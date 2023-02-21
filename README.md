@@ -1,1 +1,1 @@
-# balancer-pools-metadata
+# Balancer Pool Metadata

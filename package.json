@@ -1,12 +1,10 @@
 {
   "name": "balancer-pool-metadata",
   "version": "1.0.0",
-  "workspaces": [
-    "packages/**"
-  ],
   "private": true,
   "description": "",
   "scripts": {
+    "dev": "pnpm -r dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

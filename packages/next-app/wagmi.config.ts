@@ -3,7 +3,7 @@ import { foundry, react } from "@wagmi/cli/plugins";
 import * as chains from "wagmi/chains";
 
 export default defineConfig({
-  out: "src/generated.ts",
+  out: "src/wagmi/generated.ts",
   plugins: [
     foundry({
       deployments: {
@@ -13,7 +13,7 @@ export default defineConfig({
           [chains.foundry.id]: "0xbe18A1B61ceaF59aEB6A9bC81AB4FB87D56Ba167",
         },
       },
-      project: "./contracts",
+      project: "../contracts",
     }),
     react(),
   ],

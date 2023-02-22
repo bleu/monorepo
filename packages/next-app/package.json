@@ -1,12 +1,15 @@
 {
-  "name": "next-app",
+  "name": "@balancer-pool-metadata/next-app",
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "build": "pnpm run wagmi && next build",
+    "dev": "pnpm run --stream --parallel dev:wagmi dev:next",
+    "dev:wagmi": "wagmi generate --watch",
+    "dev:next": "next dev",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "wagmi": "wagmi generate"
   },
   "dependencies": {
     "@wagmi/cli": "0.1.10",

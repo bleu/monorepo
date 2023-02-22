@@ -4,7 +4,7 @@
   "private": true,
   "description": "",
   "scripts": {
-    "dev": "pnpm -r dev",
+    "dev": "pnpm --stream -r dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

@@ -30,3 +30,5 @@ Install foundry to your system:
 ```bash
 curl -L https://foundry.paradigm.xyz | bash
 ```
+
+Pro tip: configure your vscode to (play nice with Solidity)[https://book.getfoundry.sh/config/vscode] =)

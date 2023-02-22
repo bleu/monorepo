@@ -1,0 +1,22 @@
+{
+  "name": "balancer-pool-metadata",
+  "version": "1.0.0",
+  "workspaces": [
+    "packages/**"
+  ],
+  "private": true,
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bleu-llc/balancer-pool-metadata.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bleu-llc/balancer-pool-metadata/issues"
+  },
+  "homepage": "https://github.com/bleu-llc/balancer-pool-metadata#readme"
+}

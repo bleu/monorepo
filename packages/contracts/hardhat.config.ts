@@ -1,7 +1,8 @@
-import fs from "fs";
 import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "hardhat-preprocessor";
+
+import fs from "fs";
 import { HardhatUserConfig, task } from "hardhat/config";
 
 import example from "./tasks/example";
@@ -31,8 +32,9 @@ const config: HardhatUserConfig = {
     cache: "./cache_hardhat", // Use a different cache for Hardhat than Foundry
   },
   // This fully resolves paths for imports in the ./lib directory for Hardhat
+  // @ts-expect-error
   preprocess: {
-    eachLine: (hre) => ({
+    eachLine: (_hre: unknown) => ({
       transform: (line: string) => {
         if (line.match(/^\s*import /i)) {
           getRemappings().forEach(([find, replace]) => {

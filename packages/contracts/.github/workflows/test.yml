@@ -51,13 +51,13 @@ jobs:
       - name: Setup Node 16
         uses: actions/setup-node@v3
         with:
-          node-version: '16.x'
-          cache: 'npm'
+          node-version: "16.x"
+          cache: "npm"
 
       - name: Install Node dependencies
         run: |
           npm ci
-        
+
       - name: Run Hardhat tests
         run: |
           npm run test

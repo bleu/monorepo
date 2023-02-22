@@ -4,45 +4,15 @@ importers:
 
   .:
     specifiers:
-      '@balancer-pool-metadata/config': workspace:*
+      '@balancer-pool-metadata/eslint-config': workspace:*
       ghooks: ^2.0.4
       lint-staged: ^13.1.2
       prettier: ^2.8.3
     dependencies:
-      '@balancer-pool-metadata/config': link:packages/config
+      '@balancer-pool-metadata/eslint-config': link:packages/eslint-config
       ghooks: 2.0.4
       lint-staged: 13.1.2
       prettier: 2.8.4
-
-  packages/config:
-    specifiers:
-      '@typescript-eslint/eslint-plugin': latest
-      eslint: 8.28.0
-      eslint-config-airbnb: latest
-      eslint-config-next: latest
-      eslint-config-prettier: latest
-      eslint-import-resolver-typescript: latest
-      eslint-plugin-compat: latest
-      eslint-plugin-graphql: latest
-      eslint-plugin-import: latest
-      eslint-plugin-jsx-a11y: latest
-      eslint-plugin-prettier: latest
-      eslint-plugin-react-hooks: latest
-      eslint-plugin-simple-import-sort: latest
-    devDependencies:
-      '@typescript-eslint/eslint-plugin': 5.53.0_vbkgzy3hkh6s3godevybh4p22q
-      eslint: 8.28.0
-      eslint-config-airbnb: 19.0.4_ongsiio47jr43tjxhh22vk6k3e
-      eslint-config-next: 13.1.6_pku7h6lsbnh7tcsfjudlqd5qce
-      eslint-config-prettier: 8.6.0_eslint@8.28.0
-      eslint-import-resolver-typescript: 3.5.3_3n2ft6b6mablvh7v5gm3zyhpdm
-      eslint-plugin-compat: 4.1.2_eslint@8.28.0
-      eslint-plugin-graphql: 4.0.0_x5mm656fih6nbvpgn4jizxdype
-      eslint-plugin-import: 2.27.5_bpdqnpizjex2wey2qymb5vzpe4
-      eslint-plugin-jsx-a11y: 6.7.1_eslint@8.28.0
-      eslint-plugin-prettier: 4.2.1_av56x6twmfdhew6whikex4ovbm
-      eslint-plugin-react-hooks: 4.6.0_eslint@8.28.0
-      eslint-plugin-simple-import-sort: 10.0.0_eslint@8.28.0
 
   packages/contracts:
     specifiers:
@@ -80,9 +50,39 @@ importers:
       typechain: 8.1.1_typescript@4.9.5
       typescript: 4.9.5
 
+  packages/eslint-config:
+    specifiers:
+      '@typescript-eslint/eslint-plugin': latest
+      eslint: 8.28.0
+      eslint-config-airbnb: latest
+      eslint-config-next: latest
+      eslint-config-prettier: latest
+      eslint-import-resolver-typescript: latest
+      eslint-plugin-compat: latest
+      eslint-plugin-graphql: latest
+      eslint-plugin-import: latest
+      eslint-plugin-jsx-a11y: latest
+      eslint-plugin-prettier: latest
+      eslint-plugin-react-hooks: latest
+      eslint-plugin-simple-import-sort: latest
+    devDependencies:
+      '@typescript-eslint/eslint-plugin': 5.53.0_vbkgzy3hkh6s3godevybh4p22q
+      eslint: 8.28.0
+      eslint-config-airbnb: 19.0.4_ongsiio47jr43tjxhh22vk6k3e
+      eslint-config-next: 13.1.6_pku7h6lsbnh7tcsfjudlqd5qce
+      eslint-config-prettier: 8.6.0_eslint@8.28.0
+      eslint-import-resolver-typescript: 3.5.3_3n2ft6b6mablvh7v5gm3zyhpdm
+      eslint-plugin-compat: 4.1.2_eslint@8.28.0
+      eslint-plugin-graphql: 4.0.0_x5mm656fih6nbvpgn4jizxdype
+      eslint-plugin-import: 2.27.5_bpdqnpizjex2wey2qymb5vzpe4
+      eslint-plugin-jsx-a11y: 6.7.1_eslint@8.28.0
+      eslint-plugin-prettier: 4.2.1_av56x6twmfdhew6whikex4ovbm
+      eslint-plugin-react-hooks: 4.6.0_eslint@8.28.0
+      eslint-plugin-simple-import-sort: 10.0.0_eslint@8.28.0
+
   packages/next-app:
     specifiers:
-      '@balancer-pool-metadata/config': workspace:*
+      '@balancer-pool-metadata/eslint-config': workspace:*
       '@balancer-pool-metadata/tsconfig': workspace:*
       '@rainbow-me/rainbowkit': ^0.11.0
       '@types/node': ^18.14.0
@@ -99,7 +99,7 @@ importers:
       typescript: ^4.9.5
       wagmi: ~0.11.6
     dependencies:
-      '@balancer-pool-metadata/config': link:../config
+      '@balancer-pool-metadata/eslint-config': link:../eslint-config
       '@balancer-pool-metadata/tsconfig': link:../tsconfig
       '@rainbow-me/rainbowkit': 0.11.0_7mbqcem2us4hjkgdkfe6733sim
       '@wagmi/cli': 0.1.10_yfvc64t7fgwqabnaazvo3d7ovu
@@ -6058,6 +6058,19 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
+    dev: false
+
+  /follow-redirects/1.15.2_debug@4.3.4:
+    resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
+    engines: {node: '>=4.0'}
+    peerDependencies:
+      debug: '*'
+    peerDependenciesMeta:
+      debug:
+        optional: true
+    dependencies:
+      debug: 4.3.4
+    dev: true
 
   /for-each/0.3.3:
     resolution: {integrity: sha512-jqYfLp7mo9vIyQf8ykW2v7A+2N4QjeCeI5+Dz9XraiO1ign81wjiH7Fb9vSOWvQfNtmSa4H2RoQTrrXivdUZmw==}
@@ -9181,7 +9194,7 @@ packages:
     dependencies:
       command-exists: 1.2.9
       commander: 3.0.2
-      follow-redirects: 1.15.2
+      follow-redirects: 1.15.2_debug@4.3.4
       fs-extra: 0.30.0
       js-sha3: 0.8.0
       memorystream: 0.3.1
@@ -9199,7 +9212,7 @@ packages:
     dependencies:
       command-exists: 1.2.9
       commander: 8.3.0
-      follow-redirects: 1.15.2
+      follow-redirects: 1.15.2_debug@4.3.4
       js-sha3: 0.8.0
       memorystream: 0.3.1
       semver: 5.7.1

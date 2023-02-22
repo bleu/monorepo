@@ -12,7 +12,7 @@
     "url": "git+https://github.com/bleu-llc/balancer-pool-metadata.git"
   },
   "dependencies": {
-    "@balancer-pool-metadata/config": "workspace:*",
+    "@balancer-pool-metadata/eslint-config": "workspace:*",
     "ghooks": "^2.0.4",
     "lint-staged": "^13.1.2",
     "prettier": "^2.8.3"

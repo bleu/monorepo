@@ -1,10 +1,10 @@
-import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { useAccount } from 'wagmi'
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useAccount } from "wagmi";
 
-import { Account } from '../components'
+import { Account } from "../components";
 
 function Page() {
-  const { isConnected } = useAccount()
+  const { isConnected } = useAccount();
   return (
     <>
       <h1>wagmi + RainbowKit + Next.js</h1>
@@ -12,7 +12,7 @@ function Page() {
       <ConnectButton />
       {isConnected && <Account />}
     </>
-  )
+  );
 }
 
-export default Page
+export default Page;

@@ -1,5 +1,5 @@
 {
-  "name": "hardhat-foundry-template",
+  "name": "@balancer-pool-metadata/contracts",
   "version": "1.0.0",
   "description": "The harmony between Foundry and Hardhat.",
   "directories": {
@@ -7,24 +7,30 @@
     "test": "test"
   },
   "scripts": {
-    "dev:testnet": "anvil",
-    "test": "hardhat test"
+    "dev": "pnpm run --stream --parallel dev:anvil",
+    "dev:anvil": "anvil",
+    "deploy": "source .env && forge create src/Token.sol:Token --rpc-url $FORGE_RPC_URL --private-key $FORGE_PRIVATE_KEY --etherscan-api-key $ETHERSCAN_API_KEY --verify",
+    "deploy:anvil": "source .env && forge create src/Token.sol:Token --rpc-url http://127.0.0.1:8545 --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+    "test": "forge test",
+    "format": "prettier --write .",
+    "lint:fix": "eslint --cache --cache-location ./node_modules/.cache/eslint . --fix"
   },
   "devDependencies": {
-    "@nomiclabs/hardhat-ethers": "^2.0.6",
-    "@nomiclabs/hardhat-waffle": "^2.0.3",
-    "@typechain/ethers-v5": "^10.0.0",
-    "@typechain/hardhat": "^6.0.0",
-    "@types/chai": "^4.3.0",
-    "@types/mocha": "^9.1.0",
-    "@types/node": "^17.0.35",
-    "chai": "^4.3.6",
-    "ethereum-waffle": "^3.2.0",
-    "ethers": "^5.6.6",
-    "hardhat": "^2.9.5",
-    "hardhat-preprocessor": "^0.1.4",
-    "ts-node": "^10.7.0",
-    "typechain": "^8.0.0",
-    "typescript": "^4.6.4"
+    "@nomiclabs/hardhat-ethers": "^2.2.2",
+    "@nomiclabs/hardhat-waffle": "^2.0.5",
+    "@typechain/ethers-v5": "^10.2.0",
+    "@typechain/hardhat": "^6.1.5",
+    "@types/chai": "^4.3.4",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^18.14.0",
+    "chai": "^4.3.7",
+    "ethereum-waffle": "^4.0.10",
+    "ethers": "^5.7.2",
+    "hardhat": "^2.12.7",
+    "hardhat-preprocessor": "^0.1.5",
+    "ts-node": "^10.9.1",
+    "typechain": "^8.1.1",
+    "typescript": "^4.9.5",
+    "@balancer-pool-metadata/tsconfig": "workspace:*"
   }
 }

@@ -1,17 +1,33 @@
 {
   "name": "balancer-pool-metadata",
   "version": "1.0.0",
-  "workspaces": [
-    "packages/**"
-  ],
   "private": true,
   "description": "",
   "scripts": {
+    "dev": "pnpm --stream -r dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bleu-llc/balancer-pool-metadata.git"
+  },
+  "dependencies": {
+    "@balancer-pool-metadata/eslint-config": "workspace:*",
+    "ghooks": "^2.0.4",
+    "lint-staged": "^13.1.2",
+    "prettier": "^2.8.3"
+  },
+  "lint-staged": {
+    "*.{md,html,mjml,json,graphql,yml,css,scss}": "prettier --write"
+  },
+  "config": {
+    "ghooks": {
+      "pre-commit": "pnpm lint-staged"
+    }
+  },
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=7"
   },
   "author": "",
   "license": "ISC",

@@ -1,3 +1,4 @@
+/** @type {import('@wagmi/cli').Config} */
 import { defineConfig } from "@wagmi/cli";
 import { foundry, react } from "@wagmi/cli/plugins";
 import * as chains from "wagmi/chains";
@@ -7,6 +8,7 @@ export default defineConfig({
   plugins: [
     foundry({
       deployments: {
+        // TODO: here you'd update the addresses to the ones you deployed to
         Counter: {
           [chains.mainnet.id]: "0x1A61839Eb5fC6eBBcAe01eD5E79062E598792Dac",
           [chains.goerli.id]: "0x78991BB1D194C1235fe285240af8489CFA552151",

@@ -1,0 +1,6 @@
+node_modules/
+.next/
+__generated__/
+src/types/types.d.ts
+!.eslintrc.js
+!.lintstagedrc.js

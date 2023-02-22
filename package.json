@@ -11,6 +11,24 @@
     "type": "git",
     "url": "git+https://github.com/bleu-llc/balancer-pool-metadata.git"
   },
+  "dependencies": {
+    "@balancer-pool-metadata/config": "workspace:*",
+    "ghooks": "^2.0.4",
+    "lint-staged": "^13.1.2",
+    "prettier": "^2.8.3"
+  },
+  "lint-staged": {
+    "*.{md,html,mjml,json,graphql,yml,css,scss}": "prettier --write"
+  },
+  "config": {
+    "ghooks": {
+      "pre-commit": "pnpm lint-staged"
+    }
+  },
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=7"
+  },
   "author": "",
   "license": "ISC",
   "bugs": {

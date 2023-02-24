@@ -16,7 +16,6 @@ importers:
 
   packages/contracts:
     specifiers:
-      '@balancer-labs/v2-interfaces': ^0.3.0
       '@balancer-pool-metadata/tsconfig': workspace:*
       '@nomiclabs/hardhat-ethers': ^2.2.2
       '@nomiclabs/hardhat-waffle': ^2.0.5
@@ -33,8 +32,6 @@ importers:
       ts-node: ^10.9.1
       typechain: ^8.1.1
       typescript: ^4.9.5
-    dependencies:
-      '@balancer-labs/v2-interfaces': 0.3.0
     devDependencies:
       '@balancer-pool-metadata/tsconfig': link:../tsconfig
       '@nomiclabs/hardhat-ethers': 2.2.2_4tzilew2vuitdwerzusliplz24
@@ -377,10 +374,6 @@ packages:
       '@babel/helper-string-parser': 7.19.4
       '@babel/helper-validator-identifier': 7.19.1
       to-fast-properties: 2.0.0
-    dev: false
-
-  /@balancer-labs/v2-interfaces/0.3.0:
-    resolution: {integrity: sha512-QgzUUHxqruuRzhTDb0ug49oYniK5zXupTkDSvsy/VKLWQQcHzci1WTyTHUGHaLV+TvNRzHx7fLgdSogxlLa4Bg==}
     dev: false
 
   /@coinbase/wallet-sdk/3.6.4_@babel+core@7.21.0:

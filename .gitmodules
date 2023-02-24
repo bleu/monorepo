@@ -4,6 +4,3 @@
 [submodule "packages/contracts/lib/solmate"]
 	path = packages/contracts/lib/solmate
 	url = https://github.com/rari-capital/solmate
-[submodule "packages/contracts/lib/balancer-v2-monorepo"]
-	path = packages/contracts/lib/balancer-v2-monorepo
-	url = https://github.com/balancer-labs/balancer-v2-monorepo

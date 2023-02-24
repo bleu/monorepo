@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity ^0.8.13;
 
 import "@balancer-labs/v2-interfaces/contracts/vault/IVault.sol";
@@ -8,8 +8,12 @@ import "@balancer-labs/v2-interfaces/contracts/vault/IVault.sol";
 /// @notice This contract (description...)
 contract PoolMetadataRegistry {
 
-    /// @notice Vault address on Goerli Testnet (temporary)
-    IVault public immutable vault = IVault(0xBA12222222228d8Ba445958a75a0704d566BF2C8);
+    /// @notice Vault address on Goerli Testnet (temporary) = IVault(0xBA12222222228d8Ba445958a75a0704d566BF2C8)
+    IVault private immutable _vault;
+
+    constructor(IVault vault) {
+        _vault = vault;
+    }
 
     /// @notice Check if a Pool is registered on Balancer
     /// @param poolId The pool ID to check against the Balancer vault
@@ -17,7 +21,7 @@ contract PoolMetadataRegistry {
     function isPoolRegistered(
         bytes32 poolId
     ) public view returns (bool) {
-        try vault.getPool(poolId) returns (address, IVault.PoolSpecialization) {
+        try _vault.getPool(poolId) returns (address, IVault.PoolSpecialization) {
             return true;
         } catch (bytes memory) {
             return false;

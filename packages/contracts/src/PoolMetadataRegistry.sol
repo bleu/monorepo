@@ -7,6 +7,8 @@ import "@balancer-labs/v2-interfaces/contracts/vault/IVault.sol";
 /// @author Bleu LLC
 /// @notice This contract (description...)
 contract PoolMetadataRegistry {
+    address private constant BALANCER_VAULT_ADDR = 0xBA12222222228d8Ba445958a75a0704d566BF2C8;
+
     IVault private immutable _vault;
 
     constructor(IVault vault) {

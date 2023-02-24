@@ -23,8 +23,6 @@ contract PoolMetadataRegistryTest is Test {
 
         IERC20[] memory tokens = new IERC20[](10);
         for (uint256 i = 0; i < tokens.length; i++) {
-            // We don't actually care about the token addresses, we just need unique identifiers so we can register and
-            // deregister the "tokens". We can then just cast the values from 1 to 10 into addresses.
             tokens[i] = IERC20(i + 1);
         }
         address[] memory assetManagers = new address[](10);
@@ -41,5 +39,13 @@ contract PoolMetadataRegistryTest is Test {
         emit log_named_string("is a Pool?", isPool ? "Yes" : "No");
 
         assertTrue(isPool);
+    }
+
+    function testIsPoolNotRegistered() public {
+        emit log_named_bytes32("poolId = ", poolId);
+        bool isPool = poolMetadataRegistry.isPoolRegistered(0);
+        emit log_named_string("is a Pool?", isPool ? "Yes" : "No");
+
+        assertFalse(isPool);
     }
 }

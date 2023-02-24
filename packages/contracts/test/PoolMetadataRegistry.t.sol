@@ -5,29 +5,13 @@ pragma experimental ABIEncoderV2;
 import "../src/PoolMetadataRegistry.sol";
 // import "lib/balancer-v2-monorepo/pkg/vault/contracts/Vault.sol";
 
-import "@balancer-labs/v2-interfaces/contracts/vault/IVault.sol";
-import "balancer-v2-monorepo/pkg/vault/contracts/test/MockPool.sol";
-import "@balancer-labs/v2-vault/contracts/Vault.sol";
-
-import "@balancer-labs/v2-pool-utils/contracts/lib/PoolRegistrationLib.sol";
 import "balancer-v2-monorepo/pkg/vault/contracts/test/MockBasicAuthorizer.sol";
+import "balancer-v2-monorepo/pkg/vault/contracts/test/MockPool.sol";
+import "@balancer-labs/v2-interfaces/contracts/vault/IVault.sol";
+import "@balancer-labs/v2-vault/contracts/Vault.sol";
+import "@balancer-labs/v2-pool-utils/contracts/lib/PoolRegistrationLib.sol";
 
-import {console} from "forge-std/console.sol";
-import {stdStorage, StdStorage, Test} from "forge-std/Test.sol";
-
-// contract VaultMock is Vault {
-//     bool isPublicConfig;
-
-//     constructor() public Vault(0) {}
-
-//     function setIsPublic(bool isPublic) external {
-//         isPublicConfig = isPublic;
-//     }
-
-//     function isPublic() public view returns (bool) {
-//         return isPublicConfig;
-//     }
-// }
+import {Test} from "forge-std/Test.sol";
 
 contract PoolMetadataRegistryTest is Test {
     PoolMetadataRegistry poolMetadataRegistry;
@@ -37,8 +21,6 @@ contract PoolMetadataRegistryTest is Test {
 
     function setUp() external {
         _vault = new Vault(IAuthorizer(0), IWETH(0), 0, 0);
-
-        IERC20 bpt = IERC20(address(this));
 
         IERC20[] memory tokens = new IERC20[](10);
         for (uint256 i = 0; i < tokens.length; i++) {
@@ -50,18 +32,17 @@ contract PoolMetadataRegistryTest is Test {
 
         poolId =
             PoolRegistrationLib.registerComposablePool(_vault, IVault.PoolSpecialization.GENERAL, tokens, assetManagers);
+    
+        poolMetadataRegistry = new PoolMetadataRegistry(_vault);
+
     }
 
-    // vault = new MockVault(IAuthorizer(0), IWETH(0), 0, 0);
-
-    // poolMetadataRegistry = new PoolMetadataRegistry(vault);    }
-
     function testIsPoolRegistered() public {
-        // bool isPool =
-        //     poolMetadataRegistry.isPoolRegistered(0x0091463ef18ad148413edc994df10fbda850a3f700000000000000000000030b);
+        
+        emit log_named_bytes32("poolId = ", poolId);
+        bool isPool = poolMetadataRegistry.isPoolRegistered(poolId);
+        emit log_named_string("is a Pool?", isPool ? 'Yes' : 'No');
 
-        // console.log(isPool);
-
-        // assertTrue(isPool);
+        assertTrue(isPool);
     }
 }

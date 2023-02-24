@@ -3,7 +3,6 @@ pragma solidity >=0.7.0 <0.9.0;
 pragma experimental ABIEncoderV2;
 
 import "../src/PoolMetadataRegistry.sol";
-// import "lib/balancer-v2-monorepo/pkg/vault/contracts/Vault.sol";
 
 import "balancer-v2-monorepo/pkg/vault/contracts/test/MockBasicAuthorizer.sol";
 import "balancer-v2-monorepo/pkg/vault/contracts/test/MockPool.sol";
@@ -32,16 +31,14 @@ contract PoolMetadataRegistryTest is Test {
 
         poolId =
             PoolRegistrationLib.registerComposablePool(_vault, IVault.PoolSpecialization.GENERAL, tokens, assetManagers);
-    
-        poolMetadataRegistry = new PoolMetadataRegistry(_vault);
 
+        poolMetadataRegistry = new PoolMetadataRegistry(_vault);
     }
 
     function testIsPoolRegistered() public {
-        
         emit log_named_bytes32("poolId = ", poolId);
         bool isPool = poolMetadataRegistry.isPoolRegistered(poolId);
-        emit log_named_string("is a Pool?", isPool ? 'Yes' : 'No');
+        emit log_named_string("is a Pool?", isPool ? "Yes" : "No");
 
         assertTrue(isPool);
     }

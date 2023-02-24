@@ -1,3 +1,8 @@
-forge-std/=lib/forge-std/src/
-solmate/=lib/solmate/src/
+@balancer-labs/=lib/balancer-v2-monorepo/../../node_modules/@balancer-labs/
+@ensdomains/=../../node_modules/@ensdomains/
+balancer-v2-monorepo/=lib/balancer-v2-monorepo/
 ds-test/=lib/forge-std/lib/ds-test/src/
+forge-std/=lib/forge-std/src/
+hardhat-foundry-template/=../../node_modules/hardhat-foundry-template/
+hardhat/=../../node_modules/hardhat/
+solmate/=lib/solmate/src/

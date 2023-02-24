@@ -1,5 +1,4 @@
 @balancer-labs/=lib/balancer-v2-monorepo/../../node_modules/@balancer-labs/
-@balancer-labs/=packages/contracts/node_modules/@balancer-labs/
 balancer-v2-monorepo/=lib/balancer-v2-monorepo/
 ds-test/=lib/forge-std/lib/ds-test/src/
 forge-std/=lib/forge-std/src/

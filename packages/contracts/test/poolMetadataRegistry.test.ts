@@ -1,3 +1,5 @@
+import  StablePoolDeployer from "@balancer-labs/v2-helpers/src/models/pools/stable/StablePoolDeployer"
+import TokenList from "@balancer-labs/v2-helpers/src/models/tokens/TokenList";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
@@ -7,11 +9,16 @@ describe("PoolMetadataRegistry", function () {
       "PoolMetadataRegistry"
     );
 
+    const tokens = await TokenList.create(6, { sorted: true });
+
+    const pool = await StablePoolDeployer.deploy({tokens, mockedVault: true})
+    
     const registry = await PoolMetadataRegistry.deploy(
-      "0xBA12222222228d8Ba445958a75a0704d566BF2C8"
+      pool.vault.address
     );
+
     await registry.deployed();
 
-    expect(await registry.isPoolRegistered("0")).to.equal(true);
+    expect(await registry.isPoolRegistered(pool.address)).to.equal(true);
   });
 });

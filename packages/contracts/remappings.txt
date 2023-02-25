@@ -1,7 +1,9 @@
 @balancer-labs/=lib/balancer-v2-monorepo/../../node_modules/@balancer-labs/
-@ethereum-waffle/=../../node_modules/@ethereum-waffle/
+@ensdomains/=lib/balancer-v2-monorepo/node_modules/@ensdomains/
+@solidity-parser/=/
 balancer-v2-monorepo/=lib/balancer-v2-monorepo/
 ds-test/=lib/forge-std/lib/ds-test/src/
 forge-std/=lib/forge-std/src/
 hardhat/=../../node_modules/hardhat/
+prettier-plugin-solidity/=lib/balancer-v2-monorepo/node_modules/prettier-plugin-solidity/
 solmate/=lib/solmate/src/

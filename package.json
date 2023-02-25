@@ -40,13 +40,13 @@
     "url": "https://github.com/bleu-llc/balancer-pool-metadata/issues"
   },
   "homepage": "https://github.com/bleu-llc/balancer-pool-metadata#readme",
-  "peerDependencies": {
+  "devDependencies": {
     "@balancer-labs/v2-interfaces": "link:./lib/balancer-v2-monorepo/pkg/interfaces",
     "@balancer-labs/v2-pool-utils": "link:./lib/balancer-v2-monorepo/pkg/pool-utils",
     "@balancer-labs/v2-solidity-utils": "link:./lib/balancer-v2-monorepo/pkg/solidity-utils",
-    "@balancer-labs/v2-vault": "link:./lib/balancer-v2-monorepo/pkg/vault"
-  },
-  "devDependencies": {
+    "@balancer-labs/v2-vault": "link:./lib/balancer-v2-monorepo/pkg/vault",
+    "@balancer-labs/v2-helpers": "link:./lib/balancer-v2-monorepo/pvt/helpers",
+    "@balancer-labs/balancer-js": "link:./lib/balancer-v2-monorepo/pck/balancer-js",
     "concurrently": "^7.6.0"
   }
 }

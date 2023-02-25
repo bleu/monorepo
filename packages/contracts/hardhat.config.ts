@@ -2,7 +2,6 @@ import "@nomicfoundation/hardhat-toolbox";
 import "@nomicfoundation/hardhat-chai-matchers"
 import "@typechain/hardhat";
 import "hardhat-preprocessor";
-import 'hardhat-dependency-compiler'
 
 import fs from "fs";
 import { HardhatUserConfig, task } from "hardhat/config";
@@ -56,19 +55,6 @@ const config: HardhatUserConfig = {
       },
     }),
   },
-  dependencyCompiler: {
-    paths: [
-      "balancer-v2-monorepo/pkg/vault/contracts/test/MockBasicAuthorizer.sol",
-      "balancer-v2-monorepo/pkg/pool-utils/contracts/test/MockVault.sol",
-      "balancer-v2-monorepo/pkg/liquidity-mining/contracts/admin/AuthorizerAdaptor.sol",
-      "balancer-v2-monorepo/pkg/liquidity-mining/contracts/admin/AuthorizerAdaptorEntrypoint.sol",
-      "balancer-v2-monorepo/pkg/standalone-utils/contracts/ProtocolFeePercentagesProvider.sol",
-      "balancer-v2-monorepo/pkg/vault/contracts/authorizer/TimelockAuthorizer.sol",
-      "balancer-v2-monorepo/pkg/pool-stable/contracts/test/MockComposableStablePool.sol",
-      "@balancer-labs/v2-solidity-utils/contracts/test/TestToken.sol",
-      "balancer-v2-monorepo/pkg/standalone-utils/contracts/test/TestWETH.sol"
-    ],
-  }
 };
 
 export default config;

@@ -4,11 +4,19 @@ importers:
 
   .:
     specifiers:
+      '@balancer-labs/v2-interfaces': link:./lib/balancer-v2-monorepo/pkg/interfaces
+      '@balancer-labs/v2-pool-utils': link:./lib/balancer-v2-monorepo/pkg/pool-utils
+      '@balancer-labs/v2-solidity-utils': link:./lib/balancer-v2-monorepo/pkg/solidity-utils
+      '@balancer-labs/v2-vault': link:./lib/balancer-v2-monorepo/pkg/vault
       '@balancer-pool-metadata/eslint-config': workspace:*
       ghooks: ^2.0.4
       lint-staged: ^13.1.2
       prettier: ^2.8.3
     dependencies:
+      '@balancer-labs/v2-interfaces': link:lib/balancer-v2-monorepo/pkg/interfaces
+      '@balancer-labs/v2-pool-utils': link:lib/balancer-v2-monorepo/pkg/pool-utils
+      '@balancer-labs/v2-solidity-utils': link:lib/balancer-v2-monorepo/pkg/solidity-utils
+      '@balancer-labs/v2-vault': link:lib/balancer-v2-monorepo/pkg/vault
       '@balancer-pool-metadata/eslint-config': link:packages/eslint-config
       ghooks: 2.0.4
       lint-staged: 13.1.2
@@ -16,10 +24,10 @@ importers:
 
   packages/contracts:
     specifiers:
-      '@balancer-labs/v2-interfaces': ^0.3.0
-      '@balancer-labs/v2-pool-utils': ^3.1.2
-      '@balancer-labs/v2-solidity-utils': ^3.0.2
-      '@balancer-labs/v2-vault': ^3.0.1
+      '@balancer-labs/v2-interfaces': link:./lib/balancer-v2-monorepo/pkg/interfaces
+      '@balancer-labs/v2-pool-utils': link:./lib/balancer-v2-monorepo/pkg/pool-utils
+      '@balancer-labs/v2-solidity-utils': link:./lib/balancer-v2-monorepo/pkg/solidity-utils
+      '@balancer-labs/v2-vault': link:./lib/balancer-v2-monorepo/pkg/vault
       '@balancer-pool-metadata/tsconfig': workspace:*
       '@nomiclabs/hardhat-ethers': ^2.2.2
       '@nomiclabs/hardhat-waffle': ^2.0.5
@@ -37,10 +45,10 @@ importers:
       typechain: ^8.1.1
       typescript: ^4.9.5
     dependencies:
-      '@balancer-labs/v2-interfaces': 0.3.0
-      '@balancer-labs/v2-pool-utils': 3.1.2
-      '@balancer-labs/v2-solidity-utils': 3.0.2
-      '@balancer-labs/v2-vault': 3.0.1
+      '@balancer-labs/v2-interfaces': link:lib/balancer-v2-monorepo/pkg/interfaces
+      '@balancer-labs/v2-pool-utils': link:lib/balancer-v2-monorepo/pkg/pool-utils
+      '@balancer-labs/v2-solidity-utils': link:lib/balancer-v2-monorepo/pkg/solidity-utils
+      '@balancer-labs/v2-vault': link:lib/balancer-v2-monorepo/pkg/vault
     devDependencies:
       '@balancer-pool-metadata/tsconfig': link:../tsconfig
       '@nomiclabs/hardhat-ethers': 2.2.2_4tzilew2vuitdwerzusliplz24
@@ -78,7 +86,7 @@ importers:
       '@typescript-eslint/eslint-plugin': 5.53.0_vbkgzy3hkh6s3godevybh4p22q
       eslint: 8.28.0
       eslint-config-airbnb: 19.0.4_ongsiio47jr43tjxhh22vk6k3e
-      eslint-config-next: 13.1.6_pku7h6lsbnh7tcsfjudlqd5qce
+      eslint-config-next: 13.2.1_pku7h6lsbnh7tcsfjudlqd5qce
       eslint-config-prettier: 8.6.0_eslint@8.28.0
       eslint-import-resolver-typescript: 3.5.3_3n2ft6b6mablvh7v5gm3zyhpdm
       eslint-plugin-compat: 4.1.2_eslint@8.28.0
@@ -383,44 +391,6 @@ packages:
       '@babel/helper-string-parser': 7.19.4
       '@babel/helper-validator-identifier': 7.19.1
       to-fast-properties: 2.0.0
-    dev: false
-
-  /@balancer-labs/v2-interfaces/0.2.0:
-    resolution: {integrity: sha512-p317Ojk3iZ6ja689u72HZvi03mG02LRkS+40J/EO2o1SDdOxbKThP7cWaZNbNJBC3IP8hzRcsZI+zmLqGa6Emw==}
-    dev: false
-
-  /@balancer-labs/v2-interfaces/0.2.1:
-    resolution: {integrity: sha512-CBbUKjIJKdPwPGW5PCjqwStbvu9+qonnx0sY8vhIn1hJ17kopio6HCe7SsyMF7vWOd4YqzUq4Zc/6kyHH+8Bpg==}
-    dev: false
-
-  /@balancer-labs/v2-interfaces/0.3.0:
-    resolution: {integrity: sha512-QgzUUHxqruuRzhTDb0ug49oYniK5zXupTkDSvsy/VKLWQQcHzci1WTyTHUGHaLV+TvNRzHx7fLgdSogxlLa4Bg==}
-    dev: false
-
-  /@balancer-labs/v2-pool-utils/3.1.2:
-    resolution: {integrity: sha512-sosx05+RXtCaXHSJhAmBe/CEvK1lIRBgi/k3uxi55OYJAH12RIT38FGZcNDxzF7D8TEmjtj+Mpea9DLXIbY3zw==}
-    dependencies:
-      '@balancer-labs/v2-interfaces': 0.3.0
-      '@balancer-labs/v2-solidity-utils': 3.0.2
-    dev: false
-
-  /@balancer-labs/v2-solidity-utils/3.0.1:
-    resolution: {integrity: sha512-uhaQbgFyT5uRWW39aPWH0ZARzqIICJvwZXKJpv7EPG2NAUrf03ZsF/Zb3gxpTZXfNoKsKznJWtxgJ1W0rnLu9w==}
-    dependencies:
-      '@balancer-labs/v2-interfaces': 0.2.0
-    dev: false
-
-  /@balancer-labs/v2-solidity-utils/3.0.2:
-    resolution: {integrity: sha512-r0tFP0ywPK2+U37F491zaXwDtnzyU9HKVnLhFXD4YpxDLT4gqkrn2aJM8aW3tJWB7IHQDqGGj6zPFqQRMkONoA==}
-    dependencies:
-      '@balancer-labs/v2-interfaces': 0.3.0
-    dev: false
-
-  /@balancer-labs/v2-vault/3.0.1:
-    resolution: {integrity: sha512-uVvHWDR8sGUCxdMOluYPEjeqeNYHo9/47ALYnpv4NLdXwNH8nw7PWun+cExLLdTBJ3XEc/6IyuYUlfcoWWpfcw==}
-    dependencies:
-      '@balancer-labs/v2-interfaces': 0.2.1
-      '@balancer-labs/v2-solidity-utils': 3.0.1
     dev: false
 
   /@coinbase/wallet-sdk/3.6.4_@babel+core@7.21.0:
@@ -1428,6 +1398,12 @@ packages:
 
   /@next/eslint-plugin-next/13.1.6:
     resolution: {integrity: sha512-o7cauUYsXjzSJkay8wKjpKJf2uLzlggCsGUkPu3lP09Pv97jYlekTC20KJrjQKmSv5DXV0R/uks2ZXhqjNkqAw==}
+    dependencies:
+      glob: 7.1.7
+    dev: true
+
+  /@next/eslint-plugin-next/13.2.1:
+    resolution: {integrity: sha512-r0i5rcO6SMAZtqiGarUVMr3k256X0R0j6pEkKg4PxqUW+hG0qgMxRVAJsuoRG5OBFkCOlSfWZJ0mP9fQdCcyNg==}
     dependencies:
       glob: 7.1.7
     dev: true
@@ -5102,8 +5078,8 @@ packages:
       - supports-color
     dev: true
 
-  /eslint-config-next/13.1.6_pku7h6lsbnh7tcsfjudlqd5qce:
-    resolution: {integrity: sha512-0cg7h5wztg/SoLAlxljZ0ZPUQ7i6QKqRiP4M2+MgTZtxWwNKb2JSwNc18nJ6/kXBI6xYvPraTbQSIhAuVw6czw==}
+  /eslint-config-next/13.2.1_pku7h6lsbnh7tcsfjudlqd5qce:
+    resolution: {integrity: sha512-2GAx7EjSiCzJN6H2L/v1kbYrNiwQxzkyjy6eWSjuhAKt+P6d3nVNHGy9mON8ZcYd72w/M8kyMjm4UB9cvijgrw==}
     peerDependencies:
       eslint: ^7.23.0 || ^8.0.0
       typescript: '>=3.3.1'
@@ -5111,7 +5087,7 @@ packages:
       typescript:
         optional: true
     dependencies:
-      '@next/eslint-plugin-next': 13.1.6
+      '@next/eslint-plugin-next': 13.2.1
       '@rushstack/eslint-patch': 1.2.0
       '@typescript-eslint/parser': 5.53.0_pku7h6lsbnh7tcsfjudlqd5qce
       eslint: 8.28.0
@@ -6105,19 +6081,6 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
-    dev: false
-
-  /follow-redirects/1.15.2_debug@4.3.4:
-    resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
-    engines: {node: '>=4.0'}
-    peerDependencies:
-      debug: '*'
-    peerDependenciesMeta:
-      debug:
-        optional: true
-    dependencies:
-      debug: 4.3.4
-    dev: true
 
   /for-each/0.3.3:
     resolution: {integrity: sha512-jqYfLp7mo9vIyQf8ykW2v7A+2N4QjeCeI5+Dz9XraiO1ign81wjiH7Fb9vSOWvQfNtmSa4H2RoQTrrXivdUZmw==}
@@ -9241,7 +9204,7 @@ packages:
     dependencies:
       command-exists: 1.2.9
       commander: 3.0.2
-      follow-redirects: 1.15.2_debug@4.3.4
+      follow-redirects: 1.15.2
       fs-extra: 0.30.0
       js-sha3: 0.8.0
       memorystream: 0.3.1
@@ -9259,7 +9222,7 @@ packages:
     dependencies:
       command-exists: 1.2.9
       commander: 8.3.0
-      follow-redirects: 1.15.2_debug@4.3.4
+      follow-redirects: 1.15.2
       js-sha3: 0.8.0
       memorystream: 0.3.1
       semver: 5.7.1

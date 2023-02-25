@@ -1,4 +1,4 @@
-name: lint
+name: ci
 
 on:
   push:
@@ -17,8 +17,5 @@ jobs:
       - uses: actions/checkout@v3
       - uses: ./.github/workflows/setup-pnpm
 
-      - name: Run linters
-        uses: wearerequired/lint-action@v2
-        with:
-          eslint: true
-          prettier: true
+      - name: Check formatting and linting
+        run: pnpm ci

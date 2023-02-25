@@ -6,8 +6,11 @@
   "scripts": {
     "dev": "pnpm --stream -r dev",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "format-all": "pnpm --stream --if-present -r --include-workspace-root format",
-    "format": "prettier --write ."
+    "format-all": "pnpm --stream --parallel --if-present -r --include-workspace-root format",
+    "lint-all": "pnpm --stream --parallel --if-present -r --include-workspace-root lint",
+    "lint-fix-all": "pnpm --stream --parallel --if-present -r --include-workspace-root lint:fix",
+    "format": "prettier --write .",
+    "ci": "concurrently -c \"auto\" -p \"name\" -n \"format,lint\" \"pnpm format-all\" \"pnpm lint-all\" "
   },
   "repository": {
     "type": "git",
@@ -42,5 +45,8 @@
     "@balancer-labs/v2-pool-utils": "link:./lib/balancer-v2-monorepo/pkg/pool-utils",
     "@balancer-labs/v2-solidity-utils": "link:./lib/balancer-v2-monorepo/pkg/solidity-utils",
     "@balancer-labs/v2-vault": "link:./lib/balancer-v2-monorepo/pkg/vault"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0"
   }
 }

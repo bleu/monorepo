@@ -41,9 +41,9 @@ contract PoolMetadataRegistryTest is Test {
         assertTrue(isPool);
     }
 
-    function testIsPoolNotRegistered() public {
+    function testIsPoolNotRegistered(bytes32 fuzzyPoolId) public {
         emit log_named_bytes32("poolId = ", poolId);
-        bool isPool = poolMetadataRegistry.isPoolRegistered(0);
+        bool isPool = poolMetadataRegistry.isPoolRegistered(fuzzyPoolId);
         emit log_named_string("is a Pool?", isPool ? "Yes" : "No");
 
         assertFalse(isPool);

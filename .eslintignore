@@ -4,3 +4,5 @@ __generated__/
 src/types/types.d.ts
 !.eslintrc.js
 !.lintstagedrc.js
+
+**/lib/**

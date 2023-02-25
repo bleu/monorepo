@@ -5,7 +5,12 @@
   "description": "",
   "scripts": {
     "dev": "pnpm --stream -r dev",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format-all": "pnpm --stream --parallel --if-present -r --include-workspace-root format",
+    "lint-all": "pnpm --stream --parallel --if-present -r --include-workspace-root lint",
+    "lint-fix-all": "pnpm --stream --parallel --if-present -r --include-workspace-root lint:fix",
+    "format": "prettier --write .",
+    "ci": "concurrently -c \"auto\" -p \"name\" -n \"format,lint\" \"pnpm format-all\" \"pnpm lint-all\" "
   },
   "repository": {
     "type": "git",
@@ -34,5 +39,14 @@
   "bugs": {
     "url": "https://github.com/bleu-llc/balancer-pool-metadata/issues"
   },
-  "homepage": "https://github.com/bleu-llc/balancer-pool-metadata#readme"
+  "homepage": "https://github.com/bleu-llc/balancer-pool-metadata#readme",
+  "devDependencies": {
+    "@balancer-labs/v2-interfaces": "link:./lib/balancer-v2-monorepo/pkg/interfaces",
+    "@balancer-labs/v2-pool-utils": "link:./lib/balancer-v2-monorepo/pkg/pool-utils",
+    "@balancer-labs/v2-solidity-utils": "link:./lib/balancer-v2-monorepo/pkg/solidity-utils",
+    "@balancer-labs/v2-vault": "link:./lib/balancer-v2-monorepo/pkg/vault",
+    "@balancer-labs/v2-helpers": "link:./lib/balancer-v2-monorepo/pvt/helpers",
+    "@balancer-labs/balancer-js": "link:./lib/balancer-v2-monorepo/pck/balancer-js",
+    "concurrently": "^7.6.0"
+  }
 }

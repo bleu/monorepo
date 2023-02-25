@@ -1,0 +1,16 @@
+node_modules
+
+/build
+/public/build
+.env
+
+/cypress/screenshots
+/cypress/videos
+/postgres-data
+
+/artifacts
+/cache
+/cache_hardhat
+/lib
+/out
+/typechain-types

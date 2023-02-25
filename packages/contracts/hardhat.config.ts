@@ -1,4 +1,5 @@
-import "@nomiclabs/hardhat-waffle";
+import "@nomicfoundation/hardhat-toolbox";
+import "@nomicfoundation/hardhat-chai-matchers"
 import "@typechain/hardhat";
 import "hardhat-preprocessor";
 
@@ -19,7 +20,7 @@ task("example", "Example task").setAction(example);
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.8.13",
+    version:  '0.7.6',
     settings: {
       optimizer: {
         enabled: true,
@@ -27,16 +28,23 @@ const config: HardhatUserConfig = {
       },
     },
   },
+  networks: {
+    hardhat: {
+      allowUnlimitedContractSize: true,
+    }
+  },
+  defaultNetwork: 'hardhat',
   paths: {
     sources: "./src", // Use ./src rather than ./contracts as Hardhat expects
     cache: "./cache_hardhat", // Use a different cache for Hardhat than Foundry
   },
   // This fully resolves paths for imports in the ./lib directory for Hardhat
-  // @ts-expect-error
   preprocess: {
     eachLine: (_hre: unknown) => ({
       transform: (line: string) => {
         if (line.match(/^\s*import /i)) {
+          if (line.includes("@balancer-labs")) return line;
+
           getRemappings().forEach(([find, replace]) => {
             if (line.match(find)) {
               line = line.replace(find, replace);

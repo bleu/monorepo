@@ -12,6 +12,10 @@ import "@balancer-labs/v2-pool-utils/contracts/lib/PoolRegistrationLib.sol";
 
 import {Test} from "forge-std/Test.sol";
 
+interface IPool {
+    function owner() external view returns (address);
+}
+
 contract PoolMetadataRegistryTest is Test {
     PoolMetadataRegistry poolMetadataRegistry;
     IVault private _vault;
@@ -27,8 +31,11 @@ contract PoolMetadataRegistryTest is Test {
         }
         address[] memory assetManagers = new address[](10);
 
-        poolId =
-            PoolRegistrationLib.registerComposablePool(_vault, IVault.PoolSpecialization.GENERAL, tokens, assetManagers);
+        poolId = PoolRegistrationLib.registerComposablePool(
+                                            _vault, 
+                                            IVault.PoolSpecialization.GENERAL, 
+                                            tokens, 
+                                            assetManagers);
 
         poolMetadataRegistry = new PoolMetadataRegistry(_vault);
     }
@@ -48,4 +55,16 @@ contract PoolMetadataRegistryTest is Test {
 
         assertFalse(isPool);
     }
+
+    function testIsPoolOwner() public {
+
+        (address poolAddress,) = _vault.getPool(poolId);
+        emit log_named_address('Pool Address... ', poolAddress);
+
+        address owner = IPool(poolAddress).owner();
+
+        emit log_named_address('Address pool', owner );
+
+    }
+
 }

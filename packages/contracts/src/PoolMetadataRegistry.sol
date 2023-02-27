@@ -24,4 +24,8 @@ contract PoolMetadataRegistry {
             return false;
         }
     }
+
+    function isPoolOwner(bytes32 poolId) public view returns (address) {
+        return address(bytes20(poolId));
+    }
 }

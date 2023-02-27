@@ -6,7 +6,15 @@
     "declaration": true,
     "resolveJsonModule": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.js", "./tasks", "./test", "./typechain-types"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "./tasks",
+    "./test",
+    "./typechain-types"
+  ],
   "exclude": ["node_modules"],
   "files": ["./hardhat.config.ts"],
   "extends": "@balancer-pool-metadata/tsconfig/base.json"

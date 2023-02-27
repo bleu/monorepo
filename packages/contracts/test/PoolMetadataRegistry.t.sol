@@ -13,7 +13,7 @@ import "@balancer-labs/v2-pool-utils/contracts/lib/PoolRegistrationLib.sol";
 import {Test} from "forge-std/Test.sol";
 
 interface IPool {
-    function owner() external view returns (address);
+    function getOwner() external view returns (address);
 }
 
 contract PoolMetadataRegistryTest is Test {
@@ -61,7 +61,7 @@ contract PoolMetadataRegistryTest is Test {
         (address poolAddress,) = _vault.getPool(poolId);
         emit log_named_address('Pool Address... ', poolAddress);
 
-        address owner = IPool(poolAddress).owner();
+        address owner = IPool(poolAddress).getOwner();
 
         emit log_named_address('Address pool', owner );
 

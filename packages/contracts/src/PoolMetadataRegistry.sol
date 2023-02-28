@@ -10,9 +10,13 @@ import "@balancer-labs/v2-interfaces/contracts/vault/IVault.sol";
 contract PoolMetadataRegistry {
     IVault private immutable _vault;
 
+    mapping(bytes32 => bytes32) private _poolsMetadata;
+
     constructor(IVault vault) {
         _vault = vault;
     }
+
+    event PoolMetadataUpdated(bytes32 poolId, bytes32 ipfsHash);
 
     /// @notice Check if a Pool is registered on Balancer
     /// @param poolId The pool ID to check against the Balancer vault
@@ -23,5 +27,16 @@ contract PoolMetadataRegistry {
         } catch (bytes memory) {
             return false;
         }
+    }
+
+    /// @notice Update a pool metadata
+    /// @param poolId The pool ID to update the metadata
+    /// @param ipfsHash The ipfsHash related to the new pool metadata
+    function updatePoolMetadata(bytes32 poolId, bytes32 ipfsHash) public {
+        require(isPoolRegistered(poolId), "Pool not registered");
+        // TODO: https://linear.app/bleu-llc/issue/BAL-85/check-if-the-caller-is-the-owner
+        // require(isPoolOwner(poolId, address), "Caller is not the owner");
+        _poolsMetadata[poolId] = ipfsHash;
+        emit PoolMetadataUpdated(poolId, ipfsHash);
     }
 }

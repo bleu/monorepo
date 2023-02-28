@@ -64,4 +64,19 @@ contract PoolMetadataRegistryTest is Test {
         assertTrue(_poolMetadataRegistry.isPoolOwner(_basePool.getPoolId()));
         vm.stopPrank();
     }
+    
+    event PoolMetadataUpdated(bytes32 poolId, bytes32 ipfsHash);
+
+    function testIfUpdatePoolMetadataRevert() public {
+        emit log_named_bytes32("poolId = ", 0);
+        vm.expectRevert(bytes("Pool not registered"));
+        poolMetadataRegistry.updatePoolMetadata(0, "ipfs-hash");
+    }
+
+    function testPoolMetadataUpdatedEvent() public {
+        vm.expectEmit(false, false, false, false, address(poolMetadataRegistry));
+        emit PoolMetadataUpdated(poolId, "ipfs-hash");
+
+        poolMetadataRegistry.updatePoolMetadata(poolId, "ipfs-hash");
+    }
 }

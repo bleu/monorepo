@@ -5,7 +5,6 @@ import "balancer-v2-monorepo/pkg/interfaces/contracts/vault/IVault.sol";
 import "balancer-v2-monorepo/pkg/interfaces/contracts/vault/IBasePool.sol";
 import "balancer-v2-monorepo/pkg/pool-utils/contracts/BasePoolAuthorization.sol";
 
-
 interface PoolMetadataRegistryEvents {
     event PoolMetadataUpdated(bytes32 indexed poolId, string metadataCID);
 }
@@ -38,9 +37,8 @@ contract PoolMetadataRegistry is PoolMetadataRegistryEvents {
     /// @param poolId The pool ID where the ownership will be tested.
     /// @return bool Returns TRUE if the caller is the Pool owner, FALSE otherwise.
     function isPoolOwner(bytes32 poolId) public view returns (bool) {
+        (address pool,) = _vault.getPool(poolId);
 
-        (address pool, ) = _vault.getPool(poolId);
-        
         return BasePoolAuthorization(pool).getOwner() == msg.sender ? true : false;
     }
 

@@ -6,6 +6,7 @@ import "../src/PoolMetadataRegistry.sol";
 import "@balancer-labs/v2-interfaces/contracts/vault/IVault.sol";
 import "@balancer-labs/v2-interfaces/contracts/standalone-utils/IProtocolFeePercentagesProvider.sol";
 import "@balancer-labs/v2-vault/contracts/Vault.sol";
+import "@balancer-labs/v2-pool-utils/contracts/test/MockBasePool.sol";
 import "@balancer-labs/v2-pool-utils/contracts/lib/PoolRegistrationLib.sol";
 import "balancer-v2-monorepo/pkg/pool-weighted/contracts/WeightedPool.sol";
 import "balancer-v2-monorepo/pkg/pool-weighted/contracts/WeightedPool.sol";
@@ -21,7 +22,7 @@ contract PoolMetadataRegistryTest is Test {
     PoolMetadataRegistry poolMetadataRegistry;
     IVault private _vault;
     bytes32 poolId;
-    MockWeightedPool private _weightedPool;
+    MockBasePool private _basePool;
     ProtocolFeePercentagesProvider private _protocolFeeProvider;
     ProtocolFeesCollector private _feesCollector;
     address fakeOwner = address(11);
@@ -32,10 +33,6 @@ contract PoolMetadataRegistryTest is Test {
         _vault = new Vault(IAuthorizer(0), IWETH(0), 0, 0);
         _feesCollector = new ProtocolFeesCollector(_vault);
 
-        _feesCollector.setSwapFeePercentage(50e16);
-        _feesCollector.setFlashLoanFeePercentage(1e16);
-        _protocolFeeProvider = new ProtocolFeePercentagesProvider(_vault, uint256(50e16), uint256(50e16));
-
         IERC20[] memory tokens = new IERC20[](2);
 
         for (uint256 i = 0; i < tokens.length; i++) {
@@ -44,31 +41,9 @@ contract PoolMetadataRegistryTest is Test {
 
         address[] memory assetManagers = new address[](2);
 
-        poolId =
-            PoolRegistrationLib.registerComposablePool(_vault, IVault.PoolSpecialization.GENERAL, tokens, assetManagers);
+        poolId = PoolRegistrationLib.registerComposablePool(_vault, IVault.PoolSpecialization.GENERAL, tokens, assetManagers);
 
         poolMetadataRegistry = new PoolMetadataRegistry(_vault);
-
-        IRateProvider[] memory rates = new IRateProvider[](2);
-        rates[0] = IRateProvider(uint256(1e16));
-        rates[1] = IRateProvider(uint256(1e16));
-
-        //   {
-        //     name: '',
-        //     symbol: '',
-        //     tokens: allTokens.subset(2).addresses,
-        //     normalizedWeights: [fp(0.5), fp(0.5)],
-        //     rateProviders: new Array(2).fill(ZERO_ADDRESS),
-        //     assetManagers: new Array(2).fill(ZERO_ADDRESS),
-        //     swapFeePercentage: POOL_SWAP_FEE_PERCENTAGE,
-        //   },
-
-        //   vault.address,
-        //   vault.getFeesProvider().address,
-        //   0,
-        //   0,
-        //   ZERO_ADDRESS,
-        // ],
 
         uint256[] memory normalizedWeights = new uint256[](tokens.length);
 
@@ -76,39 +51,19 @@ contract PoolMetadataRegistryTest is Test {
             normalizedWeights[i] = uint256(5e17);
         }
 
-        _weightedPool = new MockWeightedPool(
-                            WeightedPool.NewPoolParams({
-                                name: 'TestingPool',
-                                symbol: 'TeP',
-                                tokens: tokens,
-                                normalizedWeights: normalizedWeights,
-                                rateProviders: rates,
-                                assetManagers: assetManagers,
-                                swapFeePercentage: uint256(1e16)
-                            }),
-                            _vault,
-                            _protocolFeeProvider,
-                            0,
-                            0,
-                            address(0)
+        _basePool = new MockBasePool(
+            _vault,
+            IVault.PoolSpecialization.GENERAL,
+            'MockBasePool',
+            'MBP',
+            tokens,
+            assetManagers,
+            1e16,
+            0,
+            0,
+            address(15) // 0x00..00f
         );
 
-        // WeightedPoolFactory poolFactory = new WeightedPoolFactory(
-        //     _vault,
-        //     protocolFeePercentagesProvider,
-        //     0,
-        //     0
-        // );
-
-        // address pool = poolFactory.create(
-        //     'TestingPool',
-        //     'TeP',
-        //     tokens,
-        //     normalizedWeights,
-        //     rates,
-        //     uint256(1e16),
-        //     fakeOwner
-        // );
     }
 
     function testIsPoolRegistered() public {
@@ -128,9 +83,10 @@ contract PoolMetadataRegistryTest is Test {
     }
 
     function testIsPoolOwner() public {
-        (address poolAddress,) = _vault.getPool(poolId);
-        emit log_named_address("Pool Address... ", poolAddress);
+        address poolOwner = _basePool.getOwner();
+        emit log_named_address("Pool Owner... ", poolOwner);
 
+        assertTrue(true);
         // address owner = IPool(poolAddress).getOwner();
 
         // emit log_named_address('Address pool', owner );

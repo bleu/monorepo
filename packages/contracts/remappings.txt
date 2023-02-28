@@ -1,4 +1,10 @@
-@balancer-labs/=lib/balancer-v2-monorepo/../../node_modules/@balancer-labs/
+@balancer-labs/=lib/balancer-v2-monorepo/node_modules/@balancer-labs/
+@balancer-labs/balancer-js/=lib/balancer-v2-monorepo/pkg/balancer-js/
+@balancer-labs/v2-helpers/=lib/balancer-v2-monorepo/pvt/helpers/
+@balancer-labs/v2-interfaces/=lib/balancer-v2-monorepo/pkg/interfaces/
+@balancer-labs/v2-pool-utils/=lib/balancer-v2-monorepo/pkg/pool-utils/
+@balancer-labs/v2-solidity-utils/=lib/balancer-v2-monorepo/pkg/solidity-utils/
+@balancer-labs/v2-vault/=lib/balancer-v2-monorepo/pkg/vault/
 @ensdomains/=lib/balancer-v2-monorepo/node_modules/@ensdomains/
 @solidity-parser/=/
 balancer-v2-monorepo/=lib/balancer-v2-monorepo/

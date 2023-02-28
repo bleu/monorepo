@@ -6,9 +6,9 @@ import "../src/PoolMetadataRegistry.sol";
 
 import "balancer-v2-monorepo/pkg/vault/contracts/test/MockBasicAuthorizer.sol";
 import "balancer-v2-monorepo/pkg/vault/contracts/test/MockPool.sol";
-import "@balancer-labs/v2-interfaces/contracts/vault/IVault.sol";
-import "@balancer-labs/v2-vault/contracts/Vault.sol";
-import "@balancer-labs/v2-pool-utils/contracts/lib/PoolRegistrationLib.sol";
+import "balancer-v2-monorepo/pkg/interfaces/contracts/vault/IVault.sol";
+import "balancer-v2-monorepo/pkg/vault/contracts/Vault.sol";
+import "balancer-v2-monorepo/pkg/pool-utils/contracts/lib/PoolRegistrationLib.sol";
 
 import {Test} from "forge-std/Test.sol";
 

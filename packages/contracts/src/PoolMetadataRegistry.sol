@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0 <0.9.0;
 
-import "lib/balancer-v2-monorepo/pkg/interfaces/contracts/vault/IVault.sol";
+import "balancer-v2-monorepo/pkg/interfaces/contracts/vault/IVault.sol";
 
 /// TODO: https://linear.app/bleu-llc/issue/BAL-84/define-poolmetadataregistrysol-metadata
 /// @title A Pool Metadata dApp

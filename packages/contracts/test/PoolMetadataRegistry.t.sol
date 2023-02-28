@@ -66,7 +66,7 @@ contract PoolMetadataRegistryTest is PoolMetadataRegistryEvents, Test {
         assertTrue(_poolMetadataRegistry.isPoolOwner(_basePool.getPoolId()));
         vm.stopPrank();
     }
-    
+
     event PoolMetadataUpdated(bytes32 poolId, bytes32 ipfsHash);
 
     function testIfUpdatePoolMetadataRevert() public {

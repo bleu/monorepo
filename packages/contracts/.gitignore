@@ -1,7 +1,6 @@
 # Foundry
 cache/
 out/
-broadcast/
 
 # JS
 node_modules/
@@ -14,3 +13,4 @@ artifacts/
 typechain-types/
 
 .vscode/
+.DS_Store

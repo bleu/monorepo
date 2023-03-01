@@ -36,7 +36,7 @@ contract PoolMetadataRegistry is IPoolMetadataRegistry {
     /// @notice Check if the caller is the pool owner
     /// @param poolId The pool ID where the ownership will be tested.
     /// @return bool Returns TRUE if the caller is the Pool owner, FALSE otherwise.
-    function isPoolOwner(bytes32 poolId) public view returns (bool) {
+    function _isPoolOwner(bytes32 poolId) public view returns (bool) {
         (address pool,) = _vault.getPool(poolId);
 
         return BasePoolAuthorization(pool).getOwner() == msg.sender ? true : false;
@@ -47,8 +47,7 @@ contract PoolMetadataRegistry is IPoolMetadataRegistry {
     /// @param metadataCID The metadataCID related to the new pool metadata
     function setPoolMetadata(bytes32 poolId, string memory metadataCID) public {
         require(_isPoolRegistered(poolId), "Pool not registered");
-        // TODO: https://linear.app/bleu-llc/issue/BAL-85/check-if-the-caller-is-the-owner
-        // require(isPoolOwner(poolId, address), "Caller is not the owner");
+        require(_isPoolOwner(poolId), "Caller is not the owner");
         poolIdMetadataCIDMap[poolId] = metadataCID;
         emit PoolMetadataUpdated(poolId, metadataCID);
     }

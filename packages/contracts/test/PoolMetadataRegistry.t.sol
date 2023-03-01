@@ -15,12 +15,17 @@ contract MockPoolMetadataRegistry is PoolMetadataRegistry {
     function isPoolRegistered(bytes32 poolId) public view returns (bool) {
         return _isPoolRegistered(poolId);
     }
+
+    function isPoolOwner(bytes32 poolId) public view returns (bool) {
+        return _isPoolOwner(poolId);
+    }
 }
 
 contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
     MockPoolMetadataRegistry _poolMetadataRegistry;
     IVault private _vault;
     MockBasePool private _basePool;
+    address private constant _poolOwner = address(15);
 
     string private constant _testMetadataCID = "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR";
 
@@ -45,7 +50,7 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
             1e16,
             0,
             0,
-            address(15) // 0x00..00f
+            _poolOwner
         );
 
         _poolMetadataRegistry = new MockPoolMetadataRegistry(_vault);
@@ -63,30 +68,43 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
         assertFalse(isPool);
     }
 
-    function testIsPoolOwner() public {
-        assertFalse(_poolMetadataRegistry.isPoolOwner(_basePool.getPoolId()));
-
-        vm.startPrank(address(15));
+    function testIsPoolOwnerReturnsTrueWhenOwner() public {
+        vm.startPrank(_poolOwner);
         assertTrue(_poolMetadataRegistry.isPoolOwner(_basePool.getPoolId()));
         vm.stopPrank();
     }
 
-    function testIfUpdatePoolMetadataRevert() public {
+    function testIsPoolOwnerFalseWhenNotOwner() public {
+        assertFalse(_poolMetadataRegistry.isPoolOwner(_basePool.getPoolId()));
+    }
+
+    function testIfsetPoolMetadataRevertWhePoolNotRegistered() public {
         vm.expectRevert("Pool not registered");
 
         _poolMetadataRegistry.setPoolMetadata(0x0, _testMetadataCID);
     }
 
+    function testIfsetPoolMetadataRevertWhenNotOwner() public {
+        bytes32 poolId = _basePool.getPoolId();
+        vm.expectRevert("Caller is not the owner");
+
+        _poolMetadataRegistry.setPoolMetadata(poolId, _testMetadataCID);
+    }
+
     function testMetadataSetter() public {
+        vm.startPrank(_poolOwner);
         _poolMetadataRegistry.setPoolMetadata(_basePool.getPoolId(), _testMetadataCID);
 
         assertEq(_poolMetadataRegistry.poolIdMetadataCIDMap(_basePool.getPoolId()), _testMetadataCID);
+        vm.stopPrank();
     }
 
     function testMetadataSetterEmitsEvent() public {
+        vm.startPrank(_poolOwner);
         vm.expectEmit(true, false, false, true, address(_poolMetadataRegistry));
         emit PoolMetadataUpdated(_basePool.getPoolId(), _testMetadataCID);
 
         _poolMetadataRegistry.setPoolMetadata(_basePool.getPoolId(), _testMetadataCID);
+        vm.stopPrank();
     }
 }

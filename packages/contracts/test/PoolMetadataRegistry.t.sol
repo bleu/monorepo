@@ -16,6 +16,8 @@ contract PoolMetadataRegistryTest is PoolMetadataRegistryEvents, Test {
 
     string private constant _testMetadataCID = "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR";
 
+    bytes32 poolId;
+
     function setUp() external {
         _vault = new Vault(IAuthorizer(0), IWETH(0), 0, 0);
 
@@ -67,24 +69,22 @@ contract PoolMetadataRegistryTest is PoolMetadataRegistryEvents, Test {
         vm.stopPrank();
     }
 
-    event PoolMetadataUpdated(bytes32 poolId, bytes32 ipfsHash);
-
     function testIfUpdatePoolMetadataRevert() public {
         vm.expectRevert("Pool not registered");
 
-        _poolMetadataRegistry.setPoolMetadata(0x0, _testMetadataCID);
+        poolMetadataRegistry.setPoolMetadata(0x0, _testMetadataCID);
     }
 
     function testMetadataSetter() public {
-        _poolMetadataRegistry.setPoolMetadata(_basePool.getPoolId(), _testMetadataCID);
+        poolMetadataRegistry.setPoolMetadata(poolId, _testMetadataCID);
 
-        assertEq(_poolMetadataRegistry.poolIdMetadataCIDMap(_basePool.getPoolId()), _testMetadataCID);
+        assertEq(poolMetadataRegistry.poolIdMetadataCIDMap(poolId), _testMetadataCID);
     }
 
     function testMetadataSetterEmitsEvent() public {
-        vm.expectEmit(true, false, true, true, address(_poolMetadataRegistry));
-        emit PoolMetadataUpdated(_basePool.getPoolId(), _testMetadataCID);
+        vm.expectEmit(true, false, false, true, address(poolMetadataRegistry));
+        emit PoolMetadataUpdated(poolId, _testMetadataCID);
 
-        _poolMetadataRegistry.setPoolMetadata(_basePool.getPoolId(), _testMetadataCID);
+        poolMetadataRegistry.setPoolMetadata(poolId, _testMetadataCID);
     }
 }

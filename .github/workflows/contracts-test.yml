@@ -45,21 +45,3 @@ jobs:
         run: |
           forge test -vvv
         id: forge-test
-
-  hardhat:
-    name: Hardhat project
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: recursive
-
-      - uses: ./.github/workflows/setup-pnpm
-
-      - name: Run Hardhat tests
-        run: |
-          pnpm hardhat test
-        id: hardhat-test

@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0 <0.9.0;
 
-import "@balancer-labs/v2-interfaces/contracts/vault/IVault.sol";
-import "@balancer-labs/v2-interfaces/contracts/vault/IBasePool.sol";
+import "balancer-v2-monorepo/pkg/interfaces/contracts/vault/IVault.sol";
+import "balancer-v2-monorepo/pkg/interfaces/contracts/vault/IBasePool.sol";
+import "balancer-v2-monorepo/pkg/pool-utils/contracts/BasePoolAuthorization.sol";
 
-interface Pool {
-    function getOwner() external view returns (address);
-}
 
 /// TODO: https://linear.app/bleu-llc/issue/BAL-84/define-poolmetadataregistrysol-metadata
 /// @title A Pool Metadata dApp
@@ -37,6 +35,6 @@ contract PoolMetadataRegistry {
 
         (address pool, ) = _vault.getPool(poolId);
         
-        return Pool(pool).getOwner() == msg.sender ? true : false;
+        return BasePoolAuthorization(pool).getOwner() == msg.sender ? true : false;
     }
 }

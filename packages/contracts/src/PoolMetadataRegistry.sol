@@ -42,7 +42,7 @@ contract PoolMetadataRegistry is PoolMetadataRegistryEvents {
         return BasePoolAuthorization(pool).getOwner() == msg.sender ? true : false;
     }
 
-    /// @notice Update a pool metadata
+    /// @notice Updates the pool metadata CID
     /// @param poolId The pool ID to update the metadata
     /// @param metadataCID The metadataCID related to the new pool metadata
     function setPoolMetadata(bytes32 poolId, string memory metadataCID) public {

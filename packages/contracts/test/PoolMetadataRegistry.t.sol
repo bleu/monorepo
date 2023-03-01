@@ -10,7 +10,7 @@ import "@balancer-labs/v2-pool-utils/contracts/test/MockBasePool.sol";
 import {Test} from "forge-std/Test.sol";
 
 contract PoolMetadataRegistryTest is PoolMetadataRegistryEvents, Test {
-    PoolMetadataRegistry _poolMetadataRegistry;
+    PoolMetadataRegistry poolMetadataRegistry;
     IVault private _vault;
     MockBasePool private _basePool;
 

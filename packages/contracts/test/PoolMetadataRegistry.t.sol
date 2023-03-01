@@ -16,6 +16,8 @@ contract PoolMetadataRegistryTest is PoolMetadataRegistryEvents, Test {
     PoolMetadataRegistry poolMetadataRegistry;
     IVault private _vault;
 
+    string private constant _testMetadataCID = "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR";
+
     bytes32 poolId;
 
     function setUp() external {
@@ -50,25 +52,21 @@ contract PoolMetadataRegistryTest is PoolMetadataRegistryEvents, Test {
     }
 
     function testIfUpdatePoolMetadataRevert() public {
-        vm.expectRevert(bytes("Pool not registered"));
+        vm.expectRevert("Pool not registered");
 
-        poolMetadataRegistry.setPoolMetadata(0x0, "ipfs-hash");
+        poolMetadataRegistry.setPoolMetadata(0x0, _testMetadataCID);
     }
 
     function testMetadataSetter() public {
-        string memory metadataCID = "ipfs-hash";
+        poolMetadataRegistry.setPoolMetadata(poolId, _testMetadataCID);
 
-        poolMetadataRegistry.setPoolMetadata(poolId, metadataCID);
-
-        assertEq(poolMetadataRegistry.poolIdMetadataCIDMap(poolId), metadataCID);
+        assertEq(poolMetadataRegistry.poolIdMetadataCIDMap(poolId), _testMetadataCID);
     }
 
     function testMetadataSetterEmitsEvent() public {
-        string memory metadataCID = "ipfs-hash";
+        vm.expectEmit(true, false, false, true, address(poolMetadataRegistry));
+        emit PoolMetadataUpdated(poolId, _testMetadataCID);
 
-        vm.expectEmit(true, false, true, true, address(poolMetadataRegistry));
-        emit PoolMetadataUpdated(poolId, metadataCID);
-
-        poolMetadataRegistry.setPoolMetadata(poolId, metadataCID);
+        poolMetadataRegistry.setPoolMetadata(poolId, _testMetadataCID);
     }
 }

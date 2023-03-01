@@ -25,6 +25,7 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
     MockPoolMetadataRegistry _poolMetadataRegistry;
     IVault private _vault;
     MockBasePool private _basePool;
+    address private constant _poolOwner = address(15);
 
     string private constant _testMetadataCID = "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR";
 
@@ -49,7 +50,7 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
             1e16,
             0,
             0,
-            address(15) // 0x00..00f
+            _poolOwner
         );
 
         _poolMetadataRegistry = new MockPoolMetadataRegistry(_vault);
@@ -70,7 +71,7 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
     function testIsPoolOwner() public {
         assertFalse(_poolMetadataRegistry.isPoolOwner(_basePool.getPoolId()));
 
-        vm.startPrank(address(15));
+        vm.startPrank(_poolOwner);
         assertTrue(_poolMetadataRegistry.isPoolOwner(_basePool.getPoolId()));
         vm.stopPrank();
     }
@@ -84,7 +85,7 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
     }
 
     function testMetadataSetter() public {
-        vm.startPrank(address(15));
+        vm.startPrank(_poolOwner);
         _poolMetadataRegistry.setPoolMetadata(_basePool.getPoolId(), _testMetadataCID);
 
         assertEq(_poolMetadataRegistry.poolIdMetadataCIDMap(_basePool.getPoolId()), _testMetadataCID);
@@ -92,8 +93,8 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
     }
 
     function testMetadataSetterEmitsEvent() public {
-        vm.startPrank(address(15));
-        vm.expectEmit(true, false, true, true, address(_poolMetadataRegistry));
+        vm.startPrank(_poolOwner);
+        vm.expectEmit(true, false, false, true, address(_poolMetadataRegistry));
         emit PoolMetadataUpdated(_basePool.getPoolId(), _testMetadataCID);
 
         _poolMetadataRegistry.setPoolMetadata(_basePool.getPoolId(), _testMetadataCID);

@@ -19,13 +19,13 @@ import "balancer-v2-monorepo/pkg/pool-utils/contracts/test/MockRateProvider.sol"
 import {Test} from "forge-std/Test.sol";
 
 contract PoolMetadataRegistryTest is Test {
-    PoolMetadataRegistry poolMetadataRegistry;
+    PoolMetadataRegistry _poolMetadataRegistry;
     IVault private _vault;
     bytes32 poolId;
     MockBasePool private _basePool;
+    MockBasePool private  _myPool;
     ProtocolFeePercentagesProvider private _protocolFeeProvider;
     ProtocolFeesCollector private _feesCollector;
-    address fakeOwner = address(11);
 
     function setUp() external {
         // To continue this setUp, we'll probably need to do the same done in
@@ -41,9 +41,7 @@ contract PoolMetadataRegistryTest is Test {
 
         address[] memory assetManagers = new address[](2);
 
-        poolId = PoolRegistrationLib.registerComposablePool(_vault, IVault.PoolSpecialization.GENERAL, tokens, assetManagers);
-
-        poolMetadataRegistry = new PoolMetadataRegistry(_vault);
+        _poolMetadataRegistry = new PoolMetadataRegistry(_vault);
 
         uint256[] memory normalizedWeights = new uint256[](tokens.length);
 
@@ -64,11 +62,25 @@ contract PoolMetadataRegistryTest is Test {
             address(15) // 0x00..00f
         );
 
+
+        _myPool = new MockBasePool(
+            _vault,
+            IVault.PoolSpecialization.GENERAL,
+            'MockBasePool',
+            'MBP',
+            tokens,
+            assetManagers,
+            1e16,
+            0,
+            0,
+            address(this)
+        );
+
     }
 
     function testIsPoolRegistered() public {
-        emit log_named_bytes32("poolId = ", poolId);
-        bool isPool = poolMetadataRegistry.isPoolRegistered(poolId);
+        emit log_named_bytes32("poolId = ", _basePool.getPoolId());
+        bool isPool = _poolMetadataRegistry.isPoolRegistered(_basePool.getPoolId());
         emit log_named_string("is a Pool?", isPool ? "Yes" : "No");
 
         assertTrue(isPool);
@@ -76,19 +88,17 @@ contract PoolMetadataRegistryTest is Test {
 
     function testIsPoolNotRegistered() public {
         emit log_named_bytes32("poolId = ", 0);
-        bool isPool = poolMetadataRegistry.isPoolRegistered(0);
+        bool isPool = _poolMetadataRegistry.isPoolRegistered(0);
         emit log_named_string("is a Pool?", isPool ? "Yes" : "No");
 
         assertFalse(isPool);
     }
 
     function testIsPoolOwner() public {
-        address poolOwner = _basePool.getOwner();
-        emit log_named_address("Pool Owner... ", poolOwner);
+        bool isPoolOwner = _poolMetadataRegistry.isPoolOwner(_basePool.getPoolId());
+        assertFalse(isPoolOwner);
 
-        assertTrue(true);
-        // address owner = IPool(poolAddress).getOwner();
-
-        // emit log_named_address('Address pool', owner );
+        bool amIPoolOwner = _poolMetadataRegistry.isPoolOwner(_myPool.getPoolId());
+        assertTrue(amIPoolOwner);
     }
 }

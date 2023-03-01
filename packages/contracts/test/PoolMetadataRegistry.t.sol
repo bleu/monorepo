@@ -3,39 +3,47 @@ pragma solidity >=0.7.0 <0.9.0;
 pragma experimental ABIEncoderV2;
 
 import "../src/PoolMetadataRegistry.sol";
-
-import "balancer-v2-monorepo/pkg/vault/contracts/test/MockBasicAuthorizer.sol";
-import "balancer-v2-monorepo/pkg/vault/contracts/test/MockPool.sol";
-import "balancer-v2-monorepo/pkg/interfaces/contracts/vault/IVault.sol";
-import "balancer-v2-monorepo/pkg/vault/contracts/Vault.sol";
-import "balancer-v2-monorepo/pkg/pool-utils/contracts/lib/PoolRegistrationLib.sol";
+import "@balancer-labs/v2-interfaces/contracts/vault/IVault.sol";
+import "@balancer-labs/v2-vault/contracts/Vault.sol";
+import "@balancer-labs/v2-pool-utils/contracts/test/MockBasePool.sol";
 
 import {Test} from "forge-std/Test.sol";
 
 contract PoolMetadataRegistryTest is Test {
-    PoolMetadataRegistry poolMetadataRegistry;
+    PoolMetadataRegistry _poolMetadataRegistry;
     IVault private _vault;
-
-    bytes32 poolId;
+    MockBasePool private _basePool;
 
     function setUp() external {
         _vault = new Vault(IAuthorizer(0), IWETH(0), 0, 0);
 
-        IERC20[] memory tokens = new IERC20[](10);
+        IERC20[] memory tokens = new IERC20[](2);
+
         for (uint256 i = 0; i < tokens.length; i++) {
             tokens[i] = IERC20(i + 1);
         }
-        address[] memory assetManagers = new address[](10);
 
-        poolId =
-            PoolRegistrationLib.registerComposablePool(_vault, IVault.PoolSpecialization.GENERAL, tokens, assetManagers);
+        address[] memory assetManagers = new address[](2);
 
-        poolMetadataRegistry = new PoolMetadataRegistry(_vault);
+        _poolMetadataRegistry = new PoolMetadataRegistry(_vault);
+
+        _basePool = new MockBasePool(
+            _vault,
+            IVault.PoolSpecialization.GENERAL,
+            'MockBasePool',
+            'MBP',
+            tokens,
+            assetManagers,
+            1e16,
+            0,
+            0,
+            address(15) // 0x00..00f
+        );
     }
 
     function testIsPoolRegistered() public {
-        emit log_named_bytes32("poolId = ", poolId);
-        bool isPool = poolMetadataRegistry.isPoolRegistered(poolId);
+        emit log_named_bytes32("poolId = ", _basePool.getPoolId());
+        bool isPool = _poolMetadataRegistry.isPoolRegistered(_basePool.getPoolId());
         emit log_named_string("is a Pool?", isPool ? "Yes" : "No");
 
         assertTrue(isPool);
@@ -43,9 +51,17 @@ contract PoolMetadataRegistryTest is Test {
 
     function testIsPoolNotRegistered() public {
         emit log_named_bytes32("poolId = ", 0);
-        bool isPool = poolMetadataRegistry.isPoolRegistered(0);
+        bool isPool = _poolMetadataRegistry.isPoolRegistered(0);
         emit log_named_string("is a Pool?", isPool ? "Yes" : "No");
 
         assertFalse(isPool);
+    }
+
+    function testIsPoolOwner() public {
+        assertFalse(_poolMetadataRegistry.isPoolOwner(_basePool.getPoolId()));
+
+        vm.startPrank(address(15));
+        assertTrue(_poolMetadataRegistry.isPoolOwner(_basePool.getPoolId()));
+        vm.stopPrank();
     }
 }

@@ -1,5 +1,5 @@
+import "@nomicfoundation/hardhat-chai-matchers";
 import "@nomicfoundation/hardhat-toolbox";
-import "@nomicfoundation/hardhat-chai-matchers"
 import "@typechain/hardhat";
 import "hardhat-preprocessor";
 
@@ -20,7 +20,7 @@ task("example", "Example task").setAction(example);
 
 const config: HardhatUserConfig = {
   solidity: {
-    version:  '0.7.6',
+    version: "0.7.6",
     settings: {
       optimizer: {
         enabled: true,
@@ -31,9 +31,9 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       allowUnlimitedContractSize: true,
-    }
+    },
   },
-  defaultNetwork: 'hardhat',
+  defaultNetwork: "hardhat",
   paths: {
     sources: "./src", // Use ./src rather than ./contracts as Hardhat expects
     cache: "./cache_hardhat", // Use a different cache for Hardhat than Foundry

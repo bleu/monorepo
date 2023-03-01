@@ -78,12 +78,17 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
         vm.stopPrank();
     }
 
-    function testIfUpdatePoolMetadataRevert() public {
+    function testIfsetPoolMetadataRevertWhePoolNotRegistered() public {
         vm.expectRevert("Pool not registered");
-        _poolMetadataRegistry.setPoolMetadata(0x0, _testMetadataCID);
 
-        // vm.expectRevert();
-        // _poolMetadataRegistry.setPoolMetadata(_basePool.getPoolId(), _testMetadataCID);
+        _poolMetadataRegistry.setPoolMetadata(0x0, _testMetadataCID);
+    }
+
+    function testIfsetPoolMetadataRevertWhenNotOwner() public {
+        bytes32 notPoolId = _basePool.getPoolId();
+        vm.expectRevert("Caller is not the owner");
+
+        _poolMetadataRegistry.setPoolMetadata(notPoolId, _testMetadataCID);
     }
 
     function testMetadataSetter() public {

@@ -85,10 +85,10 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
     }
 
     function testIfsetPoolMetadataRevertWhenNotOwner() public {
-        bytes32 notPoolId = _basePool.getPoolId();
+        bytes32 poolId = _basePool.getPoolId();
         vm.expectRevert("Caller is not the owner");
 
-        _poolMetadataRegistry.setPoolMetadata(notPoolId, _testMetadataCID);
+        _poolMetadataRegistry.setPoolMetadata(poolId, _testMetadataCID);
     }
 
     function testMetadataSetter() public {

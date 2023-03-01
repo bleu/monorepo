@@ -69,13 +69,13 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
     }
 
     function testIsPoolOwnerReturnsTrueWhenOwner() public {
-        assertFalse(_poolMetadataRegistry.isPoolOwner(_basePool.getPoolId()));
-    }
-
-    function testIsPoolOwnerFalseWhenNotOwner() public {
         vm.startPrank(_poolOwner);
         assertTrue(_poolMetadataRegistry.isPoolOwner(_basePool.getPoolId()));
         vm.stopPrank();
+    }
+
+    function testIsPoolOwnerFalseWhenNotOwner() public {
+        assertFalse(_poolMetadataRegistry.isPoolOwner(_basePool.getPoolId()));
     }
 
     function testIfsetPoolMetadataRevertWhePoolNotRegistered() public {

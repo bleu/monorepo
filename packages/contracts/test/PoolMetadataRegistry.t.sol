@@ -12,7 +12,7 @@ import "balancer-v2-monorepo/pkg/pool-utils/contracts/lib/PoolRegistrationLib.so
 
 import {Test} from "forge-std/Test.sol";
 
-contract PoolMetadataRegistryTest is Test {
+contract PoolMetadataRegistryTest is PoolMetadataRegistryEvents, Test {
     PoolMetadataRegistry poolMetadataRegistry;
     IVault private _vault;
 
@@ -49,18 +49,26 @@ contract PoolMetadataRegistryTest is Test {
         assertFalse(isPool);
     }
 
-    event PoolMetadataUpdated(bytes32 poolId, bytes32 ipfsHash);
-
     function testIfUpdatePoolMetadataRevert() public {
-        emit log_named_bytes32("poolId = ", 0);
         vm.expectRevert(bytes("Pool not registered"));
-        poolMetadataRegistry.updatePoolMetadata(0, "ipfs-hash");
+
+        poolMetadataRegistry.setPoolMetadata(0x0, "ipfs-hash");
     }
 
-    function testPoolMetadataUpdatedEvent() public {
-        vm.expectEmit(false, false, false, false, address(poolMetadataRegistry));
-        emit PoolMetadataUpdated(poolId, "ipfs-hash");
+    function testMetadataSetter() public {
+        string memory metadataCID = "ipfs-hash";
 
-        poolMetadataRegistry.updatePoolMetadata(poolId, "ipfs-hash");
+        poolMetadataRegistry.setPoolMetadata(poolId, metadataCID);
+
+        assertEq(poolMetadataRegistry.poolIdMetadataCIDMap(poolId), metadataCID);
+    }
+
+    function testMetadataSetterEmitsEvent() public {
+        string memory metadataCID = "ipfs-hash";
+
+        vm.expectEmit(true, false, true, true, address(poolMetadataRegistry));
+        emit PoolMetadataUpdated(poolId, metadataCID);
+
+        poolMetadataRegistry.setPoolMetadata(poolId, metadataCID);
     }
 }

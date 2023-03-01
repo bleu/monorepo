@@ -12,8 +12,16 @@ import "@balancer-labs/v2-pool-utils/contracts/lib/PoolRegistrationLib.sol";
 
 import {Test} from "forge-std/Test.sol";
 
-contract PoolMetadataRegistryTest is PoolMetadataRegistryEvents, Test {
-    PoolMetadataRegistry poolMetadataRegistry;
+contract MockPoolMetadataRegistry is PoolMetadataRegistry {
+    constructor(IVault vault) PoolMetadataRegistry(vault) {}
+
+    function isPoolRegistered(bytes32 poolId) public view returns (bool) {
+        return _isPoolRegistered(poolId);
+    }
+}
+
+contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
+    MockPoolMetadataRegistry poolMetadataRegistry;
     IVault private _vault;
 
     string private constant _testMetadataCID = "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR";
@@ -32,7 +40,7 @@ contract PoolMetadataRegistryTest is PoolMetadataRegistryEvents, Test {
         poolId =
             PoolRegistrationLib.registerComposablePool(_vault, IVault.PoolSpecialization.GENERAL, tokens, assetManagers);
 
-        poolMetadataRegistry = new PoolMetadataRegistry(_vault);
+        poolMetadataRegistry = new MockPoolMetadataRegistry(_vault);
     }
 
     function testIsPoolRegistered() public {

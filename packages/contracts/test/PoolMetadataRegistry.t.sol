@@ -15,6 +15,10 @@ contract MockPoolMetadataRegistry is PoolMetadataRegistry {
     function isPoolRegistered(bytes32 poolId) public view returns (bool) {
         return _isPoolRegistered(poolId);
     }
+
+    function isPoolOwner(bytes32 poolId) public view returns (bool) {
+        return _isPoolOwner(poolId);
+    }
 }
 
 contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {

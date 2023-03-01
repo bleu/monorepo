@@ -13,3 +13,4 @@ artifacts/
 typechain-types/
 
 .vscode/
+.DS_Store

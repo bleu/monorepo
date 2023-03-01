@@ -9,8 +9,16 @@ import "@balancer-labs/v2-pool-utils/contracts/test/MockBasePool.sol";
 
 import {Test} from "forge-std/Test.sol";
 
-contract PoolMetadataRegistryTest is PoolMetadataRegistryEvents, Test {
-    PoolMetadataRegistry poolMetadataRegistry;
+contract MockPoolMetadataRegistry is PoolMetadataRegistry {
+    constructor(IVault vault) PoolMetadataRegistry(vault) {}
+
+    function isPoolRegistered(bytes32 poolId) public view returns (bool) {
+        return _isPoolRegistered(poolId);
+    }
+}
+
+contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
+    MockPoolMetadataRegistry _poolMetadataRegistry;
     IVault private _vault;
     MockBasePool private _basePool;
 
@@ -29,8 +37,6 @@ contract PoolMetadataRegistryTest is PoolMetadataRegistryEvents, Test {
 
         address[] memory assetManagers = new address[](2);
 
-        _poolMetadataRegistry = new PoolMetadataRegistry(_vault);
-
         _basePool = new MockBasePool(
             _vault,
             IVault.PoolSpecialization.GENERAL,
@@ -43,6 +49,8 @@ contract PoolMetadataRegistryTest is PoolMetadataRegistryEvents, Test {
             0,
             address(15) // 0x00..00f
         );
+
+        _poolMetadataRegistry = new MockPoolMetadataRegistry(_vault);
     }
 
     function testIsPoolRegistered() public {
@@ -72,19 +80,19 @@ contract PoolMetadataRegistryTest is PoolMetadataRegistryEvents, Test {
     function testIfUpdatePoolMetadataRevert() public {
         vm.expectRevert("Pool not registered");
 
-        poolMetadataRegistry.setPoolMetadata(0x0, _testMetadataCID);
+        _poolMetadataRegistry.setPoolMetadata(0x0, _testMetadataCID);
     }
 
     function testMetadataSetter() public {
-        poolMetadataRegistry.setPoolMetadata(poolId, _testMetadataCID);
+        _poolMetadataRegistry.setPoolMetadata(poolId, _testMetadataCID);
 
-        assertEq(poolMetadataRegistry.poolIdMetadataCIDMap(poolId), _testMetadataCID);
+        assertEq(_poolMetadataRegistry.poolIdMetadataCIDMap(poolId), _testMetadataCID);
     }
 
     function testMetadataSetterEmitsEvent() public {
-        vm.expectEmit(true, false, false, true, address(poolMetadataRegistry));
+        vm.expectEmit(true, false, false, true, address(_poolMetadataRegistry));
         emit PoolMetadataUpdated(poolId, _testMetadataCID);
 
-        poolMetadataRegistry.setPoolMetadata(poolId, _testMetadataCID);
+        _poolMetadataRegistry.setPoolMetadata(poolId, _testMetadataCID);
     }
 }

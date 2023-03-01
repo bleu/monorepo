@@ -5,7 +5,7 @@ import "balancer-v2-monorepo/pkg/interfaces/contracts/vault/IVault.sol";
 import "balancer-v2-monorepo/pkg/interfaces/contracts/vault/IBasePool.sol";
 import "balancer-v2-monorepo/pkg/pool-utils/contracts/BasePoolAuthorization.sol";
 
-interface PoolMetadataRegistryEvents {
+interface IPoolMetadataRegistry {
     event PoolMetadataUpdated(bytes32 indexed poolId, string metadataCID);
 }
 
@@ -13,7 +13,7 @@ interface PoolMetadataRegistryEvents {
 /// @title A Pool Metadata dApp
 /// @author Bleu LLC
 /// @notice This contract provides a registry for Balancer's Pools metadata
-contract PoolMetadataRegistry is PoolMetadataRegistryEvents {
+contract PoolMetadataRegistry is IPoolMetadataRegistry {
     IVault private immutable _vault;
 
     mapping(bytes32 => string) public poolIdMetadataCIDMap;
@@ -25,7 +25,7 @@ contract PoolMetadataRegistry is PoolMetadataRegistryEvents {
     /// @notice Checks if a Pool is registered on Balancer
     /// @param poolId The pool ID to check against the Balancer vault
     /// @return bool Returns TRUE for registered and FALSE for unregistered
-    function isPoolRegistered(bytes32 poolId) public view returns (bool) {
+    function _isPoolRegistered(bytes32 poolId) internal view returns (bool) {
         try _vault.getPool(poolId) returns (address, IVault.PoolSpecialization) {
             return true;
         } catch (bytes memory) {
@@ -46,7 +46,7 @@ contract PoolMetadataRegistry is PoolMetadataRegistryEvents {
     /// @param poolId The pool ID to update the metadata
     /// @param metadataCID The metadataCID related to the new pool metadata
     function setPoolMetadata(bytes32 poolId, string memory metadataCID) public {
-        require(isPoolRegistered(poolId), "Pool not registered");
+        require(_isPoolRegistered(poolId), "Pool not registered");
         // TODO: https://linear.app/bleu-llc/issue/BAL-85/check-if-the-caller-is-the-owner
         // require(isPoolOwner(poolId, address), "Caller is not the owner");
         poolIdMetadataCIDMap[poolId] = metadataCID;

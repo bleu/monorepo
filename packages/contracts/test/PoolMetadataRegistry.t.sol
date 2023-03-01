@@ -77,20 +77,26 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
 
     function testIfUpdatePoolMetadataRevert() public {
         vm.expectRevert("Pool not registered");
-
         _poolMetadataRegistry.setPoolMetadata(0x0, _testMetadataCID);
+
+        // vm.expectRevert();
+        // _poolMetadataRegistry.setPoolMetadata(_basePool.getPoolId(), _testMetadataCID);
     }
 
     function testMetadataSetter() public {
+        vm.startPrank(address(15));
         _poolMetadataRegistry.setPoolMetadata(_basePool.getPoolId(), _testMetadataCID);
 
         assertEq(_poolMetadataRegistry.poolIdMetadataCIDMap(_basePool.getPoolId()), _testMetadataCID);
+        vm.stopPrank();
     }
 
     function testMetadataSetterEmitsEvent() public {
-        vm.expectEmit(true, false, false, true, address(_poolMetadataRegistry));
+        vm.startPrank(address(15));
+        vm.expectEmit(true, false, true, true, address(_poolMetadataRegistry));
         emit PoolMetadataUpdated(_basePool.getPoolId(), _testMetadataCID);
 
         _poolMetadataRegistry.setPoolMetadata(_basePool.getPoolId(), _testMetadataCID);
+        vm.stopPrank();
     }
 }

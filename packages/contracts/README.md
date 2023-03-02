@@ -26,7 +26,7 @@ pnpm install
 pnpm test
 ```
 
-## Deploy to local
+## Deploy to local network
 
 We are using [anvil](https://book.getfoundry.sh/anvil/) to create a local testnet node for deploying and testing contracts. Run the anvil server, get a generated private key in the terminal, and change your `PRIVATE_KEY` in the `.env` file. Then deploy with `deploy:local`.
 
@@ -35,7 +35,7 @@ pnpm dev:anvil
 pnpm deploy:local
 ```
 
-## Deploy to goerli testnet
+## Deploy to Goerli testnet
 
 ```bash
 pnpm deploy:goerli

@@ -13,17 +13,17 @@ To be able to test and deploy the smart contract, you need to create a `.env` fi
 If you did not clone the repository using the `--recursive-submodules` option, make sure to install the submodules with
 
 ```bash
-$ git submodule update --init --recursive   # in the balancer-pool-metadata directory
+git submodule update --init --recursive   # in the balancer-pool-metadata directory
 ```
 
 ```bash
-$ pnpm install
+pnpm install
 ```
 
 ## Running tests
 
 ```bash
-$ pnpm test
+pnpm test
 ```
 
 ## Deploy to local
@@ -31,12 +31,12 @@ $ pnpm test
 We are using an anvil to create a local testnet node for deploying and testing smart contracts. Run the anvil server, get a generated private key in the terminal, and change your `PRIVATE_KEY` in the `.env`. Then deploy with the `deploy:local` command.
 
 ```bash
-$ pnpm dev:anvil
-$ pnpm deploy:local
+pnpm dev:anvil
+pnpm deploy:local
 ```
 
 ## Deploy to goerli testnet
 
 ```bash
-$ pnpm deploy:goerli
+pnpm deploy:goerli
 ```

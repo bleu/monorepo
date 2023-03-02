@@ -11,7 +11,6 @@
     "dev:anvil": "anvil",
     "deploy:local": "source .env && forge script script/PoolMetadataRegistry.s.sol:Deploy --fork-url $ANVIL_FORK_URL -vvvvv --broadcast",
     "deploy:goerli": "source .env && forge script script/PoolMetadataRegistry.s.sol:Deploy --rpc-url $GOERLI_RPC_URL -vvvvv --broadcast --verify",
-    "forge:re": "forge re > /tmp/re && sort -u /tmp/re remappings.txt > /tmp/remappings.txt && mv /tmp/remappings.txt remappings.txt",
     "test": "forge test",
     "format": "prettier --write .",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",

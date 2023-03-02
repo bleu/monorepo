@@ -34,13 +34,5 @@
     "ts-node": "^10.9.1",
     "typechain": "^8.1.1",
     "typescript": "^4.9.5"
-  },
-  "dependencies": {
-    "@balancer-labs/balancer-js": "link:./lib/balancer-v2-monorepo/pkg/balancer-js",
-    "@balancer-labs/v2-helpers": "link:./lib/balancer-v2-monorepo/pvt/helpers",
-    "@balancer-labs/v2-interfaces": "link:./lib/balancer-v2-monorepo/pkg/interfaces",
-    "@balancer-labs/v2-pool-utils": "link:./lib/balancer-v2-monorepo/pkg/pool-utils",
-    "@balancer-labs/v2-solidity-utils": "link:./lib/balancer-v2-monorepo/pkg/solidity-utils",
-    "@balancer-labs/v2-vault": "link:./lib/balancer-v2-monorepo/pkg/vault"
   }
 }

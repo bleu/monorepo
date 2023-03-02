@@ -23,9 +23,9 @@ The project uses a monorepo structure and git submodules to organize its codebas
 - [Install Foundry](https://book.getfoundry.sh/getting-started/installation) to your system:
 
 ```bash
-$ curl -L https://foundry.paradigm.xyz | bash
-$ source ~/.bashrc # or open a new terminal
-$ foundryup
+curl -L https://foundry.paradigm.xyz | bash
+source ~/.bashrc # or open a new terminal
+foundryup
 ```
 
 ## Clone
@@ -33,7 +33,7 @@ $ foundryup
 This repository uses git submodules; use `--recurse-submodules` option when cloning:
 
 ```bash
-$ git clone --recurse-submodules https://github.com/bleu-llc/balancer-pool-metadata.git
+git clone --recurse-submodules https://github.com/bleu-llc/balancer-pool-metadata.git
 ```
 
 ## Installation
@@ -41,24 +41,24 @@ $ git clone --recurse-submodules https://github.com/bleu-llc/balancer-pool-metad
 This project requires node v18.14.0. We suggest installing it using [asdf](https://asdf-vm.com/)
 
 ```bash
-$ git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.11.1
+git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.11.1
 ```
 
 and add binginds to your shell config file.
 
 ```bash
-$ asdf plugin add nodejs
-$ asdf install nodejs 18.14.0
+asdf plugin add nodejs
+asdf install nodejs 18.14.0
 ```
 
 We use pnpm for package management. To install pnpm, run:
 
 ```bash
-$ npm install -g pnpm
+npm install -g pnpm
 ```
 
 Install dependencies
 
 ```bash
-$ pnpm i
+pnpm i
 ```

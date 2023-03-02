@@ -1,12 +1,12 @@
 # <h1 align="center"> Balancer Pool Metadata Contract</h1>
 
-This package contains the source code for the Balancer Pool Metadata smart-contract, the [`PoolMetadataRegistry`](./src/PoolMetadataRegistry.sol).
+This package contains contract sources for the Balancer Pool Metadata Main contract is under `src/PoolMetadataRegistry.sol`.
 
 # Getting started
 
-## Filling environment variables
+## Environment variables
 
-To be able to test and deploy the smart contract, you need to create a `.env` file in the `contracts` directory. Check the [`.env.example`](./.env.template) for information.
+Make sure to create your own `.env` (`cp .env.template .env`) and add your variables before testing and trying to deploy the contract.
 
 ## Install dependencies
 
@@ -28,7 +28,7 @@ pnpm test
 
 ## Deploy to local
 
-We are using an anvil to create a local testnet node for deploying and testing smart contracts. Run the anvil server, get a generated private key in the terminal, and change your `PRIVATE_KEY` in the `.env`. Then deploy with the `deploy:local` command.
+We are using [anvil](https://book.getfoundry.sh/anvil/) to create a local testnet node for deploying and testing contracts. Run the anvil server, get a generated private key in the terminal, and change your `PRIVATE_KEY` in the `.env` file. Then deploy with `deploy:local`.
 
 ```bash
 pnpm dev:anvil

@@ -1,0 +1,8 @@
+type PoolMetadataUpdated @entity(immutable: true) {
+  id: Bytes!
+  poolId: Bytes! # bytes32
+  metadataCID: String! # string
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}

@@ -1,0 +1,24 @@
+specVersion: 0.0.5
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: PoolMetadataRegistry
+    network: goerli
+    source:
+      address: "0xEBfADf723E077c80f6058dC9c9202bB613DE07cf"
+      abi: PoolMetadataRegistry
+      startBlock: 8583917
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - PoolMetadataUpdated
+      abis:
+        - name: PoolMetadataRegistry
+          file: ./abis/PoolMetadataRegistry.json
+      eventHandlers:
+        - event: PoolMetadataUpdated(indexed bytes32,string)
+          handler: handlePoolMetadataUpdated
+      file: ./src/pool-metadata-registry.ts

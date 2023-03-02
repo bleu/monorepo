@@ -3,7 +3,6 @@ pragma solidity >=0.7.0 <0.9.0;
 pragma experimental ABIEncoderV2;
 
 import "../src/PoolMetadataRegistry.sol";
-import "balancer-v2-monorepo/pkg/interfaces/contracts/vault/IVault.sol";
 import "balancer-v2-monorepo/pkg/vault/contracts/Vault.sol";
 import "balancer-v2-monorepo/pkg/pool-utils/contracts/test/MockBasePool.sol";
 

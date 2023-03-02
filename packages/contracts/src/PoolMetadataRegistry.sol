@@ -2,8 +2,7 @@
 pragma solidity >=0.7.0 <0.9.0;
 
 import "balancer-v2-monorepo/pkg/interfaces/contracts/vault/IVault.sol";
-import "balancer-v2-monorepo/pkg/interfaces/contracts/vault/IBasePool.sol";
-import "balancer-v2-monorepo/pkg/pool-utils/contracts/BasePoolAuthorization.sol";
+import {BasePoolAuthorization} from "balancer-v2-monorepo/pkg/pool-utils/contracts/BasePoolAuthorization.sol";
 
 interface IPoolMetadataRegistry {
     event PoolMetadataUpdated(bytes32 indexed poolId, string metadataCID);

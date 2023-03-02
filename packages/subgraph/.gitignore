@@ -1,0 +1,16 @@
+# Geenrated types
+generated/
+
+# build
+build/
+
+# JS
+node_modules/
+
+.vscode/
+.DS_Store
+
+**.env
+!**.env.template
+
+**.tsbuildinfo

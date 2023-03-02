@@ -1,47 +1,42 @@
-# <h1 align="center"> Hardhat x Foundry Template </h1>
+# <h1 align="center"> Balancer Pool Metadata Contract</h1>
 
-**Template repository for getting started quickly with Hardhat and Foundry in one project**
+This package contains the source code for the Balancer Pool Metadata smart-contract, the [`PoolMetadataRegistry`](./src/PoolMetadataRegistry.sol).
 
-![Github Actions](https://github.com/devanonon/hardhat-foundry-template/workflows/test/badge.svg)
+# Getting started
 
-### Getting Started
+## Filling environment variables
 
-- Use Foundry:
+To be able to test and deploy the smart contract, you need to create a `.env` file in the `contracts` directory. Check the [`.env.example`](./.env.template) for information.
 
-```bash
-forge install
-forge test
-```
+## Install dependencies
 
-- Use Hardhat:
+If you did not clone the repository using the `--recursive-submodules` option, make sure to install the submodules with
 
 ```bash
-npm install
-pnpm hardhat test
+$ git submodule update --init --recursive   # in the balancer-pool-metadata directory
 ```
-
-### Features
-
-- Write / run tests with either Hardhat or Foundry:
 
 ```bash
-forge test
-# or
-pnpm hardhat test
+$ pnpm install
 ```
 
-- Use Hardhat's task framework
+## Running tests
 
 ```bash
-pnpm hardhat example
+$ pnpm test
 ```
 
-- Install libraries with Foundry which work with Hardhat.
+## Deploy to local
+
+We are using an anvil to create a local testnet node for deploying and testing smart contracts. Run the anvil server, get a generated private key in the terminal, and change your `PRIVATE_KEY` in the `.env`. Then deploy with the `deploy:local` command.
 
 ```bash
-forge install rari-capital/solmate # Already in this repo, just an example
+$ pnpm dev:anvil
+$ pnpm deploy:local
 ```
 
-### Notes
+## Deploy to goerli testnet
 
-Whenever you install new libraries using Foundry, make sure to update your `remappings.txt` file by running `forge remappings > remappings.txt`. This is required because we use `hardhat-preprocessor` and the `remappings.txt` file to allow Hardhat to resolve libraries you install with Foundry.
+```bash
+$ pnpm deploy:goerli
+```

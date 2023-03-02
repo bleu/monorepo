@@ -1,10 +1,10 @@
 # <h1 align="center"> Balancer Pool Metadata </h1>
 
-Balancer Pool Metadata is an open source project that enables pool owners to add metadata to their pools on the Balancer platform. This metadata can include information such as pool name, symbol, description, link and more.
+Balancer Pool Metadata is an open-source project that enables pool owners to add metadata to their pools on the Balancer platform. This metadata can include information such as pool name, symbol, description, link, and much more.
 
 By adding metadata to their pools, pool owners can improve the discoverability of their pools on Balancer and make it easier for users to understand the purpose and characteristics of the pool.
 
-The Balancer Pool Metadata project provides an easy-to-use interface for pool owners to add and update their pool metadata, as well as a public subgraph for developers to access and use the metadata.
+The Balancer Pool Metadata project provides an easy-to-use interface for pool owners to add and update their pool metadata, as well as a public Subgraph for developers to access and use the metadata.
 
 ## Structure
 

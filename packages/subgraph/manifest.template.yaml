@@ -23,4 +23,4 @@ dataSources:
       eventHandlers:
         - event: PoolMetadataUpdated(indexed bytes32,string)
           handler: handlePoolMetadataUpdated
-      file: ./src/mappings/pool-metadata-registry.ts
+      file: ./src/mappings/poolMetadataRegistry.ts

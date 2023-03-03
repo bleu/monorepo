@@ -7,6 +7,8 @@ build/
 # JS
 node_modules/
 
+src/types/
+
 .vscode/
 .DS_Store
 

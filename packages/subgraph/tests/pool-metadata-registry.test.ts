@@ -3,14 +3,15 @@ import {
   afterAll, assert, beforeAll, clearStore, describe,
   test
 } from "matchstick-as/assembly/index"
+
 import { handlePoolMetadataUpdated } from "../src/mappings/PoolMetadataRegistry"
 import { createPoolMetadataUpdatedEvent } from "./pool-metadata-registry-utils"
 
 describe("Describe entity assertions", () => {
   beforeAll(() => {
-    let poolId = Bytes.fromI32(1234567890)
-    let metadataCID = "Example string value"
-    let newPoolMetadataUpdatedEvent = createPoolMetadataUpdatedEvent(
+    const poolId = Bytes.fromI32(1234567890)
+    const metadataCID = "Example string value"
+    const newPoolMetadataUpdatedEvent = createPoolMetadataUpdatedEvent(
       poolId,
       metadataCID
     )

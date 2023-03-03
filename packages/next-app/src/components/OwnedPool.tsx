@@ -1,6 +1,6 @@
 import { Badge, Button, Stack, Text } from "@chakra-ui/react";
 
-interface IPoolItem {
+interface IOwnedPool {
   onClick: () => void;
   address: string;
   type: string;
@@ -9,14 +9,14 @@ interface IPoolItem {
   isSelected: boolean;
 }
 
-export function PoolItem({
+export function OwnedPool({
   onClick,
   address,
   type,
   ratio,
   name,
   isSelected,
-}: IPoolItem) {
+}: IOwnedPool) {
   const backgroundColor = isSelected ? "blue.800" : "gray.800";
 
   return (

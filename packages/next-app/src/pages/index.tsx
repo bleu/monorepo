@@ -1,16 +1,14 @@
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useAccount } from "wagmi";
+import { Stack } from "@chakra-ui/react";
 
-import { Account } from "../components";
+import { Header, Sidebar } from "../components";
 
 function Page() {
-  const { isConnected } = useAccount();
   return (
     <>
-      <h1>wagmi + RainbowKit + Next.js</h1>
-
-      <ConnectButton />
-      {isConnected && <Account />}
+      <Header />
+      <Stack h="100%" w="100%" background="gray.900">
+        <Sidebar />
+      </Stack>
     </>
   );
 }

@@ -1,0 +1,25 @@
+{
+  "name": "@balancer-pool-metadata/subgraph",
+  "version": "1.0.0",
+  "scripts": {
+    "codegen": "yarn generate-manifests && graph codegen subgraph.*.yaml --output-dir src/types/",
+    "build": "graph build",
+    "generate-manifests": "ts-node ./scripts/generate-manifests",
+    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ PoolMetadataRegistrySubgraph",
+    "create-local": "graph create --node http://localhost:8020/ PoolMetadataRegistrySubgraph",
+    "remove-local": "graph remove --node http://localhost:8020/ PoolMetadataRegistrySubgraph",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 PoolMetadataRegistrySubgraph",
+    "test": "graph test"
+  },
+  "devDependencies": {
+    "@balancer-pool-metadata/tsconfig": "workspace:*",
+    "@graphprotocol/graph-cli": "0.42.3",
+    "@graphprotocol/graph-ts": "0.29.1",
+    "@types/fs-extra": "^11.0.1",
+    "@types/js-yaml": "^4.0.5",
+    "handlebars": "^4.7.7",
+    "js-yaml": "^4.1.0",
+    "matchstick-as": "0.5.0",
+    "ts-node": "^10.9.1"
+  }
+}

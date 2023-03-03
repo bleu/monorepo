@@ -1,4 +1,4 @@
 export { Account } from "./Account";
 export { Header } from "./Header";
-export { PoolItem } from "./PoolItem";
+export { OwnedPool } from "./OwnedPool";
 export { Sidebar } from "./Sidebar";

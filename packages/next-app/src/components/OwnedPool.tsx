@@ -9,7 +9,7 @@ interface IPoolItem {
   isSelected: boolean;
 }
 
-export function PoolItem({
+export function OwnedPool({
   onClick,
   address,
   type,

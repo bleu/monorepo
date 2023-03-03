@@ -1,7 +1,7 @@
 import { Stack, Text } from "@chakra-ui/react";
 import { useState } from "react";
 
-import { PoolItem } from "./PoolItem";
+import { OwnedPool } from "./OwnedPool";
 
 const pools = [
   {
@@ -89,7 +89,7 @@ export function Sidebar() {
         >
           {pools &&
             pools.map((item) => (
-              <PoolItem
+              <OwnedPool
                 key={item.address}
                 onClick={() => handleButtonClick(item.address)}
                 isSelected={item.address === selectedPool}

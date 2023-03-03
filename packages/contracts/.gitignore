@@ -1,6 +1,8 @@
 # Foundry
 cache/
 out/
+broadcast/**/**/*.json
+!broadcast/**/**/*latest.json
 
 # JS
 node_modules/

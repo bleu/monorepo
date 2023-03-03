@@ -16,6 +16,5 @@
     "./typechain-types"
   ],
   "exclude": ["node_modules"],
-  "files": ["./hardhat.config.ts"],
   "extends": "@balancer-pool-metadata/tsconfig/base.json"
 }

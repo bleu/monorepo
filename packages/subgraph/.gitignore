@@ -1,13 +1,11 @@
 # Geenrated types
-generated/
+src/types/
 
 # build
 build/
 
 # JS
 node_modules/
-
-src/types/
 
 .vscode/
 .DS_Store

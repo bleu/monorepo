@@ -5,10 +5,10 @@
     "codegen": "yarn generate-manifests && graph codegen subgraph.*.yaml --output-dir src/types/",
     "build": "graph build",
     "generate-manifests": "ts-node ./scripts/generate-manifests",
-    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ pool-matadata-registry-graph",
-    "create-local": "graph create --node http://localhost:8020/ pool-matadata-registry-graph",
-    "remove-local": "graph remove --node http://localhost:8020/ pool-matadata-registry-graph",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 pool-matadata-registry-graph",
+    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ PoolMetadataRegistrySubgraph",
+    "create-local": "graph create --node http://localhost:8020/ PoolMetadataRegistrySubgraph",
+    "remove-local": "graph remove --node http://localhost:8020/ PoolMetadataRegistrySubgraph",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 PoolMetadataRegistrySubgraph",
     "test": "graph test"
   },
   "devDependencies": {

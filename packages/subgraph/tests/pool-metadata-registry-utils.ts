@@ -1,6 +1,6 @@
+import { Bytes, ethereum } from "@graphprotocol/graph-ts"
 import { newMockEvent } from "matchstick-as"
-import { ethereum, Bytes } from "@graphprotocol/graph-ts"
-import { PoolMetadataUpdated } from "../generated/PoolMetadataRegistry/PoolMetadataRegistry"
+import { PoolMetadataUpdated } from "../src/types/PoolMetadataRegistry/PoolMetadataRegistry"
 
 export function createPoolMetadataUpdatedEvent(
   poolId: Bytes,

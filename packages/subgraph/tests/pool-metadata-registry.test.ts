@@ -3,7 +3,7 @@ import {
   afterAll, assert, beforeAll, clearStore, describe,
   test
 } from "matchstick-as/assembly/index"
-import { handlePoolMetadataUpdated } from "../src/mappings/pool-metadata-registry"
+import { handlePoolMetadataUpdated } from "../src/mappings/PoolMetadataRegistry"
 import { createPoolMetadataUpdatedEvent } from "./pool-metadata-registry-utils"
 
 describe("Describe entity assertions", () => {

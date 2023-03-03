@@ -1,8 +1,30 @@
+type Pool @entity {
+  " Pool's poolId "
+  id: ID!
+
+  " Address of the Pool "
+  address: Bytes!
+
+  " List of the Pool's metadata updates "
+  metadataUpdates: [PoolMetadataUpdated!] @derivedFrom(field: "poolId")
+}
+
 type PoolMetadataUpdated @entity(immutable: true) {
-  id: Bytes!
-  poolId: Bytes! # bytes32
-  metadataCID: String! # string
+  " PoolMetadataUpdated contract address "
+  id: ID!
+
+  " Reference to Pool entity "
+  poolId: Pool
+
+  " ipfs hash of the PoolMetadataUpdate "
+  metadataCID: String!
+
+  " Blocknumber of this PoolMetadataUpdate "
   blockNumber: BigInt!
+
+  " Timestamp of this block "
   blockTimestamp: BigInt!
+
+  " Address of the PoolMetadataUpdate transaction "
   transactionHash: Bytes!
 }

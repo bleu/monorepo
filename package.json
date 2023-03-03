@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "description": "",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "dev": "pnpm --stream -r dev",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -20,7 +23,7 @@
     "@balancer-pool-metadata/eslint-config": "workspace:*",
     "ghooks": "^2.0.4",
     "lint-staged": "^13.1.2",
-    "prettier": "^2.8.3"
+    "prettier": "^2.8.4"
   },
   "lint-staged": {
     "*.{md,html,mjml,json,graphql,yml,css,scss}": "prettier --write"

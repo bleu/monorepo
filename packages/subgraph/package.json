@@ -12,6 +12,7 @@
     "test": "graph test"
   },
   "devDependencies": {
+    "@balancer-pool-metadata/tsconfig": "workspace:*",
     "@graphprotocol/graph-cli": "0.42.3",
     "@graphprotocol/graph-ts": "0.29.1",
     "handlebars": "^4.7.7",

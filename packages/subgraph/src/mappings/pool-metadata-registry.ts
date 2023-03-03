@@ -1,5 +1,5 @@
-import { PoolMetadataUpdated as PoolMetadataUpdatedEvent } from "../generated/PoolMetadataRegistry/PoolMetadataRegistry"
-import { PoolMetadataUpdated } from "../generated/schema"
+import { PoolMetadataUpdated as PoolMetadataUpdatedEvent } from "../../generated/PoolMetadataRegistry/PoolMetadataRegistry"
+import { PoolMetadataUpdated } from "../../generated/schema"
 
 export function handlePoolMetadataUpdated(
   event: PoolMetadataUpdatedEvent

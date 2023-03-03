@@ -1,4 +1,12 @@
 {
-  "extends": "@graphprotocol/graph-ts/types/tsconfig.base.json",
-  "include": ["src"]
+  "compilerOptions": {
+    "lib": ["DOM","ES2018"],
+    "types": ["@graphprotocol/graph-ts", "node"],
+    "skipLibCheck": true,                     /* Skip type checking of declaration files. */
+    "forceConsistentCasingInFileNames": true,  /* Disallow inconsistently-cased references to the same file. */
+    "strictNullChecks": true
+  },
+  "exclude": [
+    "src/types"
+  ]
 }

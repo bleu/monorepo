@@ -1,0 +1,11 @@
+# mainnet:
+#   network: mainnet
+#   EventEmitter:
+#     address: "0x000000000000000000000000000000000000000"
+#     startBlock: 16419620
+goerli:
+  network: goerli
+  PoolMetadataRegistry:
+    address: "0xEBfADf723E077c80f6058dC9c9202bB613DE07cf"
+    startBlock: 8583917
+  

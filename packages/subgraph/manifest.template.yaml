@@ -1,14 +1,16 @@
-specVersion: 0.0.5
+specVersion: 0.0.2
+description: Balancer Pool Metadata Registry provides a registry for Balancer's Pools metadata.
+repository: https://github.com/bleu-llc/balancer-pool-metadata
 schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum
     name: PoolMetadataRegistry
-    network: goerli
+    network: {{network}}
     source:
-      address: "0xEBfADf723E077c80f6058dC9c9202bB613DE07cf"
+      address: "{{PoolMetadataRegistry.address}}"
       abi: PoolMetadataRegistry
-      startBlock: 8583917
+      startBlock: {{PoolMetadataRegistry.startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -21,4 +23,4 @@ dataSources:
       eventHandlers:
         - event: PoolMetadataUpdated(indexed bytes32,string)
           handler: handlePoolMetadataUpdated
-      file: ./src/pool-metadata-registry.ts
+      file: ./src/mappings/pool-metadata-registry.ts

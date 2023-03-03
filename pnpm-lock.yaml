@@ -101,6 +101,8 @@ importers:
       '@balancer-pool-metadata/tsconfig': workspace:*
       '@graphprotocol/graph-cli': 0.42.3
       '@graphprotocol/graph-ts': 0.29.1
+      '@types/fs-extra': ^11.0.1
+      '@types/js-yaml': ^4.0.5
       handlebars: ^4.7.7
       js-yaml: ^4.1.0
       matchstick-as: 0.5.0
@@ -109,6 +111,8 @@ importers:
       '@balancer-pool-metadata/tsconfig': link:../tsconfig
       '@graphprotocol/graph-cli': 0.42.3
       '@graphprotocol/graph-ts': 0.29.1
+      '@types/fs-extra': 11.0.1
+      '@types/js-yaml': 4.0.5
       handlebars: 4.7.7
       js-yaml: 4.1.0
       matchstick-as: 0.5.0
@@ -1749,12 +1753,29 @@ packages:
       '@types/node': 18.14.0
     dev: true
 
+  /@types/fs-extra/11.0.1:
+    resolution: {integrity: sha512-MxObHvNl4A69ofaTRU8DFqvgzzv8s9yRtaPPm5gud9HDNvpB3GPQFvNuTWAI59B9huVGV5jXYJwbCsmBsOGYWA==}
+    dependencies:
+      '@types/jsonfile': 6.1.1
+      '@types/node': 18.14.0
+    dev: true
+
+  /@types/js-yaml/4.0.5:
+    resolution: {integrity: sha512-FhpRzf927MNQdRZP0J5DLIdTXhjLYzeUTmLAu69mnVksLH9CJY3IuSeEgbKUki7GQZm0WqDkGzyxju2EZGD2wA==}
+    dev: true
+
   /@types/json-schema/7.0.11:
     resolution: {integrity: sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==}
     dev: true
 
   /@types/json5/0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
+    dev: true
+
+  /@types/jsonfile/6.1.1:
+    resolution: {integrity: sha512-GSgiRCVeapDN+3pqA35IkQwasaCh/0YFH5dEF6S88iDvEn901DjOeH3/QPY+XYP1DFzDZPvIvfeEgk+7br5png==}
+    dependencies:
+      '@types/node': 18.14.0
     dev: true
 
   /@types/lodash/4.14.191:

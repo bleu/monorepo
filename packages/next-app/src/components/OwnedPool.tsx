@@ -39,7 +39,7 @@ export function OwnedPool({
     poolType === "Weighted" ? tokens!.map((obj) => obj.symbol).join("/") : name;
   const weights =
     poolType === "Weighted"
-      ? tokens!.map((obj) => Number(obj.weight) * 100).join("/")
+      ? tokens!.map((obj) => (Number(obj.weight) * 100).toFixed()).join("/")
       : null;
 
   return (

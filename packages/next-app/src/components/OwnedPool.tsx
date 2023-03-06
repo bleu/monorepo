@@ -1,4 +1,4 @@
-import { Badge, Button, Stack, Text } from "@chakra-ui/react";
+import { Badge, Button, HStack, Text, VStack } from "@chakra-ui/react";
 
 interface IOwnedPool {
   onClick: () => void;
@@ -21,7 +21,7 @@ export function OwnedPool({
 
   return (
     <Button
-      p="0"
+      p="2"
       h="20"
       w="full"
       background={backgroundColor}
@@ -34,89 +34,54 @@ export function OwnedPool({
       color={backgroundColor}
       onClick={onClick}
     >
-      <Stack
-        w="full"
-        h="full"
-        p="2.5"
-        direction="row"
-        justify="flex-start"
-        align="center"
-      >
-        <Stack justify="flex-start" align="flex-start" spacing="4px" flex="1">
-          <Stack
-            direction="row"
-            justify="flex-start"
-            align="center"
-            alignSelf="stretch"
+      <VStack spacing="1" w={"full"}>
+        <HStack alignSelf="stretch">
+          <Text
+            fontFamily="Inter"
+            lineHeight="1.5"
+            fontWeight="bold"
+            fontSize="1rem"
+            color="gray.200"
+            _groupHover={{
+              color: "yellow.400",
+            }}
           >
-            <Text
-              fontFamily="Inter"
-              lineHeight="1.5"
-              fontWeight="bold"
-              fontSize="1rem"
-              color="gray.200"
-              _groupHover={{
-                color: "yellow.400",
-              }}
+            {name}
+          </Text>
+          {ratio && (
+            <Badge
+              p="1px"
+              colorScheme="blue"
+              _groupHover={{ background: "yellow.100" }}
+              background={isSelected ? "yellow.100" : "blue.200"}
             >
-              {name}
-            </Text>
-            {ratio && (
-              <Badge
-                p="1px"
-                colorScheme="blue"
-                _groupHover={{ background: "yellow.100" }}
-                background={isSelected ? "yellow.100" : "blue.200"}
-              >
-                {ratio}
-              </Badge>
-            )}
-          </Stack>
-          <Stack
-            direction="row"
-            justify="flex-start"
-            align="center"
-            spacing="16px"
-            alignSelf="stretch"
+              {ratio}
+            </Badge>
+          )}
+        </HStack>
+        <HStack spacing={3} w={"full"}>
+          <Badge
+            p="1"
+            variant="outline"
+            _groupHover={{
+              color: "gray.400",
+            }}
           >
-            <Stack
-              direction="row"
-              justify="flex-start"
-              align="flex-start"
-              spacing="0px"
-            >
-              <Badge
-                p="1"
-                variant="outline"
-                _groupHover={{
-                  color: "gray.400",
-                }}
-              >
-                {type}
-              </Badge>
-            </Stack>
-            <Stack
-              direction="row"
-              justify="flex-start"
-              align="center"
-              spacing="1"
-            >
-              <Text
-                fontFamily="Inter"
-                lineHeight="1.2"
-                fontWeight="regular"
-                fontSize="0.75rem"
-                color="gray.600"
-                _groupHover={{
-                  color: "gray.400",
-                }}
-              >
-                {address}
-              </Text>
-            </Stack>
-          </Stack>
-        </Stack>
-      </Stack>
+            {type}
+          </Badge>
+          <Text
+            fontFamily="Inter"
+            lineHeight="1.2"
+            fontSize="0.75rem"
+            color="gray.500"
+            _groupHover={{
+              color: "gray.400",
+            }}
+          >
+            {address}
+          </Text>
+        </HStack>
+      </VStack>
     </Button>
   );
 }

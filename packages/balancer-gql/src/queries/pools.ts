@@ -6,6 +6,11 @@ export const poolWhereOwner = gql`
       poolType
       name
       id
+      address
+      tokens {
+        symbol
+        weight
+      }
     }
   }
 `;

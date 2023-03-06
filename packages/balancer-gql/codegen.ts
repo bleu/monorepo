@@ -2,7 +2,7 @@ import { CodegenConfig } from "@graphql-codegen/cli";
 
 const BASE_URL = "https://api.thegraph.com/subgraphs/name/balancer-labs";
 
-enum Network {
+export enum Network {
   mainnet = "mainnet",
   polygon = "polygon",
   arbitrum = "arbitrum",

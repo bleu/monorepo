@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "baseUrl": "src",
+    "paths": {
+      "*": ["*", "../*"]
+    }
+  },
+  "exclude": ["node_modules"],
+  "extends": "@balancer-pool-metadata/tsconfig/base.json",
+  "include": ["**/*.ts", "**/*.tsx", "../codegen.ts", "codegen.cjs"],
+  "references": []
+}

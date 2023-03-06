@@ -1,15 +1,20 @@
 import { getDefaultWallets } from "@rainbow-me/rainbowkit";
 import { configureChains, createClient } from "wagmi";
-import { goerli, mainnet } from "wagmi/chains";
+import { arbitrum, goerli, mainnet, polygon } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 
 const { chains, provider, webSocketProvider } = configureChains(
-  [mainnet, ...(process.env.NODE_ENV === "development" ? [goerli] : [])],
+  [
+    mainnet,
+    ...(process.env.NODE_ENV === "development"
+      ? [polygon, arbitrum, goerli]
+      : []),
+  ],
   [publicProvider()]
 );
 
 const { connectors } = getDefaultWallets({
-  appName: "My wagmi + RainbowKit App",
+  appName: "Balancer Pool Metadata",
   chains,
 });
 

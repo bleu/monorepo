@@ -1,5 +1,6 @@
 import "@rainbow-me/rainbowkit/styles.css";
 
+import { ChakraProvider } from "@chakra-ui/react";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import type { AppProps } from "next/app";
 import NextHead from "next/head";
@@ -12,15 +13,16 @@ function App({ Component, pageProps }: AppProps) {
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => setMounted(true), []);
   return (
-    <WagmiConfig client={client}>
-      <RainbowKitProvider chains={chains}>
-        <NextHead>
-          <title>My wagmi + RainbowKit App</title>
-        </NextHead>
-
-        {mounted && <Component {...pageProps} />}
-      </RainbowKitProvider>
-    </WagmiConfig>
+    <ChakraProvider>
+      <WagmiConfig client={client}>
+        <RainbowKitProvider chains={chains}>
+          <NextHead>
+            <title>Balancer Pool Metadata</title>
+          </NextHead>
+          {mounted && <Component {...pageProps} />}
+        </RainbowKitProvider>
+      </WagmiConfig>
+    </ChakraProvider>
   );
 }
 

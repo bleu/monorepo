@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: PoolMetadataRegistry
-    network: {{network}}
+    network: { { network } }
     source:
       address: "{{PoolMetadataRegistry.address}}"
       abi: PoolMetadataRegistry
-      startBlock: {{PoolMetadataRegistry.startBlock}}
+      startBlock: { { PoolMetadataRegistry.startBlock } }
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7

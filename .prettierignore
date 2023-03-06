@@ -1,4 +1,13 @@
-node_modules
-lib
+**/node_modules**
+**/lib/**
+
 pnpm-lock.yaml
 
+**/.next/**
+**/.vercel/**
+**/.vscode/**
+
+**/__generated__/**
+generated**
+
+**/out/**

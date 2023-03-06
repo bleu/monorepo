@@ -1,4 +1,4 @@
-import { PoolMetadataUpdated as PoolMetadataUpdatedEvent } from "../types/PoolMetadataRegistry/PoolMetadataRegistry"
+import { PoolMetadataUpdated as PoolMetadataUpdatedEvent } from "../types/PoolMetadataRegistry/PoolMetadataRegistry";
 
 export function handlePoolMetadataUpdated(
   event: PoolMetadataUpdatedEvent
@@ -9,10 +9,8 @@ export function handlePoolMetadataUpdated(
   // )
   // entity.poolId = event.params.poolId
   // entity.metadataCID = event.params.metadataCID
-
   // entity.blockNumber = event.block.number
   // entity.blockTimestamp = event.block.timestamp
   // entity.transactionHash = event.transaction.hash
-
   // entity.save()
 }

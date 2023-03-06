@@ -1,34 +1,16 @@
 import { Stack, Text } from "@chakra-ui/react";
 import { useState } from "react";
+import { useAccount } from "wagmi";
 
+import gql from "../lib/gql";
 import { OwnedPool } from "./OwnedPool";
 
-const pools = [
-  {
-    address: "0xe2f515d5e8...08c2",
-    type: "WEIGHTED",
-    ratio: "80/20",
-    name: "USDC/SPHERE",
-  },
-  {
-    address: "0xe2f51rrd5e8...08c2",
-    type: "STABLE",
-    name: "EGX/MSGLD",
-  },
-  {
-    address: "0xe1515ewd5e8...08c2",
-    type: "BOOSTED",
-    ratio: "80/20",
-    name: "Balancer Boosted Aave USD",
-  },
-  {
-    address: "0xe3515d5e8...08c2",
-    type: "COMPOSABLE STABLE",
-    name: "TETU/USDC",
-  },
-];
-
 export function Sidebar() {
+  const { address } = useAccount();
+  const { data } = gql.usePool({
+    owner: address,
+  });
+
   const [selectedPool, setSelectedPool] = useState<string | null>(null);
 
   const handleButtonClick = (index: string | null) => {
@@ -87,12 +69,12 @@ export function Sidebar() {
           position="relative"
           overflow="auto"
         >
-          {pools &&
-            pools.map((item) => (
+          {data?.pools &&
+            data.pools.map((item) => (
               <OwnedPool
-                key={item.address}
-                onClick={() => handleButtonClick(item.address)}
-                isSelected={item.address === selectedPool}
+                key={item.id}
+                onClick={() => handleButtonClick(item.id)}
+                isSelected={item.id === selectedPool}
                 {...item}
               />
             ))}

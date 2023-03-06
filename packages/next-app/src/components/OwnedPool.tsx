@@ -2,22 +2,45 @@ import { Badge, Button, HStack, Text, VStack } from "@chakra-ui/react";
 
 interface IOwnedPool {
   onClick: () => void;
-  address: string;
-  type: string;
-  ratio?: string;
-  name: string;
+  address?: string;
+  poolType?: string | null | undefined;
+  name?: string | null | undefined;
+  id?: string | null | undefined;
+  tokens?:
+    | {
+        symbol: string;
+        weight?: unknown;
+      }[]
+    | null
+    | undefined;
   isSelected: boolean;
+}
+
+function truncateAddress(address: string | undefined) {
+  if (!address) return;
+  const match = address.match(
+    /^(0x[a-zA-Z0-9]{10})[a-zA-Z0-9]+([a-zA-Z0-9]{4})$/
+  );
+  if (!match) return address;
+  return `${match[1]}…${match[2]}`;
 }
 
 export function OwnedPool({
   onClick,
   address,
-  type,
-  ratio,
+  poolType,
   name,
   isSelected,
+  tokens,
 }: IOwnedPool) {
   const backgroundColor = isSelected ? "blue.800" : "gray.800";
+
+  const poolName =
+    poolType === "Weighted" ? tokens!.map((obj) => obj.symbol).join("/") : name;
+  const weights =
+    poolType === "Weighted"
+      ? tokens!.map((obj) => Number(obj.weight) * 100).join("/")
+      : null;
 
   return (
     <Button
@@ -46,16 +69,16 @@ export function OwnedPool({
               color: "yellow.400",
             }}
           >
-            {name}
+            {poolName}
           </Text>
-          {ratio && (
+          {weights && (
             <Badge
-              p="1px"
+              p="2px"
               colorScheme="blue"
               _groupHover={{ background: "yellow.100" }}
               background={isSelected ? "yellow.100" : "blue.200"}
             >
-              {ratio}
+              {weights}
             </Badge>
           )}
         </HStack>
@@ -67,7 +90,7 @@ export function OwnedPool({
               color: "gray.400",
             }}
           >
-            {type}
+            {poolType}
           </Badge>
           <Text
             fontFamily="Inter"
@@ -78,7 +101,7 @@ export function OwnedPool({
               color: "gray.400",
             }}
           >
-            {address}
+            {truncateAddress(address)}
           </Text>
         </HStack>
       </VStack>

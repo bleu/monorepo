@@ -6,10 +6,10 @@ type Pool @entity {
   address: Bytes!
 
   " List of the Pool's metadata updates "
-  metadataUpdates: [PoolMetadataUpdated!] @derivedFrom(field: "poolId")
+  metadataUpdates: [PoolMetadataUpdate!] @derivedFrom(field: "poolId")
 }
 
-type PoolMetadataUpdated @entity(immutable: true) {
+type PoolMetadataUpdate @entity(immutable: true) {
   " PoolMetadataUpdated contract address "
   id: ID!
 

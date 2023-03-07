@@ -45,3 +45,9 @@ pnpm create-local
 pnpm deploy-local
 ```
 
+## Create and Deploy to Studio
+
+```bash
+...
+```
+

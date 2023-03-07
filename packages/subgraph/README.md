@@ -12,11 +12,17 @@ Ensure you have installed all project dependencies and deployed the PoolMetadata
 
 ## Install Graph-node
 
-Should we address the graph-node here?
+```bash
+git clone https://github.com/graphprotocol/graph-node/
+cd graph-node/docker
+./setup.sh
+docker compose start
+```
+
 
 ## Setting up environment
 
-Define the networks with its respective address and initialBlock on networks.yaml file:
+Define the networks with its respective address and startBlock on networks.yaml file:
 
 ```yaml
 mainnet:
@@ -45,9 +51,4 @@ pnpm create-local
 pnpm deploy-local
 ```
 
-## Create and Deploy to Studio
-
-```bash
-...
-```
 

@@ -1,6 +1,7 @@
 name: Deploy Graph
 
 on:
+  workflow_dispatch:
   push:
     branches: main
 

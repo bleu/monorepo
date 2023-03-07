@@ -1,19 +1,10 @@
+import { Pool } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/mainnet";
 import { Badge, Button, HStack, Text, VStack } from "@chakra-ui/react";
 
 interface IOwnedPool {
   onClick: () => void;
-  address?: string;
-  poolType?: string | null | undefined;
-  name?: string | null | undefined;
-  id?: string | null | undefined;
-  tokens?:
-    | {
-        symbol: string;
-        weight?: unknown;
-      }[]
-    | null
-    | undefined;
   isSelected: boolean;
+  pool: Pool;
 }
 
 function truncateAddress(address: string | undefined) {
@@ -25,21 +16,17 @@ function truncateAddress(address: string | undefined) {
   return `${match[1]}…${match[2]}`;
 }
 
-export function OwnedPool({
-  onClick,
-  address,
-  poolType,
-  name,
-  isSelected,
-  tokens,
-}: IOwnedPool) {
+export function OwnedPool({ onClick, isSelected, pool }: IOwnedPool) {
   const backgroundColor = isSelected ? "blue.800" : "gray.800";
+  const { poolType, tokens, name, address } = pool;
 
   const poolName =
-    poolType === "Weighted" ? tokens!.map((obj) => obj.symbol).join("/") : name;
+    poolType === "Weighted" && tokens
+      ? tokens.map((obj) => obj.symbol).join("/")
+      : name;
   const weights =
-    poolType === "Weighted"
-      ? tokens!.map((obj) => (Number(obj.weight) * 100).toFixed()).join("/")
+    poolType === "Weighted" && tokens
+      ? tokens.map((obj) => (Number(obj.weight) * 100).toFixed()).join("/")
       : null;
 
   return (

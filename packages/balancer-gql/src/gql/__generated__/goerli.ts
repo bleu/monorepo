@@ -5055,7 +5055,7 @@ export type PoolQueryVariables = Exact<{
 }>;
 
 
-export type PoolQuery = { __typename?: 'Query', pools: Array<{ __typename?: 'Pool', poolType?: string | null, name?: string | null, id: string }> };
+export type PoolQuery = { __typename?: 'Query', pools: Array<{ __typename?: 'Pool', poolType?: string | null, name?: string | null, id: string, address: any, tokens?: Array<{ __typename?: 'PoolToken', symbol: string, weight?: any | null }> | null }> };
 
 
 export const PoolDocument = gql`
@@ -5064,6 +5064,11 @@ export const PoolDocument = gql`
     poolType
     name
     id
+    address
+    tokens {
+      symbol
+      weight
+    }
   }
 }
     `;

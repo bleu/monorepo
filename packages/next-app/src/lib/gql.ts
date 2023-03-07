@@ -13,19 +13,18 @@ const currentNetwork =
     ? localStorage.getItem("networkId") ?? "1"
     : "1";
 
-function networkFor(key: string | number): Network {
-  switch (key.toString()) {
-    case "1":
-      return Network.mainnet;
-    case "5":
-      return Network.goerli;
-    case "137":
-      return Network.polygon;
-    case "42161":
-      return Network.arbitrum;
-    default:
-      return Network.mainnet;
-  }
+const networkIdEnumMap = {
+  "1": Network.mainnet,
+  "5": Network.goerli,
+  "137": Network.polygon,
+  "42161": Network.arbitrum,
+};
+
+function networkFor(key: string | number) {
+  return (
+    networkIdEnumMap[key.toString() as keyof typeof networkIdEnumMap] ||
+    Network.mainnet
+  );
 }
 
 const networkSdks = {

@@ -25,9 +25,9 @@ jobs:
         working-directory: ./packages/subgraph
         run: pnpm codegen
 
-      - name: Codegen
+      - name: Build
         working-directory: ./packages/subgraph
-        run: pnpm build
+        run: pnpm build subgraph.goerli.yaml
 
       - uses: gtaschuk/graph-deploy@v0.1.12
         with:

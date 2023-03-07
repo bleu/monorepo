@@ -1,16 +1,28 @@
+import { getPoolAddress } from "../helpers";
 import { PoolMetadataUpdated as PoolMetadataUpdatedEvent } from "../types/PoolMetadataRegistry/PoolMetadataRegistry";
-import { PoolMetadataUpdate } from "../types/schema";
+import { Pool, PoolMetadataUpdate } from "../types/schema";
 
 export function handlePoolMetadataUpdated(
   event: PoolMetadataUpdatedEvent
 ): void {
-  const entity = new PoolMetadataUpdate(event.transaction.hash.toHexString());
-  entity.poolId = event.params.poolId.toString();
-  entity.metadataCID = event.params.metadataCID;
+  const poolId = event.params.poolId.toHexString();
 
-  entity.blockNumber = event.block.number;
-  entity.blockTimestamp = event.block.timestamp;
-  entity.transactionHash = event.transaction.hash;
+  let pool = Pool.load(poolId);
+  if (pool == null) {
+    pool = new Pool(poolId);
+    pool.address = getPoolAddress(poolId);;
+  }
+  pool.metadataCID = event.params.metadataCID;
+  pool.save();
 
-  entity.save();
+  const metadataUpdateId = event.transaction.hash.toHex() + "-" + event.logIndex.toString();
+  const metadataUpdate = new PoolMetadataUpdate(metadataUpdateId);
+  metadataUpdate.pool = poolId;
+  metadataUpdate.metadataCID = event.params.metadataCID;
+
+  metadataUpdate.blockNumber = event.block.number;
+  metadataUpdate.blockTimestamp = event.block.timestamp;
+  metadataUpdate.transactionHash = event.transaction.hash;
+
+  metadataUpdate.save();
 }

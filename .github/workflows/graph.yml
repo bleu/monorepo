@@ -2,11 +2,10 @@ name: Deploy Graph
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches:
-      - tullyo/bal-37-create-action-to-automate-deployment-on
   push:
-    branches: main
+    branches: 
+      - main
+      - tullyo/bal-37-create-action-to-automate-deployment-on
 
 jobs:
   deploy-goerli:

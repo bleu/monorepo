@@ -1,5 +1,3 @@
-
-
 <h1 align="center"> Balancer Pool Metadata - Subgraph</h1>
 
 This package contains the Balancer Pool Metadata subgraph project.

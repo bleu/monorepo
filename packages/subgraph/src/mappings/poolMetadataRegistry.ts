@@ -5,7 +5,7 @@ export function handlePoolMetadataUpdated(
   event: PoolMetadataUpdatedEvent
 ): void {
   const entity = new PoolMetadataUpdate(event.transaction.hash.toHexString());
-  entity.poolId = event.params.poolId.toHexString();
+  entity.poolId = event.params.poolId.toString();
   entity.metadataCID = event.params.metadataCID;
 
   entity.blockNumber = event.block.number;

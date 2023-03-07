@@ -1,5 +1,4 @@
 import { Pool } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/mainnet";
-import { Stack, Text } from "@chakra-ui/react";
 import { useState } from "react";
 import { useAccount } from "wagmi";
 
@@ -19,57 +18,14 @@ export function Sidebar() {
   };
 
   return (
-    <Stack w="96" h="100%" maxWidth="100%" background="gray.900" p="5">
-      <Stack
-        justify="flex-start"
-        align="flex-start"
-        spacing="4"
-        w="96"
-        h="56rem"
-        maxWidth="100%"
-      >
-        <Stack
-          paddingX="2"
-          justify="flex-start"
-          align="flex-start"
-          spacing="2.5"
-          alignSelf="stretch"
-          background="gray.900"
-        >
-          <Stack
-            direction="row"
-            justify="flex-start"
-            align="flex-start"
-            spacing="0px"
-          >
-            <Text
-              fontFamily="Inter"
-              lineHeight="1.2"
-              fontWeight="medium"
-              fontSize="2rem"
-              color="gray.400"
-            >
-              Owned pools
-            </Text>
-          </Stack>
-        </Stack>
-        <Stack
-          borderRadius="6px"
-          justify="flex-start"
-          align="flex-start"
-          direction="column"
-          spacing="0"
-          maxHeight="40rem"
-          borderColor="gray.700"
-          borderStartWidth="1px"
-          borderEndWidth="1px"
-          borderTopWidth="1px"
-          borderBottomWidth="1px"
-          alignSelf="stretch"
-          background="gray.800"
-          position="relative"
-          overflow="auto"
-        >
+    <div className="h-full w-96 max-w-full bg-gray-900 p-5">
+      <div className="h-screen w-96 max-w-full items-start justify-start space-y-4">
+        <div className="items-start justify-start space-y-2.5 self-stretch bg-gray-900 px-2">
+          <div className="flex items-center justify-start space-x-0 text-2xl font-medium text-gray-400">
+            <span>Owned pools</span>
+          </div>
+        </div>
+        <div className="relative max-h-[40rem] self-stretch overflow-auto rounded-md border border-gray-700 bg-gray-800">
           {data?.pools &&
             data.pools.map((item) => (
               <OwnedPool
@@ -79,8 +35,8 @@ export function Sidebar() {
                 pool={item as Pool}
               />
             ))}
-        </Stack>
-      </Stack>
-    </Stack>
+        </div>
+      </div>
+    </div>
   );
 }

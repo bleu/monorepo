@@ -1,24 +1,14 @@
-import { Flex, Heading } from "@chakra-ui/react";
-
 import { Header } from "./Header";
 
 export function Hero() {
   return (
     <>
       <Header />
-      <Flex h="100vh" align="center" justify="center" background="gray.900">
-        <Heading
-          as="h1"
-          size="xl"
-          color="white"
-          opacity="0.8"
-          fontWeight="normal"
-          lineHeight={1.5}
-          textAlign="center"
-        >
+      <div className="flex h-screen items-center justify-center bg-gray-900">
+        <h1 className="text-center text-xl font-normal leading-6 text-white opacity-80 md:text-2xl md:leading-9">
           Welcome to Balancer Pool Metadata, please connect your wallet
-        </Heading>
-      </Flex>
+        </h1>
+      </div>
     </>
   );
 }

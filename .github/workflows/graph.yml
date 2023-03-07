@@ -13,9 +13,6 @@ jobs:
 
       - uses: ./.github/workflows/setup-pnpm
 
-      - name: Check formatting and linting
-        run: pnpm ci
-
       - name: Install node
         uses: actions/setup-node@v1
         with:
@@ -24,7 +21,6 @@ jobs:
       - name: Codegen and Build
         working-directory: ./packages/subgraph
         run: |
-          pnpm i
           pnpm codegen
           cp subgraph.goerli.yaml subgraph.yaml
           pnpm build

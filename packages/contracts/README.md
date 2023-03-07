@@ -1,4 +1,4 @@
-# <h1 align="center"> Balancer Pool Metadata Contract</h1>
+# <h1 align="center"> Balancer Pool Metadata - Contract</h1>
 
 This package contains contract sources for the Balancer Pool Metadata Main contract is under `src/PoolMetadataRegistry.sol`.
 

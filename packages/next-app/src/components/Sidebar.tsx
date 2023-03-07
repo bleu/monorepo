@@ -1,3 +1,4 @@
+import { Pool } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/mainnet";
 import { Stack, Text } from "@chakra-ui/react";
 import { useState } from "react";
 import { useAccount } from "wagmi";
@@ -75,7 +76,7 @@ export function Sidebar() {
                 key={item.id}
                 onClick={() => handleButtonClick(item.id)}
                 isSelected={item.id === selectedPool}
-                {...item}
+                pool={item as Pool}
               />
             ))}
         </Stack>

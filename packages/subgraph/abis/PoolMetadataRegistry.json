@@ -1,54 +1,1958 @@
-[
-  {
-    "inputs": [
-      { "internalType": "contract IVault", "name": "vault", "type": "address" }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "contract IVault",
+          "name": "vault",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "poolId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "metadataCID",
+          "type": "string"
+        }
+      ],
+      "name": "PoolMetadataUpdated",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "poolId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "_isPoolOwner",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "name": "poolIdMetadataCIDMap",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "poolId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "string",
+          "name": "metadataCID",
+          "type": "string"
+        }
+      ],
+      "name": "setPoolMetadata",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x60a060405234801561001057600080fd5b506040516106f93803806106f98339818101604052602081101561003357600080fd5b5051606081901b6001600160601b0319166080526001600160a01b031661068d61006c6000398061025752806104e0525061068d6000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c80632181fd63146100465780638974b803146100d8578063f44f9f1514610109575b600080fd5b6100636004803603602081101561005c57600080fd5b50356101b8565b6040805160208082528351818301528351919283929083019185019080838360005b8381101561009d578181015183820152602001610085565b50505050905090810190601f1680156100ca5780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b6100f5600480360360208110156100ee57600080fd5b5035610252565b604080519115158252519081900360200190f35b6101b66004803603604081101561011f57600080fd5b8135919081019060408101602082013564010000000081111561014157600080fd5b82018360208201111561015357600080fd5b8035906020019184600183028401116401000000008311171561017557600080fd5b91908080601f016020809104026020016040519081016040528093929190818152602001838380828437600092019190915250929550610376945050505050565b005b600060208181529181526040908190208054825160026001831615610100026000190190921691909104601f81018590048502820185019093528281529290919083018282801561024a5780601f1061021f5761010080835404028352916020019161024a565b820191906000526020600020905b81548152906001019060200180831161022d57829003601f168201915b505050505081565b6000807f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031663f6c00927846040518263ffffffff1660e01b815260040180828152602001915050604080518083038186803b1580156102b857600080fd5b505afa1580156102cc573d6000803e3d6000fd5b505050506040513d60408110156102e257600080fd5b505160408051631127a41d60e31b8152905191925033916001600160a01b0384169163893d20e8916004808301926020929190829003018186803b15801561032957600080fd5b505afa15801561033d573d6000803e3d6000fd5b505050506040513d602081101561035357600080fd5b50516001600160a01b03161461036a57600061036d565b60015b9150505b919050565b61037f826104dc565b6103c6576040805162461bcd60e51b8152602060048201526013602482015272141bdbdb081b9bdd081c9959da5cdd195c9959606a1b604482015290519081900360640190fd5b6103cf82610252565b610420576040805162461bcd60e51b815260206004820152601760248201527f43616c6c6572206973206e6f7420746865206f776e6572000000000000000000604482015290519081900360640190fd5b600082815260208181526040909120825161043d928401906105b6565b50817fbccdd5919e4a045110d8eff02f169384df8f76feec5d75614cb01dea4bd988eb826040518080602001828103825283818151815260200191508051906020019080838360005b8381101561049e578181015183820152602001610486565b50505050905090810190601f1680156104cb5780820380516001836020036101000a031916815260200191505b509250505060405180910390a25050565b60007f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031663f6c00927836040518263ffffffff1660e01b815260040180828152602001915050604080518083038186803b15801561054157600080fd5b505afa92505050801561056d57506040513d604081101561056157600080fd5b50805160209091015160015b6105ab573d80801561059b576040519150601f19603f3d011682016040523d82523d6000602084013e6105a0565b606091505b506000915050610371565b600192505050610371565b828054600181600116156101000203166002900490600052602060002090601f0160209004810192826105ec5760008555610632565b82601f1061060557805160ff1916838001178555610632565b82800160010185558215610632579182015b82811115610632578251825591602001919060010190610617565b5061063e929150610642565b5090565b5b8082111561063e576000815560010161064356fea2646970667358221220feb87a5222abea946aa9ed35b564f0fee9c158674dd493a3f28faba0bcde450b64736f6c63430007060033",
+    "sourceMap": "582:1613:81:-:0;;;742:57;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;742:57:81;-1:-1:-1;;778:14:81;;;;;;;-1:-1:-1;;;;;582:1613:81;-1:-1:-1;582:1613:81;;;;;;",
+    "linkReferences": {}
   },
-  {
-    "anonymous": false,
-    "inputs": [
+  "deployedBytecode": {
+    "object": "0x608060405234801561001057600080fd5b50600436106100415760003560e01c80632181fd63146100465780638974b803146100d8578063f44f9f1514610109575b600080fd5b6100636004803603602081101561005c57600080fd5b50356101b8565b6040805160208082528351818301528351919283929083019185019080838360005b8381101561009d578181015183820152602001610085565b50505050905090810190601f1680156100ca5780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b6100f5600480360360208110156100ee57600080fd5b5035610252565b604080519115158252519081900360200190f35b6101b66004803603604081101561011f57600080fd5b8135919081019060408101602082013564010000000081111561014157600080fd5b82018360208201111561015357600080fd5b8035906020019184600183028401116401000000008311171561017557600080fd5b91908080601f016020809104026020016040519081016040528093929190818152602001838380828437600092019190915250929550610376945050505050565b005b600060208181529181526040908190208054825160026001831615610100026000190190921691909104601f81018590048502820185019093528281529290919083018282801561024a5780601f1061021f5761010080835404028352916020019161024a565b820191906000526020600020905b81548152906001019060200180831161022d57829003601f168201915b505050505081565b6000807f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031663f6c00927846040518263ffffffff1660e01b815260040180828152602001915050604080518083038186803b1580156102b857600080fd5b505afa1580156102cc573d6000803e3d6000fd5b505050506040513d60408110156102e257600080fd5b505160408051631127a41d60e31b8152905191925033916001600160a01b0384169163893d20e8916004808301926020929190829003018186803b15801561032957600080fd5b505afa15801561033d573d6000803e3d6000fd5b505050506040513d602081101561035357600080fd5b50516001600160a01b03161461036a57600061036d565b60015b9150505b919050565b61037f826104dc565b6103c6576040805162461bcd60e51b8152602060048201526013602482015272141bdbdb081b9bdd081c9959da5cdd195c9959606a1b604482015290519081900360640190fd5b6103cf82610252565b610420576040805162461bcd60e51b815260206004820152601760248201527f43616c6c6572206973206e6f7420746865206f776e6572000000000000000000604482015290519081900360640190fd5b600082815260208181526040909120825161043d928401906105b6565b50817fbccdd5919e4a045110d8eff02f169384df8f76feec5d75614cb01dea4bd988eb826040518080602001828103825283818151815260200191508051906020019080838360005b8381101561049e578181015183820152602001610486565b50505050905090810190601f1680156104cb5780820380516001836020036101000a031916815260200191505b509250505060405180910390a25050565b60007f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031663f6c00927836040518263ffffffff1660e01b815260040180828152602001915050604080518083038186803b15801561054157600080fd5b505afa92505050801561056d57506040513d604081101561056157600080fd5b50805160209091015160015b6105ab573d80801561059b576040519150601f19603f3d011682016040523d82523d6000602084013e6105a0565b606091505b506000915050610371565b600192505050610371565b828054600181600116156101000203166002900490600052602060002090601f0160209004810192826105ec5760008555610632565b82601f1061060557805160ff1916838001178555610632565b82800160010185558215610632579182015b82811115610632578251825591602001919060010190610617565b5061063e929150610642565b5090565b5b8082111561063e576000815560010161064356fea2646970667358221220feb87a5222abea946aa9ed35b564f0fee9c158674dd493a3f28faba0bcde450b64736f6c63430007060033",
+    "sourceMap": "582:1613:81:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;681:54;;;;;;;;;;;;;;;;-1:-1:-1;681:54:81;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1479:207;;;;;;;;;;;;;;;;-1:-1:-1;1479:207:81;;:::i;:::-;;;;;;;;;;;;;;;;;;1871:322;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;1871:322:81;;-1:-1:-1;1871:322:81;;-1:-1:-1;;;;;1871:322:81:i;:::-;;681:54;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;681:54:81;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;1479:207::-;1572:22;;;-1:-1:-1;;;1572:22:81;;;;;;;;;;1538:4;;;;-1:-1:-1;;;;;1572:6:81;:14;;;;:22;;;;;;;;;;;;;:14;:22;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;1572:22:81;;1612:38;;-1:-1:-1;;;1612:38:81;;;;1572:22;;-1:-1:-1;1654:10:81;;-1:-1:-1;;;;;1612:36:81;;;;;:38;;;;;1572:22;;1612:38;;;;;;;:36;:38;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;1612:38:81;-1:-1:-1;;;;;1612:52:81;;:67;;1674:5;1612:67;;;1667:4;1612:67;1605:74;;;1479:207;;;;:::o;1871:322::-;1964:25;1982:6;1964:17;:25::i;:::-;1956:57;;;;;-1:-1:-1;;;1956:57:81;;;;;;;;;;;;-1:-1:-1;;;1956:57:81;;;;;;;;;;;;;;;2031:20;2044:6;2031:12;:20::i;:::-;2023:56;;;;;-1:-1:-1;;;2023:56:81;;;;;;;;;;;;;;;;;;;;;;;;;;;;2089:20;:28;;;;;;;;;;;:42;;;;;;;;:::i;:::-;;2166:6;2146:40;2174:11;2146:40;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1871:322;;:::o;1010:255::-;1096:22;;;-1:-1:-1;;;1096:22:81;;;;;;;;;;1076:4;;-1:-1:-1;;;;;1096:6:81;:14;;;;:22;;;;;;;;;;;:14;:22;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;1096:22:81;;;;;;;;;1092:167;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1243:5;1236:12;;;;;1092:167;1185:4;1178:11;;;;;;-1:-1:-1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;:::o;:::-;;;;;;;;;;;;;;",
+    "linkReferences": {},
+    "immutableReferences": {
+      "43715": [
+        {
+          "start": 599,
+          "length": 32
+        },
+        {
+          "start": 1248,
+          "length": 32
+        }
+      ]
+    }
+  },
+  "methodIdentifiers": {
+    "_isPoolOwner(bytes32)": "8974b803",
+    "poolIdMetadataCIDMap(bytes32)": "2181fd63",
+    "setPoolMetadata(bytes32,string)": "f44f9f15"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.7.6+commit.7338295f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"contract IVault\",\"name\":\"vault\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"poolId\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"metadataCID\",\"type\":\"string\"}],\"name\":\"PoolMetadataUpdated\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"poolId\",\"type\":\"bytes32\"}],\"name\":\"_isPoolOwner\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"poolIdMetadataCIDMap\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"poolId\",\"type\":\"bytes32\"},{\"internalType\":\"string\",\"name\":\"metadataCID\",\"type\":\"string\"}],\"name\":\"setPoolMetadata\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"Bleu LLC\",\"kind\":\"dev\",\"methods\":{\"_isPoolOwner(bytes32)\":{\"params\":{\"poolId\":\"The pool ID where the ownership will be tested.\"},\"returns\":{\"_0\":\"bool Returns TRUE if the caller is the Pool owner, FALSE otherwise.\"}},\"setPoolMetadata(bytes32,string)\":{\"params\":{\"metadataCID\":\"The metadataCID related to the new pool metadata\",\"poolId\":\"The pool ID to update the metadata\"}}},\"title\":\"A Pool Metadata dApp\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"_isPoolOwner(bytes32)\":{\"notice\":\"Check if the caller is the pool owner\"},\"setPoolMetadata(bytes32,string)\":{\"notice\":\"Updates the pool metadata CID\"}},\"notice\":\"TODO: https://linear.app/bleu-llc/issue/BAL-84/define-poolmetadataregistrysol-metadataThis contract provides a registry for Balancer's Pools metadata\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/PoolMetadataRegistry.sol\":\"PoolMetadataRegistry\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@balancer-labs/balancer-js/=lib/balancer-v2-monorepo/pkg/balancer-js/\",\":@balancer-labs/typechain/=lib/balancer-v2-monorepo/pkg/typechain/\",\":@balancer-labs/v2-deployments/=lib/balancer-v2-monorepo/pkg/deployments/\",\":@balancer-labs/v2-governance-scripts/=lib/balancer-v2-monorepo/pkg/governance-scripts/\",\":@balancer-labs/v2-helpers/=lib/balancer-v2-monorepo/pvt/helpers/\",\":@balancer-labs/v2-interfaces/=lib/balancer-v2-monorepo/pkg/interfaces/\",\":@balancer-labs/v2-liquidity-mining/=lib/balancer-v2-monorepo/pkg/liquidity-mining/\",\":@balancer-labs/v2-pool-linear/=lib/balancer-v2-monorepo/pkg/pool-linear/\",\":@balancer-labs/v2-pool-stable/=lib/balancer-v2-monorepo/pkg/pool-stable/\",\":@balancer-labs/v2-pool-utils/=lib/balancer-v2-monorepo/pkg/pool-utils/\",\":@balancer-labs/v2-pool-weighted/=lib/balancer-v2-monorepo/pkg/pool-weighted/\",\":@balancer-labs/v2-solidity-utils/=lib/balancer-v2-monorepo/pkg/solidity-utils/\",\":@balancer-labs/v2-standalone-utils/=lib/balancer-v2-monorepo/pkg/standalone-utils/\",\":balancer-v2-monorepo/=lib/balancer-v2-monorepo/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":forge-std/=lib/forge-std/src/\",\":solmate/=lib/solmate/src/\"]},\"sources\":{\"lib/balancer-v2-monorepo/pkg/interfaces/contracts/solidity-utils/helpers/BalancerErrors.sol\":{\"keccak256\":\"0xf8eeb6c6ad4a8a5a0b72eec1fcae67df37b4682be1fa87ab41dc9ce09f02a7f8\",\"license\":\"GPL-3.0-or-later\",\"urls\":[\"bzz-raw://fe6d060b6d4c8b237a55c33fb6d5cd959491bd815e92e7d9c15c03c3a9a6a064\",\"dweb:/ipfs/QmRAMquirua4mrTYSXFHquMJmgD35Dri5XFjHdpT2ny8bN\"]},\"lib/balancer-v2-monorepo/pkg/interfaces/contracts/solidity-utils/helpers/IAuthentication.sol\":{\"keccak256\":\"0x2d45ea7c14dc950acf5917377d9eb67d2b1d9f8b8d81fa60eeaad345cf257655\",\"license\":\"GPL-3.0-or-later\",\"urls\":[\"bzz-raw://c387331bc3da670d45d54af96b067ea6fce6f3e0e5fac53b86fba73d5e9e874a\",\"dweb:/ipfs/QmYkY4d2TDA4BXpjz1RPQn8rdWvZVTi3pSBbiUSaPFKwtM\"]},\"lib/balancer-v2-monorepo/pkg/interfaces/contracts/solidity-utils/helpers/ISignaturesValidator.sol\":{\"keccak256\":\"0x571907ff5a68a10937b13e0828dd78bf9508f6e74eaafe7faf525453160c3627\",\"license\":\"GPL-3.0-or-later\",\"urls\":[\"bzz-raw://afb73b213075954086eb7fa4eb4fac4962b779c8dd8c9c72902336d64c13210e\",\"dweb:/ipfs/QmNWFPnoPxo8ToVHrqXaQQF8RPYeNNhV2eZN9EwFS3iHpz\"]},\"lib/balancer-v2-monorepo/pkg/interfaces/contracts/solidity-utils/helpers/ITemporarilyPausable.sol\":{\"keccak256\":\"0x7d98e4751329dd9effc016cbc5acdf6399d3592407b9d3e28b38c10c621e56a3\",\"license\":\"GPL-3.0-or-later\",\"urls\":[\"bzz-raw://a70c4c16829f31c75dd0a3987137ed1572a0343ff933dcdcfbef17d5d63307ae\",\"dweb:/ipfs/QmSGBafawe525NbvK8LVN1rsD2yJxaS83QoTNC84evwM2E\"]},\"lib/balancer-v2-monorepo/pkg/interfaces/contracts/solidity-utils/misc/IWETH.sol\":{\"keccak256\":\"0x41c26d92fde92c927352c447ff80e3b2216d076662f2b222b735e4c865a481dc\",\"license\":\"GPL-3.0-or-later\",\"urls\":[\"bzz-raw://291a4b4f141ea187a61c3bb1ab16b370012e7e80ddc045671015ab2bfaf3c52c\",\"dweb:/ipfs/QmXvvVdfZC3pAqLst3bW9Fbj8mS9y1t1k7Zqr9BXuKdUHP\"]},\"lib/balancer-v2-monorepo/pkg/interfaces/contracts/solidity-utils/openzeppelin/IERC20.sol\":{\"keccak256\":\"0x3c415102b8b53a3efe0209b7fa4fd052a48b35a1df99e1b37572597d25030249\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8aac0d9f5ff03e0edeb07e1c400b78edea5948acff7e113ba52fd32f86cad72d\",\"dweb:/ipfs/Qmbh6C53fCjvjoHEVZHNadpRq5KZJzfHpDeR3qYfPgKvZt\"]},\"lib/balancer-v2-monorepo/pkg/interfaces/contracts/vault/IAsset.sol\":{\"keccak256\":\"0x780769a0bd8655d8a05a75b062b32a65b775b9deb923b2e8f42f57a0ee263a2d\",\"license\":\"GPL-3.0-or-later\",\"urls\":[\"bzz-raw://b63d22729102954a657432d81b31764e6dbdc7216a6deb991499a73dc4ebbd7b\",\"dweb:/ipfs/QmWRyByegCCJr37yesLi7urtzNk2BBiDEjzbkPpV8TKy1X\"]},\"lib/balancer-v2-monorepo/pkg/interfaces/contracts/vault/IAuthorizer.sol\":{\"keccak256\":\"0x1407e18b806b109e6a878697d2942eeb17bfc6cc601da725941658b90dc9dcc6\",\"license\":\"GPL-3.0-or-later\",\"urls\":[\"bzz-raw://e2695f5ae435de2de9fa9dc3b165f05b5bf876217aba0e4bcbd20943a23fc831\",\"dweb:/ipfs/QmYTmazrQQqjb4znByMiUUviqbXKTebrhpP8MDERZ5PLxz\"]},\"lib/balancer-v2-monorepo/pkg/interfaces/contracts/vault/IFlashLoanRecipient.sol\":{\"keccak256\":\"0xadcf6e9f8677de9ec51a1bbb419da349b7c0c17af8b8cddad85ee0e80107036e\",\"license\":\"GPL-3.0-or-later\",\"urls\":[\"bzz-raw://e9b30c1b15e3d0990a4a343fac14d2263c4bae4c3bdbeb38489103b4f6f66c39\",\"dweb:/ipfs/QmeQjBDidkLAoq4nknwPPPmunSTvQEZ9shaAhPiJAPmbk6\"]},\"lib/balancer-v2-monorepo/pkg/interfaces/contracts/vault/IProtocolFeesCollector.sol\":{\"keccak256\":\"0xe18a4e04a4a4e828c81548cc50d9d8ab6461dafbe88929c0342fa2b6c08e0d76\",\"license\":\"GPL-3.0-or-later\",\"urls\":[\"bzz-raw://7056ea1221db4eacc3e263ea8b9d741c11b1871f745169a39c6f926dab9c403f\",\"dweb:/ipfs/QmabGZff9x43RJUororFfmMzocB2UuZDDBMhhfELEeSJue\"]},\"lib/balancer-v2-monorepo/pkg/interfaces/contracts/vault/IVault.sol\":{\"keccak256\":\"0x63425148b27356cee63cf843ef8918d3ff6cdd8d5c00371326bca8b4331b773c\",\"license\":\"GPL-3.0-or-later\",\"urls\":[\"bzz-raw://6764d2a22a2e23de5235ceb0d06ebb9006f694c59547b8dc82dbc2e215d1f230\",\"dweb:/ipfs/Qmb6BQBgUQno6RAqPPR8qeC3smNEC3Bm6y8ZcWEWZKAfhF\"]},\"lib/balancer-v2-monorepo/pkg/pool-utils/contracts/BasePoolAuthorization.sol\":{\"keccak256\":\"0x713dcf03ea533f663e6591f0cfdd13594bb5a1f256b01f3850a6dd9264d1f1c2\",\"license\":\"GPL-3.0-or-later\",\"urls\":[\"bzz-raw://f7b8cabe4a489e87b1de32f9fccbbafd678020b85c4357efea9225b52b94f589\",\"dweb:/ipfs/QmV7HexCyDQUkBpJFzANejCgSZDsM61eHMstGnTnvMKhLS\"]},\"lib/balancer-v2-monorepo/pkg/solidity-utils/contracts/helpers/Authentication.sol\":{\"keccak256\":\"0x1462b53900d425f1c7dcd53d928b6aa5d327cba8fa2bec27720603bb40d9be70\",\"license\":\"GPL-3.0-or-later\",\"urls\":[\"bzz-raw://ad188b1ccd7b1353665228bdc77de9c25e426553f3ec518006aa83d1300b6bf2\",\"dweb:/ipfs/QmaBTVdpM5jSucrVJHU37ZUHdZXEWPYMLkbB6hRiEwHcKN\"]},\"src/PoolMetadataRegistry.sol\":{\"keccak256\":\"0x1dea865ae9f9f09168a33f521cec9500e1a6fbff32012128146d7ea518ee89dd\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://628797c377a273e1d5a24ecbe3d5245ca8233a63602ad55eabf19d6924d7f0d3\",\"dweb:/ipfs/QmQqBs4L4vZpV9GHSqTRuVggGSvoSCueb4uoJ9eQ5VfwLS\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.7.6+commit.7338295f"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "contract IVault",
+              "name": "vault",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "constructor"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "poolId",
+              "type": "bytes32",
+              "indexed": true
+            },
+            {
+              "internalType": "string",
+              "name": "metadataCID",
+              "type": "string",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "PoolMetadataUpdated",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "poolId",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "_isPoolOwner",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "poolIdMetadataCIDMap",
+          "outputs": [
+            {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "poolId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "string",
+              "name": "metadataCID",
+              "type": "string"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setPoolMetadata"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "_isPoolOwner(bytes32)": {
+            "params": {
+              "poolId": "The pool ID where the ownership will be tested."
+            },
+            "returns": {
+              "_0": "bool Returns TRUE if the caller is the Pool owner, FALSE otherwise."
+            }
+          },
+          "setPoolMetadata(bytes32,string)": {
+            "params": {
+              "metadataCID": "The metadataCID related to the new pool metadata",
+              "poolId": "The pool ID to update the metadata"
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "_isPoolOwner(bytes32)": {
+            "notice": "Check if the caller is the pool owner"
+          },
+          "setPoolMetadata(bytes32,string)": {
+            "notice": "Updates the pool metadata CID"
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@balancer-labs/balancer-js/=lib/balancer-v2-monorepo/pkg/balancer-js/",
+        ":@balancer-labs/typechain/=lib/balancer-v2-monorepo/pkg/typechain/",
+        ":@balancer-labs/v2-deployments/=lib/balancer-v2-monorepo/pkg/deployments/",
+        ":@balancer-labs/v2-governance-scripts/=lib/balancer-v2-monorepo/pkg/governance-scripts/",
+        ":@balancer-labs/v2-helpers/=lib/balancer-v2-monorepo/pvt/helpers/",
+        ":@balancer-labs/v2-interfaces/=lib/balancer-v2-monorepo/pkg/interfaces/",
+        ":@balancer-labs/v2-liquidity-mining/=lib/balancer-v2-monorepo/pkg/liquidity-mining/",
+        ":@balancer-labs/v2-pool-linear/=lib/balancer-v2-monorepo/pkg/pool-linear/",
+        ":@balancer-labs/v2-pool-stable/=lib/balancer-v2-monorepo/pkg/pool-stable/",
+        ":@balancer-labs/v2-pool-utils/=lib/balancer-v2-monorepo/pkg/pool-utils/",
+        ":@balancer-labs/v2-pool-weighted/=lib/balancer-v2-monorepo/pkg/pool-weighted/",
+        ":@balancer-labs/v2-solidity-utils/=lib/balancer-v2-monorepo/pkg/solidity-utils/",
+        ":@balancer-labs/v2-standalone-utils/=lib/balancer-v2-monorepo/pkg/standalone-utils/",
+        ":balancer-v2-monorepo/=lib/balancer-v2-monorepo/",
+        ":ds-test/=lib/forge-std/lib/ds-test/src/",
+        ":forge-std/=lib/forge-std/src/",
+        ":solmate/=lib/solmate/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/PoolMetadataRegistry.sol": "PoolMetadataRegistry"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "lib/balancer-v2-monorepo/pkg/interfaces/contracts/solidity-utils/helpers/BalancerErrors.sol": {
+        "keccak256": "0xf8eeb6c6ad4a8a5a0b72eec1fcae67df37b4682be1fa87ab41dc9ce09f02a7f8",
+        "urls": [
+          "bzz-raw://fe6d060b6d4c8b237a55c33fb6d5cd959491bd815e92e7d9c15c03c3a9a6a064",
+          "dweb:/ipfs/QmRAMquirua4mrTYSXFHquMJmgD35Dri5XFjHdpT2ny8bN"
+        ],
+        "license": "GPL-3.0-or-later"
+      },
+      "lib/balancer-v2-monorepo/pkg/interfaces/contracts/solidity-utils/helpers/IAuthentication.sol": {
+        "keccak256": "0x2d45ea7c14dc950acf5917377d9eb67d2b1d9f8b8d81fa60eeaad345cf257655",
+        "urls": [
+          "bzz-raw://c387331bc3da670d45d54af96b067ea6fce6f3e0e5fac53b86fba73d5e9e874a",
+          "dweb:/ipfs/QmYkY4d2TDA4BXpjz1RPQn8rdWvZVTi3pSBbiUSaPFKwtM"
+        ],
+        "license": "GPL-3.0-or-later"
+      },
+      "lib/balancer-v2-monorepo/pkg/interfaces/contracts/solidity-utils/helpers/ISignaturesValidator.sol": {
+        "keccak256": "0x571907ff5a68a10937b13e0828dd78bf9508f6e74eaafe7faf525453160c3627",
+        "urls": [
+          "bzz-raw://afb73b213075954086eb7fa4eb4fac4962b779c8dd8c9c72902336d64c13210e",
+          "dweb:/ipfs/QmNWFPnoPxo8ToVHrqXaQQF8RPYeNNhV2eZN9EwFS3iHpz"
+        ],
+        "license": "GPL-3.0-or-later"
+      },
+      "lib/balancer-v2-monorepo/pkg/interfaces/contracts/solidity-utils/helpers/ITemporarilyPausable.sol": {
+        "keccak256": "0x7d98e4751329dd9effc016cbc5acdf6399d3592407b9d3e28b38c10c621e56a3",
+        "urls": [
+          "bzz-raw://a70c4c16829f31c75dd0a3987137ed1572a0343ff933dcdcfbef17d5d63307ae",
+          "dweb:/ipfs/QmSGBafawe525NbvK8LVN1rsD2yJxaS83QoTNC84evwM2E"
+        ],
+        "license": "GPL-3.0-or-later"
+      },
+      "lib/balancer-v2-monorepo/pkg/interfaces/contracts/solidity-utils/misc/IWETH.sol": {
+        "keccak256": "0x41c26d92fde92c927352c447ff80e3b2216d076662f2b222b735e4c865a481dc",
+        "urls": [
+          "bzz-raw://291a4b4f141ea187a61c3bb1ab16b370012e7e80ddc045671015ab2bfaf3c52c",
+          "dweb:/ipfs/QmXvvVdfZC3pAqLst3bW9Fbj8mS9y1t1k7Zqr9BXuKdUHP"
+        ],
+        "license": "GPL-3.0-or-later"
+      },
+      "lib/balancer-v2-monorepo/pkg/interfaces/contracts/solidity-utils/openzeppelin/IERC20.sol": {
+        "keccak256": "0x3c415102b8b53a3efe0209b7fa4fd052a48b35a1df99e1b37572597d25030249",
+        "urls": [
+          "bzz-raw://8aac0d9f5ff03e0edeb07e1c400b78edea5948acff7e113ba52fd32f86cad72d",
+          "dweb:/ipfs/Qmbh6C53fCjvjoHEVZHNadpRq5KZJzfHpDeR3qYfPgKvZt"
+        ],
+        "license": "MIT"
+      },
+      "lib/balancer-v2-monorepo/pkg/interfaces/contracts/vault/IAsset.sol": {
+        "keccak256": "0x780769a0bd8655d8a05a75b062b32a65b775b9deb923b2e8f42f57a0ee263a2d",
+        "urls": [
+          "bzz-raw://b63d22729102954a657432d81b31764e6dbdc7216a6deb991499a73dc4ebbd7b",
+          "dweb:/ipfs/QmWRyByegCCJr37yesLi7urtzNk2BBiDEjzbkPpV8TKy1X"
+        ],
+        "license": "GPL-3.0-or-later"
+      },
+      "lib/balancer-v2-monorepo/pkg/interfaces/contracts/vault/IAuthorizer.sol": {
+        "keccak256": "0x1407e18b806b109e6a878697d2942eeb17bfc6cc601da725941658b90dc9dcc6",
+        "urls": [
+          "bzz-raw://e2695f5ae435de2de9fa9dc3b165f05b5bf876217aba0e4bcbd20943a23fc831",
+          "dweb:/ipfs/QmYTmazrQQqjb4znByMiUUviqbXKTebrhpP8MDERZ5PLxz"
+        ],
+        "license": "GPL-3.0-or-later"
+      },
+      "lib/balancer-v2-monorepo/pkg/interfaces/contracts/vault/IFlashLoanRecipient.sol": {
+        "keccak256": "0xadcf6e9f8677de9ec51a1bbb419da349b7c0c17af8b8cddad85ee0e80107036e",
+        "urls": [
+          "bzz-raw://e9b30c1b15e3d0990a4a343fac14d2263c4bae4c3bdbeb38489103b4f6f66c39",
+          "dweb:/ipfs/QmeQjBDidkLAoq4nknwPPPmunSTvQEZ9shaAhPiJAPmbk6"
+        ],
+        "license": "GPL-3.0-or-later"
+      },
+      "lib/balancer-v2-monorepo/pkg/interfaces/contracts/vault/IProtocolFeesCollector.sol": {
+        "keccak256": "0xe18a4e04a4a4e828c81548cc50d9d8ab6461dafbe88929c0342fa2b6c08e0d76",
+        "urls": [
+          "bzz-raw://7056ea1221db4eacc3e263ea8b9d741c11b1871f745169a39c6f926dab9c403f",
+          "dweb:/ipfs/QmabGZff9x43RJUororFfmMzocB2UuZDDBMhhfELEeSJue"
+        ],
+        "license": "GPL-3.0-or-later"
+      },
+      "lib/balancer-v2-monorepo/pkg/interfaces/contracts/vault/IVault.sol": {
+        "keccak256": "0x63425148b27356cee63cf843ef8918d3ff6cdd8d5c00371326bca8b4331b773c",
+        "urls": [
+          "bzz-raw://6764d2a22a2e23de5235ceb0d06ebb9006f694c59547b8dc82dbc2e215d1f230",
+          "dweb:/ipfs/Qmb6BQBgUQno6RAqPPR8qeC3smNEC3Bm6y8ZcWEWZKAfhF"
+        ],
+        "license": "GPL-3.0-or-later"
+      },
+      "lib/balancer-v2-monorepo/pkg/pool-utils/contracts/BasePoolAuthorization.sol": {
+        "keccak256": "0x713dcf03ea533f663e6591f0cfdd13594bb5a1f256b01f3850a6dd9264d1f1c2",
+        "urls": [
+          "bzz-raw://f7b8cabe4a489e87b1de32f9fccbbafd678020b85c4357efea9225b52b94f589",
+          "dweb:/ipfs/QmV7HexCyDQUkBpJFzANejCgSZDsM61eHMstGnTnvMKhLS"
+        ],
+        "license": "GPL-3.0-or-later"
+      },
+      "lib/balancer-v2-monorepo/pkg/solidity-utils/contracts/helpers/Authentication.sol": {
+        "keccak256": "0x1462b53900d425f1c7dcd53d928b6aa5d327cba8fa2bec27720603bb40d9be70",
+        "urls": [
+          "bzz-raw://ad188b1ccd7b1353665228bdc77de9c25e426553f3ec518006aa83d1300b6bf2",
+          "dweb:/ipfs/QmaBTVdpM5jSucrVJHU37ZUHdZXEWPYMLkbB6hRiEwHcKN"
+        ],
+        "license": "GPL-3.0-or-later"
+      },
+      "src/PoolMetadataRegistry.sol": {
+        "keccak256": "0x1dea865ae9f9f09168a33f521cec9500e1a6fbff32012128146d7ea518ee89dd",
+        "urls": [
+          "bzz-raw://628797c377a273e1d5a24ecbe3d5245ca8233a63602ad55eabf19d6924d7f0d3",
+          "dweb:/ipfs/QmQqBs4L4vZpV9GHSqTRuVggGSvoSCueb4uoJ9eQ5VfwLS"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "src/PoolMetadataRegistry.sol",
+    "id": 43823,
+    "exportedSymbols": {
+      "BasePoolAuthorization": [
+        3234
+      ],
+      "IAsset": [
+        1045
+      ],
+      "IAuthentication": [
+        875
+      ],
+      "IAuthorizer": [
+        1060
+      ],
+      "IERC20": [
+        1005
+      ],
+      "IFlashLoanRecipient": [
+        1203
+      ],
+      "IPoolMetadataRegistry": [
+        43710
+      ],
+      "IProtocolFeesCollector": [
+        1334
+      ],
+      "ISignaturesValidator": [
+        893
+      ],
+      "ITemporarilyPausable": [
+        912
+      ],
+      "IVault": [
+        1799
+      ],
+      "IWETH": [
+        927
+      ],
+      "PoolMetadataRegistry": [
+        43822
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:2164:81",
+    "nodes": [
       {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "poolId",
-        "type": "bytes32"
+        "id": 43700,
+        "nodeType": "PragmaDirective",
+        "src": "32:31:81",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          ">=",
+          "0.7",
+          ".0",
+          "<",
+          "0.9",
+          ".0"
+        ]
       },
       {
-        "indexed": false,
-        "internalType": "string",
-        "name": "metadataCID",
-        "type": "string"
+        "id": 43701,
+        "nodeType": "ImportDirective",
+        "src": "65:72:81",
+        "nodes": [],
+        "absolutePath": "lib/balancer-v2-monorepo/pkg/interfaces/contracts/vault/IVault.sol",
+        "file": "balancer-v2-monorepo/pkg/interfaces/contracts/vault/IVault.sol",
+        "scope": 43823,
+        "sourceUnit": 1800,
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "id": 43703,
+        "nodeType": "ImportDirective",
+        "src": "138:110:81",
+        "nodes": [],
+        "absolutePath": "lib/balancer-v2-monorepo/pkg/pool-utils/contracts/BasePoolAuthorization.sol",
+        "file": "balancer-v2-monorepo/pkg/pool-utils/contracts/BasePoolAuthorization.sol",
+        "scope": 43823,
+        "sourceUnit": 3235,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 43702,
+              "name": "BasePoolAuthorization",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "src": "146:21:81",
+              "typeDescriptions": {}
+            }
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 43710,
+        "nodeType": "ContractDefinition",
+        "src": "250:110:81",
+        "nodes": [
+          {
+            "id": 43709,
+            "nodeType": "EventDefinition",
+            "src": "288:70:81",
+            "nodes": [],
+            "anonymous": false,
+            "name": "PoolMetadataUpdated",
+            "parameters": {
+              "id": 43708,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 43705,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "poolId",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 43709,
+                  "src": "314:22:81",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 43704,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "314:7:81",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 43707,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "metadataCID",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 43709,
+                  "src": "338:18:81",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 43706,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "338:6:81",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "313:44:81"
+            }
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          43710
+        ],
+        "name": "IPoolMetadataRegistry",
+        "scope": 43823
+      },
+      {
+        "id": 43822,
+        "nodeType": "ContractDefinition",
+        "src": "582:1613:81",
+        "nodes": [
+          {
+            "id": 43715,
+            "nodeType": "VariableDeclaration",
+            "src": "643:31:81",
+            "nodes": [],
+            "constant": false,
+            "mutability": "immutable",
+            "name": "_vault",
+            "scope": 43822,
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_IVault_$1799",
+              "typeString": "contract IVault"
+            },
+            "typeName": {
+              "id": 43714,
+              "name": "IVault",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 1799,
+              "src": "643:6:81",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IVault_$1799",
+                "typeString": "contract IVault"
+              }
+            },
+            "visibility": "private"
+          },
+          {
+            "id": 43719,
+            "nodeType": "VariableDeclaration",
+            "src": "681:54:81",
+            "nodes": [],
+            "constant": false,
+            "functionSelector": "2181fd63",
+            "mutability": "mutable",
+            "name": "poolIdMetadataCIDMap",
+            "scope": 43822,
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_bytes32_$_t_string_storage_$",
+              "typeString": "mapping(bytes32 => string)"
+            },
+            "typeName": {
+              "id": 43718,
+              "keyType": {
+                "id": 43716,
+                "name": "bytes32",
+                "nodeType": "ElementaryTypeName",
+                "src": "689:7:81",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes32",
+                  "typeString": "bytes32"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "681:26:81",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_bytes32_$_t_string_storage_$",
+                "typeString": "mapping(bytes32 => string)"
+              },
+              "valueType": {
+                "id": 43717,
+                "name": "string",
+                "nodeType": "ElementaryTypeName",
+                "src": "700:6:81",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                }
+              }
+            },
+            "visibility": "public"
+          },
+          {
+            "id": 43729,
+            "nodeType": "FunctionDefinition",
+            "src": "742:57:81",
+            "nodes": [],
+            "body": {
+              "id": 43728,
+              "nodeType": "Block",
+              "src": "768:31:81",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "id": 43726,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 43724,
+                      "name": "_vault",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 43715,
+                      "src": "778:6:81",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_IVault_$1799",
+                        "typeString": "contract IVault"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "id": 43725,
+                      "name": "vault",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 43721,
+                      "src": "787:5:81",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_IVault_$1799",
+                        "typeString": "contract IVault"
+                      }
+                    },
+                    "src": "778:14:81",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IVault_$1799",
+                      "typeString": "contract IVault"
+                    }
+                  },
+                  "id": 43727,
+                  "nodeType": "ExpressionStatement",
+                  "src": "778:14:81"
+                }
+              ]
+            },
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "parameters": {
+              "id": 43722,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 43721,
+                  "mutability": "mutable",
+                  "name": "vault",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 43729,
+                  "src": "754:12:81",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_IVault_$1799",
+                    "typeString": "contract IVault"
+                  },
+                  "typeName": {
+                    "id": 43720,
+                    "name": "IVault",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 1799,
+                    "src": "754:6:81",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IVault_$1799",
+                      "typeString": "contract IVault"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "753:14:81"
+            },
+            "returnParameters": {
+              "id": 43723,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "768:0:81"
+            },
+            "scope": 43822,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "id": 43759,
+            "nodeType": "FunctionDefinition",
+            "src": "1010:255:81",
+            "nodes": [],
+            "body": {
+              "id": 43758,
+              "nodeType": "Block",
+              "src": "1082:183:81",
+              "nodes": [],
+              "statements": [
+                {
+                  "clauses": [
+                    {
+                      "block": {
+                        "id": 43748,
+                        "nodeType": "Block",
+                        "src": "1164:36:81",
+                        "statements": [
+                          {
+                            "expression": {
+                              "hexValue": "74727565",
+                              "id": 43746,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": true,
+                              "kind": "bool",
+                              "lValueRequested": false,
+                              "nodeType": "Literal",
+                              "src": "1185:4:81",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_bool",
+                                "typeString": "bool"
+                              },
+                              "value": "true"
+                            },
+                            "functionReturnParameters": 43736,
+                            "id": 43747,
+                            "nodeType": "Return",
+                            "src": "1178:11:81"
+                          }
+                        ]
+                      },
+                      "errorName": "",
+                      "id": 43749,
+                      "nodeType": "TryCatchClause",
+                      "parameters": {
+                        "id": 43745,
+                        "nodeType": "ParameterList",
+                        "parameters": [
+                          {
+                            "constant": false,
+                            "id": 43742,
+                            "mutability": "mutable",
+                            "name": "",
+                            "nodeType": "VariableDeclaration",
+                            "scope": 43749,
+                            "src": "1128:7:81",
+                            "stateVariable": false,
+                            "storageLocation": "default",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            },
+                            "typeName": {
+                              "id": 43741,
+                              "name": "address",
+                              "nodeType": "ElementaryTypeName",
+                              "src": "1128:7:81",
+                              "stateMutability": "nonpayable",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_address",
+                                "typeString": "address"
+                              }
+                            },
+                            "visibility": "internal"
+                          },
+                          {
+                            "constant": false,
+                            "id": 43744,
+                            "mutability": "mutable",
+                            "name": "",
+                            "nodeType": "VariableDeclaration",
+                            "scope": 43749,
+                            "src": "1137:25:81",
+                            "stateVariable": false,
+                            "storageLocation": "default",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_enum$_PoolSpecialization_$1458",
+                              "typeString": "enum IVault.PoolSpecialization"
+                            },
+                            "typeName": {
+                              "id": 43743,
+                              "name": "IVault.PoolSpecialization",
+                              "nodeType": "UserDefinedTypeName",
+                              "referencedDeclaration": 1458,
+                              "src": "1137:25:81",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_enum$_PoolSpecialization_$1458",
+                                "typeString": "enum IVault.PoolSpecialization"
+                              }
+                            },
+                            "visibility": "internal"
+                          }
+                        ],
+                        "src": "1127:36:81"
+                      },
+                      "src": "1119:81:81"
+                    },
+                    {
+                      "block": {
+                        "id": 43755,
+                        "nodeType": "Block",
+                        "src": "1222:37:81",
+                        "statements": [
+                          {
+                            "expression": {
+                              "hexValue": "66616c7365",
+                              "id": 43753,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": true,
+                              "kind": "bool",
+                              "lValueRequested": false,
+                              "nodeType": "Literal",
+                              "src": "1243:5:81",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_bool",
+                                "typeString": "bool"
+                              },
+                              "value": "false"
+                            },
+                            "functionReturnParameters": 43736,
+                            "id": 43754,
+                            "nodeType": "Return",
+                            "src": "1236:12:81"
+                          }
+                        ]
+                      },
+                      "errorName": "",
+                      "id": 43756,
+                      "nodeType": "TryCatchClause",
+                      "parameters": {
+                        "id": 43752,
+                        "nodeType": "ParameterList",
+                        "parameters": [
+                          {
+                            "constant": false,
+                            "id": 43751,
+                            "mutability": "mutable",
+                            "name": "",
+                            "nodeType": "VariableDeclaration",
+                            "scope": 43756,
+                            "src": "1208:12:81",
+                            "stateVariable": false,
+                            "storageLocation": "memory",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_bytes_memory_ptr",
+                              "typeString": "bytes"
+                            },
+                            "typeName": {
+                              "id": 43750,
+                              "name": "bytes",
+                              "nodeType": "ElementaryTypeName",
+                              "src": "1208:5:81",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_bytes_storage_ptr",
+                                "typeString": "bytes"
+                              }
+                            },
+                            "visibility": "internal"
+                          }
+                        ],
+                        "src": "1207:14:81"
+                      },
+                      "src": "1201:58:81"
+                    }
+                  ],
+                  "externalCall": {
+                    "arguments": [
+                      {
+                        "id": 43739,
+                        "name": "poolId",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 43732,
+                        "src": "1111:6:81",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      ],
+                      "expression": {
+                        "id": 43737,
+                        "name": "_vault",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 43715,
+                        "src": "1096:6:81",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_contract$_IVault_$1799",
+                          "typeString": "contract IVault"
+                        }
+                      },
+                      "id": 43738,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "getPool",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 1485,
+                      "src": "1096:14:81",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_external_view$_t_bytes32_$returns$_t_address_$_t_enum$_PoolSpecialization_$1458_$",
+                        "typeString": "function (bytes32) view external returns (address,enum IVault.PoolSpecialization)"
+                      }
+                    },
+                    "id": 43740,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1096:22:81",
+                    "tryCall": true,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$_t_address_$_t_enum$_PoolSpecialization_$1458_$",
+                      "typeString": "tuple(address,enum IVault.PoolSpecialization)"
+                    }
+                  },
+                  "id": 43757,
+                  "nodeType": "TryStatement",
+                  "src": "1092:167:81"
+                }
+              ]
+            },
+            "documentation": {
+              "id": 43730,
+              "nodeType": "StructuredDocumentation",
+              "src": "805:200:81",
+              "text": "@notice Checks if a Pool is registered on Balancer\n @param poolId The pool ID to check against the Balancer vault\n @return bool Returns TRUE for registered and FALSE for unregistered"
+            },
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "_isPoolRegistered",
+            "parameters": {
+              "id": 43733,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 43732,
+                  "mutability": "mutable",
+                  "name": "poolId",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 43759,
+                  "src": "1037:14:81",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 43731,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1037:7:81",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1036:16:81"
+            },
+            "returnParameters": {
+              "id": 43736,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 43735,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 43759,
+                  "src": "1076:4:81",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 43734,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1076:4:81",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1075:6:81"
+            },
+            "scope": 43822,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "internal"
+          },
+          {
+            "id": 43787,
+            "nodeType": "FunctionDefinition",
+            "src": "1479:207:81",
+            "nodes": [],
+            "body": {
+              "id": 43786,
+              "nodeType": "Block",
+              "src": "1544:142:81",
+              "nodes": [],
+              "statements": [
+                {
+                  "assignments": [
+                    43768,
+                    null
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 43768,
+                      "mutability": "mutable",
+                      "name": "pool",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 43786,
+                      "src": "1555:12:81",
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      },
+                      "typeName": {
+                        "id": 43767,
+                        "name": "address",
+                        "nodeType": "ElementaryTypeName",
+                        "src": "1555:7:81",
+                        "stateMutability": "nonpayable",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      },
+                      "visibility": "internal"
+                    },
+                    null
+                  ],
+                  "id": 43773,
+                  "initialValue": {
+                    "arguments": [
+                      {
+                        "id": 43771,
+                        "name": "poolId",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 43762,
+                        "src": "1587:6:81",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      ],
+                      "expression": {
+                        "id": 43769,
+                        "name": "_vault",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 43715,
+                        "src": "1572:6:81",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_contract$_IVault_$1799",
+                          "typeString": "contract IVault"
+                        }
+                      },
+                      "id": 43770,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "getPool",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 1485,
+                      "src": "1572:14:81",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_external_view$_t_bytes32_$returns$_t_address_$_t_enum$_PoolSpecialization_$1458_$",
+                        "typeString": "function (bytes32) view external returns (address,enum IVault.PoolSpecialization)"
+                      }
+                    },
+                    "id": 43772,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1572:22:81",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$_t_address_$_t_enum$_PoolSpecialization_$1458_$",
+                      "typeString": "tuple(address,enum IVault.PoolSpecialization)"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "1554:40:81"
+                },
+                {
+                  "expression": {
+                    "condition": {
+                      "commonType": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      },
+                      "id": 43781,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "leftExpression": {
+                        "arguments": [],
+                        "expression": {
+                          "argumentTypes": [],
+                          "expression": {
+                            "arguments": [
+                              {
+                                "id": 43775,
+                                "name": "pool",
+                                "nodeType": "Identifier",
+                                "overloadedDeclarations": [],
+                                "referencedDeclaration": 43768,
+                                "src": "1634:4:81",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_address",
+                                  "typeString": "address"
+                                }
+                              }
+                            ],
+                            "expression": {
+                              "argumentTypes": [
+                                {
+                                  "typeIdentifier": "t_address",
+                                  "typeString": "address"
+                                }
+                              ],
+                              "id": 43774,
+                              "name": "BasePoolAuthorization",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 3234,
+                              "src": "1612:21:81",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_type$_t_contract$_BasePoolAuthorization_$3234_$",
+                                "typeString": "type(contract BasePoolAuthorization)"
+                              }
+                            },
+                            "id": 43776,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "kind": "typeConversion",
+                            "lValueRequested": false,
+                            "names": [],
+                            "nodeType": "FunctionCall",
+                            "src": "1612:27:81",
+                            "tryCall": false,
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_contract$_BasePoolAuthorization_$3234",
+                              "typeString": "contract BasePoolAuthorization"
+                            }
+                          },
+                          "id": 43777,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "memberName": "getOwner",
+                          "nodeType": "MemberAccess",
+                          "referencedDeclaration": 3169,
+                          "src": "1612:36:81",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_function_external_view$__$returns$_t_address_$",
+                            "typeString": "function () view external returns (address)"
+                          }
+                        },
+                        "id": 43778,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "functionCall",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "1612:38:81",
+                        "tryCall": false,
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      },
+                      "nodeType": "BinaryOperation",
+                      "operator": "==",
+                      "rightExpression": {
+                        "expression": {
+                          "id": 43779,
+                          "name": "msg",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": -15,
+                          "src": "1654:3:81",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_magic_message",
+                            "typeString": "msg"
+                          }
+                        },
+                        "id": 43780,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberName": "sender",
+                        "nodeType": "MemberAccess",
+                        "src": "1654:10:81",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address_payable",
+                          "typeString": "address payable"
+                        }
+                      },
+                      "src": "1612:52:81",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bool",
+                        "typeString": "bool"
+                      }
+                    },
+                    "falseExpression": {
+                      "hexValue": "66616c7365",
+                      "id": 43783,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "kind": "bool",
+                      "lValueRequested": false,
+                      "nodeType": "Literal",
+                      "src": "1674:5:81",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bool",
+                        "typeString": "bool"
+                      },
+                      "value": "false"
+                    },
+                    "id": 43784,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "nodeType": "Conditional",
+                    "src": "1612:67:81",
+                    "trueExpression": {
+                      "hexValue": "74727565",
+                      "id": 43782,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "kind": "bool",
+                      "lValueRequested": false,
+                      "nodeType": "Literal",
+                      "src": "1667:4:81",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bool",
+                        "typeString": "bool"
+                      },
+                      "value": "true"
+                    },
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "functionReturnParameters": 43766,
+                  "id": 43785,
+                  "nodeType": "Return",
+                  "src": "1605:74:81"
+                }
+              ]
+            },
+            "documentation": {
+              "id": 43760,
+              "nodeType": "StructuredDocumentation",
+              "src": "1271:203:81",
+              "text": "@notice Check if the caller is the pool owner\n @param poolId The pool ID where the ownership will be tested.\n @return bool Returns TRUE if the caller is the Pool owner, FALSE otherwise."
+            },
+            "functionSelector": "8974b803",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "_isPoolOwner",
+            "parameters": {
+              "id": 43763,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 43762,
+                  "mutability": "mutable",
+                  "name": "poolId",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 43787,
+                  "src": "1501:14:81",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 43761,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1501:7:81",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1500:16:81"
+            },
+            "returnParameters": {
+              "id": 43766,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 43765,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 43787,
+                  "src": "1538:4:81",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 43764,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1538:4:81",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1537:6:81"
+            },
+            "scope": 43822,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "id": 43821,
+            "nodeType": "FunctionDefinition",
+            "src": "1871:322:81",
+            "nodes": [],
+            "body": {
+              "id": 43820,
+              "nodeType": "Block",
+              "src": "1946:247:81",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "arguments": [
+                          {
+                            "id": 43797,
+                            "name": "poolId",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 43790,
+                            "src": "1982:6:81",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            }
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": [
+                            {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            }
+                          ],
+                          "id": 43796,
+                          "name": "_isPoolRegistered",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 43759,
+                          "src": "1964:17:81",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_function_internal_view$_t_bytes32_$returns$_t_bool_$",
+                            "typeString": "function (bytes32) view returns (bool)"
+                          }
+                        },
+                        "id": 43798,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "functionCall",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "1964:25:81",
+                        "tryCall": false,
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      },
+                      {
+                        "hexValue": "506f6f6c206e6f742072656769737465726564",
+                        "id": 43799,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "kind": "string",
+                        "lValueRequested": false,
+                        "nodeType": "Literal",
+                        "src": "1991:21:81",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_stringliteral_d4223e50a367045d38bb02066828a03f85319e396cac02a270481328c4439b7c",
+                          "typeString": "literal_string \"Pool not registered\""
+                        },
+                        "value": "Pool not registered"
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        },
+                        {
+                          "typeIdentifier": "t_stringliteral_d4223e50a367045d38bb02066828a03f85319e396cac02a270481328c4439b7c",
+                          "typeString": "literal_string \"Pool not registered\""
+                        }
+                      ],
+                      "id": 43795,
+                      "name": "require",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [
+                        -18,
+                        -18
+                      ],
+                      "referencedDeclaration": -18,
+                      "src": "1956:7:81",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                        "typeString": "function (bool,string memory) pure"
+                      }
+                    },
+                    "id": 43800,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1956:57:81",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 43801,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1956:57:81"
+                },
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "arguments": [
+                          {
+                            "id": 43804,
+                            "name": "poolId",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 43790,
+                            "src": "2044:6:81",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            }
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": [
+                            {
+                              "typeIdentifier": "t_bytes32",
+                              "typeString": "bytes32"
+                            }
+                          ],
+                          "id": 43803,
+                          "name": "_isPoolOwner",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 43787,
+                          "src": "2031:12:81",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_function_internal_view$_t_bytes32_$returns$_t_bool_$",
+                            "typeString": "function (bytes32) view returns (bool)"
+                          }
+                        },
+                        "id": 43805,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "functionCall",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "2031:20:81",
+                        "tryCall": false,
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      },
+                      {
+                        "hexValue": "43616c6c6572206973206e6f7420746865206f776e6572",
+                        "id": 43806,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "kind": "string",
+                        "lValueRequested": false,
+                        "nodeType": "Literal",
+                        "src": "2053:25:81",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_stringliteral_15ed5034391ed5ef65b8bb8dbcb08f9b6c4034ebcf89f76344a17e1651e92b33",
+                          "typeString": "literal_string \"Caller is not the owner\""
+                        },
+                        "value": "Caller is not the owner"
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        },
+                        {
+                          "typeIdentifier": "t_stringliteral_15ed5034391ed5ef65b8bb8dbcb08f9b6c4034ebcf89f76344a17e1651e92b33",
+                          "typeString": "literal_string \"Caller is not the owner\""
+                        }
+                      ],
+                      "id": 43802,
+                      "name": "require",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [
+                        -18,
+                        -18
+                      ],
+                      "referencedDeclaration": -18,
+                      "src": "2023:7:81",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                        "typeString": "function (bool,string memory) pure"
+                      }
+                    },
+                    "id": 43807,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "2023:56:81",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 43808,
+                  "nodeType": "ExpressionStatement",
+                  "src": "2023:56:81"
+                },
+                {
+                  "expression": {
+                    "id": 43813,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "baseExpression": {
+                        "id": 43809,
+                        "name": "poolIdMetadataCIDMap",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 43719,
+                        "src": "2089:20:81",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_mapping$_t_bytes32_$_t_string_storage_$",
+                          "typeString": "mapping(bytes32 => string storage ref)"
+                        }
+                      },
+                      "id": 43811,
+                      "indexExpression": {
+                        "id": 43810,
+                        "name": "poolId",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 43790,
+                        "src": "2110:6:81",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      },
+                      "isConstant": false,
+                      "isLValue": true,
+                      "isPure": false,
+                      "lValueRequested": true,
+                      "nodeType": "IndexAccess",
+                      "src": "2089:28:81",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_string_storage",
+                        "typeString": "string storage ref"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "id": 43812,
+                      "name": "metadataCID",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 43792,
+                      "src": "2120:11:81",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_string_memory_ptr",
+                        "typeString": "string memory"
+                      }
+                    },
+                    "src": "2089:42:81",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage",
+                      "typeString": "string storage ref"
+                    }
+                  },
+                  "id": 43814,
+                  "nodeType": "ExpressionStatement",
+                  "src": "2089:42:81"
+                },
+                {
+                  "eventCall": {
+                    "arguments": [
+                      {
+                        "id": 43816,
+                        "name": "poolId",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 43790,
+                        "src": "2166:6:81",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        }
+                      },
+                      {
+                        "id": 43817,
+                        "name": "metadataCID",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 43792,
+                        "src": "2174:11:81",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_string_memory_ptr",
+                          "typeString": "string memory"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bytes32",
+                          "typeString": "bytes32"
+                        },
+                        {
+                          "typeIdentifier": "t_string_memory_ptr",
+                          "typeString": "string memory"
+                        }
+                      ],
+                      "id": 43815,
+                      "name": "PoolMetadataUpdated",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 43709,
+                      "src": "2146:19:81",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_event_nonpayable$_t_bytes32_$_t_string_memory_ptr_$returns$__$",
+                        "typeString": "function (bytes32,string memory)"
+                      }
+                    },
+                    "id": 43818,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "2146:40:81",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 43819,
+                  "nodeType": "EmitStatement",
+                  "src": "2141:45:81"
+                }
+              ]
+            },
+            "documentation": {
+              "id": 43788,
+              "nodeType": "StructuredDocumentation",
+              "src": "1692:174:81",
+              "text": "@notice Updates the pool metadata CID\n @param poolId The pool ID to update the metadata\n @param metadataCID The metadataCID related to the new pool metadata"
+            },
+            "functionSelector": "f44f9f15",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "setPoolMetadata",
+            "parameters": {
+              "id": 43793,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 43790,
+                  "mutability": "mutable",
+                  "name": "poolId",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 43821,
+                  "src": "1896:14:81",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 43789,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1896:7:81",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 43792,
+                  "mutability": "mutable",
+                  "name": "metadataCID",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 43821,
+                  "src": "1912:25:81",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 43791,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1912:6:81",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1895:43:81"
+            },
+            "returnParameters": {
+              "id": 43794,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1946:0:81"
+            },
+            "scope": 43822,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [
+          {
+            "baseName": {
+              "id": 43712,
+              "name": "IPoolMetadataRegistry",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 43710,
+              "src": "615:21:81",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IPoolMetadataRegistry_$43710",
+                "typeString": "contract IPoolMetadataRegistry"
+              }
+            },
+            "id": 43713,
+            "nodeType": "InheritanceSpecifier",
+            "src": "615:21:81"
+          }
+        ],
+        "contractDependencies": [
+          43710
+        ],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 43711,
+          "nodeType": "StructuredDocumentation",
+          "src": "362:220:81",
+          "text": "TODO: https://linear.app/bleu-llc/issue/BAL-84/define-poolmetadataregistrysol-metadata\n @title A Pool Metadata dApp\n @author Bleu LLC\n @notice This contract provides a registry for Balancer's Pools metadata"
+        },
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          43822,
+          43710
+        ],
+        "name": "PoolMetadataRegistry",
+        "scope": 43823
       }
     ],
-    "name": "PoolMetadataUpdated",
-    "type": "event"
+    "license": "MIT"
   },
-  {
-    "inputs": [
-      { "internalType": "bytes32", "name": "poolId", "type": "bytes32" }
-    ],
-    "name": "_isPoolOwner",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
-    "name": "poolIdMetadataCIDMap",
-    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "bytes32", "name": "poolId", "type": "bytes32" },
-      { "internalType": "string", "name": "metadataCID", "type": "string" }
-    ],
-    "name": "setPoolMetadata",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
-]
+  "id": 81
+}

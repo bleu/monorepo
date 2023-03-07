@@ -1,4 +1,3 @@
-import { Stack } from "@chakra-ui/react";
 import Router from "next/router";
 import { useEffect, useState } from "react";
 import { useAccount, useNetwork } from "wagmi";
@@ -21,12 +20,19 @@ function Page() {
   useEffect(() => setMounted(true), []);
 
   return isConnected ? (
-    <>
+    <div className="h-full w-full bg-gray-900">
       <Header />
-      <Stack h="100%" w="100%" background="gray.900">
-        <Sidebar />
-      </Stack>
-    </>
+      <div className="flex h-full">
+        <div className="h-full w-96">
+          <div className="h-full w-full">
+            <Sidebar />
+          </div>
+        </div>
+        <div className="h-full flex-1 py-5 text-white">
+          Metadata Attributes {/* <MetadataAttribute /> */}
+        </div>
+      </div>
+    </div>
   ) : (
     <Hero />
   );

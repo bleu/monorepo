@@ -1,24 +1,15 @@
-import { Flex, Heading } from "@chakra-ui/react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export function Header() {
   return (
-    <Flex
-      as="nav"
-      align="center"
-      justify="space-between"
-      wrap="wrap"
-      padding={4}
-      bg="gray.800"
-      color="white"
-    >
-      <Flex align="center" mr={5}>
-        <Heading as="h1" size="md" letterSpacing={"tighter"}>
+    <div className="flex flex-wrap items-center justify-between bg-gray-700 p-4 text-white">
+      <div className="mr-5 flex items-center">
+        <h1 className="text-lg font-medium tracking-tighter md:text-xl">
           Balancer Pool Metadata
-        </Heading>
-      </Flex>
+        </h1>
+      </div>
 
       <ConnectButton />
-    </Flex>
+    </div>
   );
 }

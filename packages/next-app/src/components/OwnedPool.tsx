@@ -1,5 +1,4 @@
 import { Pool } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/mainnet";
-import { Badge, Button, HStack, Text, VStack } from "@chakra-ui/react";
 
 interface IOwnedPool {
   onClick: () => void;
@@ -17,7 +16,7 @@ function truncateAddress(address: string | undefined) {
 }
 
 export function OwnedPool({ onClick, isSelected, pool }: IOwnedPool) {
-  const backgroundColor = isSelected ? "blue.800" : "gray.800";
+  const backgroundColor = isSelected ? "bg-gray-700" : "bg-gray-800";
   const { poolType, tokens, name, address } = pool;
 
   const poolName =
@@ -30,68 +29,36 @@ export function OwnedPool({ onClick, isSelected, pool }: IOwnedPool) {
       : null;
 
   return (
-    <Button
-      p="2"
-      h="20"
-      w="full"
-      background={backgroundColor}
-      alignSelf="stretch"
-      role="group"
-      _hover={{
-        background: "blue.800",
-        borderRadius: 0,
-      }}
-      color={backgroundColor}
+    <button
+      className={`h-20 w-full p-2 ${backgroundColor} group self-stretch hover:bg-gray-700`}
       onClick={onClick}
     >
-      <VStack spacing="1" w={"full"}>
-        <HStack alignSelf="stretch">
-          <Text
-            fontFamily="Inter"
-            lineHeight="1.5"
-            fontWeight="bold"
-            fontSize="1rem"
-            color="gray.200"
-            _groupHover={{
-              color: "yellow.400",
-            }}
+      <div className="flex w-full flex-col space-y-1">
+        <div className="flex items-center space-x-3 self-stretch">
+          <p
+            className={`text-lg font-bold text-gray-200 group-hover:text-yellow-400`}
           >
             {poolName}
-          </Text>
+          </p>
           {weights && (
-            <Badge
-              p="2px"
-              colorScheme="blue"
-              _groupHover={{ background: "yellow.100" }}
-              background={isSelected ? "yellow.100" : "blue.200"}
+            <span
+              className={`rounded p-[1px] text-sm font-bold ${
+                isSelected ? "bg-yellow-100" : "bg-blue-200"
+              } text-gray-800 group-hover:bg-yellow-100`}
             >
               {weights}
-            </Badge>
+            </span>
           )}
-        </HStack>
-        <HStack spacing={3} w={"full"}>
-          <Badge
-            p="1"
-            variant="outline"
-            _groupHover={{
-              color: "gray.400",
-            }}
-          >
+        </div>
+        <div className="flex w-full items-center space-x-3">
+          <span className="rounded border border-gray-500 p-[3px] text-sm font-bold uppercase leading-4 text-gray-500 group-hover:text-gray-400">
             {poolType}
-          </Badge>
-          <Text
-            fontFamily="Inter"
-            lineHeight="1.2"
-            fontSize="0.75rem"
-            color="gray.500"
-            _groupHover={{
-              color: "gray.400",
-            }}
-          >
+          </span>
+          <p className="text-sm leading-tight text-gray-500 group-hover:text-gray-400">
             {truncateAddress(address)}
-          </Text>
-        </HStack>
-      </VStack>
-    </Button>
+          </p>
+        </div>
+      </div>
+    </button>
   );
 }

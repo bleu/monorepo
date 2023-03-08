@@ -1,7 +1,9 @@
 /** @type {import('next').NextConfig} */
 
-const moduleExports = {
+module.exports = {
   transpilePackages: ["@balancer-pool-metadata/balancer-gql"],
+  experimental: {
+    appDir: true,
+    typedRoutes: true,
+  },
 };
-
-module.exports = moduleExports;

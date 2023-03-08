@@ -113,6 +113,7 @@ importers:
       '@types/react-dom': ^18.0.11
       '@wagmi/cli': 0.1.11
       autoprefixer: ^10.4.13
+      classnames: ^2.3.2
       eslint: ^8.35.0
       eslint-config-next: ^13.2.3
       eslint-plugin-tailwindcss: ^3.10.1
@@ -133,6 +134,7 @@ importers:
       '@balancer-pool-metadata/tsconfig': link:../tsconfig
       '@rainbow-me/rainbowkit': 0.11.1_n6t5aahpmtkwjlwfqif42jvo7q
       '@wagmi/cli': 0.1.11_zlazxegjtp47f62sahkwh4tpyy
+      classnames: 2.3.2
       ethers: 5.7.2
       graphql-request: 4.3.0_graphql@16.6.0
       next: 13.2.3_6m24vuloj5ihw4zc5lbsktc4fu
@@ -4965,6 +4967,10 @@ packages:
   /class-is/1.1.0:
     resolution: {integrity: sha512-rhjH9AG1fvabIDoGRVH587413LPjTZgmDF9fOFCbFJQV4yuocX1mHxxvXI4g3cGwbVY9wAYIoKlg1N79frJKQw==}
     dev: true
+
+  /classnames/2.3.2:
+    resolution: {integrity: sha512-CSbhY4cFEJRe6/GQzIk5qXZ4Jeg5pcsP7b5peFSDpffpe1cqjASH/n9UTjBwOp6XpMSTwQ8Za2K5V02ueA7Tmw==}
+    dev: false
 
   /clean-stack/2.2.0:
     resolution: {integrity: sha512-4diC9HaTE+KRAMWhDhrGOECgWZxoevMc5TlkObMqNSsVU62PYzXZ/SMTjzyGAFF1YusgxGcSWTEXBhp0CPwQ1A==}

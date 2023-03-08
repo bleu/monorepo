@@ -49,7 +49,7 @@ const Td = ({ className, children }: CellProps) => (
   </td>
 );
 
-const rowData: { node: React.ReactNode; className?: string }[][] = [
+const cellData: { node: React.ReactNode; className?: string }[][] = [
   [
     { node: "Title" },
     { node: "text" },
@@ -58,7 +58,7 @@ const rowData: { node: React.ReactNode; className?: string }[][] = [
   ],
 ];
 
-function Row({ data }: { data: typeof rowData }) {
+function Row({ data }: { data: typeof cellData }) {
   const defaultActions = [
     {
       className:
@@ -110,9 +110,9 @@ export function MetadataAttribute({ poolId }: { poolId: string }) {
             <Header />
 
             <tbody className="divide-y divide-gray-800">
-              <Row data={rowData} />
-              <Row data={rowData} />
-              <Row data={rowData} />
+              <Row data={cellData} />
+              <Row data={cellData} />
+              <Row data={cellData} />
             </tbody>
           </table>
         </div>

@@ -14,7 +14,7 @@ Ensure you have installed all project dependencies and deployed the PoolMetadata
 git clone https://github.com/graphprotocol/graph-node/
 cd graph-node/docker
 ./setup.sh
-docker compose start
+docker-compose start
 ```
 
 
@@ -25,7 +25,7 @@ Define the networks with its respective address and startBlock on networks.yaml 
 ```yaml
 mainnet:
   network: mainnet
-  EventEmitter:
+  PoolMetadataRegistry:
     address: "0x000000000000000000000000000000000000000"
     startBlock: ??
 goerli:
@@ -35,7 +35,7 @@ goerli:
     startBlock: ??
 
 ```
-Generate types and build the subgraph:
+## Generate types and build the subgraph:
 
 ```bash
 pnpm codegen

@@ -33,6 +33,7 @@ goerli:
   PoolMetadataRegistry:
     address: "0x000000000000000000000000000000000000000"
     startBlock: ??
+```
 ## Generate types and build the subgraph:
 
 ```bash

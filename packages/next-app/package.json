@@ -16,6 +16,7 @@
   "dependencies": {
     "@balancer-pool-metadata/balancer-gql": "workspace:*",
     "@balancer-pool-metadata/eslint-config": "workspace:*",
+    "@balancer-pool-metadata/pool-metadata-gql": "workspace:*",
     "@balancer-pool-metadata/tsconfig": "workspace:*",
     "@radix-ui/colors": "^0.1.8",
     "@radix-ui/react-dialog": "^1.0.3",

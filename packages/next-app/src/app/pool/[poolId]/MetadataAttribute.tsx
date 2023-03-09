@@ -62,14 +62,14 @@ const Th = ({ className, children }: CellProps) => (
 
 const Header = () => {
   const cols = [
-    { node: "Name" },
-    { node: "Type" },
-    { node: "Description" },
-    { node: "Value" },
     {
       node: <span className="sr-only">Edit</span>,
       className: "relative py-3.5 pl-3 pr-4 sm:pr-0",
     },
+    { node: "Name" },
+    { node: "Type" },
+    { node: "Description" },
+    { node: "Value" },
   ];
 
   return (
@@ -115,14 +115,12 @@ const AttributeLink = ({ data }: { data: (typeof cellData)[1] }) => {
 function Row({ data }: { data: (typeof cellData)[1] }) {
   return (
     <tr>
-      <Td className="min-w-[10rem]">
-        <div className="flex items-center gap-2">
-          <button>
-            <Pencil2Icon className="text-yellow-400" />
-          </button>
-          {data.name}
-        </div>
+      <Td>
+        <button className="flex items-center">
+          <Pencil2Icon className="text-yellow-400" />
+        </button>
       </Td>
+      <Td className="min-w-[10rem]">{data.name}</Td>
       <Td>{data.type}</Td>
       <Td>{data.desc}</Td>
       <Td>

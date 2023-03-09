@@ -68,11 +68,10 @@ export function PoolMetadataForm() {
                   ))}
                 </select>
               </div>
-              <Input label="Name" placeholder="Define an attribute's name" />
+              <Input label="Name" placeholder="Define an attribute name" />
               <Input
                 label="Description"
-                rows={8}
-                placeholder="Short attribute’s description"
+                placeholder="Short attribute description"
               />
               <Input
                 type={attributeType}

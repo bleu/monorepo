@@ -6,7 +6,7 @@ import {
 import cn from "classnames";
 import { TableHTMLAttributes } from "react";
 
-import { Button, ImageDialog } from "../../../components";
+import { Button, ImageDialog, PoolMetadataForm } from "../../../components";
 
 const cellData: {
   name: string;
@@ -171,9 +171,7 @@ export function MetadataAttribute({ poolId }: { poolId: string }) {
         </div>
         <div className="mt-5 w-full justify-between sm:flex sm:items-center">
           <div className="flex gap-4">
-            <Button className="bg-indigo-500 text-white hover:bg-indigo-400 focus-visible:outline-indigo-500">
-              Add new attribute
-            </Button>
+            <PoolMetadataForm />
             <Button className="border border-blue-500 bg-gray-900  text-blue-500 hover:bg-gray-800 focus-visible:outline-indigo-500">
               Import template
             </Button>

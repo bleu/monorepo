@@ -26,7 +26,7 @@ const inputTypes = [
   { value: "datetime-local", label: "Datetime" },
 ];
 
-export function PoolMetadataForm({
+export function PoolMetadataFormModal({
   children: trigger,
 }: {
   children: React.ReactNode;

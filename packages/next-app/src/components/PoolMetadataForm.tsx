@@ -26,16 +26,16 @@ const inputTypes = [
   { value: "datetime-local", label: "Datetime" },
 ];
 
-export function PoolMetadataForm() {
+export function PoolMetadataForm({
+  children: trigger,
+}: {
+  children: React.ReactNode;
+}) {
   const [attributeType, setAttributeType] = useState("text");
 
   return (
     <Dialog.Root>
-      <Dialog.Trigger asChild>
-        <Button className="bg-indigo-500 text-white hover:bg-indigo-400 focus-visible:outline-indigo-500">
-          Add new attribute
-        </Button>
-      </Dialog.Trigger>
+      <Dialog.Trigger asChild>{trigger}</Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay
           className={cn(

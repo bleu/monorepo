@@ -3,10 +3,14 @@
 import { Pool } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/mainnet";
 import { ConnectButton, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { useAccount, useNetwork, WagmiConfig } from "wagmi";
 
 import { OwnedPool } from "../components/OwnedPool";
+import {
+  PoolMetadataContext,
+  PoolMetadataProvider,
+} from "../contexts/PoolMetadataContext";
 import gql from "../lib/gql";
 import { chains, client } from "../wagmi";
 
@@ -26,15 +30,17 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
       <RainbowKitProvider chains={chains}>
         <Header />
         {isConnected ? (
-          <div className="flex h-full">
-            <div className="h-full w-96">
-              <div className="h-full w-full">
-                <Sidebar />
+          <PoolMetadataProvider>
+            <div className="flex h-full">
+              <div className="h-full w-96">
+                <div className="h-full w-full">
+                  <Sidebar />
+                </div>
               </div>
-            </div>
 
-            {children}
-          </div>
+              {children}
+            </div>
+          </PoolMetadataProvider>
         ) : (
           <WalletEmptyState />
         )}
@@ -63,10 +69,10 @@ export function Sidebar() {
     owner: address,
   });
 
-  const [selectedPool, setSelectedPool] = useState<string | null>(null);
+  const { selectedPool, handleSetPool } = useContext(PoolMetadataContext);
 
-  const handleButtonClick = (index: string | null) => {
-    setSelectedPool(index === selectedPool ? null : index);
+  const handleButtonClick = (index: string) => {
+    handleSetPool(index);
   };
 
   return (

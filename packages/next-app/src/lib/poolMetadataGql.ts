@@ -11,6 +11,7 @@ const currentNetwork =
     : "1";
 
 const networkIdEnumMap = {
+  "1": Network.goerli,
   "5": Network.goerli,
 };
 

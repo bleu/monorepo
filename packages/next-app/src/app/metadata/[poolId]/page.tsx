@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useContractWrite, usePrepareContractWrite } from "wagmi";
 
 import { Button } from "../../../components";
 import useDebounce from "../../../hooks/useDebounce";
 import metadataGql from "../../../lib/poolMetadataGql";
-import { poolMetadataRegistryABI } from "../../../wagmi/generated";
+import {
+  usePoolMetadataRegistrySetPoolMetadata,
+  usePreparePoolMetadataRegistrySetPoolMetadata
+} from "../../../wagmi/generated";
 
 export default function Page({ params }: { params: { poolId: string } }) {
   const textField = useRef<HTMLTextAreaElement>(null);
@@ -34,16 +36,14 @@ export default function Page({ params }: { params: { poolId: string } }) {
     }
   }, [metadataPool?.metadataCID]);
 
-  const { config } = usePrepareContractWrite({
+  const { config } = usePreparePoolMetadataRegistrySetPoolMetadata({
     address: "0xebfadf723e077c80f6058dc9c9202bb613de07cf",
-    abi: poolMetadataRegistryABI,
-    functionName: "setPoolMetadata",
     args: [`0x${params.poolId.slice(2)}`, debouncedCID],
     enabled: Boolean(debouncedCID),
   });
 
   const { data, isLoading, isSuccess, isError, write } =
-    useContractWrite(config);
+    usePoolMetadataRegistrySetPoolMetadata(config);
 
   async function pinJSON() {
     fetch(`./${params.poolId}/pin`, {

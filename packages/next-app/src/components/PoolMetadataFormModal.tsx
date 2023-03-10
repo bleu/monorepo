@@ -1,23 +1,32 @@
 "use client";
-
 import * as Dialog from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import cn from "classnames";
-import { useState } from "react";
+import cuid from "cuid";
+import * as React from "react";
+import { HTMLProps, useContext, useState } from "react";
+import { useForm } from "react-hook-form";
 
+import {
+  PoolMetadataAttribute,
+  PoolMetadataContext,
+} from "../contexts/PoolMetadataContext";
 import { Button } from "./Button";
 
-function Input({ label, ...rest }: React.HTMLProps<HTMLInputElement>) {
-  return (
-    <div className="mb-4">
-      <label className="mb-2 block text-sm text-gray-400">{label}</label>
-      <input
-        {...rest}
-        className="block w-full rounded border bg-gray-50 py-2 px-3 leading-tight text-gray-700 shadow focus:outline-none"
-      />
-    </div>
-  );
-}
+const Input = React.forwardRef<HTMLInputElement, HTMLProps<HTMLInputElement>>(
+  ({ label, ...rest }: React.HTMLProps<HTMLInputElement>, ref) => {
+    return (
+      <div className="mb-4">
+        <label className="mb-2 block text-sm text-gray-400">{label}</label>
+        <input
+          ref={ref}
+          {...rest}
+          className="block w-full rounded border bg-gray-50 py-2 px-3 leading-tight text-gray-700 shadow focus:outline-none"
+        />
+      </div>
+    );
+  }
+);
 
 const inputTypes = [
   { value: "text", label: "Text" },
@@ -28,10 +37,34 @@ const inputTypes = [
 
 export function PoolMetadataFormModal({
   children: trigger,
+  mode,
+  data,
 }: {
   children: React.ReactNode;
+  mode: "add" | "edit";
+  data?: PoolMetadataAttribute;
 }) {
   const [attributeType, setAttributeType] = useState("text");
+  const { register, handleSubmit, reset } = useForm<PoolMetadataAttribute>();
+  const { handleAddMetadata, handleUpdateMetadata } =
+    useContext(PoolMetadataContext);
+
+  function handleSubmitForm(formData: PoolMetadataAttribute) {
+    switch (mode) {
+      case "add":
+        handleAddMetadata({ ...formData });
+        reset();
+        return;
+      case "edit":
+        handleUpdateMetadata({ ...formData });
+        reset();
+        return;
+      default:
+        handleAddMetadata({ ...formData });
+        reset();
+        return;
+    }
+  }
 
   return (
     <Dialog.Root>
@@ -49,16 +82,23 @@ export function PoolMetadataFormModal({
         >
           <Dialog.Title asChild>
             <h1 className="mx-1 text-2xl font-medium text-gray-400">
-              Add new attribute
+              {mode === "add" ? "Add new attribute" : "Edit attribute"}
             </h1>
           </Dialog.Title>
           <div className="w-full">
-            <form className="px-2 pt-2">
+            <form
+              onSubmit={handleSubmit(handleSubmitForm)}
+              id="attribute-form"
+              className="px-2 pt-2"
+            >
+              <input hidden value={data?.id || cuid()}></input>
               <label className="mb-2 block text-sm text-gray-400">Type</label>
               <div className="mb-4">
                 <select
                   placeholder="Choose a type"
                   className="w-full rounded border p-2 leading-tight text-gray-400 shadow focus:outline-none"
+                  {...register("type")}
+                  defaultValue={data?.type as string}
                   onChange={(e) => {
                     setAttributeType(e.target.value);
                   }}
@@ -68,15 +108,24 @@ export function PoolMetadataFormModal({
                   ))}
                 </select>
               </div>
-              <Input label="Name" placeholder="Define an attribute name" />
+              <Input
+                label="Name"
+                placeholder={data?.name || "Define an attribute name"}
+                {...register("name")}
+                defaultValue={data?.name}
+              />
               <Input
                 label="Description"
-                placeholder="Short attribute description"
+                placeholder={data?.desc || "Short attribute description"}
+                {...register("desc")}
+                defaultValue={data?.desc}
               />
               <Input
                 type={attributeType}
                 label="Value"
                 placeholder="Attribute value"
+                {...register("value")}
+                defaultValue={data?.value as string}
               />
               <div className="flex items-center justify-end gap-3">
                 <Dialog.Close asChild>
@@ -88,8 +137,10 @@ export function PoolMetadataFormModal({
                   </Button>
                 </Dialog.Close>
                 <Button
-                  disabled={true}
-                  className="bg-indigo-500 text-gray-500 hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-gray-600"
+                  form="attribute-form"
+                  type="submit"
+                  disabled={false}
+                  className="bg-indigo-500 text-gray-50 hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-gray-600 disabled:text-gray-500"
                 >
                   Save item
                 </Button>

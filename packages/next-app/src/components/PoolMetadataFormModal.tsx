@@ -13,13 +13,6 @@ import {
 } from "../contexts/PoolMetadataContext";
 import { Button } from "./Button";
 
-type Inputs = {
-  name: string;
-  desc: string;
-  type: string;
-  value: unknown;
-};
-
 const Input = React.forwardRef<HTMLInputElement, HTMLProps<HTMLInputElement>>(
   ({ label, ...rest }: React.HTMLProps<HTMLInputElement>, ref) => {
     return (
@@ -44,30 +37,30 @@ const inputTypes = [
 
 export function PoolMetadataFormModal({
   children: trigger,
-  context,
+  mode,
   data,
 }: {
   children: React.ReactNode;
-  context: "add" | "edit";
+  mode: "add" | "edit";
   data?: PoolMetadataAttribute;
 }) {
   const [attributeType, setAttributeType] = useState("text");
-  const { register, handleSubmit, reset } = useForm<Inputs>();
+  const { register, handleSubmit, reset } = useForm<PoolMetadataAttribute>();
   const { handleAddMetadata, handleUpdateMetadata } =
     useContext(PoolMetadataContext);
 
-  function handleSubmitForm(formData: Inputs) {
-    switch (context) {
+  function handleSubmitForm(formData: PoolMetadataAttribute) {
+    switch (mode) {
       case "add":
-        handleAddMetadata({ ...formData, id: cuid() });
+        handleAddMetadata({ ...formData });
         reset();
         return;
       case "edit":
-        handleUpdateMetadata({ ...formData, id: data?.id || "" });
+        handleUpdateMetadata({ ...formData });
         reset();
         return;
       default:
-        handleAddMetadata({ ...formData, id: cuid() });
+        handleAddMetadata({ ...formData });
         reset();
         return;
     }
@@ -89,7 +82,7 @@ export function PoolMetadataFormModal({
         >
           <Dialog.Title asChild>
             <h1 className="mx-1 text-2xl font-medium text-gray-400">
-              {context === "add" ? "Add new attribute" : "Edit attribute"}
+              {mode === "add" ? "Add new attribute" : "Edit attribute"}
             </h1>
           </Dialog.Title>
           <div className="w-full">
@@ -98,6 +91,7 @@ export function PoolMetadataFormModal({
               id="attribute-form"
               className="px-2 pt-2"
             >
+              <input hidden value={data?.id || cuid()}></input>
               <label className="mb-2 block text-sm text-gray-400">Type</label>
               <div className="mb-4">
                 <select

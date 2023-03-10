@@ -88,7 +88,7 @@ function Row({ data }: { data: PoolMetadataAttribute }) {
   return (
     <tr>
       <Td>
-        <PoolMetadataFormModal context="edit" data={data}>
+        <PoolMetadataFormModal mode="edit" data={data}>
           <button className="flex items-center">
             <Pencil2Icon className="text-yellow-400" />
           </button>
@@ -154,7 +154,7 @@ export function MetadataAttribute({ poolId }: { poolId: string }) {
         </div>
         <div className="mt-5 w-full justify-between sm:flex sm:items-center">
           <div className="flex gap-4">
-            <PoolMetadataFormModal context="add">
+            <PoolMetadataFormModal mode="add">
               <Button className="bg-indigo-500 text-white hover:bg-indigo-400 focus-visible:outline-indigo-500">
                 Add new attribute
               </Button>

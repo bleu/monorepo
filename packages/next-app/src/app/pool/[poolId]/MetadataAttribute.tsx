@@ -1,54 +1,22 @@
+"use client";
+
 import {
   ArrowTopRightIcon,
   ChevronDownIcon,
   Pencil2Icon,
 } from "@radix-ui/react-icons";
 import cn from "classnames";
-import { TableHTMLAttributes } from "react";
+import { TableHTMLAttributes, useContext } from "react";
 
 import {
   Button,
   ImageDialog,
   PoolMetadataFormModal,
 } from "../../../components";
-
-const cellData: {
-  name: string;
-  type: string;
-  desc: string;
-  value: React.ReactNode;
-}[] = [
-  {
-    name: "Pool Address",
-    type: "address",
-    desc: "The address of the smart contract that implements the exchange pool",
-    value: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
-  },
-  {
-    name: "Pool link",
-    type: "URL",
-    desc: "The address of the smart contract that implements the exchange pool",
-    value: "https://github.com/",
-  },
-  {
-    name: "Pool Address",
-    type: "address",
-    desc: "The address of the smart contract that implements the exchange pool",
-    value: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
-  },
-  {
-    name: "Pool link",
-    type: "URL",
-    desc: "The address of the smart contract that implements the exchange pool",
-    value: "https://github.com/",
-  },
-  {
-    name: "Pool image",
-    type: "image",
-    desc: "balancer logo",
-    value: "https://s2.coinmarketcap.com/static/img/coins/200x200/5728.png",
-  },
-];
+import {
+  PoolMetadataAttribute,
+  PoolMetadataContext,
+} from "../../../contexts/PoolMetadataContext";
 
 type CellProps = TableHTMLAttributes<HTMLTableCellElement>;
 
@@ -97,7 +65,7 @@ const Td = ({ className, children }: CellProps) => {
   );
 };
 
-const AttributeLink = ({ data }: { data: (typeof cellData)[1] }) => {
+const AttributeLink = ({ data }: { data: PoolMetadataAttribute }) => {
   switch (data.type) {
     case "URL":
       return (
@@ -116,20 +84,22 @@ const AttributeLink = ({ data }: { data: (typeof cellData)[1] }) => {
   }
 };
 
-function Row({ data }: { data: (typeof cellData)[1] }) {
+function Row({ data }: { data: PoolMetadataAttribute }) {
   return (
     <tr>
       <Td>
-        <button className="flex items-center">
-          <Pencil2Icon className="text-yellow-400" />
-        </button>
+        <PoolMetadataFormModal mode="edit" data={data}>
+          <button className="flex items-center">
+            <Pencil2Icon className="text-yellow-400" />
+          </button>
+        </PoolMetadataFormModal>
       </Td>
       <Td className="min-w-[10rem]">{data.name}</Td>
       <Td>{data.type}</Td>
       <Td>{data.desc}</Td>
       <Td>
         <div className="flex justify-between gap-2">
-          {data.value}
+          <>{data.value}</>
           <AttributeLink data={data} />
         </div>
       </Td>
@@ -138,6 +108,15 @@ function Row({ data }: { data: (typeof cellData)[1] }) {
 }
 
 export function MetadataAttribute({ poolId }: { poolId: string }) {
+  const { metadata } = useContext(PoolMetadataContext);
+
+  function handleUpdatePoolMetadata() {
+    // get `selectedPool` and `metadata` from context
+    // pin metadata to ipfs
+    // call PoolMetadataRegistry contract to setPoolMetadata
+    // TODO: https://linear.app/bleu-llc/issue/BAL-57/update-metadata-calling-poolmetadataregistry-contract
+  }
+
   return (
     <div className="w-full bg-gray-900">
       <div className="pr-4 sm:pr-6 lg:pr-12">
@@ -154,8 +133,8 @@ export function MetadataAttribute({ poolId }: { poolId: string }) {
             <Header />
 
             <tbody className="divide-y divide-gray-800">
-              {cellData.map((item, index) => (
-                <Row key={index} data={item} />
+              {metadata.map((item) => (
+                <Row key={item.id} data={item} />
               ))}
             </tbody>
           </table>
@@ -175,7 +154,7 @@ export function MetadataAttribute({ poolId }: { poolId: string }) {
         </div>
         <div className="mt-5 w-full justify-between sm:flex sm:items-center">
           <div className="flex gap-4">
-            <PoolMetadataFormModal>
+            <PoolMetadataFormModal mode="add">
               <Button className="bg-indigo-500 text-white hover:bg-indigo-400 focus-visible:outline-indigo-500">
                 Add new attribute
               </Button>
@@ -184,7 +163,10 @@ export function MetadataAttribute({ poolId }: { poolId: string }) {
               Import template
             </Button>
           </div>
-          <Button className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 focus-visible:bg-yellow-300">
+          <Button
+            onClick={handleUpdatePoolMetadata}
+            className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 focus-visible:bg-yellow-300"
+          >
             Update metadata
           </Button>
         </div>

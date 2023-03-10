@@ -42,7 +42,7 @@ export default function Page({ params }: { params: { poolId: string } }) {
     enabled: Boolean(debouncedCID),
   });
 
-  const { data, isLoading, isSuccess, isError, status, write } =
+  const { data, isLoading, isSuccess, isError, write } =
     useContractWrite(config);
 
   async function pinJSON() {

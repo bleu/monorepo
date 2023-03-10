@@ -18,6 +18,7 @@
     "@balancer-pool-metadata/eslint-config": "workspace:*",
     "@balancer-pool-metadata/pool-metadata-gql": "workspace:*",
     "@balancer-pool-metadata/tsconfig": "workspace:*",
+    "@pinata/sdk": "^2.1.0",
     "@radix-ui/colors": "^0.1.8",
     "@radix-ui/react-dialog": "^1.0.3",
     "@radix-ui/react-icons": "^1.2.0",

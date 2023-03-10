@@ -22,7 +22,7 @@
   "dependencies": {
     "@balancer-pool-metadata/eslint-config": "workspace:*",
     "ghooks": "^2.0.4",
-    "lint-staged": "^13.1.2",
+    "lint-staged": "^13.2.0",
     "prettier": "^2.8.4"
   },
   "lint-staged": {

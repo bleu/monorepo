@@ -10,7 +10,7 @@ import { useAccount, useNetwork, WagmiConfig } from "wagmi";
 import { OwnedPool } from "../components/OwnedPool";
 import {
   PoolMetadataContext,
-  PoolMetadataProvider,
+  PoolMetadataProvider
 } from "../contexts/PoolMetadataContext";
 import gql from "../lib/gql";
 import { chains, client } from "../wagmi";
@@ -72,10 +72,6 @@ export function Sidebar() {
 
   const { selectedPool, handleSetPool } = useContext(PoolMetadataContext);
 
-  const handleButtonClick = (index: string) => {
-    handleSetPool(index);
-  };
-
   return (
     <div className="h-full w-96 max-w-full bg-gray-900 p-5">
       <div className="h-screen w-96 max-w-full items-start justify-start space-y-4">
@@ -87,10 +83,12 @@ export function Sidebar() {
         <div className="relative max-h-[40rem] self-stretch overflow-auto rounded-md border border-gray-700 bg-gray-800">
           {data?.pools &&
             data.pools.map((item) => (
-              <Link href={`/metadata/${item.id}`}>
+              <Link
+                href={`/metadata/${item.id}`}
+                onClick={() => handleSetPool(item.id)}
+              >
                 <OwnedPool
                   key={item.id}
-                  onClick={() => handleButtonClick(item.id)}
                   isSelected={item.id === selectedPool}
                   pool={item as Pool}
                 />

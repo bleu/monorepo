@@ -12,5 +12,6 @@ module.exports = {
   env: {
     PINATA_API_KEY: process.env.PINATA_API_KEY,
     PINATA_API_SECRET: process.env.PINATA_API_SECRET,
+    NEXT_PUBLIC_PINATA_GW: process.env.NEXT_PUBLIC_PINATA_GW,
   },
 };

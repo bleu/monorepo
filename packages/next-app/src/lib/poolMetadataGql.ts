@@ -7,11 +7,10 @@ import { GraphQLClient } from "graphql-request";
 
 const currentNetwork =
   typeof localStorage !== "undefined"
-    ? localStorage.getItem("networkId") ?? "1"
-    : "1";
+    ? localStorage.getItem("networkId") ?? "5"
+    : "5";
 
 const networkIdEnumMap = {
-  "1": Network.goerli,
   "5": Network.goerli,
 };
 

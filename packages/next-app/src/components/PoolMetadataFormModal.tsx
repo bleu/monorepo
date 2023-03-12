@@ -1,17 +1,19 @@
 "use client";
+import { MetadataItemSchema } from "@balancer-pool-metadata/schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import cn from "classnames";
-import cuid from "cuid";
 import * as React from "react";
-import { HTMLProps, useContext, useState } from "react";
-import { useForm } from "react-hook-form";
+import { HTMLProps, useContext } from "react";
+import { Controller, useForm } from "react-hook-form";
 
 import {
   PoolMetadataAttribute,
   PoolMetadataContext,
 } from "../contexts/PoolMetadataContext";
 import { Button } from "./Button";
+import { Select, SelectItem } from "./Select";
 
 const Input = React.forwardRef<HTMLInputElement, HTMLProps<HTMLInputElement>>(
   ({ label, ...rest }: React.HTMLProps<HTMLInputElement>, ref) => {
@@ -28,7 +30,7 @@ const Input = React.forwardRef<HTMLInputElement, HTMLProps<HTMLInputElement>>(
   }
 );
 
-const inputTypes = [
+const inputTypenames = [
   { value: "text", label: "Text" },
   { value: "url", label: "URL" },
   { value: "date", label: "Date" },
@@ -44,28 +46,6 @@ export function PoolMetadataFormModal({
   mode: "add" | "edit";
   data?: PoolMetadataAttribute;
 }) {
-  const [attributeType, setAttributeType] = useState("text");
-  const { register, handleSubmit, reset } = useForm<PoolMetadataAttribute>();
-  const { handleAddMetadata, handleUpdateMetadata } =
-    useContext(PoolMetadataContext);
-
-  function handleSubmitForm(formData: PoolMetadataAttribute) {
-    switch (mode) {
-      case "add":
-        handleAddMetadata({ ...formData });
-        reset();
-        return;
-      case "edit":
-        handleUpdateMetadata({ ...formData });
-        reset();
-        return;
-      default:
-        handleAddMetadata({ ...formData });
-        reset();
-        return;
-    }
-  }
-
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>{trigger}</Dialog.Trigger>
@@ -86,66 +66,7 @@ export function PoolMetadataFormModal({
             </h1>
           </Dialog.Title>
           <div className="w-full">
-            <form
-              onSubmit={handleSubmit(handleSubmitForm)}
-              id="attribute-form"
-              className="px-2 pt-2"
-            >
-              <input hidden value={data?.id || cuid()}></input>
-              <label className="mb-2 block text-sm text-gray-400">Type</label>
-              <div className="mb-4">
-                <select
-                  placeholder="Choose a type"
-                  className="w-full rounded border p-2 leading-tight text-gray-400 shadow focus:outline-none"
-                  {...register("type")}
-                  defaultValue={data?.type as string}
-                  onChange={(e) => {
-                    setAttributeType(e.target.value);
-                  }}
-                >
-                  {inputTypes.map(({ value, label }) => (
-                    <option value={value}>{label}</option>
-                  ))}
-                </select>
-              </div>
-              <Input
-                label="Name"
-                placeholder={data?.name || "Define an attribute name"}
-                {...register("name")}
-                defaultValue={data?.name}
-              />
-              <Input
-                label="Description"
-                placeholder={data?.desc || "Short attribute description"}
-                {...register("desc")}
-                defaultValue={data?.desc}
-              />
-              <Input
-                type={attributeType}
-                label="Value"
-                placeholder="Attribute value"
-                {...register("value")}
-                defaultValue={data?.value as string}
-              />
-              <div className="flex items-center justify-end gap-3">
-                <Dialog.Close asChild>
-                  <Button
-                    type="button"
-                    className="border border-indigo-500 bg-gray-700 text-indigo-400 hover:bg-gray-600 focus-visible:outline-indigo-500"
-                  >
-                    Cancel
-                  </Button>
-                </Dialog.Close>
-                <Button
-                  form="attribute-form"
-                  type="submit"
-                  disabled={false}
-                  className="bg-indigo-500 text-gray-50 hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-gray-600 disabled:text-gray-500"
-                >
-                  Save item
-                </Button>
-              </div>
-            </form>
+            <Form data={data} mode={mode} />
           </div>
           <Dialog.Close asChild>
             <button
@@ -160,3 +81,131 @@ export function PoolMetadataFormModal({
     </Dialog.Root>
   );
 }
+
+function Form({
+  data,
+  mode,
+}: {
+  data?: PoolMetadataAttribute;
+  mode: "add" | "edit";
+}) {
+  const {
+    register,
+    handleSubmit,
+    watch,
+    reset,
+    resetField,
+    control,
+    formState: { errors },
+  } = useForm<PoolMetadataAttribute>({
+    // @ts-expect-error
+    resolver: zodResolver(MetadataItemSchema),
+    defaultValues: {
+      typename: data?.typename || "text",
+    },
+  });
+  const { handleAddMetadata, handleUpdateMetadata } =
+    useContext(PoolMetadataContext);
+
+  // BUG: after changing type selector clean all types
+
+  function handleSubmitForm(formData: PoolMetadataAttribute) {
+    // WHY?
+    switch (mode) {
+      case "add":
+        handleAddMetadata(formData);
+        reset();
+        return;
+      case "edit":
+        handleUpdateMetadata(formData);
+        reset();
+        return;
+      default:
+        handleAddMetadata(formData);
+        reset();
+        return;
+    }
+  }
+
+  const selectedTypename = watch("typename");
+
+  React.useLayoutEffect(() => {
+    resetField("value");
+  }, [selectedTypename]);
+
+  return (
+    <form
+      onSubmit={handleSubmit(handleSubmitForm)}
+      id="attribute-form"
+      className="px-2 pt-2"
+    >
+      <label className="mb-2 block text-sm text-gray-400">Typename</label>
+      <div className="mb-4">
+        <Controller
+          control={control}
+          name={"typename"}
+          defaultValue={data?.typename || "text"}
+          render={({ field: { onChange, value, ref } }) => (
+            <Select
+              onValueChange={onChange}
+              value={value}
+              ref={ref}
+              defaultValue={data?.typename || "text"}
+            >
+              {inputTypenames.map(({ value, label }) => (
+                <SelectItem value={value}>{label}</SelectItem>
+              ))}
+            </Select>
+          )}
+        />
+      </div>
+      <Input
+        label="Name"
+        placeholder={data?.key || "Define an attribute key"}
+        {...register("key")}
+      />
+      <p>{errors.key?.message}</p>
+
+      <Input
+        label="Description"
+        placeholder={data?.description || "Short attribute description"}
+        {...register("description")}
+      />
+      <p>{errors.description?.message}</p>
+
+      <Input
+        type={selectedTypename}
+        label="Value"
+        placeholder="Attribute value"
+        {...register("value")}
+      />
+      <p>{errors.value?.message}</p>
+
+      <div className="flex items-center justify-end gap-3">
+        <Dialog.Close asChild>
+          <Button
+            type="button"
+            className="border border-indigo-500 bg-gray-700 text-indigo-400 hover:bg-gray-600 focus-visible:outline-indigo-500"
+          >
+            Cancel
+          </Button>
+        </Dialog.Close>
+        <Button
+          form="attribute-form"
+          type="submit"
+          disabled={false}
+          className="bg-indigo-500 text-gray-50 hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-gray-600 disabled:text-gray-500"
+        >
+          Save item
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+// function toSlug(string: string) {
+//   return string
+//     .toLowerCase()
+//     .replace(/ /g, "-")
+//     .replace(/[^\w-]+/g, "");
+// }

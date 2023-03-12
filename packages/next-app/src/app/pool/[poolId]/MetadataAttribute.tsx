@@ -39,7 +39,7 @@ const Header = () => {
       className: "relative py-3.5 pl-3 pr-4 sm:pr-0",
     },
     { node: "Name" },
-    { node: "Type" },
+    { node: "Typename" },
     { node: "Description" },
     { node: "Value" },
   ];
@@ -66,7 +66,7 @@ const Td = ({ className, children }: CellProps) => {
 };
 
 const AttributeLink = ({ data }: { data: PoolMetadataAttribute }) => {
-  switch (data.type) {
+  switch (data.typename) {
     case "URL":
       return (
         <button>
@@ -94,9 +94,9 @@ function Row({ data }: { data: PoolMetadataAttribute }) {
           </button>
         </PoolMetadataFormModal>
       </Td>
-      <Td className="min-w-[10rem]">{data.name}</Td>
-      <Td>{data.type}</Td>
-      <Td>{data.desc}</Td>
+      <Td className="min-w-[10rem]">{data.key}</Td>
+      <Td>{data.typename}</Td>
+      <Td>{data.description}</Td>
       <Td>
         <div className="flex justify-between gap-2">
           <>{data.value}</>

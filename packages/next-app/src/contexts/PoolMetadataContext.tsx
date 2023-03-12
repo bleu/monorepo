@@ -7,39 +7,41 @@ import { createContext, ReactNode, useState } from "react";
 
 const cellData: {
   id: string;
-  name: string;
-  type: string;
-  desc: string;
+  key: string;
+  typename: string;
+  description: string;
   value: React.ReactNode;
 }[] = [
   {
     id: cuid(),
-    name: "Pool Address",
-    type: "address",
-    desc: "The address of the smart contract that implements the exchange pool",
+    key: "Pool Address",
+    typename: "address",
+    description:
+      "The address of the smart contract that implements the exchange pool",
     value: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
   },
   {
     id: cuid(),
-    name: "Pool link",
-    type: "URL",
-    desc: "The address of the smart contract that implements the exchange pool",
+    key: "Pool link",
+    typename: "URL",
+    description:
+      "The address of the smart contract that implements the exchange pool",
     value: "https://github.com/",
   },
   {
     id: cuid(),
-    name: "Pool image",
-    type: "image",
-    desc: "balancer logo",
+    key: "Pool image",
+    typename: "image",
+    description: "balancer logo",
     value: "https://s2.coinmarketcap.com/static/img/coins/200x200/5728.png",
   },
 ];
 
 export interface PoolMetadataAttribute {
   id: string;
-  name: string;
-  type: string;
-  desc: string;
+  key: string;
+  typename: string;
+  description: string;
   value: unknown;
 }
 

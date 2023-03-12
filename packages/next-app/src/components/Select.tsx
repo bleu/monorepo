@@ -15,7 +15,7 @@ export const Select = forwardRef<
   return (
     <SelectPrimitive.Root {...props}>
       <SelectPrimitive.Trigger
-        className="inline-flex h-[35px] items-center justify-center gap-[5px] rounded bg-blue3 px-[15px] text-[13px] leading-none text-blue11 shadow-[0_2px_10px] shadow-blue1/10 outline-none hover:bg-blue3 focus:shadow-[0_0_0_2px] focus:shadow-blue1 data-[placeholder]:text-blue9"
+        className="bg-blue3 text-blue11 shadow-blue1/10 hover:bg-blue3 focus:shadow-blue1 data-[placeholder]:text-blue9 inline-flex h-[35px] items-center justify-center gap-[5px] rounded px-[15px] text-[13px] leading-none shadow-[0_2px_10px] outline-none focus:shadow-[0_0_0_2px]"
         ref={forwardedRef}
       >
         <SelectPrimitive.Value />
@@ -24,8 +24,8 @@ export const Select = forwardRef<
         </SelectPrimitive.Icon>
       </SelectPrimitive.Trigger>
       <SelectPrimitive.Portal>
-        <SelectPrimitive.Content className="overflow-hidden rounded-md bg-blue3 shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)]">
-          <SelectPrimitive.ScrollUpButton className="flex h-[25px] cursor-default items-center justify-center bg-blue3 text-blue11">
+        <SelectPrimitive.Content className="bg-blue3 overflow-hidden rounded-md shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)]">
+          <SelectPrimitive.ScrollUpButton className="bg-blue3 text-blue11 flex h-[25px] cursor-default items-center justify-center">
             <ChevronUpIcon />
           </SelectPrimitive.ScrollUpButton>
           <SelectPrimitive.Viewport className="p-[5px]">

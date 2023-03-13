@@ -6,6 +6,10 @@ on:
   push:
     branches-ignore:
       - main
+defaults:
+  run:
+    shell: bash
+    working-directory: ./packages/next-app
 jobs:
   Deploy-Preview:
     runs-on: ubuntu-latest

@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "build": "pnpm wagmi generate && next build",
+    "build": "next build",
     "dev": "npm-run-all -l --parallel dev:**",
     "dev:wagmi": "wagmi generate --watch",
     "dev:next": "next dev",

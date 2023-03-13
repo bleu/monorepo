@@ -7,10 +7,14 @@ import useDebounce from "#/hooks/useDebounce";
 import metadataGql from "#/lib/poolMetadataGql";
 import {
   usePoolMetadataRegistrySetPoolMetadata,
-  usePreparePoolMetadataRegistrySetPoolMetadata
+  usePreparePoolMetadataRegistrySetPoolMetadata,
 } from "#/wagmi/generated";
 
-export default function Page({ params }: { params: { poolId: `0x${string}` } }) {
+export default function Page({
+  params,
+}: {
+  params: { poolId: `0x${string}` };
+}) {
   const textField = useRef<HTMLTextAreaElement>(null);
 
   const [metadata, setMetadata] = useState("");

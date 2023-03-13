@@ -18,5 +18,15 @@
     "skipLibCheck": true,
     "strict": true
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "references": [
+    { "path": "packages/balancer-gql" },
+    { "path": "packages/contracts" },
+    { "path": "packages/eslint-config" },
+    { "path": "packages/next-app" },
+    { "path": "packages/pool-metadata-gql" },
+    { "path": "packages/schema" },
+    { "path": "packages/subgraph" },
+    { "path": "packages/tsconfig" }
+  ]
 }

@@ -10,12 +10,13 @@ export function handlePoolMetadataUpdated(
   let pool = Pool.load(poolId);
   if (pool == null) {
     pool = new Pool(poolId);
-    pool.address = getPoolAddress(poolId);;
+    pool.address = getPoolAddress(poolId);
   }
   pool.metadataCID = event.params.metadataCID;
   pool.save();
 
-  const metadataUpdateId = event.transaction.hash.toHex() + "-" + event.logIndex.toString();
+  const metadataUpdateId =
+    event.transaction.hash.toHex() + "-" + event.logIndex.toString();
   const metadataUpdate = new PoolMetadataUpdate(metadataUpdateId);
   metadataUpdate.pool = poolId;
   metadataUpdate.metadataCID = event.params.metadataCID;

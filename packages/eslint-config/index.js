@@ -5,22 +5,12 @@ module.exports = {
   env: { es6: true },
   plugins: ["simple-import-sort", "import"],
   extends: [
-    "plugin:import/recommended",
-    "plugin:import/typescript",
     "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended",
+    "plugin:tailwindcss/recommended",
+    "plugin:@next/next/recommended",
+    "plugin:import/typescript",
   ],
   parser: "@typescript-eslint/parser",
-  settings: {
-    "import/parsers": {
-      "@typescript-eslint/parser": [".ts", ".tsx"],
-    },
-    "import/resolver": {
-      typescript: {
-        project: ["packages/*/tsconfig.json"],
-      },
-    },
-  },
   rules: {
     "import/no-named-as-default": "off",
     "no-console": "error",
@@ -36,5 +26,20 @@ module.exports = {
       "error",
       { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
     ],
+    "tailwindcss/classnames-order": "warn",
+    "tailwindcss/enforces-negative-arbitrary-values": "warn",
+    "tailwindcss/enforces-shorthand": "warn",
+    "tailwindcss/migration-from-tailwind-2": "warn",
+    "tailwindcss/no-arbitrary-value": "off",
+    "tailwindcss/no-custom-classname": "off",
+    "tailwindcss/no-contradicting-classname": "error",
   },
+  ignorePatterns: [
+    "**/generated.ts",
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/__generated__/**",
+    "**/lib/**",
+    "** /.vercel/ **",
+  ],
 };

@@ -1,11 +1,11 @@
 {
+  "extends": "@balancer-pool-metadata/tsconfig/nextjs.json",
   "compilerOptions": {
-    "baseUrl": "src",
+    "baseUrl": ".",
     "paths": {
-      "#/*": ["./*"]
+      "#/*": ["./src/*"]
     }
   },
-  "exclude": ["node_modules"],
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "extends": "@balancer-pool-metadata/tsconfig/nextjs.json"
+  "exclude": ["node_modules"]
 }

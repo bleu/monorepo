@@ -11,7 +11,7 @@ import {
   PoolMetadataProvider,
 } from "../../contexts/PoolMetadataContext";
 import gql from "../../lib/gql";
-import { chains, client } from "../../wagmi.config";
+import { chains, client } from "../../wagmi/client";
 import { OwnedPool } from "./OwnedPool";
 
 export function RootLayout({ children }: { children: React.ReactNode }) {

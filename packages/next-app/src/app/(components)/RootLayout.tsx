@@ -9,9 +9,10 @@ import { useAccount, useNetwork, WagmiConfig } from "wagmi";
 import {
   PoolMetadataContext,
   PoolMetadataProvider,
-} from "../../contexts/PoolMetadataContext";
-import gql from "../../lib/gql";
-import { chains, client } from "../../wagmi/client";
+} from "#/contexts/PoolMetadataContext";
+import gql from "#/lib/gql";
+import { chains, client } from "#/wagmi/client";
+
 import { OwnedPool } from "./OwnedPool";
 
 export function RootLayout({ children }: { children: React.ReactNode }) {

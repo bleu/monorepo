@@ -1,9 +1,15 @@
 "use client";
 
-import cuid from "cuid";
 import { createContext, ReactNode, useState } from "react";
 
-// import metadataGql from "../lib/poolMetadataGql";
+export function toSlug(string?: string) {
+  return (
+    string
+      ?.toLowerCase()
+      ?.replace(/ /g, "-")
+      ?.replace(/[^\w-]+/g, "") || ""
+  );
+}
 
 const cellData: {
   id: string;
@@ -13,7 +19,7 @@ const cellData: {
   value: React.ReactNode;
 }[] = [
   {
-    id: cuid(),
+    id: "pool-address",
     key: "Pool Address",
     typename: "address",
     description:
@@ -21,7 +27,7 @@ const cellData: {
     value: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
   },
   {
-    id: cuid(),
+    id: "pool-link",
     key: "Pool link",
     typename: "URL",
     description:
@@ -29,7 +35,7 @@ const cellData: {
     value: "https://github.com/",
   },
   {
-    id: cuid(),
+    id: "pool-image",
     key: "Pool image",
     typename: "image",
     description: "balancer logo",
@@ -51,6 +57,7 @@ interface PoolMetadataContextType {
   handleUpdateMetadata: (data: PoolMetadataAttribute) => void;
   selectedPool: string | null;
   handleSetPool: (poolId: string) => void;
+  isKeyUnique: (key: string) => boolean;
 }
 
 export const PoolMetadataContext = createContext({} as PoolMetadataContextType);
@@ -79,6 +86,10 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
     setSelectedPool(poolId);
   }
 
+  function isKeyUnique(key: string) {
+    return metadata.every((item) => toSlug(item.key) !== toSlug(key));
+  }
+
   return (
     <PoolMetadataContext.Provider
       value={{
@@ -87,6 +98,7 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
         handleUpdateMetadata,
         selectedPool,
         handleSetPool,
+        isKeyUnique,
       }}
     >
       {children}

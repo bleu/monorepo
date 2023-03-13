@@ -96,6 +96,7 @@ function Form({
     watch,
     reset,
     resetField,
+    setError,
     control,
     formState: { errors },
   } = useForm<PoolMetadataAttribute>({
@@ -105,12 +106,24 @@ function Form({
       typename: data?.typename || "text",
     },
   });
-  const { handleAddMetadata, handleUpdateMetadata } =
+  const { handleAddMetadata, handleUpdateMetadata, isKeyUnique } =
     useContext(PoolMetadataContext);
 
-  // BUG: after changing type selector clean all types
-
   function handleSubmitForm(formData: PoolMetadataAttribute) {
+    const uniqueKey = isKeyUnique(formData.key);
+
+    if (!uniqueKey) {
+      setError(
+        "key",
+        {
+          type: "uniqueness",
+          message: "This key already exists.",
+        },
+        { shouldFocus: true }
+      );
+      return;
+    }
+
     // WHY?
     switch (mode) {
       case "add":
@@ -161,7 +174,7 @@ function Form({
         />
       </div>
       <Input
-        label="Name"
+        label="Key"
         placeholder={data?.key || "Define an attribute key"}
         {...register("key")}
       />
@@ -203,10 +216,3 @@ function Form({
     </form>
   );
 }
-
-// function toSlug(string: string) {
-//   return string
-//     .toLowerCase()
-//     .replace(/ /g, "-")
-//     .replace(/[^\w-]+/g, "");
-// }

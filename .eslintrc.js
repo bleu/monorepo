@@ -1,4 +1,4 @@
 module.exports = {
-  extends: "@balancer-pool-metadata/eslint-config",
   root: true,
+  extends: "@balancer-pool-metadata/eslint-config",
 };

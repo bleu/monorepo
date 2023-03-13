@@ -1,6 +1,6 @@
 import {
   ENDPOINTS,
-  Network
+  Network,
 } from "@balancer-pool-metadata/balancer-gql/codegen";
 import { getSdkWithHooks as arbitrumSdk } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/arbitrum";
 import { getSdkWithHooks as goerliSdk } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/goerli";

@@ -15,17 +15,17 @@ export const Select = forwardRef<
   return (
     <SelectPrimitive.Root {...props}>
       <SelectPrimitive.Trigger
-        className="inline-flex h-[35px] items-center justify-center gap-[5px] rounded bg-blue3 px-[15px] text-[13px] leading-none text-blue11 shadow-[0_2px_10px] shadow-blue1/10 outline-none hover:bg-blue3 focus:shadow-[0_0_0_2px] focus:shadow-blue1 data-[placeholder]:text-blue9"
+        className="inline-flex h-[35px] items-center justify-center gap-[5px] rounded bg-blue3 px-[15px] text-[13px] leading-none text-white shadow-[0_2px_10px] shadow-blue1/10 outline-none hover:bg-blue3 focus:shadow-[0_0_0_2px] focus:shadow-blue1 disabled:bg-blackA9 data-[placeholder]:text-blue9"
         ref={forwardedRef}
       >
         <SelectPrimitive.Value />
-        <SelectPrimitive.Icon className="text-blue11">
+        <SelectPrimitive.Icon className="text-white">
           <ChevronDownIcon />
         </SelectPrimitive.Icon>
       </SelectPrimitive.Trigger>
       <SelectPrimitive.Portal>
         <SelectPrimitive.Content className="overflow-hidden rounded-md bg-blue3 shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)]">
-          <SelectPrimitive.ScrollUpButton className="flex h-[25px] cursor-default items-center justify-center bg-blue3 text-blue11">
+          <SelectPrimitive.ScrollUpButton className="flex h-[25px] cursor-default items-center justify-center bg-blue3 text-white">
             <ChevronUpIcon />
           </SelectPrimitive.ScrollUpButton>
           <SelectPrimitive.Viewport className="p-[5px]">
@@ -33,7 +33,7 @@ export const Select = forwardRef<
           </SelectPrimitive.Viewport>
           <SelectPrimitive.ScrollDownButton
             className={classNames(
-              "text-blue11 flex h-[25px] cursor-default items-center justify-center bg-blue3"
+              "text-white flex h-[25px] cursor-default items-center justify-center bg-blue3"
             )}
           >
             <ChevronDownIcon />
@@ -51,7 +51,7 @@ export const SelectItem = forwardRef<
   return (
     <SelectPrimitive.Item
       className={classNames(
-        "text-blue11 data-[disabled]:text-blue3 data-[highlighted]:bg-blue9 data-[highlighted]:text-blue1 relative flex h-[25px] select-none items-center rounded-[3px] pr-[35px] pl-[25px] text-[13px] leading-none data-[disabled]:pointer-events-none data-[highlighted]:outline-none",
+        "text-white data-[disabled]:text-blue3 data-[highlighted]:bg-blue9 data-[highlighted]:text-blue1 relative flex h-[25px] select-none items-center rounded-[3px] pr-[35px] pl-[25px] text-[13px] leading-none data-[disabled]:pointer-events-none data-[highlighted]:outline-none",
         className
       )}
       {...props}

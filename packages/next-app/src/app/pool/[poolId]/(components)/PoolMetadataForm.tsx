@@ -85,8 +85,6 @@ export function PoolMetadataItemForm({
         handleAddMetadata(formData);
       case "edit":
         handleUpdateMetadata(formData);
-      default:
-        handleAddMetadata(formData);
     }
 
     close?.();

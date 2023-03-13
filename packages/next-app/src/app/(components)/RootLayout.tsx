@@ -2,6 +2,7 @@
 
 import { Pool } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/mainnet";
 import { ConnectButton, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
 import { useAccount, useNetwork, WagmiConfig } from "wagmi";
@@ -72,10 +73,6 @@ export function Sidebar() {
 
   const { selectedPool, handleSetPool } = useContext(PoolMetadataContext);
 
-  const handleButtonClick = (index: string) => {
-    handleSetPool(index);
-  };
-
   return (
     <div className="h-full w-96 max-w-full bg-gray-900 p-5">
       <div className="h-screen w-96 max-w-full items-start justify-start space-y-4">
@@ -87,12 +84,16 @@ export function Sidebar() {
         <div className="relative max-h-[40rem] self-stretch overflow-auto rounded-md border border-gray-700 bg-gray-800">
           {data?.pools &&
             data.pools.map((item) => (
-              <OwnedPool
-                key={item.id}
-                onClick={() => handleButtonClick(item.id)}
-                isSelected={item.id === selectedPool}
-                pool={item as Pool}
-              />
+              <Link
+                href={`/metadata/${item.id}`}
+                onClick={() => handleSetPool(item.id)}
+              >
+                <OwnedPool
+                  key={item.id}
+                  isSelected={item.id === selectedPool}
+                  pool={item as Pool}
+                />
+              </Link>
             ))}
         </div>
       </div>

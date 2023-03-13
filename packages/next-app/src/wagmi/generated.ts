@@ -4301,6 +4301,27 @@ export const iProtocolFeesCollectorABI = [
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ISignaturesValidator
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const iSignaturesValidatorABI = [
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [],
+    name: 'getDomainSeparator',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [{ name: 'user', internalType: 'address', type: 'address' }],
+    name: 'getNextNonce',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+  },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // IRecoveryMode
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -4333,27 +4354,6 @@ export const iRecoveryModeABI = [
     inputs: [],
     name: 'inRecoveryMode',
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-  },
-] as const
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ISignaturesValidator
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-export const iSignaturesValidatorABI = [
-  {
-    stateMutability: 'view',
-    type: 'function',
-    inputs: [],
-    name: 'getDomainSeparator',
-    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-  },
-  {
-    stateMutability: 'view',
-    type: 'function',
-    inputs: [{ name: 'user', internalType: 'address', type: 'address' }],
-    name: 'getNextNonce',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
   },
 ] as const
 
@@ -22335,6 +22335,102 @@ export function useIProtocolFeesCollectorSwapFeePercentageChangedEvent(
 }
 
 /**
+ * Wraps __{@link useContract}__ with `abi` set to __{@link iSignaturesValidatorABI}__.
+ */
+export function useISignaturesValidator(
+  config: Omit<UseContractConfig, 'abi'> = {} as any,
+) {
+  return useContract({ abi: iSignaturesValidatorABI, ...config })
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link iSignaturesValidatorABI}__.
+ */
+export function useISignaturesValidatorRead<
+  TFunctionName extends string,
+  TSelectData = ReadContractResult<
+    typeof iSignaturesValidatorABI,
+    TFunctionName
+  >,
+>(
+  config: Omit<
+    UseContractReadConfig<
+      typeof iSignaturesValidatorABI,
+      TFunctionName,
+      TSelectData
+    >,
+    'abi'
+  > = {} as any,
+) {
+  return useContractRead({
+    abi: iSignaturesValidatorABI,
+    ...config,
+  } as UseContractReadConfig<
+    typeof iSignaturesValidatorABI,
+    TFunctionName,
+    TSelectData
+  >)
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link iSignaturesValidatorABI}__ and `functionName` set to `"getDomainSeparator"`.
+ */
+export function useISignaturesValidatorGetDomainSeparator<
+  TSelectData = ReadContractResult<
+    typeof iSignaturesValidatorABI,
+    'getDomainSeparator'
+  >,
+>(
+  config: Omit<
+    UseContractReadConfig<
+      typeof iSignaturesValidatorABI,
+      'getDomainSeparator',
+      TSelectData
+    >,
+    'abi' | 'functionName'
+  > = {} as any,
+) {
+  return useContractRead({
+    abi: iSignaturesValidatorABI,
+    functionName: 'getDomainSeparator',
+    ...config,
+  } as UseContractReadConfig<
+    typeof iSignaturesValidatorABI,
+    'getDomainSeparator',
+    TSelectData
+  >)
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link iSignaturesValidatorABI}__ and `functionName` set to `"getNextNonce"`.
+ */
+export function useISignaturesValidatorGetNextNonce<
+  TSelectData = ReadContractResult<
+    typeof iSignaturesValidatorABI,
+    'getNextNonce'
+  >,
+>(
+  config: Omit<
+    UseContractReadConfig<
+      typeof iSignaturesValidatorABI,
+      'getNextNonce',
+      TSelectData
+    >,
+    'abi' | 'functionName'
+  > = {} as any,
+) {
+  return useContractRead({
+    abi: iSignaturesValidatorABI,
+    functionName: 'getNextNonce',
+    ...config,
+  } as UseContractReadConfig<
+    typeof iSignaturesValidatorABI,
+    'getNextNonce',
+    TSelectData
+  >)
+}
+
+/**
  * Wraps __{@link useContract}__ with `abi` set to __{@link iRecoveryModeABI}__.
  */
 export function useIRecoveryMode(
@@ -22572,102 +22668,6 @@ export function useIRecoveryModeRecoveryModeStateChangedEvent(
   } as UseContractEventConfig<
     typeof iRecoveryModeABI,
     'RecoveryModeStateChanged'
-  >)
-}
-
-/**
- * Wraps __{@link useContract}__ with `abi` set to __{@link iSignaturesValidatorABI}__.
- */
-export function useISignaturesValidator(
-  config: Omit<UseContractConfig, 'abi'> = {} as any,
-) {
-  return useContract({ abi: iSignaturesValidatorABI, ...config })
-}
-
-/**
- * Wraps __{@link useContractRead}__ with `abi` set to __{@link iSignaturesValidatorABI}__.
- */
-export function useISignaturesValidatorRead<
-  TFunctionName extends string,
-  TSelectData = ReadContractResult<
-    typeof iSignaturesValidatorABI,
-    TFunctionName
-  >,
->(
-  config: Omit<
-    UseContractReadConfig<
-      typeof iSignaturesValidatorABI,
-      TFunctionName,
-      TSelectData
-    >,
-    'abi'
-  > = {} as any,
-) {
-  return useContractRead({
-    abi: iSignaturesValidatorABI,
-    ...config,
-  } as UseContractReadConfig<
-    typeof iSignaturesValidatorABI,
-    TFunctionName,
-    TSelectData
-  >)
-}
-
-/**
- * Wraps __{@link useContractRead}__ with `abi` set to __{@link iSignaturesValidatorABI}__ and `functionName` set to `"getDomainSeparator"`.
- */
-export function useISignaturesValidatorGetDomainSeparator<
-  TSelectData = ReadContractResult<
-    typeof iSignaturesValidatorABI,
-    'getDomainSeparator'
-  >,
->(
-  config: Omit<
-    UseContractReadConfig<
-      typeof iSignaturesValidatorABI,
-      'getDomainSeparator',
-      TSelectData
-    >,
-    'abi' | 'functionName'
-  > = {} as any,
-) {
-  return useContractRead({
-    abi: iSignaturesValidatorABI,
-    functionName: 'getDomainSeparator',
-    ...config,
-  } as UseContractReadConfig<
-    typeof iSignaturesValidatorABI,
-    'getDomainSeparator',
-    TSelectData
-  >)
-}
-
-/**
- * Wraps __{@link useContractRead}__ with `abi` set to __{@link iSignaturesValidatorABI}__ and `functionName` set to `"getNextNonce"`.
- */
-export function useISignaturesValidatorGetNextNonce<
-  TSelectData = ReadContractResult<
-    typeof iSignaturesValidatorABI,
-    'getNextNonce'
-  >,
->(
-  config: Omit<
-    UseContractReadConfig<
-      typeof iSignaturesValidatorABI,
-      'getNextNonce',
-      TSelectData
-    >,
-    'abi' | 'functionName'
-  > = {} as any,
-) {
-  return useContractRead({
-    abi: iSignaturesValidatorABI,
-    functionName: 'getNextNonce',
-    ...config,
-  } as UseContractReadConfig<
-    typeof iSignaturesValidatorABI,
-    'getNextNonce',
-    TSelectData
   >)
 }
 

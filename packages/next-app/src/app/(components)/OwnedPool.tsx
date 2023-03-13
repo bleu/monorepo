@@ -1,7 +1,6 @@
 import { Pool } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/mainnet";
 
 interface IOwnedPool {
-  onClick: () => void;
   isSelected: boolean;
   pool: Pool;
 }
@@ -15,7 +14,7 @@ function truncateAddress(address: string | undefined) {
   return `${match[1]}…${match[2]}`;
 }
 
-export function OwnedPool({ onClick, isSelected, pool }: IOwnedPool) {
+export function OwnedPool({ isSelected, pool }: IOwnedPool) {
   const backgroundColor = isSelected ? "bg-gray-700" : "bg-gray-800";
   const { poolType, tokens, name, address } = pool;
 
@@ -31,7 +30,6 @@ export function OwnedPool({ onClick, isSelected, pool }: IOwnedPool) {
   return (
     <button
       className={`h-20 w-full p-2 ${backgroundColor} group self-stretch hover:bg-gray-700`}
-      onClick={onClick}
     >
       <div className="flex w-full flex-col space-y-1">
         <div className="flex items-center space-x-3 self-stretch">

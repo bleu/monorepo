@@ -7,10 +7,10 @@ import useDebounce from "#/hooks/useDebounce";
 import metadataGql from "#/lib/poolMetadataGql";
 import {
   usePoolMetadataRegistrySetPoolMetadata,
-  usePreparePoolMetadataRegistrySetPoolMetadata,
+  usePreparePoolMetadataRegistrySetPoolMetadata
 } from "#/wagmi/generated";
 
-export default function Page({ params }: { params: { poolId: string } }) {
+export default function Page({ params }: { params: { poolId: `0x${string}` } }) {
   const textField = useRef<HTMLTextAreaElement>(null);
 
   const [metadata, setMetadata] = useState("");
@@ -26,7 +26,7 @@ export default function Page({ params }: { params: { poolId: string } }) {
 
   useEffect(() => {
     if (metadataPool?.metadataCID) {
-      fetch(`${process.env.NEXT_PUBLIC_PINATA_GW}/${metadataPool?.metadataCID}`)
+      fetch(`https://gateway.pinata.cloud/ipfs/${metadataPool?.metadataCID}`)
         .then((res) => {
           return res.json();
         })
@@ -38,7 +38,7 @@ export default function Page({ params }: { params: { poolId: string } }) {
 
   const { config } = usePreparePoolMetadataRegistrySetPoolMetadata({
     address: "0xebfadf723e077c80f6058dc9c9202bb613de07cf",
-    args: [`0x${params.poolId.slice(2)}`, debouncedCID],
+    args: [params.poolId, debouncedCID],
     enabled: Boolean(debouncedCID),
   });
 

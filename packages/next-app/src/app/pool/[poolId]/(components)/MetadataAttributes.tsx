@@ -8,11 +8,12 @@ import {
 import cn from "classnames";
 import { TableHTMLAttributes, useContext } from "react";
 
-import { Button, ImageDialog } from "../../../../components";
+import { Button, ImageDialog } from "#/components";
 import {
   PoolMetadataAttribute,
   PoolMetadataContext,
-} from "../../../../contexts/PoolMetadataContext";
+} from "#/contexts/PoolMetadataContext";
+
 import { PoolMetadataFormModal } from "./PoolMetadataFormModal";
 
 type CellProps = TableHTMLAttributes<HTMLTableCellElement>;

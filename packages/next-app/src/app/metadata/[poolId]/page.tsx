@@ -2,8 +2,8 @@
 
 import { useRef, useState } from "react";
 
-import { Button } from "../../../components";
-import metadataGql from "../../../lib/poolMetadataGql";
+import { Button } from "#/components";
+import metadataGql from "#/lib/poolMetadataGql";
 
 export default function Page({ params }: { params: { poolId: string } }) {
   const textField = useRef<HTMLTextAreaElement>(null);

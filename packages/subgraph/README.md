@@ -17,7 +17,6 @@ cd graph-node/docker
 docker-compose start
 ```
 
-
 ## Setting up environment
 
 Define the networks with its respective address and startBlock on networks.yaml file:
@@ -34,6 +33,7 @@ goerli:
     address: "0x000000000000000000000000000000000000000"
     startBlock: ??
 ```
+
 ## Generate types and build the subgraph:
 
 ```bash
@@ -47,5 +47,3 @@ pnpm build
 pnpm create-local
 pnpm deploy-local
 ```
-
-

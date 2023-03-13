@@ -1,10 +1,10 @@
 import "@rainbow-me/rainbowkit/styles.css";
-import "../styles/global.css";
+import "#/styles/global.css";
 
 import type { Metadata } from "next";
 import * as React from "react";
 
-import { RootLayout } from "./RootLayout";
+import { RootLayout } from "./(components)/RootLayout";
 
 export const metadata: Metadata = {
   title: "Balancer Pool Metadata",

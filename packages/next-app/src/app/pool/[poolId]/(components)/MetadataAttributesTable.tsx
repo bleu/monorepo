@@ -8,15 +8,15 @@ import {
 import cn from "classnames";
 import { TableHTMLAttributes, useContext } from "react";
 
-import {
-  Button,
-  ImageDialog,
-  PoolMetadataFormModal,
-} from "../../../components";
+import { Button } from "#/components";
+import { Dialog } from "#/components/Dialog";
 import {
   PoolMetadataAttribute,
   PoolMetadataContext,
-} from "../../../contexts/PoolMetadataContext";
+  toSlug,
+} from "#/contexts/PoolMetadataContext";
+
+import { PoolMetadataItemForm } from "./PoolMetadataForm";
 
 type CellProps = TableHTMLAttributes<HTMLTableCellElement>;
 
@@ -39,7 +39,7 @@ const Header = () => {
       className: "relative py-3.5 pl-3 pr-4 sm:pr-0",
     },
     { node: "Name" },
-    { node: "Type" },
+    { node: "Typename" },
     { node: "Description" },
     { node: "Value" },
   ];
@@ -66,19 +66,20 @@ const Td = ({ className, children }: CellProps) => {
 };
 
 const AttributeLink = ({ data }: { data: PoolMetadataAttribute }) => {
-  switch (data.type) {
-    case "URL":
+  switch (data.typename) {
+    case "url":
       return (
         <button>
           <ArrowTopRightIcon className="text-white" />
         </button>
       );
-    case "image":
-      return (
-        <button>
-          <ImageDialog src={data.value as string} />
-        </button>
-      );
+    // TODO: decide whether we want to have an image type and create it accordingly
+    // case "image":
+    //   return (
+    //     <button>
+    //       <ImageDialog src={data.value as string} />
+    //     </button>
+    //   );
     default:
       return <></>;
   }
@@ -88,15 +89,18 @@ function Row({ data }: { data: PoolMetadataAttribute }) {
   return (
     <tr>
       <Td>
-        <PoolMetadataFormModal mode="edit" data={data}>
+        <Dialog
+          title={"Edit attribute"}
+          content={<PoolMetadataItemForm data={data} mode="edit" />}
+        >
           <button className="flex items-center">
             <Pencil2Icon className="text-yellow-400" />
           </button>
-        </PoolMetadataFormModal>
+        </Dialog>
       </Td>
-      <Td className="min-w-[10rem]">{data.name}</Td>
-      <Td>{data.type}</Td>
-      <Td>{data.desc}</Td>
+      <Td className="min-w-[10rem]">{data.key}</Td>
+      <Td>{data.typename}</Td>
+      <Td>{data.description}</Td>
       <Td>
         <div className="flex justify-between gap-2">
           <>{data.value}</>
@@ -107,7 +111,7 @@ function Row({ data }: { data: PoolMetadataAttribute }) {
   );
 }
 
-export function MetadataAttribute({ poolId }: { poolId: string }) {
+export function MetadataAttributesTable({ poolId }: { poolId: string }) {
   const { metadata } = useContext(PoolMetadataContext);
 
   function handleUpdatePoolMetadata() {
@@ -134,7 +138,7 @@ export function MetadataAttribute({ poolId }: { poolId: string }) {
 
             <tbody className="divide-y divide-gray-800">
               {metadata.map((item) => (
-                <Row key={item.id} data={item} />
+                <Row key={toSlug(item.key)} data={item} />
               ))}
             </tbody>
           </table>
@@ -154,11 +158,12 @@ export function MetadataAttribute({ poolId }: { poolId: string }) {
         </div>
         <div className="mt-5 w-full justify-between sm:flex sm:items-center">
           <div className="flex gap-4">
-            <PoolMetadataFormModal mode="add">
+            <Dialog title={"Add attribute"} content={<PoolMetadataItemForm />}>
               <Button className="bg-indigo-500 text-white hover:bg-indigo-400 focus-visible:outline-indigo-500">
-                Add new attribute
+                Add attribute
               </Button>
-            </PoolMetadataFormModal>
+            </Dialog>
+
             <Button className="border border-blue-500 bg-gray-900  text-blue-500 hover:bg-gray-800 focus-visible:outline-indigo-500">
               Import template
             </Button>

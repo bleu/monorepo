@@ -2,18 +2,18 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { Button } from "../../../components";
-import useDebounce from "../../../hooks/useDebounce";
-import metadataGql from "../../../lib/poolMetadataGql";
+import { Button } from "#/components";
+import useDebounce from "#/hooks/useDebounce";
+import metadataGql from "#/lib/poolMetadataGql";
 import {
   usePoolMetadataRegistrySetPoolMetadata,
-  usePreparePoolMetadataRegistrySetPoolMetadata
-} from "../../../wagmi/generated";
+  usePreparePoolMetadataRegistrySetPoolMetadata,
+} from "#/wagmi/generated";
 
 export default function Page({ params }: { params: { poolId: string } }) {
   const textField = useRef<HTMLTextAreaElement>(null);
 
-  const [metadata, setMetadata] = useState();
+  const [metadata, setMetadata] = useState("");
 
   const [pinned, setPinned] = useState("");
   const [metadataCID, setMetadataCID] = useState("");

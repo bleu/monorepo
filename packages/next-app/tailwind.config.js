@@ -1,5 +1,5 @@
 // eslint-disable-next-line
-const { blackA } = require("@radix-ui/colors");
+const { blackA, blueDark, slateDark } = require("@radix-ui/colors");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -8,6 +8,8 @@ module.exports = {
     extend: {
       colors: {
         ...blackA,
+        ...slateDark,
+        ...blueDark,
       },
       keyframes: {
         overlayShow: {

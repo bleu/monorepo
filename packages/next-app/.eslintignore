@@ -1,5 +1,5 @@
-!.lintstagedrc.js
-!.eslintrc.js
-node_modules/
-lib
-
+**/node_modules/**
+**/.next/**
+**/__generated__/**
+**/lib/**
+**/.vercel/**

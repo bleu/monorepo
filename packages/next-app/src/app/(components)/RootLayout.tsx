@@ -7,13 +7,14 @@ import { useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
 import { useAccount, useNetwork, WagmiConfig } from "wagmi";
 
-import { OwnedPool } from "../components/OwnedPool";
 import {
   PoolMetadataContext,
-  PoolMetadataProvider
-} from "../contexts/PoolMetadataContext";
-import gql from "../lib/gql";
-import { chains, client } from "../wagmi";
+  PoolMetadataProvider,
+} from "#/contexts/PoolMetadataContext";
+import gql from "#/lib/gql";
+import { chains, client } from "#/wagmi/client";
+
+import { OwnedPool } from "./OwnedPool";
 
 export function RootLayout({ children }: { children: React.ReactNode }) {
   const { chain } = useNetwork();

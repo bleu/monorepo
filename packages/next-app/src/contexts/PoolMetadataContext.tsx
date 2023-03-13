@@ -1,5 +1,6 @@
 "use client";
 
+import { TypenameEnum } from "@balancer-pool-metadata/schema";
 import { createContext, ReactNode, useState } from "react";
 
 export function toSlug(string?: string) {
@@ -11,44 +12,35 @@ export function toSlug(string?: string) {
   );
 }
 
-const cellData: {
-  id: string;
-  key: string;
-  typename: string;
-  description: string;
-  value: React.ReactNode;
-}[] = [
+const cellData: PoolMetadataAttribute[] = [
   {
-    id: "pool-address",
     key: "Pool Address",
-    typename: "address",
+    typename: TypenameEnum.enum.text,
     description:
       "The address of the smart contract that implements the exchange pool",
     value: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
   },
   {
-    id: "pool-link",
     key: "Pool link",
-    typename: "URL",
+    typename: TypenameEnum.enum.url,
     description:
       "The address of the smart contract that implements the exchange pool",
     value: "https://github.com/",
   },
   {
-    id: "pool-image",
     key: "Pool image",
-    typename: "image",
+    typename: TypenameEnum.enum.url,
     description: "balancer logo",
     value: "https://s2.coinmarketcap.com/static/img/coins/200x200/5728.png",
   },
 ];
 
+// TODO: generate TS types from zod: https://github.com/sachinraja/zod-to-ts
 export interface PoolMetadataAttribute {
-  id: string;
+  typename: (typeof TypenameEnum.enum)[keyof typeof TypenameEnum.enum];
   key: string;
-  typename: string;
   description: string;
-  value: unknown;
+  value: string;
 }
 
 interface PoolMetadataContextType {
@@ -77,7 +69,7 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
   function handleUpdateMetadata(data: PoolMetadataAttribute) {
     setMetadata((state) =>
       state.map((item) => {
-        return item.id === data.id ? data : item;
+        return toSlug(item.key) === toSlug(data.key) ? data : item;
       })
     );
   }

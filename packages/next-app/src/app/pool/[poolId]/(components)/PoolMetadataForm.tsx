@@ -22,7 +22,7 @@ const Input = React.forwardRef<HTMLInputElement, HTMLProps<HTMLInputElement>>(
         <input
           ref={ref}
           {...rest}
-          className="block w-full rounded border bg-gray-50 py-2 px-3 leading-tight text-gray-700 shadow focus:outline-none"
+          className="selection:color-white box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] bg-blackA5 px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] shadow-blackA9 outline-none selection:bg-blackA9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-blackA9"
         />
       </div>
     );
@@ -79,7 +79,6 @@ export function PoolMetadataItemForm({
       return;
     }
 
-    // WHY?
     switch (mode) {
       case "add":
         handleAddMetadata(formData);
@@ -103,7 +102,7 @@ export function PoolMetadataItemForm({
       className="px-2 pt-2"
     >
       <label className="mb-2 block text-sm text-gray-400">Typename</label>
-      <div className="mb-4">
+      <div className="mb-2">
         <Controller
           control={control}
           name={"typename"}
@@ -113,7 +112,7 @@ export function PoolMetadataItemForm({
               onValueChange={onChange}
               value={value}
               ref={ref}
-              defaultValue={data?.typename || "text"}
+              disabled={mode === "edit"}
             >
               {inputTypenames.map(({ value, label }) => (
                 <SelectItem value={value}>{label}</SelectItem>
@@ -124,14 +123,15 @@ export function PoolMetadataItemForm({
       </div>
       <Input
         label="Key"
-        placeholder={data?.key || "Define an attribute key"}
+        placeholder={"Define an attribute key"}
+        disabled={mode === "edit"}
         {...register("key")}
       />
       <p>{errors.key?.message}</p>
 
       <Input
         label="Description"
-        placeholder={data?.description || "Short attribute description"}
+        placeholder={"Short attribute description"}
         {...register("description")}
       />
       <p>{errors.description?.message}</p>

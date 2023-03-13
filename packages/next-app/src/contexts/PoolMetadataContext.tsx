@@ -12,29 +12,6 @@ export function toSlug(string?: string) {
   );
 }
 
-const cellData: PoolMetadataAttribute[] = [
-  {
-    key: "Pool Address",
-    typename: TypenameEnum.enum.text,
-    description:
-      "The address of the smart contract that implements the exchange pool",
-    value: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
-  },
-  {
-    key: "Pool link",
-    typename: TypenameEnum.enum.url,
-    description:
-      "The address of the smart contract that implements the exchange pool",
-    value: "https://github.com/",
-  },
-  {
-    key: "Pool image",
-    typename: TypenameEnum.enum.url,
-    description: "balancer logo",
-    value: "https://s2.coinmarketcap.com/static/img/coins/200x200/5728.png",
-  },
-];
-
 // TODO: generate TS types from zod: https://github.com/sachinraja/zod-to-ts
 export interface PoolMetadataAttribute {
   typename: (typeof TypenameEnum.enum)[keyof typeof TypenameEnum.enum];
@@ -50,17 +27,18 @@ interface PoolMetadataContextType {
   selectedPool: string | null;
   handleSetPool: (poolId: string) => void;
   isKeyUnique: (key: string) => boolean;
+  handleSetMetadata: (data: PoolMetadataAttribute[]) => void;
 }
 
 export const PoolMetadataContext = createContext({} as PoolMetadataContextType);
 
 export function PoolMetadataProvider({ children }: { children: ReactNode }) {
   const [selectedPool, setSelectedPool] = useState<string>("");
-  // const { data: poolMetadata } = metadataGql.useMetadataPool({
-  //   poolId: selectedPool,
-  // });
-  // cellData = getDataFromIpfs(poolMetadata.CID)
-  const [metadata, setMetadata] = useState<PoolMetadataAttribute[]>(cellData);
+  const [metadata, setMetadata] = useState<PoolMetadataAttribute[]>([]);
+
+  function handleSetMetadata(data: PoolMetadataAttribute[]) {
+    setMetadata(data);
+  }
 
   function handleAddMetadata(data: PoolMetadataAttribute) {
     setMetadata((state) => [data, ...state]);
@@ -91,6 +69,7 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
         selectedPool,
         handleSetPool,
         isKeyUnique,
+        handleSetMetadata,
       }}
     >
       {children}

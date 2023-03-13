@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { pinPoolMetadata } from "../../../../domain/poolMetadata";
+import { pinPoolMetadata } from "#/domain/poolMetadata";
 
 export async function POST(req: Request) {
   const { metadata } = await req.json();

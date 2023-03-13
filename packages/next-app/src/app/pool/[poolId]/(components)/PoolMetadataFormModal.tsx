@@ -9,12 +9,12 @@ import * as React from "react";
 import { HTMLProps, useContext } from "react";
 import { Controller, useForm } from "react-hook-form";
 
-import { Button } from "../../../../components/Button";
-import { Select, SelectItem } from "../../../../components/Select";
+import { Button } from "#/components/Button";
+import { Select, SelectItem } from "#/components/Select";
 import {
   PoolMetadataAttribute,
   PoolMetadataContext,
-} from "../../../../contexts/PoolMetadataContext";
+} from "#/contexts/PoolMetadataContext";
 
 const Input = React.forwardRef<HTMLInputElement, HTMLProps<HTMLInputElement>>(
   ({ label, ...rest }: React.HTMLProps<HTMLInputElement>, ref) => {
@@ -100,7 +100,6 @@ function Form({
     control,
     formState: { errors },
   } = useForm<PoolMetadataAttribute>({
-    // @ts-expect-error
     resolver: zodResolver(MetadataItemSchema),
     defaultValues: {
       typename: data?.typename || "text",

@@ -8,15 +8,12 @@ import {
 import cn from "classnames";
 import { TableHTMLAttributes, useContext } from "react";
 
-import {
-  Button,
-  ImageDialog,
-  PoolMetadataFormModal,
-} from "../../../components";
+import { Button, ImageDialog } from "../../../../components";
 import {
   PoolMetadataAttribute,
   PoolMetadataContext,
-} from "../../../contexts/PoolMetadataContext";
+} from "../../../../contexts/PoolMetadataContext";
+import { PoolMetadataFormModal } from "./PoolMetadataFormModal";
 
 type CellProps = TableHTMLAttributes<HTMLTableCellElement>;
 
@@ -107,7 +104,7 @@ function Row({ data }: { data: PoolMetadataAttribute }) {
   );
 }
 
-export function MetadataAttribute({ poolId }: { poolId: string }) {
+export function MetadataAttributes({ poolId }: { poolId: string }) {
   const { metadata } = useContext(PoolMetadataContext);
 
   function handleUpdatePoolMetadata() {

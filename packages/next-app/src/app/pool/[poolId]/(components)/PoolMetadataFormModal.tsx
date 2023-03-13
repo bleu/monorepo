@@ -1,4 +1,5 @@
 "use client";
+
 import { MetadataItemSchema } from "@balancer-pool-metadata/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Dialog from "@radix-ui/react-dialog";
@@ -8,12 +9,12 @@ import * as React from "react";
 import { HTMLProps, useContext } from "react";
 import { Controller, useForm } from "react-hook-form";
 
+import { Button } from "../../../../components/Button";
+import { Select, SelectItem } from "../../../../components/Select";
 import {
   PoolMetadataAttribute,
   PoolMetadataContext,
-} from "../contexts/PoolMetadataContext";
-import { Button } from "./Button";
-import { Select, SelectItem } from "./Select";
+} from "../../../../contexts/PoolMetadataContext";
 
 const Input = React.forwardRef<HTMLInputElement, HTMLProps<HTMLInputElement>>(
   ({ label, ...rest }: React.HTMLProps<HTMLInputElement>, ref) => {

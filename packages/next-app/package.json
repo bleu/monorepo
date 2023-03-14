@@ -20,6 +20,7 @@
     "@hookform/resolvers": "^2.9.11",
     "@pinata/sdk": "^2.1.0",
     "@radix-ui/colors": "^0.1.8",
+    "@radix-ui/react-alert-dialog": "^1.0.3",
     "@radix-ui/react-dialog": "^1.0.3",
     "@radix-ui/react-icons": "^1.2.0",
     "@radix-ui/react-select": "^1.2.1",
@@ -33,6 +34,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.5",
+    "react-icons": "^4.8.0",
     "wagmi": "~0.12.1"
   },
   "devDependencies": {

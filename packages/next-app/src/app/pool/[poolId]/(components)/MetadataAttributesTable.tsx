@@ -23,6 +23,7 @@ import {
 } from "#/wagmi/generated";
 
 import { PoolMetadataItemForm } from "./PoolMetadataForm";
+import { TransactionDialog } from "./TransactionDialog";
 
 type CellProps = TableHTMLAttributes<HTMLTableCellElement>;
 
@@ -224,6 +225,17 @@ export function MetadataAttributesTable({ poolId }: { poolId: `0x${string}` }) {
               Import template
             </Button>
           </div>
+          <TransactionDialog title={"Update metadata"}>
+            <button className="flex items-center">
+              <Pencil2Icon className="text-yellow-400" />
+            </button>
+          </TransactionDialog>
+          <Button
+            onClick={handleUpdatePoolMetadata}
+            className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 focus-visible:bg-yellow-300"
+          >
+            Update metadata and Tracking
+          </Button>
           <Button
             onClick={handleUpdatePoolMetadata}
             className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 focus-visible:bg-yellow-300"

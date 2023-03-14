@@ -121,9 +121,10 @@ export function MetadataAttributesTable({ poolId }: { poolId: `0x${string}` }) {
   const { metadata, handleSetMetadata, handleSetPool } =
     useContext(PoolMetadataContext);
 
-  handleSetPool(poolId);
-
-  useEffect(() => handleSetMetadata([]), []);
+  useEffect(() => {
+    handleSetPool(poolId);
+    handleSetMetadata([]);
+  }, []);
 
   const { data: pools } = metadataGql.useMetadataPool({
     poolId,

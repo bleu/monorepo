@@ -1,7 +1,7 @@
 "use client";
 
 import { Pool } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/mainnet";
-import { ConnectButton, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
@@ -21,6 +21,11 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
   const { isConnected } = useAccount();
   const router = useRouter();
 
+  const RainbowKitProviderDynamic = dynamic(
+    async () => (await import("@rainbow-me/rainbowkit")).RainbowKitProvider,
+    { ssr: false }
+  );
+
   useEffect(() => {
     localStorage.setItem("networkId", chain?.id?.toString() || "1");
 
@@ -29,7 +34,7 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <WagmiConfig client={client}>
-      <RainbowKitProvider chains={chains}>
+      <RainbowKitProviderDynamic chains={chains}>
         <Header />
         {isConnected ? (
           <PoolMetadataProvider>
@@ -46,12 +51,17 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
         ) : (
           <WalletEmptyState />
         )}
-      </RainbowKitProvider>
+      </RainbowKitProviderDynamic>
     </WagmiConfig>
   );
 }
 
 export function Header() {
+  const ConnectButtonDynamic = dynamic(
+    async () => (await import("@rainbow-me/rainbowkit")).ConnectButton,
+    { ssr: false }
+  );
+
   return (
     <div className="flex flex-wrap items-center justify-between bg-gray-700 p-4 text-white">
       <div className="mr-5 flex items-center">
@@ -60,7 +70,7 @@ export function Header() {
         </h1>
       </div>
 
-      <ConnectButton />
+      <ConnectButtonDynamic />
     </div>
   );
 }

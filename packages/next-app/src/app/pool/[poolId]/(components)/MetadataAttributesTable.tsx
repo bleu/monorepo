@@ -5,9 +5,8 @@ import {
   ChevronDownIcon,
   Pencil2Icon,
 } from "@radix-ui/react-icons";
-import { prepareWriteContract, writeContract } from "@wagmi/core";
 import cn from "classnames";
-import { TableHTMLAttributes, useContext, useEffect, useState } from "react";
+import { TableHTMLAttributes, useContext, useEffect } from "react";
 import useSWR from "swr";
 
 import { Button } from "#/components";
@@ -19,11 +18,7 @@ import {
 } from "#/contexts/PoolMetadataContext";
 import { fetcher, pinJSON } from "#/lib/ipfs";
 import metadataGql from "#/lib/poolMetadataGql";
-import {
-  poolMetadataRegistryABI,
-  usePoolMetadataRegistrySetPoolMetadata as useSetPoolMetadata,
-  usePreparePoolMetadataRegistrySetPoolMetadata as usePrepareSetPoolMetadata,
-} from "#/wagmi/generated";
+import { writeSetPoolMetadata } from "#/wagmi/setPoolMetadata";
 
 import { PoolMetadataItemForm } from "./PoolMetadataForm";
 
@@ -121,7 +116,6 @@ function Row({ data }: { data: PoolMetadataAttribute }) {
 }
 
 export function MetadataAttributesTable({ poolId }: { poolId: `0x${string}` }) {
-  const [updatedMetadataCID, setUpdatedMetadataCID] = useState("");
   const { metadata, handleSetMetadata } = useContext(PoolMetadataContext);
   const { data: poolsData } = metadataGql.useMetadataPool({
     poolId,
@@ -129,44 +123,23 @@ export function MetadataAttributesTable({ poolId }: { poolId: `0x${string}` }) {
 
   const pool = poolsData?.pools[0];
   const { data } = useSWR(
-    pool?.metadataCID ? `https://ipfs.io/ipfs/${pool.metadataCID}` : null,
-    fetcher
+    pool?.metadataCID
+      ? `https://gateway.pinata.cloud/ipfs/${pool.metadataCID}`
+      : null,
+    fetcher,
+    {
+      revalidateOnMount: true,
+    }
   );
 
   useEffect(() => {
     handleSetMetadata(data ? (data as PoolMetadataAttribute[]) : []);
   }, [data]);
 
-  const { config } = usePrepareSetPoolMetadata({
-    address: "0xebfadf723e077c80f6058dc9c9202bb613de07cf",
-    args: [poolId, updatedMetadataCID],
-    enabled: Boolean(updatedMetadataCID),
-  });
-
-  const { write: writeToMetadataContract, status } = useSetPoolMetadata(config);
-
-  // useEffect(() => {
-  //   if (!updatedMetadataCID) return;
-  //   console.log({ updatedMetadataCID, writeToMetadataContract });
-  //   writeToMetadataContract?.();
-  // }, [writeToMetadataContract]);
-
-  console.log({ writeToMetadataContract, status });
-
   async function handleUpdatePoolMetadata() {
     const pinData = await pinJSON(poolId, metadata);
-    setUpdatedMetadataCID(pinData.IpfsHash);
-    // writeToMetadataContract?.();
-    // const config = await prepareWriteContract({
-    //   address: "0xebfadf723e077c80f6058dc9c9202bb613de07cf",
-    //   abi: poolMetadataRegistryABI,
-    //   functionName: "setPoolMetadata",
-    //   args: [poolId, pinData.IpfsHash],
-    // });
-
-    // const { hash } = await writeContract(config);
-
-    // console.log({ config });
+    const hash = await writeSetPoolMetadata(poolId, pinData.IpfsHash);
+    return hash;
   }
 
   return (

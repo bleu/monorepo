@@ -6,7 +6,8 @@ import {
   Pencil2Icon,
 } from "@radix-ui/react-icons";
 import cn from "classnames";
-import { TableHTMLAttributes, useContext, useEffect, useState } from "react";
+import { TableHTMLAttributes, useContext, useEffect } from "react";
+import useSWR from "swr";
 
 import { Button } from "#/components";
 import { Dialog } from "#/components/Dialog";
@@ -15,12 +16,10 @@ import {
   PoolMetadataContext,
   toSlug,
 } from "#/contexts/PoolMetadataContext";
-import useDebounce from "#/hooks/useDebounce";
+import { pinJSON } from "#/lib/ipfs";
 import metadataGql from "#/lib/poolMetadataGql";
-import {
-  usePoolMetadataRegistrySetPoolMetadata as useSetPoolMetadata,
-  usePreparePoolMetadataRegistrySetPoolMetadata as usePrepareSetPoolMetadata,
-} from "#/wagmi/generated";
+import { fetcher } from "#/utils/fetcher";
+import { writeSetPoolMetadata } from "#/wagmi/setPoolMetadata";
 
 import { PoolMetadataItemForm } from "./PoolMetadataForm";
 import { TransactionDialog } from "./TransactionDialog";
@@ -119,63 +118,30 @@ function Row({ data }: { data: PoolMetadataAttribute }) {
 }
 
 export function MetadataAttributesTable({ poolId }: { poolId: `0x${string}` }) {
-  const { metadata, handleSetMetadata, handleSetPool } =
-    useContext(PoolMetadataContext);
-
-  useEffect(() => {
-    handleSetPool(poolId);
-    handleSetMetadata([]);
-  }, []);
-
-  const { data: pools } = metadataGql.useMetadataPool({
+  const { metadata, handleSetMetadata } = useContext(PoolMetadataContext);
+  const { data: poolsData } = metadataGql.useMetadataPool({
     poolId,
   });
 
-  const metadataPool = pools?.pools[0];
-
-  const [poolMetadataCID, setMetadataCID] = useState("");
-  const debouncedCID = useDebounce(poolMetadataCID, 500);
+  const pool = poolsData?.pools[0];
+  const { data } = useSWR(
+    pool?.metadataCID
+      ? `https://gateway.pinata.cloud/ipfs/${pool.metadataCID}`
+      : null,
+    fetcher,
+    {
+      revalidateOnMount: true,
+    }
+  );
 
   useEffect(() => {
-    async function fetchData() {
-      const response = await fetch(
-        `https://ipfs.io/ipfs/${metadataPool?.metadataCID}`,
-        {
-          method: "GET",
-        }
-      );
-      const json = await response.json();
-      handleSetMetadata(json);
-    }
-    if (metadataPool?.metadataCID) {
-      fetchData();
-    }
-  }, [metadataPool?.metadataCID]);
-
-  const { config } = usePrepareSetPoolMetadata({
-    address: "0xebfadf723e077c80f6058dc9c9202bb613de07cf",
-    args: [poolId, debouncedCID],
-    enabled: Boolean(debouncedCID),
-  });
-
-  const { write } = useSetPoolMetadata(config);
-
-  async function pinJSON() {
-    const resp = await fetch(`./${poolId}/pin`, {
-      method: "POST",
-      body: JSON.stringify({ metadata: metadata }),
-      headers: {
-        "Content-Type": "application/json; charset=utf8",
-      },
-      mode: "no-cors",
-    });
-    return await resp.json();
-  }
+    handleSetMetadata(data ? (data as PoolMetadataAttribute[]) : []);
+  }, [data]);
 
   async function handleUpdatePoolMetadata() {
-    const pinData = await pinJSON();
-    setMetadataCID(pinData.IpfsHash);
-    write?.();
+    const pinData = await pinJSON(poolId, metadata);
+    const hash = await writeSetPoolMetadata(poolId, pinData.IpfsHash);
+    return hash;
   }
 
   return (

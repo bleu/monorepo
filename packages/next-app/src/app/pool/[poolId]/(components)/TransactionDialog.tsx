@@ -2,7 +2,7 @@
 
 import * as Alert from "@radix-ui/react-alert-dialog";
 import cn from "classnames";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import {
   ImCheckboxChecked,
   ImCheckboxUnchecked,
@@ -10,27 +10,23 @@ import {
 } from "react-icons/im";
 
 import { Button } from "#/components";
+import { PoolMetadataContext } from "#/contexts/PoolMetadataContext";
 
 const ActionStage = ({
+  description,
   stage,
-  status,
 }: {
-  stage: string;
-  status: "idle" | "loading" | "done";
+  description: string;
+  stage: number;
 }) => {
-  let Icon;
+  const { updateStatus } = useContext(PoolMetadataContext);
 
-  switch (status) {
-    case "idle":
-      Icon = ImCheckboxUnchecked;
-      break;
-    case "loading":
-      Icon = ImHourGlass;
-      break;
-    default:
-      Icon = ImCheckboxChecked;
-      break;
-  }
+  const Icon =
+    updateStatus < stage
+      ? ImCheckboxUnchecked
+      : updateStatus === stage
+      ? ImHourGlass
+      : ImCheckboxChecked;
 
   return (
     <div className="flex items-center space-x-2 text-xl">
@@ -41,19 +37,14 @@ const ActionStage = ({
             status === "idle" ? "text-slate-400" : "text-white"
           }`}
         >
-          {stage}
+          {description}
         </div>
       </>
     </div>
   );
 };
 
-export function TransactionDialog({
-  children,
-  title,
-}: React.PropsWithChildren<{
-  title: string;
-}>) {
+export function TransactionDialog({ children }: React.PropsWithChildren) {
   const [open, setOpen] = useState(true);
 
   return (
@@ -71,19 +62,21 @@ export function TransactionDialog({
           )}
         >
           <Alert.Title asChild>
-            <h1 className="mx-1 mb-6 text-3xl text-gray-400">{title}</h1>
+            <h1 className="mx-1 mb-6 text-3xl text-gray-400">
+              Update metadata
+            </h1>
           </Alert.Title>
           <div className="w-full space-y-6 p-4">
-            <ActionStage stage="Pinning file to IPFS" status={"done"} />
+            <ActionStage description="Pinning file to IPFS" stage={0} />
             <ActionStage
-              stage="Waiting user to confirm transaction"
-              status={"loading"}
+              description="Waiting user to confirm transaction"
+              stage={1}
             />
             <ActionStage
-              stage="Submitting transaction on-chain"
-              status={"idle"}
+              description="Submitting transaction on-chain"
+              stage={2}
             />
-            <ActionStage stage="Transaction confirmed" status={"idle"} />
+            <ActionStage description="Transaction confirmed" stage={3} />
           </div>
           <div className="mt-4 flex justify-center">
             <Alert.Action asChild>

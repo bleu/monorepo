@@ -225,7 +225,7 @@ export function MetadataAttributesTable({ poolId }: { poolId: `0x${string}` }) {
               Import template
             </Button>
           </div>
-          <TransactionDialog title={"Update metadata"}>
+          <TransactionDialog>
             <button className="flex items-center">
               <Pencil2Icon className="text-yellow-400" />
             </button>

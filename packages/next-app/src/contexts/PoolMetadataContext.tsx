@@ -1,7 +1,13 @@
 "use client";
 
 import { TypenameEnum } from "@balancer-pool-metadata/schema";
-import { createContext, ReactNode, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useState,
+} from "react";
 
 export function toSlug(string?: string) {
   return (
@@ -28,6 +34,16 @@ interface PoolMetadataContextType {
   handleSetPool: (poolId: string) => void;
   isKeyUnique: (key: string) => boolean;
   handleSetMetadata: (data: PoolMetadataAttribute[]) => void;
+  updateStatus: UpdateStatus;
+  setStatus: Dispatch<SetStateAction<UpdateStatus>>;
+}
+
+enum UpdateStatus {
+  PINNING,
+  AUTHORIZING,
+  SUBMITTING,
+  CONFIRMING,
+  CONFIRMED,
 }
 
 export const PoolMetadataContext = createContext({} as PoolMetadataContextType);
@@ -35,6 +51,9 @@ export const PoolMetadataContext = createContext({} as PoolMetadataContextType);
 export function PoolMetadataProvider({ children }: { children: ReactNode }) {
   const [selectedPool, setSelectedPool] = useState<string>("");
   const [metadata, setMetadata] = useState<PoolMetadataAttribute[]>([]);
+  const [updateStatus, setStatus] = useState<UpdateStatus>(
+    UpdateStatus.CONFIRMING
+  );
 
   function handleSetMetadata(data: PoolMetadataAttribute[]) {
     setMetadata(data);
@@ -70,6 +89,8 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
         handleSetPool,
         isKeyUnique,
         handleSetMetadata,
+        updateStatus,
+        setStatus,
       }}
     >
       {children}

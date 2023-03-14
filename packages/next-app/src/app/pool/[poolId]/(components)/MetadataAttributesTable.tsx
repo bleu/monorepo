@@ -16,8 +16,9 @@ import {
   PoolMetadataContext,
   toSlug,
 } from "#/contexts/PoolMetadataContext";
-import { fetcher, pinJSON } from "#/lib/ipfs";
+import { pinJSON } from "#/lib/ipfs";
 import metadataGql from "#/lib/poolMetadataGql";
+import { fetcher } from "#/utils/fetcher";
 import { writeSetPoolMetadata } from "#/wagmi/setPoolMetadata";
 
 import { PoolMetadataItemForm } from "./PoolMetadataForm";

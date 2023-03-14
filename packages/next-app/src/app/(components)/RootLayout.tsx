@@ -85,6 +85,7 @@ export function Sidebar() {
           {data?.pools &&
             data.pools.map((item) => (
               <Link
+                key={item.id}
                 href={`/pool/${item.id}`}
                 onClick={() => handleSetPool(item.id)}
               >

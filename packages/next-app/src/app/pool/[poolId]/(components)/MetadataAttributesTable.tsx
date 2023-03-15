@@ -15,6 +15,7 @@ import {
   PoolMetadataAttribute,
   PoolMetadataContext,
   toSlug,
+  UpdateStatus,
 } from "#/contexts/PoolMetadataContext";
 import { pinJSON } from "#/lib/ipfs";
 import metadataGql from "#/lib/poolMetadataGql";
@@ -118,7 +119,8 @@ function Row({ data }: { data: PoolMetadataAttribute }) {
 }
 
 export function MetadataAttributesTable({ poolId }: { poolId: `0x${string}` }) {
-  const { metadata, handleSetMetadata } = useContext(PoolMetadataContext);
+  const { metadata, handleSetMetadata, setStatus } =
+    useContext(PoolMetadataContext);
   const { data: poolsData } = metadataGql.useMetadataPool({
     poolId,
   });
@@ -139,9 +141,19 @@ export function MetadataAttributesTable({ poolId }: { poolId: `0x${string}` }) {
   }, [data]);
 
   async function handleUpdatePoolMetadata() {
+    setStatus(UpdateStatus.PINNING);
+
     const pinData = await pinJSON(poolId, metadata);
-    const hash = await writeSetPoolMetadata(poolId, pinData.IpfsHash);
-    return hash;
+    setStatus(UpdateStatus.AUTHORIZING);
+
+    const { wait } = await writeSetPoolMetadata(poolId, pinData.IpfsHash);
+    setStatus(UpdateStatus.SUBMITTING);
+    const receipt = await wait();
+    if (receipt.status) {
+      setStatus(UpdateStatus.CONFIRMED);
+    } else {
+      console.log("Error on transaction!", receipt);
+    }
   }
 
   return (
@@ -196,12 +208,14 @@ export function MetadataAttributesTable({ poolId }: { poolId: `0x${string}` }) {
               <Pencil2Icon className="text-yellow-400" />
             </button>
           </TransactionDialog>
-          <Button
-            onClick={handleUpdatePoolMetadata}
-            className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 focus-visible:bg-yellow-300"
-          >
-            Update metadata and Tracking
-          </Button>
+          <TransactionDialog>
+            <Button
+              onClick={handleUpdatePoolMetadata}
+              className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 focus-visible:bg-yellow-300"
+            >
+              Update metadata and Tracking
+            </Button>
+          </TransactionDialog>
           <Button
             onClick={handleUpdatePoolMetadata}
             className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 focus-visible:bg-yellow-300"

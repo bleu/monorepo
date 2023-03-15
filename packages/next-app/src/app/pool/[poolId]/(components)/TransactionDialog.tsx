@@ -45,7 +45,7 @@ const ActionStage = ({
 };
 
 export function TransactionDialog({ children }: React.PropsWithChildren) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   return (
     <Alert.Root open={open} onOpenChange={setOpen}>

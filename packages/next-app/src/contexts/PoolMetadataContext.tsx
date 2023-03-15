@@ -38,7 +38,7 @@ interface PoolMetadataContextType {
   setStatus: Dispatch<SetStateAction<UpdateStatus>>;
 }
 
-enum UpdateStatus {
+export enum UpdateStatus {
   PINNING,
   AUTHORIZING,
   SUBMITTING,
@@ -52,7 +52,7 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
   const [selectedPool, setSelectedPool] = useState<string>("");
   const [metadata, setMetadata] = useState<PoolMetadataAttribute[]>([]);
   const [updateStatus, setStatus] = useState<UpdateStatus>(
-    UpdateStatus.CONFIRMING
+    UpdateStatus.PINNING
   );
 
   function handleSetMetadata(data: PoolMetadataAttribute[]) {

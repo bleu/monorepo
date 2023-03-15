@@ -48,6 +48,14 @@ export enum UpdateStatus {
   CONFIRMED,
 }
 
+export enum StatusLabels {
+  "Waiting...",
+  "Confirm transaction on your wallet",
+  "Submitting...",
+  "Submitted",
+  "Close",
+}
+
 export const PoolMetadataContext = createContext({} as PoolMetadataContextType);
 
 export function PoolMetadataProvider({ children }: { children: ReactNode }) {

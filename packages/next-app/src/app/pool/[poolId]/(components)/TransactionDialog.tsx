@@ -14,20 +14,13 @@ import { Button } from "#/components";
 import {
   PoolMetadataAttribute,
   PoolMetadataContext,
+  StatusLabels,
   UpdateStatus,
 } from "#/contexts/PoolMetadataContext";
 import { pinJSON } from "#/lib/ipfs";
 import metadataGql from "#/lib/poolMetadataGql";
 import { fetcher } from "#/utils/fetcher";
 import { writeSetPoolMetadata } from "#/wagmi/setPoolMetadata";
-
-enum ButtonLabels {
-  "Waiting...",
-  "Confirm transaction on your wallet",
-  "Submiting...",
-  "Close!",
-  "Close",
-}
 
 const ActionStage = ({
   description,
@@ -214,7 +207,7 @@ export function TransactionDialog({
                     }
                     className="bg-blue-500 p-8 text-gray-50 hover:bg-blue-400 focus-visible:outline-blue-500 disabled:bg-gray-600 disabled:text-gray-500"
                   >
-                    {ButtonLabels[updateStatus]}
+                    {StatusLabels[updateStatus]}
                   </Button>
                 )}
               </>

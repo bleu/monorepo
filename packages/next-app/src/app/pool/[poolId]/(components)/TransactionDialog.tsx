@@ -1,13 +1,13 @@
 "use client";
 import * as Alert from "@radix-ui/react-alert-dialog";
+import {
+  BoxIcon,
+  CheckboxIcon,
+  ExclamationTriangleIcon,
+  UpdateIcon,
+} from "@radix-ui/react-icons";
 import cn from "classnames";
 import { useContext, useEffect, useState } from "react";
-import {
-  ImCheckboxChecked,
-  ImCheckboxUnchecked,
-  ImHourGlass,
-  ImWarning,
-} from "react-icons/im";
 import useSWR from "swr";
 
 import { Button } from "#/components";
@@ -42,12 +42,12 @@ const ActionStage = ({
 
   const Icon =
     error === stage
-      ? ImWarning
+      ? ExclamationTriangleIcon
       : updateStatus < stage
-      ? ImCheckboxUnchecked
+      ? BoxIcon
       : updateStatus === stage
-      ? ImHourGlass
-      : ImCheckboxChecked;
+      ? UpdateIcon
+      : CheckboxIcon;
 
   return (
     <div className="flex items-center space-x-2 text-xl">
@@ -60,6 +60,8 @@ const ActionStage = ({
               ? "text-white"
               : "text-blue-500"
           }`}
+          width={32}
+          height={32}
         />
         <div
           className={`font-light 

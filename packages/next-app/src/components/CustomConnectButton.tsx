@@ -71,8 +71,8 @@ export function CustomConnectButton() {
                             <Image
                               alt={chain.name ?? "Chain icon"}
                               src={chain.iconUrl}
-                              width={12}
-                              height={12}
+                              width={20}
+                              height={20}
                             />
                           )}
                         </div>

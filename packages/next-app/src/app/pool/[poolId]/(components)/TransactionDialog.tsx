@@ -1,16 +1,24 @@
 "use client";
-
 import * as Alert from "@radix-ui/react-alert-dialog";
 import cn from "classnames";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   ImCheckboxChecked,
   ImCheckboxUnchecked,
   ImHourGlass,
 } from "react-icons/im";
+import useSWR from "swr";
 
 import { Button } from "#/components";
-import { PoolMetadataContext } from "#/contexts/PoolMetadataContext";
+import {
+  PoolMetadataAttribute,
+  PoolMetadataContext,
+  UpdateStatus,
+} from "#/contexts/PoolMetadataContext";
+import { pinJSON } from "#/lib/ipfs";
+import metadataGql from "#/lib/poolMetadataGql";
+import { fetcher } from "#/utils/fetcher";
+import { writeSetPoolMetadata } from "#/wagmi/setPoolMetadata";
 
 const ActionStage = ({
   description,
@@ -44,8 +52,66 @@ const ActionStage = ({
   );
 };
 
-export function TransactionDialog({ children }: React.PropsWithChildren) {
+export function TransactionDialog({
+  children,
+  poolId,
+}: React.PropsWithChildren<{
+  poolId: `0x${string}`;
+}>) {
   const [open, setOpen] = useState(false);
+
+  const { metadata, handleSetMetadata, setStatus, submit, handleSubmit } =
+    useContext(PoolMetadataContext);
+
+  const { data: poolsData } = metadataGql.useMetadataPool({
+    poolId,
+  });
+
+  const pool = poolsData?.pools[0];
+  const { data } = useSWR(
+    pool?.metadataCID
+      ? `https://gateway.pinata.cloud/ipfs/${pool.metadataCID}`
+      : null,
+    fetcher,
+    {
+      revalidateOnMount: true,
+    }
+  );
+
+  useEffect(() => {
+    handleSetMetadata(data ? (data as PoolMetadataAttribute[]) : []);
+  }, [data]);
+
+  useEffect(() => {
+    if (submit) {
+      async function handleUpdatePoolMetadata() {
+        setStatus(UpdateStatus.PINNING);
+
+        const pinData = await pinJSON(poolId, metadata);
+        setStatus(UpdateStatus.AUTHORIZING);
+
+        try {
+          const { hash, wait } = await writeSetPoolMetadata(
+            poolId,
+            pinData.IpfsHash
+          );
+          console.log(hash, wait);
+          setStatus(UpdateStatus.SUBMITTING);
+          const receipt = await wait();
+          if (receipt.status) {
+            setStatus(UpdateStatus.CONFIRMED);
+          } else {
+            console.log("Error on transaction!", receipt);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
+      if (metadata) handleUpdatePoolMetadata();
+      handleSubmit(false);
+    }
+  }, [submit]);
 
   return (
     <Alert.Root open={open} onOpenChange={setOpen}>

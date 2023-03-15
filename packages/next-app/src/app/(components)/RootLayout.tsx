@@ -1,15 +1,20 @@
 "use client";
 
 import { Pool } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/mainnet";
+import { darkTheme, RainbowKitProvider, Theme } from "@rainbow-me/rainbowkit";
+import merge from "lodash.merge";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
 import { useAccount, useNetwork, WagmiConfig } from "wagmi";
 
+import balancerSymbol from "#/assets/balancer-symbol.svg";
+import { CustomConnectButton } from "#/components/CustomConnectButton";
 import {
   PoolMetadataContext,
-  PoolMetadataProvider,
+  PoolMetadataProvider
 } from "#/contexts/PoolMetadataContext";
 import gql from "#/lib/gql";
 import { chains, client } from "#/wagmi/client";
@@ -34,7 +39,11 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <WagmiConfig client={client}>
-      <RainbowKitProviderDynamic chains={chains}>
+      <RainbowKitProvider
+        chains={chains}
+        modalSize="compact"
+        theme={CustomTheme}
+      >
         <Header />
         {isConnected ? (
           <PoolMetadataProvider>
@@ -63,14 +72,15 @@ export function Header() {
   );
 
   return (
-    <div className="flex flex-wrap items-center justify-between bg-gray-700 p-4 text-white">
-      <div className="mr-5 flex items-center">
-        <h1 className="text-lg font-medium tracking-tighter md:text-xl">
-          Balancer Pool Metadata
+    <div className="flex flex-wrap items-center justify-between border-b border-gray-700 bg-gray-800 p-4 text-white">
+      <div className="mr-5 flex items-center gap-3">
+        <Image src={balancerSymbol} height={50} width={50} alt="" />
+        <h1 className="flex gap-2 text-4xl font-thin not-italic leading-8 text-gray-200">
+          Balancer <p className="font-medium">Pool Metadata</p>
         </h1>
       </div>
 
-      <ConnectButtonDynamic />
+      <CustomConnectButton />
     </div>
   );
 }
@@ -121,3 +131,33 @@ export function WalletEmptyState() {
     </div>
   );
 }
+
+const CustomTheme = merge(darkTheme(), {
+  colors: {
+    accentColor: "#3182CE",
+    accentColorForeground: "#E2E8F0",
+    closeButtonBackground: "#E2E8F0",
+    connectButtonText: "#E2E8F0",
+    closeButton: "#2D3748",
+    connectButtonTextError: "#E2E8F0",
+    connectionIndicator: "#30E000",
+    generalBorder: "#E2E8F0",
+    menuItemBackground: "#353d49",
+    modalBackground: "#2D3748",
+    modalBorder: "transparent",
+    modalText: "#E2E8F0",
+    modalTextDim: "#E2E8F0",
+    modalTextSecondary: "#E2E8F0",
+    selectedOptionBorder: "rgba(60, 66, 66, 0.1)",
+    standby: "#FFD641",
+  },
+  fonts: {},
+  radii: {
+    menuButton: "25px",
+    modal: "25px",
+  },
+  shadows: {
+    selectedOption: "0px 4px 8px rgba(0, 0, 0, 0.24)",
+    selectedWallet: "0px 4px 8px rgba(0, 0, 0, 0.12)",
+  },
+} as Theme);

@@ -119,6 +119,7 @@ importers:
       '@radix-ui/react-icons': ^1.2.0
       '@radix-ui/react-select': ^1.2.1
       '@rainbow-me/rainbowkit': ^0.12.0
+      '@types/lodash.merge': ^4.6.7
       '@types/node': ^18.15.0
       '@types/react': ^18.0.28
       '@types/react-dom': ^18.0.11
@@ -129,6 +130,7 @@ importers:
       cuid: ^3.0.0
       ethers: ^5.7.2
       graphql-request: 5.1.0
+      lodash.merge: ^4.6.2
       next: ^13.2.4
       npm-run-all: ^4.1.5
       postcss: ^8.4.21
@@ -157,6 +159,7 @@ importers:
       cuid: 3.0.0
       ethers: 5.7.2
       graphql-request: 5.1.0_graphql@16.6.0
+      lodash.merge: 4.6.2
       next: 13.2.4_6m24vuloj5ihw4zc5lbsktc4fu
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
@@ -164,6 +167,7 @@ importers:
       swr: 2.1.0_react@18.2.0
       wagmi: 0.12.1_kkrqvl37g7i6ouba7cdtkl6w6m
     devDependencies:
+      '@types/lodash.merge': 4.6.7
       '@types/node': 18.15.0
       '@types/react': 18.0.28
       '@types/react-dom': 18.0.11
@@ -3460,6 +3464,12 @@ packages:
     resolution: {integrity: sha512-c5ltxazpWabia/4UzhIoaDcIza4KViOQhdbjRlfcIGVnsE3c3brkz9Z+F/EeJIECOQP7W7US2hNE930cWWkPiw==}
     dependencies:
       '@types/node': 18.15.0
+    dev: true
+
+  /@types/lodash.merge/4.6.7:
+    resolution: {integrity: sha512-OwxUJ9E50gw3LnAefSHJPHaBLGEKmQBQ7CZe/xflHkyy/wH2zVyEIAKReHvVrrn7zKdF58p16We9kMfh7v0RRQ==}
+    dependencies:
+      '@types/lodash': 4.14.191
     dev: true
 
   /@types/lodash/4.14.191:
@@ -9152,7 +9162,6 @@ packages:
 
   /lodash.merge/4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
-    dev: true
 
   /lodash.pad/4.5.1:
     resolution: {integrity: sha512-mvUHifnLqM+03YNzeTBS1/Gr6JRFjd3rRx88FHWUvamVaT9k2O/kXha3yBSOwB9/DTQrSTLJNHvLBBt2FdX7Mg==}

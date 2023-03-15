@@ -6,6 +6,7 @@ import {
   ImCheckboxChecked,
   ImCheckboxUnchecked,
   ImHourGlass,
+  ImWarning,
 } from "react-icons/im";
 import useSWR from "swr";
 
@@ -20,17 +21,29 @@ import metadataGql from "#/lib/poolMetadataGql";
 import { fetcher } from "#/utils/fetcher";
 import { writeSetPoolMetadata } from "#/wagmi/setPoolMetadata";
 
+enum ButtonLabels {
+  "Waiting...",
+  "Confirm transaction on your wallet",
+  "Submiting...",
+  "Close!",
+  "Close",
+}
+
 const ActionStage = ({
   description,
   stage,
+  error,
 }: {
   description: string;
   stage: number;
+  error: number;
 }) => {
   const { updateStatus } = useContext(PoolMetadataContext);
 
   const Icon =
-    updateStatus < stage
+    error === stage
+      ? ImWarning
+      : updateStatus < stage
       ? ImCheckboxUnchecked
       : updateStatus === stage
       ? ImHourGlass
@@ -39,10 +52,24 @@ const ActionStage = ({
   return (
     <div className="flex items-center space-x-2 text-xl">
       <>
-        <Icon className="text-white" />
+        <Icon
+          className={`${
+            stage === error
+              ? "text-red-400"
+              : stage >= updateStatus
+              ? "text-white"
+              : "text-blue-500"
+          }`}
+        />
         <div
-          className={`font-light ${
-            status === "idle" ? "text-slate-400" : "text-white"
+          className={`font-light 
+          
+          ${
+            stage === error
+              ? "text-red-400"
+              : stage > updateStatus
+              ? "text-slate-400"
+              : "text-white"
           }`}
         >
           {description}
@@ -59,9 +86,16 @@ export function TransactionDialog({
   poolId: `0x${string}`;
 }>) {
   const [open, setOpen] = useState(false);
+  const [stageError, setStageError] = useState(-1);
 
-  const { metadata, handleSetMetadata, setStatus, submit, handleSubmit } =
-    useContext(PoolMetadataContext);
+  const {
+    metadata,
+    handleSetMetadata,
+    setStatus,
+    updateStatus,
+    submit,
+    handleSubmit,
+  } = useContext(PoolMetadataContext);
 
   const { data: poolsData } = metadataGql.useMetadataPool({
     poolId,
@@ -84,6 +118,7 @@ export function TransactionDialog({
 
   useEffect(() => {
     if (submit) {
+      setStageError(-1);
       async function handleUpdatePoolMetadata() {
         setStatus(UpdateStatus.PINNING);
 
@@ -91,20 +126,16 @@ export function TransactionDialog({
         setStatus(UpdateStatus.AUTHORIZING);
 
         try {
-          const { hash, wait } = await writeSetPoolMetadata(
-            poolId,
-            pinData.IpfsHash
-          );
-          console.log(hash, wait);
+          const { wait } = await writeSetPoolMetadata(poolId, pinData.IpfsHash);
           setStatus(UpdateStatus.SUBMITTING);
           const receipt = await wait();
           if (receipt.status) {
             setStatus(UpdateStatus.CONFIRMED);
           } else {
-            console.log("Error on transaction!", receipt);
+            setStageError(2);
           }
         } catch (error) {
-          console.log(error);
+          setStageError(1);
         }
       }
 
@@ -133,27 +164,58 @@ export function TransactionDialog({
             </h1>
           </Alert.Title>
           <div className="w-full space-y-6 p-4">
-            <ActionStage description="Pinning file to IPFS" stage={0} />
+            <ActionStage
+              description="Pinning file to IPFS"
+              stage={0}
+              error={stageError}
+            />
             <ActionStage
               description="Waiting user to confirm transaction"
               stage={1}
+              error={stageError}
             />
             <ActionStage
               description="Submitting transaction on-chain"
               stage={2}
+              error={stageError}
             />
-            <ActionStage description="Transaction confirmed" stage={3} />
+            <ActionStage
+              description="Transaction confirmed"
+              stage={3}
+              error={stageError}
+            />
           </div>
           <div className="mt-4 flex justify-center">
             <Alert.Action asChild>
-              <Button
-                form="attribute-form"
-                type="submit"
-                disabled={false}
-                className="bg-blue-500 p-8 text-gray-50 hover:bg-blue-400 focus-visible:outline-blue-500 disabled:bg-gray-600 disabled:text-gray-500"
-              >
-                Finish
-              </Button>
+              <>
+                {stageError > -1 ? (
+                  <Button
+                    onClick={() => {
+                      handleSubmit(true);
+                    }}
+                    form="attribute-form"
+                    type="button"
+                    disabled={stageError < 0}
+                    className="bg-blue-500 p-8 text-gray-50 hover:bg-blue-400 focus-visible:outline-blue-500 disabled:bg-gray-600 disabled:text-gray-500"
+                  >
+                    Try again
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => {
+                      setOpen(false);
+                    }}
+                    form="attribute-form"
+                    type="button"
+                    disabled={
+                      stageError < 0 && updateStatus !== UpdateStatus.CONFIRMED
+                    }
+                    className="bg-blue-500 p-8 text-gray-50 hover:bg-blue-400 focus-visible:outline-blue-500 disabled:bg-gray-600 disabled:text-gray-500"
+                  >
+                    {ButtonLabels[updateStatus]}
+                  </Button>
+                )}
+              </>
             </Alert.Action>
           </div>
         </Alert.Content>

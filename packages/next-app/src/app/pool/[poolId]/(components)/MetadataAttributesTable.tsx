@@ -167,12 +167,9 @@ export function MetadataAttributesTable({ poolId }: { poolId: `0x${string}` }) {
               onClick={() => handleSubmit(true)}
               className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 focus-visible:bg-yellow-300"
             >
-              Update metadata and Tracking
+              Update metadata
             </Button>
           </TransactionDialog>
-          <Button className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 focus-visible:bg-yellow-300">
-            Update metadata
-          </Button>
         </div>
       </div>
     </div>

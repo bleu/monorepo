@@ -125,7 +125,6 @@ importers:
       '@types/react-dom': ^18.0.11
       '@wagmi/cli': 0.1.11
       '@wagmi/core': ^0.10.1
-      '@wagmi/core': ^0.10.1
       autoprefixer: ^10.4.14
       classnames: ^2.3.2
       cuid: ^3.0.0
@@ -165,6 +164,8 @@ importers:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-hook-form: 7.43.5_react@18.2.0
+      react-icons: 4.8.0_react@18.2.0
+      swr: 2.1.0_react@18.2.0
       wagmi: 0.12.1_kkrqvl37g7i6ouba7cdtkl6w6m
     devDependencies:
       '@types/node': 18.15.0

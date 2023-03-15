@@ -12,6 +12,6 @@ export async function writeSetPoolMetadata(
     functionName: "setPoolMetadata",
     args: [poolId, metadataCID],
   });
-  
+
   return await writeContract(config);
 }

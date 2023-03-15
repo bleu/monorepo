@@ -6,8 +6,7 @@ import {
   Pencil2Icon,
 } from "@radix-ui/react-icons";
 import cn from "classnames";
-import { TableHTMLAttributes, useContext, useEffect } from "react";
-import useSWR from "swr";
+import { TableHTMLAttributes, useContext } from "react";
 
 import { Button } from "#/components";
 import { Dialog } from "#/components/Dialog";
@@ -16,12 +15,9 @@ import {
   PoolMetadataContext,
   toSlug,
 } from "#/contexts/PoolMetadataContext";
-import { pinJSON } from "#/lib/ipfs";
-import metadataGql from "#/lib/poolMetadataGql";
-import { fetcher } from "#/utils/fetcher";
-import { writeSetPoolMetadata } from "#/wagmi/setPoolMetadata";
 
 import { PoolMetadataItemForm } from "./PoolMetadataForm";
+import { TransactionDialog } from "./TransactionDialog";
 
 type CellProps = TableHTMLAttributes<HTMLTableCellElement>;
 
@@ -117,31 +113,7 @@ function Row({ data }: { data: PoolMetadataAttribute }) {
 }
 
 export function MetadataAttributesTable({ poolId }: { poolId: `0x${string}` }) {
-  const { metadata, handleSetMetadata } = useContext(PoolMetadataContext);
-  const { data: poolsData } = metadataGql.useMetadataPool({
-    poolId,
-  });
-
-  const pool = poolsData?.pools[0];
-  const { data } = useSWR(
-    pool?.metadataCID
-      ? `https://gateway.pinata.cloud/ipfs/${pool.metadataCID}`
-      : null,
-    fetcher,
-    {
-      revalidateOnMount: true,
-    }
-  );
-
-  useEffect(() => {
-    handleSetMetadata(data ? (data as PoolMetadataAttribute[]) : []);
-  }, [data]);
-
-  async function handleUpdatePoolMetadata() {
-    const pinData = await pinJSON(poolId, metadata);
-    const hash = await writeSetPoolMetadata(poolId, pinData.IpfsHash);
-    return hash;
-  }
+  const { metadata, handleSubmit } = useContext(PoolMetadataContext);
 
   return (
     <div className="w-full bg-gray-900">
@@ -190,12 +162,14 @@ export function MetadataAttributesTable({ poolId }: { poolId: `0x${string}` }) {
               Import template
             </Button>
           </div>
-          <Button
-            onClick={handleUpdatePoolMetadata}
-            className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 focus-visible:bg-yellow-300"
-          >
-            Update metadata
-          </Button>
+          <TransactionDialog poolId={poolId}>
+            <Button
+              onClick={() => handleSubmit(true)}
+              className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 focus-visible:bg-yellow-300"
+            >
+              Update metadata
+            </Button>
+          </TransactionDialog>
         </div>
       </div>
     </div>

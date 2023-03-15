@@ -1,8 +1,9 @@
 "use client";
 
 import { Pool } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/mainnet";
-import { darkTheme, RainbowKitProvider, Theme } from "@rainbow-me/rainbowkit";
+import { darkTheme, Theme } from "@rainbow-me/rainbowkit";
 import merge from "lodash.merge";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -10,7 +11,6 @@ import { useContext, useEffect } from "react";
 import { useAccount, useNetwork, WagmiConfig } from "wagmi";
 
 import balancerSymbol from "#/assets/balancer-symbol.svg";
-import { CustomConnectButton } from "#/components/CustomConnectButton";
 import {
   PoolMetadataContext,
   PoolMetadataProvider,
@@ -25,6 +25,11 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
   const { isConnected } = useAccount();
   const router = useRouter();
 
+  const RainbowKitProviderDynamic = dynamic(
+    async () => (await import("@rainbow-me/rainbowkit")).RainbowKitProvider,
+    { ssr: false }
+  );
+
   useEffect(() => {
     localStorage.setItem("networkId", chain?.id?.toString() || "1");
 
@@ -33,7 +38,7 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <WagmiConfig client={client}>
-      <RainbowKitProvider
+      <RainbowKitProviderDynamic
         chains={chains}
         modalSize="compact"
         theme={CustomTheme}
@@ -54,12 +59,18 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
         ) : (
           <WalletEmptyState />
         )}
-      </RainbowKitProvider>
+      </RainbowKitProviderDynamic>
     </WagmiConfig>
   );
 }
 
 export function Header() {
+  const CustomConnectButton = dynamic(
+    async () =>
+      (await import("#/components/CustomConnectButton")).CustomConnectButton,
+    { ssr: false }
+  );
+
   return (
     <div className="flex flex-wrap items-center justify-between border-b border-gray-700 bg-gray-800 p-4 text-white">
       <div className="mr-5 flex items-center gap-3">
@@ -94,6 +105,7 @@ export function Sidebar() {
           {data?.pools &&
             data.pools.map((item) => (
               <Link
+                key={item.id}
                 href={`/pool/${item.id}`}
                 onClick={() => handleSetPool(item.id)}
               >

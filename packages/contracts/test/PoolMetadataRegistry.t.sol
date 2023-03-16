@@ -5,6 +5,7 @@ pragma experimental ABIEncoderV2;
 import "../src/PoolMetadataRegistry.sol";
 import "balancer-v2-monorepo/pkg/vault/contracts/Vault.sol";
 import "balancer-v2-monorepo/pkg/pool-utils/contracts/test/MockBasePool.sol";
+import "balancer-v2-monorepo/pkg/vault/contracts/test/MockBasicAuthorizer.sol";
 
 import {Test} from "forge-std/Test.sol";
 
@@ -18,18 +19,28 @@ contract MockPoolMetadataRegistry is PoolMetadataRegistry {
     function isPoolOwner(bytes32 poolId) public view returns (bool) {
         return _isPoolOwner(poolId);
     }
+
+    function isCallerOwner(bytes32 poolId) public view returns (bool) {
+        return _isCallerOwner(poolId);
+    }
 }
 
 contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
     MockPoolMetadataRegistry _poolMetadataRegistry;
+    MockBasicAuthorizer private _authorizer;
     IVault private _vault;
     MockBasePool private _basePool;
+    MockBasePool private _delegatedBasePool;
     address private constant _poolOwner = address(15);
 
     string private constant _testMetadataCID = "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR";
+    address internal constant _DELEGATE_OWNER = 0xBA1BA1ba1BA1bA1bA1Ba1BA1ba1BA1bA1ba1ba1B;
 
     function setUp() external {
-        _vault = new Vault(IAuthorizer(0), IWETH(0), 0, 0);
+        vm.startPrank(_poolOwner);
+        _authorizer = new MockBasicAuthorizer();
+        vm.stopPrank();
+        _vault = new Vault(_authorizer, IWETH(0), 0, 0);
 
         IERC20[] memory tokens = new IERC20[](2);
 
@@ -50,6 +61,19 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
             0,
             0,
             _poolOwner
+        );
+
+        _delegatedBasePool = new MockBasePool(
+            _vault,
+            IVault.PoolSpecialization.GENERAL,
+            'MockBasePool',
+            'MBP',
+            tokens,
+            assetManagers,
+            1e16,
+            0,
+            0,
+            _DELEGATE_OWNER
         );
 
         _poolMetadataRegistry = new MockPoolMetadataRegistry(_vault);
@@ -104,6 +128,19 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
         emit PoolMetadataUpdated(_basePool.getPoolId(), _testMetadataCID);
 
         _poolMetadataRegistry.setPoolMetadata(_basePool.getPoolId(), _testMetadataCID);
+        vm.stopPrank();
+    }
+
+    function testIsCallerOwner() public {
+        vm.startPrank(_poolOwner);
+
+        // create function to get actionId
+        // string actionId = authorizer.getActionId(_delegatedBasePool, "setSwapFeePercentage");
+
+        _authorizer.grantRole(0x3697d13ee45583cf9c2c64a978ab5886bcd07ec2b851efbea2fced982b8f9596, _poolOwner);
+
+        bool isCallerOwner = _poolMetadataRegistry.isCallerOwner(_delegatedBasePool.getPoolId());
+        assertTrue(isCallerOwner);
         vm.stopPrank();
     }
 }

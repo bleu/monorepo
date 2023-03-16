@@ -15,6 +15,8 @@ interface IPoolMetadataRegistry {
 contract PoolMetadataRegistry is IPoolMetadataRegistry {
     IVault private immutable _vault;
 
+    address internal constant _DELEGATE_OWNER = 0xBA1BA1ba1BA1bA1bA1Ba1BA1ba1BA1bA1ba1ba1B;
+
     mapping(bytes32 => string) public poolIdMetadataCIDMap;
 
     constructor(IVault vault) {
@@ -39,6 +41,19 @@ contract PoolMetadataRegistry is IPoolMetadataRegistry {
         (address pool,) = _vault.getPool(poolId);
 
         return BasePoolAuthorization(pool).getOwner() == msg.sender ? true : false;
+    }
+
+    function _isCallerOwner(bytes32 poolId) public view returns (bool) {
+        (address pool,) = _vault.getPool(poolId);
+        BasePoolAuthorization poolAuth = BasePoolAuthorization(pool);
+        if (poolAuth.getOwner() == _DELEGATE_OWNER) {
+            bool canPerform = poolAuth.getAuthorizer().canPerform(
+                0x3697d13ee45583cf9c2c64a978ab5886bcd07ec2b851efbea2fced982b8f9596, msg.sender, address(this)
+            );
+            return canPerform;
+        } else {
+            return _isPoolOwner((poolId));
+        }
     }
 
     /// @notice Updates the pool metadata CID

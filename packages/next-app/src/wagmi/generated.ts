@@ -980,6 +980,36 @@ export const balancerPoolTokenABI = [
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// BasePoolAuthorization
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const basePoolAuthorizationABI = [
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [{ name: 'selector', internalType: 'bytes4', type: 'bytes4' }],
+    name: 'getActionId',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [],
+    name: 'getAuthorizer',
+    outputs: [
+      { name: '', internalType: 'contract IAuthorizer', type: 'address' },
+    ],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [],
+    name: 'getOwner',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+  },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // BasePool
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1398,36 +1428,6 @@ export const basePoolABI = [
     inputs: [],
     name: 'unpause',
     outputs: [],
-  },
-] as const
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// BasePoolAuthorization
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-export const basePoolAuthorizationABI = [
-  {
-    stateMutability: 'view',
-    type: 'function',
-    inputs: [{ name: 'selector', internalType: 'bytes4', type: 'bytes4' }],
-    name: 'getActionId',
-    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-  },
-  {
-    stateMutability: 'view',
-    type: 'function',
-    inputs: [],
-    name: 'getAuthorizer',
-    outputs: [
-      { name: '', internalType: 'contract IAuthorizer', type: 'address' },
-    ],
-  },
-  {
-    stateMutability: 'view',
-    type: 'function',
-    inputs: [],
-    name: 'getOwner',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
   },
 ] as const
 
@@ -3301,20 +3301,6 @@ export const flashLoansABI = [
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// IAuthentication
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-export const iAuthenticationABI = [
-  {
-    stateMutability: 'view',
-    type: 'function',
-    inputs: [{ name: 'selector', internalType: 'bytes4', type: 'bytes4' }],
-    name: 'getActionId',
-    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-  },
-] as const
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // IAuthorizer
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -3329,6 +3315,20 @@ export const iAuthorizerABI = [
     ],
     name: 'canPerform',
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+  },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// IAuthentication
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const iAuthenticationABI = [
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [{ name: 'selector', internalType: 'bytes4', type: 'bytes4' }],
+    name: 'getActionId',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
   },
 ] as const
 
@@ -14842,6 +14842,128 @@ export function useBalancerPoolTokenTransferEvent(
 }
 
 /**
+ * Wraps __{@link useContract}__ with `abi` set to __{@link basePoolAuthorizationABI}__.
+ */
+export function useBasePoolAuthorization(
+  config: Omit<UseContractConfig, 'abi'> = {} as any,
+) {
+  return useContract({ abi: basePoolAuthorizationABI, ...config })
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link basePoolAuthorizationABI}__.
+ */
+export function useBasePoolAuthorizationRead<
+  TFunctionName extends string,
+  TSelectData = ReadContractResult<
+    typeof basePoolAuthorizationABI,
+    TFunctionName
+  >,
+>(
+  config: Omit<
+    UseContractReadConfig<
+      typeof basePoolAuthorizationABI,
+      TFunctionName,
+      TSelectData
+    >,
+    'abi'
+  > = {} as any,
+) {
+  return useContractRead({
+    abi: basePoolAuthorizationABI,
+    ...config,
+  } as UseContractReadConfig<
+    typeof basePoolAuthorizationABI,
+    TFunctionName,
+    TSelectData
+  >)
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link basePoolAuthorizationABI}__ and `functionName` set to `"getActionId"`.
+ */
+export function useBasePoolAuthorizationGetActionId<
+  TSelectData = ReadContractResult<
+    typeof basePoolAuthorizationABI,
+    'getActionId'
+  >,
+>(
+  config: Omit<
+    UseContractReadConfig<
+      typeof basePoolAuthorizationABI,
+      'getActionId',
+      TSelectData
+    >,
+    'abi' | 'functionName'
+  > = {} as any,
+) {
+  return useContractRead({
+    abi: basePoolAuthorizationABI,
+    functionName: 'getActionId',
+    ...config,
+  } as UseContractReadConfig<
+    typeof basePoolAuthorizationABI,
+    'getActionId',
+    TSelectData
+  >)
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link basePoolAuthorizationABI}__ and `functionName` set to `"getAuthorizer"`.
+ */
+export function useBasePoolAuthorizationGetAuthorizer<
+  TSelectData = ReadContractResult<
+    typeof basePoolAuthorizationABI,
+    'getAuthorizer'
+  >,
+>(
+  config: Omit<
+    UseContractReadConfig<
+      typeof basePoolAuthorizationABI,
+      'getAuthorizer',
+      TSelectData
+    >,
+    'abi' | 'functionName'
+  > = {} as any,
+) {
+  return useContractRead({
+    abi: basePoolAuthorizationABI,
+    functionName: 'getAuthorizer',
+    ...config,
+  } as UseContractReadConfig<
+    typeof basePoolAuthorizationABI,
+    'getAuthorizer',
+    TSelectData
+  >)
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link basePoolAuthorizationABI}__ and `functionName` set to `"getOwner"`.
+ */
+export function useBasePoolAuthorizationGetOwner<
+  TSelectData = ReadContractResult<typeof basePoolAuthorizationABI, 'getOwner'>,
+>(
+  config: Omit<
+    UseContractReadConfig<
+      typeof basePoolAuthorizationABI,
+      'getOwner',
+      TSelectData
+    >,
+    'abi' | 'functionName'
+  > = {} as any,
+) {
+  return useContractRead({
+    abi: basePoolAuthorizationABI,
+    functionName: 'getOwner',
+    ...config,
+  } as UseContractReadConfig<
+    typeof basePoolAuthorizationABI,
+    'getOwner',
+    TSelectData
+  >)
+}
+
+/**
  * Wraps __{@link useContract}__ with `abi` set to __{@link basePoolABI}__.
  */
 export function useBasePool(
@@ -15996,128 +16118,6 @@ export function useBasePoolTransferEvent(
     eventName: 'Transfer',
     ...config,
   } as UseContractEventConfig<typeof basePoolABI, 'Transfer'>)
-}
-
-/**
- * Wraps __{@link useContract}__ with `abi` set to __{@link basePoolAuthorizationABI}__.
- */
-export function useBasePoolAuthorization(
-  config: Omit<UseContractConfig, 'abi'> = {} as any,
-) {
-  return useContract({ abi: basePoolAuthorizationABI, ...config })
-}
-
-/**
- * Wraps __{@link useContractRead}__ with `abi` set to __{@link basePoolAuthorizationABI}__.
- */
-export function useBasePoolAuthorizationRead<
-  TFunctionName extends string,
-  TSelectData = ReadContractResult<
-    typeof basePoolAuthorizationABI,
-    TFunctionName
-  >,
->(
-  config: Omit<
-    UseContractReadConfig<
-      typeof basePoolAuthorizationABI,
-      TFunctionName,
-      TSelectData
-    >,
-    'abi'
-  > = {} as any,
-) {
-  return useContractRead({
-    abi: basePoolAuthorizationABI,
-    ...config,
-  } as UseContractReadConfig<
-    typeof basePoolAuthorizationABI,
-    TFunctionName,
-    TSelectData
-  >)
-}
-
-/**
- * Wraps __{@link useContractRead}__ with `abi` set to __{@link basePoolAuthorizationABI}__ and `functionName` set to `"getActionId"`.
- */
-export function useBasePoolAuthorizationGetActionId<
-  TSelectData = ReadContractResult<
-    typeof basePoolAuthorizationABI,
-    'getActionId'
-  >,
->(
-  config: Omit<
-    UseContractReadConfig<
-      typeof basePoolAuthorizationABI,
-      'getActionId',
-      TSelectData
-    >,
-    'abi' | 'functionName'
-  > = {} as any,
-) {
-  return useContractRead({
-    abi: basePoolAuthorizationABI,
-    functionName: 'getActionId',
-    ...config,
-  } as UseContractReadConfig<
-    typeof basePoolAuthorizationABI,
-    'getActionId',
-    TSelectData
-  >)
-}
-
-/**
- * Wraps __{@link useContractRead}__ with `abi` set to __{@link basePoolAuthorizationABI}__ and `functionName` set to `"getAuthorizer"`.
- */
-export function useBasePoolAuthorizationGetAuthorizer<
-  TSelectData = ReadContractResult<
-    typeof basePoolAuthorizationABI,
-    'getAuthorizer'
-  >,
->(
-  config: Omit<
-    UseContractReadConfig<
-      typeof basePoolAuthorizationABI,
-      'getAuthorizer',
-      TSelectData
-    >,
-    'abi' | 'functionName'
-  > = {} as any,
-) {
-  return useContractRead({
-    abi: basePoolAuthorizationABI,
-    functionName: 'getAuthorizer',
-    ...config,
-  } as UseContractReadConfig<
-    typeof basePoolAuthorizationABI,
-    'getAuthorizer',
-    TSelectData
-  >)
-}
-
-/**
- * Wraps __{@link useContractRead}__ with `abi` set to __{@link basePoolAuthorizationABI}__ and `functionName` set to `"getOwner"`.
- */
-export function useBasePoolAuthorizationGetOwner<
-  TSelectData = ReadContractResult<typeof basePoolAuthorizationABI, 'getOwner'>,
->(
-  config: Omit<
-    UseContractReadConfig<
-      typeof basePoolAuthorizationABI,
-      'getOwner',
-      TSelectData
-    >,
-    'abi' | 'functionName'
-  > = {} as any,
-) {
-  return useContractRead({
-    abi: basePoolAuthorizationABI,
-    functionName: 'getOwner',
-    ...config,
-  } as UseContractReadConfig<
-    typeof basePoolAuthorizationABI,
-    'getOwner',
-    TSelectData
-  >)
 }
 
 /**
@@ -19497,6 +19497,51 @@ export function useFlashLoansTokensRegisteredEvent(
 }
 
 /**
+ * Wraps __{@link useContract}__ with `abi` set to __{@link iAuthorizerABI}__.
+ */
+export function useIAuthorizer(
+  config: Omit<UseContractConfig, 'abi'> = {} as any,
+) {
+  return useContract({ abi: iAuthorizerABI, ...config })
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link iAuthorizerABI}__.
+ */
+export function useIAuthorizerRead<
+  TFunctionName extends string,
+  TSelectData = ReadContractResult<typeof iAuthorizerABI, TFunctionName>,
+>(
+  config: Omit<
+    UseContractReadConfig<typeof iAuthorizerABI, TFunctionName, TSelectData>,
+    'abi'
+  > = {} as any,
+) {
+  return useContractRead({
+    abi: iAuthorizerABI,
+    ...config,
+  } as UseContractReadConfig<typeof iAuthorizerABI, TFunctionName, TSelectData>)
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link iAuthorizerABI}__ and `functionName` set to `"canPerform"`.
+ */
+export function useIAuthorizerCanPerform<
+  TSelectData = ReadContractResult<typeof iAuthorizerABI, 'canPerform'>,
+>(
+  config: Omit<
+    UseContractReadConfig<typeof iAuthorizerABI, 'canPerform', TSelectData>,
+    'abi' | 'functionName'
+  > = {} as any,
+) {
+  return useContractRead({
+    abi: iAuthorizerABI,
+    functionName: 'canPerform',
+    ...config,
+  } as UseContractReadConfig<typeof iAuthorizerABI, 'canPerform', TSelectData>)
+}
+
+/**
  * Wraps __{@link useContract}__ with `abi` set to __{@link iAuthenticationABI}__.
  */
 export function useIAuthentication(
@@ -19555,51 +19600,6 @@ export function useIAuthenticationGetActionId<
     'getActionId',
     TSelectData
   >)
-}
-
-/**
- * Wraps __{@link useContract}__ with `abi` set to __{@link iAuthorizerABI}__.
- */
-export function useIAuthorizer(
-  config: Omit<UseContractConfig, 'abi'> = {} as any,
-) {
-  return useContract({ abi: iAuthorizerABI, ...config })
-}
-
-/**
- * Wraps __{@link useContractRead}__ with `abi` set to __{@link iAuthorizerABI}__.
- */
-export function useIAuthorizerRead<
-  TFunctionName extends string,
-  TSelectData = ReadContractResult<typeof iAuthorizerABI, TFunctionName>,
->(
-  config: Omit<
-    UseContractReadConfig<typeof iAuthorizerABI, TFunctionName, TSelectData>,
-    'abi'
-  > = {} as any,
-) {
-  return useContractRead({
-    abi: iAuthorizerABI,
-    ...config,
-  } as UseContractReadConfig<typeof iAuthorizerABI, TFunctionName, TSelectData>)
-}
-
-/**
- * Wraps __{@link useContractRead}__ with `abi` set to __{@link iAuthorizerABI}__ and `functionName` set to `"canPerform"`.
- */
-export function useIAuthorizerCanPerform<
-  TSelectData = ReadContractResult<typeof iAuthorizerABI, 'canPerform'>,
->(
-  config: Omit<
-    UseContractReadConfig<typeof iAuthorizerABI, 'canPerform', TSelectData>,
-    'abi' | 'functionName'
-  > = {} as any,
-) {
-  return useContractRead({
-    abi: iAuthorizerABI,
-    functionName: 'canPerform',
-    ...config,
-  } as UseContractReadConfig<typeof iAuthorizerABI, 'canPerform', TSelectData>)
 }
 
 /**

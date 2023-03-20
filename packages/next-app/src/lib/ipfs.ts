@@ -1,4 +1,4 @@
-import { PoolMetadataAttribute } from "#/contexts/PoolMetadataContext";
+import { PoolMetadataAttribute } from "#/contexts/AdminToolsContext";
 
 export async function pinJSON(poolId: string, metadata: PoolMetadataAttribute[]) {
   const resp = await fetch(`./${poolId}/pin`, {

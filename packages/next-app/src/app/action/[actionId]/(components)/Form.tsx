@@ -2,15 +2,14 @@
 
 import * as Dialog from "@radix-ui/react-dialog";
 import * as React from "react";
-import { HTMLProps, useContext } from "react";
+import { HTMLProps } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import { Button } from "#/components/Button";
 import { Select, SelectItem } from "#/components/Select";
 import {
-  PoolMetadataAttribute,
-  PoolMetadataContext,
-} from "#/contexts/PoolMetadataContext";
+  ActionAttribute,
+} from "#/contexts/AdminToolsContext";
 
 const Input = React.forwardRef<HTMLInputElement, HTMLProps<HTMLInputElement>>(
   ({ label, ...rest }: React.HTMLProps<HTMLInputElement>, ref) => {
@@ -40,7 +39,7 @@ export function PoolMetadataItemForm({
   mode = "add",
   close,
 }: {
-  data?: PoolMetadataAttribute;
+  data?: ActionAttribute;
   mode?: "add" | "edit";
   close?: () => void;
 }) {
@@ -49,41 +48,17 @@ export function PoolMetadataItemForm({
     handleSubmit,
     watch,
     resetField,
-    setError,
     control,
     formState: { errors },
-  } = useForm<PoolMetadataAttribute>({
+  } = useForm<ActionAttribute>({
     defaultValues: {
       ...data,
       typename: data?.typename || "text",
     },
   });
 
-  const { handleAddMetadata, handleUpdateMetadata, isKeyUnique } =
-    useContext(PoolMetadataContext);
 
-  function handleSubmitForm(formData: PoolMetadataAttribute) {
-    const uniqueKey = isKeyUnique(formData.key);
-
-    if (!uniqueKey && mode === "add") {
-      setError(
-        "key",
-        {
-          type: "uniqueness",
-          message: "This key already exists.",
-        },
-        { shouldFocus: true }
-      );
-      return;
-    }
-
-    switch (mode) {
-      case "add":
-        handleAddMetadata(formData);
-      case "edit":
-        handleUpdateMetadata(formData);
-    }
-
+  function handleSubmitForm() {
     close?.();
   }
 

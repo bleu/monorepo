@@ -3,21 +3,19 @@
 import { darkTheme, Theme } from "@rainbow-me/rainbowkit";
 import merge from "lodash.merge";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
 import { useAccount, useNetwork, WagmiConfig } from "wagmi";
 
-import balancerSymbol from "#/assets/balancer-symbol.svg";
 import {
-  PoolMetadataContext,
-  PoolMetadataProvider,
-} from "#/contexts/PoolMetadataContext";
+  AdminToolsContext,
+  AdminToolsProvider,
+} from "#/contexts/AdminToolsContext";
 import gql from "#/lib/gql";
 import { chains, client } from "#/wagmi/client";
 
-import { OwnedPool } from "./OwnedPool";
+import { Actions } from "./Actions";
 
 export function RootLayout({ children }: { children: React.ReactNode }) {
   const { chain } = useNetwork();
@@ -44,7 +42,7 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
       >
         <Header />
         {isConnected ? (
-          <PoolMetadataProvider>
+          <AdminToolsProvider>
             <div className="flex h-full">
               <div className="h-full w-96">
                 <div className="h-full w-full">
@@ -54,7 +52,7 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
 
               {children}
             </div>
-          </PoolMetadataProvider>
+          </AdminToolsProvider>
         ) : (
           <WalletEmptyState />
         )}
@@ -73,9 +71,9 @@ export function Header() {
   return (
     <div className="flex flex-wrap items-center justify-between border-b border-gray-700 bg-gray-800 p-4 text-white">
       <div className="mr-5 flex items-center gap-3">
-        <Image src={balancerSymbol} height={50} width={50} alt="" />
+        {/* <Image src={balancerSymbol} height={50} width={50} alt="" /> */}
         <h1 className="flex gap-2 text-4xl font-thin not-italic leading-8 text-gray-200">
-          Balancer <p className="font-medium">Pool Metadata</p>
+          Balancer <p className="font-medium">Admin Tools</p>
         </h1>
       </div>
 
@@ -90,14 +88,14 @@ export function Sidebar() {
     owner: address,
   });
 
-  const { selectedPool, handleSetPool } = useContext(PoolMetadataContext);
+  const { selectedAction, handleSetAction } = useContext(AdminToolsContext);
 
   return (
     <div className="h-full w-96 max-w-full bg-gray-900 p-5">
       <div className="h-screen w-96 max-w-full items-start justify-start space-y-4">
         <div className="items-start justify-start space-y-2.5 self-stretch bg-gray-900 px-2">
           <div className="flex items-center justify-start space-x-0 text-2xl font-medium text-gray-400">
-            <span>Owned pools</span>
+            <span>Actions</span>
           </div>
         </div>
         <div className="relative max-h-[40rem] self-stretch overflow-auto rounded-md border border-gray-700 bg-gray-800">
@@ -105,13 +103,13 @@ export function Sidebar() {
             data.pools.map((item:any) => (
               <Link
                 key={item.id}
-                href={`/pool/${item.id}`}
-                onClick={() => handleSetPool(item.id)}
+                href={`/action/${item.id}`}
+                onClick={() => handleSetAction(item.id)}
               >
-                <OwnedPool
+                <Actions
                   key={item.id}
-                  isSelected={item.id === selectedPool}
-                  pool={item as any}
+                  isSelected={item.id === selectedAction}
+                  action={item as any}
                 />
               </Link>
             ))}
@@ -125,7 +123,7 @@ export function WalletEmptyState() {
   return (
     <div className="flex h-screen items-center justify-center bg-gray-900">
       <h1 className="text-center text-xl font-normal leading-6 text-white opacity-80 md:text-2xl md:leading-9">
-        Welcome to Balancer Pool Metadata, please connect your wallet
+        Welcome to Balancer Admin Tools, please connect your wallet
       </h1>
     </div>
   );

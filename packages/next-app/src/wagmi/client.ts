@@ -14,7 +14,7 @@ const { chains, provider, webSocketProvider } = configureChains(
 );
 
 const { connectors } = getDefaultWallets({
-  appName: "Balancer Pool Metadata",
+  appName: "Balancer DAO Admin Tools",
   chains,
 });
 

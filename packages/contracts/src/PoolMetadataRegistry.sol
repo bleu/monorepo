@@ -2,9 +2,10 @@
 pragma solidity >=0.7.0 <0.9.0;
 
 import "balancer-v2-monorepo/pkg/interfaces/contracts/vault/IVault.sol";
-import "@balancer-labs/v2-solidity-utils/contracts/helpers/Authentication.sol";
+import "balancer-v2-monorepo/pkg/solidity-utils/contracts/helpers/Authentication.sol";
 import {BasePoolAuthorization} from "balancer-v2-monorepo/pkg/pool-utils/contracts/BasePoolAuthorization.sol";
-import "@balancer-labs/v2-interfaces/contracts/vault/IAuthorizer.sol";
+import "balancer-v2-monorepo/pkg/interfaces/contracts/vault/IAuthorizer.sol";
+
 import "./PoolMetadataAuthorization.sol";
 
 interface IPoolMetadataRegistry {

@@ -1,5 +1,5 @@
 {
-  "name": "balancer-pool-metadata",
+  "name": "balancer-admin-tools",
   "version": "1.0.0",
   "private": true,
   "description": "",
@@ -18,10 +18,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bleu-llc/balancer-pool-metadata.git"
+    "url": "git+https://github.com/bleu-llc/balancer-admin-tools.git"
   },
   "dependencies": {
-    "@balancer-pool-metadata/eslint-config": "workspace:*",
+    "@balancer-admin-tools/eslint-config": "workspace:*",
     "@types/node": "^18.15.0",
     "ghooks": "^2.0.4",
     "lint-staged": "^13.2.0",
@@ -43,9 +43,9 @@
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/bleu-llc/balancer-pool-metadata/issues"
+    "url": "https://github.com/bleu-llc/balancer-admin-tools/issues"
   },
-  "homepage": "https://github.com/bleu-llc/balancer-pool-metadata#readme",
+  "homepage": "https://github.com/bleu-llc/balancer-admin-tools#readme",
   "devDependencies": {
     "concurrently": "^7.6.0"
   }

@@ -28,7 +28,7 @@ jobs:
       - uses: gtaschuk/graph-deploy@v0.1.12
         with:
           graph_access_token: ${{secrets.GRAPH_ACCESS_TOKEN}}
-          graph_subgraph_name: "balancer-pools-metadata"
+          graph_subgraph_name: "balancer-admin-tools"
           graph_account: "bleu-llc"
           graph_config_file: "./packages/subgraph/subgraph.goerli.yaml"
 env:

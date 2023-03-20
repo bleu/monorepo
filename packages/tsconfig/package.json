@@ -1,5 +1,5 @@
 {
-  "name": "@balancer-pool-metadata/tsconfig",
+  "name": "@balancer-admin-tools/tsconfig",
   "version": "0.0.0",
   "private": true,
   "files": [

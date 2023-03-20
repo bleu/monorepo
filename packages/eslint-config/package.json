@@ -1,5 +1,5 @@
 {
-  "name": "@balancer-pool-metadata/eslint-config",
+  "name": "@balancer-admin-tools/eslint-config",
   "version": "0.0.0",
   "license": "MIT",
   "files": [

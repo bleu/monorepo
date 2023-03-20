@@ -1,11 +1,11 @@
 import {
   ENDPOINTS,
   Network,
-} from "@balancer-pool-metadata/balancer-gql/codegen";
-import { getSdkWithHooks as arbitrumSdk } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/arbitrum";
-import { getSdkWithHooks as goerliSdk } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/goerli";
-import { getSdkWithHooks as mainnetSdk } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/mainnet";
-import { getSdkWithHooks as polygonSdk } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/polygon";
+} from "@balancer-admin-tools/balancer-gql/codegen";
+import { getSdkWithHooks as arbitrumSdk } from "@balancer-admin-tools/balancer-gql/src/gql/__generated__/arbitrum";
+import { getSdkWithHooks as goerliSdk } from "@balancer-admin-tools/balancer-gql/src/gql/__generated__/goerli";
+import { getSdkWithHooks as mainnetSdk } from "@balancer-admin-tools/balancer-gql/src/gql/__generated__/mainnet";
+import { getSdkWithHooks as polygonSdk } from "@balancer-admin-tools/balancer-gql/src/gql/__generated__/polygon";
 import { GraphQLClient } from "graphql-request";
 
 const currentNetwork =

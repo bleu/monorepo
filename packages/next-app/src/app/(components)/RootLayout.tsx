@@ -1,6 +1,5 @@
 "use client";
 
-import { Pool } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/mainnet";
 import { darkTheme, Theme } from "@rainbow-me/rainbowkit";
 import merge from "lodash.merge";
 import dynamic from "next/dynamic";
@@ -103,7 +102,7 @@ export function Sidebar() {
         </div>
         <div className="relative max-h-[40rem] self-stretch overflow-auto rounded-md border border-gray-700 bg-gray-800">
           {data?.pools &&
-            data.pools.map((item) => (
+            data.pools.map((item:any) => (
               <Link
                 key={item.id}
                 href={`/pool/${item.id}`}
@@ -112,7 +111,7 @@ export function Sidebar() {
                 <OwnedPool
                   key={item.id}
                   isSelected={item.id === selectedPool}
-                  pool={item as Pool}
+                  pool={item as any}
                 />
               </Link>
             ))}

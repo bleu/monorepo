@@ -1,10 +1,9 @@
-import { Pool } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/mainnet";
 
 import { truncateAddress } from "#/utils/truncateAddress";
 
 interface IOwnedPool {
   isSelected: boolean;
-  pool: Pool;
+  pool: any;
 }
 
 export function OwnedPool({ isSelected, pool }: IOwnedPool) {
@@ -13,11 +12,11 @@ export function OwnedPool({ isSelected, pool }: IOwnedPool) {
 
   const poolName =
     poolType === "Weighted" && tokens
-      ? tokens.map((obj) => obj.symbol).join("/")
+      ? tokens.map((obj:any) => obj.symbol).join("/")
       : name;
   const weights =
     poolType === "Weighted" && tokens
-      ? tokens.map((obj) => (Number(obj.weight) * 100).toFixed()).join("/")
+      ? tokens.map((obj:any) => (Number(obj.weight) * 100).toFixed()).join("/")
       : null;
 
   return (

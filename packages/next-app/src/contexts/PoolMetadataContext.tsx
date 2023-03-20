@@ -1,6 +1,5 @@
 "use client";
 
-import { TypenameEnum } from "@balancer-pool-metadata/schema";
 import {
   createContext,
   Dispatch,
@@ -20,7 +19,7 @@ export function toSlug(string?: string) {
 
 // TODO: generate TS types from zod: https://github.com/sachinraja/zod-to-ts
 export interface PoolMetadataAttribute {
-  typename: (typeof TypenameEnum.enum)[keyof typeof TypenameEnum.enum];
+  typename: any;
   key: string;
   description: string;
   value: string;

@@ -1,7 +1,5 @@
 "use client";
 
-import { MetadataItemSchema } from "@balancer-pool-metadata/schema";
-import { zodResolver } from "@hookform/resolvers/zod";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as React from "react";
 import { HTMLProps, useContext } from "react";
@@ -22,7 +20,7 @@ const Input = React.forwardRef<HTMLInputElement, HTMLProps<HTMLInputElement>>(
         <input
           ref={ref}
           {...rest}
-          className="selection:color-white box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] bg-blackA5 px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] shadow-blackA9 outline-none selection:bg-blackA9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-blackA9"
+          className="selection:color-white bg-blackA5 shadow-blackA9 selection:bg-blackA9 disabled:bg-blackA9 box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
         />
       </div>
     );
@@ -35,6 +33,7 @@ const inputTypenames = [
   { value: "date", label: "Date" },
   { value: "datetime-local", label: "Datetime" },
 ];
+
 
 export function PoolMetadataItemForm({
   data,
@@ -54,7 +53,6 @@ export function PoolMetadataItemForm({
     control,
     formState: { errors },
   } = useForm<PoolMetadataAttribute>({
-    resolver: zodResolver(MetadataItemSchema),
     defaultValues: {
       ...data,
       typename: data?.typename || "text",

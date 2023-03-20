@@ -1,5 +1,0 @@
-goerli:
-  network: goerli
-  PoolMetadataRegistry:
-    address: "0xEBfADf723E077c80f6058dC9c9202bB613DE07cf"
-    startBlock: 8583917

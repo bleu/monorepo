@@ -1,7 +1,4 @@
-import {
-  ENDPOINTS,
-  Network,
-} from "@balancer-admin-tools/balancer-gql/codegen";
+import { ENDPOINTS, Network } from "@balancer-admin-tools/balancer-gql/codegen";
 import { getSdkWithHooks as arbitrumSdk } from "@balancer-admin-tools/balancer-gql/src/gql/__generated__/arbitrum";
 import { getSdkWithHooks as goerliSdk } from "@balancer-admin-tools/balancer-gql/src/gql/__generated__/goerli";
 import { getSdkWithHooks as mainnetSdk } from "@balancer-admin-tools/balancer-gql/src/gql/__generated__/mainnet";

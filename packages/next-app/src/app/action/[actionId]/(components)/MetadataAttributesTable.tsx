@@ -10,10 +10,7 @@ import { TableHTMLAttributes } from "react";
 
 import { Button } from "#/components";
 import { Dialog } from "#/components/Dialog";
-import {
-  ActionAttribute,
-  toSlug,
-} from "#/contexts/AdminToolsContext";
+import { ActionAttribute, toSlug } from "#/contexts/AdminToolsContext";
 
 import { PoolMetadataItemForm } from "./Form";
 
@@ -111,8 +108,7 @@ function Row({ data }: { data: ActionAttribute }) {
 }
 
 export function MetadataAttributesTable({ actionId }: { actionId: string }) {
-
-  const metadata = ['foo','bar']
+  const metadata = ["foo", "bar"];
 
   return (
     <div className="w-full bg-gray-900">
@@ -130,7 +126,7 @@ export function MetadataAttributesTable({ actionId }: { actionId: string }) {
             <Header />
 
             <tbody className="divide-y divide-gray-800">
-              {metadata.map((item:any) => (
+              {metadata.map((item: any) => (
                 <Row key={toSlug(item.key)} data={item} />
               ))}
             </tbody>

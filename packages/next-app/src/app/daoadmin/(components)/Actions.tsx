@@ -1,24 +1,13 @@
-import { Pool } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/mainnet";
-
 import { truncateAddress } from "#/utils/truncateAddress";
 
-interface IOwnedPool {
+interface IActions {
   isSelected: boolean;
-  pool: Pool;
+  action: any;
 }
 
-export function OwnedPool({ isSelected, pool }: IOwnedPool) {
+export function Actions({ isSelected, action }: IActions) {
   const backgroundColor = isSelected ? "bg-gray-700" : "bg-gray-800";
-  const { poolType, tokens, name, address } = pool;
-
-  const poolName =
-    poolType === "Weighted" && tokens
-      ? tokens.map((obj) => obj.symbol).join("/")
-      : name;
-  const weights =
-    poolType === "Weighted" && tokens
-      ? tokens.map((obj) => (Number(obj.weight) * 100).toFixed()).join("/")
-      : null;
+  const { name, contractAddress, operationResponsible } = action;
 
   return (
     <button
@@ -29,24 +18,21 @@ export function OwnedPool({ isSelected, pool }: IOwnedPool) {
           <p
             className={`text-lg font-bold text-gray-200 group-hover:text-yellow-400`}
           >
-            {poolName}
+            {name}
           </p>
-          {weights && (
+        </div>
+        <div className="flex w-full items-center space-x-3">
+          {operationResponsible && (
             <span
               className={`rounded p-1 text-sm font-bold ${
                 isSelected ? "bg-yellow-100" : "bg-blue-200"
               } text-gray-800 group-hover:bg-yellow-100`}
             >
-              {weights}
+              {operationResponsible}
             </span>
           )}
-        </div>
-        <div className="flex w-full items-center space-x-3">
-          <span className="rounded border border-gray-500 p-[3px] text-sm font-bold uppercase leading-4 text-gray-500 group-hover:text-gray-400">
-            {poolType}
-          </span>
           <p className="text-sm leading-tight text-gray-500 group-hover:text-gray-400">
-            {truncateAddress(address)}
+            {truncateAddress(contractAddress)}
           </p>
         </div>
       </div>

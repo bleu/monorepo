@@ -15,7 +15,7 @@ import {
   PoolMetadataContext,
   PoolMetadataProvider,
 } from "#/contexts/PoolMetadataContext";
-import gql from "#/lib/gql";
+import gql, { impersonateWhetherDAO } from "#/lib/gql";
 import { chains, client } from "#/wagmi/client";
 
 import { OwnedPool } from "./OwnedPool";
@@ -86,7 +86,10 @@ export function Header() {
 }
 
 export function Sidebar() {
-  const { address } = useAccount();
+  let { address } = useAccount();
+
+  address = impersonateWhetherDAO(address);
+
   const { data } = gql.usePool({
     owner: address,
   });

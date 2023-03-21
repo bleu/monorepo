@@ -1,9 +1,9 @@
-import { MetadataAttributesTable } from "./(components)/MetadataAttributesTable";
+import { ActionAttributeContent } from "./(components)/ActionAttribute";
 
-export default function Page({ params }: { params: { actionId: string } }) {
+export default function Page() {
   return (
     <div className="h-full flex-1 py-5 text-white">
-      <MetadataAttributesTable actionId={params.actionId} />
+      <ActionAttributeContent />
     </div>
   );
 }

@@ -19,15 +19,40 @@ export function toSlug(string?: string) {
 
 // TODO: generate TS types from zod: https://github.com/sachinraja/zod-to-ts
 export interface ActionAttribute {
-  typename: any;
-  key: string;
+  id: number;
+  name: string;
   description: string;
-  value: string;
+  operationResponsible: string;
+  contractAddress: `0x${string}`;
+  contractUrl: string;
+  fields: {
+    name: string;
+    placeholder: string;
+    type: string;
+  }[];
 }
 
+//TODO fetch selectedAction data from action Id once the backend exists #BAL-157
+export const initialState: ActionAttribute = {
+  id: 0,
+  name: "",
+  description: "",
+  operationResponsible: "",
+  contractAddress: "0xBA1BA1ba1BA1bA1bA1Ba1BA1ba1BA1bA1ba1ba1B",
+  contractUrl: "",
+  fields: [
+    {
+      name: "",
+      placeholder: "",
+      type: "",
+    },
+  ],
+};
+
 interface AdminToolsContextType {
-  selectedAction: string | null;
-  handleSetAction: (actionId: string) => void;
+  //#BAL-157 selectedAction is an Id
+  selectedAction: ActionAttribute | null;
+  handleSetAction: (action: ActionAttribute) => void;
   submit: boolean;
   handleSubmit: Dispatch<SetStateAction<boolean>>;
 }
@@ -35,11 +60,12 @@ interface AdminToolsContextType {
 export const AdminToolsContext = createContext({} as AdminToolsContextType);
 
 export function AdminToolsProvider({ children }: { children: ReactNode }) {
-  const [selectedAction, setSelectedAction] = useState<string>("");
+  const [selectedAction, setSelectedAction] =
+    useState<ActionAttribute>(initialState);
   const [submit, handleSubmit] = useState<boolean>(false);
 
-  function handleSetAction(actionId: string) {
-    setSelectedAction(actionId);
+  function handleSetAction(action: ActionAttribute) {
+    setSelectedAction(action);
   }
 
   return (

@@ -21,6 +21,7 @@ import { pinJSON } from "#/lib/ipfs";
 import metadataGql from "#/lib/poolMetadataGql";
 import { fetcher } from "#/utils/fetcher";
 import { writeSetPoolMetadata } from "#/wagmi/setPoolMetadata";
+import { useNetwork } from "wagmi";
 
 const ActionStage = ({
   description,
@@ -82,6 +83,7 @@ export function TransactionDialog({
 }>) {
   const [open, setOpen] = useState(false);
   const [stageError, setStageError] = useState(-1);
+  const { chain } = useNetwork();
 
   const {
     metadata,
@@ -92,7 +94,9 @@ export function TransactionDialog({
     handleSubmit,
   } = useContext(PoolMetadataContext);
 
-  const { data: poolsData } = metadataGql.useMetadataPool({
+  const { data: poolsData } = metadataGql(
+    chain?.id.toString() || "1"
+  ).useMetadataPool({
     poolId,
   });
 

@@ -5,11 +5,6 @@ import {
 import { getSdkWithHooks as goerliSdk } from "@balancer-pool-metadata/pool-metadata-gql/src/gql/__generated__/goerli";
 import { GraphQLClient } from "graphql-request";
 
-const currentNetwork =
-  typeof localStorage !== "undefined"
-    ? localStorage.getItem("networkId") ?? "5"
-    : "5";
-
 const networkIdEnumMap = {
   "5": Network.goerli,
 };
@@ -24,14 +19,8 @@ const networkSdks = {
   [Network.goerli]: goerliSdk,
 };
 
-const client = new GraphQLClient(ENDPOINTS[networkFor(currentNetwork)]);
+const client = (chainId: string) => new GraphQLClient(ENDPOINTS[networkFor(chainId)]);
 
-const gql = networkSdks[networkFor(currentNetwork)](client);
-
-export async function getPool(poolId: string) {
-  gql.MetadataPool({ poolId }).then((data) => {
-    return data;
-  });
-}
+const gql = (chainId: string) => networkSdks[networkFor(chainId)](client(chainId));
 
 export default gql;

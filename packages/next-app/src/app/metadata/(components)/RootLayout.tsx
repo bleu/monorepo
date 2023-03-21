@@ -6,35 +6,33 @@ import merge from "lodash.merge";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { useAccount, useNetwork, WagmiConfig } from "wagmi";
+import EmptyWalletImage from "#/assets/empty-wallet.svg";
 
 import balancerSymbol from "#/assets/balancer-symbol.svg";
+import ConnectWalletImage from "#/assets/connect-wallet.svg";
 import {
   PoolMetadataContext,
   PoolMetadataProvider,
 } from "#/contexts/PoolMetadataContext";
-import gql from "#/lib/gql";
 import { chains, client } from "#/wagmi/client";
 
 import { OwnedPool } from "./OwnedPool";
+import gql from "#/lib/gql";
 
 export function RootLayout({ children }: { children: React.ReactNode }) {
   const { chain } = useNetwork();
-  const { isConnected } = useAccount();
-  const router = useRouter();
+  const { isConnected, address } = useAccount();
 
   const RainbowKitProviderDynamic = dynamic(
     async () => (await import("@rainbow-me/rainbowkit")).RainbowKitProvider,
     { ssr: false }
   );
 
-  useEffect(() => {
-    localStorage.setItem("networkId", chain?.id?.toString() || "1");
-
-    router.refresh();
-  }, [chain]);
+  const { data } = gql(chain?.id.toString() || "1").usePool({
+    owner: address,
+  });
 
   return (
     <WagmiConfig client={client}>
@@ -46,18 +44,19 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
         <Header />
         {isConnected ? (
           <PoolMetadataProvider>
-            <div className="flex h-full">
-              <div className="h-full w-96">
-                <div className="h-full w-full">
-                  <Sidebar />
+            {data?.pools && !!data.pools.length ? (
+              <div className="flex h-full w-full">
+                <div className="h-full w-96">
+                  <Sidebar pools={data.pools as Pool[]} />
                 </div>
+                {children}
               </div>
-
-              {children}
-            </div>
+            ) : (
+              <WalletEmptyState />
+            )}
           </PoolMetadataProvider>
         ) : (
-          <WalletEmptyState />
+          <WalletNotConnectedState />
         )}
       </RainbowKitProviderDynamic>
     </WagmiConfig>
@@ -85,12 +84,7 @@ export function Header() {
   );
 }
 
-export function Sidebar() {
-  const { address } = useAccount();
-  const { data } = gql.usePool({
-    owner: address,
-  });
-
+export function Sidebar({ pools }: { pools: Pool[] }) {
   const { selectedPool, handleSetPool } = useContext(PoolMetadataContext);
 
   return (
@@ -102,8 +96,8 @@ export function Sidebar() {
           </div>
         </div>
         <div className="relative max-h-[40rem] self-stretch overflow-auto rounded-md border border-gray-700 bg-gray-800">
-          {data?.pools &&
-            data.pools.map((item) => (
+          {pools &&
+            pools.map((item) => (
               <Link
                 key={item.id}
                 href={`/metadata/pool/${item.id}`}
@@ -124,10 +118,30 @@ export function Sidebar() {
 
 export function WalletEmptyState() {
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-900">
-      <h1 className="text-center text-xl font-normal leading-6 text-white opacity-80 md:text-2xl md:leading-9">
-        Welcome to Balancer Pool Metadata, please connect your wallet
+    <div className="flex h-full w-full">
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-gray-900">
+        <h1 className="flex h-12 items-center text-center text-3xl font-medium not-italic text-gray-400">
+          There are no pools in this network!
+        </h1>
+        <h1 className="mb-4 flex h-12 items-center text-center	 text-3xl font-medium not-italic text-yellow-300">
+          Please, choose other network.
+        </h1>
+        <Image src={EmptyWalletImage} height={500} width={500} alt="" />
+      </div>
+    </div>
+  );
+}
+
+export function WalletNotConnectedState() {
+  return (
+    <div className="flex h-screen flex-col items-center justify-center bg-gray-900">
+      <h1 className="flex h-12 items-center text-center text-3xl font-medium not-italic text-gray-400">
+        Your metadata pools will appear here.
       </h1>
+      <h1 className="mb-4 flex h-12 items-center text-center	 text-3xl font-medium not-italic text-yellow-300">
+        Please, connect your wallet.
+      </h1>
+      <Image src={ConnectWalletImage} height={500} width={500} alt="" />
     </div>
   );
 }

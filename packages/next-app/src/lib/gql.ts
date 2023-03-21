@@ -8,10 +8,6 @@ import { getSdkWithHooks as mainnetSdk } from "@balancer-pool-metadata/balancer-
 import { getSdkWithHooks as polygonSdk } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/polygon";
 import { GraphQLClient } from "graphql-request";
 
-const currentNetwork =
-  typeof localStorage !== "undefined"
-    ? localStorage.getItem("networkId") ?? "1"
-    : "1";
 
 const networkIdEnumMap = {
   "1": Network.mainnet,
@@ -34,8 +30,9 @@ const networkSdks = {
   [Network.goerli]: goerliSdk,
 };
 
-const client = new GraphQLClient(ENDPOINTS[networkFor(currentNetwork)]);
+const client = (chainId: string) => new GraphQLClient(ENDPOINTS[networkFor(chainId)]);
 
-const gql = networkSdks[networkFor(currentNetwork)](client);
+const gql = (chainId: string) => networkSdks[networkFor(chainId)](client(chainId));
+
 
 export default gql;

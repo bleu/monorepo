@@ -47,11 +47,12 @@ const client = new GraphQLClient(ENDPOINTS[networkFor(currentNetwork)]);
 const gql = networkSdks[networkFor(currentNetwork)](client);
 
 export function impersonateWhetherDAO(address: `0x${string}` | undefined) {
-  if (networkMultisigs[networkFor(currentNetwork)] === (address as string)) {
-    return DELEGATE_OWNER
-  }
+  const network = networkFor(currentNetwork);
 
-  return address
+  if (network !== Network.goerli && networkMultisigs[network] === address) {
+    return DELEGATE_OWNER;
+  }
+  return address;
 }
 
 export default gql;

@@ -4,12 +4,7 @@ import { arbitrum, goerli, mainnet, polygon } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 
 const { chains, provider, webSocketProvider } = configureChains(
-  [
-    mainnet,
-    ...(process.env.NODE_ENV === "development"
-      ? [polygon, arbitrum, goerli]
-      : []),
-  ],
+  [mainnet, polygon, arbitrum, goerli],
   [publicProvider()]
 );
 

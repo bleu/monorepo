@@ -51,4 +51,10 @@ export function impersonateWhetherDAO(chainId: string, address: `0x${string}` | 
   return address;
 }
 
+export async function getPools(chainId: string, address: string) {
+  gql(chainId).Pool({ owner: address }).then((data) => {
+    return data;
+  });
+}
+
 export default gql;

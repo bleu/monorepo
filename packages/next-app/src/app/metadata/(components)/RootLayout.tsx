@@ -6,7 +6,7 @@ import merge from "lodash.merge";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useAccount, useNetwork, WagmiConfig } from "wagmi";
 
 import balancerSymbol from "#/assets/balancer-symbol.svg";
@@ -16,12 +16,14 @@ import {
   PoolMetadataContext,
   PoolMetadataProvider,
 } from "#/contexts/PoolMetadataContext";
-import gql, { impersonateWhetherDAO } from "#/lib/gql";
+import { impersonateWhetherDAO } from "#/lib/gql";
+import { fetchOwnedPools } from "#/utils/fetcher";
 import { chains, client } from "#/wagmi/client";
 
 import { OwnedPool } from "./OwnedPool";
 
 export function RootLayout({ children }: { children: React.ReactNode }) {
+  const [poolsData, setPoolsData] = useState<Pool[]>([]);
   const { chain } = useNetwork();
   const { isConnected } = useAccount();
 
@@ -34,9 +36,13 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
 
   address = impersonateWhetherDAO(chain?.id.toString() || "1", address);
 
-  const { data } = gql(chain?.id.toString() || "1").usePool({
-    owner: address,
-  });
+  useEffect(() => {
+    if (!address) return;
+
+    fetchOwnedPools(address, chain?.id.toString() || "1")
+      .then((response) => setPoolsData(response.pools as Pool[]))
+      .catch(() => setPoolsData([]));
+  }, [chain, address]);
 
   return (
     <WagmiConfig client={client}>
@@ -48,10 +54,10 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
         <Header />
         {isConnected ? (
           <PoolMetadataProvider>
-            {data?.pools && !!data.pools.length ? (
+            {poolsData && !!poolsData.length ? (
               <div className="flex h-full w-full">
                 <div className="h-full w-96">
-                  <Sidebar pools={data.pools as Pool[]} />
+                  <Sidebar pools={poolsData as Pool[]} />
                 </div>
                 {children}
               </div>

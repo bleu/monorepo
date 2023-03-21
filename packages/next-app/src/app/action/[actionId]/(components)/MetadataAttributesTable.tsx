@@ -6,18 +6,16 @@ import {
   Pencil2Icon,
 } from "@radix-ui/react-icons";
 import cn from "classnames";
-import { TableHTMLAttributes, useContext } from "react";
+import { TableHTMLAttributes } from "react";
 
 import { Button } from "#/components";
 import { Dialog } from "#/components/Dialog";
 import {
-  PoolMetadataAttribute,
-  PoolMetadataContext,
+  ActionAttribute,
   toSlug,
-} from "#/contexts/PoolMetadataContext";
+} from "#/contexts/AdminToolsContext";
 
-import { PoolMetadataItemForm } from "./PoolMetadataForm";
-import { TransactionDialog } from "./TransactionDialog";
+import { PoolMetadataItemForm } from "./Form";
 
 type CellProps = TableHTMLAttributes<HTMLTableCellElement>;
 
@@ -66,7 +64,7 @@ const Td = ({ className, children }: CellProps) => {
   );
 };
 
-const AttributeLink = ({ data }: { data: PoolMetadataAttribute }) => {
+const AttributeLink = ({ data }: { data: ActionAttribute }) => {
   switch (data.typename) {
     case "url":
       return (
@@ -86,7 +84,7 @@ const AttributeLink = ({ data }: { data: PoolMetadataAttribute }) => {
   }
 };
 
-function Row({ data }: { data: PoolMetadataAttribute }) {
+function Row({ data }: { data: ActionAttribute }) {
   return (
     <tr>
       <Td>
@@ -112,8 +110,9 @@ function Row({ data }: { data: PoolMetadataAttribute }) {
   );
 }
 
-export function MetadataAttributesTable({ poolId }: { poolId: `0x${string}` }) {
-  const { metadata, handleSubmit } = useContext(PoolMetadataContext);
+export function MetadataAttributesTable({ actionId }: { actionId: string }) {
+
+  const metadata = ['foo','bar']
 
   return (
     <div className="w-full bg-gray-900">
@@ -121,7 +120,7 @@ export function MetadataAttributesTable({ poolId }: { poolId: `0x${string}` }) {
         <div className="sm:flex sm:items-center">
           <div className="sm:flex-auto">
             <h1 className="mx-1 text-2xl font-medium text-gray-400">
-              Metadata attributes - Pool #{poolId}
+              Metadata attributes - Pool #{actionId}
             </h1>
           </div>
         </div>
@@ -131,7 +130,7 @@ export function MetadataAttributesTable({ poolId }: { poolId: `0x${string}` }) {
             <Header />
 
             <tbody className="divide-y divide-gray-800">
-              {metadata.map((item) => (
+              {metadata.map((item:any) => (
                 <Row key={toSlug(item.key)} data={item} />
               ))}
             </tbody>
@@ -162,14 +161,6 @@ export function MetadataAttributesTable({ poolId }: { poolId: `0x${string}` }) {
               Import template
             </Button>
           </div>
-          <TransactionDialog poolId={poolId}>
-            <Button
-              onClick={() => handleSubmit(true)}
-              className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 focus-visible:bg-yellow-300"
-            >
-              Update metadata
-            </Button>
-          </TransactionDialog>
         </div>
       </div>
     </div>

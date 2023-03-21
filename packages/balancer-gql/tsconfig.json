@@ -6,7 +6,7 @@
     }
   },
   "exclude": ["node_modules"],
-  "extends": "@balancer-pool-metadata/tsconfig/base.json",
+  "extends": "@balancer-admin-tools/tsconfig/base.json",
   "include": ["**/*.ts", "**/*.tsx", "../codegen.ts", "codegen.cjs"],
   "references": []
 }

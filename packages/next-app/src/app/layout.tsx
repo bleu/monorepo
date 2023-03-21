@@ -7,8 +7,8 @@ import * as React from "react";
 import { RootLayout } from "./(components)/RootLayout";
 
 export const metadata: Metadata = {
-  title: "Balancer Pool Metadata",
-  description: "Welcome to Balancer Pool Metadata",
+  title: "Balancer DAO Admin Tools",
+  description: "Welcome to Balancer DAO Admin Tools",
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {

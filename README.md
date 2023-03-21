@@ -1,10 +1,9 @@
-# <h1 align="center"> Balancer Pool Metadata </h1>
+# <h1 align="center"> Balancer DAO Admin Tools </h1>
 
-Balancer Pool Metadata is an open-source project that enables pool owners to add metadata to their pools on the Balancer platform. This metadata can include information such as pool name, symbol, description, link, and much more.
+Balancer DAO is responsible for running the protocol operations, e.g. adding reward tokens, registering gauges, etc. For this, they have to build the transactions (encode the function, call the contracts, etc) and execute them on-chain. Performing these actions manually is error-prone and time-consuming - also, many of the actions performed by the DAO are irreversible.
 
-By adding metadata to their pools, pool owners can improve the discoverability of their pools on Balancer and make it easier for users to understand the purpose and characteristics of the pool.
+This is a Gnosis Safe App containing a set of common DAO actions to be proposed/executed seamlessly. Through this App, a Balancer Maxi, for instance, could just select the action `Register Gauge to Controller` and pass the required arguments and automatically the transactions will be created and proposed to the DAO's multisig.
 
-The Balancer Pool Metadata project provides an easy-to-use interface for pool owners to add and update their pool metadata, as well as a public Subgraph for developers to access and use the metadata.
 
 ## Structure
 
@@ -12,9 +11,7 @@ The project uses a monorepo structure and git submodules to organize its codebas
 
 ## Packages
 
-- [`contracts`](./packages/contracts): smart contract responsible for setting/pointing the pool metadata to an IPFS CID.
-- [`next-app`](./packages/next-app): UI where pool owners can connect wallets, list the pools they own, and change the metadata.
-- [`subgraph`](./packages/subgraph): a simplified version that indexes the events emitted by the smart contract. This API allows for the mapping of Pools to their respective IPFS CIDs, which can be consumed by both our App and external front end.
+- [`next-app`](./packages/next-app): UI where the user can connect wallets, view and configurate the avaliable actions, and send them to the DAO's multisig. 
 
 ## Pre-requisites
 
@@ -33,7 +30,7 @@ foundryup
 This repository uses git submodules; use `--recurse-submodules` option when cloning:
 
 ```bash
-git clone --recurse-submodules https://github.com/bleu-llc/balancer-pool-metadata.git
+git clone --recurse-submodules git@github.com:bleu-studio/balancer-admin-tools.git
 ```
 
 ## Installation

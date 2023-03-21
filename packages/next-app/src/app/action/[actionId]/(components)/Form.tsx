@@ -1,18 +1,15 @@
 "use client";
 
-import { MetadataItemSchema } from "@balancer-pool-metadata/schema";
-import { zodResolver } from "@hookform/resolvers/zod";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as React from "react";
-import { HTMLProps, useContext } from "react";
+import { HTMLProps } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import { Button } from "#/components/Button";
 import { Select, SelectItem } from "#/components/Select";
 import {
-  PoolMetadataAttribute,
-  PoolMetadataContext,
-} from "#/contexts/PoolMetadataContext";
+  ActionAttribute,
+} from "#/contexts/AdminToolsContext";
 
 const Input = React.forwardRef<HTMLInputElement, HTMLProps<HTMLInputElement>>(
   ({ label, ...rest }: React.HTMLProps<HTMLInputElement>, ref) => {
@@ -22,7 +19,7 @@ const Input = React.forwardRef<HTMLInputElement, HTMLProps<HTMLInputElement>>(
         <input
           ref={ref}
           {...rest}
-          className="selection:color-white box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] bg-blackA5 px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] shadow-blackA9 outline-none selection:bg-blackA9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-blackA9"
+          className="selection:color-white bg-blackA5 shadow-blackA9 selection:bg-blackA9 disabled:bg-blackA9 box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
         />
       </div>
     );
@@ -36,12 +33,13 @@ const inputTypenames = [
   { value: "datetime-local", label: "Datetime" },
 ];
 
+
 export function PoolMetadataItemForm({
   data,
   mode = "add",
   close,
 }: {
-  data?: PoolMetadataAttribute;
+  data?: ActionAttribute;
   mode?: "add" | "edit";
   close?: () => void;
 }) {
@@ -50,42 +48,17 @@ export function PoolMetadataItemForm({
     handleSubmit,
     watch,
     resetField,
-    setError,
     control,
     formState: { errors },
-  } = useForm<PoolMetadataAttribute>({
-    resolver: zodResolver(MetadataItemSchema),
+  } = useForm<ActionAttribute>({
     defaultValues: {
       ...data,
       typename: data?.typename || "text",
     },
   });
 
-  const { handleAddMetadata, handleUpdateMetadata, isKeyUnique } =
-    useContext(PoolMetadataContext);
 
-  function handleSubmitForm(formData: PoolMetadataAttribute) {
-    const uniqueKey = isKeyUnique(formData.key);
-
-    if (!uniqueKey && mode === "add") {
-      setError(
-        "key",
-        {
-          type: "uniqueness",
-          message: "This key already exists.",
-        },
-        { shouldFocus: true }
-      );
-      return;
-    }
-
-    switch (mode) {
-      case "add":
-        handleAddMetadata(formData);
-      case "edit":
-        handleUpdateMetadata(formData);
-    }
-
+  function handleSubmitForm() {
     close?.();
   }
 

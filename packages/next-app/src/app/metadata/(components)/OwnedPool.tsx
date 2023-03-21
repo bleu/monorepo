@@ -33,7 +33,7 @@ export function OwnedPool({ isSelected, pool }: IOwnedPool) {
           </p>
           {weights && (
             <span
-              className={`rounded p-[1px] text-sm font-bold ${
+              className={`rounded p-1 text-sm font-bold ${
                 isSelected ? "bg-yellow-100" : "bg-blue-200"
               } text-gray-800 group-hover:bg-yellow-100`}
             >

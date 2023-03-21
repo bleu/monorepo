@@ -8,33 +8,35 @@ import Image from "next/image";
 import Link from "next/link";
 import { useContext } from "react";
 import { useAccount, useNetwork, WagmiConfig } from "wagmi";
-import EmptyWalletImage from "#/assets/empty-wallet.svg";
 
 import balancerSymbol from "#/assets/balancer-symbol.svg";
 import ConnectWalletImage from "#/assets/connect-wallet.svg";
-
+import EmptyWalletImage from "#/assets/empty-wallet.svg";
 import {
   PoolMetadataContext,
   PoolMetadataProvider,
 } from "#/contexts/PoolMetadataContext";
+import gql, { impersonateWhetherDAO } from "#/lib/gql";
 import { chains, client } from "#/wagmi/client";
 
 import { OwnedPool } from "./OwnedPool";
-import gql from "#/lib/gql";
 
 export function RootLayout({ children }: { children: React.ReactNode }) {
   const { chain } = useNetwork();
-  const { isConnected, address } = useAccount();
+  const { isConnected } = useAccount();
 
   const RainbowKitProviderDynamic = dynamic(
     async () => (await import("@rainbow-me/rainbowkit")).RainbowKitProvider,
     { ssr: false }
   );
 
+  let { address } = useAccount();
+
+  address = impersonateWhetherDAO(chain?.id.toString() || "1", address);
+
   const { data } = gql(chain?.id.toString() || "1").usePool({
     owner: address,
   });
-
 
   return (
     <WagmiConfig client={client}>
@@ -87,7 +89,6 @@ export function Header() {
 }
 
 export function Sidebar({ pools }: { pools: Pool[] }) {
-
   const { selectedPool, handleSetPool } = useContext(PoolMetadataContext);
 
   return (

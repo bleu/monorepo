@@ -59,7 +59,7 @@ const ActionStage = ({
         />
         <div
           className={`font-light 
-          
+  
           ${
             stage === error
               ? "text-red-400"

@@ -136,6 +136,7 @@ export function MetadataAttributesTable({ poolId }: { poolId: `0x${string}` }) {
               ))}
             </tbody>
           </table>
+          
         </div>
         <div className="mt-5 w-full justify-between sm:flex sm:items-center">
           <div className="flex gap-4">

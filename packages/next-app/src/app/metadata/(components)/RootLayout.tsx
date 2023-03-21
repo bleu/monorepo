@@ -12,6 +12,7 @@ import EmptyWalletImage from "#/assets/empty-wallet.svg";
 
 import balancerSymbol from "#/assets/balancer-symbol.svg";
 import ConnectWalletImage from "#/assets/connect-wallet.svg";
+
 import {
   PoolMetadataContext,
   PoolMetadataProvider,
@@ -33,6 +34,7 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
   const { data } = gql(chain?.id.toString() || "1").usePool({
     owner: address,
   });
+
 
   return (
     <WagmiConfig client={client}>
@@ -85,6 +87,7 @@ export function Header() {
 }
 
 export function Sidebar({ pools }: { pools: Pool[] }) {
+
   const { selectedPool, handleSetPool } = useContext(PoolMetadataContext);
 
   return (

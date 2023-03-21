@@ -9,6 +9,7 @@ import {
 import cn from "classnames";
 import { useContext, useEffect, useState } from "react";
 import useSWR from "swr";
+import { useNetwork } from "wagmi";
 
 import { Button } from "#/components";
 import {
@@ -58,7 +59,7 @@ const ActionStage = ({
         />
         <div
           className={`font-light 
-          
+  
           ${
             stage === error
               ? "text-red-400"
@@ -82,6 +83,7 @@ export function TransactionDialog({
 }>) {
   const [open, setOpen] = useState(false);
   const [stageError, setStageError] = useState(-1);
+  const { chain } = useNetwork();
 
   const {
     metadata,
@@ -92,7 +94,9 @@ export function TransactionDialog({
     handleSubmit,
   } = useContext(PoolMetadataContext);
 
-  const { data: poolsData } = metadataGql.useMetadataPool({
+  const { data: poolsData } = metadataGql(
+    chain?.id.toString() || "1"
+  ).useMetadataPool({
     poolId,
   });
 

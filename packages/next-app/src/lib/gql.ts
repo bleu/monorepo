@@ -10,11 +10,6 @@ import { GraphQLClient } from "graphql-request";
 
 export const DELEGATE_OWNER = '0xBA1BA1ba1BA1bA1bA1Ba1BA1ba1BA1bA1ba1ba1B';
 
-const currentNetwork: string =
-  typeof localStorage !== "undefined"
-    ? localStorage.getItem("networkId") ?? "1"
-    : "1";
-
 const networkIdEnumMap = {
   "1": Network.mainnet,
   "5": Network.goerli,
@@ -42,12 +37,13 @@ const networkMultisigs = {
   [Network.arbitrum]: '0xaF23DC5983230E9eEAf93280e312e57539D098D0',
 };
 
-const client = new GraphQLClient(ENDPOINTS[networkFor(currentNetwork)]);
+const client = (chainId: string) => new GraphQLClient(ENDPOINTS[networkFor(chainId)]);
 
-const gql = networkSdks[networkFor(currentNetwork)](client);
+const gql = (chainId: string) => networkSdks[networkFor(chainId)](client(chainId));
 
-export function impersonateWhetherDAO(address: `0x${string}` | undefined) {
-  const network = networkFor(currentNetwork);
+
+export function impersonateWhetherDAO(chainId: string, address: `0x${string}` | undefined) {
+  const network = networkFor(chainId);
 
   if (network !== Network.goerli && networkMultisigs[network] === address) {
     return DELEGATE_OWNER;

@@ -1,5 +1,14 @@
+import Image from "next/image";
+
+import SelectPoolImage from "#/assets/choose-pool.svg";
+
 export default function Page() {
   return (
-    <div className="h-full flex-1 py-5 text-white">Please select a pool</div>
+    <div className="flex h-screen w-full flex-col items-center justify-center bg-gray-900">
+      <h1 className="mb-4 flex h-12 items-center text-center	 text-3xl font-medium not-italic text-yellow-500">
+        Choose a pool on the side!
+      </h1>
+      <Image src={SelectPoolImage} height={400} width={400} alt="" />
+    </div>
   );
 }

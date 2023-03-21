@@ -36,35 +36,10 @@ const networkSdks = {
   [Network.goerli]: goerliSdk,
 };
 
-
-const mainnetMultisig = [
-  '0x7c68c42De679ffB0f16216154C996C354cF1161B',
-  '0xf4A80929163C5179Ca042E1B292F5EFBBE3D89e6',
-  '0x10A19e7eE7d7F8a52822f6817de8ea18204F2e4f',
-  '0xc38c5f97B34E175FFd35407fc91a937300E33860',
-  '0x75a52c0e32397A3FC0c052E2CeB3479802713Cf4',
-  '0x166f54F44F271407f24AA1BE415a730035637325',
-  '0x0EFcCBb9E2C09Ea29551879bd9Da32362b32fc89',
-]
-
-const arbitrumMultisig = [
-  '0x7c68c42De679ffB0f16216154C996C354cF1161B',
-  '0xc38c5f97B34E175FFd35407fc91a937300E33860',
-  '0xaF23DC5983230E9eEAf93280e312e57539D098D0',
-]
-
-const polygonMultisig = [
-  '0x7c68c42De679ffB0f16216154C996C354cF1161B',
-  '0xc38c5f97B34E175FFd35407fc91a937300E33860',
-  '0xeE071f4B516F69a1603dA393CdE8e76C40E5Be85',
-]
-
-const networkMultisig: {
-  [key: string]: string[]
-} = {
-  [Network.mainnet]: mainnetMultisig,
-  [Network.polygon]: polygonMultisig,
-  [Network.arbitrum]: arbitrumMultisig,
+const networkMultisigs = {
+  [Network.mainnet]: '0x10A19e7eE7d7F8a52822f6817de8ea18204F2e4f',
+  [Network.polygon]: '0xeE071f4B516F69a1603dA393CdE8e76C40E5Be85',
+  [Network.arbitrum]: '0xaF23DC5983230E9eEAf93280e312e57539D098D0',
 };
 
 const client = new GraphQLClient(ENDPOINTS[networkFor(currentNetwork)]);
@@ -72,7 +47,7 @@ const client = new GraphQLClient(ENDPOINTS[networkFor(currentNetwork)]);
 const gql = networkSdks[networkFor(currentNetwork)](client);
 
 export function impersonateWhetherDAO(address: `0x${string}` | undefined) {
-  if (networkMultisig[networkFor(currentNetwork)].includes(address as string)) {
+  if (networkMultisigs[networkFor(currentNetwork)] === (address as string)) {
     return DELEGATE_OWNER
   }
 

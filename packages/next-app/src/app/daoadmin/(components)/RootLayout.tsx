@@ -101,7 +101,7 @@ export function Sidebar() {
             data.actions.map((item: ActionAttribute) => (
               <Link
                 key={item.id}
-                href={`/action/${item.id}`}
+                href={`/daoadmin/action/${item.id}`}
                 onClick={() => handleSetAction(item)}
               >
                 <Actions

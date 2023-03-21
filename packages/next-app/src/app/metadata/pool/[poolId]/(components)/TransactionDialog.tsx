@@ -9,6 +9,7 @@ import {
 import cn from "classnames";
 import { useContext, useEffect, useState } from "react";
 import useSWR from "swr";
+import { useNetwork } from "wagmi";
 
 import { Button } from "#/components";
 import {
@@ -21,7 +22,6 @@ import { pinJSON } from "#/lib/ipfs";
 import metadataGql from "#/lib/poolMetadataGql";
 import { fetcher } from "#/utils/fetcher";
 import { writeSetPoolMetadata } from "#/wagmi/setPoolMetadata";
-import { useNetwork } from "wagmi";
 
 const ActionStage = ({
   description,

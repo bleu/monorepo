@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  ArrowTopRightIcon,
-  ChevronDownIcon,
-  Pencil2Icon,
-} from "@radix-ui/react-icons";
+import { ArrowTopRightIcon, Pencil2Icon } from "@radix-ui/react-icons";
 import cn from "classnames";
 import { TableHTMLAttributes, useContext } from "react";
 
@@ -136,7 +132,6 @@ export function MetadataAttributesTable({ poolId }: { poolId: `0x${string}` }) {
               ))}
             </tbody>
           </table>
-          
         </div>
         <div className="mt-5 w-full justify-between sm:flex sm:items-center">
           <div className="flex gap-4">

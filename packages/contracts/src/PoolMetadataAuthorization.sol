@@ -8,12 +8,6 @@ import {BasePoolAuthorization} from "balancer-v2-monorepo/pkg/pool-utils/contrac
 abstract contract PoolMetadataAuthorization is Authentication {
     address internal constant _DELEGATE_OWNER = 0xBA1BA1ba1BA1bA1bA1Ba1BA1ba1BA1bA1ba1ba1B;
 
-    /// @notice Returns the authorizer contract for managing access control
-    /// @return The authorizer contract
-    function getAuthorizer() external view returns (IAuthorizer) {
-        return _getAuthorizer();
-    }
-
     /// @notice Determines whether an action can be performed by a given account
     /// @param actionId The ID of the action to be performed
     /// @param account The account to check for authorization
@@ -32,5 +26,7 @@ abstract contract PoolMetadataAuthorization is Authentication {
     /// @return The owner of the pool
     function _getOwner() internal view virtual returns (address);
 
+    /// @notice Returns the authorizer contract for managing access control
+    /// @return The authorizer contract
     function _getAuthorizer() internal view virtual returns (IAuthorizer);
 }

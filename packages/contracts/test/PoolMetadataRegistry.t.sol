@@ -30,7 +30,7 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
 
     string private constant _testMetadataCID = "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR";
     address internal constant _DELEGATE_OWNER = 0xBA1BA1ba1BA1bA1bA1Ba1BA1ba1BA1bA1ba1ba1B;
-    address DAOmultisig = 0x10A19e7eE7d7F8a52822f6817de8ea18204F2e4f;
+    address DAOmultisig = address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty)))));
 
     function setUp() external {
         _authorizer = new MockBasicAuthorizer();
@@ -74,9 +74,9 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
         _poolMetadataRegistry = new MockPoolMetadataRegistry(_vault);
 
         // Compute the "setPoolMetadata(bytes32,string)" actionId
-        bytes32 _actionIdDisambiguator = bytes32(uint256(address(_poolMetadataRegistry)));
+        bytes32 actionIdDisambiguator = bytes32(uint256(address(_poolMetadataRegistry)));
         bytes4 selector = _poolMetadataRegistry.setPoolMetadata.selector; // 0xf44f9f15
-        bytes32 setPoolMetadataActionId = keccak256(abi.encodePacked(_actionIdDisambiguator, selector));
+        bytes32 setPoolMetadataActionId = keccak256(abi.encodePacked(actionIdDisambiguator, selector));
 
         // Grant the "setPoolMetadata(bytes32,string)" role to the DAO multisig
         _authorizer.grantRole(setPoolMetadataActionId, DAOmultisig);
@@ -102,6 +102,8 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
 
     function testIfsetPoolMetadataRevertWhenNotOwner() public {
         bytes32 poolId = _basePool.getPoolId();
+        // check if it reverts with SENDER_NOT_ALLOWED
+        // https://docs.balancer.fi/reference/contracts/error-codes.html#lib
         vm.expectRevert("BAL#401");
 
         _poolMetadataRegistry.setPoolMetadata(poolId, _testMetadataCID);
@@ -126,6 +128,8 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
     function testMetadataSetterWhenDAONotDelegatedOwner() public {
         bytes32 poolId = _basePool.getPoolId();
         vm.startPrank(DAOmultisig);
+        // check if it reverts with SENDER_NOT_ALLOWED
+        // https://docs.balancer.fi/reference/contracts/error-codes.html#lib
         vm.expectRevert("BAL#401");
 
         _poolMetadataRegistry.setPoolMetadata(poolId, _testMetadataCID);

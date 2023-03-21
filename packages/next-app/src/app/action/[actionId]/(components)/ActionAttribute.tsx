@@ -3,12 +3,16 @@
 import { useRouter } from 'next/navigation';
 import { HTMLProps, useContext } from "react";
 import * as React from "react";
+import { useForm } from "react-hook-form";
 
 import { Button } from "#/components";
-import { AdminToolsContext } from "#/contexts/AdminToolsContext";
+import { AdminToolsContext, toSlug } from "#/contexts/AdminToolsContext";
 import { truncateAddress } from "#/utils/truncateAddress";
 
 export function ActionAttributeContent() {
+  const { register, handleSubmit } = useForm();
+  // eslint-disable-next-line no-console
+  const onSubmit = (data: any) => console.log(data);
   const { push } = useRouter();
   const { selectedAction } = useContext(AdminToolsContext);
 
@@ -37,7 +41,7 @@ export function ActionAttributeContent() {
   },[selectedAction])
 
   return (
-    <>
+    <form onSubmit={handleSubmit(onSubmit)}>
       {selectedAction?.name && (
         <div className="w-full bg-gray-900">
           <div className="pr-4 sm:pr-6 lg:pr-12">
@@ -70,13 +74,18 @@ export function ActionAttributeContent() {
                 </div>
               </div>
               <div className="flex flex-col gap-4">
-                {selectedAction?.fields.map((field) => (
-                  <Input
-                    key={field.name}
-                    label={field.name}
-                    placeholder={field.placeholder}
-                  />
-                ))}
+                {selectedAction?.fields.map((field) => {
+                  return (
+                  <>
+                    <Input
+                      key={field.name}
+                      label={field.name}
+                      placeholder={field.placeholder}
+                      {...register(toSlug(`${field.name}`))}
+                    />
+                  </>
+                  )
+                })}
               </div>
               <Button
                 type="submit"
@@ -89,6 +98,6 @@ export function ActionAttributeContent() {
           </div>
         </div>
       )}
-    </>
+    </form>
   );
 }

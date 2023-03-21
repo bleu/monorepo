@@ -1,8 +1,9 @@
+import { ActionAttribute } from "#/contexts/AdminToolsContext";
 import { truncateAddress } from "#/utils/truncateAddress";
 
 interface IActions {
   isSelected: boolean;
-  action: any;
+  action: ActionAttribute;
 }
 
 export function Actions({ isSelected, action }: IActions) {

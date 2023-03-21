@@ -26,8 +26,15 @@ contract PoolMetadataRegistry is IPoolMetadataRegistry, PoolMetadataAuthorizatio
     }
 
     modifier onlyRegisteredPool(bytes32 poolId) {
-        _poolId = poolId;
         require(_isPoolRegistered(poolId), "Pool not registered");
+        _;
+    }
+
+    /// @notice setPoolId modifier is used to set the pool ID before the authenticate modifier is called.
+    /// The authenticate modifier then calls the canPerform function,
+    /// which in turn calls the _getOwner function that requires the pool ID.
+    modifier setPoolId(bytes32 poolId) {
+        _poolId = poolId;
         _;
     }
 
@@ -61,6 +68,7 @@ contract PoolMetadataRegistry is IPoolMetadataRegistry, PoolMetadataAuthorizatio
     function setPoolMetadata(bytes32 poolId, string memory metadataCID)
         public
         onlyRegisteredPool(poolId)
+        setPoolId(poolId)
         authenticate
     {
         poolIdMetadataCIDMap[poolId] = metadataCID;

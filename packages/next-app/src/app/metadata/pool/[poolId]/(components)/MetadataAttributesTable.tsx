@@ -3,6 +3,7 @@
 import { ArrowTopRightIcon, Pencil2Icon } from "@radix-ui/react-icons";
 import cn from "classnames";
 import { TableHTMLAttributes, useContext } from "react";
+import { useNetwork } from "wagmi";
 
 import { Button } from "#/components";
 import { Dialog } from "#/components/Dialog";
@@ -11,6 +12,8 @@ import {
   PoolMetadataContext,
   toSlug,
 } from "#/contexts/PoolMetadataContext";
+import { networkFor } from "#/lib/gql";
+import { truncateAddress } from "#/utils/truncateAddress";
 
 import { PoolMetadataItemForm } from "./PoolMetadataForm";
 import { TransactionDialog } from "./TransactionDialog";
@@ -112,14 +115,26 @@ export function MetadataAttributesTable({ poolId }: { poolId: `0x${string}` }) {
   const { metadata, handleSubmit, metadataUpdated } =
     useContext(PoolMetadataContext);
 
+  const { chain } = useNetwork();
+  const link = `https://app.balancer.fi/#/${networkFor(
+    chain!.id.toString()
+  )}/pool/${poolId}`;
 
   return (
     <div className="w-full bg-gray-900">
       <div className="pr-4 sm:pr-6 lg:pr-12">
         <div className="sm:flex sm:items-center">
           <div className="sm:flex-auto">
-            <h1 className="mx-1 text-2xl font-medium text-gray-400">
-              Metadata attributes - Pool #{poolId}
+            <h1 className="mx-1 flex text-2xl font-medium text-gray-400">
+              Metadata attributes - Pool
+              <a
+                target="_blank"
+                href={link}
+                className="flex flex-row items-center justify-center"
+              >
+                #{truncateAddress(poolId)}{" "}
+                <ArrowTopRightIcon width={25} height={25} fontWeight={25} />
+              </a>
             </h1>
           </div>
         </div>

@@ -17,7 +17,7 @@ const networkIdEnumMap = {
   "42161": Network.arbitrum,
 };
 
-function networkFor(key: string | number) {
+export function networkFor(key: string | number) {
   return (
     networkIdEnumMap[key.toString() as keyof typeof networkIdEnumMap] ||
     Network.mainnet

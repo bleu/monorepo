@@ -1,8 +1,9 @@
+import { ActionAttribute } from "#/contexts/AdminToolsContext";
 import { truncateAddress } from "#/utils/truncateAddress";
 
 interface IActions {
   isSelected: boolean;
-  action: any;
+  action: ActionAttribute;
 }
 
 export function Actions({ isSelected, action }: IActions) {
@@ -31,9 +32,9 @@ export function Actions({ isSelected, action }: IActions) {
               {operationResponsible}
             </span>
           )}
-            <p className="text-sm leading-tight text-gray-500 group-hover:text-gray-400">
-              {truncateAddress(contractAddress)}
-            </p>
+          <p className="text-sm leading-tight text-gray-500 group-hover:text-gray-400">
+            {truncateAddress(contractAddress)}
+          </p>
         </div>
       </div>
     </button>

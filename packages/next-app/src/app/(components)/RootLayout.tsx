@@ -9,6 +9,7 @@ import { useContext, useEffect } from "react";
 import { useAccount, useNetwork, WagmiConfig } from "wagmi";
 
 import {
+  ActionAttribute,
   AdminToolsContext,
   AdminToolsProvider,
 } from "#/contexts/AdminToolsContext";
@@ -83,7 +84,7 @@ export function Header() {
 }
 
 export function Sidebar() {
-  const data = hardcodedData
+  const data = hardcodedData;
 
   const { selectedAction, handleSetAction } = useContext(AdminToolsContext);
 
@@ -97,16 +98,16 @@ export function Sidebar() {
         </div>
         <div className="relative max-h-[40rem] self-stretch overflow-auto rounded-md border border-gray-700 bg-gray-800">
           {data?.actions &&
-            data.actions.map((item: any) => (
+            data.actions.map((item: ActionAttribute) => (
               <Link
                 key={item.id}
                 href={`/action/${item.id}`}
-                onClick={() => handleSetAction(item.id)}
+                onClick={() => handleSetAction(item)}
               >
                 <Actions
                   key={item.id}
-                  isSelected={item.id === selectedAction}
-                  action={item as any}
+                  isSelected={item.id === selectedAction?.id}
+                  action={item as ActionAttribute}
                 />
               </Link>
             ))}

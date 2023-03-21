@@ -2,7 +2,11 @@
 pragma solidity >=0.7.0 <0.9.0;
 
 import "balancer-v2-monorepo/pkg/interfaces/contracts/vault/IVault.sol";
+import "balancer-v2-monorepo/pkg/solidity-utils/contracts/helpers/Authentication.sol";
 import {BasePoolAuthorization} from "balancer-v2-monorepo/pkg/pool-utils/contracts/BasePoolAuthorization.sol";
+import "balancer-v2-monorepo/pkg/interfaces/contracts/vault/IAuthorizer.sol";
+
+import "./PoolMetadataAuthorization.sol";
 
 interface IPoolMetadataRegistry {
     event PoolMetadataUpdated(bytes32 indexed poolId, string metadataCID);
@@ -12,13 +16,26 @@ interface IPoolMetadataRegistry {
 /// @title A Pool Metadata dApp
 /// @author Bleu LLC
 /// @notice This contract provides a registry for Balancer's Pools metadata
-contract PoolMetadataRegistry is IPoolMetadataRegistry {
+contract PoolMetadataRegistry is IPoolMetadataRegistry, PoolMetadataAuthorization {
     IVault private immutable _vault;
-
+    bytes32 private _poolId;
     mapping(bytes32 => string) public poolIdMetadataCIDMap;
 
-    constructor(IVault vault) {
+    constructor(IVault vault) Authentication(bytes32(uint256(address(this)))) PoolMetadataAuthorization() {
         _vault = vault;
+    }
+
+    modifier onlyRegisteredPool(bytes32 poolId) {
+        require(_isPoolRegistered(poolId), "Pool not registered");
+        _;
+    }
+
+    /// @notice setPoolId modifier is used to set the pool ID before the authenticate modifier is called.
+    /// The authenticate modifier then calls the canPerform function,
+    /// which in turn calls the _getOwner function that requires the pool ID.
+    modifier setPoolId(bytes32 poolId) {
+        _poolId = poolId;
+        _;
     }
 
     /// @notice Checks if a Pool is registered on Balancer
@@ -32,21 +49,28 @@ contract PoolMetadataRegistry is IPoolMetadataRegistry {
         }
     }
 
-    /// @notice Check if the caller is the pool owner
-    /// @param poolId The pool ID where the ownership will be tested.
-    /// @return bool Returns TRUE if the caller is the Pool owner, FALSE otherwise.
-    function _isPoolOwner(bytes32 poolId) public view returns (bool) {
-        (address pool,) = _vault.getPool(poolId);
+    /// @notice Returns the authorizer contract for managing access control
+    /// @return The authorizer contract
+    function _getAuthorizer() internal view override returns (IAuthorizer) {
+        return _vault.getAuthorizer();
+    }
 
-        return BasePoolAuthorization(pool).getOwner() == msg.sender ? true : false;
+    /// @notice Returns the owner of the pool that's currently being operated on
+    /// @return The owner of the pool
+    function _getOwner() internal view override returns (address) {
+        (address pool,) = _vault.getPool(_poolId);
+        return BasePoolAuthorization(pool).getOwner();
     }
 
     /// @notice Updates the pool metadata CID
     /// @param poolId The pool ID to update the metadata
     /// @param metadataCID The metadataCID related to the new pool metadata
-    function setPoolMetadata(bytes32 poolId, string memory metadataCID) public {
-        require(_isPoolRegistered(poolId), "Pool not registered");
-        require(_isPoolOwner(poolId), "Caller is not the owner");
+    function setPoolMetadata(bytes32 poolId, string memory metadataCID)
+        public
+        onlyRegisteredPool(poolId)
+        setPoolId(poolId)
+        authenticate
+    {
         poolIdMetadataCIDMap[poolId] = metadataCID;
         emit PoolMetadataUpdated(poolId, metadataCID);
     }

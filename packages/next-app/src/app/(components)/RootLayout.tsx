@@ -12,7 +12,7 @@ import {
   AdminToolsContext,
   AdminToolsProvider,
 } from "#/contexts/AdminToolsContext";
-import gql from "#/lib/gql";
+import { hardcodedData } from "#/utils/hardcodedData";
 import { chains, client } from "#/wagmi/client";
 
 import { Actions } from "./Actions";
@@ -83,10 +83,7 @@ export function Header() {
 }
 
 export function Sidebar() {
-  const { address } = useAccount();
-  const { data } = gql.usePool({
-    owner: address,
-  });
+  const data = hardcodedData
 
   const { selectedAction, handleSetAction } = useContext(AdminToolsContext);
 
@@ -99,8 +96,8 @@ export function Sidebar() {
           </div>
         </div>
         <div className="relative max-h-[40rem] self-stretch overflow-auto rounded-md border border-gray-700 bg-gray-800">
-          {data?.pools &&
-            data.pools.map((item:any) => (
+          {data?.actions &&
+            data.actions.map((item: any) => (
               <Link
                 key={item.id}
                 href={`/action/${item.id}`}

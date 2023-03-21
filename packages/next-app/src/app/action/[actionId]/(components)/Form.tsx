@@ -7,9 +7,7 @@ import { Controller, useForm } from "react-hook-form";
 
 import { Button } from "#/components/Button";
 import { Select, SelectItem } from "#/components/Select";
-import {
-  ActionAttribute,
-} from "#/contexts/AdminToolsContext";
+import { ActionAttribute } from "#/contexts/AdminToolsContext";
 
 const Input = React.forwardRef<HTMLInputElement, HTMLProps<HTMLInputElement>>(
   ({ label, ...rest }: React.HTMLProps<HTMLInputElement>, ref) => {
@@ -33,7 +31,6 @@ const inputTypenames = [
   { value: "datetime-local", label: "Datetime" },
 ];
 
-
 export function PoolMetadataItemForm({
   data,
   mode = "add",
@@ -56,7 +53,6 @@ export function PoolMetadataItemForm({
       typename: data?.typename || "text",
     },
   });
-
 
   function handleSubmitForm() {
     close?.();

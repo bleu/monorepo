@@ -1,9 +1,7 @@
 /** @type {import('next').NextConfig} */
 
 module.exports = {
-  transpilePackages: [
-    "@balancer-admin-tools/balancer-gql",
-  ],
+  transpilePackages: ["@balancer-admin-tools/balancer-gql"],
   experimental: {
     appDir: true,
     typedRoutes: true,

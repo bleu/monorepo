@@ -109,7 +109,9 @@ function Row({ data }: { data: PoolMetadataAttribute }) {
 }
 
 export function MetadataAttributesTable({ poolId }: { poolId: `0x${string}` }) {
-  const { metadata, handleSubmit } = useContext(PoolMetadataContext);
+  const { metadata, handleSubmit, metadataUpdated } =
+    useContext(PoolMetadataContext);
+
 
   return (
     <div className="w-full bg-gray-900">
@@ -148,7 +150,8 @@ export function MetadataAttributesTable({ poolId }: { poolId: `0x${string}` }) {
           <TransactionDialog poolId={poolId}>
             <Button
               onClick={() => handleSubmit(true)}
-              className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 focus-visible:bg-yellow-300"
+              disabled={!metadataUpdated}
+              className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 focus-visible:bg-yellow-300 disabled:bg-yellow-200"
             >
               Update metadata
             </Button>

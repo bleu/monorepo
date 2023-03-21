@@ -38,6 +38,7 @@ interface PoolMetadataContextType {
   setStatus: Dispatch<SetStateAction<UpdateStatus>>;
   submit: boolean;
   handleSubmit: Dispatch<SetStateAction<boolean>>;
+  metadataUpdated: boolean;
 }
 
 export enum UpdateStatus {
@@ -65,16 +66,20 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
     UpdateStatus.PINNING
   );
   const [submit, handleSubmit] = useState<boolean>(false);
+  const [metadataUpdated, setMetadataUpdated] = useState<boolean>(false);
 
   function handleSetMetadata(data: PoolMetadataAttribute[]) {
+    setMetadataUpdated(false);
     setMetadata(data);
   }
 
   function handleAddMetadata(data: PoolMetadataAttribute) {
+    setMetadataUpdated(true);
     setMetadata((state) => [data, ...state]);
   }
 
   function handleUpdateMetadata(data: PoolMetadataAttribute) {
+    setMetadataUpdated(true);
     setMetadata((state) =>
       state.map((item) => {
         return toSlug(item.key) === toSlug(data.key) ? data : item;
@@ -104,6 +109,7 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
         setStatus,
         submit,
         handleSubmit,
+        metadataUpdated,
       }}
     >
       {children}

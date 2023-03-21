@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import { HTMLProps, useContext } from "react";
 import * as React from "react";
 import { useForm } from "react-hook-form";
@@ -26,7 +26,7 @@ export function ActionAttributeContent() {
           <input
             ref={ref}
             {...rest}
-            className="selection:color-white bg-blackA5 shadow-blackA9 selection:bg-blackA9 disabled:bg-blackA9 box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black]"
+            className="selection:color-white box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] bg-blackA5 px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] shadow-blackA9 outline-none selection:bg-blackA9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-blackA9"
           />
         </div>
       );
@@ -34,11 +34,11 @@ export function ActionAttributeContent() {
   );
 
   //TODO fetch selectedAction data from action Id once the backend exists #BAL-157
-  React.useEffect(()=>{
-    if(selectedAction?.name === ""){
-      push('/');
+  React.useEffect(() => {
+    if (selectedAction?.name === "") {
+      push("/daoadmin");
     }
-  },[selectedAction])
+  }, [selectedAction]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -76,15 +76,15 @@ export function ActionAttributeContent() {
               <div className="flex flex-col gap-4">
                 {selectedAction?.fields.map((field) => {
                   return (
-                  <>
-                    <Input
-                      key={field.name}
-                      label={field.name}
-                      placeholder={field.placeholder}
-                      {...register(toSlug(`${field.name}`))}
-                    />
-                  </>
-                  )
+                    <>
+                      <Input
+                        key={field.name}
+                        label={field.name}
+                        placeholder={field.placeholder}
+                        {...register(toSlug(`${field.name}`))}
+                      />
+                    </>
+                  );
                 })}
               </div>
               <Button

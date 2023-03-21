@@ -22,7 +22,7 @@ export function OwnedPool({ isSelected, pool }: IOwnedPool) {
 
   return (
     <button
-      className={`w-full p-4 ${backgroundColor} group self-stretch hover:bg-gray-700`}
+      className={`h-20 w-full p-2 ${backgroundColor} group self-stretch hover:bg-gray-700`}
     >
       <div className="flex w-full flex-col space-y-1">
         <div className="flex items-center space-x-3 self-stretch">

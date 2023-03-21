@@ -5,6 +5,9 @@ pragma experimental ABIEncoderV2;
 import "../src/PoolMetadataRegistry.sol";
 import "balancer-v2-monorepo/pkg/vault/contracts/Vault.sol";
 import "balancer-v2-monorepo/pkg/pool-utils/contracts/test/MockBasePool.sol";
+import "balancer-v2-monorepo/pkg/vault/contracts/test/MockBasicAuthorizer.sol";
+import "balancer-v2-monorepo/pkg/vault/contracts/test/MockAuthenticatedContract.sol";
+import "forge-std/console.sol";
 
 import {Test} from "forge-std/Test.sol";
 
@@ -14,22 +17,25 @@ contract MockPoolMetadataRegistry is PoolMetadataRegistry {
     function isPoolRegistered(bytes32 poolId) public view returns (bool) {
         return _isPoolRegistered(poolId);
     }
-
-    function isPoolOwner(bytes32 poolId) public view returns (bool) {
-        return _isPoolOwner(poolId);
-    }
 }
 
 contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
     MockPoolMetadataRegistry _poolMetadataRegistry;
+    MockBasicAuthorizer private _authorizer;
+    MockAuthenticatedContract private _authenticated;
     IVault private _vault;
     MockBasePool private _basePool;
+    MockBasePool private _delegatedBasePool;
     address private constant _poolOwner = address(15);
 
     string private constant _testMetadataCID = "QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR";
+    address internal constant _DELEGATE_OWNER = 0xBA1BA1ba1BA1bA1bA1Ba1BA1ba1BA1bA1ba1ba1B;
+    address DAOmultisig = address(uint160(uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty)))));
 
     function setUp() external {
-        _vault = new Vault(IAuthorizer(0), IWETH(0), 0, 0);
+        _authorizer = new MockBasicAuthorizer();
+        _vault = new Vault(_authorizer, IWETH(0), 0, 0);
+        _authenticated = new MockAuthenticatedContract(_vault);
 
         IERC20[] memory tokens = new IERC20[](2);
 
@@ -52,7 +58,28 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
             _poolOwner
         );
 
+        _delegatedBasePool = new MockBasePool(
+            _vault,
+            IVault.PoolSpecialization.GENERAL,
+            'MockBasePool',
+            'MBP',
+            tokens,
+            assetManagers,
+            1e16,
+            0,
+            0,
+            _DELEGATE_OWNER
+        );
+
         _poolMetadataRegistry = new MockPoolMetadataRegistry(_vault);
+
+        // Compute the "setPoolMetadata(bytes32,string)" actionId
+        bytes32 actionIdDisambiguator = bytes32(uint256(address(_poolMetadataRegistry)));
+        bytes4 selector = _poolMetadataRegistry.setPoolMetadata.selector; // 0xf44f9f15
+        bytes32 setPoolMetadataActionId = keccak256(abi.encodePacked(actionIdDisambiguator, selector));
+
+        // Grant the "setPoolMetadata(bytes32,string)" role to the DAO multisig
+        _authorizer.grantRole(setPoolMetadataActionId, DAOmultisig);
     }
 
     function testIsPoolRegistered() public {
@@ -67,16 +94,6 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
         assertFalse(isPool);
     }
 
-    function testIsPoolOwnerReturnsTrueWhenOwner() public {
-        vm.startPrank(_poolOwner);
-        assertTrue(_poolMetadataRegistry.isPoolOwner(_basePool.getPoolId()));
-        vm.stopPrank();
-    }
-
-    function testIsPoolOwnerFalseWhenNotOwner() public {
-        assertFalse(_poolMetadataRegistry.isPoolOwner(_basePool.getPoolId()));
-    }
-
     function testIfsetPoolMetadataRevertWhePoolNotRegistered() public {
         vm.expectRevert("Pool not registered");
 
@@ -85,7 +102,9 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
 
     function testIfsetPoolMetadataRevertWhenNotOwner() public {
         bytes32 poolId = _basePool.getPoolId();
-        vm.expectRevert("Caller is not the owner");
+        // check if it reverts with SENDER_NOT_ALLOWED
+        // https://docs.balancer.fi/reference/contracts/error-codes.html#lib
+        vm.expectRevert("BAL#401");
 
         _poolMetadataRegistry.setPoolMetadata(poolId, _testMetadataCID);
     }
@@ -95,6 +114,25 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
         _poolMetadataRegistry.setPoolMetadata(_basePool.getPoolId(), _testMetadataCID);
 
         assertEq(_poolMetadataRegistry.poolIdMetadataCIDMap(_basePool.getPoolId()), _testMetadataCID);
+        vm.stopPrank();
+    }
+
+    function testMetadataSetterDAOmultisig() public {
+        vm.startPrank(DAOmultisig);
+        _poolMetadataRegistry.setPoolMetadata(_delegatedBasePool.getPoolId(), _testMetadataCID);
+
+        assertEq(_poolMetadataRegistry.poolIdMetadataCIDMap(_delegatedBasePool.getPoolId()), _testMetadataCID);
+        vm.stopPrank();
+    }
+
+    function testMetadataSetterWhenDAONotDelegatedOwner() public {
+        bytes32 poolId = _basePool.getPoolId();
+        vm.startPrank(DAOmultisig);
+        // check if it reverts with SENDER_NOT_ALLOWED
+        // https://docs.balancer.fi/reference/contracts/error-codes.html#lib
+        vm.expectRevert("BAL#401");
+
+        _poolMetadataRegistry.setPoolMetadata(poolId, _testMetadataCID);
         vm.stopPrank();
     }
 

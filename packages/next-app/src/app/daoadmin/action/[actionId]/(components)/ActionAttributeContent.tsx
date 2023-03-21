@@ -76,14 +76,12 @@ export function ActionAttributeContent() {
               <div className="flex flex-col gap-4">
                 {selectedAction?.fields.map((field) => {
                   return (
-                    <>
-                      <Input
-                        key={field.name}
-                        label={field.name}
-                        placeholder={field.placeholder}
-                        {...register(toSlug(`${field.name}`))}
-                      />
-                    </>
+                    <Input
+                      key={field.name}
+                      label={field.name}
+                      placeholder={field.placeholder}
+                      {...register(toSlug(`${field.name}`))}
+                    />
                   );
                 })}
               </div>

@@ -44,7 +44,7 @@ export function ActionAttributeContent() {
     <form onSubmit={handleSubmit(onSubmit)}>
       {selectedAction?.name && (
         <div className="w-full bg-gray-900">
-          <div className="pr-4 sm:pr-6 lg:pr-12">
+          <div>
             <div className="sm:flex sm:items-center">
               <div className="sm:flex-auto">
                 <h1 className="mx-1 text-2xl font-medium text-gray-400">

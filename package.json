@@ -48,5 +48,10 @@
   "homepage": "https://github.com/bleu-llc/balancer-pool-metadata#readme",
   "devDependencies": {
     "concurrently": "^7.6.0"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "@rainbow-me/rainbowkit@0.12.2": "patches/@rainbow-me__rainbowkit@0.12.2.patch"
+    }
   }
 }

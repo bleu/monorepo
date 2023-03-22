@@ -1,14 +1,14 @@
 "use client";
 
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import { darkTheme, Theme } from "@rainbow-me/rainbowkit";
+import { darkTheme, RainbowKitProvider, Theme } from "@rainbow-me/rainbowkit";
 import merge from "lodash.merge";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import { useAccount, useNetwork, WagmiConfig } from "wagmi";
 
+import { CustomConnectButton } from "#/components/CustomConnectButton";
 import {
   ActionAttribute,
   AdminToolsContext,
@@ -19,15 +19,23 @@ import { chains, client } from "#/wagmi/client";
 
 import { Actions } from "./Actions";
 
+// const RainbowKitProviderDynamic = dynamic(
+//   () => import("@rainbow-me/rainbowkit").then((mod) => mod.RainbowKitProvider),
+//   { ssr: false }
+// );
+
+// const CustomConnectButton = dynamic(
+//   () =>
+//     import("#/components/CustomConnectButton").then(
+//       (mod) => mod.CustomConnectButton
+//     ),
+//   { ssr: false }
+// );
+
 export function RootLayout({ children }: { children: React.ReactNode }) {
   const { chain } = useNetwork();
   const { isConnected } = useAccount();
   const router = useRouter();
-
-  const RainbowKitProviderDynamic = dynamic(
-    async () => (await import("@rainbow-me/rainbowkit")).RainbowKitProvider,
-    { ssr: false }
-  );
 
   useEffect(() => {
     localStorage.setItem("networkId", chain?.id?.toString() || "1");
@@ -37,7 +45,7 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <WagmiConfig client={client}>
-      <RainbowKitProviderDynamic
+      <RainbowKitProvider
         chains={chains}
         modalSize="compact"
         theme={CustomTheme}
@@ -57,18 +65,12 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
         ) : (
           <WalletEmptyState />
         )}
-      </RainbowKitProviderDynamic>
+      </RainbowKitProvider>
     </WagmiConfig>
   );
 }
 
 export function Header() {
-  const CustomConnectButton = dynamic(
-    async () =>
-      (await import("#/components/CustomConnectButton")).CustomConnectButton,
-    { ssr: false }
-  );
-
   return (
     <div className="flex flex-wrap items-center justify-between border-b border-gray-700 bg-gray-800 p-4 text-white">
       <div className="mr-5 flex items-center gap-3">

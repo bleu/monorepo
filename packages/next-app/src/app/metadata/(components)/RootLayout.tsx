@@ -1,9 +1,8 @@
 "use client";
 
 import { Pool } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/mainnet";
-import { darkTheme, Theme } from "@rainbow-me/rainbowkit";
+import { darkTheme, RainbowKitProvider, Theme } from "@rainbow-me/rainbowkit";
 import merge from "lodash.merge";
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
@@ -12,6 +11,7 @@ import { useAccount, useNetwork, WagmiConfig } from "wagmi";
 import balancerSymbol from "#/assets/balancer-symbol.svg";
 import ConnectWalletImage from "#/assets/connect-wallet.svg";
 import EmptyWalletImage from "#/assets/empty-wallet.svg";
+import { CustomConnectButton } from "#/components/CustomConnectButton";
 import {
   PoolMetadataContext,
   PoolMetadataProvider,
@@ -22,15 +22,17 @@ import { chains, client } from "#/wagmi/client";
 
 import { OwnedPool } from "./OwnedPool";
 
+// const CustomConnectButton = React.lazy(
+//   () => import("#/components/CustomConnectButton").CustomConnectButton
+// );
+
+// const RainbowKitProviderDynamic = React.lazy(
+//   () => import("@rainbow-me/rainbowkit").RainbowKitProvider
+// );
+
 export function RootLayout({ children }: { children: React.ReactNode }) {
   const [poolsData, setPoolsData] = useState<Pool[]>([]);
   const { chain } = useNetwork();
-  const { isConnected } = useAccount();
-
-  const RainbowKitProviderDynamic = dynamic(
-    async () => (await import("@rainbow-me/rainbowkit")).RainbowKitProvider,
-    { ssr: false }
-  );
 
   let { address } = useAccount();
 
@@ -46,40 +48,30 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <WagmiConfig client={client}>
-      <RainbowKitProviderDynamic
+      <RainbowKitProvider
         chains={chains}
         modalSize="compact"
         theme={CustomTheme}
       >
         <Header />
-        {isConnected ? (
-          <PoolMetadataProvider>
-            {poolsData && !!poolsData.length ? (
-              <div className="flex h-full w-full">
-                <div className="h-full w-96">
-                  <Sidebar pools={poolsData as Pool[]} />
-                </div>
-                {children}
+        <PoolMetadataProvider>
+          {poolsData && !!poolsData.length ? (
+            <div className="flex h-full w-full">
+              <div className="h-full w-96">
+                <Sidebar pools={poolsData as Pool[]} />
               </div>
-            ) : (
-              <WalletEmptyState />
-            )}
-          </PoolMetadataProvider>
-        ) : (
-          <WalletNotConnectedState />
-        )}
-      </RainbowKitProviderDynamic>
+              {children}
+            </div>
+          ) : (
+            <WalletEmptyState />
+          )}
+        </PoolMetadataProvider>
+      </RainbowKitProvider>
     </WagmiConfig>
   );
 }
 
 export function Header() {
-  const CustomConnectButton = dynamic(
-    async () =>
-      (await import("#/components/CustomConnectButton")).CustomConnectButton,
-    { ssr: false }
-  );
-
   return (
     <div className="flex flex-wrap items-center justify-between border-b border-gray-700 bg-gray-800 p-4 text-white">
       <div className="mr-5 flex items-center gap-3">

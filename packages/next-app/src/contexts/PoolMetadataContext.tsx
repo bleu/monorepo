@@ -9,6 +9,9 @@ import {
   useEffect,
   useState,
 } from "react";
+import { useAccount } from "wagmi";
+
+import { WalletNotConnectedState } from "#/app/metadata/(components)/RootLayout";
 
 export function toSlug(string?: string) {
   return (
@@ -62,6 +65,8 @@ export enum StatusLabels {
 export const PoolMetadataContext = createContext({} as PoolMetadataContextType);
 
 export function PoolMetadataProvider({ children }: { children: ReactNode }) {
+  const { isConnected } = useAccount();
+
   const [selectedPool, setSelectedPool] = useState<string>("");
   const [metadata, setMetadata] = useState<PoolMetadataAttribute[]>([]);
   const [updateStatus, setStatus] = useState<UpdateStatus>(
@@ -104,6 +109,8 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     setMetadataUpdated(!isEqual(metadata, originalMetadata));
   }, [metadata, originalMetadata]);
+
+  if (!isConnected) return <>{<WalletNotConnectedState />}</>;
 
   return (
     <PoolMetadataContext.Provider

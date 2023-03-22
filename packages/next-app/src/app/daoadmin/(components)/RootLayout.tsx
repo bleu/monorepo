@@ -50,8 +50,7 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
                   <Sidebar />
                 </div>
               </div>
-
-              {children}
+              <div className="p-5">{children}</div>
             </div>
           </AdminToolsProvider>
         ) : (
@@ -72,9 +71,11 @@ export function Header() {
   return (
     <div className="flex flex-wrap items-center justify-between border-b border-gray-700 bg-gray-800 p-4 text-white">
       <div className="mr-5 flex items-center gap-3">
-        <h1 className="flex gap-2 text-4xl font-thin not-italic leading-8 text-gray-200">
-          Balancer <p className="font-medium">Admin Tools</p>
-        </h1>
+        <Link href={"/daoadmin"}>
+          <h1 className="flex gap-2 text-4xl font-thin not-italic leading-8 text-gray-200">
+            Balancer <p className="font-medium">Admin Tools</p>
+          </h1>
+        </Link>
       </div>
 
       <CustomConnectButton />
@@ -88,14 +89,14 @@ export function Sidebar() {
   const { selectedAction, handleSetAction } = useContext(AdminToolsContext);
 
   return (
-    <div className="h-full w-96 max-w-full bg-gray-900 p-5">
+    <div className="h-full w-96 max-w-full bg-gray-800 py-5">
       <div className="h-screen w-96 max-w-full items-start justify-start space-y-4">
-        <div className="items-start justify-start space-y-2.5 self-stretch bg-gray-900 px-2">
-          <div className="flex items-center justify-start space-x-0 text-2xl font-medium text-gray-400">
-            <span>Actions</span>
+        <div className="items-start justify-start space-y-2.5 self-stretch">
+          <div className="flex items-center justify-start space-x-0 px-5 text-2xl font-medium text-gray-400">
+            <span>DAO Actions</span>
           </div>
         </div>
-        <div className="relative max-h-[40rem] self-stretch overflow-auto rounded-md border border-gray-700 bg-gray-800">
+        <div className="relative max-h-[40rem] self-stretch overflow-auto">
           {data?.actions &&
             data.actions.map((item: ActionAttribute) => (
               <Link

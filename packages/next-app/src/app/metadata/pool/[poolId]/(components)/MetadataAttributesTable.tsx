@@ -116,7 +116,7 @@ export function MetadataAttributesTable({ poolId }: { poolId: `0x${string}` }) {
     useContext(PoolMetadataContext);
 
   const { chain } = useNetwork();
-  const link = `https://app.balancer.fi/#/${networkFor(
+  const balancerPoolLink = `https://app.balancer.fi/#/${networkFor(
     chain!.id.toString()
   )}/pool/${poolId}`;
 
@@ -129,7 +129,7 @@ export function MetadataAttributesTable({ poolId }: { poolId: `0x${string}` }) {
               Metadata attributes - Pool
               <a
                 target="_blank"
-                href={link}
+                href={balancerPoolLink}
                 className="flex flex-row items-center justify-center"
               >
                 #{truncateAddress(poolId)}{" "}

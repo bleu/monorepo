@@ -1,11 +1,12 @@
 "use client";
-
 import { TypenameEnum } from "@balancer-pool-metadata/schema";
+import isEqual from "lodash/isEqual";
 import {
   createContext,
   Dispatch,
   ReactNode,
   SetStateAction,
+  useEffect,
   useState,
 } from "react";
 
@@ -34,10 +35,12 @@ interface PoolMetadataContextType {
   handleSetPool: (poolId: string) => void;
   isKeyUnique: (key: string) => boolean;
   handleSetMetadata: (data: PoolMetadataAttribute[]) => void;
+  handleSetOriginalMetadata: (data: PoolMetadataAttribute[]) => void;
   updateStatus: UpdateStatus;
   setStatus: Dispatch<SetStateAction<UpdateStatus>>;
   submit: boolean;
   handleSubmit: Dispatch<SetStateAction<boolean>>;
+  metadataUpdated: boolean;
 }
 
 export enum UpdateStatus {
@@ -65,9 +68,17 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
     UpdateStatus.PINNING
   );
   const [submit, handleSubmit] = useState<boolean>(false);
+  const [metadataUpdated, setMetadataUpdated] = useState<boolean>(false);
+  const [originalMetadata, setOriginalMetadata] = useState<
+    PoolMetadataAttribute[]
+  >([]);
 
   function handleSetMetadata(data: PoolMetadataAttribute[]) {
     setMetadata(data);
+  }
+
+  function handleSetOriginalMetadata(data: PoolMetadataAttribute[]) {
+    setOriginalMetadata(data);
   }
 
   function handleAddMetadata(data: PoolMetadataAttribute) {
@@ -90,6 +101,10 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
     return metadata.every((item) => toSlug(item.key) !== toSlug(key));
   }
 
+  useEffect(() => {
+    setMetadataUpdated(!isEqual(metadata, originalMetadata));
+  }, [metadata, originalMetadata]);
+
   return (
     <PoolMetadataContext.Provider
       value={{
@@ -104,6 +119,8 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
         setStatus,
         submit,
         handleSubmit,
+        metadataUpdated,
+        handleSetOriginalMetadata,
       }}
     >
       {children}

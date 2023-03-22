@@ -3,16 +3,17 @@ import { CodegenConfig } from "@graphql-codegen/cli";
 const BASE_URL = "https://api.thegraph.com/subgraphs/name/bleu-llc";
 
 export enum Network {
-  // mainnet = "mainnet",
-  // polygon = "polygon",
-  // arbitrum = "arbitrum",
+  mainnet = "mainnet",
+  polygon = "polygon",
+  arbitrum = "arbitrum",
   goerli = "goerli",
 }
 
+// TODO: https://linear.app/bleu-llc/issue/BAL-131/deploy-contracts-in-all-networks-that-balancer-is-deployed
 export const ENDPOINTS = {
-  // [Network.mainnet]: `${BASE_URL}/balancer-v2`,
-  // [Network.polygon]: `${BASE_URL}/balancer-polygon-v2`,
-  // [Network.arbitrum]: `${BASE_URL}/balancer-arbitrum-v2`,
+  [Network.mainnet]: `${BASE_URL}/balancer-pools-metadata`,
+  [Network.polygon]: `${BASE_URL}/balancer-pools-metadata`,
+  [Network.arbitrum]: `${BASE_URL}/balancer-pools-metadata`,
   [Network.goerli]: `${BASE_URL}/balancer-pools-metadata`,
 };
 

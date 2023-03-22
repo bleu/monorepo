@@ -1,11 +1,12 @@
 "use client";
-
 import { TypenameEnum } from "@balancer-pool-metadata/schema";
+import { isEqual } from "lodash";
 import {
   createContext,
   Dispatch,
   ReactNode,
   SetStateAction,
+  useEffect,
   useState,
 } from "react";
 
@@ -34,6 +35,7 @@ interface PoolMetadataContextType {
   handleSetPool: (poolId: string) => void;
   isKeyUnique: (key: string) => boolean;
   handleSetMetadata: (data: PoolMetadataAttribute[]) => void;
+  handleSetOriginalMetadata: (data: PoolMetadataAttribute[]) => void;
   updateStatus: UpdateStatus;
   setStatus: Dispatch<SetStateAction<UpdateStatus>>;
   submit: boolean;
@@ -67,19 +69,23 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
   );
   const [submit, handleSubmit] = useState<boolean>(false);
   const [metadataUpdated, setMetadataUpdated] = useState<boolean>(false);
+  const [originalMetadata, setOriginalMetadata] = useState<
+    PoolMetadataAttribute[]
+  >([]);
 
   function handleSetMetadata(data: PoolMetadataAttribute[]) {
-    setMetadataUpdated(false);
     setMetadata(data);
   }
 
+  function handleSetOriginalMetadata(data: PoolMetadataAttribute[]) {
+    setOriginalMetadata(data);
+  }
+
   function handleAddMetadata(data: PoolMetadataAttribute) {
-    setMetadataUpdated(true);
     setMetadata((state) => [data, ...state]);
   }
 
   function handleUpdateMetadata(data: PoolMetadataAttribute) {
-    setMetadataUpdated(true);
     setMetadata((state) =>
       state.map((item) => {
         return toSlug(item.key) === toSlug(data.key) ? data : item;
@@ -94,6 +100,10 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
   function isKeyUnique(key: string) {
     return metadata.every((item) => toSlug(item.key) !== toSlug(key));
   }
+
+  useEffect(() => {
+    setMetadataUpdated(!isEqual(metadata, originalMetadata));
+  }, [metadata, originalMetadata]);
 
   return (
     <PoolMetadataContext.Provider
@@ -110,6 +120,7 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
         submit,
         handleSubmit,
         metadataUpdated,
+        handleSetOriginalMetadata,
       }}
     >
       {children}

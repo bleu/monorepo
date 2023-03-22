@@ -92,6 +92,7 @@ export function TransactionDialog({
     updateStatus,
     submit,
     handleSubmit,
+    handleSetOriginalMetadata,
   } = useContext(PoolMetadataContext);
 
   const { data: poolsData } = metadataGql(
@@ -113,6 +114,7 @@ export function TransactionDialog({
 
   useEffect(() => {
     handleSetMetadata(data ? (data as PoolMetadataAttribute[]) : []);
+    handleSetOriginalMetadata(data ? (data as PoolMetadataAttribute[]) : []);
   }, [data]);
 
   useEffect(() => {

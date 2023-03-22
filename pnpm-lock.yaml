@@ -120,6 +120,7 @@ importers:
       '@radix-ui/react-icons': ^1.2.0
       '@radix-ui/react-select': ^1.2.1
       '@rainbow-me/rainbowkit': ^0.12.0
+      '@types/lodash': ^4.14.191
       '@types/lodash.merge': ^4.6.7
       '@types/node': ^18.15.0
       '@types/react': ^18.0.28
@@ -131,6 +132,7 @@ importers:
       cuid: ^3.0.0
       ethers: ^5.7.2
       graphql-request: 5.1.0
+      lodash: ^4.17.21
       lodash.merge: ^4.6.2
       next: ^13.2.4
       npm-run-all: ^4.1.5
@@ -161,6 +163,7 @@ importers:
       cuid: 3.0.0
       ethers: 5.7.2
       graphql-request: 5.1.0_graphql@16.6.0
+      lodash: 4.17.21
       lodash.merge: 4.6.2
       next: 13.2.4_6m24vuloj5ihw4zc5lbsktc4fu
       react: 18.2.0
@@ -169,6 +172,7 @@ importers:
       swr: 2.1.0_react@18.2.0
       wagmi: 0.12.1_kkrqvl37g7i6ouba7cdtkl6w6m
     devDependencies:
+      '@types/lodash': 4.14.191
       '@types/lodash.merge': 4.6.7
       '@types/node': 18.15.0
       '@types/react': 18.0.28

@@ -8,19 +8,14 @@ import {
 } from "@radix-ui/react-icons";
 import cn from "classnames";
 import { useContext, useEffect, useState } from "react";
-import useSWR from "swr";
-import { useNetwork } from "wagmi";
 
 import { Button } from "#/components";
 import {
-  PoolMetadataAttribute,
   PoolMetadataContext,
   StatusLabels,
   UpdateStatus,
 } from "#/contexts/PoolMetadataContext";
 import { pinJSON } from "#/lib/ipfs";
-import metadataGql from "#/lib/poolMetadataGql";
-import { fetcher } from "#/utils/fetcher";
 import { writeSetPoolMetadata } from "#/wagmi/setPoolMetadata";
 
 const ActionStage = ({
@@ -83,39 +78,9 @@ export function TransactionDialog({
 }>) {
   const [open, setOpen] = useState(false);
   const [stageError, setStageError] = useState(-1);
-  const { chain } = useNetwork();
 
-  const {
-    metadata,
-    handleSetMetadata,
-    setStatus,
-    updateStatus,
-    submit,
-    handleSubmit,
-    handleSetOriginalMetadata,
-  } = useContext(PoolMetadataContext);
-
-  const { data: poolsData } = metadataGql(
-    chain?.id.toString() || "1"
-  ).useMetadataPool({
-    poolId,
-  });
-
-  const pool = poolsData?.pools[0];
-  const { data } = useSWR(
-    pool?.metadataCID
-      ? `https://gateway.pinata.cloud/ipfs/${pool.metadataCID}`
-      : null,
-    fetcher,
-    {
-      revalidateOnMount: true,
-    }
-  );
-
-  useEffect(() => {
-    handleSetMetadata(data ? (data as PoolMetadataAttribute[]) : []);
-    handleSetOriginalMetadata(data ? (data as PoolMetadataAttribute[]) : []);
-  }, [data]);
+  const { metadata, setStatus, updateStatus, submit, handleSubmit } =
+    useContext(PoolMetadataContext);
 
   useEffect(() => {
     if (submit) {

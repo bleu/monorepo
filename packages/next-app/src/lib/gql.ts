@@ -24,6 +24,12 @@ export function networkFor(key: string | number) {
   );
 }
 
+export function networkIdFor(name: string){
+  return Object.keys(networkIdEnumMap).find(
+    key => networkIdEnumMap[key as keyof typeof networkIdEnumMap] === name
+  ) || "1"
+}
+
 const networkSdks = {
   [Network.mainnet]: mainnetSdk,
   [Network.polygon]: polygonSdk,

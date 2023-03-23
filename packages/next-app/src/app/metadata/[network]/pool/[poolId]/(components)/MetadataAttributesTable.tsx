@@ -1,8 +1,10 @@
 "use client";
 
+import { Network } from "@balancer-pool-metadata/balancer-gql/codegen";
 import { ArrowTopRightIcon, Pencil2Icon } from "@radix-ui/react-icons";
 import cn from "classnames";
-import { TableHTMLAttributes, useContext } from "react";
+import { TableHTMLAttributes, useContext, useEffect } from "react";
+import useSWR from "swr";
 import { useNetwork } from "wagmi";
 
 import { Button } from "#/components";
@@ -12,7 +14,9 @@ import {
   PoolMetadataContext,
   toSlug,
 } from "#/contexts/PoolMetadataContext";
-import { networkFor } from "#/lib/gql";
+import { networkIdFor } from "#/lib/gql";
+import metadataGql from "#/lib/poolMetadataGql";
+import { fetcher } from "#/utils/fetcher";
 import { truncateAddress } from "#/utils/truncateAddress";
 
 import { PoolMetadataItemForm } from "./PoolMetadataForm";
@@ -111,14 +115,46 @@ function Row({ data }: { data: PoolMetadataAttribute }) {
   );
 }
 
-export function MetadataAttributesTable({ poolId }: { poolId: `0x${string}` }) {
-  const { metadata, handleSubmit, metadataUpdated } =
-    useContext(PoolMetadataContext);
+export function MetadataAttributesTable({
+  poolId,
+  network,
+}: {
+  poolId: `0x${string}`;
+  network: Network;
+}) {
+  const {
+    metadata,
+    handleSetMetadata,
+    handleSubmit,
+    handleSetOriginalMetadata,
+    metadataUpdated,
+  } = useContext(PoolMetadataContext);
 
   const { chain } = useNetwork();
-  const balancerPoolLink = `https://app.balancer.fi/#/${networkFor(
-    chain!.id.toString()
-  )}/pool/${poolId}`;
+
+  const { data: poolsData } = metadataGql(
+    chain?.id.toString() || networkIdFor(network)
+  ).useMetadataPool({
+    poolId,
+  });
+
+  const pool = poolsData?.pools[0];
+  const { data } = useSWR(
+    pool?.metadataCID
+      ? `https://gateway.pinata.cloud/ipfs/${pool.metadataCID}`
+      : null,
+    fetcher,
+    {
+      revalidateOnMount: true,
+    }
+  );
+
+  useEffect(() => {
+    handleSetMetadata(data ? (data as PoolMetadataAttribute[]) : []);
+    handleSetOriginalMetadata(data ? (data as PoolMetadataAttribute[]) : []);
+  }, [data]);
+
+  const balancerPoolLink = `https://app.balancer.fi/#/${network}/pool/${poolId}`;
 
   return (
     <div className="w-full bg-gray-900">
@@ -150,6 +186,7 @@ export function MetadataAttributesTable({ poolId }: { poolId: `0x${string}` }) {
             </tbody>
           </table>
         </div>
+
         <div className="mt-5 w-full justify-between sm:flex sm:items-center">
           <div className="flex gap-4">
             <Dialog title={"Add attribute"} content={<PoolMetadataItemForm />}>

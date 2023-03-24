@@ -1,6 +1,4 @@
 import { z } from "zod";
-import zodToJsonSchema from "zod-to-json-schema";
-import { createTypeAlias, zodToTs } from "zod-to-ts";
 
 export const TypenameEnum = z.enum(["text", "url", "date", "datetime-local"]);
 
@@ -51,11 +49,11 @@ export const PoolMetadataSchema = z
   .array(MetadataItemSchema)
   .describe("My neat object schema");
 
-export const jsonSchema = zodToJsonSchema(
-  PoolMetadataSchema,
-  "PoolMetadataSchema"
-);
+// export const jsonSchema = zodToJsonSchema(
+//   PoolMetadataSchema,
+//   "PoolMetadataSchema"
+// );
 
-const identifier = "PoolMetadataSchema";
-export const { node } = zodToTs(PoolMetadataSchema, identifier);
-export const typeAlias = createTypeAlias(node, identifier);
+// const identifier = "PoolMetadataSchema";
+// export const { node } = zodToTs(PoolMetadataSchema, identifier);
+// export const typeAlias = createTypeAlias(node, identifier);

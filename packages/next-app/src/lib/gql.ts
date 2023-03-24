@@ -17,11 +17,17 @@ const networkIdEnumMap = {
   "42161": Network.arbitrum,
 };
 
-function networkFor(key: string | number) {
+export function networkFor(key: string | number) {
   return (
     networkIdEnumMap[key.toString() as keyof typeof networkIdEnumMap] ||
     Network.mainnet
   );
+}
+
+export function networkIdFor(name: string){
+  return Object.keys(networkIdEnumMap).find(
+    key => networkIdEnumMap[key as keyof typeof networkIdEnumMap] === name
+  ) || "1"
 }
 
 const networkSdks = {

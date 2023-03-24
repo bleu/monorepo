@@ -12,7 +12,7 @@ import { truncateAddress } from "#/utils/truncateAddress";
 export function ActionAttributeContent() {
   const { register, handleSubmit } = useForm();
   // eslint-disable-next-line no-console
-  const onSubmit = (data: any) => console.log(data);
+  const onSubmit = (data: unknown) => console.log(data);
   const { push } = useRouter();
   const { selectedAction } = useAdminTools();
 

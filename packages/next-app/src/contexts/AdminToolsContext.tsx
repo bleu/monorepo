@@ -5,6 +5,7 @@ import {
   Dispatch,
   ReactNode,
   SetStateAction,
+  useContext,
   useState,
 } from "react";
 
@@ -55,14 +56,42 @@ interface AdminToolsContextType {
   handleSetAction: (action: ActionAttribute) => void;
   submit: boolean;
   handleSubmit: Dispatch<SetStateAction<boolean>>;
+  selectedFilters: { [key: string]: string };
+  changeSelectedFilters: (key: string, value: string) => void;
+  clearSelectedFilter: (field: string) => void;
 }
 
 export const AdminToolsContext = createContext({} as AdminToolsContextType);
 
 export function AdminToolsProvider({ children }: { children: ReactNode }) {
+  const filterInitialState = {
+    "operation-responsible": "",
+  };
+
   const [selectedAction, setSelectedAction] =
     useState<ActionAttribute>(initialState);
+
   const [submit, handleSubmit] = useState<boolean>(false);
+
+  const [selectedFilters, setSelectedFilters] = useState(filterInitialState);
+
+  function changeSelectedFilters(key: string, value: string) {
+    setSelectedFilters((prevState) => {
+      return {
+        ...prevState,
+        [key]: value,
+      };
+    });
+  }
+
+  function clearSelectedFilter(field: string) {
+    setSelectedFilters((prevState) => {
+      return {
+        ...prevState,
+        [field]: "",
+      };
+    });
+  }
 
   function handleSetAction(action: ActionAttribute) {
     setSelectedAction(action);
@@ -75,9 +104,18 @@ export function AdminToolsProvider({ children }: { children: ReactNode }) {
         handleSetAction,
         submit,
         handleSubmit,
+        selectedFilters,
+        changeSelectedFilters,
+        clearSelectedFilter,
       }}
     >
       {children}
     </AdminToolsContext.Provider>
   );
+}
+
+export function useAdminTools() {
+  const context = useContext(AdminToolsContext);
+
+  return context;
 }

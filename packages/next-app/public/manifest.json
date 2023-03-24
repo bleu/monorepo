@@ -1,5 +1,5 @@
 {
   "name": "Balancer Tools",
-  "description": "Test dApp deployment of RainbowKit",
-  "iconPath": "rainbow.svg"
+  "description": "Tools for Balancer Pools Management",
+  "iconPath": "balancer-symbol.svg"
 }

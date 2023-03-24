@@ -1,23 +1,16 @@
 "use client";
 
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { darkTheme, Theme } from "@rainbow-me/rainbowkit";
 import merge from "lodash.merge";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useContext, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useAccount, useNetwork, WagmiConfig } from "wagmi";
 
-import {
-  ActionAttribute,
-  AdminToolsContext,
-  AdminToolsProvider,
-} from "#/contexts/AdminToolsContext";
-import { hardcodedData } from "#/utils/hardcodedData";
+import { Sidebar } from "#/components/Sidebar";
+import { AdminToolsProvider } from "#/contexts/AdminToolsContext";
 import { chains, client } from "#/wagmi/client";
-
-import { Actions } from "./Actions";
 
 export function RootLayout({ children }: { children: React.ReactNode }) {
   const { chain } = useNetwork();
@@ -80,66 +73,6 @@ export function Header() {
       </div>
 
       <CustomConnectButton />
-    </div>
-  );
-}
-
-export function Sidebar() {
-  const data = hardcodedData;
-  const [querySearch, setQuerySearch] = useState("");
-
-  const handleSearchChange = (e: React.FormEvent<HTMLInputElement>) => {
-    setQuerySearch(e.currentTarget.value);
-  };
-
-  const filteredActions = data.actions.filter((item) =>
-    item.name.toLowerCase().includes(querySearch.toLowerCase())
-  );
-
-  const { selectedAction, handleSetAction } = useContext(AdminToolsContext);
-
-  return (
-    <div className="h-full w-96 max-w-full bg-gray-800 py-5">
-      <div className="h-screen w-96 max-w-full items-start justify-start space-y-4">
-        <div className="items-start justify-start space-y-2.5 self-stretch px-5">
-          <div className="flex items-center justify-start space-x-0 text-2xl font-medium text-gray-400">
-            <span>DAO Actions</span>
-          </div>
-          <div className="flex justify-between">
-            <div className="flex items-center">
-              <input
-                placeholder="Search for DAO Action"
-                className="h-9 w-full appearance-none items-center justify-center rounded-l-[4px] bg-white px-[10px] text-sm leading-none text-gray-400 outline-none"
-                onChange={handleSearchChange}
-              />
-              <button className="h-9 rounded-r-[4px] bg-gray-400 px-2 leading-none outline-none transition hover:bg-gray-500">
-                <MagnifyingGlassIcon
-                  color="rgb(31 41 55)"
-                  className="ml-1 font-semibold"
-                  height={20}
-                  width={20}
-                />
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="relative max-h-[40rem] self-stretch overflow-auto">
-          {filteredActions &&
-            filteredActions.map((item: ActionAttribute) => (
-              <Link
-                key={item.id}
-                href={`/daoadmin/action/${item.id}`}
-                onClick={() => handleSetAction(item)}
-              >
-                <Actions
-                  key={item.id}
-                  isSelected={item.id === selectedAction?.id}
-                  action={item as ActionAttribute}
-                />
-              </Link>
-            ))}
-        </div>
-      </div>
     </div>
   );
 }

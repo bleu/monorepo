@@ -48,3 +48,12 @@ export const MetadataItemSchema = z.union([
 export const PoolMetadataSchema = z
   .array(MetadataItemSchema)
   .describe("My neat object schema");
+
+// export const jsonSchema = zodToJsonSchema(
+//   PoolMetadataSchema,
+//   "PoolMetadataSchema"
+// );
+
+// const identifier = "PoolMetadataSchema";
+// export const { node } = zodToTs(PoolMetadataSchema, identifier);
+// export const typeAlias = createTypeAlias(node, identifier);

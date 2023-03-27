@@ -4,7 +4,11 @@ import "#/styles/global.css";
 import type { Metadata } from "next";
 import * as React from "react";
 
-import { RootLayout } from "./(components)/RootLayout";
+import balancerSymbol from "#/assets/balancer-symbol.svg";
+import { Header } from "#/components/Header";
+import { RootLayout } from "#/components/RootLayout";
+
+import { MetadataProvider } from "./(components)/MetadataProvider";
 
 export const metadata: Metadata = {
   title: "Balancer Pool Metadata",
@@ -16,7 +20,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <html lang="en">
       <body>
         <div className="h-full w-full bg-gray-900">
-          <RootLayout>{children}</RootLayout>
+          <RootLayout>
+            <Header
+              linkUrl={"/metadata"}
+              title={"Pool Metadata"}
+              imageSrc={balancerSymbol}
+            />
+            <MetadataProvider>{children}</MetadataProvider>
+          </RootLayout>
         </div>
       </body>
     </html>

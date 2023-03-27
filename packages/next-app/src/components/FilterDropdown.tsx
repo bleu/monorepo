@@ -4,7 +4,7 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { ChevronDownIcon, EraserIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 
-import { toSlug, useAdminTools } from "#/contexts/AdminToolsContext";
+import { toCammelCase, useAdminTools } from "#/contexts/AdminToolsContext";
 
 export interface IFilter {
   name: string;
@@ -39,15 +39,15 @@ export function FilterDropdown({ filters }: IFilterDropdown) {
 
             function handleSelectFilter(value: string) {
               setFilterValue(value);
-              changeSelectedFilters(toSlug(filter.name), value);
+              changeSelectedFilters(toCammelCase(filter.name), value);
             }
             function handleClearFilter() {
-              clearSelectedFilter(toSlug(filter.name));
+              clearSelectedFilter(toCammelCase(filter.name));
               setFilterValue("");
             }
 
             return (
-              <>
+              <div key={filter.name}>
                 <div className="flex gap-4 text-xs leading-[25px] text-gray-500">
                   <DropdownMenu.Label>{filter.name}</DropdownMenu.Label>
                   <button onClick={handleClearFilter}>
@@ -78,7 +78,7 @@ export function FilterDropdown({ filters }: IFilterDropdown) {
                     </DropdownMenu.RadioItem>
                   ))}
                 </DropdownMenu.RadioGroup>
-              </>
+              </div>
             );
           })}
         </DropdownMenu.Content>

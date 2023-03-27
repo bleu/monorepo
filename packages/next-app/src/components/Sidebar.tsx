@@ -18,11 +18,10 @@ export function Sidebar() {
   };
 
   const filteredActionsByTag =
-    selectedFilters["operation-responsible"] !== ""
+    selectedFilters.operationResponsible !== ""
       ? data.actions.filter(
           (item) =>
-            item.operationResponsible ===
-            selectedFilters["operation-responsible"]
+            item.operationResponsible === selectedFilters.operationResponsible
         )
       : data.actions;
 

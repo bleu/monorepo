@@ -10,59 +10,55 @@ import { PoolMetadataContext } from "#/contexts/PoolMetadataContext";
 import { TransactionStatus, useTransaction } from "#/hooks/useTransaction";
 
 type Stage = {
-  pinColor: string;
-  confirmColor: string;
-  writeColor: string;
+  pinningStep: string;
+  transitionLine: string;
+  writingOnChainStep: string;
 };
 
-const STAGE_MAPPING: Record<TransactionStatus, Stage> = {
+const STAGE_CN_MAPPING: Record<TransactionStatus, Stage> = {
   [TransactionStatus.PINNING]: {
-    pinColor: "border-yellow-400 text-yellow-400",
-    confirmColor: "bg-gray-400",
-    writeColor: "border-gray-400 text-gray-400",
+    pinningStep: "border-yellow-400 text-yellow-400",
+    transitionLine: "bg-gray-400",
+    writingOnChainStep: "border-gray-400 text-gray-400",
   },
   [TransactionStatus.CONFIRMING]: {
-    pinColor: "border-green-400 text-green-400",
-    confirmColor: "bg-green-400",
-    writeColor: "border-yellow-400 text-yellow-400",
+    pinningStep: "border-green-400 text-green-400",
+    transitionLine: "bg-green-400",
+    writingOnChainStep: "border-yellow-400 text-yellow-400",
   },
   [TransactionStatus.SUBMITTING]: {
-    pinColor: "border-green-400 text-green-400",
-    confirmColor: "bg-green-400",
-    writeColor: "border-yellow-400 text-yellow-400",
+    pinningStep: "border-green-400 text-green-400",
+    transitionLine: "bg-green-400",
+    writingOnChainStep: "border-yellow-400 text-yellow-400",
   },
   [TransactionStatus.CONFIRMED]: {
-    pinColor: "border-green-400 text-green-400",
-    confirmColor: "bg-green-400",
-    writeColor: "border-green-400 text-green-400",
+    pinningStep: "border-green-400 text-green-400",
+    transitionLine: "bg-green-400",
+    writingOnChainStep: "border-green-400 text-green-400",
   },
   [TransactionStatus.PINNING_ERROR]: {
-    pinColor: "border-red-400 text-red-400",
-    confirmColor: "bg-gray-400",
-    writeColor: "border-gray-400 text-gray-400",
+    pinningStep: "border-red-400 text-red-400",
+    transitionLine: "bg-gray-400",
+    writingOnChainStep: "border-gray-400 text-gray-400",
   },
   [TransactionStatus.WRITE_ERROR]: {
-    pinColor: "border-green-400 text-green-400",
-    confirmColor: "bg-green-400",
-    writeColor: "border-red-400 text-red-400",
+    pinningStep: "border-green-400 text-green-400",
+    transitionLine: "bg-green-400",
+    writingOnChainStep: "border-red-400 text-red-400",
   },
   [TransactionStatus.AUTHORIZING]: {
-    pinColor: "border-yellow-400 text-yellow-400",
-    confirmColor: "bg-gray-400",
-    writeColor: "border-gray-400 text-gray-400",
+    pinningStep: "border-yellow-400 text-yellow-400",
+    transitionLine: "bg-gray-400",
+    writingOnChainStep: "border-gray-400 text-gray-400",
   },
   [TransactionStatus.WAITING_APPROVAL]: {
-    pinColor: "border-green-400 text-green-400",
-    confirmColor: "bg-green-400",
-    writeColor: "border-yellow-400 text-yellow-400",
+    pinningStep: "border-green-400 text-green-400",
+    transitionLine: "bg-green-400",
+    writingOnChainStep: "border-yellow-400 text-yellow-400",
   },
 };
 
-function ConfirmationAlert({
-  handleSubmit,
-}: {
-  handleSubmit: (value: boolean) => void;
-}) {
+function ConfirmationAlert({ handleSubmit }: { handleSubmit: () => void }) {
   return (
     <div className="mt-4 px-1">
       <div className="w-full space-y-6">
@@ -79,7 +75,7 @@ function ConfirmationAlert({
           </Button>
         </DialogPrimitive.Close>
         <Button
-          onClick={() => handleSubmit(true)}
+          onClick={() => handleSubmit()}
           className="w-full bg-yellow-400 text-gray-900 hover:bg-yellow-300 focus-visible:bg-yellow-300 disabled:bg-yellow-200"
         >
           I'm sure
@@ -89,13 +85,16 @@ function ConfirmationAlert({
   );
 }
 
-function Ball({ color, children }: PropsWithChildren<{ color: string }>) {
+function StepCircle({
+  classNames,
+  children,
+}: PropsWithChildren<{ classNames: string }>) {
   return (
     <div
       className={cn(
         "w-8 h-8 rounded-full flex items-center justify-center",
         "font-bold text-lg border-[1px]",
-        color
+        classNames
       )}
     >
       {children}
@@ -103,16 +102,16 @@ function Ball({ color, children }: PropsWithChildren<{ color: string }>) {
   );
 }
 
-function Line({ color }: { color: string }) {
-  return <div className={cn("h-[1px] w-20", color)} />;
+function Line({ classNames }: { classNames: string }) {
+  return <div className={cn("h-[1px] w-20", classNames)} />;
 }
 
 function ProgressLine({ stage }: { stage: Stage }) {
   return (
     <div className="mt-44 flex items-center justify-center">
-      <Ball color={stage.pinColor}>1</Ball>
-      <Line color={stage.confirmColor} />
-      <Ball color={stage.writeColor}>2</Ball>
+      <StepCircle classNames={stage.pinningStep}>1</StepCircle>
+      <Line classNames={stage.transitionLine} />
+      <StepCircle classNames={stage.writingOnChainStep}>2</StepCircle>
     </div>
   );
 }
@@ -159,7 +158,7 @@ function ProcessTransaction({ poolId }: { poolId: `0x${string}` }) {
     transactionUrl,
   } = useTransaction({ poolId, metadata });
 
-  const stage = STAGE_MAPPING[transactionStatus];
+  const stage = STAGE_CN_MAPPING[transactionStatus];
 
   const modalDescription =
     transactionStatus === TransactionStatus.AUTHORIZING ||

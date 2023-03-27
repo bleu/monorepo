@@ -98,8 +98,8 @@ export function useTransaction({
   const { chain } = useNetwork();
 
   const handleSetTransactionLink = (hash: `0x${string}`) => {
-    const base_tx_url = networkUrls[chain!.id as keyof typeof networkUrls];
-    setTransactionUrl(`${base_tx_url}${hash}`);
+    const baseTxUrl = networkUrls[chain!.id as keyof typeof networkUrls];
+    setTransactionUrl(`${baseTxUrl}${hash}`);
   };
 
   const handleTransaction = async () => {

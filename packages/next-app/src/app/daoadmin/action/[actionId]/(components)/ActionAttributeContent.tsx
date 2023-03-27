@@ -1,12 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { HTMLProps, useContext } from "react";
+import { HTMLProps } from "react";
 import * as React from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "#/components";
-import { AdminToolsContext, toSlug } from "#/contexts/AdminToolsContext";
+import { toSlug, useAdminTools } from "#/contexts/AdminToolsContext";
 import { truncateAddress } from "#/utils/truncateAddress";
 
 export function ActionAttributeContent() {
@@ -14,7 +14,7 @@ export function ActionAttributeContent() {
   // eslint-disable-next-line no-console
   const onSubmit = (data: unknown) => console.log(data);
   const { push } = useRouter();
-  const { selectedAction } = useContext(AdminToolsContext);
+  const { selectedAction } = useAdminTools();
 
   const Input = React.forwardRef<HTMLInputElement, HTMLProps<HTMLInputElement>>(
     ({ label, ...rest }: React.HTMLProps<HTMLInputElement>, ref) => {
@@ -43,7 +43,7 @@ export function ActionAttributeContent() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       {selectedAction?.name && (
-        <div className="w-full bg-gray-900">
+        <div className="w-full">
           <div>
             <div className="sm:flex sm:items-center">
               <div className="sm:flex-auto">

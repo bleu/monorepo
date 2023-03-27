@@ -5,6 +5,7 @@ import {
   Dispatch,
   ReactNode,
   SetStateAction,
+  useContext,
   useState,
 } from "react";
 
@@ -62,6 +63,7 @@ export const AdminToolsContext = createContext({} as AdminToolsContextType);
 export function AdminToolsProvider({ children }: { children: ReactNode }) {
   const [selectedAction, setSelectedAction] =
     useState<ActionAttribute>(initialState);
+
   const [submit, handleSubmit] = useState<boolean>(false);
 
   function handleSetAction(action: ActionAttribute) {
@@ -80,4 +82,10 @@ export function AdminToolsProvider({ children }: { children: ReactNode }) {
       {children}
     </AdminToolsContext.Provider>
   );
+}
+
+export function useAdminTools() {
+  const context = useContext(AdminToolsContext);
+
+  return context;
 }

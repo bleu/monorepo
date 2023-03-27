@@ -10,10 +10,32 @@ import { hardcodedData } from "#/utils/hardcodedData";
 
 import { FilterDropdown, IFilter } from "../../../components/FilterDropdown";
 
+const filterInitialState = {
+  "operation-responsible": "",
+};
 export function Sidebar() {
   const data = hardcodedData;
   const [querySearch, setQuerySearch] = useState("");
-  const { selectedAction, handleSetAction, selectedFilters } = useAdminTools();
+  const [selectedFilters, setSelectedFilters] = useState(filterInitialState);
+  const { selectedAction, handleSetAction } = useAdminTools();
+
+  function changeSelectedFilters(key: string, value: string) {
+    setSelectedFilters((prevState) => {
+      return {
+        ...prevState,
+        [key]: value,
+      };
+    });
+  }
+
+  function clearSelectedFilter(field: string) {
+    setSelectedFilters((prevState) => {
+      return {
+        ...prevState,
+        [field]: "",
+      };
+    });
+  }
 
   const handleSearchChange = (e: React.FormEvent<HTMLInputElement>) => {
     setQuerySearch(e.currentTarget.value);
@@ -62,7 +84,11 @@ export function Sidebar() {
                 />
               </button>
             </div>
-            <FilterDropdown filters={filters} />
+            <FilterDropdown
+              filters={filters}
+              changeSelectedFilters={changeSelectedFilters}
+              clearSelectedFilter={clearSelectedFilter}
+            />
           </div>
         </div>
         <div className="relative max-h-[40rem] self-stretch overflow-auto">

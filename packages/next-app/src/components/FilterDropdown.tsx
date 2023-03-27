@@ -4,7 +4,7 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { ChevronDownIcon, EraserIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 
-import { toSlug, useAdminTools } from "#/contexts/AdminToolsContext";
+import { toSlug } from "#/contexts/AdminToolsContext";
 
 export interface IFilter {
   name: string;
@@ -13,10 +13,15 @@ export interface IFilter {
 
 interface IFilterDropdown {
   filters: IFilter[];
+  changeSelectedFilters: (key: string, value: string) => void;
+  clearSelectedFilter: (field: string) => void;
 }
 
-export function FilterDropdown({ filters }: IFilterDropdown) {
-  const { changeSelectedFilters, clearSelectedFilter } = useAdminTools();
+export function FilterDropdown({
+  filters,
+  changeSelectedFilters,
+  clearSelectedFilter,
+}: IFilterDropdown) {
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
@@ -32,7 +37,7 @@ export function FilterDropdown({ filters }: IFilterDropdown) {
       <DropdownMenu.Portal>
         <DropdownMenu.Content
           sideOffset={5}
-          className="rounded-md bg-white px-5 py-2 will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade"
+          className="data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade rounded-md bg-white px-5 py-2 will-change-[opacity,transform]"
         >
           {filters.map((filter) => {
             const [filterValue, setFilterValue] = useState("");

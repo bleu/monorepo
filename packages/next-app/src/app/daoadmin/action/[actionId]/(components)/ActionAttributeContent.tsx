@@ -1,37 +1,83 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { HTMLProps } from "react";
 import * as React from "react";
 import { useForm } from "react-hook-form";
+import { useNetwork } from "wagmi";
 
 import { Button } from "#/components";
-import { toSlug, useAdminTools } from "#/contexts/AdminToolsContext";
+import { toCammelCase, useAdminTools } from "#/contexts/AdminToolsContext";
+import { fetchExistingPool } from "#/utils/fetcher";
 import { truncateAddress } from "#/utils/truncateAddress";
 
+const Input = React.forwardRef<
+  HTMLInputElement,
+  React.HTMLProps<HTMLInputElement>
+>(({ label, ...rest }: React.HTMLProps<HTMLInputElement>, ref) => {
+  return (
+    <div>
+      <label className="mb-2 block text-sm text-gray-400">{label}</label>
+      <input
+        ref={ref}
+        {...rest}
+        className="selection:color-white box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] bg-blackA5 px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] shadow-blackA9 outline-none selection:bg-blackA9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-blackA9"
+      />
+    </div>
+  );
+});
+
+const CheckPoolID = ({
+  fieldName,
+  poolName,
+  poolError,
+}: {
+  fieldName: string;
+  poolName: string | undefined;
+  poolError: string | undefined;
+}) => {
+  return (
+    <div className="mt-2 flex gap-1 text-sm text-gray-400">
+      {fieldName === "Pool ID" && poolName ? (
+        <>
+          <h1 className="text-white">Pool Name:</h1>
+          <h1>{poolName}</h1>
+        </>
+      ) : fieldName === "Pool ID" && poolError ? (
+        <h1>{poolError}</h1>
+      ) : (
+        <></>
+      )}
+    </div>
+  );
+};
+
 export function ActionAttributeContent() {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, watch } = useForm();
   // eslint-disable-next-line no-console
   const onSubmit = (data: unknown) => console.log(data);
   const { push } = useRouter();
   const { selectedAction } = useAdminTools();
+  const { chain } = useNetwork();
+  const [poolName, setPoolName] = React.useState<string>();
+  const [poolError, setPoolError] = React.useState<string>();
 
-  const Input = React.forwardRef<HTMLInputElement, HTMLProps<HTMLInputElement>>(
-    ({ label, ...rest }: React.HTMLProps<HTMLInputElement>, ref) => {
-      return (
-        <div>
-          <label className="mb-2 block text-sm font-bold text-gray-400">
-            {label}
-          </label>
-          <input
-            ref={ref}
-            {...rest}
-            className="selection:color-white box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] bg-blackA5 px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] shadow-blackA9 outline-none selection:bg-blackA9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-blackA9"
-          />
-        </div>
-      );
+  const poolID = watch("poolID");
+
+  React.useEffect(() => {
+    if (poolID) {
+      if (poolID.length === 66)
+        fetchExistingPool(poolID, chain?.id.toString() || "1").then(
+          (response) => setPoolName(response.pool?.symbol as string)
+        );
+      else {
+        setPoolName("");
+        setPoolError("Pool not found. Please insert an existing Pool ID");
+      }
+    } else {
+      setPoolName("");
+      setPoolError("");
     }
-  );
+  }, [poolID]);
 
   //TODO fetch selectedAction data from action Id once the backend exists #BAL-157
   React.useEffect(() => {
@@ -76,12 +122,18 @@ export function ActionAttributeContent() {
               <div className="flex flex-col gap-4">
                 {selectedAction?.fields.map((field) => {
                   return (
-                    <Input
-                      key={field.name}
-                      label={field.name}
-                      placeholder={field.placeholder}
-                      {...register(toSlug(`${field.name}`))}
-                    />
+                    <div key={field.name}>
+                      <Input
+                        label={field.name}
+                        placeholder={field.placeholder}
+                        {...register(toCammelCase(`${field.name}`))}
+                      />
+                      <CheckPoolID
+                        fieldName={field.name}
+                        poolName={poolName}
+                        poolError={poolError}
+                      />
+                    </div>
                   );
                 })}
               </div>

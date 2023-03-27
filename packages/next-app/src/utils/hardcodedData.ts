@@ -13,8 +13,8 @@ export const hardcodedData: { actions: ActionAttribute[] } = {
         "https://etherscan.io/address/0xba100000625a3754423978a60c9317c58a424e3d",
       fields: [
         {
-          name: "Name",
-          placeholder: "Insert your name here",
+          name: "Pool ID",
+          placeholder: "Insert the Pool ID here",
           type: "string",
         },
         {
@@ -88,6 +88,11 @@ export const hardcodedData: { actions: ActionAttribute[] } = {
         {
           name: "Name",
           placeholder: "Insert your name here",
+          type: "string",
+        },
+        {
+          name: "Pool ID",
+          placeholder: "Insert the Pool ID here",
           type: "string",
         },
       ],

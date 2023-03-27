@@ -14,3 +14,9 @@ export const poolWhereOwner = gql`
     }
   }
 `;
+
+export const poolExists = gql`
+  query PoolExists($poolAddress: ID!) {
+    pool(id: $poolAddress) { symbol }
+  }
+`

@@ -5057,6 +5057,13 @@ export type PoolQueryVariables = Exact<{
 
 export type PoolQuery = { __typename?: 'Query', pools: Array<{ __typename?: 'Pool', poolType?: string | null, name?: string | null, id: string, address: any, tokens?: Array<{ __typename?: 'PoolToken', symbol: string, weight?: any | null }> | null }> };
 
+export type PoolExistsQueryVariables = Exact<{
+  poolAddress: Scalars['ID'];
+}>;
+
+
+export type PoolExistsQuery = { __typename?: 'Query', pool?: { __typename?: 'Pool', symbol?: string | null } | null };
+
 
 export const PoolDocument = gql`
     query Pool($owner: Bytes!) {
@@ -5072,6 +5079,13 @@ export const PoolDocument = gql`
   }
 }
     `;
+export const PoolExistsDocument = gql`
+    query PoolExists($poolAddress: ID!) {
+  pool(id: $poolAddress) {
+    symbol
+  }
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string) => Promise<T>;
 
@@ -5082,6 +5096,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
   return {
     Pool(variables: PoolQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<PoolQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<PoolQuery>(PoolDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Pool', 'query');
+    },
+    PoolExists(variables: PoolExistsQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<PoolExistsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<PoolExistsQuery>(PoolExistsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PoolExists', 'query');
     }
   };
 }
@@ -5093,6 +5110,9 @@ export function getSdkWithHooks(client: GraphQLClient, withWrapper: SdkFunctionW
     ...sdk,
     usePool(variables: PoolQueryVariables, config?: SWRConfigInterface<PoolQuery, ClientError>) {
       return useSWR<PoolQuery, ClientError>(genKey<PoolQueryVariables>('Pool', variables), () => sdk.Pool(variables), config);
+    },
+    usePoolExists(variables: PoolExistsQueryVariables, config?: SWRConfigInterface<PoolExistsQuery, ClientError>) {
+      return useSWR<PoolExistsQuery, ClientError>(genKey<PoolExistsQueryVariables>('PoolExists', variables), () => sdk.PoolExists(variables), config);
     }
   };
 }

@@ -20,7 +20,7 @@ import { fetcher } from "#/utils/fetcher";
 import { truncateAddress } from "#/utils/truncateAddress";
 
 import { PoolMetadataItemForm } from "./PoolMetadataForm";
-import { TransactionDialog } from "./TransactionDialog";
+import { TransactionModal } from "./TransactionModal";
 
 type CellProps = TableHTMLAttributes<HTMLTableCellElement>;
 
@@ -125,7 +125,6 @@ export function MetadataAttributesTable({
   const {
     metadata,
     handleSetMetadata,
-    handleSubmit,
     handleSetOriginalMetadata,
     metadataUpdated,
   } = useContext(PoolMetadataContext);
@@ -199,15 +198,17 @@ export function MetadataAttributesTable({
               Import template
             </Button>
           </div>
-          <TransactionDialog poolId={poolId}>
+          <Dialog
+            title={"Update metadata"}
+            content={<TransactionModal poolId={poolId} />}
+          >
             <Button
-              onClick={() => handleSubmit(true)}
               disabled={!metadataUpdated}
               className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 focus-visible:bg-yellow-300 disabled:bg-yellow-200"
             >
               Update metadata
             </Button>
-          </TransactionDialog>
+          </Dialog>
         </div>
       </div>
     </div>

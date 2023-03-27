@@ -28,12 +28,10 @@ import { chains, client } from "#/wagmi/client";
 export function RootLayout({ children }: { children: React.ReactNode }) {
   const { chain } = useNetwork();
   const { isConnected } = useAccount();
-  const router = useRouter();
+  const { push } = useRouter();
 
   useEffect(() => {
-    localStorage.setItem("networkId", chain?.id?.toString() || "1");
-
-    router.refresh();
+    if (chain) push("/daoadmin");
   }, [chain]);
 
   return (

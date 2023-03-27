@@ -11,10 +11,66 @@ export interface IFilter {
   options: string[];
 }
 
-interface IFilterDropdown {
-  filters: IFilter[];
+interface IDropdownRadioItem {
+  filter: IFilter;
   changeSelectedFilters: (key: string, value: string) => void;
   clearSelectedFilter: (field: string) => void;
+}
+
+interface IFilterDropdown extends Omit<IDropdownRadioItem, "filter"> {
+  filters: IFilter[];
+}
+
+function DropdownRadioItem({
+  changeSelectedFilters,
+  clearSelectedFilter,
+  filter,
+}: IDropdownRadioItem) {
+  const [filterValue, setFilterValue] = useState("");
+
+  function handleSelectFilter(value: string) {
+    setFilterValue(value);
+    changeSelectedFilters(toSlug(filter.name), value);
+  }
+  function handleClearFilter() {
+    clearSelectedFilter(toSlug(filter.name));
+    setFilterValue("");
+  }
+
+  return (
+    <>
+      <div className="flex gap-4 text-xs leading-[25px] text-gray-500">
+        <DropdownMenu.Label>{filter.name}</DropdownMenu.Label>
+        <button onClick={handleClearFilter}>
+          <EraserIcon className="hover:text-gray-900" />
+        </button>
+      </div>
+      <DropdownMenu.RadioGroup
+        value={filterValue}
+        onValueChange={handleSelectFilter}
+        className="flex flex-col gap-y-1 text-gray-700"
+      >
+        {filter.options.map((option) => (
+          <DropdownMenu.RadioItem
+            asChild
+            key={option}
+            value={`${option}`}
+            className="w-fit rounded p-1 text-sm font-bold text-gray-800 outline-none"
+          >
+            {filterValue !== option ? (
+              <span className="hover:cursor-pointer hover:bg-gray-100">
+                {option}
+              </span>
+            ) : (
+              <DropdownMenu.ItemIndicator className="bg-yellow-100">
+                {option}
+              </DropdownMenu.ItemIndicator>
+            )}
+          </DropdownMenu.RadioItem>
+        ))}
+      </DropdownMenu.RadioGroup>
+    </>
+  );
 }
 
 export function FilterDropdown({
@@ -40,50 +96,12 @@ export function FilterDropdown({
           className="data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade rounded-md bg-white px-5 py-2 will-change-[opacity,transform]"
         >
           {filters.map((filter) => {
-            const [filterValue, setFilterValue] = useState("");
-
-            function handleSelectFilter(value: string) {
-              setFilterValue(value);
-              changeSelectedFilters(toSlug(filter.name), value);
-            }
-            function handleClearFilter() {
-              clearSelectedFilter(toSlug(filter.name));
-              setFilterValue("");
-            }
-
             return (
-              <>
-                <div className="flex gap-4 text-xs leading-[25px] text-gray-500">
-                  <DropdownMenu.Label>{filter.name}</DropdownMenu.Label>
-                  <button onClick={handleClearFilter}>
-                    <EraserIcon className="hover:text-gray-900" />
-                  </button>
-                </div>
-                <DropdownMenu.RadioGroup
-                  value={filterValue}
-                  onValueChange={handleSelectFilter}
-                  className="flex flex-col gap-y-1 text-gray-700"
-                >
-                  {filter.options.map((option) => (
-                    <DropdownMenu.RadioItem
-                      asChild
-                      key={option}
-                      value={`${option}`}
-                      className="w-fit rounded p-1 text-sm font-bold text-gray-800 outline-none"
-                    >
-                      {filterValue !== option ? (
-                        <span className="hover:cursor-pointer hover:bg-gray-100">
-                          {option}
-                        </span>
-                      ) : (
-                        <DropdownMenu.ItemIndicator className="bg-yellow-100">
-                          {option}
-                        </DropdownMenu.ItemIndicator>
-                      )}
-                    </DropdownMenu.RadioItem>
-                  ))}
-                </DropdownMenu.RadioGroup>
-              </>
+              <DropdownRadioItem
+                filter={filter}
+                changeSelectedFilters={changeSelectedFilters}
+                clearSelectedFilter={clearSelectedFilter}
+              />
             );
           })}
         </DropdownMenu.Content>

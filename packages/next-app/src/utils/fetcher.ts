@@ -15,3 +15,11 @@ export async function fetchOwnedPools(address: string, chainId: string) {
   });
   return data;
 }
+
+export async function fetchExistingPool(poolAddress:string ,chainId: string) {
+  if (!poolAddress) return { pool: {} };
+  const data = await gql(chainId).PoolExists({
+    poolAddress: poolAddress,
+  });
+  return data;
+}

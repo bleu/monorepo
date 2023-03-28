@@ -50,7 +50,8 @@ export function ActionAttributeContent() {
 
   React.useEffect(() => {
     if (poolID) {
-      if (poolID.length === 66)
+      const couldInputBePoolId = /^(0x){1}[0-9a-f]{64}/i.test(poolID);
+      if (couldInputBePoolId)
         fetchExistingPool(poolID, chain?.id.toString() || "1").then(
           (response) => setPoolName(response.pool?.symbol as string)
         );

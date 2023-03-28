@@ -4,30 +4,16 @@ import { MetadataItemSchema } from "@balancer-pool-metadata/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as React from "react";
-import { HTMLProps, useContext } from "react";
+import { useContext } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import { Button } from "#/components/Button";
+import { Input } from "#/components/Input";
 import { Select, SelectItem } from "#/components/Select";
 import {
   PoolMetadataAttribute,
   PoolMetadataContext,
 } from "#/contexts/PoolMetadataContext";
-
-const Input = React.forwardRef<HTMLInputElement, HTMLProps<HTMLInputElement>>(
-  ({ label, ...rest }: React.HTMLProps<HTMLInputElement>, ref) => {
-    return (
-      <div className="mb-4">
-        <label className="mb-2 block text-sm text-gray-400">{label}</label>
-        <input
-          ref={ref}
-          {...rest}
-          className="selection:color-white box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] bg-blackA5 px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] shadow-blackA9 outline-none selection:bg-blackA9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-blackA9"
-        />
-      </div>
-    );
-  }
-);
 
 const inputTypenames = [
   { value: "text", label: "Text" },

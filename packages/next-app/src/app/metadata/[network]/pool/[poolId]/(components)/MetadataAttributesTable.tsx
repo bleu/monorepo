@@ -12,11 +12,11 @@ import { Dialog } from "#/components/Dialog";
 import {
   PoolMetadataAttribute,
   PoolMetadataContext,
-  toSlug,
 } from "#/contexts/PoolMetadataContext";
 import { networkIdFor } from "#/lib/gql";
 import metadataGql from "#/lib/poolMetadataGql";
 import { fetcher } from "#/utils/fetcher";
+import { toSlug } from "#/utils/formatStringCase";
 import { truncateAddress } from "#/utils/truncateAddress";
 
 import { PoolMetadataItemForm } from "./PoolMetadataForm";

@@ -29,11 +29,11 @@ export function Sidebar() {
     });
   }
 
-  function clearSelectedFilter(field: string) {
+  function clearSelectedFilter(key: string) {
     setSelectedFilters((prevState) => {
       return {
         ...prevState,
-        [field]: "",
+        [key]: "",
       };
     });
   }

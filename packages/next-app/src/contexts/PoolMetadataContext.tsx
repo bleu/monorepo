@@ -10,14 +10,7 @@ import {
   useState,
 } from "react";
 
-export function toSlug(string?: string) {
-  return (
-    string
-      ?.toLowerCase()
-      ?.replace(/ /g, "-")
-      ?.replace(/[^\w-]+/g, "") || ""
-  );
-}
+import { toSlug } from "#/utils/formatStringCase";
 
 // TODO: generate TS types from zod: https://github.com/sachinraja/zod-to-ts
 export interface PoolMetadataAttribute {

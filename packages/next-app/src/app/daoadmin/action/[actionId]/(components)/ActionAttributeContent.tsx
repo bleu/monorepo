@@ -7,8 +7,9 @@ import { useNetwork } from "wagmi";
 
 import { Button } from "#/components";
 import { Input } from "#/components/Input";
-import { toCammelCase, useAdminTools } from "#/contexts/AdminToolsContext";
+import { useAdminTools } from "#/contexts/AdminToolsContext";
 import { fetchExistingPool } from "#/utils/fetcher";
+import { toCamelCase } from "#/utils/formatStringCase";
 import { truncateAddress } from "#/utils/truncateAddress";
 
 export function ActionAttributeContent() {
@@ -87,7 +88,7 @@ export function ActionAttributeContent() {
                       <Input
                         label={field.name}
                         placeholder={field.placeholder}
-                        {...register(toCammelCase(`${field.name}`))}
+                        {...register(toCamelCase(`${field.name}`))}
                       />
                       <div className="mt-2 flex gap-1 text-sm text-gray-400">
                         {field.name === "Pool ID" && poolName ? (

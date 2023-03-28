@@ -19,25 +19,25 @@ export function ActionAttributeContent() {
   const { push } = useRouter();
   const { selectedAction } = useAdminTools();
   const { chain } = useNetwork();
-  const [poolName, setPoolName] = React.useState<string>();
+  const [poolSymbol, setPoolSymbol] = React.useState<string>();
   const [poolError, setPoolError] = React.useState<string>();
 
   const poolId = watch("poolID");
 
   React.useEffect(() => {
     if (!poolId) {
-      setPoolName("");
+      setPoolSymbol("");
       setPoolError("");
       return;
     }
     const couldInputBePoolId = /^(0x){1}[0-9a-f]{64}/i.test(poolId);
     if (!couldInputBePoolId) {
-      setPoolName("");
+      setPoolSymbol("");
       setPoolError("Pool not found. Please insert an existing Pool ID");
       return;
     }
     fetchExistingPool(poolId, chain?.id.toString() || "1").then((response) =>
-      setPoolName(response.pool?.symbol as string)
+      setPoolSymbol(response.pool?.symbol as string)
     );
   }, [poolId]);
 
@@ -91,10 +91,10 @@ export function ActionAttributeContent() {
                         {...register(toCamelCase(`${field.name}`))}
                       />
                       <div className="mt-2 flex gap-1 text-sm text-gray-400">
-                        {field.name === "Pool ID" && poolName ? (
+                        {field.name === "Pool ID" && poolSymbol ? (
                           <>
-                            <h1 className="text-white">Pool Name:</h1>
-                            <h1>{poolName}</h1>
+                            <h1 className="text-white">Pool Symbol:</h1>
+                            <h1>{poolSymbol}</h1>
                           </>
                         ) : field.name === "Pool ID" && poolError ? (
                           <h1>{poolError}</h1>

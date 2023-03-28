@@ -11,31 +11,6 @@ import { toCammelCase, useAdminTools } from "#/contexts/AdminToolsContext";
 import { fetchExistingPool } from "#/utils/fetcher";
 import { truncateAddress } from "#/utils/truncateAddress";
 
-const CheckPoolID = ({
-  fieldName,
-  poolName,
-  poolError,
-}: {
-  fieldName: string;
-  poolName: string | undefined;
-  poolError: string | undefined;
-}) => {
-  return (
-    <div className="mt-2 flex gap-1 text-sm text-gray-400">
-      {fieldName === "Pool ID" && poolName ? (
-        <>
-          <h1 className="text-white">Pool Name:</h1>
-          <h1>{poolName}</h1>
-        </>
-      ) : fieldName === "Pool ID" && poolError ? (
-        <h1>{poolError}</h1>
-      ) : (
-        <></>
-      )}
-    </div>
-  );
-};
-
 export function ActionAttributeContent() {
   const { register, handleSubmit, watch } = useForm();
   // eslint-disable-next-line no-console
@@ -114,11 +89,18 @@ export function ActionAttributeContent() {
                         placeholder={field.placeholder}
                         {...register(toCammelCase(`${field.name}`))}
                       />
-                      <CheckPoolID
-                        fieldName={field.name}
-                        poolName={poolName}
-                        poolError={poolError}
-                      />
+                      <div className="mt-2 flex gap-1 text-sm text-gray-400">
+                        {field.name === "Pool ID" && poolName ? (
+                          <>
+                            <h1 className="text-white">Pool Name:</h1>
+                            <h1>{poolName}</h1>
+                          </>
+                        ) : field.name === "Pool ID" && poolError ? (
+                          <h1>{poolError}</h1>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
                     </div>
                   );
                 })}

@@ -46,13 +46,13 @@ export function ActionAttributeContent() {
   const [poolName, setPoolName] = React.useState<string>();
   const [poolError, setPoolError] = React.useState<string>();
 
-  const poolID = watch("poolID");
+  const poolId = watch("poolID");
 
   React.useEffect(() => {
-    if (poolID) {
-      const couldInputBePoolId = /^(0x){1}[0-9a-f]{64}/i.test(poolID);
+    if (poolId) {
+      const couldInputBePoolId = /^(0x){1}[0-9a-f]{64}/i.test(poolId);
       if (couldInputBePoolId)
-        fetchExistingPool(poolID, chain?.id.toString() || "1").then(
+        fetchExistingPool(poolId, chain?.id.toString() || "1").then(
           (response) => setPoolName(response.pool?.symbol as string)
         );
       else {
@@ -63,7 +63,7 @@ export function ActionAttributeContent() {
       setPoolName("");
       setPoolError("");
     }
-  }, [poolID]);
+  }, [poolId]);
 
   //TODO fetch selectedAction data from action Id once the backend exists #BAL-157
   React.useEffect(() => {

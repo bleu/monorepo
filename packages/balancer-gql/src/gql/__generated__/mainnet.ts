@@ -5219,7 +5219,7 @@ export type PoolsQueryVariables = Exact<{
 export type PoolsQuery = { __typename?: 'Query', pools: Array<{ __typename?: 'Pool', poolType?: string | null, name?: string | null, id: string, address: any, tokens?: Array<{ __typename?: 'PoolToken', symbol: string, weight?: any | null }> | null }> };
 
 export type PoolQueryVariables = Exact<{
-  poolID: Scalars['ID'];
+  poolId: Scalars['ID'];
 }>;
 
 
@@ -5241,8 +5241,8 @@ export const PoolsDocument = gql`
 }
     `;
 export const PoolDocument = gql`
-    query Pool($poolID: ID!) {
-  pool(id: $poolID) {
+    query Pool($poolId: ID!) {
+  pool(id: $poolId) {
     symbol
   }
 }

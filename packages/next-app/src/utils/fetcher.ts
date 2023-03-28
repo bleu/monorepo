@@ -19,7 +19,7 @@ export async function fetchOwnedPools(address: string, chainId: string) {
 export async function fetchExistingPool(poolId:string ,chainId: string) {
   if (!poolId) return { pool: {} };
   const data = await gql(chainId).Pool({
-    poolID: poolId,
+    poolId: poolId,
   });
   return data;
 }

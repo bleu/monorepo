@@ -80,7 +80,7 @@ contract PoolMetadataRegistry is IPoolMetadataRegistry {
             return msg.sender == poolOwner;
         } else {
             // Non-owner actions are always processed via the Authorizer, as "owner only" ones are when delegated.
-            return _vault.getAuthorizer().canPerform(actionId, account, address(this));
+            return _vault.getAuthorizer().canPerform(actionId, account, pool);
         }
     }
 }

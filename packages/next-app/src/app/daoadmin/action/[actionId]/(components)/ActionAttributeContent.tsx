@@ -36,7 +36,7 @@ export function ActionAttributeContent() {
       setPoolError("Pool not found. Please insert an existing Pool ID");
       return;
     }
-    fetchExistingPool(poolId, chain?.id.toString() || "1").then((response) =>
+    fetchExistingPool(poolId, chain!.id.toString()).then((response) =>
       setPoolSymbol(response.pool?.symbol as string)
     );
   }, [poolId]);

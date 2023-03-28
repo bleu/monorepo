@@ -10,14 +10,12 @@ import { hardcodedData } from "#/utils/hardcodedData";
 
 import { FilterDropdown, IFilter } from "../../../components/FilterDropdown";
 
-const filterInitialState = {
-  operationResponsible: "",
-};
-
 export function Sidebar() {
   const data = hardcodedData;
   const [querySearch, setQuerySearch] = useState("");
-  const [selectedFilters, setSelectedFilters] = useState(filterInitialState);
+  const [selectedFilters, setSelectedFilters] = useState({
+    operationResponsible: "",
+  });
   const { selectedAction, handleSetAction } = useAdminTools();
 
   function changeSelectedFilters(key: string, value: string) {

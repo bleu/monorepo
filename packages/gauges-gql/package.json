@@ -1,0 +1,42 @@
+{
+  "name": "@balancer-pool-metadata/gauges-gql",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "format:check": "prettier --check \"**/*.{md,html,mjml,json,graphql,yml,css,scss}\"",
+    "format": "prettier --write \"**/*.{md,html,mjml,json,graphql,yml,css,scss,ts,tsx,js,jsx}\"",
+    "lint": "eslint '**/*.{ts,tsx}' --max-warnings 0",
+    "lint:fix": "eslint '**/*.{ts,tsx}' --fix",
+    "graphql:check-types": "graphql-codegen --config codegen.ts --check",
+    "graphql:update-types": "graphql-codegen --config codegen.ts"
+  },
+  "devDependencies": {
+    "@balancer-pool-metadata/tsconfig": "workspace:*",
+    "@graphql-codegen/cli": "3.2.2",
+    "@graphql-codegen/client-preset": "^2.1.1",
+    "@graphql-codegen/typescript": "3.0.2",
+    "@graphql-codegen/typescript-graphql-request": "4.5.9",
+    "@graphql-codegen/typescript-operations": "3.0.2",
+    "@types/node": "18.15.10",
+    "@types/react": "18.0.30",
+    "@types/react-dom": "18.0.11",
+    "graphql-codegen-plugin-typescript-swr": "0.8.3",
+    "micromatch": "4.0.5",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "typescript": "5.0.2",
+    "graphql": "16.6.0",
+    "graphql-request": "5.1.0"
+  },
+  "peerDependencies": {
+    "@types/react": ">=17",
+    "@types/react-dom": ">=17",
+    "dotenv": ">=16",
+    "graphql": "16.6.0",
+    "graphql-request": "~5.1.0",
+    "graphql-tag": ">=2",
+    "react": ">=17",
+    "react-dom": ">=17",
+    "swr": "2.0.0"
+  }
+}

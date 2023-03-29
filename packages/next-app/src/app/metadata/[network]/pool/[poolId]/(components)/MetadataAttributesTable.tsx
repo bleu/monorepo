@@ -9,16 +9,18 @@ import {
 import cn from "classnames";
 import { TableHTMLAttributes, useContext, useEffect } from "react";
 import useSWR from "swr";
-import { useNetwork } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 
 import { Button } from "#/components";
+import { ButtonWithToolTip } from "#/components/ButtonWithToolTip";
 import { Dialog } from "#/components/Dialog";
 import {
   PoolMetadataAttribute,
   PoolMetadataContext,
 } from "#/contexts/PoolMetadataContext";
-import { networkIdFor } from "#/lib/gql";
+import balancerGql, { networkIdFor } from "#/lib/gql";
 import metadataGql from "#/lib/poolMetadataGql";
+import { isPoolOwner } from "#/utils/address";
 import { fetcher } from "#/utils/fetcher";
 import { toSlug } from "#/utils/formatStringCase";
 import { truncateAddress } from "#/utils/truncateAddress";
@@ -152,10 +154,13 @@ export function MetadataAttributesTable({
   } = useContext(PoolMetadataContext);
 
   const { chain } = useNetwork();
+  const { address } = useAccount();
 
-  const { data: poolsData } = metadataGql(
-    chain?.id.toString() || networkIdFor(network)
-  ).useMetadataPool({
+  const chainId = chain?.id.toString() || networkIdFor(network);
+  const { data: poolOwner } = balancerGql(chainId).usePoolOwner({
+    poolId,
+  });
+  const { data: poolsData } = metadataGql(chainId).useMetadataPool({
     poolId,
   });
 
@@ -176,6 +181,7 @@ export function MetadataAttributesTable({
   }, [data]);
 
   const balancerPoolLink = `https://app.balancer.fi/#/${network}/pool/${poolId}`;
+  const isOwner = isPoolOwner(chainId, poolOwner?.pool?.owner, address);
 
   return (
     <div className="w-full bg-gray-900">
@@ -214,27 +220,45 @@ export function MetadataAttributesTable({
 
         <div className="mt-5 w-full justify-between sm:flex sm:items-center">
           <div className="flex gap-4">
-            <Dialog title={"Add attribute"} content={<PoolMetadataItemForm />}>
-              <Button className="bg-indigo-500 text-white hover:bg-indigo-400 focus-visible:outline-indigo-500">
-                Add attribute
-              </Button>
-            </Dialog>
+            <ButtonWithToolTip
+              enabled={isOwner}
+              label="Add attribute"
+              message={!isOwner ? "You are not the pool owner" : ""}
+              className="bg-indigo-400 text-white"
+            >
+              <Dialog
+                title={"Add attribute"}
+                content={<PoolMetadataItemForm />}
+              >
+                <Button className="bg-indigo-500 text-white hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-indigo-400">
+                  Add attribute
+                </Button>
+              </Dialog>
+            </ButtonWithToolTip>
 
             <Button className="border border-blue-500 bg-gray-900  text-blue-500 hover:bg-gray-800 focus-visible:outline-indigo-500">
               Import template
             </Button>
           </div>
-          <Dialog
-            title={"Update metadata"}
-            content={<TransactionModal poolId={poolId} />}
+          <ButtonWithToolTip
+            enabled={metadataUpdated && isOwner}
+            label="Update metadata"
+            message={
+              !isOwner
+                ? "You are not the pool owner"
+                : "Your need to update the metadata first"
+            }
+            className="bg-yellow-200 text-gray-900"
           >
-            <Button
-              disabled={!metadataUpdated}
-              className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 focus-visible:bg-yellow-300 disabled:bg-yellow-200"
+            <Dialog
+              title={"Update metadata"}
+              content={<TransactionModal poolId={poolId} />}
             >
-              Update metadata
-            </Button>
-          </Dialog>
+              <Button className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 focus-visible:bg-yellow-300">
+                Update metadata
+              </Button>
+            </Dialog>
+          </ButtonWithToolTip>
         </div>
       </div>
     </div>

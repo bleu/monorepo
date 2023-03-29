@@ -10,13 +10,12 @@ import { hardcodedData } from "#/utils/hardcodedData";
 
 import { FilterDropdown, IFilter } from "../../../components/FilterDropdown";
 
-const filterInitialState = {
-  "operation-responsible": "",
-};
 export function Sidebar() {
   const data = hardcodedData;
   const [querySearch, setQuerySearch] = useState("");
-  const [selectedFilters, setSelectedFilters] = useState(filterInitialState);
+  const [selectedFilters, setSelectedFilters] = useState({
+    operationResponsible: "",
+  });
   const { selectedAction, handleSetAction } = useAdminTools();
 
   function changeSelectedFilters(key: string, value: string) {
@@ -28,11 +27,11 @@ export function Sidebar() {
     });
   }
 
-  function clearSelectedFilter(field: string) {
+  function clearSelectedFilter(key: string) {
     setSelectedFilters((prevState) => {
       return {
         ...prevState,
-        [field]: "",
+        [key]: "",
       };
     });
   }
@@ -42,11 +41,10 @@ export function Sidebar() {
   };
 
   const filteredActionsByTag =
-    selectedFilters["operation-responsible"] !== ""
+    selectedFilters.operationResponsible !== ""
       ? data.actions.filter(
           (item) =>
-            item.operationResponsible ===
-            selectedFilters["operation-responsible"]
+            item.operationResponsible === selectedFilters.operationResponsible
         )
       : data.actions;
 

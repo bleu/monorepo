@@ -1,7 +1,7 @@
 import { gql } from "graphql-tag";
 
 export const poolWhereOwner = gql`
-  query Pool($owner: Bytes!) {
+  query Pools($owner: Bytes!) {
     pools(where: { owner: $owner }) {
       poolType
       name
@@ -14,3 +14,9 @@ export const poolWhereOwner = gql`
     }
   }
 `;
+
+export const poolSymbol = gql`
+  query Pool($poolId: ID!) {
+    pool(id: $poolId) { symbol }
+  }
+`

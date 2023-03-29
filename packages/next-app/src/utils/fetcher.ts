@@ -10,8 +10,16 @@ export async function fetcher<JSON = unknown>(
 
 export async function fetchOwnedPools(address: string, chainId: string) {
   if (!address) return { pools: [] };
-  const data = await gql(chainId).Pool({
+  const data = await gql(chainId).Pools({
     owner: address,
+  });
+  return data;
+}
+
+export async function fetchExistingPool(poolId:string ,chainId: string) {
+  if (!poolId) return { pool: {} };
+  const data = await gql(chainId).Pool({
+    poolId: poolId,
   });
   return data;
 }

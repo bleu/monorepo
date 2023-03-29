@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAccount, useNetwork } from "wagmi";
 
-import { WalletNotConnectedState } from "#/components/RootLayout";
+import WalletNotConnected from "#/components/WalletNotConnected";
 import { AdminToolsProvider } from "#/contexts/AdminToolsContext";
 
 import { Sidebar } from "./Sidebar";
@@ -33,7 +33,7 @@ export function DaoAdminProvider({ children }: { children: React.ReactNode }) {
           </div>
         </AdminToolsProvider>
       ) : (
-        <WalletNotConnectedState />
+        <WalletNotConnected />
       )}
     </>
   );

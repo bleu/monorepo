@@ -38,8 +38,6 @@ interface PoolMetadataContextType {
   handleSetOriginalMetadata: (data: PoolMetadataAttribute[]) => void;
   updateStatus: UpdateStatus;
   setStatus: Dispatch<SetStateAction<UpdateStatus>>;
-  submit: boolean;
-  handleSubmit: Dispatch<SetStateAction<boolean>>;
   metadataUpdated: boolean;
 }
 
@@ -67,7 +65,6 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
   const [updateStatus, setStatus] = useState<UpdateStatus>(
     UpdateStatus.PINNING
   );
-  const [submit, handleSubmit] = useState<boolean>(false);
   const [metadataUpdated, setMetadataUpdated] = useState<boolean>(false);
   const [originalMetadata, setOriginalMetadata] = useState<
     PoolMetadataAttribute[]
@@ -117,8 +114,6 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
         handleSetMetadata,
         updateStatus,
         setStatus,
-        submit,
-        handleSubmit,
         metadataUpdated,
         handleSetOriginalMetadata,
       }}

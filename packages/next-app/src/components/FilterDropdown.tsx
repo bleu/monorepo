@@ -93,7 +93,7 @@ export function FilterDropdown({
       <DropdownMenu.Portal>
         <DropdownMenu.Content
           sideOffset={5}
-          className="data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade rounded-md bg-white px-5 py-2 will-change-[opacity,transform]"
+          className="rounded-md bg-white px-5 py-2 will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade"
         >
           {filters.map((filter) => {
             return (

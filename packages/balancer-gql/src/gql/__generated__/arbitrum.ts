@@ -5225,6 +5225,13 @@ export type PoolQueryVariables = Exact<{
 
 export type PoolQuery = { __typename?: 'Query', pool?: { __typename?: 'Pool', symbol?: string | null } | null };
 
+export type PoolOwnerQueryVariables = Exact<{
+  poolId: Scalars['ID'];
+}>;
+
+
+export type PoolOwnerQuery = { __typename?: 'Query', pool?: { __typename?: 'Pool', owner?: any | null } | null };
+
 
 export const PoolsDocument = gql`
     query Pools($owner: Bytes!) {
@@ -5247,6 +5254,13 @@ export const PoolDocument = gql`
   }
 }
     `;
+export const PoolOwnerDocument = gql`
+    query PoolOwner($poolId: ID!) {
+  pool(id: $poolId) {
+    owner
+  }
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string) => Promise<T>;
 
@@ -5260,6 +5274,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     Pool(variables: PoolQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<PoolQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<PoolQuery>(PoolDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Pool', 'query');
+    },
+    PoolOwner(variables: PoolOwnerQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<PoolOwnerQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<PoolOwnerQuery>(PoolOwnerDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PoolOwner', 'query');
     }
   };
 }
@@ -5274,6 +5291,9 @@ export function getSdkWithHooks(client: GraphQLClient, withWrapper: SdkFunctionW
     },
     usePool(variables: PoolQueryVariables, config?: SWRConfigInterface<PoolQuery, ClientError>) {
       return useSWR<PoolQuery, ClientError>(genKey<PoolQueryVariables>('Pool', variables), () => sdk.Pool(variables), config);
+    },
+    usePoolOwner(variables: PoolOwnerQueryVariables, config?: SWRConfigInterface<PoolOwnerQuery, ClientError>) {
+      return useSWR<PoolOwnerQuery, ClientError>(genKey<PoolOwnerQueryVariables>('PoolOwner', variables), () => sdk.PoolOwner(variables), config);
     }
   };
 }

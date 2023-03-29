@@ -14,6 +14,7 @@ const { connectors } = getDefaultWallets({
 });
 
 export const client = createClient({
+  autoConnect: true,
   connectors,
   provider,
   webSocketProvider,

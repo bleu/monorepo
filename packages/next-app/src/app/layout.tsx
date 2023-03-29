@@ -1,8 +1,9 @@
-import { RootLayout } from "#/components/RootLayout";
 import "#/styles/global.css";
 import "@rainbow-me/rainbowkit/styles.css";
 
 import * as React from "react";
+
+import { RootLayout } from "#/components/RootLayout";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (

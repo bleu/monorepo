@@ -35,7 +35,7 @@ importers:
       dotenv: '>=16'
       graphql: 16.6.0
       graphql-codegen-plugin-typescript-swr: 0.8.3
-      graphql-request: 5.2.0
+      graphql-request: 5.1.0
       graphql-tag: '>=2'
       micromatch: 4.0.5
       react: 18.2.0
@@ -51,14 +51,14 @@ importers:
       '@graphql-codegen/cli': 3.2.2_no3kj2p6ai3ys2hj2vbad42xye
       '@graphql-codegen/client-preset': 2.1.1_graphql@16.6.0
       '@graphql-codegen/typescript': 3.0.2_graphql@16.6.0
-      '@graphql-codegen/typescript-graphql-request': 4.5.9_zevvb7nvi4hzweqh5hchlib5c4
+      '@graphql-codegen/typescript-graphql-request': 4.5.9_f45c35xnr66et7kv43kezet7ie
       '@graphql-codegen/typescript-operations': 3.0.2_graphql@16.6.0
       '@types/node': 18.15.10
       '@types/react': 18.0.30
       '@types/react-dom': 18.0.11
       graphql: 16.6.0
       graphql-codegen-plugin-typescript-swr: 0.8.3_onqnqwb3ubg5opvemcqf7c2qhy
-      graphql-request: 5.2.0_graphql@16.6.0
+      graphql-request: 5.1.0_graphql@16.6.0
       micromatch: 4.0.5
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
@@ -1597,25 +1597,6 @@ packages:
       - supports-color
     dev: true
 
-  /@graphql-codegen/typescript-graphql-request/4.5.9_zevvb7nvi4hzweqh5hchlib5c4:
-    resolution: {integrity: sha512-Vtv5qymUXcR4UFdHOlJHzK5TN+CZUwMwFDGb3n4Gjcr4yln1BWbUb7DXgD0GHzpXwDIj5G2XmJnFtr0jihBfrg==}
-    peerDependencies:
-      graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
-      graphql-request: ^3.4.0 || ^4.0.0 || ~5.0.0 || ~5.1.0
-      graphql-tag: ^2.0.0
-    dependencies:
-      '@graphql-codegen/plugin-helpers': 3.1.2_graphql@16.6.0
-      '@graphql-codegen/visitor-plugin-common': 2.13.1_graphql@16.6.0
-      auto-bind: 4.0.0
-      graphql: 16.6.0
-      graphql-request: 5.2.0_graphql@16.6.0
-      graphql-tag: 2.12.6_graphql@16.6.0
-      tslib: 2.4.0
-    transitivePeerDependencies:
-      - encoding
-      - supports-color
-    dev: true
-
   /@graphql-codegen/typescript-operations/3.0.2_graphql@16.6.0:
     resolution: {integrity: sha512-FYi5QcOsBZZvBKlzBQ+jpBCUxMo9g3fTYa2v1+rqooG6SiW/lQyk2CNL5tsYAt6TLmH3rws8rzSUil0DWNsflQ==}
     peerDependencies:
@@ -2074,7 +2055,7 @@ packages:
       debug: 4.3.4
       dotenv: 16.0.3
       graphql: 16.6.0
-      graphql-request: 5.2.0_graphql@16.6.0
+      graphql-request: 5.1.0_graphql@16.6.0
       http-proxy-agent: 5.0.0
       https-proxy-agent: 5.0.1
       isomorphic-fetch: 3.0.0
@@ -7930,20 +7911,6 @@ packages:
       graphql: 16.6.0
     transitivePeerDependencies:
       - encoding
-
-  /graphql-request/5.2.0_graphql@16.6.0:
-    resolution: {integrity: sha512-pLhKIvnMyBERL0dtFI3medKqWOz/RhHdcgbZ+hMMIb32mEPa5MJSzS4AuXxfI4sRAu6JVVk5tvXuGfCWl9JYWQ==}
-    peerDependencies:
-      graphql: 14 - 16
-    dependencies:
-      '@graphql-typed-document-node/core': 3.1.2_graphql@16.6.0
-      cross-fetch: 3.1.5
-      extract-files: 9.0.0
-      form-data: 3.0.1
-      graphql: 16.6.0
-    transitivePeerDependencies:
-      - encoding
-    dev: true
 
   /graphql-tag/2.12.6_graphql@16.6.0:
     resolution: {integrity: sha512-FdSNcu2QQcWnM2VNvSCCDCVS5PpPqpzgFT8+GXzqJuoDd0CBncxCY278u4mhRO7tMgo2JjgJA5aZ+nWSQ/Z+xg==}

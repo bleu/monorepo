@@ -32,6 +32,7 @@ interface PoolMetadataContextType {
   updateStatus: UpdateStatus;
   setStatus: Dispatch<SetStateAction<UpdateStatus>>;
   metadataUpdated: boolean;
+  handleRemoveMetadataAttr: (key: string) => void;
 }
 
 export enum UpdateStatus {
@@ -75,6 +76,10 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
     setMetadata((state) => [data, ...state]);
   }
 
+  const handleRemoveMetadataAttr = (key: string) => {
+    setMetadata((state) => state.filter((item) => item.key !== key));
+  };
+
   function handleUpdateMetadata(data: PoolMetadataAttribute) {
     setMetadata((state) =>
       state.map((item) => {
@@ -109,6 +114,7 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
         setStatus,
         metadataUpdated,
         handleSetOriginalMetadata,
+        handleRemoveMetadataAttr,
       }}
     >
       {children}

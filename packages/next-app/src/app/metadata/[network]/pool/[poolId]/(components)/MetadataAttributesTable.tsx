@@ -1,7 +1,11 @@
 "use client";
 
 import { Network } from "@balancer-pool-metadata/balancer-gql/codegen";
-import { ArrowTopRightIcon, Pencil2Icon } from "@radix-ui/react-icons";
+import {
+  ArrowTopRightIcon,
+  Pencil2Icon,
+  TrashIcon,
+} from "@radix-ui/react-icons";
 import cn from "classnames";
 import { TableHTMLAttributes, useContext, useEffect } from "react";
 import useSWR from "swr";
@@ -89,18 +93,36 @@ const AttributeLink = ({ data }: { data: PoolMetadataAttribute }) => {
   }
 };
 
-function Row({ data }: { data: PoolMetadataAttribute }) {
+function Row({
+  data,
+  mode = "view",
+}: {
+  data: PoolMetadataAttribute;
+  mode: "view" | "edit";
+}) {
+  const { handleRemoveMetadataAttr } = useContext(PoolMetadataContext);
+
   return (
     <tr>
       <Td>
-        <Dialog
-          title={"Edit attribute"}
-          content={<PoolMetadataItemForm data={data} mode="edit" />}
-        >
-          <button className="flex items-center">
-            <Pencil2Icon className="text-yellow-400" />
-          </button>
-        </Dialog>
+        {mode === "edit" && (
+          <div className="flex justify-around">
+            <button
+              className="flex items-center"
+              onClick={() => handleRemoveMetadataAttr(data.key)}
+            >
+              <TrashIcon className="text-red-400" width={16} height={16} />
+            </button>
+            <Dialog
+              title={"Edit attribute"}
+              content={<PoolMetadataItemForm data={data} mode="edit" />}
+            >
+              <button className="flex items-center">
+                <Pencil2Icon className="text-yellow-400" />
+              </button>
+            </Dialog>
+          </div>
+        )}
       </Td>
       <Td className="min-w-[10rem]">{data.key}</Td>
       <Td>{data.typename}</Td>
@@ -180,7 +202,11 @@ export function MetadataAttributesTable({
 
             <tbody className="divide-y divide-gray-800">
               {metadata.map((item) => (
-                <Row key={toSlug(item.key)} data={item} />
+                <Row
+                  key={toSlug(item.key)}
+                  data={item}
+                  mode={isOwner ? "edit" : "view"}
+                />
               ))}
             </tbody>
           </table>

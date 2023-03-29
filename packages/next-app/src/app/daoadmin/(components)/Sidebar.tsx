@@ -1,50 +1,34 @@
 "use client";
 
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import * as SelectPrimitive from "@radix-ui/react-select";
 import Link from "next/link";
 import { useState } from "react";
 
 import { Actions } from "#/app/daoadmin/(components)/Actions";
+import { Select, SelectItem } from "#/components/Select";
 import { ActionAttribute, useAdminTools } from "#/contexts/AdminToolsContext";
 import { hardcodedData } from "#/utils/hardcodedData";
 
-import { FilterDropdown, IFilter } from "../../../components/FilterDropdown";
+interface IFilter {
+  name: string;
+  options: string[];
+}
 
 export function Sidebar() {
   const data = hardcodedData;
   const [querySearch, setQuerySearch] = useState("");
-  const [selectedFilters, setSelectedFilters] = useState({
-    operationResponsible: "",
-  });
+  const [selectedFilter, setSelectedFilter] = useState<string>("");
   const { selectedAction, handleSetAction } = useAdminTools();
-
-  function changeSelectedFilters(key: string, value: string) {
-    setSelectedFilters((prevState) => {
-      return {
-        ...prevState,
-        [key]: value,
-      };
-    });
-  }
-
-  function clearSelectedFilter(key: string) {
-    setSelectedFilters((prevState) => {
-      return {
-        ...prevState,
-        [key]: "",
-      };
-    });
-  }
 
   const handleSearchChange = (e: React.FormEvent<HTMLInputElement>) => {
     setQuerySearch(e.currentTarget.value);
   };
 
   const filteredActionsByTag =
-    selectedFilters.operationResponsible !== ""
+    selectedFilter !== ""
       ? data.actions.filter(
-          (item) =>
-            item.operationResponsible === selectedFilters.operationResponsible
+          (item) => item.operationResponsible === selectedFilter
         )
       : data.actions;
 
@@ -82,11 +66,26 @@ export function Sidebar() {
                 />
               </button>
             </div>
-            <FilterDropdown
-              filters={filters}
-              changeSelectedFilters={changeSelectedFilters}
-              clearSelectedFilter={clearSelectedFilter}
-            />
+            <Select
+              onValueChange={(value: string) => setSelectedFilter(value)}
+              theme={"light"}
+            >
+              {filters.map((filter) => (
+                <SelectPrimitive.Group key={filter.name}>
+                  <SelectPrimitive.Label className="py-1 px-2 text-sm text-gray-600">
+                    {filter.name}
+                  </SelectPrimitive.Label>
+                  <SelectItem value="" theme={"light"}>
+                    No filter
+                  </SelectItem>
+                  {filter.options.map((option) => (
+                    <SelectItem key={option} value={option} theme={"light"}>
+                      {option}
+                    </SelectItem>
+                  ))}
+                </SelectPrimitive.Group>
+              ))}
+            </Select>
           </div>
         </div>
         <div className="relative max-h-[40rem] self-stretch overflow-auto">

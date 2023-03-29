@@ -102,9 +102,8 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
 
     function testIfsetPoolMetadataRevertWhenNotOwner() public {
         bytes32 poolId = _basePool.getPoolId();
-        // check if it reverts with SENDER_NOT_ALLOWED
-        // https://docs.balancer.fi/reference/contracts/error-codes.html#lib
-        vm.expectRevert("BAL#401");
+
+        vm.expectRevert("sender not allowed");
 
         _poolMetadataRegistry.setPoolMetadata(poolId, _testMetadataCID);
     }
@@ -128,9 +127,8 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
     function testMetadataSetterWhenDAONotDelegatedOwner() public {
         bytes32 poolId = _basePool.getPoolId();
         vm.startPrank(DAOmultisig);
-        // check if it reverts with SENDER_NOT_ALLOWED
-        // https://docs.balancer.fi/reference/contracts/error-codes.html#lib
-        vm.expectRevert("BAL#401");
+
+        vm.expectRevert("sender not allowed");
 
         _poolMetadataRegistry.setPoolMetadata(poolId, _testMetadataCID);
         vm.stopPrank();

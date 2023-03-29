@@ -33,10 +33,12 @@ const metadataDateSchema = z
   })
   .merge(baseMetadataItemSchema);
 
-const metadataDatetimeSchema = z.object({
-  typename: z.literal(TypenameEnum.enum["datetime-local"]),
-  value: datelike.pipe(z.coerce.string()),
-});
+const metadataDatetimeSchema = z
+  .object({
+    typename: z.literal(TypenameEnum.enum["datetime-local"]),
+    value: datelike.pipe(z.coerce.string()),
+  })
+  .merge(baseMetadataItemSchema);
 
 export const MetadataItemSchema = z.union([
   metadataTextSchema,

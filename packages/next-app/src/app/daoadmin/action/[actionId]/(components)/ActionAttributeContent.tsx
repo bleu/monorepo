@@ -8,38 +8,35 @@ import { useNetwork } from "wagmi";
 import { Button } from "#/components";
 import { Input } from "#/components/Input";
 import { useAdminTools } from "#/contexts/AdminToolsContext";
-import { fetchExistingPool } from "#/utils/fetcher";
-import { toCamelCase } from "#/utils/formatStringCase";
+import gaugeGql from "#/lib/gaugesGql";
+import poolGql from "#/lib/gql";
 import { truncateAddress } from "#/utils/truncateAddress";
 
+interface IChekedInputs {
+  pool: {
+    symbol: string;
+    error: string;
+  };
+  gauge: {
+    symbol: string;
+    error: string;
+  };
+}
+
 export function ActionAttributeContent() {
-  const { register, handleSubmit, watch } = useForm();
+  const { register, handleSubmit, watch } = useForm({ mode: "onChange" });
   // eslint-disable-next-line no-console
   const onSubmit = (data: unknown) => console.log(data);
   const { push } = useRouter();
   const { selectedAction } = useAdminTools();
-  const { chain } = useNetwork();
-  const [poolSymbol, setPoolSymbol] = React.useState<string>();
-  const [poolError, setPoolError] = React.useState<string>();
+  const [inputValues, setInputValues] = React.useState({ pool: "", gauge: "" });
 
-  const poolId = watch("poolID");
+  const poolId = watch("Pool ID");
+  const gaugeID = watch("Gauge ID");
 
   React.useEffect(() => {
-    if (!poolId) {
-      setPoolSymbol("");
-      setPoolError("");
-      return;
-    }
-    const couldInputBePoolId = /^(0x){1}[0-9a-f]{64}/i.test(poolId);
-    if (!couldInputBePoolId) {
-      setPoolSymbol("");
-      setPoolError("Pool not found. Please insert an existing Pool ID");
-      return;
-    }
-    fetchExistingPool(poolId, chain!.id.toString()).then((response) =>
-      setPoolSymbol(response.pool?.symbol as string)
-    );
-  }, [poolId]);
+    setInputValues({ pool: poolId, gauge: gaugeID });
+  }, [poolId, gaugeID]);
 
   //TODO fetch selectedAction data from action Id once the backend exists #BAL-157
   React.useEffect(() => {
@@ -88,20 +85,12 @@ export function ActionAttributeContent() {
                       <Input
                         label={field.name}
                         placeholder={field.placeholder}
-                        {...register(toCamelCase(`${field.name}`))}
+                        {...register(field.name, {})}
                       />
-                      <div className="mt-2 flex gap-1 text-sm text-gray-400">
-                        {field.name === "Pool ID" && poolSymbol ? (
-                          <>
-                            <h1 className="text-white">Pool Symbol:</h1>
-                            <h1>{poolSymbol}</h1>
-                          </>
-                        ) : field.name === "Pool ID" && poolError ? (
-                          <h1>{poolError}</h1>
-                        ) : (
-                          <></>
-                        )}
-                      </div>
+                      <ValidateInputs
+                        inputValues={inputValues}
+                        fieldName={field.name}
+                      />
                     </div>
                   );
                 })}
@@ -118,5 +107,124 @@ export function ActionAttributeContent() {
         </div>
       )}
     </form>
+  );
+}
+
+function ValidateInputs({
+  inputValues,
+  fieldName,
+}: {
+  inputValues: { pool: string; gauge: string };
+  fieldName: string;
+}) {
+  const { chain } = useNetwork();
+  const [checkedInputs, setCheckedInputs] = React.useState<IChekedInputs>({
+    pool: { symbol: "", error: "" },
+    gauge: { symbol: "", error: "" },
+  });
+
+  function changeCheckedInputs(
+    input: "pool" | "gauge",
+    symbol: string,
+    error: string
+  ) {
+    setCheckedInputs((prevState) => {
+      return {
+        ...prevState,
+        [input]: {
+          symbol,
+          error,
+        },
+      };
+    });
+  }
+  const field = fieldName === "Pool ID" ? "pool" : "Gauge ID" ? "gauge" : "";
+
+  if (field === "pool") {
+    const { data: poolData } = poolGql(chain!.id.toString()).usePool({
+      poolId: inputValues.pool,
+    });
+
+    React.useEffect(() => {
+      if (!inputValues.pool) {
+        changeCheckedInputs(field, "", "");
+        return;
+      }
+      const poolResponse = poolData?.pool;
+      if (!poolResponse) {
+        changeCheckedInputs(
+          field,
+          "",
+          "Pool not found. Please insert an existing Pool ID"
+        );
+        return;
+      }
+      if (!poolResponse.symbol) {
+        changeCheckedInputs(
+          field,
+          "",
+          "Looks like we couldn't load this pool symbol. Please try typing again"
+        );
+      }
+      changeCheckedInputs(field, poolResponse.symbol as string, "");
+    }, [poolData]);
+  }
+  if (field === "gauge") {
+    const { data: gaugeData } = gaugeGql(chain!.id.toString()).useGauge({
+      gaugeId: inputValues.gauge,
+    });
+
+    React.useEffect(() => {
+      if (!inputValues.gauge) {
+        changeCheckedInputs(field, "", "");
+        return;
+      }
+      const liquidityGaugeResponse = gaugeData?.liquidityGauge;
+      if (!liquidityGaugeResponse) {
+        changeCheckedInputs(
+          field,
+          "",
+          "Gauge not found. Please insert an existing Gauge ID"
+        );
+        return;
+      }
+      if (!liquidityGaugeResponse.symbol) {
+        changeCheckedInputs(
+          field,
+          "",
+          "Looks like we couldn't load this gauge symbol. Please try typing again"
+        );
+      }
+      changeCheckedInputs(field, liquidityGaugeResponse.symbol as string, "");
+    }, [gaugeData]);
+  }
+  return (
+    <div className="mt-2 flex gap-1 text-sm text-gray-400">
+      {fieldName === "Pool ID" ? (
+        checkedInputs.pool.symbol ? (
+          <>
+            <h1 className="text-white">Pool Symbol:</h1>
+            <h1>{checkedInputs.pool.symbol}</h1>
+          </>
+        ) : checkedInputs.pool.error ? (
+          <h1>{checkedInputs.pool.error}</h1>
+        ) : (
+          <></>
+        )
+      ) : fieldName === "Gauge ID" ? (
+        checkedInputs.gauge.symbol ? (
+          <>
+            <h1 className="text-white">Gauge Symbol:</h1>
+            <h1>{checkedInputs.gauge.symbol}</h1>
+          </>
+        ) : checkedInputs.gauge.error ? (
+          <h1>{checkedInputs.gauge.error}</h1>
+        ) : (
+          <></>
+        )
+      ) : (
+        <></>
+      )}
+    </div>
   );
 }

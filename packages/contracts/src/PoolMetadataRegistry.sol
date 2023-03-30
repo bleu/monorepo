@@ -23,14 +23,6 @@ contract PoolMetadataRegistry is IPoolMetadataRegistry {
         _vault = vault;
     }
 
-    /// @notice Wraps a single pool ID in an array.
-    /// @param poolId The pool ID to wrap.
-    function _wrapPoolId(bytes32 poolId) internal pure returns (bytes32[] memory) {
-        bytes32[] memory wrappedPoolId = new bytes32[](1);
-        wrappedPoolId[0] = poolId;
-        return wrappedPoolId;
-    }
-
     /// @notice Reverts unless the pools with the given ID are registered on Balancer.
     /// @param poolIds The IDs of the pool to check registration status for.
     modifier onlyRegisteredPools(bytes32[] memory poolIds) {
@@ -51,21 +43,27 @@ contract PoolMetadataRegistry is IPoolMetadataRegistry {
         _;
     }
 
-    /**
-     * @notice Validate the size of two arrays to avoid exceeding the gas limit and ensure equal length.
-     * @dev Set maxArraySize to 2**11 to not allow more transactions that would revert
-     * due to gas limit. As of 30.Mar.2022, gas limits were the following:
-     * Ethereum (~30M), Polygon (<30M), Gnosis (~30M), Arbitrum (~30M)
-     * For more info see /chart/gaslimit in chain blockchain explorer
-     * e.g. https://polygonscan.com/chart/gaslimit
-     * @param poolIds Array of pool IDs to be validated
-     * @param metadataCIDs Array of metadata CIDs to be validated
-     */
+    /// @notice Validate the size of two arrays to avoid exceeding the gas limit and ensure equal length.
+    /// @dev Set maxArraySize to 2**11 to not allow more transactions that would revert
+    /// due to gas limit. As of 30.Mar.2022, gas limits were the following:
+    /// Ethereum (~30M), Polygon (<30M), Gnosis (~30M), Arbitrum (~30M)
+    /// For more info see /chart/gaslimit in chain blockchain explorer
+    /// e.g. https://polygonscan.com/chart/gaslimit
+    /// @param poolIds Array of pool IDs to be validated
+    /// @param metadataCIDs Array of metadata CIDs to be validated
     modifier validateArraySize(bytes32[] memory poolIds, string[] memory metadataCIDs) {
         uint256 maxArraySize = 2 ** 11;
         require(poolIds.length <= maxArraySize && metadataCIDs.length <= maxArraySize, "Array size exceeds the limit");
         require(poolIds.length == metadataCIDs.length, "Array size mismatch");
         _;
+    }
+
+    /// @notice Wraps a single pool ID in an array.
+    /// @param poolId The pool ID to wrap.
+    function _wrapPoolId(bytes32 poolId) internal pure returns (bytes32[] memory) {
+        bytes32[] memory wrappedPoolId = new bytes32[](1);
+        wrappedPoolId[0] = poolId;
+        return wrappedPoolId;
     }
 
     /// @notice Checks if a Pool is registered on Balancer
@@ -101,6 +99,10 @@ contract PoolMetadataRegistry is IPoolMetadataRegistry {
         _setPoolMetadata(poolId, metadataCID);
     }
 
+    /// @notice Updates the metadata CIDs for multiple pools in a batch,
+    ///         ensuring that the pools exist and the caller is authorized.
+    /// @param poolIds Array of pool IDs to update the metadata.
+    /// @param metadataCIDs Array of new metadata CIDs corresponding to the specified pool IDs.
     function setBatchPoolMetadata(bytes32[] calldata poolIds, string[] calldata metadataCIDs)
         public
         validateArraySize(poolIds, metadataCIDs)
@@ -115,7 +117,6 @@ contract PoolMetadataRegistry is IPoolMetadataRegistry {
     /// @notice Computes the action ID for a given function selector.
     /// @param selector The function selector to compute the action ID for.
     /// @return The computed action ID.
-
     function getActionId(bytes4 selector) internal view returns (bytes32) {
         return keccak256(abi.encodePacked(bytes32(uint256(address(this))), selector));
     }

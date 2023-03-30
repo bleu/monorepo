@@ -136,6 +136,27 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
         vm.stopPrank();
     }
 
+    function test_setBatchPoolMetadata_RevertIf_NotOwnerOfSomePool() public {
+        vm.startPrank(_poolOwner);
+        uint256 maxArraySize = 2 ** 11;
+
+        bytes32[] memory poolIds = new bytes32[](maxArraySize);
+        for (uint256 i = 0; i < maxArraySize; i++) {
+            poolIds[i] = i % 2 == 0 ? _basePool.getPoolId() : _delegatedBasePool.getPoolId();
+        }
+
+        string[] memory CIDs = new string[](maxArraySize);
+        for (uint256 i = 0; i < maxArraySize; i++) {
+            CIDs[i] = _testMetadataCID;
+        }
+
+        vm.expectRevert("sender not allowed");
+
+        _poolMetadataRegistry.setBatchPoolMetadata(poolIds, CIDs);
+
+        vm.stopPrank();
+    }
+
     function test_setBatchPoolMetadata_RevertIf_ArrayMismatch() public {
         vm.startPrank(_poolOwner);
         uint256 maxArraySize = 2 ** 10;

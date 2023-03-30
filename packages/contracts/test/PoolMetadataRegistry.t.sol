@@ -103,7 +103,7 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
     function test_setPoolMetadata_RevertIf_SenderNotOwner() public {
         bytes32 poolId = _basePool.getPoolId();
 
-        vm.expectRevert("sender not allowed");
+        vm.expectRevert("Sender not allowed");
 
         _poolMetadataRegistry.setPoolMetadata(poolId, _testMetadataCID);
     }
@@ -150,7 +150,7 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
             CIDs[i] = _testMetadataCID;
         }
 
-        vm.expectRevert("sender not allowed");
+        vm.expectRevert("Sender not allowed");
 
         _poolMetadataRegistry.setBatchPoolMetadata(poolIds, CIDs);
 
@@ -211,7 +211,7 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
         bytes32 poolId = _basePool.getPoolId();
         vm.startPrank(DAOmultisig);
 
-        vm.expectRevert("sender not allowed");
+        vm.expectRevert("Sender not allowed");
 
         _poolMetadataRegistry.setPoolMetadata(poolId, _testMetadataCID);
         vm.stopPrank();
@@ -220,7 +220,7 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
     function test_setPoolMetadata_EmitsEvent() public {
         vm.startPrank(_poolOwner);
         vm.expectEmit(true, false, false, true, address(_poolMetadataRegistry));
-        emit PoolMetadataUpdated(_basePool.getPoolId(), _testMetadataCID);
+        emit PoolMetadataUpdated(_basePool.getPoolId(), _testMetadataCID, _poolOwner);
 
         _poolMetadataRegistry.setPoolMetadata(_basePool.getPoolId(), _testMetadataCID);
         vm.stopPrank();

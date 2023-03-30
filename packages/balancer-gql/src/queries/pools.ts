@@ -17,6 +17,16 @@ export const poolWhereOwner = gql`
 
 export const poolSymbol = gql`
   query Pool($poolId: ID!) {
-    pool(id: $poolId) { symbol }
+    pool(id: $poolId) {
+      symbol
+    }
   }
-`
+`;
+
+export const poolOwner = gql`
+  query PoolOwner($poolId: ID!) {
+    pool(id: $poolId) {
+      owner
+    }
+  }
+`;

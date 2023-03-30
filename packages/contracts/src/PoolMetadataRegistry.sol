@@ -7,7 +7,7 @@ import {BasePoolAuthorization} from "balancer-v2-monorepo/pkg/pool-utils/contrac
 import "balancer-v2-monorepo/pkg/interfaces/contracts/vault/IAuthorizer.sol";
 
 interface IPoolMetadataRegistry {
-    event PoolMetadataUpdated(bytes32 indexed poolId, string metadataCID);
+    event PoolMetadataUpdated(bytes32 indexed poolId, string metadataCID, address indexed sender);
 }
 
 /// TODO: https://linear.app/bleu-llc/issue/BAL-84/define-poolmetadataregistrysol-metadata
@@ -38,7 +38,7 @@ contract PoolMetadataRegistry is IPoolMetadataRegistry {
         bytes32 actionId = getActionId(msg.sig);
         for (uint256 i = 0; i < poolIds.length; i++) {
             bytes32 poolId = poolIds[i];
-            require(_canPerform(actionId, poolId, msg.sender), "sender not allowed");
+            require(_canPerform(actionId, poolId, msg.sender), "Sender not allowed");
         }
         _;
     }
@@ -85,7 +85,7 @@ contract PoolMetadataRegistry is IPoolMetadataRegistry {
         require(bytes(metadataCID).length <= 46, "CID too long");
 
         poolIdMetadataCIDMap[poolId] = metadataCID;
-        emit PoolMetadataUpdated(poolId, metadataCID);
+        emit PoolMetadataUpdated(poolId, metadataCID, msg.sender);
     }
 
     /// @notice Ensures that the pool exists and the caller is allowed to change its metadata

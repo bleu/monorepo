@@ -18,6 +18,11 @@ export const hardcodedData: { actions: ActionAttribute[] } = {
           type: "string",
         },
         {
+          name: "Gauge ID",
+          placeholder: "Insert the Gauge ID here",
+          type: "string",
+        },
+        {
           name: "Amount",
           placeholder: "Insert the amount",
           type: "number",

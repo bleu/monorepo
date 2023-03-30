@@ -106,9 +106,53 @@ importers:
       eslint-plugin-simple-import-sort: 10.0.0_eslint@8.37.0
       eslint-plugin-tailwindcss: 3.10.1_tailwindcss@3.2.7
 
+  packages/gauges-gql:
+    specifiers:
+      '@balancer-pool-metadata/tsconfig': workspace:*
+      '@graphql-codegen/cli': 3.2.2
+      '@graphql-codegen/client-preset': ^2.1.1
+      '@graphql-codegen/typescript': 3.0.2
+      '@graphql-codegen/typescript-graphql-request': 4.5.9
+      '@graphql-codegen/typescript-operations': 3.0.2
+      '@types/node': 18.15.10
+      '@types/react': 18.0.30
+      '@types/react-dom': 18.0.11
+      dotenv: '>=16'
+      graphql: 16.6.0
+      graphql-codegen-plugin-typescript-swr: 0.8.3
+      graphql-request: 5.1.0
+      graphql-tag: '>=2'
+      micromatch: 4.0.5
+      react: 18.2.0
+      react-dom: 18.2.0
+      swr: 2.0.0
+      typescript: 5.0.2
+    dependencies:
+      dotenv: 16.0.3
+      graphql-tag: 2.12.6_graphql@16.6.0
+      swr: 2.0.0_react@18.2.0
+    devDependencies:
+      '@balancer-pool-metadata/tsconfig': link:../tsconfig
+      '@graphql-codegen/cli': 3.2.2_no3kj2p6ai3ys2hj2vbad42xye
+      '@graphql-codegen/client-preset': 2.1.1_graphql@16.6.0
+      '@graphql-codegen/typescript': 3.0.2_graphql@16.6.0
+      '@graphql-codegen/typescript-graphql-request': 4.5.9_f45c35xnr66et7kv43kezet7ie
+      '@graphql-codegen/typescript-operations': 3.0.2_graphql@16.6.0
+      '@types/node': 18.15.10
+      '@types/react': 18.0.30
+      '@types/react-dom': 18.0.11
+      graphql: 16.6.0
+      graphql-codegen-plugin-typescript-swr: 0.8.3_onqnqwb3ubg5opvemcqf7c2qhy
+      graphql-request: 5.1.0_graphql@16.6.0
+      micromatch: 4.0.5
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      typescript: 5.0.2
+
   packages/next-app:
     specifiers:
       '@balancer-pool-metadata/balancer-gql': workspace:*
+      '@balancer-pool-metadata/gauges-gql': workspace:*
       '@balancer-pool-metadata/pool-metadata-gql': workspace:*
       '@balancer-pool-metadata/schema': workspace:*
       '@balancer-pool-metadata/tsconfig': workspace:*
@@ -149,6 +193,7 @@ importers:
       xstate: ^4.37.1
     dependencies:
       '@balancer-pool-metadata/balancer-gql': link:../balancer-gql
+      '@balancer-pool-metadata/gauges-gql': link:../gauges-gql
       '@balancer-pool-metadata/pool-metadata-gql': link:../pool-metadata-gql
       '@balancer-pool-metadata/schema': link:../schema
       '@balancer-pool-metadata/tsconfig': link:../tsconfig

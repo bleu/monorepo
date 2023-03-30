@@ -12,8 +12,8 @@ import useSWR from "swr";
 import { useAccount, useNetwork } from "wagmi";
 
 import { Button } from "#/components";
-import { ButtonWithToolTip } from "#/components/ButtonWithToolTip";
 import { Dialog } from "#/components/Dialog";
+import { Tooltip } from "#/components/Tooltip";
 import {
   PoolMetadataAttribute,
   PoolMetadataContext,
@@ -220,45 +220,48 @@ export function MetadataAttributesTable({
 
         <div className="mt-5 w-full justify-between sm:flex sm:items-center">
           <div className="flex gap-4">
-            <ButtonWithToolTip
-              enabled={isOwner}
-              label="Add attribute"
-              message={!isOwner ? "You are not the pool owner" : ""}
-              className="bg-indigo-400 text-white"
-            >
-              <Dialog
-                title={"Add attribute"}
-                content={<PoolMetadataItemForm />}
-              >
-                <Button className="bg-indigo-500 text-white hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-indigo-400">
-                  Add attribute
-                </Button>
-              </Dialog>
-            </ButtonWithToolTip>
+            <Tooltip content={"You are not the pool owner"} open={!isOwner}>
+              <span tabIndex={0}>
+                <Dialog
+                  title={"Add attribute"}
+                  content={<PoolMetadataItemForm />}
+                >
+                  <Button
+                    className="bg-indigo-500 text-white hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-indigo-400"
+                    disabled={!isOwner}
+                  >
+                    Add attribute
+                  </Button>
+                </Dialog>
+              </span>
+            </Tooltip>
 
             <Button className="border border-blue-500 bg-gray-900  text-blue-500 hover:bg-gray-800 focus-visible:outline-indigo-500">
               Import template
             </Button>
           </div>
-          <ButtonWithToolTip
-            enabled={metadataUpdated && isOwner}
-            label="Update metadata"
-            message={
+          <Tooltip
+            content={
               !isOwner
                 ? "You are not the pool owner"
                 : "Your need to update the metadata first"
             }
-            className="bg-yellow-200 text-gray-900"
+            open={!metadataUpdated || !isOwner}
           >
-            <Dialog
-              title={"Update metadata"}
-              content={<TransactionModal poolId={poolId} />}
-            >
-              <Button className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 focus-visible:bg-yellow-300">
-                Update metadata
-              </Button>
-            </Dialog>
-          </ButtonWithToolTip>
+            <span tabIndex={0}>
+              <Dialog
+                title={"Update metadata"}
+                content={<TransactionModal poolId={poolId} />}
+              >
+                <Button
+                  className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 focus-visible:bg-yellow-300 disabled:bg-yellow-200"
+                  disabled={!metadataUpdated || !isOwner}
+                >
+                  Update metadata
+                </Button>
+              </Dialog>
+            </span>
+          </Tooltip>
         </div>
       </div>
     </div>

@@ -25,7 +25,7 @@ interface IPoolMetadataRegistry {
 /// @title A Pool Metadata Registry
 /// @notice This contract provides a metadata registry for Balancer's Pools
 /// @author Bleu LLC
-/// @dev This contract implements the IPoolMetadataRegistry interface and allows users to set metadata associated with registered Balancer pools. It also supports setting up metadata for Balancer'S delagated pools.
+/// @dev This contract implements the IPoolMetadataRegistry interface and allows users to set metadata associated with registered Balancer pools. It also supports setting up metadata for Balancer's delagated pools.
 contract PoolMetadataRegistry is IPoolMetadataRegistry {
     IVault private immutable _vault;
 

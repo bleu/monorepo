@@ -1,4 +1,17 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: GPL-3.0-or-later
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 pragma solidity >=0.7.0 <0.9.0;
 
 import "balancer-v2-monorepo/pkg/interfaces/contracts/vault/IVault.sol";
@@ -9,13 +22,17 @@ interface IPoolMetadataRegistry {
     event PoolMetadataUpdated(bytes32 indexed poolId, string metadataCID);
 }
 
-/// TODO: https://linear.app/bleu-llc/issue/BAL-84/define-poolmetadataregistrysol-metadata
-/// @title A Pool Metadata dApp
+/// @title A Pool Metadata Registry
+/// @notice This contract provides a metadata registry for Balancer's Pools
 /// @author Bleu LLC
-/// @notice This contract provides a registry for Balancer's Pools metadata
+/// @dev This contract implements the IPoolMetadataRegistry interface and allows users to set metadata associated with registered Balancer pools. It also supports setting up metadata for Balancer'S delagated pools.
 contract PoolMetadataRegistry is IPoolMetadataRegistry {
     IVault private immutable _vault;
+
     address internal constant _DELEGATE_OWNER = 0xBA1BA1ba1BA1bA1bA1Ba1BA1ba1BA1bA1ba1ba1B;
+
+    /// @notice This maps a Balancer pool ID to its corresponding metadata CID string.
+    /// @dev The metadata CID for a given pool can be updated using the `setPoolMetadata` function.
     mapping(bytes32 => string) public poolIdMetadataCIDMap;
 
     constructor(IVault vault) {
@@ -39,7 +56,7 @@ contract PoolMetadataRegistry is IPoolMetadataRegistry {
 
     /// @notice Checks if a Pool is registered on Balancer
     /// @param poolId The pool ID to check against the Balancer vault
-    /// @return bool Returns TRUE for registered and FALSE for unregistered
+    /// @return bool Returns TRUE for registered and FALSE for unregistered pool
     function _isPoolRegistered(bytes32 poolId) internal view returns (bool) {
         try _vault.getPool(poolId) returns (address, IVault.PoolSpecialization) {
             return true;

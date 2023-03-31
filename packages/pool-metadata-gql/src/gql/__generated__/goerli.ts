@@ -42,6 +42,8 @@ export type Pool = {
   address: Scalars['Bytes'];
   /**  Pool's poolId  */
   id: Scalars['ID'];
+  /**  The sender of the latest PoolMetadataUpdate event  */
+  latestUpdatedBy: Scalars['Bytes'];
   /**  IPFS CID of the latest PoolMetadataUpdate  */
   metadataCID: Scalars['String'];
   /**  List of the Pool's metadata updates  */
@@ -69,6 +71,8 @@ export type PoolMetadataUpdate = {
   metadataCID: Scalars['String'];
   /**  Reference to Pool entity  */
   pool: Pool;
+  /**  The address of who sent the update transaction  */
+  sender: Scalars['Bytes'];
   /**  Address of the PoolMetadataUpdate transaction  */
   transactionHash: Scalars['Bytes'];
 };
@@ -143,6 +147,16 @@ export type PoolMetadataUpdate_Filter = {
   pool_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
   pool_starts_with?: InputMaybe<Scalars['String']>;
   pool_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  sender?: InputMaybe<Scalars['Bytes']>;
+  sender_contains?: InputMaybe<Scalars['Bytes']>;
+  sender_gt?: InputMaybe<Scalars['Bytes']>;
+  sender_gte?: InputMaybe<Scalars['Bytes']>;
+  sender_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  sender_lt?: InputMaybe<Scalars['Bytes']>;
+  sender_lte?: InputMaybe<Scalars['Bytes']>;
+  sender_not?: InputMaybe<Scalars['Bytes']>;
+  sender_not_contains?: InputMaybe<Scalars['Bytes']>;
+  sender_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
   transactionHash?: InputMaybe<Scalars['Bytes']>;
   transactionHash_contains?: InputMaybe<Scalars['Bytes']>;
   transactionHash_gt?: InputMaybe<Scalars['Bytes']>;
@@ -163,7 +177,9 @@ export enum PoolMetadataUpdate_OrderBy {
   Pool = 'pool',
   PoolAddress = 'pool__address',
   PoolId = 'pool__id',
+  PoolLatestUpdatedBy = 'pool__latestUpdatedBy',
   PoolMetadataCid = 'pool__metadataCID',
+  Sender = 'sender',
   TransactionHash = 'transactionHash'
 }
 
@@ -189,6 +205,16 @@ export type Pool_Filter = {
   id_lte?: InputMaybe<Scalars['ID']>;
   id_not?: InputMaybe<Scalars['ID']>;
   id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  latestUpdatedBy?: InputMaybe<Scalars['Bytes']>;
+  latestUpdatedBy_contains?: InputMaybe<Scalars['Bytes']>;
+  latestUpdatedBy_gt?: InputMaybe<Scalars['Bytes']>;
+  latestUpdatedBy_gte?: InputMaybe<Scalars['Bytes']>;
+  latestUpdatedBy_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  latestUpdatedBy_lt?: InputMaybe<Scalars['Bytes']>;
+  latestUpdatedBy_lte?: InputMaybe<Scalars['Bytes']>;
+  latestUpdatedBy_not?: InputMaybe<Scalars['Bytes']>;
+  latestUpdatedBy_not_contains?: InputMaybe<Scalars['Bytes']>;
+  latestUpdatedBy_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
   metadataCID?: InputMaybe<Scalars['String']>;
   metadataCID_contains?: InputMaybe<Scalars['String']>;
   metadataCID_contains_nocase?: InputMaybe<Scalars['String']>;
@@ -216,6 +242,7 @@ export type Pool_Filter = {
 export enum Pool_OrderBy {
   Address = 'address',
   Id = 'id',
+  LatestUpdatedBy = 'latestUpdatedBy',
   MetadataCid = 'metadataCID',
   MetadataUpdates = 'metadataUpdates'
 }

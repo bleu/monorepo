@@ -1,7 +1,11 @@
 name: Deploy Graph
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "packages/subgraph/**"
 
 jobs:
   deploy-goerli:
@@ -19,7 +23,7 @@ jobs:
 
       - name: Codegen
         working-directory: ./packages/subgraph
-        run: pnpm codegen
+        run: "pnpm codegen:goerli"
 
       - name: Build
         working-directory: ./packages/subgraph
@@ -28,8 +32,36 @@ jobs:
       - uses: gtaschuk/graph-deploy@v0.1.12
         with:
           graph_access_token: ${{secrets.GRAPH_ACCESS_TOKEN}}
-          graph_subgraph_name: "balancer-pools-metadata"
+          graph_subgraph_name: "balancer-metadata-goerli"
           graph_account: "bleu-llc"
           graph_config_file: "./packages/subgraph/subgraph.goerli.yaml"
+
+  deploy-matic:
+    runs-on: ubuntu-latest
+    environment: graph
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: ./.github/workflows/setup-pnpm
+
+      - name: Install node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 18
+
+      - name: Codegen
+        working-directory: ./packages/subgraph
+        run: "pnpm codegen:matic"
+
+      - name: Build
+        working-directory: ./packages/subgraph
+        run: pnpm build subgraph.matic.yaml
+
+      - uses: gtaschuk/graph-deploy@v0.1.12
+        with:
+          graph_access_token: ${{secrets.GRAPH_ACCESS_TOKEN}}
+          graph_subgraph_name: "balancer-metadata-polygon"
+          graph_account: "bleu-llc"
+          graph_config_file: "./packages/subgraph/subgraph.matic.yaml"
 env:
   CI: true

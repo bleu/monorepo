@@ -1,5 +1,10 @@
 goerli:
   network: goerli
   PoolMetadataRegistry:
-    address: "0xEBfADf723E077c80f6058dC9c9202bB613DE07cf"
+    address: "0x3D2C019C906C36fB05e6Ca28395E9E7d603d6CA0"
     startBlock: 8583917
+matic:
+  network: matic
+  PoolMetadataRegistry:
+    address: "0x68fd16B6D2D1D4AA042009872b08f3756Cc76261"
+    startBlock: 40976256

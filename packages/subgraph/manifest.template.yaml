@@ -21,6 +21,6 @@ dataSources:
         - name: PoolMetadataRegistry
           file: ./abis/PoolMetadataRegistry.json
       eventHandlers:
-        - event: PoolMetadataUpdated(indexed bytes32,string)
+        - event: PoolMetadataUpdated(indexed bytes32,string,indexed address)
           handler: handlePoolMetadataUpdated
       file: ./src/mappings/poolMetadataRegistry.ts

@@ -132,7 +132,12 @@ export function useTransaction({
         setTransactionStatus(TransactionStatus.WAITING_APPROVAL);
 
         // call function to set metadata on-chain
-        const { wait, hash } = await writeSetPoolMetadata(poolId, ipfsCID);
+        const { wait, hash } = await writeSetPoolMetadata(
+          poolId,
+          ipfsCID,
+          // @ts-ignore
+          chain?.id
+        );
         handleSetTransactionLink(hash);
         // Once the metadata is set on-chain, update the transaction status to SUBMITTING
         setTransactionStatus(TransactionStatus.SUBMITTING);

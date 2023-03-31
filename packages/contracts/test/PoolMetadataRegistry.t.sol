@@ -82,33 +82,33 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
         _authorizer.grantRole(setPoolMetadataActionId, DAOmultisig);
     }
 
-    function testIsPoolRegistered() public {
+    function test_isPoolRegistered_True_When_PoolExists() public {
         bool isPool = _poolMetadataRegistry.isPoolRegistered(_basePool.getPoolId());
 
         assertTrue(isPool);
     }
 
-    function testIsPoolNotRegistered() public {
+    function test_isPoolRegistered_False_When_0() public {
         bool isPool = _poolMetadataRegistry.isPoolRegistered(0);
 
         assertFalse(isPool);
     }
 
-    function testIfsetPoolMetadataRevertWhePoolNotRegistered() public {
+    function test_setPoolMetadata_RevertIf_PoolNotRegistered() public {
         vm.expectRevert("Pool not registered");
 
         _poolMetadataRegistry.setPoolMetadata(0x0, _testMetadataCID);
     }
 
-    function testIfsetPoolMetadataRevertWhenNotOwner() public {
+    function test_setPoolMetadata_RevertIf_SenderNotOwner() public {
         bytes32 poolId = _basePool.getPoolId();
 
-        vm.expectRevert("sender not allowed");
+        vm.expectRevert("Sender not allowed");
 
         _poolMetadataRegistry.setPoolMetadata(poolId, _testMetadataCID);
     }
 
-    function testMetadataSetter() public {
+    function test_setPoolMetadata_Success() public {
         vm.startPrank(_poolOwner);
         _poolMetadataRegistry.setPoolMetadata(_basePool.getPoolId(), _testMetadataCID);
 
@@ -116,7 +116,90 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
         vm.stopPrank();
     }
 
-    function testMetadataSetterDAOmultisig() public {
+    function test_setBatchPoolMetadata_Success() public {
+        vm.startPrank(_poolOwner);
+        uint256 maxArraySize = 2 ** 11;
+
+        bytes32[] memory poolIds = new bytes32[](maxArraySize);
+        for (uint256 i = 0; i < maxArraySize; i++) {
+            poolIds[i] = _basePool.getPoolId();
+        }
+
+        string[] memory CIDs = new string[](maxArraySize);
+        for (uint256 i = 0; i < maxArraySize; i++) {
+            CIDs[i] = _testMetadataCID;
+        }
+
+        _poolMetadataRegistry.setBatchPoolMetadata(poolIds, CIDs);
+
+        assertEq(_poolMetadataRegistry.poolIdMetadataCIDMap(_basePool.getPoolId()), _testMetadataCID);
+        vm.stopPrank();
+    }
+
+    function test_setBatchPoolMetadata_RevertIf_NotOwnerOfSomePool() public {
+        vm.startPrank(_poolOwner);
+        uint256 maxArraySize = 2 ** 11;
+
+        bytes32[] memory poolIds = new bytes32[](maxArraySize);
+        for (uint256 i = 0; i < maxArraySize; i++) {
+            poolIds[i] = i % 2 == 0 ? _basePool.getPoolId() : _delegatedBasePool.getPoolId();
+        }
+
+        string[] memory CIDs = new string[](maxArraySize);
+        for (uint256 i = 0; i < maxArraySize; i++) {
+            CIDs[i] = _testMetadataCID;
+        }
+
+        vm.expectRevert("Sender not allowed");
+
+        _poolMetadataRegistry.setBatchPoolMetadata(poolIds, CIDs);
+
+        vm.stopPrank();
+    }
+
+    function test_setBatchPoolMetadata_RevertIf_ArrayMismatch() public {
+        vm.startPrank(_poolOwner);
+        uint256 maxArraySize = 2 ** 10;
+
+        bytes32[] memory poolIds = new bytes32[](maxArraySize + 1);
+        for (uint256 i = 0; i < maxArraySize + 1; i++) {
+            poolIds[i] = _basePool.getPoolId();
+        }
+
+        string[] memory CIDs = new string[](maxArraySize);
+        for (uint256 i = 0; i < maxArraySize; i++) {
+            CIDs[i] = _testMetadataCID;
+        }
+
+        vm.expectRevert("Array size mismatch");
+
+        _poolMetadataRegistry.setBatchPoolMetadata(poolIds, CIDs);
+
+        vm.stopPrank();
+    }
+
+    function test_setBatchMetadata_RevertIf_ArrayTooLarge() public {
+        vm.startPrank(_poolOwner);
+        uint256 maxArraySize = 2 ** 12;
+
+        bytes32[] memory poolIds = new bytes32[](maxArraySize + 1);
+        for (uint256 i = 0; i < maxArraySize + 1; i++) {
+            poolIds[i] = _basePool.getPoolId();
+        }
+
+        string[] memory CIDs = new string[](maxArraySize);
+        for (uint256 i = 0; i < maxArraySize; i++) {
+            CIDs[i] = _testMetadataCID;
+        }
+
+        vm.expectRevert("Array size exceeds the limit");
+
+        _poolMetadataRegistry.setBatchPoolMetadata(poolIds, CIDs);
+
+        vm.stopPrank();
+    }
+
+    function test_setPoolMetadata_SuccessWhen_DAOmultisig() public {
         vm.startPrank(DAOmultisig);
         _poolMetadataRegistry.setPoolMetadata(_delegatedBasePool.getPoolId(), _testMetadataCID);
 
@@ -124,20 +207,20 @@ contract PoolMetadataRegistryTest is IPoolMetadataRegistry, Test {
         vm.stopPrank();
     }
 
-    function testMetadataSetterWhenDAONotDelegatedOwner() public {
+    function test_setPoolMetadata_RevertIf_DAONotDelegatedOwner() public {
         bytes32 poolId = _basePool.getPoolId();
         vm.startPrank(DAOmultisig);
 
-        vm.expectRevert("sender not allowed");
+        vm.expectRevert("Sender not allowed");
 
         _poolMetadataRegistry.setPoolMetadata(poolId, _testMetadataCID);
         vm.stopPrank();
     }
 
-    function testMetadataSetterEmitsEvent() public {
+    function test_setPoolMetadata_EmitsEvent() public {
         vm.startPrank(_poolOwner);
         vm.expectEmit(true, false, false, true, address(_poolMetadataRegistry));
-        emit PoolMetadataUpdated(_basePool.getPoolId(), _testMetadataCID);
+        emit PoolMetadataUpdated(_basePool.getPoolId(), _testMetadataCID, _poolOwner);
 
         _poolMetadataRegistry.setPoolMetadata(_basePool.getPoolId(), _testMetadataCID);
         vm.stopPrank();

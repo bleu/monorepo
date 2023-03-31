@@ -8,6 +8,7 @@ import { useAccount, useNetwork } from "wagmi";
 
 import EmptyWalletImage from "#/assets/empty-wallet.svg";
 import { PoolMetadataProvider } from "#/contexts/PoolMetadataContext";
+import { impersonateWhetherDAO } from "#/lib/gql";
 import { fetchOwnedPools } from "#/utils/fetcher";
 
 import { Sidebar } from "./Sidebar";
@@ -18,7 +19,8 @@ export function MetadataProvider({ children }: { children: React.ReactNode }) {
   const { isConnected } = useAccount();
   const { push } = useRouter();
 
-  const { address } = useAccount();
+  let { address } = useAccount();
+  address = impersonateWhetherDAO(chain?.id.toString() || "1", address);
 
   useEffect(() => {
     if (!address) return;

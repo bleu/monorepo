@@ -12,9 +12,9 @@ export enum Network {
 // TODO: https://linear.app/bleu-llc/issue/BAL-131/deploy-contracts-in-all-networks-that-balancer-is-deployed
 export const ENDPOINTS = {
   [Network.mainnet]: `${BASE_URL}/balancer-pools-metadata`,
-  [Network.polygon]: `${BASE_URL}/balancer-pools-metadata`,
+  [Network.polygon]: `${BASE_URL}/balancer-metadata-polygon`,
   [Network.arbitrum]: `${BASE_URL}/balancer-pools-metadata`,
-  [Network.goerli]: `${BASE_URL}/balancer-pools-metadata`,
+  [Network.goerli]: `${BASE_URL}/balancer-metadata-goerli`,
 };
 
 const plugins = [

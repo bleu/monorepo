@@ -8,35 +8,24 @@ import { useNetwork } from "wagmi";
 import { Button } from "#/components";
 import { Input } from "#/components/Input";
 import { useAdminTools } from "#/contexts/AdminToolsContext";
+import useDebounce from "#/hooks/useDebounce";
 import gaugeGql from "#/lib/gaugesGql";
 import poolGql from "#/lib/gql";
 import { truncateAddress } from "#/utils/truncateAddress";
 
-interface IChekedInputs {
-  pool: {
-    symbol: string;
-    error: string;
-  };
-  gauge: {
-    symbol: string;
-    error: string;
-  };
-}
-
 export function ActionAttributeContent() {
-  const { register, handleSubmit, watch } = useForm({ mode: "onChange" });
+  const { register, handleSubmit, watch, formState } = useForm({
+    mode: "onBlur",
+  });
   // eslint-disable-next-line no-console
   const onSubmit = (data: unknown) => console.log(data);
   const { push } = useRouter();
   const { selectedAction } = useAdminTools();
-  const [inputValues, setInputValues] = React.useState({ pool: "", gauge: "" });
 
-  const poolId = watch("Pool ID");
-  const gaugeID = watch("Gauge ID");
-
-  React.useEffect(() => {
-    setInputValues({ pool: poolId, gauge: gaugeID });
-  }, [poolId, gaugeID]);
+  const poolId = watch("poolId");
+  const gaugeId = watch("gaugeId");
+  const debouncedPoolId = useDebounce(poolId);
+  const debouncedGaugeId = useDebounce(gaugeId);
 
   //TODO fetch selectedAction data from action Id once the backend exists #BAL-157
   React.useEffect(() => {
@@ -44,6 +33,30 @@ export function ActionAttributeContent() {
       push("/daoadmin");
     }
   }, [selectedAction]);
+
+  const { chain } = useNetwork();
+
+  const { data: poolResult } = poolGql(chain!.id.toString()).usePool(
+    { poolId: debouncedPoolId },
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      revalidateOnMount: true,
+      dedupingInterval: 3_600_000,
+    }
+  );
+
+  const { data: gaugeResult } = gaugeGql(chain!.id.toString()).useGauge(
+    { gaugeId: debouncedGaugeId },
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      revalidateOnMount: true,
+      dedupingInterval: 3_600_000,
+    }
+  );
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -81,16 +94,31 @@ export function ActionAttributeContent() {
               <div className="flex flex-col gap-4">
                 {selectedAction?.fields.map((field) => {
                   return (
-                    <div key={field.name}>
+                    <div key={field.key}>
                       <Input
-                        label={field.name}
+                        label={field.label}
                         placeholder={field.placeholder}
-                        {...register(field.name, {})}
+                        {...register(field.key, {
+                          validate: field?.getValidations?.(chain),
+                        })}
                       />
-                      <ValidateInputs
-                        inputValues={inputValues}
-                        fieldName={field.name}
-                      />
+                      <h1>
+                        {formState.errors[field.key] &&
+                          (poolResult?.pool?.symbol &&
+                          field.key === "poolId" ? (
+                            <span>Pool Symbol: {poolResult?.pool?.symbol}</span>
+                          ) : gaugeResult?.liquidityGauge?.symbol &&
+                            field.key === "gaugeId" ? (
+                            <span>
+                              Gauge Symbol:{" "}
+                              {gaugeResult?.liquidityGauge?.symbol}
+                            </span>
+                          ) : (
+                            <span>
+                              {String(formState.errors[field.key]?.message)}
+                            </span>
+                          ))}
+                      </h1>
                     </div>
                   );
                 })}
@@ -107,124 +135,5 @@ export function ActionAttributeContent() {
         </div>
       )}
     </form>
-  );
-}
-
-function ValidateInputs({
-  inputValues,
-  fieldName,
-}: {
-  inputValues: { pool: string; gauge: string };
-  fieldName: string;
-}) {
-  const { chain } = useNetwork();
-  const [checkedInputs, setCheckedInputs] = React.useState<IChekedInputs>({
-    pool: { symbol: "", error: "" },
-    gauge: { symbol: "", error: "" },
-  });
-
-  function changeCheckedInputs(
-    input: "pool" | "gauge",
-    symbol: string,
-    error: string
-  ) {
-    setCheckedInputs((prevState) => {
-      return {
-        ...prevState,
-        [input]: {
-          symbol,
-          error,
-        },
-      };
-    });
-  }
-  const field = fieldName === "Pool ID" ? "pool" : "Gauge ID" ? "gauge" : "";
-
-  if (field === "pool") {
-    const { data: poolData } = poolGql(chain!.id.toString()).usePool({
-      poolId: inputValues.pool,
-    });
-
-    React.useEffect(() => {
-      if (!inputValues.pool) {
-        changeCheckedInputs(field, "", "");
-        return;
-      }
-      const poolResponse = poolData?.pool;
-      if (!poolResponse) {
-        changeCheckedInputs(
-          field,
-          "",
-          "Pool not found. Please insert an existing Pool ID"
-        );
-        return;
-      }
-      if (!poolResponse.symbol) {
-        changeCheckedInputs(
-          field,
-          "",
-          "Looks like we couldn't load this pool symbol. Please try typing again"
-        );
-      }
-      changeCheckedInputs(field, poolResponse.symbol as string, "");
-    }, [poolData]);
-  }
-  if (field === "gauge") {
-    const { data: gaugeData } = gaugeGql(chain!.id.toString()).useGauge({
-      gaugeId: inputValues.gauge,
-    });
-
-    React.useEffect(() => {
-      if (!inputValues.gauge) {
-        changeCheckedInputs(field, "", "");
-        return;
-      }
-      const liquidityGaugeResponse = gaugeData?.liquidityGauge;
-      if (!liquidityGaugeResponse) {
-        changeCheckedInputs(
-          field,
-          "",
-          "Gauge not found. Please insert an existing Gauge ID"
-        );
-        return;
-      }
-      if (!liquidityGaugeResponse.symbol) {
-        changeCheckedInputs(
-          field,
-          "",
-          "Looks like we couldn't load this gauge symbol. Please try typing again"
-        );
-      }
-      changeCheckedInputs(field, liquidityGaugeResponse.symbol as string, "");
-    }, [gaugeData]);
-  }
-  return (
-    <div className="mt-2 flex gap-1 text-sm text-gray-400">
-      {fieldName === "Pool ID" ? (
-        checkedInputs.pool.symbol ? (
-          <>
-            <h1 className="text-white">Pool Symbol:</h1>
-            <h1>{checkedInputs.pool.symbol}</h1>
-          </>
-        ) : checkedInputs.pool.error ? (
-          <h1>{checkedInputs.pool.error}</h1>
-        ) : (
-          <></>
-        )
-      ) : fieldName === "Gauge ID" ? (
-        checkedInputs.gauge.symbol ? (
-          <>
-            <h1 className="text-white">Gauge Symbol:</h1>
-            <h1>{checkedInputs.gauge.symbol}</h1>
-          </>
-        ) : checkedInputs.gauge.error ? (
-          <h1>{checkedInputs.gauge.error}</h1>
-        ) : (
-          <></>
-        )
-      ) : (
-        <></>
-      )}
-    </div>
   );
 }

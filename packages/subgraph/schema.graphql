@@ -8,6 +8,9 @@ type Pool @entity {
   " IPFS CID of the latest PoolMetadataUpdate "
   metadataCID: String!
 
+  " The sender of the latest PoolMetadataUpdate event "
+  latestUpdatedBy: Bytes!
+
   " List of the Pool's metadata updates "
   metadataUpdates: [PoolMetadataUpdate!] @derivedFrom(field: "pool")
 }
@@ -21,6 +24,9 @@ type PoolMetadataUpdate @entity(immutable: true) {
 
   " IPFS CID of the PoolMetadataUpdate "
   metadataCID: String!
+
+  " The address of who sent the update transaction "
+  sender: Bytes!
 
   " Blocknumber of this PoolMetadataUpdate "
   blockNumber: BigInt!

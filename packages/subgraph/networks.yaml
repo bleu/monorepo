@@ -3,3 +3,8 @@ goerli:
   PoolMetadataRegistry:
     address: "0xEBfADf723E077c80f6058dC9c9202bB613DE07cf"
     startBlock: 8583917
+matic:
+  network: matic
+  PoolMetadataRegistry:
+    address: "0x68fd16B6D2D1D4AA042009872b08f3756Cc76261"
+    startBlock: 40976256

@@ -2,7 +2,8 @@
   "name": "@balancer-pool-metadata/subgraph",
   "version": "1.0.0",
   "scripts": {
-    "codegen": "pnpm generate-manifests && graph codegen subgraph.*.yaml --output-dir src/types/",
+    "codegen:goerli": "pnpm generate-manifests && graph codegen subgraph.goerli.yaml --output-dir src/types/",
+    "codegen:matic": "pnpm generate-manifests && graph codegen subgraph.matic.yaml --output-dir src/types/",
     "build": "graph build",
     "generate-manifests": "ts-node ./scripts/generate-manifests",
     "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ PoolMetadataRegistrySubgraph",

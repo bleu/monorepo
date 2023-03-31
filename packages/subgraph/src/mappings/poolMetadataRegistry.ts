@@ -13,6 +13,7 @@ export function handlePoolMetadataUpdated(
     pool.address = getPoolAddress(poolId);
   }
   pool.metadataCID = event.params.metadataCID;
+  pool.latestUpdatedBy = event.params.sender;
   pool.save();
 
   const metadataUpdateId =
@@ -20,6 +21,7 @@ export function handlePoolMetadataUpdated(
   const metadataUpdate = new PoolMetadataUpdate(metadataUpdateId);
   metadataUpdate.pool = poolId;
   metadataUpdate.metadataCID = event.params.metadataCID;
+  metadataUpdate.sender = event.params.sender;
 
   metadataUpdate.blockNumber = event.block.number;
   metadataUpdate.blockTimestamp = event.block.timestamp;

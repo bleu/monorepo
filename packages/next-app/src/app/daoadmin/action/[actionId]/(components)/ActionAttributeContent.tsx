@@ -8,38 +8,24 @@ import { useNetwork } from "wagmi";
 import { Button } from "#/components";
 import { Input } from "#/components/Input";
 import { useAdminTools } from "#/contexts/AdminToolsContext";
-import { fetchExistingPool } from "#/utils/fetcher";
-import { toCamelCase } from "#/utils/formatStringCase";
+import useDebounce from "#/hooks/useDebounce";
+import gaugeGql from "#/lib/gaugesGql";
+import poolGql from "#/lib/gql";
 import { truncateAddress } from "#/utils/truncateAddress";
 
 export function ActionAttributeContent() {
-  const { register, handleSubmit, watch } = useForm();
+  const { register, handleSubmit, watch, formState } = useForm({
+    mode: "onBlur",
+  });
   // eslint-disable-next-line no-console
   const onSubmit = (data: unknown) => console.log(data);
   const { push } = useRouter();
   const { selectedAction } = useAdminTools();
-  const { chain } = useNetwork();
-  const [poolSymbol, setPoolSymbol] = React.useState<string>();
-  const [poolError, setPoolError] = React.useState<string>();
 
-  const poolId = watch("poolID");
-
-  React.useEffect(() => {
-    if (!poolId) {
-      setPoolSymbol("");
-      setPoolError("");
-      return;
-    }
-    const couldInputBePoolId = /^(0x){1}[0-9a-f]{64}/i.test(poolId);
-    if (!couldInputBePoolId) {
-      setPoolSymbol("");
-      setPoolError("Pool not found. Please insert an existing Pool ID");
-      return;
-    }
-    fetchExistingPool(poolId, chain!.id.toString()).then((response) =>
-      setPoolSymbol(response.pool?.symbol as string)
-    );
-  }, [poolId]);
+  const poolId = watch("poolId");
+  const gaugeId = watch("gaugeId");
+  const debouncedPoolId = useDebounce(poolId);
+  const debouncedGaugeId = useDebounce(gaugeId);
 
   //TODO fetch selectedAction data from action Id once the backend exists #BAL-157
   React.useEffect(() => {
@@ -47,6 +33,52 @@ export function ActionAttributeContent() {
       push("/daoadmin");
     }
   }, [selectedAction]);
+
+  const { chain } = useNetwork();
+
+  const { data: poolResult } = poolGql(chain!.id.toString()).usePool(
+    { poolId: debouncedPoolId },
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      revalidateOnMount: true,
+      dedupingInterval: 3_600_000,
+    }
+  );
+
+  const { data: gaugeResult } = gaugeGql(chain!.id.toString()).useGauge(
+    { gaugeId: debouncedGaugeId },
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      revalidateOnMount: true,
+      dedupingInterval: 3_600_000,
+    }
+  );
+
+  function Symbol({ fieldKey }: { fieldKey: string }) {
+    if (fieldKey === `poolId`) {
+      return (
+        <>
+          {poolResult?.pool?.symbol && (
+            <span>Pool Symbol: {poolResult?.pool?.symbol}</span>
+          )}
+        </>
+      );
+    }
+    if (fieldKey === `gaugeId`) {
+      return (
+        <>
+          {gaugeResult?.liquidityGauge?.symbol && (
+            <span>Gauge Symbol: {gaugeResult?.liquidityGauge?.symbol}</span>
+          )}
+        </>
+      );
+    }
+    return <></>;
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -84,24 +116,18 @@ export function ActionAttributeContent() {
               <div className="flex flex-col gap-4">
                 {selectedAction?.fields.map((field) => {
                   return (
-                    <div key={field.name}>
+                    <div key={field.key}>
                       <Input
-                        label={field.name}
+                        label={field.label}
                         placeholder={field.placeholder}
-                        {...register(toCamelCase(`${field.name}`))}
+                        {...register(field.key, {
+                          validate: field?.getValidations?.(chain),
+                        })}
+                        errorMessage={
+                          formState.errors?.[field.key]?.message as string
+                        }
                       />
-                      <div className="mt-2 flex gap-1 text-sm text-gray-400">
-                        {field.name === "Pool ID" && poolSymbol ? (
-                          <>
-                            <h1 className="text-white">Pool Symbol:</h1>
-                            <h1>{poolSymbol}</h1>
-                          </>
-                        ) : field.name === "Pool ID" && poolError ? (
-                          <h1>{poolError}</h1>
-                        ) : (
-                          <></>
-                        )}
-                      </div>
+                      <Symbol fieldKey={field.key} />
                     </div>
                   );
                 })}

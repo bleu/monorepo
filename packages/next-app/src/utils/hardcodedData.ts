@@ -1,6 +1,47 @@
-import { ActionAttribute } from "#/contexts/AdminToolsContext";
+import { Chain } from "wagmi";
 
-export const hardcodedData: { actions: ActionAttribute[] } = {
+import { ActionAttribute } from "#/contexts/AdminToolsContext";
+import gaugeGql from "#/lib/gaugesGql";
+import poolGql from "#/lib/gql";
+
+const poolField =  {
+  label: "Pool ID",
+  key: "poolId",
+  placeholder: "Insert the Pool ID here",
+  getValidations: (chain?: Chain) => ({
+    poolExists: async (value: string) => {
+      if(!value) return ""
+      const result = await poolGql(
+        chain!.id.toString()
+      ).Pool({
+        poolId: value,
+      });
+
+      return !result.pool?.symbol ? "Pool not found. Please insert an existing Pool ID" : "";
+    },
+  }),
+}
+
+const gaugeField = {
+  label: "Gauge ID",
+  key: "gaugeId",
+  placeholder: "Insert the Gauge ID here",
+  getValidations: ( chain?: Chain) => ({
+    gaugeExists: async (value: string) => {
+      if(!value) return ""
+      const result = await gaugeGql(
+        chain!.id.toString()
+      ).Gauge({
+        gaugeId: value,
+      });
+
+      return !result.liquidityGauge?.symbol ? "Gauge not found. Please insert an existing Gauge ID" : "";
+    },
+  }),
+}
+
+
+export const hardcodedData:{actions: ActionAttribute[]} = {
   actions: [
     {
       id: 1,
@@ -12,16 +53,13 @@ export const hardcodedData: { actions: ActionAttribute[] } = {
       contractUrl:
         "https://etherscan.io/address/0xba100000625a3754423978a60c9317c58a424e3d",
       fields: [
-        {
-          name: "Pool ID",
-          placeholder: "Insert the Pool ID here",
-          type: "string",
-        },
-        {
-          name: "Amount",
-          placeholder: "Insert the amount",
-          type: "number",
-        },
+        poolField,
+        gaugeField,
+      {
+        label: "Amount",
+        placeholder: "Insert the amount",
+        key: "amount"
+      }
       ],
     },
     {
@@ -35,9 +73,9 @@ export const hardcodedData: { actions: ActionAttribute[] } = {
         "https://etherscan.io/address/0xba100000625a3754423978a60c9317c58a424e3d",
       fields: [
         {
-          name: "Name",
+          label: "Name",
+          key: "name",
           placeholder: "Insert your name here",
-          type: "string",
         },
       ],
     },
@@ -52,9 +90,9 @@ export const hardcodedData: { actions: ActionAttribute[] } = {
         "https://etherscan.io/address/0xba100000625a3754423978a60c9317c58a424e3d",
       fields: [
         {
-          name: "Name",
+          label: "Name",
+          key: "name",
           placeholder: "Insert your name here",
-          type: "string",
         },
       ],
     },
@@ -69,9 +107,9 @@ export const hardcodedData: { actions: ActionAttribute[] } = {
         "https://etherscan.io/address/0xba100000625a3754423978a60c9317c58a424e3d",
       fields: [
         {
-          name: "Name",
+          label: "Name",
+          key: "name",
           placeholder: "Insert your name here",
-          type: "string",
         },
       ],
     },
@@ -86,15 +124,11 @@ export const hardcodedData: { actions: ActionAttribute[] } = {
         "https://etherscan.io/address/0xba100000625a3754423978a60c9317c58a424e3d",
       fields: [
         {
-          name: "Name",
+          label: "Name",
+          key: "name",
           placeholder: "Insert your name here",
-          type: "string",
         },
-        {
-          name: "Pool ID",
-          placeholder: "Insert the Pool ID here",
-          type: "string",
-        },
+        poolField,
       ],
     },
   ],

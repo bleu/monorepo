@@ -8,6 +8,9 @@ import {
   useContext,
   useState,
 } from "react";
+import { Chain } from "wagmi";
+
+type ValidationFunctions = "poolExists" | "gaugeExists";
 
 // TODO: generate TS types from zod: https://github.com/sachinraja/zod-to-ts
 export interface ActionAttribute {
@@ -18,9 +21,12 @@ export interface ActionAttribute {
   contractAddress: `0x${string}`;
   contractUrl: string;
   fields: {
-    name: string;
+    label: string;
+    key: string;
     placeholder: string;
-    type: string;
+    getValidations?: (chain?: Chain) => {
+      [key in ValidationFunctions]?: (value: string) => Promise<string>;
+    };
   }[];
 }
 
@@ -34,9 +40,9 @@ export const initialState: ActionAttribute = {
   contractUrl: "",
   fields: [
     {
-      name: "",
+      label: "",
+      key: "",
       placeholder: "",
-      type: "",
     },
   ],
 };

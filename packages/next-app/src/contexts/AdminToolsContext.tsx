@@ -25,13 +25,7 @@ export interface ActionAttribute {
     key: string;
     placeholder: string;
     type: string;
-    getValidations?: (
-      chain:
-        | (Chain & {
-            unsupported?: boolean | undefined;
-          })
-        | undefined
-    ) => {
+    getValidations?: (chain?: Chain) => {
       [key in ValidationFunctions]?: (value: string) => Promise<string>;
     };
   }[];

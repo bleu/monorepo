@@ -8,7 +8,7 @@ const poolField =  {
   label: "Pool ID",
   key: "poolId",
   placeholder: "Insert the Pool ID here",
-  getValidations: ( chain?: Chain) => ({
+  getValidations: (chain?: Chain) => ({
     poolExists: async (value: string) => {
       if(!value) return ""
       const result = await poolGql(
@@ -26,11 +26,7 @@ const gaugeField = {
   label: "Gauge ID",
   key: "gaugeId",
   placeholder: "Insert the Gauge ID here",
-  getValidations: ( chain:
-    | (Chain & {
-        unsupported?: boolean | undefined;
-      })
-    | undefined) => ({
+  getValidations: ( chain?: Chain) => ({
     gaugeExists: async (value: string) => {
       if(!value) return ""
       const result = await gaugeGql(

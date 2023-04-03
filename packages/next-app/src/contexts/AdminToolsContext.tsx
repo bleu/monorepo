@@ -24,7 +24,6 @@ export interface ActionAttribute {
     label: string;
     key: string;
     placeholder: string;
-    type: string;
     getValidations?: (chain?: Chain) => {
       [key in ValidationFunctions]?: (value: string) => Promise<string>;
     };
@@ -44,7 +43,6 @@ export const initialState: ActionAttribute = {
       label: "",
       key: "",
       placeholder: "",
-      type: "",
     },
   ],
 };

@@ -4,16 +4,11 @@ import { ActionAttribute } from "#/contexts/AdminToolsContext";
 import gaugeGql from "#/lib/gaugesGql";
 import poolGql from "#/lib/gql";
 
-const inputField =  {
+const poolField =  {
   label: "Pool ID",
   key: "poolId",
   placeholder: "Insert the Pool ID here",
-  type: "string",
-  getValidations: ( chain:
-    | (Chain & {
-        unsupported?: boolean | undefined;
-      })
-    | undefined) => ({
+  getValidations: ( chain?: Chain) => ({
     poolExists: async (value: string) => {
       if(!value) return ""
       const result = await poolGql(
@@ -31,7 +26,6 @@ const gaugeField = {
   label: "Gauge ID",
   key: "gaugeId",
   placeholder: "Insert the Gauge ID here",
-  type: "string",
   getValidations: ( chain:
     | (Chain & {
         unsupported?: boolean | undefined;
@@ -63,12 +57,11 @@ export const hardcodedData:{actions: ActionAttribute[]} = {
       contractUrl:
         "https://etherscan.io/address/0xba100000625a3754423978a60c9317c58a424e3d",
       fields: [
-        inputField,
+        poolField,
         gaugeField,
       {
         label: "Amount",
         placeholder: "Insert the amount",
-        type: "number",
         key: "amount"
       }
       ],
@@ -87,7 +80,6 @@ export const hardcodedData:{actions: ActionAttribute[]} = {
           label: "Name",
           key: "name",
           placeholder: "Insert your name here",
-          type: "string",
         },
       ],
     },
@@ -105,7 +97,6 @@ export const hardcodedData:{actions: ActionAttribute[]} = {
           label: "Name",
           key: "name",
           placeholder: "Insert your name here",
-          type: "string",
         },
       ],
     },
@@ -123,7 +114,6 @@ export const hardcodedData:{actions: ActionAttribute[]} = {
           label: "Name",
           key: "name",
           placeholder: "Insert your name here",
-          type: "string",
         },
       ],
     },
@@ -141,16 +131,9 @@ export const hardcodedData:{actions: ActionAttribute[]} = {
           label: "Name",
           key: "name",
           placeholder: "Insert your name here",
-          type: "string",
         },
-        inputField,
+        poolField,
       ],
     },
   ],
 };
-
-
-// name: "Set Pool Amp Factor",
-// name: "Allowlist Pool Gauge",
-// name: "Set Pool Swap Fee",
-// name: "Kill Unkill Pool Gauge",

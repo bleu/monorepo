@@ -1,6 +1,5 @@
 "use client";
 
-import _ from "lodash";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { useForm } from "react-hook-form";
@@ -70,11 +69,13 @@ export function ActionAttributeContent() {
       );
     }
     if (fieldKey === `gaugeId`) {
-      <>
-        {gaugeResult?.liquidityGauge?.symbol && (
-          <span>Gauge Symbol: {gaugeResult?.liquidityGauge?.symbol}</span>
-        )}
-      </>;
+      return (
+        <>
+          {gaugeResult?.liquidityGauge?.symbol && (
+            <span>Gauge Symbol: {gaugeResult?.liquidityGauge?.symbol}</span>
+          )}
+        </>
+      );
     }
     return <></>;
   }
@@ -123,9 +124,7 @@ export function ActionAttributeContent() {
                           validate: field?.getValidations?.(chain),
                         })}
                         errorMessage={
-                          _.isEmpty(formState.errors[field.key])
-                            ? undefined
-                            : String(formState.errors[field.key]?.message)
+                          formState.errors?.[field.key]?.message as string
                         }
                       />
                       <Symbol fieldKey={field.key} />

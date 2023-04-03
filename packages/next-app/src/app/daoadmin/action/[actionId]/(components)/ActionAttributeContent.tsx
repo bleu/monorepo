@@ -1,5 +1,6 @@
 "use client";
 
+import _ from "lodash";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { useForm } from "react-hook-form";
@@ -58,6 +59,26 @@ export function ActionAttributeContent() {
     }
   );
 
+  function Symbol({ fieldKey }: { fieldKey: string }) {
+    if (fieldKey === `poolId`) {
+      return (
+        <>
+          {poolResult?.pool?.symbol && (
+            <span>Pool Symbol: {poolResult?.pool?.symbol}</span>
+          )}
+        </>
+      );
+    }
+    if (fieldKey === `gaugeId`) {
+      <>
+        {gaugeResult?.liquidityGauge?.symbol && (
+          <span>Gauge Symbol: {gaugeResult?.liquidityGauge?.symbol}</span>
+        )}
+      </>;
+    }
+    return <></>;
+  }
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       {selectedAction?.name && (
@@ -101,24 +122,13 @@ export function ActionAttributeContent() {
                         {...register(field.key, {
                           validate: field?.getValidations?.(chain),
                         })}
+                        errorMessage={
+                          _.isEmpty(formState.errors[field.key])
+                            ? undefined
+                            : String(formState.errors[field.key]?.message)
+                        }
                       />
-                      <h1>
-                        {formState.errors[field.key] &&
-                          (poolResult?.pool?.symbol &&
-                          field.key === "poolId" ? (
-                            <span>Pool Symbol: {poolResult?.pool?.symbol}</span>
-                          ) : gaugeResult?.liquidityGauge?.symbol &&
-                            field.key === "gaugeId" ? (
-                            <span>
-                              Gauge Symbol:{" "}
-                              {gaugeResult?.liquidityGauge?.symbol}
-                            </span>
-                          ) : (
-                            <span>
-                              {String(formState.errors[field.key]?.message)}
-                            </span>
-                          ))}
-                      </h1>
+                      <Symbol fieldKey={field.key} />
                     </div>
                   );
                 })}

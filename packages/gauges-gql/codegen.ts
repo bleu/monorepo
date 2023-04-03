@@ -34,6 +34,10 @@ const config: CodegenConfig = {
       schema: ENDPOINTS[key as Network],
       documents,
       plugins,
+      config: {
+        enumsAsTypes: true,
+        futureProofEnums: true
+      }
     };
 
     return acc;

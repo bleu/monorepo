@@ -5232,6 +5232,13 @@ export type PoolOwnerQueryVariables = Exact<{
 
 export type PoolOwnerQuery = { __typename?: 'Query', pool?: { __typename?: 'Pool', owner?: any | null } | null };
 
+export type PoolAddressQueryVariables = Exact<{
+  poolId: Scalars['ID'];
+}>;
+
+
+export type PoolAddressQuery = { __typename?: 'Query', pool?: { __typename?: 'Pool', address: any } | null };
+
 
 export const PoolsDocument = gql`
     query Pools($owner: Bytes!) {
@@ -5261,6 +5268,13 @@ export const PoolOwnerDocument = gql`
   }
 }
     `;
+export const PoolAddressDocument = gql`
+    query PoolAddress($poolId: ID!) {
+  pool(id: $poolId) {
+    address
+  }
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string) => Promise<T>;
 
@@ -5277,6 +5291,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     PoolOwner(variables: PoolOwnerQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<PoolOwnerQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<PoolOwnerQuery>(PoolOwnerDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PoolOwner', 'query');
+    },
+    PoolAddress(variables: PoolAddressQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<PoolAddressQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<PoolAddressQuery>(PoolAddressDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PoolAddress', 'query');
     }
   };
 }
@@ -5294,6 +5311,9 @@ export function getSdkWithHooks(client: GraphQLClient, withWrapper: SdkFunctionW
     },
     usePoolOwner(variables: PoolOwnerQueryVariables, config?: SWRConfigInterface<PoolOwnerQuery, ClientError>) {
       return useSWR<PoolOwnerQuery, ClientError>(genKey<PoolOwnerQueryVariables>('PoolOwner', variables), () => sdk.PoolOwner(variables), config);
+    },
+    usePoolAddress(variables: PoolAddressQueryVariables, config?: SWRConfigInterface<PoolAddressQuery, ClientError>) {
+      return useSWR<PoolAddressQuery, ClientError>(genKey<PoolAddressQueryVariables>('PoolAddress', variables), () => sdk.PoolAddress(variables), config);
     }
   };
 }

@@ -30,3 +30,11 @@ export const poolOwner = gql`
     }
   }
 `;
+
+export const poolAddress = gql`
+  query PoolAddress($poolId: ID!) {
+    pool(id: $poolId) {
+      address
+    }
+  }
+`;

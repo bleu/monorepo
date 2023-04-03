@@ -10,7 +10,7 @@ import { GraphQLClient } from "graphql-request";
 
 export const DELEGATE_OWNER = '0xBA1BA1ba1BA1bA1bA1Ba1BA1ba1BA1bA1ba1ba1B';
 
-const networkIdEnumMap = {
+export const networkIdEnumMap = {
   "1": Network.mainnet,
   "5": Network.goerli,
   "137": Network.polygon,

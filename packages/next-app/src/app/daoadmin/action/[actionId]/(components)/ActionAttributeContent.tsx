@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { useNetwork } from "wagmi";
 
 import { Button } from "#/components";
+import { Badge } from "#/components/Badge";
 import { Input } from "#/components/Input";
 import { useAdminTools } from "#/contexts/AdminToolsContext";
 import useDebounce from "#/hooks/useDebounce";
@@ -97,9 +98,7 @@ export function ActionAttributeContent() {
               <div className="mt-2 flex items-center gap-8">
                 <div className="flex items-center gap-2">
                   Operation Responsible
-                  <span className="rounded bg-blue-200 p-1 text-sm font-bold text-gray-800 group-hover:bg-yellow-100">
-                    {selectedAction?.operationResponsible}
-                  </span>
+                  <Badge>{selectedAction?.operationResponsible}</Badge>
                 </div>
                 <div className="flex items-center gap-2">
                   Contract Address

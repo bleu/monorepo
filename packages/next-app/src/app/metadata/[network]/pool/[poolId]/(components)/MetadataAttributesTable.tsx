@@ -156,7 +156,7 @@ export function MetadataAttributesTable({
   const { chain } = useNetwork();
   const { address } = useAccount();
 
-  const chainId = chain?.id.toString() || networkIdFor(network);
+  const chainId = networkIdFor(network) ?? chain?.id.toString();
   const { data: poolOwner } = balancerGql(chainId).usePoolOwner({
     poolId,
   });

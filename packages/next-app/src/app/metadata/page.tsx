@@ -6,11 +6,17 @@ import { useAccount } from "wagmi";
 import SelectPoolImage from "#/assets/choose-pool.svg";
 import WalletNotConnected from "#/components/WalletNotConnected";
 
-export default function Page() {
-  const { isConnected } = useAccount();
+import { Loading } from "./(components)/Loading";
 
-  if (!isConnected) {
+export default function Page() {
+  const { isConnected, isReconnecting, isConnecting } = useAccount();
+
+  if (!isConnected && !isReconnecting && !isConnecting) {
     return <WalletNotConnected />;
+  }
+
+  if (isConnecting || isReconnecting) {
+    return <Loading />;
   }
 
   return (

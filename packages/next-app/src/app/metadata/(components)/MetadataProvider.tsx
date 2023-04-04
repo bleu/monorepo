@@ -2,7 +2,7 @@
 
 import { Pool } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/mainnet";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAccount, useNetwork } from "wagmi";
 
@@ -34,6 +34,8 @@ function MetadataContent({ children }: { children: React.ReactNode }) {
   const { push } = useRouter();
   const { isConnected, isDisconnected } = useAccount();
   const { poolsData, changeSetPoolsData } = usePoolMetadata();
+  const pathname = usePathname();
+  const isRootPath = pathname === "/metadata";
 
   let { address } = useAccount();
   address = impersonateWhetherDAO(chain?.id.toString() || "1", address);
@@ -70,7 +72,7 @@ function MetadataContent({ children }: { children: React.ReactNode }) {
           </div>
           {children}
         </div>
-      ) : isConnected && !isLoading && !poolsData.length ? (
+      ) : isConnected && isRootPath && !isLoading && !poolsData.length ? (
         <WalletEmptyState />
       ) : (
         <div className="flex h-full w-full pl-4 sm:pl-6 lg:pl-12">

@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useAccount, useNetwork } from "wagmi";
+import { useNetwork } from "wagmi";
 
 import { Button } from "#/components/Button";
 import { Input } from "#/components/Input";
@@ -35,10 +35,9 @@ export default function SearchPoolForm({ close }: { close?: () => void }) {
   } = useForm<PoolMetadataAttribute>();
   const { push } = useRouter();
   const { chain } = useNetwork();
-  const { isConnected } = useAccount();
 
   const poolId = watch("poolId");
-  const network = isConnected ? chain?.id.toString() : watch("network");
+  const network = watch("network");
 
   const { data: poolAddress } = balancerGql(network || "1").usePoolAddress(
     {
@@ -80,25 +79,21 @@ export default function SearchPoolForm({ close }: { close?: () => void }) {
 
   return (
     <form onSubmit={handleSubmit(handleSubmitForm)} className="px-2 pt-2">
-      {!isConnected && (
-        <>
-          <label className="mb-2 block text-sm text-gray-400">Network</label>
-          <div>
-            <Controller
-              control={control}
-              name={"network"}
-              defaultValue={"1"}
-              render={({ field: { onChange, value, ref } }) => (
-                <Select onValueChange={onChange} value={value} ref={ref}>
-                  {inputTypenames.map(({ value, label }) => (
-                    <SelectItem value={value}>{label}</SelectItem>
-                  ))}
-                </Select>
-              )}
-            />
-          </div>
-        </>
-      )}
+      <label className="mb-2 block text-sm text-gray-400">Network</label>
+      <div className="mb-2">
+        <Controller
+          control={control}
+          name={"network"}
+          defaultValue={"1"}
+          render={({ field: { onChange, value, ref } }) => (
+            <Select onValueChange={onChange} value={value} ref={ref}>
+              {inputTypenames.map(({ value, label }) => (
+                <SelectItem value={value}>{label}</SelectItem>
+              ))}
+            </Select>
+          )}
+        />
+      </div>
 
       <Input
         label="pool id"

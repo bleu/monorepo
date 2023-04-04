@@ -128,7 +128,7 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
         changeSetPoolsData,
       }}
     >
-      {children}
+      <div className="grow">{children}</div>
     </PoolMetadataContext.Provider>
   );
 }

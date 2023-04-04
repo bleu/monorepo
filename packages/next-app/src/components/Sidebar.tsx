@@ -33,7 +33,7 @@ export default function Sidebar({
     <SidebarContext.Provider value={{ isFloating }}>
       <div
         className={classNames(
-          "h-full w-96 max-w-full  py-5",
+          "w-full max-w-full  py-5",
           isFloating ? "bg-gray-900" : "bg-gray-800"
         )}
       >

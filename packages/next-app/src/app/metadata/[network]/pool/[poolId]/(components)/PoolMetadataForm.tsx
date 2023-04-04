@@ -129,7 +129,7 @@ export function PoolMetadataItemForm({
       />
       <p>{errors.value?.message}</p>
 
-      <div className="flex items-center justify-end gap-3">
+      <div className="mt-4 flex items-center justify-end gap-3">
         <Dialog.Close asChild>
           <Button
             type="button"

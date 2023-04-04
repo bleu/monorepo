@@ -156,7 +156,7 @@ export function MetadataAttributesTable({
   const { chain } = useNetwork();
   const { address } = useAccount();
 
-  const chainId = chain?.id.toString() || networkIdFor(network);
+  const chainId = networkIdFor(network) ?? chain?.id.toString();
   const { data: poolOwner } = balancerGql(chainId).usePoolOwner({
     poolId,
   });
@@ -202,7 +202,7 @@ export function MetadataAttributesTable({
           </div>
         </div>
 
-        <div className="mt-4 flow-root rounded-md border border-gray-700 bg-gray-800">
+        <div className="mt-4 flow-root max-h-[30rem] overflow-y-scroll rounded-md border border-gray-700 bg-gray-800">
           <table className="min-w-full divide-y divide-gray-700">
             <Header />
 

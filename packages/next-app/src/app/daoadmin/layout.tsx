@@ -13,13 +13,13 @@ export const metadata: Metadata = {
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <>
+    <div className="flex h-screen flex-col">
       <Header
         linkUrl={"/daoadmin"}
         title={"DAO Actions"}
         imageSrc={balancerSymbol}
       />
       <DaoAdminProvider>{children}</DaoAdminProvider>
-    </>
+    </div>
   );
 }

@@ -38,7 +38,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 strokeWidth={1}
                 className="mr-3 flex-none"
               />
-              Search pool metadata...
+              Search pool...
             </button>
           </div>
         </Dialog>

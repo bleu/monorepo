@@ -23,7 +23,7 @@ export function Header({ linkUrl, imageSrc, title, children }: IHeader) {
           Balancer <p className="font-medium">{title}</p>
         </h1>
       </Link>
-      {children && children}
+      {children}
       <CustomConnectButton />
     </div>
   );

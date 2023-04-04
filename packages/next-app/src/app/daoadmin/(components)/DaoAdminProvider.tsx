@@ -7,7 +7,7 @@ import { useAccount, useNetwork } from "wagmi";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { AdminToolsProvider } from "#/contexts/AdminToolsContext";
 
-import { Sidebar } from "./Sidebar";
+import { DaoAdminSidebar } from "./DaoAdminSidebar";
 
 export function DaoAdminProvider({ children }: { children: React.ReactNode }) {
   const { isConnected } = useAccount();
@@ -25,9 +25,7 @@ export function DaoAdminProvider({ children }: { children: React.ReactNode }) {
         <AdminToolsProvider>
           <div className="flex h-full">
             <div className="h-full w-96">
-              <div className="h-full w-full">
-                <Sidebar />
-              </div>
+              <DaoAdminSidebar />
             </div>
             <div className="p-5">{children}</div>
           </div>

@@ -4,7 +4,6 @@ import { MetadataItemSchema } from "@balancer-pool-metadata/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as React from "react";
-import { useContext } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import { Button } from "#/components/Button";
@@ -12,7 +11,7 @@ import { Input } from "#/components/Input";
 import { Select, SelectItem } from "#/components/Select";
 import {
   PoolMetadataAttribute,
-  PoolMetadataContext,
+  usePoolMetadata,
 } from "#/contexts/PoolMetadataContext";
 
 const inputTypenames = [
@@ -48,7 +47,7 @@ export function PoolMetadataItemForm({
   });
 
   const { handleAddMetadata, handleUpdateMetadata, isKeyUnique } =
-    useContext(PoolMetadataContext);
+    usePoolMetadata();
 
   function handleSubmitForm(formData: PoolMetadataAttribute) {
     const uniqueKey = isKeyUnique(formData.key);

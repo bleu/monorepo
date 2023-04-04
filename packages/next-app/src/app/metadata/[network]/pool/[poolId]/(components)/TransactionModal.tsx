@@ -2,11 +2,11 @@
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import cn from "classnames";
-import { PropsWithChildren, useContext, useState } from "react";
+import { PropsWithChildren, useState } from "react";
 
 import { Button } from "#/components";
 import { Toast } from "#/components/Toast";
-import { PoolMetadataContext } from "#/contexts/PoolMetadataContext";
+import { usePoolMetadata } from "#/contexts/PoolMetadataContext";
 import { TransactionStatus, useTransaction } from "#/hooks/useTransaction";
 
 type Stage = {
@@ -147,7 +147,7 @@ function ToastContent({
 }
 
 function ProcessTransaction({ poolId }: { poolId: `0x${string}` }) {
-  const { metadata } = useContext(PoolMetadataContext);
+  const { metadata } = usePoolMetadata();
   const {
     handleTransaction,
     isNotifierOpen,

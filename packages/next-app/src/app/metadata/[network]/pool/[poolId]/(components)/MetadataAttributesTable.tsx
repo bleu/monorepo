@@ -7,7 +7,7 @@ import {
   TrashIcon,
 } from "@radix-ui/react-icons";
 import cn from "classnames";
-import { TableHTMLAttributes, useContext, useEffect } from "react";
+import { TableHTMLAttributes, useEffect } from "react";
 import useSWR from "swr";
 import { useAccount, useNetwork } from "wagmi";
 
@@ -16,7 +16,7 @@ import { Dialog } from "#/components/Dialog";
 import { Tooltip } from "#/components/Tooltip";
 import {
   PoolMetadataAttribute,
-  PoolMetadataContext,
+  usePoolMetadata,
 } from "#/contexts/PoolMetadataContext";
 import balancerGql, { networkIdFor } from "#/lib/gql";
 import metadataGql from "#/lib/poolMetadataGql";
@@ -102,7 +102,7 @@ function Row({
   data: PoolMetadataAttribute;
   mode: "view" | "edit";
 }) {
-  const { handleRemoveMetadataAttr } = useContext(PoolMetadataContext);
+  const { handleRemoveMetadataAttr } = usePoolMetadata();
 
   return (
     <tr>
@@ -151,7 +151,7 @@ export function MetadataAttributesTable({
     handleSetMetadata,
     handleSetOriginalMetadata,
     metadataUpdated,
-  } = useContext(PoolMetadataContext);
+  } = usePoolMetadata();
 
   const { chain } = useNetwork();
   const { address } = useAccount();

@@ -1,4 +1,5 @@
 "use client";
+import { Pool } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/mainnet";
 import { TypenameEnum } from "@balancer-pool-metadata/schema";
 import isEqual from "lodash/isEqual";
 import {
@@ -6,6 +7,7 @@ import {
   Dispatch,
   ReactNode,
   SetStateAction,
+  useContext,
   useEffect,
   useState,
 } from "react";
@@ -33,6 +35,8 @@ interface PoolMetadataContextType {
   setStatus: Dispatch<SetStateAction<UpdateStatus>>;
   metadataUpdated: boolean;
   handleRemoveMetadataAttr: (key: string) => void;
+  poolsData: Pool[];
+  changeSetPoolsData: (data: Pool[]) => void;
 }
 
 export enum UpdateStatus {
@@ -63,6 +67,7 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
   const [originalMetadata, setOriginalMetadata] = useState<
     PoolMetadataAttribute[]
   >([]);
+  const [poolsData, setPoolsData] = useState<Pool[]>([]);
 
   function handleSetMetadata(data: PoolMetadataAttribute[]) {
     setMetadata(data);
@@ -92,6 +97,10 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
     setSelectedPool(poolId);
   }
 
+  function changeSetPoolsData(data: Pool[]) {
+    setPoolsData(data);
+  }
+
   function isKeyUnique(key: string) {
     return metadata.every((item) => toSlug(item.key) !== toSlug(key));
   }
@@ -115,9 +124,17 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
         metadataUpdated,
         handleSetOriginalMetadata,
         handleRemoveMetadataAttr,
+        poolsData,
+        changeSetPoolsData,
       }}
     >
       {children}
     </PoolMetadataContext.Provider>
   );
+}
+
+export function usePoolMetadata() {
+  const context = useContext(PoolMetadataContext);
+
+  return context;
 }

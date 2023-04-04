@@ -8,7 +8,7 @@ export default function Page({
   params: { poolId: `0x${string}`; network: Network };
 }) {
   return (
-    <div className="h-screen flex-1 py-5 text-white">
+    <div className="h-full flex-1 py-5 text-white">
       <MetadataAttributesTable
         poolId={params.poolId}
         network={params.network}

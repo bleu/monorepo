@@ -45,7 +45,7 @@ export function Sidebar() {
 
   return (
     <div className="h-full w-96 max-w-full bg-gray-800 py-5">
-      <div className="h-screen w-96 max-w-full items-start justify-start space-y-4">
+      <div className="h-full w-96 max-w-full items-start justify-start space-y-4">
         <div className="items-start justify-start space-y-2.5 self-stretch px-5">
           <div className="flex items-center justify-start space-x-0 text-2xl font-medium text-gray-400">
             <span>DAO Actions</span>

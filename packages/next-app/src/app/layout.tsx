@@ -9,7 +9,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <div className="h-full w-full bg-gray-900">
+        <div className="h-screen w-screen bg-gray-900">
           <RootLayout>{children}</RootLayout>
         </div>
       </body>

@@ -13,7 +13,7 @@ export default function WalletNotConnected() {
       : "";
 
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-center bg-gray-900">
+    <div className="flex h-full w-full flex-col items-center justify-center bg-gray-900">
       <h1 className="flex h-12 items-center text-center text-3xl font-medium not-italic text-gray-400">
         Your {message} will appear here
       </h1>

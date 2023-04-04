@@ -117,7 +117,7 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
         handleRemoveMetadataAttr,
       }}
     >
-      {children}
+      <div className="grow">{children}</div>
     </PoolMetadataContext.Provider>
   );
 }

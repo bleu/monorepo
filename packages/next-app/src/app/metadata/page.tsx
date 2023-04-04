@@ -14,7 +14,7 @@ export default function Page() {
   }
 
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-center bg-gray-900">
+    <div className="flex h-full w-full flex-col items-center justify-center bg-gray-900">
       <h1 className="mb-4 flex h-12 items-center text-center	 text-3xl font-medium not-italic text-yellow-500">
         Choose a pool on the side!
       </h1>

@@ -14,7 +14,7 @@ interface IHeader {
 
 export function Header({ linkUrl, imageSrc, title }: IHeader) {
   return (
-    <div className="flex flex-wrap items-center justify-between border-b border-gray-700 bg-gray-800 p-4 text-white">
+    <div className="flex h-20 flex-wrap items-center justify-between border-b border-gray-700 bg-gray-800 p-4 text-white">
       <Link href={linkUrl} className="mr-5 flex items-center gap-3">
         {imageSrc && <Image src={imageSrc} height={50} width={50} alt="" />}
         <h1 className="flex gap-2 text-4xl font-thin not-italic leading-8 text-gray-200">

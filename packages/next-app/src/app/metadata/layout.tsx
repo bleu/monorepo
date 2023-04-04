@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <>
+    <div className="flex h-screen flex-col">
       <Header
         linkUrl={"/metadata"}
         title={"Pool Metadata"}
@@ -25,6 +25,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         githubLink="https://github.com/bleu-studio/balancer-pool-metadata"
         discordLink="https://discord.balancer.fi/"
       />
-    </>
+    </div>
   );
 }

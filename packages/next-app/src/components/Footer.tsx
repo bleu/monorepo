@@ -8,7 +8,7 @@ export function Footer({
   discordLink: string;
 }) {
   return (
-    <footer className="mt-auto flex border-t border-gray-700 bg-gray-800 px-6 py-4 md:flex md:items-center md:justify-between">
+    <footer className="mt-auto flex h-14 border-t border-gray-700 bg-gray-800 px-6 py-4 md:flex md:items-center md:justify-between">
       <span className="text-sm text-gray-300 sm:text-center">
         Proudly powered by{" "}
         <a

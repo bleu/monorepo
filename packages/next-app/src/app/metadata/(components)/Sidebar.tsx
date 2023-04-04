@@ -15,7 +15,7 @@ export function Sidebar({ pools }: { pools: Pool[] }) {
 
   return (
     <div className="h-full w-96 max-w-full bg-gray-900 p-5">
-      <div className="h-screen w-96 max-w-full items-start justify-start space-y-4">
+      <div className="w-full max-w-full items-start justify-start space-y-4">
         <div className="items-start justify-start space-y-2.5 self-stretch bg-gray-900 px-2">
           <div className="flex items-center justify-start space-x-0 text-2xl font-medium text-gray-400">
             <span>Owned pools</span>

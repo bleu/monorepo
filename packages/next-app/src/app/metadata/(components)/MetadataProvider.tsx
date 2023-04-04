@@ -56,7 +56,7 @@ export function MetadataProvider({ children }: { children: React.ReactNode }) {
 export function WalletEmptyState() {
   return (
     <div className="flex h-full w-full">
-      <div className="flex h-screen w-full flex-col items-center justify-center bg-gray-900">
+      <div className="flex h-full w-full flex-col items-center justify-center bg-gray-900">
         <h1 className="flex h-12 items-center text-center text-3xl font-medium not-italic text-gray-400">
           There are no pools in this network!
         </h1>

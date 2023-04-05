@@ -8,6 +8,7 @@
     "react-library.json"
   ],
   "devDependencies": {
+    "@balancer-pool-metadata/shared": "workspace:^",
     "typescript": "^5.0.2"
   }
 }

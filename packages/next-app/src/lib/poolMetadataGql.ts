@@ -1,18 +1,18 @@
 import {
   ENDPOINTS,
-  Network
 } from "@balancer-pool-metadata/pool-metadata-gql/codegen";
 import { getSdkWithHooks as arbitrumSdk } from "@balancer-pool-metadata/pool-metadata-gql/src/gql/__generated__/arbitrum";
 import { getSdkWithHooks as goerliSdk } from "@balancer-pool-metadata/pool-metadata-gql/src/gql/__generated__/goerli";
 import { getSdkWithHooks as mainnetSdk } from "@balancer-pool-metadata/pool-metadata-gql/src/gql/__generated__/mainnet";
 import { getSdkWithHooks as polygonSdk } from "@balancer-pool-metadata/pool-metadata-gql/src/gql/__generated__/polygon";
 import { GraphQLClient } from "graphql-request";
+import { Network } from "@balancer-pool-metadata/shared";
 
 const networkIdEnumMap = {
-  "1": Network.mainnet,
-  "5": Network.goerli,
-  "137": Network.polygon,
-  "42161": Network.arbitrum,
+  "1": Network.Mainnet,
+  "5": Network.Goerli,
+  "137": Network.Polygon,
+  "42161": Network.Arbitrum,
 };
 
 function networkFor(key: string | number) {
@@ -22,10 +22,10 @@ function networkFor(key: string | number) {
 }
 
 const networkSdks = {
-  [Network.mainnet]: mainnetSdk,
-  [Network.polygon]: polygonSdk,
-  [Network.arbitrum]: arbitrumSdk,
-  [Network.goerli]: goerliSdk,
+  [Network.Mainnet]: mainnetSdk,
+  [Network.Polygon]: polygonSdk,
+  [Network.Arbitrum]: arbitrumSdk,
+  [Network.Goerli]: goerliSdk,
 };
 
 const client = (chainId: string) => new GraphQLClient(ENDPOINTS[networkFor(chainId)]);

@@ -11,6 +11,7 @@
     "graphql:update-types": "graphql-codegen --config codegen.ts"
   },
   "devDependencies": {
+    "@balancer-pool-metadata/shared": "workspace:^",
     "@balancer-pool-metadata/tsconfig": "workspace:*",
     "@graphql-codegen/cli": "3.2.2",
     "@graphql-codegen/typescript": "3.0.2",

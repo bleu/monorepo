@@ -1,6 +1,6 @@
-import { Network } from "@balancer-pool-metadata/balancer-gql/codegen";
+import { Network, networkMultisigs } from "@balancer-pool-metadata/shared";
 
-import { DELEGATE_OWNER, networkFor, networkMultisigs } from "#/lib/gql";
+import { DELEGATE_OWNER, networkFor } from "#/lib/networkFor";
 
 export function isPoolOwner(
   chainId: string,
@@ -21,7 +21,7 @@ export function isPoolOwner(
     return true;
   }
 
-  if (network !== Network.goerli && networkMultisigs[network]) {
+  if (network !== Network.Goerli && networkMultisigs[network]) {
     const isMultisigOwner =
       networkMultisigs[network].toUpperCase() ===
       connectedAddress.toUpperCase();

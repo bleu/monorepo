@@ -20,13 +20,6 @@
     "type": "git",
     "url": "git+https://github.com/bleu-llc/balancer-pool-metadata.git"
   },
-  "dependencies": {
-    "@balancer-pool-metadata/eslint-config": "workspace:*",
-    "@types/node": "^18.15.10",
-    "lint-staged": "^13.2.0",
-    "prettier": "^2.8.7",
-    "typescript": "^5.0.2"
-  },
   "lint-staged": {
     "*.{md,html,mjml,json,graphql,yml,css,scss}": "prettier --write"
   },
@@ -47,6 +40,11 @@
   "homepage": "https://github.com/bleu-llc/balancer-pool-metadata#readme",
   "devDependencies": {
     "concurrently": "^7.6.0",
-    "ghooks": "^2.0.4"
+    "ghooks": "^2.0.4",
+    "@balancer-pool-metadata/eslint-config": "workspace:*",
+    "@types/node": "^18.15.10",
+    "lint-staged": "^13.2.0",
+    "prettier": "^2.8.7",
+    "typescript": "^5.0.2"
   }
 }

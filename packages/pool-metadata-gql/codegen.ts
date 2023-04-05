@@ -1,20 +1,14 @@
+import { Network } from "@balancer-pool-metadata/shared";
 import { CodegenConfig } from "@graphql-codegen/cli";
 
 const BASE_URL = "https://api.thegraph.com/subgraphs/name/bleu-llc";
 
-export enum Network {
-  mainnet = "mainnet",
-  polygon = "polygon",
-  arbitrum = "arbitrum",
-  goerli = "goerli",
-}
-
 // TODO: https://linear.app/bleu-llc/issue/BAL-131/deploy-contracts-in-all-networks-that-balancer-is-deployed
 export const ENDPOINTS = {
-  [Network.mainnet]: `${BASE_URL}/balancer-pools-metadata`,
-  [Network.polygon]: `${BASE_URL}/balancer-metadata-polygon`,
-  [Network.arbitrum]: `${BASE_URL}/balancer-pools-metadata`,
-  [Network.goerli]: `${BASE_URL}/balancer-metadata-goerli`,
+  [Network.Mainnet]: `${BASE_URL}/balancer-pools-metadata`,
+  [Network.Polygon]: `${BASE_URL}/balancer-metadata-polygon`,
+  [Network.Arbitrum]: `${BASE_URL}/balancer-pools-metadata`,
+  [Network.Goerli]: `${BASE_URL}/balancer-metadata-goerli`,
 };
 
 const plugins = [

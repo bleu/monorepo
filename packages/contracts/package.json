@@ -20,6 +20,7 @@
     "postinstall": "make patch"
   },
   "devDependencies": {
+    "@balancer-pool-metadata/shared": "workspace:^",
     "@balancer-pool-metadata/tsconfig": "workspace:*",
     "@typechain/ethers-v5": "^10.2.0",
     "typechain": "^8.1.1",

@@ -1,25 +1,9 @@
-import {
-  ENDPOINTS,
-} from "@balancer-pool-metadata/balancer-gql/codegen";
-import { getSdkWithHooks as arbitrumSdk } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/arbitrum";
-import { getSdkWithHooks as goerliSdk } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/goerli";
-import { getSdkWithHooks as mainnetSdk } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/mainnet";
-import { getSdkWithHooks as polygonSdk } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/polygon";
+import poolsSdks from "@balancer-pool-metadata/gql/src/balancer-pools";
+import { DELEGATE_OWNER, Network, networkFor, networkMultisigs } from "@balancer-pool-metadata/shared";
 import { GraphQLClient } from "graphql-request";
-import { networkFor, DELEGATE_OWNER } from "./networkFor";
-import { Network, networkMultisigs } from "@balancer-pool-metadata/shared";
-
-const networkSdks = {
-  [Network.Mainnet]: mainnetSdk,
-  [Network.Polygon]: polygonSdk,
-  [Network.Arbitrum]: arbitrumSdk,
-  [Network.Goerli]: goerliSdk,
-};
-
-const client = (chainId: string) => new GraphQLClient(ENDPOINTS[networkFor(chainId)]);
-
-const gql = (chainId: string) => networkSdks[networkFor(chainId)](client(chainId));
-
+import gaugesSdks from "@balancer-pool-metadata/gql/src/balancer-gauges";
+import { SUBGRAPHS, Subgraph } from "@balancer-pool-metadata/gql/codegen";
+import poolMetadataSdks from "@balancer-pool-metadata/gql/src/balancer-pools-metadata";
 
 export function impersonateWhetherDAO(chainId: string, address: `0x${string}` | undefined) {
   const network = networkFor(chainId);
@@ -30,4 +14,23 @@ export function impersonateWhetherDAO(chainId: string, address: `0x${string}` | 
   return address;
 }
 
-export default gql;
+const clientFor = (client: Subgraph)=> (chainId: string) => {
+  const network = networkFor(chainId)
+  const endpoint = SUBGRAPHS[client].endpointFor(network)
+  return new GraphQLClient(endpoint)
+}
+
+export const pools = {
+  client: clientFor(Subgraph.BalancerPools),
+  gql: (chainId: string) => poolsSdks[networkFor(chainId)](pools.client(chainId))
+}
+
+export const poolsMetadata = {
+  client:clientFor(Subgraph.BalancerPoolsMetadata),
+  gql: (chainId: string) => poolMetadataSdks[networkFor(chainId)](poolsMetadata.client(chainId))
+}
+
+export const gauges = {
+  client:clientFor(Subgraph.BalancerGauges),
+  gql: (chainId: string) => gaugesSdks[networkFor(chainId)](gauges.client(chainId))
+}

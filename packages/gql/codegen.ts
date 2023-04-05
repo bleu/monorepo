@@ -3,6 +3,8 @@ import { CodegenConfig } from "@graphql-codegen/cli";
 
 export enum Subgraph {
   BalancerPoolsMetadata = "balancer-pools-metadata",
+  BalancerGauges = "balancer-gauges",
+  BalancerPools = "balancer-pools",
 }
 
 export const SUBGRAPHS = {
@@ -23,6 +25,40 @@ export const SUBGRAPHS = {
       return this.endpoints()[network];
     },
   },
+  [Subgraph.BalancerGauges]: {
+    name: Subgraph.BalancerGauges,
+    endpoints() {
+      const baseEndpoint =
+        "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-gauges";
+
+      return {
+        [Network.Mainnet]: `${baseEndpoint}`,
+        [Network.Polygon]: `${baseEndpoint}-polygon`,
+        [Network.Arbitrum]: `${baseEndpoint}-arbitrum`,
+        [Network.Goerli]: `${baseEndpoint}-goerli`,
+      };
+    },
+    endpointFor(network: Network) {
+      return this.endpoints()[network];
+    },
+  },
+  [Subgraph.BalancerPools]: {
+    name: Subgraph.BalancerPools,
+    endpoints() {
+      const baseEndpoint =
+        "https://api.thegraph.com/subgraphs/name/balancer-labs";
+
+      return {
+        [Network.Mainnet]: `${baseEndpoint}/balancer-v2`,
+        [Network.Polygon]: `${baseEndpoint}/balancer-polygon-v2`,
+        [Network.Arbitrum]: `${baseEndpoint}/balancer-arbitrum-v2`,
+        [Network.Goerli]: `${baseEndpoint}/balancer-goerli-v2`,
+      };
+    },
+    endpointFor(network: Network) {
+      return this.endpoints()[network];
+    },
+  },
 };
 
 const generates = Object.assign(
@@ -30,7 +66,7 @@ const generates = Object.assign(
   ...Object.values(SUBGRAPHS).map(({ name, endpoints }) =>
     Object.fromEntries(
       Object.entries(endpoints()).map(([network, endpoint]) => [
-        `./src/__generated__/${name}/${network}.ts`,
+        `./src/${name}/__generated__/${network}.ts`,
         {
           schema: endpoint,
           documents: [`src/${name}/**/*.ts`],

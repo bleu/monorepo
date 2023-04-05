@@ -1,10 +1,9 @@
 "use client";
 
-import { Network } from "@balancer-pool-metadata/shared";
+import { Network, networkIdFor } from "@balancer-pool-metadata/shared";
 import { useContext, useEffect } from "react";
 
 import { NetworksContext } from "#/contexts/networks";
-import { networkIdFor } from "#/lib/networkFor";
 
 export default function Page({
   children,

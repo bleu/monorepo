@@ -1,4 +1,4 @@
-import gql from "#/lib/gql";
+import { pools } from "#/lib/gql";
 
 export async function fetcher<JSON = unknown>(
   input: RequestInfo,
@@ -10,15 +10,15 @@ export async function fetcher<JSON = unknown>(
 
 export async function fetchOwnedPools(address: string, chainId: string) {
   if (!address) return { pools: [] };
-  const data = await gql(chainId).Pools({
+  const data = await pools.gql(chainId).Pools({
     owner: address,
   });
   return data;
 }
 
-export async function fetchExistingPool(poolId:string ,chainId: string) {
+export async function fetchExistingPool(poolId: string, chainId: string) {
   if (!poolId) return { pool: {} };
-  const data = await gql(chainId).Pool({
+  const data = await pools.gql(chainId).Pool({
     poolId: poolId,
   });
   return data;

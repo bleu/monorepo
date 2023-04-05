@@ -1,11 +1,11 @@
 import { Pool } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/mainnet";
+import { networkFor } from "@balancer-pool-metadata/shared";
 import Link from "next/link";
 import { useNetwork } from "wagmi";
 
 import { Badge } from "#/components/Badge";
 import Sidebar from "#/components/Sidebar";
 import { usePoolMetadata } from "#/contexts/PoolMetadataContext";
-import { networkFor } from "#/lib/networkFor";
 import { truncateAddress } from "#/utils/truncateAddress";
 
 export function MetadataSidebar() {

@@ -1,6 +1,9 @@
-import { Network, networkMultisigs } from "@balancer-pool-metadata/shared";
-
-import { DELEGATE_OWNER, networkFor } from "#/lib/networkFor";
+import {
+  DELEGATE_OWNER,
+  Network,
+  networkFor,
+  networkMultisigs,
+} from "@balancer-pool-metadata/shared";
 
 export function isPoolOwner(
   chainId: string,

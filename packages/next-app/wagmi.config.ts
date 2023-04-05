@@ -7,14 +7,15 @@ export default defineConfig({
   out: "src/wagmi/generated.ts",
   plugins: [
     foundry({
+      artifacts: "out/PoolMetadataRegistry.sol",
       deployments: {
         // TODO: here you'd update the addresses to the ones you deployed to
-        Counter: {
-          [chains.mainnet.id]: "0x1A61839Eb5fC6eBBcAe01eD5E79062E598792Dac",
-          [chains.goerli.id]: "0x78991BB1D194C1235fe285240af8489CFA552151",
-          [chains.foundry.id]: "0xbe18A1B61ceaF59aEB6A9bC81AB4FB87D56Ba167",
+        PoolMetadataRegistry: {
+          [chains.goerli.id]: "0x3D2C019C906C36fB05e6Ca28395E9E7d603d6CA0",
+          [chains.polygon.id]: "0x68fd16B6D2D1D4AA042009872b08f3756Cc76261",
         },
       },
+      exclude: ["../contracts/lib/**"],
       project: "../contracts",
     }),
     react(),

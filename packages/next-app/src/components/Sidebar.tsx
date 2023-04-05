@@ -33,11 +33,11 @@ export default function Sidebar({
     <SidebarContext.Provider value={{ isFloating }}>
       <div
         className={classNames(
-          "w-full max-w-full  py-5",
+          "w-full max-w-full  py-5 h-full",
           isFloating ? "bg-gray-900" : "bg-gray-800"
         )}
       >
-        <div className="h-screen w-96 max-w-full items-start justify-start space-y-4">
+        <div className="h-full w-96 max-w-full items-start justify-start space-y-4">
           {children}
         </div>
       </div>
@@ -68,7 +68,7 @@ function Content({ children }: { children: React.ReactNode }) {
   return (
     <div
       className={classNames(
-        "relative max-h-[40rem] self-stretch overflow-auto",
+        "relative max-h-[38rem] self-stretch overflow-auto",
         isFloating ? "rounded-md border border-gray-700 bg-gray-800 mx-5" : ""
       )}
     >

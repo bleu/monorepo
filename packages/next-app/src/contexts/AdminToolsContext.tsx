@@ -76,7 +76,7 @@ export function AdminToolsProvider({ children }: { children: ReactNode }) {
         handleSubmit,
       }}
     >
-      {children}
+      <div className="grow">{children}</div>
     </AdminToolsContext.Provider>
   );
 }

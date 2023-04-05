@@ -1,6 +1,6 @@
 "use client";
 
-import { Network } from "@balancer-pool-metadata/balancer-gql/codegen";
+import { Network } from "@balancer-pool-metadata/shared";
 import {
   ArrowTopRightIcon,
   Pencil2Icon,
@@ -11,22 +11,21 @@ import { TableHTMLAttributes, useEffect } from "react";
 import useSWR from "swr";
 import { useAccount, useNetwork } from "wagmi";
 
-import { Button } from "#/components";
 import { Dialog } from "#/components/Dialog";
-import { Tooltip } from "#/components/Tooltip";
 import {
   PoolMetadataAttribute,
   usePoolMetadata,
 } from "#/contexts/PoolMetadataContext";
-import balancerGql, { networkIdFor } from "#/lib/gql";
+import balancerGql from "#/lib/gql";
+import { networkIdFor } from "#/lib/networkFor";
 import metadataGql from "#/lib/poolMetadataGql";
 import { isPoolOwner } from "#/utils/address";
 import { fetcher } from "#/utils/fetcher";
 import { toSlug } from "#/utils/formatStringCase";
 import { truncateAddress } from "#/utils/truncateAddress";
 
+import { Actions } from "./Actions";
 import { PoolMetadataItemForm } from "./PoolMetadataForm";
-import { TransactionModal } from "./TransactionModal";
 
 type CellProps = TableHTMLAttributes<HTMLTableCellElement>;
 
@@ -139,7 +138,7 @@ function Row({
   );
 }
 
-export function MetadataAttributesTable({
+export default function MetadataAttributesTable({
   poolId,
   network,
 }: {
@@ -218,51 +217,11 @@ export function MetadataAttributesTable({
           </table>
         </div>
 
-        <div className="mt-5 w-full justify-between sm:flex sm:items-center">
-          <div className="flex gap-4">
-            <Tooltip content={"You are not the pool owner"} open={!isOwner}>
-              <span tabIndex={0}>
-                <Dialog
-                  title={"Add attribute"}
-                  content={<PoolMetadataItemForm />}
-                >
-                  <Button
-                    className="bg-indigo-500 text-white hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-indigo-400"
-                    disabled={!isOwner}
-                  >
-                    Add attribute
-                  </Button>
-                </Dialog>
-              </span>
-            </Tooltip>
-
-            <Button className="border border-blue-500 bg-gray-900  text-blue-500 hover:bg-gray-800 focus-visible:outline-indigo-500">
-              Import template
-            </Button>
-          </div>
-          <Tooltip
-            content={
-              !isOwner
-                ? "You are not the pool owner"
-                : "Your need to update the metadata first"
-            }
-            open={!metadataUpdated || !isOwner}
-          >
-            <span tabIndex={0}>
-              <Dialog
-                title={"Update metadata"}
-                content={<TransactionModal poolId={poolId} />}
-              >
-                <Button
-                  className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 focus-visible:bg-yellow-300 disabled:bg-yellow-200"
-                  disabled={!metadataUpdated || !isOwner}
-                >
-                  Update metadata
-                </Button>
-              </Dialog>
-            </span>
-          </Tooltip>
-        </div>
+        <Actions
+          poolId={poolId}
+          isOwner={isOwner}
+          metadataUpdated={metadataUpdated}
+        />
       </div>
     </div>
   );

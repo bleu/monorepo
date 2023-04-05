@@ -2,7 +2,7 @@
 
 import { Pool } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/mainnet";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAccount, useNetwork } from "wagmi";
 
@@ -26,12 +26,8 @@ export function MetadataProvider({ children }: { children: React.ReactNode }) {
 }
 
 function MetadataContent({ children }: { children: React.ReactNode }) {
-  const [selectedChain, setSelectedChain] = useState<number | undefined>(
-    undefined
-  );
   const [isLoading, setIsLoading] = useState(true);
   const { chain } = useNetwork();
-  const { push } = useRouter();
   const { isConnected, isDisconnected } = useAccount();
   const { poolsData, changeSetPoolsData } = usePoolMetadata();
   const pathname = usePathname();
@@ -52,16 +48,6 @@ function MetadataContent({ children }: { children: React.ReactNode }) {
         setIsLoading(false);
       });
   }, [chain, address]);
-
-  useEffect(() => {
-    // case user switch the chain
-    if (chain && selectedChain && chain.id !== selectedChain) {
-      setSelectedChain(chain.id);
-      push("/metadata");
-    } else if (chain && !selectedChain) {
-      setSelectedChain(chain.id);
-    }
-  }, [chain]);
 
   return (
     <>

@@ -1,6 +1,8 @@
-import { Network } from "@balancer-pool-metadata/balancer-gql/codegen";
+"use client";
 
-import { MetadataAttributesTable } from "./(components)/MetadataAttributesTable";
+import { Network } from "@balancer-pool-metadata/shared";
+
+import MetadataAttributesTable from "./(components)/MetadataAttributesTable";
 
 export default function Page({
   params,

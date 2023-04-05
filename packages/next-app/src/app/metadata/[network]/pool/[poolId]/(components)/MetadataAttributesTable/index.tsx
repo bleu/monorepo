@@ -16,7 +16,7 @@ import {
   PoolMetadataAttribute,
   usePoolMetadata,
 } from "#/contexts/PoolMetadataContext";
-import { pools , poolsMetadata } from "#/lib/gql";
+import { pools, poolsMetadata } from "#/lib/gql";
 import { isPoolOwner } from "#/utils/address";
 import { fetcher } from "#/utils/fetcher";
 import { toSlug } from "#/utils/formatStringCase";

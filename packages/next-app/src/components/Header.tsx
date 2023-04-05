@@ -41,7 +41,7 @@ export function HeaderNetworkMismatchAlert() {
 
   const { switchNetwork } = useSwitchNetwork({ chainId: urlPathNetwork });
 
-  if (!mismatchedNetworks) return null;
+  if (!mismatchedNetworks || !urlPathNetwork) return null;
 
   return (
     <div className="flex min-h-[50px] flex-row items-center justify-center bg-blue6 text-white">

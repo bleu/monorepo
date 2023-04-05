@@ -1,6 +1,6 @@
 "use client";
 
-import { Pool } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/mainnet";
+import { Pool } from "@balancer-pool-metadata/gql/src/balancer-pools/__generated__/Mainnet";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";

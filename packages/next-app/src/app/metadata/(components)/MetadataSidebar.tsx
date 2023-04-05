@@ -1,4 +1,4 @@
-import { Pool } from "@balancer-pool-metadata/balancer-gql/src/gql/__generated__/mainnet";
+import { Pool } from "@balancer-pool-metadata/gql/src/balancer-pools/__generated__/Mainnet";
 import { networkFor } from "@balancer-pool-metadata/shared";
 import Link from "next/link";
 import { useNetwork } from "wagmi";

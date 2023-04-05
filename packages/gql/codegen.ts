@@ -85,6 +85,8 @@ const generates = Object.assign(
 const config: CodegenConfig = {
   config: {
     autogenSWRKey: true,
+    enumsAsTypes: true,
+    futureProofEnums: true,
   },
   generates,
 };

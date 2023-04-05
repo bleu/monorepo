@@ -3,7 +3,7 @@
 module.exports = {
   transpilePackages: [
     "@balancer-pool-metadata/balancer-gql",
-    "@balancer-pool-metadata/pool-metadata-gql",
+    "@balancer-pool-metadata/gql",
     "@balancer-pool-metadata/gauges-gql",
     "@balancer-pool-metadata/schema",
   ],

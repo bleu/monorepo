@@ -15,7 +15,7 @@
   "dependencies": {
     "@balancer-pool-metadata/balancer-gql": "workspace:*",
     "@balancer-pool-metadata/gauges-gql": "workspace:*",
-    "@balancer-pool-metadata/pool-metadata-gql": "workspace:*",
+    "@balancer-pool-metadata/gql": "workspace:*",
     "@balancer-pool-metadata/schema": "workspace:*",
     "@balancer-pool-metadata/tsconfig": "workspace:*",
     "@hookform/resolvers": "^3.0.0",

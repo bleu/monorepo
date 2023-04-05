@@ -1,5 +1,6 @@
 "use client";
 
+import { networkFor } from "@balancer-pool-metadata/shared";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,7 +10,6 @@ import { UrlObject } from "url";
 import { useSwitchNetwork } from "wagmi";
 
 import { NetworksContext } from "#/contexts/networks";
-import { networkFor } from "#/lib/networkFor";
 
 import { CustomConnectButton } from "./CustomConnectButton";
 

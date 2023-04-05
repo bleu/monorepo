@@ -1,47 +1,45 @@
 import { Chain } from "wagmi";
 
 import { ActionAttribute } from "#/contexts/AdminToolsContext";
-import gaugeGql from "#/lib/gaugesGql";
-import poolGql from "#/lib/gql";
+import { gauges,pools } from "#/lib/gql";
 
-const poolField =  {
+const poolField = {
   label: "Pool ID",
   key: "poolId",
   placeholder: "Insert the Pool ID here",
   getValidations: (chain?: Chain) => ({
     poolExists: async (value: string) => {
-      if(!value) return ""
-      const result = await poolGql(
-        chain!.id.toString()
-      ).Pool({
+      if (!value) return "";
+      const result = await pools.gql(chain!.id.toString()).Pool({
         poolId: value,
       });
 
-      return !result.pool?.symbol ? "Pool not found. Please insert an existing Pool ID" : "";
+      return !result.pool?.symbol
+        ? "Pool not found. Please insert an existing Pool ID"
+        : "";
     },
   }),
-}
+};
 
 const gaugeField = {
   label: "Gauge ID",
   key: "gaugeId",
   placeholder: "Insert the Gauge ID here",
-  getValidations: ( chain?: Chain) => ({
+  getValidations: (chain?: Chain) => ({
     gaugeExists: async (value: string) => {
-      if(!value) return ""
-      const result = await gaugeGql(
-        chain!.id.toString()
-      ).Gauge({
+      if (!value) return "";
+      const result = await gauges.gql(chain!.id.toString()).Gauge({
         gaugeId: value,
       });
 
-      return !result.liquidityGauge?.symbol ? "Gauge not found. Please insert an existing Gauge ID" : "";
+      return !result.liquidityGauge?.symbol
+        ? "Gauge not found. Please insert an existing Gauge ID"
+        : "";
     },
   }),
-}
+};
 
-
-export const hardcodedData:{actions: ActionAttribute[]} = {
+export const hardcodedData: { actions: ActionAttribute[] } = {
   actions: [
     {
       id: 1,
@@ -55,11 +53,11 @@ export const hardcodedData:{actions: ActionAttribute[]} = {
       fields: [
         poolField,
         gaugeField,
-      {
-        label: "Amount",
-        placeholder: "Insert the amount",
-        key: "amount"
-      }
+        {
+          label: "Amount",
+          placeholder: "Insert the amount",
+          key: "amount",
+        },
       ],
     },
     {

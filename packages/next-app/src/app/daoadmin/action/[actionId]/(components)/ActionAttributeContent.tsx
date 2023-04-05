@@ -10,8 +10,7 @@ import { Badge } from "#/components/Badge";
 import { Input } from "#/components/Input";
 import { useAdminTools } from "#/contexts/AdminToolsContext";
 import useDebounce from "#/hooks/useDebounce";
-import gaugeGql from "#/lib/gaugesGql";
-import poolGql from "#/lib/gql";
+import { gauges, pools } from "#/lib/gql";
 import { truncateAddress } from "#/utils/truncateAddress";
 
 export function ActionAttributeContent() {
@@ -37,7 +36,7 @@ export function ActionAttributeContent() {
 
   const { chain } = useNetwork();
 
-  const { data: poolResult } = poolGql(chain!.id.toString()).usePool(
+  const { data: poolResult } = pools.gql(chain!.id.toString()).usePool(
     { poolId: debouncedPoolId },
     {
       revalidateIfStale: false,
@@ -48,7 +47,7 @@ export function ActionAttributeContent() {
     }
   );
 
-  const { data: gaugeResult } = gaugeGql(chain!.id.toString()).useGauge(
+  const { data: gaugeResult } = gauges.gql(chain!.id.toString()).useGauge(
     { gaugeId: debouncedGaugeId },
     {
       revalidateIfStale: false,

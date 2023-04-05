@@ -1,6 +1,6 @@
 "use client";
 
-import { Network } from "@balancer-pool-metadata/shared";
+import { Network, networkIdFor } from "@balancer-pool-metadata/shared";
 import {
   ArrowTopRightIcon,
   Pencil2Icon,
@@ -16,9 +16,7 @@ import {
   PoolMetadataAttribute,
   usePoolMetadata,
 } from "#/contexts/PoolMetadataContext";
-import balancerGql from "#/lib/gql";
-import { networkIdFor } from "#/lib/networkFor";
-import metadataGql from "#/lib/poolMetadataGql";
+import { pools , poolsMetadata } from "#/lib/gql";
 import { isPoolOwner } from "#/utils/address";
 import { fetcher } from "#/utils/fetcher";
 import { toSlug } from "#/utils/formatStringCase";
@@ -156,10 +154,10 @@ export default function MetadataAttributesTable({
   const { address } = useAccount();
 
   const chainId = networkIdFor(network) ?? chain?.id.toString();
-  const { data: poolOwner } = balancerGql(chainId).usePoolOwner({
+  const { data: poolOwner } = pools.gql(chainId).usePoolOwner({
     poolId,
   });
-  const { data: poolsData } = metadataGql(chainId).useMetadataPool({
+  const { data: poolsData } = poolsMetadata.gql(chainId).useMetadataPool({
     poolId,
   });
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { networkIdEnumMap } from "@balancer-pool-metadata/shared";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -8,8 +9,7 @@ import { useNetwork } from "wagmi";
 import { Button } from "#/components/Button";
 import { Input } from "#/components/Input";
 import { Select, SelectItem } from "#/components/Select";
-import balancerGql from "#/lib/gql";
-import { networkIdEnumMap } from "#/lib/networkFor";
+import { pools } from "#/lib/gql";
 
 export interface PoolMetadataAttribute {
   poolId: string;
@@ -40,7 +40,7 @@ export default function SearchPoolForm({ close }: { close?: () => void }) {
   const poolId = watch("poolId");
   const network = watch("network");
 
-  const { data: poolAddress } = balancerGql(network || "1").usePoolAddress(
+  const { data: poolAddress } = pools.gql(network || "1").usePoolAddress(
     {
       poolId,
     },

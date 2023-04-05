@@ -214,6 +214,70 @@ importers:
         specifier: 5.0.2
         version: 5.0.2
 
+  packages/gql:
+    dependencies:
+      dotenv:
+        specifier: '>=16'
+        version: 16.0.3
+      graphql-tag:
+        specifier: '>=2'
+        version: 2.12.6(graphql@16.6.0)
+      swr:
+        specifier: 2.0.0
+        version: 2.0.0(react@18.2.0)
+    devDependencies:
+      '@balancer-pool-metadata/shared':
+        specifier: workspace:^
+        version: link:../shared
+      '@balancer-pool-metadata/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
+      '@graphql-codegen/cli':
+        specifier: 3.2.2
+        version: 3.2.2(@babel/core@7.21.0)(@types/node@18.15.10)(graphql@16.6.0)
+      '@graphql-codegen/client-preset':
+        specifier: ^2.1.1
+        version: 2.1.1(graphql@16.6.0)
+      '@graphql-codegen/typescript':
+        specifier: 3.0.2
+        version: 3.0.2(graphql@16.6.0)
+      '@graphql-codegen/typescript-graphql-request':
+        specifier: 4.5.9
+        version: 4.5.9(graphql-request@5.1.0)(graphql-tag@2.12.6)(graphql@16.6.0)
+      '@graphql-codegen/typescript-operations':
+        specifier: 3.0.2
+        version: 3.0.2(graphql@16.6.0)
+      '@types/node':
+        specifier: 18.15.10
+        version: 18.15.10
+      '@types/react':
+        specifier: 18.0.30
+        version: 18.0.30
+      '@types/react-dom':
+        specifier: 18.0.11
+        version: 18.0.11
+      graphql:
+        specifier: 16.6.0
+        version: 16.6.0
+      graphql-codegen-plugin-typescript-swr:
+        specifier: 0.8.3
+        version: 0.8.3(graphql@16.6.0)(react@18.2.0)
+      graphql-request:
+        specifier: 5.1.0
+        version: 5.1.0(graphql@16.6.0)
+      micromatch:
+        specifier: 4.0.5
+        version: 4.0.5
+      react:
+        specifier: 18.2.0
+        version: 18.2.0
+      react-dom:
+        specifier: 18.2.0
+        version: 18.2.0(react@18.2.0)
+      typescript:
+        specifier: 5.0.2
+        version: 5.0.2
+
   packages/next-app:
     dependencies:
       '@balancer-pool-metadata/balancer-gql':
@@ -222,9 +286,9 @@ importers:
       '@balancer-pool-metadata/gauges-gql':
         specifier: workspace:*
         version: link:../gauges-gql
-      '@balancer-pool-metadata/pool-metadata-gql':
+      '@balancer-pool-metadata/gql':
         specifier: workspace:*
-        version: link:../pool-metadata-gql
+        version: link:../gql
       '@balancer-pool-metadata/schema':
         specifier: workspace:*
         version: link:../schema
@@ -340,70 +404,6 @@ importers:
       tailwindcss:
         specifier: ^3.2.7
         version: 3.2.7(postcss@8.4.21)
-      typescript:
-        specifier: 5.0.2
-        version: 5.0.2
-
-  packages/pool-metadata-gql:
-    dependencies:
-      dotenv:
-        specifier: '>=16'
-        version: 16.0.3
-      graphql-tag:
-        specifier: '>=2'
-        version: 2.12.6(graphql@16.6.0)
-      swr:
-        specifier: 2.0.0
-        version: 2.0.0(react@18.2.0)
-    devDependencies:
-      '@balancer-pool-metadata/shared':
-        specifier: workspace:^
-        version: link:../shared
-      '@balancer-pool-metadata/tsconfig':
-        specifier: workspace:*
-        version: link:../tsconfig
-      '@graphql-codegen/cli':
-        specifier: 3.2.2
-        version: 3.2.2(@babel/core@7.21.0)(@types/node@18.15.10)(graphql@16.6.0)
-      '@graphql-codegen/client-preset':
-        specifier: ^2.1.1
-        version: 2.1.1(graphql@16.6.0)
-      '@graphql-codegen/typescript':
-        specifier: 3.0.2
-        version: 3.0.2(graphql@16.6.0)
-      '@graphql-codegen/typescript-graphql-request':
-        specifier: 4.5.9
-        version: 4.5.9(graphql-request@5.1.0)(graphql-tag@2.12.6)(graphql@16.6.0)
-      '@graphql-codegen/typescript-operations':
-        specifier: 3.0.2
-        version: 3.0.2(graphql@16.6.0)
-      '@types/node':
-        specifier: 18.15.10
-        version: 18.15.10
-      '@types/react':
-        specifier: 18.0.30
-        version: 18.0.30
-      '@types/react-dom':
-        specifier: 18.0.11
-        version: 18.0.11
-      graphql:
-        specifier: 16.6.0
-        version: 16.6.0
-      graphql-codegen-plugin-typescript-swr:
-        specifier: 0.8.3
-        version: 0.8.3(graphql@16.6.0)(react@18.2.0)
-      graphql-request:
-        specifier: 5.1.0
-        version: 5.1.0(graphql@16.6.0)
-      micromatch:
-        specifier: 4.0.5
-        version: 4.0.5
-      react:
-        specifier: 18.2.0
-        version: 18.2.0
-      react-dom:
-        specifier: 18.2.0
-        version: 18.2.0(react@18.2.0)
       typescript:
         specifier: 5.0.2
         version: 5.0.2

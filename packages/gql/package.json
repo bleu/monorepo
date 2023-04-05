@@ -1,5 +1,5 @@
 {
-  "name": "@balancer-pool-metadata/pool-metadata-gql",
+  "name": "@balancer-pool-metadata/gql",
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {

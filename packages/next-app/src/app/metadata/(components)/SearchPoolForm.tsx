@@ -8,7 +8,8 @@ import { useNetwork } from "wagmi";
 import { Button } from "#/components/Button";
 import { Input } from "#/components/Input";
 import { Select, SelectItem } from "#/components/Select";
-import balancerGql, { networkIdEnumMap } from "#/lib/gql";
+import balancerGql from "#/lib/gql";
+import { networkIdEnumMap } from "#/lib/networkFor";
 
 export interface PoolMetadataAttribute {
   poolId: string;

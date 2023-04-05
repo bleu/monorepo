@@ -2,11 +2,12 @@
 
 import { darkTheme, RainbowKitProvider, Theme } from "@rainbow-me/rainbowkit";
 import merge from "lodash.merge";
+import React from "react";
 import { WagmiConfig } from "wagmi";
 
 import { chains, client } from "#/wagmi/client";
 
-export function RootLayout({ children }: { children: React.ReactNode }) {
+export function RootLayout({ children }: React.PropsWithChildren) {
   return (
     <WagmiConfig client={client}>
       <RainbowKitProvider

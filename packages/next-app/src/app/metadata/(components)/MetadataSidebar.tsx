@@ -5,7 +5,7 @@ import { useNetwork } from "wagmi";
 import { Badge } from "#/components/Badge";
 import Sidebar from "#/components/Sidebar";
 import { usePoolMetadata } from "#/contexts/PoolMetadataContext";
-import { networkFor } from "#/lib/gql";
+import { networkFor } from "#/lib/networkFor";
 import { truncateAddress } from "#/utils/truncateAddress";
 
 export function MetadataSidebar() {
@@ -56,7 +56,7 @@ export function OwnedPool({
       : null;
 
   return (
-    <Sidebar.Item isSelected={isSelected}>
+    <>
       <div className="flex items-center space-x-3 self-stretch">
         <p className="text-lg font-bold text-gray-200 group-hover:text-yellow-400">
           {poolName}
@@ -69,6 +69,6 @@ export function OwnedPool({
           {truncateAddress(address)}
         </p>
       </div>
-    </Sidebar.Item>
+    </>
   );
 }

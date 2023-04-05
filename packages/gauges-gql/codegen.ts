@@ -1,19 +1,14 @@
+import { Network } from "@balancer-pool-metadata/shared";
 import { CodegenConfig } from "@graphql-codegen/cli";
 
-const BASE_URL = "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-gauges";
-
-export enum Network {
-  mainnet = "mainnet",
-  polygon = "polygon",
-  arbitrum = "arbitrum",
-  goerli = "goerli",
-}
+const BASE_URL =
+  "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-gauges";
 
 export const ENDPOINTS = {
-  [Network.mainnet]: `${BASE_URL}`,
-  [Network.polygon]: `${BASE_URL}-polygon`,
-  [Network.arbitrum]: `${BASE_URL}-arbitrum`,
-  [Network.goerli]: `${BASE_URL}-goerli`,
+  [Network.Mainnet]: `${BASE_URL}`,
+  [Network.Polygon]: `${BASE_URL}-polygon`,
+  [Network.Arbitrum]: `${BASE_URL}-arbitrum`,
+  [Network.Goerli]: `${BASE_URL}-goerli`,
 };
 
 const plugins = [
@@ -36,8 +31,8 @@ const config: CodegenConfig = {
       plugins,
       config: {
         enumsAsTypes: true,
-        futureProofEnums: true
-      }
+        futureProofEnums: true,
+      },
     };
 
     return acc;

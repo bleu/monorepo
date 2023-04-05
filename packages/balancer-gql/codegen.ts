@@ -1,19 +1,13 @@
+import { Network } from "@balancer-pool-metadata/shared";
 import { CodegenConfig } from "@graphql-codegen/cli";
 
 const BASE_URL = "https://api.thegraph.com/subgraphs/name/balancer-labs";
 
-export enum Network {
-  mainnet = "mainnet",
-  polygon = "polygon",
-  arbitrum = "arbitrum",
-  goerli = "goerli",
-}
-
 export const ENDPOINTS = {
-  [Network.mainnet]: `${BASE_URL}/balancer-v2`,
-  [Network.polygon]: `${BASE_URL}/balancer-polygon-v2`,
-  [Network.arbitrum]: `${BASE_URL}/balancer-arbitrum-v2`,
-  [Network.goerli]: `${BASE_URL}/balancer-goerli-v2`,
+  [Network.Mainnet]: `${BASE_URL}/balancer-v2`,
+  [Network.Polygon]: `${BASE_URL}/balancer-polygon-v2`,
+  [Network.Arbitrum]: `${BASE_URL}/balancer-arbitrum-v2`,
+  [Network.Goerli]: `${BASE_URL}/balancer-goerli-v2`,
 };
 
 const plugins = [

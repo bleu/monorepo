@@ -1,0 +1,11 @@
+{
+  "name": "@balancer-pool-metadata/shared",
+  "version": "0.0.0",
+  "private": true,
+  "files": [
+    "index.ts"
+  ],
+  "devDependencies": {
+    "typescript": "^5.0.2"
+  }
+}

@@ -6,6 +6,7 @@
     "index.js"
   ],
   "devDependencies": {
+    "@balancer-pool-metadata/shared": "workspace:^",
     "@next/eslint-plugin-next": "^13.2.4",
     "@typescript-eslint/eslint-plugin": "latest",
     "eslint": "latest",

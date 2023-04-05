@@ -9,6 +9,6 @@
   ],
   "devDependencies": {
     "@balancer-pool-metadata/shared": "workspace:^",
-    "typescript": "^5.0.2"
+    "typescript": "^5.0.3"
   }
 }

@@ -12,7 +12,7 @@
     "eslint": "latest",
     "eslint-config-next": "latest",
     "eslint-config-prettier": "latest",
-    "eslint-import-resolver-typescript": "^3.5.3",
+    "eslint-import-resolver-typescript": "^3.5.5",
     "eslint-plugin-compat": "latest",
     "eslint-plugin-graphql": "latest",
     "eslint-plugin-import": "^2.27.5",

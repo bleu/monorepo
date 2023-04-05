@@ -24,6 +24,6 @@
     "@balancer-pool-metadata/tsconfig": "workspace:*",
     "@typechain/ethers-v5": "^10.2.0",
     "typechain": "^8.1.1",
-    "typescript": "^5.0.2"
+    "typescript": "^5.0.3"
   }
 }

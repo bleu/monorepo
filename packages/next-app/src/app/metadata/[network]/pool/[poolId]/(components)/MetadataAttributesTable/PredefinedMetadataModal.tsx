@@ -148,12 +148,16 @@ export function PredefinedMetadataModal({ close }: { close?: () => void }) {
                   onChange={() =>
                     handleCheckboxChange(attribute.name, "selectAll")
                   }
-                  label="Select all"
+                  label={
+                    checkboxes[attribute.name].selectAll
+                      ? "Uncheck all"
+                      : "Check all"
+                  }
                 />
               </div>
               <div className="ml-2 flex flex-col">
                 {attribute.options.map((option) => (
-                  <div key={option.name} className="my-1 flex items-center">
+                  <div key={option.name} className="flex items-center">
                     <Checkbox
                       id={`${attribute.name}-${option.name}`}
                       checked={checkboxes[attribute.name][option.name]}

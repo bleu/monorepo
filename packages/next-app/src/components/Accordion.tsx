@@ -27,7 +27,7 @@ export const AccordionTrigger = forwardRef<
   <Accordion.Header className="flex">
     <Accordion.Trigger
       className={classNames(
-        "text-white group flex h-[45px] flex-1 cursor-default items-center justify-between px-1 text-[15px] leading-none shadow-[0_0px_0]",
+        "text-white group flex h-8 flex-1 cursor-default items-center justify-between px-1 text-[15px] leading-none shadow-[0_0px_0]",
         className
       )}
       {...props}

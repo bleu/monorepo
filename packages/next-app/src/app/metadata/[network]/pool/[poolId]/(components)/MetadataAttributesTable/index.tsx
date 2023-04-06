@@ -8,7 +8,6 @@ import {
 } from "@radix-ui/react-icons";
 import cn from "classnames";
 import { TableHTMLAttributes, useEffect } from "react";
-import useSWR from "swr";
 import { useAccount, useNetwork } from "wagmi";
 
 import { Dialog } from "#/components/Dialog";
@@ -16,9 +15,7 @@ import {
   PoolMetadataAttribute,
   usePoolMetadata,
 } from "#/contexts/PoolMetadataContext";
-import { pools, poolsMetadata } from "#/lib/gql";
 import { isPoolOwner } from "#/utils/address";
-import { fetcher } from "#/utils/fetcher";
 import { toSlug } from "#/utils/formatStringCase";
 import { truncateAddress } from "#/utils/truncateAddress";
 
@@ -139,9 +136,13 @@ function Row({
 export default function MetadataAttributesTable({
   poolId,
   network,
+  poolOwner,
+  data,
 }: {
   poolId: `0x${string}`;
+  poolOwner: `0x${string}`;
   network: Network;
+  data: PoolMetadataAttribute[];
 }) {
   const {
     metadata,
@@ -154,23 +155,6 @@ export default function MetadataAttributesTable({
   const { address } = useAccount();
 
   const chainId = networkIdFor(network) ?? chain?.id.toString();
-  const { data: poolOwner } = pools.gql(chainId).usePoolOwner({
-    poolId,
-  });
-  const { data: poolsData } = poolsMetadata.gql(chainId).useMetadataPool({
-    poolId,
-  });
-
-  const pool = poolsData?.pools[0];
-  const { data } = useSWR(
-    pool?.metadataCID
-      ? `https://bleu.infura-ipfs.io/ipfs/${pool.metadataCID}`
-      : null,
-    fetcher,
-    {
-      revalidateOnMount: true,
-    }
-  );
 
   useEffect(() => {
     handleSetMetadata(data ? (data as PoolMetadataAttribute[]) : []);
@@ -178,7 +162,7 @@ export default function MetadataAttributesTable({
   }, [data]);
 
   const balancerPoolLink = `https://app.balancer.fi/#/${network}/pool/${poolId}`;
-  const isOwner = isPoolOwner(chainId, poolOwner?.pool?.owner, address);
+  const isOwner = isPoolOwner(chainId, poolOwner, address);
 
   return (
     <div className="w-full bg-gray-900">

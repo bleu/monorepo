@@ -1,3 +1,5 @@
+"use client";
+
 import * as ToastPrimitive from "@radix-ui/react-toast";
 import cn from "classnames";
 import React, { Dispatch } from "react";
@@ -54,7 +56,7 @@ export function Toast({
         </div>
       </ToastPrimitive.Root>
 
-      <ToastPrimitive.Viewport className="fixed right-[-32rem] bottom-[-14rem] z-[2147483647] m-0 flex w-[350px] max-w-[100vw] list-none flex-col gap-[10px] p-[var(--viewport-padding)] outline-none [--viewport-padding:_25px]" />
+      <ToastPrimitive.Viewport className="fixed bottom-[-14rem] right-[-32rem] z-[2147483647] m-0 flex w-[350px] max-w-[100vw] list-none flex-col gap-[10px] p-[var(--viewport-padding)] outline-none [--viewport-padding:_25px]" />
     </ToastPrimitive.Provider>
   );
 }

@@ -117,7 +117,7 @@ export function useTransaction({
       // Once the transaction is approved and the metadata is pinned, update the transaction status to CONFIRMING
       try {
         const value = await pinJSON(poolId, metadata);
-        setIpfsCID(value.IpfsHash);
+        setIpfsCID(value);
         setTransactionStatus(TransactionStatus.CONFIRMING);
         setNotification(NOTIFICATION_MAP[TransactionStatus.CONFIRMING]);
         setIsTransactionDisabled(false);

@@ -164,7 +164,7 @@ export default function MetadataAttributesTable({
   const pool = poolsData?.pools[0];
   const { data } = useSWR(
     pool?.metadataCID
-      ? `https://gateway.pinata.cloud/ipfs/${pool.metadataCID}`
+      ? `https://bleu.infura-ipfs.io/ipfs/${pool.metadataCID}`
       : null,
     fetcher,
     {

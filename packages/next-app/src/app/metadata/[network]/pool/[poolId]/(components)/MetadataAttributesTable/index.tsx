@@ -118,14 +118,29 @@ function Row({
           </div>
         )}
       </Td>
-      <Td className="min-w-[10rem]">{data.key}</Td>
+      <Td className="min-w-[5rem] max-w-[10rem]">
+        {!data.value || !data.description ? (
+          <div className="flex justify-between">
+            <>{data.key}</>
+            <span className="inline-flex items-center rounded-md bg-red-200 p-0.5 text-xs font-semibold text-red-600">
+              NEEDS EDIT
+            </span>
+          </div>
+        ) : (
+          <>{data.key}</>
+        )}
+      </Td>
       <Td>{data.typename}</Td>
-      <Td>{data.description}</Td>
+      <Td>{data.description ?? "..."}</Td>
       <Td>
-        <div className="flex justify-between gap-2">
-          <>{data.value}</>
-          <AttributeLink data={data} />
-        </div>
+        {data.value ? (
+          <div className="flex justify-between gap-2">
+            <>{data.value}</>
+            <AttributeLink data={data} />
+          </div>
+        ) : (
+          "..."
+        )}
       </Td>
     </tr>
   );
@@ -151,6 +166,7 @@ export default function MetadataAttributesTable({
     handleSetMetadata,
     handleSetOriginalMetadata,
     metadataUpdated,
+    isMetadataValid,
   } = usePoolMetadata();
 
   const { chain } = useNetwork();
@@ -229,6 +245,7 @@ export default function MetadataAttributesTable({
               poolId={poolId}
               isOwner={isOwner}
               metadataUpdated={metadataUpdated}
+              isMetadataValid={isMetadataValid}
             />
           </div>
         )}{" "}

@@ -4,6 +4,7 @@ import { useAccount, useNetwork } from "wagmi";
 import { Button } from "#/components";
 import Table from "#/components/Table";
 import { impersonateWhetherDAO, pools } from "#/lib/gql";
+import { tokenDictionary } from "#/utils/getTokenInfo";
 import { writeWithdrawInternalBalance } from "#/wagmi/withdrawInternalBalance";
 
 export enum UserBalanceOpKind {
@@ -29,7 +30,7 @@ export function TokenTable() {
       tokenAddress,
       balance
     );
-
+    //TODO: toast with transaction hash
     console.log("txHash", hash);
 
     try {
@@ -45,7 +46,8 @@ export function TokenTable() {
       <div className="mt-10">
         <Table>
           <Table.HeaderRow>
-            <Table.HeaderCell>Token</Table.HeaderCell>
+            <Table.HeaderCell>Token Symbol</Table.HeaderCell>
+            <Table.HeaderCell>Address</Table.HeaderCell>
             <Table.HeaderCell>Balance</Table.HeaderCell>
             <Table.HeaderCell>
               <span className="sr-only">Withdraw</span>
@@ -53,19 +55,28 @@ export function TokenTable() {
           </Table.HeaderRow>
           <Table.Body>
             {data?.user?.userInternalBalances?.map((token) => (
-              <Table.BodyRow key={token.token}>
-                <Table.BodyCell>{token.token}</Table.BodyCell>
-                <Table.BodyCell>{token.balance}</Table.BodyCell>
-                <Table.BodyCell>
-                  <Button
-                    type="button"
-                    className="bg-indigo-500 text-gray-50 hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-gray-600 disabled:text-gray-500"
-                    onClick={() => handleWithdraw(token.token, token.balance)}
-                  >
-                    Withdraw<span className="sr-only"> token</span>
-                  </Button>
-                </Table.BodyCell>
-              </Table.BodyRow>
+              <>
+                {token.balance > 0 && (
+                  <Table.BodyRow key={token.token}>
+                    <Table.BodyCell>
+                      {tokenDictionary[token.token].symbol}
+                    </Table.BodyCell>
+                    <Table.BodyCell>{token.token}</Table.BodyCell>
+                    <Table.BodyCell>{token.balance}</Table.BodyCell>
+                    <Table.BodyCell>
+                      <Button
+                        type="button"
+                        className="bg-indigo-500 text-gray-50 hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-gray-600 disabled:text-gray-500"
+                        onClick={() =>
+                          handleWithdraw(token.token, token.balance)
+                        }
+                      >
+                        Withdraw<span className="sr-only"> token</span>
+                      </Button>
+                    </Table.BodyCell>
+                  </Table.BodyRow>
+                )}
+              </>
             ))}
           </Table.Body>
         </Table>

@@ -2,6 +2,7 @@ import { parseFixed } from "@ethersproject/bignumber";
 import { prepareWriteContract, writeContract } from "@wagmi/core";
 
 import { vaultAbi } from "#/abis/vault";
+import { tokenDictionary } from "#/utils/getTokenInfo";
 
 const VAULT_CONTRACT_NETWORK_MAP = {
   5: "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
@@ -23,7 +24,7 @@ export async function writeWithdrawInternalBalance(
   const userBalanceOp = {
     kind: UserBalanceOpKind.WITHDRAW_INTERNAL,
     asset: tokenAddress,
-    amount: parseFixed(tokenAmount, 18),
+    amount: parseFixed(tokenAmount, tokenDictionary[tokenAddress].decimals),
     sender: userAddress,
     recipient: userAddress,
   };

@@ -44,7 +44,7 @@ export function OwnedPool({
   isSelected: boolean;
   pool: Pool;
 }) {
-  const { poolType, tokens, name, address } = pool;
+  const { poolType, tokens, name, id } = pool;
 
   const poolName =
     poolType === "Weighted" && tokens
@@ -66,7 +66,7 @@ export function OwnedPool({
       <div className="flex w-full items-center space-x-3">
         <Badge isOutlined>{poolType}</Badge>
         <p className="text-sm leading-tight text-gray-500 group-hover:text-gray-400">
-          {truncateAddress(address)}
+          {truncateAddress(id)}
         </p>
       </div>
     </>

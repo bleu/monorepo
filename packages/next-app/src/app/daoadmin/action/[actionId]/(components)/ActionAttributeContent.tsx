@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { useForm } from "react-hook-form";
-import { useNetwork } from "wagmi";
 
 import { Button } from "#/components";
 import { Badge } from "#/components/Badge";
@@ -12,6 +11,7 @@ import { useAdminTools } from "#/contexts/AdminToolsContext";
 import useDebounce from "#/hooks/useDebounce";
 import { gauges, pools } from "#/lib/gql";
 import { truncateAddress } from "#/utils/truncateAddress";
+import { useNetwork } from "#/wagmi";
 
 export function ActionAttributeContent() {
   const { register, handleSubmit, watch, formState } = useForm({

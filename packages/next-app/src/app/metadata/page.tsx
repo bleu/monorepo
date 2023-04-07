@@ -1,8 +1,10 @@
+"use client";
+
 import Image from "next/image";
-import { useAccount } from "wagmi";
 
 import SelectPoolImage from "#/assets/choose-pool.svg";
 import WalletNotConnected from "#/components/WalletNotConnected";
+import { useAccount } from "#/wagmi";
 
 import { Loading } from "./(components)/Loading";
 

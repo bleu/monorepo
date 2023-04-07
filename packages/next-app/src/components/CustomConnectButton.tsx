@@ -44,7 +44,7 @@ export function CustomConnectButton() {
                   <button
                     onClick={openChainModal}
                     type="button"
-                    className="rounded-md bg-yellow-500 py-2 px-4 font-semibold text-white hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-600 "
+                    className="rounded-md bg-yellow-500 px-4 py-2 font-semibold text-white hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-600 "
                   >
                     Wrong network
                   </button>

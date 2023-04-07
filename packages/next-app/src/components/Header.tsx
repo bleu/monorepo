@@ -7,9 +7,9 @@ import Link from "next/link";
 import * as React from "react";
 import { ReactNode } from "react";
 import { UrlObject } from "url";
-import { useSwitchNetwork } from "wagmi";
 
 import { NetworksContext } from "#/contexts/networks";
+import { useSwitchNetwork } from "#/wagmi";
 
 import { CustomConnectButton } from "./CustomConnectButton";
 

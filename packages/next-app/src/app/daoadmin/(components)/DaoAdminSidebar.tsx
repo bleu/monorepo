@@ -56,7 +56,7 @@ export function DaoAdminSidebar() {
           >
             {filters.map((filter) => (
               <SelectPrimitive.Group key={filter.name}>
-                <SelectPrimitive.Label className="py-1 px-2 text-sm text-gray-600">
+                <SelectPrimitive.Label className="px-2 py-1 text-sm text-gray-600">
                   {filter.name}
                 </SelectPrimitive.Label>
                 <SelectItem value="" theme={"light"}>

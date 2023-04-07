@@ -4,7 +4,6 @@ import { Pool } from "@balancer-pool-metadata/gql/src/balancer-pools/__generated
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useAccount, useNetwork } from "wagmi";
 
 import EmptyWalletImage from "#/assets/empty-wallet.svg";
 import {
@@ -13,6 +12,7 @@ import {
 } from "#/contexts/PoolMetadataContext";
 import { impersonateWhetherDAO } from "#/lib/gql";
 import { fetchOwnedPools } from "#/utils/fetcher";
+import { useAccount, useNetwork } from "#/wagmi";
 
 import { Loading } from "./Loading";
 import { MetadataSidebar } from "./MetadataSidebar";

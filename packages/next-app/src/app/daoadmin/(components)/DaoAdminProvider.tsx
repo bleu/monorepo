@@ -2,10 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useAccount, useNetwork } from "wagmi";
 
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { AdminToolsProvider } from "#/contexts/AdminToolsContext";
+import { useAccount, useNetwork } from "#/wagmi";
 
 import { DaoAdminSidebar } from "./DaoAdminSidebar";
 

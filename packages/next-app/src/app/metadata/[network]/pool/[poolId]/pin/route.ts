@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-export const pin = async (json: Record<string, string>) => {
+const pin = async (json: Record<string, string>) => {
   const formData = new FormData();
 
   formData.append(

@@ -1,7 +1,6 @@
-import { Chain } from "wagmi";
-
 import { ActionAttribute } from "#/contexts/AdminToolsContext";
 import { gauges, pools } from "#/lib/gql";
+import { Chain } from "#/wagmi";
 
 const poolField = {
   label: "Pool ID",

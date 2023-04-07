@@ -1,8 +1,8 @@
 import { Dispatch, useEffect, useState } from "react";
-import { useNetwork } from "wagmi";
 
 import { PoolMetadataAttribute } from "#/contexts/PoolMetadataContext";
 import { pinJSON } from "#/lib/ipfs";
+import { useNetwork } from "#/wagmi";
 import { writeSetPoolMetadata } from "#/wagmi/setPoolMetadata";
 
 export enum TransactionStatus {

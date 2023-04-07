@@ -12,7 +12,7 @@ export default async function Page({
   const chainId = networkIdFor(params.network);
   const poolId = params.poolId;
 
-  const [poolOwner, poolsData] = await Promise.all([
+  const [poolOwner, metadataRegistry] = await Promise.all([
     pools.gql(chainId).PoolOwner({
       poolId,
     }),
@@ -21,11 +21,14 @@ export default async function Page({
     }),
   ]);
 
-  const pool = poolsData.pools[0];
+  const pool = metadataRegistry.pools[0];
 
-  const data = await fetch(
-    `https://bleu.infura-ipfs.io/ipfs/${pool.metadataCID}`
-  ).then((res) => res.json());
+  const data =
+    pool && pool.metadataCID
+      ? await fetch(
+          `https://bleu.infura-ipfs.io/ipfs/${pool.metadataCID}`
+        ).then((res) => res.json())
+      : null;
 
   return (
     <div className="h-full flex-1 py-5 text-white">

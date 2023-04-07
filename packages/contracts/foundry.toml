@@ -6,8 +6,6 @@ test = 'test'
 solc = '0.7.6'
 allow_paths = [
     'lib/balancer-v2-monorepo/',
-    'lib/forge-std/',
-    'lib/forge-std/lib/ds-test/src/',
     '@balancer-labs/balancer-js/=lib/balancer-v2-monorepo/pkg/balancer-js/',
     '@balancer-labs/v2-deployments/=lib/balancer-v2-monorepo/pkg/deployments/',
     '@balancer-labs/v2-governance-scripts/=lib/balancer-v2-monorepo/pkg/governance-scripts/',
@@ -40,6 +38,4 @@ remappings = [
     '@balancer-labs/v2-helpers/=lib/balancer-v2-monorepo/pvt/helpers/',
     'balancer-v2-monorepo/=lib/balancer-v2-monorepo/',
     'ds-test/=lib/forge-std/lib/ds-test/src/',
-    'forge-std/=lib/forge-std/src/',
-    'solmate/=lib/solmate/src/',
 ]

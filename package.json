@@ -23,11 +23,6 @@
   "lint-staged": {
     "*.{md,html,mjml,json,graphql,yml,css,scss}": "prettier --write"
   },
-  "config": {
-    "ghooks": {
-      "pre-commit": "pnpm lint-staged"
-    }
-  },
   "engines": {
     "node": ">=18",
     "pnpm": ">=7"
@@ -46,5 +41,10 @@
     "lint-staged": "^13.2.0",
     "prettier": "^2.8.7",
     "typescript": "^5.0.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "ipfs-http-client": "^60"
+    }
   }
 }

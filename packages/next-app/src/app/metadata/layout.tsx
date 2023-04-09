@@ -26,11 +26,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           title={"Pool Metadata"}
           imageSrc={balancerSymbol}
         >
-          <Dialog title={"Search pool"} content={<SearchPoolForm />}>
-            <div className="pointer-events-auto relative rounded bg-white">
+          <Dialog title="Go to pool" content={<SearchPoolForm />}>
+            <div className="pointer-events-auto relative mx-2 rounded">
               <button
                 type="button"
-                className="flex w-full items-center rounded-md py-1.5 pl-2 pr-3 text-sm leading-6 text-slate-400 shadow-sm ring-1 ring-slate-900/10 hover:ring-slate-300 lg:flex"
+                className="flex w-full items-center rounded-md m-2 text-sm leading-6 text-slate-400 shadow-sm"
               >
                 <MagnifyingGlassIcon
                   width="21"
@@ -41,7 +41,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   strokeWidth={1}
                   className="mr-3 flex-none"
                 />
-                Search pool...
+                Go to pool
               </button>
             </div>
           </Dialog>

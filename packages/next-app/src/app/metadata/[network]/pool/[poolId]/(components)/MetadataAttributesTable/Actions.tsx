@@ -41,18 +41,15 @@ export function Actions({
           disableTooltip={isOwner}
         >
           <span tabIndex={0}>
-            <Dialog title={"Add attribute"} content={<PoolMetadataItemForm />}>
-              <Button
-                className="bg-indigo-500 text-white hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-indigo-400"
-                disabled={!isOwner}
-              >
+            <Dialog title="Add attribute" content={<PoolMetadataItemForm />}>
+              <Button shade="light" disabled={!isOwner}>
                 Add attribute
               </Button>
             </Dialog>
           </span>
         </Tooltip>
 
-        <Button className="border border-blue-500 bg-gray-900  text-blue-500 hover:bg-gray-800 focus-visible:outline-indigo-500">
+        <Button shade="light" variant="outline">
           Import template
         </Button>
       </div>
@@ -60,19 +57,16 @@ export function Actions({
         content={
           !isOwner
             ? "You are not the pool owner"
-            : "Your need to update the metadata first"
+            : "You need to make changes to the metadata first"
         }
         disableTooltip={isOwner && metadataUpdated}
       >
         <span tabIndex={0}>
           <Dialog
-            title={"Update metadata"}
+            title="Update metadata"
             content={<TransactionModal poolId={poolId} />}
           >
-            <Button
-              className="bg-amber-400 text-gray-900 hover:bg-amber-300 focus-visible:bg-amber-300 disabled:opacity-40"
-              disabled={!metadataUpdated || !isOwner}
-            >
+            <Button color="cyan" disabled={!metadataUpdated || !isOwner}>
               Update metadata
             </Button>
           </Dialog>

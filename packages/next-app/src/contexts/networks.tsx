@@ -52,3 +52,5 @@ export const NetworksContextProvider = ({
     </NetworksContext.Provider>
   );
 };
+
+export const useNetworks = () => React.useContext(NetworksContext);

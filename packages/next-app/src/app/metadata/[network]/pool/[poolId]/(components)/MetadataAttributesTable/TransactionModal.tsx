@@ -17,44 +17,44 @@ type Stage = {
 
 const STAGE_CN_MAPPING: Record<TransactionStatus, Stage> = {
   [TransactionStatus.PINNING]: {
-    pinningStep: "border-yellow-400 text-yellow-400",
-    transitionLine: "bg-gray-400",
-    writingOnChainStep: "border-gray-400 text-gray-400",
+    pinningStep: "border-amber6 text-amber10",
+    transitionLine: "bg-blue4",
+    writingOnChainStep: "border-slate6 text-slate12",
   },
   [TransactionStatus.CONFIRMING]: {
-    pinningStep: "border-green-400 text-green-400",
-    transitionLine: "bg-green-400",
-    writingOnChainStep: "border-yellow-400 text-yellow-400",
+    pinningStep: "border-green6 text-green4",
+    transitionLine: "bg-green4",
+    writingOnChainStep: "border-amber6 text-amber10",
   },
   [TransactionStatus.SUBMITTING]: {
-    pinningStep: "border-green-400 text-green-400",
-    transitionLine: "bg-green-400",
-    writingOnChainStep: "border-yellow-400 text-yellow-400",
+    pinningStep: "border-green6 text-green4",
+    transitionLine: "bg-green4",
+    writingOnChainStep: "border-amber6 text-amber10",
   },
   [TransactionStatus.CONFIRMED]: {
-    pinningStep: "border-green-400 text-green-400",
-    transitionLine: "bg-green-400",
-    writingOnChainStep: "border-green-400 text-green-400",
+    pinningStep: "border-green6 text-green4",
+    transitionLine: "bg-green4",
+    writingOnChainStep: "border-green6 text-green4",
   },
   [TransactionStatus.PINNING_ERROR]: {
-    pinningStep: "border-red-400 text-red-400",
-    transitionLine: "bg-gray-400",
-    writingOnChainStep: "border-gray-400 text-gray-400",
+    pinningStep: "border-tomato6 text-tomato10",
+    transitionLine: "bg-blue4",
+    writingOnChainStep: "border-slate6 text-slate12",
   },
   [TransactionStatus.WRITE_ERROR]: {
-    pinningStep: "border-green-400 text-green-400",
-    transitionLine: "bg-green-400",
-    writingOnChainStep: "border-red-400 text-red-400",
+    pinningStep: "border-green6 text-green4",
+    transitionLine: "bg-green4",
+    writingOnChainStep: "border-tomato6 text-tomato10",
   },
   [TransactionStatus.AUTHORIZING]: {
-    pinningStep: "border-yellow-400 text-yellow-400",
-    transitionLine: "bg-gray-400",
-    writingOnChainStep: "border-gray-400 text-gray-400",
+    pinningStep: "border-amber6 text-amber10",
+    transitionLine: "bg-blue4",
+    writingOnChainStep: "border-slate6 text-slate12",
   },
   [TransactionStatus.WAITING_APPROVAL]: {
-    pinningStep: "border-green-400 text-green-400",
-    transitionLine: "bg-green-400",
-    writingOnChainStep: "border-yellow-400 text-yellow-400",
+    pinningStep: "border-green6 text-green4",
+    transitionLine: "bg-green4",
+    writingOnChainStep: "border-amber6 text-amber10",
   },
 };
 
@@ -62,22 +62,17 @@ function ConfirmationAlert({ handleSubmit }: { handleSubmit: () => void }) {
   return (
     <div className="mt-4 px-1">
       <div className="w-full space-y-6">
-        <h1 className="my-2 text-xl text-yellow-400">Are you sure?</h1>
-        <span className=" text-gray-200">
+        <h1 className="text-amber9 my-2 text-xl">Are you sure?</h1>
+        <span className=" text-slate12">
           This procedure will cost gas fee. You make sure there is no data to
           change before updating.{" "}
         </span>
       </div>
       <div className="mt-7 flex gap-5">
         <DialogPrimitive.Close asChild>
-          <Button className="border border-gray-100 text-gray-100">
-            Cancel
-          </Button>
+          <Button variant="outline">Cancel</Button>
         </DialogPrimitive.Close>
-        <Button
-          onClick={() => handleSubmit()}
-          className="w-full bg-yellow-400 text-gray-900 hover:bg-yellow-300 focus-visible:bg-yellow-300 disabled:bg-yellow-200"
-        >
+        <Button shade="light" onClick={() => handleSubmit()}>
           I'm sure
         </Button>
       </div>
@@ -118,7 +113,7 @@ function ProgressLine({ stage }: { stage: Stage }) {
 
 function Loading() {
   return (
-    <div className="mx-2 h-4 w-4 animate-spin rounded-full border-2 border-solid border-yellow-400 border-l-gray-700"></div>
+    <div className="border-6 mx-2 h-4 w-4 animate-spin rounded-full border-solid border-amber6 border-l-slate7"></div>
   );
 }
 
@@ -134,8 +129,8 @@ function ToastContent({
   return (
     <div className="flex h-14 flex-row items-center justify-between px-4 py-8">
       <div className="flex flex-col justify-between space-y-1">
-        <h1 className="text-xl font-medium text-gray-700">{title}</h1>
-        <h3 className="mb-2 leading-3 text-gray-700">{description}</h3>
+        <h1 className="text-xl font-medium text-slate12">{title}</h1>
+        <h3 className="mb-2 leading-3 text-slate12">{description}</h3>
       </div>
       {link && (
         <a target="_blank" href={link}>
@@ -171,7 +166,7 @@ function ProcessTransaction({ poolId }: { poolId: `0x${string}` }) {
   return (
     <div className="mt-4 px-1">
       <div className="w-full space-y-6">
-        <span className="my-5 text-lg text-gray-200">{modalDescription}</span>
+        <span className="my-5 text-lg text-slate12">{modalDescription}</span>
         <ProgressLine stage={stage} />
         <Toast
           content={
@@ -193,8 +188,8 @@ function ProcessTransaction({ poolId }: { poolId: `0x${string}` }) {
             className={cn(
               "flex justify-center items-center",
               isTransactionDisabled
-                ? "w-full text-yellow-400 border border-yellow-400"
-                : "w-full text-gray-900 bg-yellow-400 hover:bg-yellow-300 focus-visible:bg-yellow-300 disabled:bg-yellow-200"
+                ? "w-full text-amber10 border border-amber4"
+                : "w-full text-slate12 bg-amber4 hover:bg-amber3 focus-visible:bg-amber3 disabled:bg-amber2"
             )}
           >
             {isTransactionDisabled &&

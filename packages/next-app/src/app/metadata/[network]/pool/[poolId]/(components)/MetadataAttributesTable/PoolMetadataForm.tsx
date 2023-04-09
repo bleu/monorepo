@@ -6,7 +6,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import * as React from "react";
 import { Controller, useForm } from "react-hook-form";
 
-import { Button } from "#/components/Button";
+import Button from "#/components/Button";
 import { Input } from "#/components/Input";
 import { Select, SelectItem } from "#/components/Select";
 import {
@@ -81,12 +81,8 @@ export function PoolMetadataItemForm({
   }, [selectedTypename]);
 
   return (
-    <form
-      onSubmit={handleSubmit(handleSubmitForm)}
-      id="attribute-form"
-      className="px-2 pt-2"
-    >
-      <label className="mb-2 block text-sm text-gray-400">Typename</label>
+    <form onSubmit={handleSubmit(handleSubmitForm)} id="attribute-form">
+      <label className="mb-2 block text-sm text-slate12">Typename</label>
       <div className="mb-2">
         <Controller
           control={control}
@@ -133,20 +129,17 @@ export function PoolMetadataItemForm({
 
       <div className="mt-4 flex items-center justify-end gap-3">
         <Dialog.Close asChild>
-          <Button
-            type="button"
-            className="border border-indigo-500 bg-gray-700 text-indigo-400 hover:bg-gray-600 focus-visible:outline-indigo-500"
-          >
+          <Button shade="light" variant="outline">
             Cancel
           </Button>
         </Dialog.Close>
         <Button
           form="attribute-form"
           type="submit"
+          shade="light"
           disabled={false}
-          className="bg-indigo-500 text-gray-50 hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-gray-600 disabled:text-gray-500"
         >
-          Save item
+          Add
         </Button>
       </div>
     </form>

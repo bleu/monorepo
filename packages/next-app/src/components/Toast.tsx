@@ -1,5 +1,3 @@
-"use client";
-
 import * as ToastPrimitive from "@radix-ui/react-toast";
 import cn from "classnames";
 import React, { Dispatch } from "react";
@@ -22,16 +20,16 @@ export function Toast({
   let bgColor;
   switch (variant) {
     case "notification":
-      bgColor = "bg-blue-100";
+      bgColor = "bg-blue1";
       break;
     case "pending":
-      bgColor = "bg-yellow-100";
+      bgColor = "bg-amber1";
       break;
     case "alert":
-      bgColor = "bg-red-100";
+      bgColor = "bg-tomato1";
       break;
     case "success":
-      bgColor = "bg-green-100";
+      bgColor = "bg-green1";
       break;
   }
 

@@ -1,5 +1,5 @@
 "use client";
-import { Pool } from "@balancer-pool-metadata/gql/src/balancer-pools/__generated__/Mainnet";
+
 import { TypenameEnum } from "@balancer-pool-metadata/schema";
 import isEqual from "lodash/isEqual";
 import {
@@ -8,7 +8,6 @@ import {
   ReactNode,
   SetStateAction,
   useContext,
-  useEffect,
   useState,
 } from "react";
 
@@ -26,8 +25,6 @@ interface PoolMetadataContextType {
   metadata: PoolMetadataAttribute[];
   handleAddMetadata: (data: PoolMetadataAttribute) => void;
   handleUpdateMetadata: (data: PoolMetadataAttribute) => void;
-  selectedPool: string | null;
-  handleSetPool: (poolId: string) => void;
   isKeyUnique: (key: string) => boolean;
   handleSetMetadata: (data: PoolMetadataAttribute[]) => void;
   handleSetOriginalMetadata: (data: PoolMetadataAttribute[]) => void;
@@ -35,8 +32,6 @@ interface PoolMetadataContextType {
   setStatus: Dispatch<SetStateAction<UpdateStatus>>;
   metadataUpdated: boolean;
   handleRemoveMetadataAttr: (key: string) => void;
-  poolsData: Pool[];
-  changeSetPoolsData: (data: Pool[]) => void;
 }
 
 export enum UpdateStatus {
@@ -58,24 +53,13 @@ export enum StatusLabels {
 export const PoolMetadataContext = createContext({} as PoolMetadataContextType);
 
 export function PoolMetadataProvider({ children }: { children: ReactNode }) {
-  const [selectedPool, setSelectedPool] = useState<string>("");
   const [metadata, setMetadata] = useState<PoolMetadataAttribute[]>([]);
   const [updateStatus, setStatus] = useState<UpdateStatus>(
     UpdateStatus.PINNING
   );
-  const [metadataUpdated, setMetadataUpdated] = useState<boolean>(false);
   const [originalMetadata, setOriginalMetadata] = useState<
     PoolMetadataAttribute[]
   >([]);
-  const [poolsData, setPoolsData] = useState<Pool[]>([]);
-
-  function handleSetMetadata(data: PoolMetadataAttribute[]) {
-    setMetadata(data);
-  }
-
-  function handleSetOriginalMetadata(data: PoolMetadataAttribute[]) {
-    setOriginalMetadata(data);
-  }
 
   function handleAddMetadata(data: PoolMetadataAttribute) {
     setMetadata((state) => [data, ...state]);
@@ -93,21 +77,11 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
     );
   }
 
-  function handleSetPool(poolId: string) {
-    setSelectedPool(poolId);
-  }
-
-  function changeSetPoolsData(data: Pool[]) {
-    setPoolsData(data);
-  }
-
   function isKeyUnique(key: string) {
     return metadata.every((item) => toSlug(item.key) !== toSlug(key));
   }
 
-  useEffect(() => {
-    setMetadataUpdated(!isEqual(metadata, originalMetadata));
-  }, [metadata, originalMetadata]);
+  const metadataUpdated = !isEqual(metadata, originalMetadata);
 
   return (
     <PoolMetadataContext.Provider
@@ -115,20 +89,16 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
         metadata,
         handleAddMetadata,
         handleUpdateMetadata,
-        selectedPool,
-        handleSetPool,
         isKeyUnique,
-        handleSetMetadata,
+        handleSetMetadata: setMetadata,
         updateStatus,
         setStatus,
         metadataUpdated,
-        handleSetOriginalMetadata,
+        handleSetOriginalMetadata: setOriginalMetadata,
         handleRemoveMetadataAttr,
-        poolsData,
-        changeSetPoolsData,
       }}
     >
-      <div className="grow">{children}</div>
+      {children}
     </PoolMetadataContext.Provider>
   );
 }

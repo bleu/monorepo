@@ -64,7 +64,7 @@ const Header = () => {
 
 const Td = ({ className, children }: CellProps) => {
   return (
-    <td className={cn("whitespace py-4 px-3 text-sm text-gray-300", className)}>
+    <td className={cn("whitespace py-4 px-3 text-sm text-slate12", className)}>
       {children}
     </td>
   );
@@ -78,13 +78,6 @@ const AttributeLink = ({ data }: { data: PoolMetadataAttribute }) => {
           <ArrowTopRightIcon className="text-white" />
         </button>
       );
-    // TODO: decide whether we want to have an image type and create it accordingly
-    // case "image":
-    //   return (
-    //     <button>
-    //       <ImageDialog src={data.value as string} />
-    //     </button>
-    //   );
     default:
       return <></>;
   }
@@ -108,14 +101,18 @@ function Row({
               className="flex items-center"
               onClick={() => handleRemoveMetadataAttr(data.key)}
             >
-              <TrashIcon className="text-red-400" width={16} height={16} />
+              <TrashIcon
+                className="text-tomato9 hover:text-tomato10"
+                width={16}
+                height={16}
+              />
             </button>
             <Dialog
               title={"Edit attribute"}
               content={<PoolMetadataItemForm data={data} mode="edit" />}
             >
               <button className="flex items-center">
-                <Pencil2Icon className="text-yellow-400" />
+                <Pencil2Icon className="hover:text-amber100 text-amber10" />
               </button>
             </Dialog>
           </div>
@@ -170,23 +167,18 @@ export default function MetadataAttributesTable({
   const isOwner = isPoolOwner(chainId, poolOwner, address);
 
   return (
-    <div className="w-full bg-gray-900">
+    <div className="w-full bg-blue1">
       <div className="pr-4 sm:pr-6 lg:pr-12">
         <div className="sm:flex sm:items-center">
           <div className="sm:flex-auto">
             <h1 className="flex text-2xl">Pool attributes</h1>
-            <div className="">
-              <div className="flex flex-row space-x-2">
-                <h2>Pool ID:</h2>
-                <ClickToCopy text={poolId}>{truncate(poolId)}</ClickToCopy>
-              </div>
-
+            <div className="inline-block">
               <a
                 target="_blank"
                 href={balancerPoolLink}
-                className="flex flex-row items-center"
+                className="flex flex-row items-center text-slate11"
               >
-                Open pool on app.balancer.fi
+                Open on app.balancer.fi
                 <ArrowTopRightIcon
                   width={16}
                   height={16}
@@ -194,21 +186,35 @@ export default function MetadataAttributesTable({
                   className="ml-1"
                 />
               </a>
-
-              <div className="flex flex-row space-x-2">
-                <h2>Current metadata CID:</h2>
-                <ClickToCopy text={poolId}>{truncate(cid)}</ClickToCopy>
-              </div>
             </div>
+
+            <table>
+              <tr>
+                <td>Pool ID:</td>
+                <td>
+                  <ClickToCopy text={poolId}>{truncate(poolId)}</ClickToCopy>
+                </td>
+              </tr>
+              <tr>
+                <td>Metadata CID:</td>
+                <td>
+                  {cid ? (
+                    <ClickToCopy text={cid}>{truncate(cid)}</ClickToCopy>
+                  ) : (
+                    <></>
+                  )}
+                </td>
+              </tr>
+            </table>
           </div>
         </div>
         {error ?? (
           <div>
-            <div className="mt-4 flow-root max-h-[30rem] overflow-y-scroll rounded-md border border-gray-700 bg-gray-800">
-              <table className="min-w-full divide-y divide-gray-700">
+            <div className="mt-4 flow-root max-h-[30rem] overflow-y-scroll rounded-md border border-blue6 bg-blue3">
+              <table className="min-w-full divide-y divide-blue6">
                 <Header />
 
-                <tbody className="divide-y divide-gray-800">
+                <tbody className="divide-y divide-blue6">
                   {metadata.map((item) => (
                     <Row
                       key={toSlug(item.key)}

@@ -4,7 +4,7 @@ import Image from "next/image";
 
 import { truncate } from "#/utils/truncate";
 
-import { Button } from "./Button";
+import Button from "./Button";
 
 export function CustomConnectButton() {
   return (
@@ -30,13 +30,11 @@ export function CustomConnectButton() {
             {(() => {
               if (!connected) {
                 return (
-                  <Button
-                    onClick={openConnectModal}
-                    type="button"
-                    className="bg-blue-500 text-gray-50 hover:bg-blue-400 focus-visible:outline-blue-500 disabled:bg-gray-600"
-                  >
-                    Connect Wallet
-                  </Button>
+                  <>
+                    <Button onClick={openConnectModal} shade="dark">
+                      Connect Wallet
+                    </Button>
+                  </>
                 );
               }
               if (chain.unsupported) {
@@ -44,7 +42,7 @@ export function CustomConnectButton() {
                   <button
                     onClick={openChainModal}
                     type="button"
-                    className="rounded-md bg-yellow-500 px-4 py-2 font-semibold text-white hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-600 "
+                    className="rounded-md bg-amber5 px-4 py-2 font-semibold text-white hover:bg-amber6 focus:outline-none focus:ring-2 focus:ring-amber6 "
                   >
                     Wrong network
                   </button>
@@ -52,18 +50,10 @@ export function CustomConnectButton() {
               }
               return (
                 <div className="flex gap-4">
-                  <Button
-                    onClick={openAccountModal}
-                    className="bg-blue-500 text-gray-50 hover:bg-blue-400 focus-visible:outline-blue-500 disabled:bg-gray-600"
-                    type="button"
-                  >
+                  <Button onClick={openAccountModal} shade="dark">
                     {truncate(account.address)}
                   </Button>
-                  <Button
-                    onClick={openChainModal}
-                    className="border border-white bg-gray-800 text-gray-200 hover:bg-gray-700 focus-visible:outline-gray-800 disabled:bg-gray-600"
-                    type="button"
-                  >
+                  <Button onClick={openChainModal} shade="dark">
                     <div className="flex items-center justify-between">
                       {chain.hasIcon && (
                         <div className="mr-2 rounded-full">

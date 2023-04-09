@@ -16,7 +16,7 @@ export function ClickToCopy({
     if (copied) {
       const timeout = setTimeout(() => {
         setCopied(false);
-      }, 1000);
+      }, 2000);
 
       return () => clearTimeout(timeout);
     }
@@ -33,14 +33,13 @@ export function ClickToCopy({
           <>
             <span className="mr-1">{children}</span>
             {!copied ? (
-              <ClipboardCopyIcon width={18} height={18} fontWeight={18} />
-            ) : (
-              <CheckIcon
+              <ClipboardCopyIcon
                 width={18}
                 height={18}
-                fontWeight={18}
-                className="font-semibold text-green-600"
+                className="text-slate11"
               />
+            ) : (
+              <CheckIcon width={18} height={18} className="text-mint9" />
             )}
           </>
         </CopyToClipboard>

@@ -3,10 +3,9 @@
 import Image from "next/image";
 
 import SelectPoolImage from "#/assets/choose-pool.svg";
+import Spinner from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { useAccount } from "#/wagmi";
-
-import { Loading } from "./(components)/Loading";
 
 export default function Page() {
   const { isConnected, isReconnecting, isConnecting } = useAccount();
@@ -16,14 +15,14 @@ export default function Page() {
   }
 
   if (isConnecting || isReconnecting) {
-    return <Loading />;
+    return <Spinner />;
   }
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center bg-gray-900">
-      <h1 className="mb-4 flex h-12 items-center text-center	 text-3xl font-medium not-italic text-yellow-500">
-        Choose a pool on the side!
-      </h1>
+    <div className="space-y-4 w-full rounded-3xl py-16 px-12 md:py-20">
+      <div className="text-center text-amber9 text-3xl">
+        Pick a pool on the side
+      </div>
       <Image src={SelectPoolImage} height={400} width={400} alt="" />
     </div>
   );

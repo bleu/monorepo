@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 
-import { Button } from "#/components/Button";
+import Button from "#/components/Button";
 import { Input } from "#/components/Input";
 import { Select, SelectItem } from "#/components/Select";
 import { pools } from "#/lib/gql";
@@ -80,7 +80,7 @@ export default function SearchPoolForm({ close }: { close?: () => void }) {
 
   return (
     <form onSubmit={handleSubmit(handleSubmitForm)} className="px-2 pt-2">
-      <label className="mb-2 block text-sm text-gray-400">Network</label>
+      <label className="mb-2 block text-sm text-slate12">Network</label>
       <div className="mb-2">
         <Controller
           control={control}
@@ -97,19 +97,14 @@ export default function SearchPoolForm({ close }: { close?: () => void }) {
       </div>
 
       <Input
-        label="pool id"
+        label="Pool ID"
         placeholder={"e.g 0x4467a48fjdan...0000692"}
         {...register("poolId")}
       />
-      <p className="text-sm text-red-400">{errors.poolId?.message}</p>
-
+      <p className="text-sm text-tomato10">{errors.poolId?.message}</p>
       <div className="mt-4 flex items-center justify-end">
-        <Button
-          type="submit"
-          disabled={!isPool || poolId === ""}
-          className="bg-indigo-500 text-gray-50 hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-gray-600 disabled:text-gray-500"
-        >
-          open pool metadata
+        <Button type="submit" disabled={!isPool || poolId === ""}>
+          Go
         </Button>
       </div>
     </form>

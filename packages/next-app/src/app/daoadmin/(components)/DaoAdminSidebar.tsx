@@ -56,7 +56,7 @@ export function DaoAdminSidebar() {
           >
             {filters.map((filter) => (
               <SelectPrimitive.Group key={filter.name}>
-                <SelectPrimitive.Label className="px-2 py-1 text-sm text-gray-600">
+                <SelectPrimitive.Label className="px-2 py-1 text-sm text-slate12">
                   {filter.name}
                 </SelectPrimitive.Label>
                 <SelectItem value="" theme={"light"}>
@@ -81,7 +81,7 @@ export function DaoAdminSidebar() {
               onClick={() => handleSetAction(item)}
             >
               <Sidebar.Item isSelected={item.id === selectedAction?.id}>
-                <p className="flex justify-start text-lg font-bold text-gray-200 group-hover:text-yellow-400">
+                <p className="flex justify-start text-lg font-bold text-slate12 group-hover:text-amber10">
                   {item.name}
                 </p>
                 <div className="flex w-full items-center space-x-3">
@@ -90,7 +90,7 @@ export function DaoAdminSidebar() {
                       {item.operationResponsible}
                     </Badge>
                   )}
-                  <p className="text-sm leading-tight text-gray-500 group-hover:text-gray-400">
+                  <p className="text-sm leading-tight text-slate12 group-hover:text-slate12">
                     {truncate(item.contractAddress)}
                   </p>
                 </div>

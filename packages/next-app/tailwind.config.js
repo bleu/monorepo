@@ -1,5 +1,14 @@
-// eslint-disable-next-line
-const { blackA, blueDark, slateDark } = require("@radix-ui/colors");
+/* eslint-disable @typescript-eslint/no-var-requires */
+const {
+  blackA,
+  blueDark,
+  tomatoDark,
+  slateDark,
+  amberDark,
+  cyanDark,
+  mintDark,
+  greenDark,
+} = require("@radix-ui/colors");
 
 /** @type {import("tailwindcss").Config} */
 module.exports = {
@@ -10,6 +19,11 @@ module.exports = {
         ...blackA,
         ...slateDark,
         ...blueDark,
+        ...amberDark,
+        ...tomatoDark,
+        ...cyanDark,
+        ...mintDark,
+        ...greenDark,
       },
       keyframes: {
         overlayShow: {

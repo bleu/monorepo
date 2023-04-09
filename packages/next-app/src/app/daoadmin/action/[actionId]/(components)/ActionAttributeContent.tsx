@@ -87,13 +87,13 @@ export function ActionAttributeContent() {
           <div>
             <div className="sm:flex sm:items-center">
               <div className="sm:flex-auto">
-                <h1 className="mx-1 text-2xl font-medium text-gray-400">
+                <h1 className="mx-1 text-2xl font-medium text-slate12">
                   {selectedAction?.name}
                 </h1>
               </div>
             </div>
-            <div className="mt-4 flex flex-col gap-6 rounded-md border border-gray-700 bg-gray-800 p-6">
-              <p className="text-gray-400">{selectedAction?.description}</p>
+            <div className="mt-4 flex flex-col gap-6 rounded-md border border-slate6 bg-blue3 p-6">
+              <p className="text-slate12">{selectedAction?.description}</p>
               <div className="mt-2 flex items-center gap-8">
                 <div className="flex items-center gap-2">
                   Operation Responsible
@@ -105,7 +105,7 @@ export function ActionAttributeContent() {
                     href={selectedAction?.contractUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-400 hover:underline"
+                    className="text-slate12 hover:underline"
                   >
                     {truncate(selectedAction?.contractAddress)}
                   </a>
@@ -130,11 +130,7 @@ export function ActionAttributeContent() {
                   );
                 })}
               </div>
-              <Button
-                type="submit"
-                disabled={false}
-                className="bg-indigo-500 text-gray-50 hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-gray-600 disabled:text-gray-500"
-              >
+              <Button type="submit" disabled={false}>
                 Submit to Gnosis Safe Signers
               </Button>
             </div>

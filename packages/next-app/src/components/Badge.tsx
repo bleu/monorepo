@@ -1,27 +1,24 @@
-import classNames from "classnames";
+import cn from "classnames";
 
 export function Badge({
   children,
   isSelected = false,
-  isOutlined = false,
-}: {
-  children: React.ReactNode;
+  variant = "default",
+}: React.PropsWithChildren<{
   isSelected?: boolean;
-  isOutlined?: boolean;
-}) {
+  variant?: string;
+}>) {
+  const outline = variant === "outlined";
+
   return (
     <span
-      className={classNames(
-        "rounded text-sm font-bold",
-        isOutlined
-          ? "bg-transparent border border-gray-500 text-gray-500 group-hover:text-gray-400 uppercase p-[3px] leading-4"
-          : classNames(
-              "text-gray-800 group-hover:bg-yellow-100 p-1",
-              isSelected
-                ? "bg-yellow-100 "
-                : "bg-blue-200 text-gray-800 group-hover:bg-yellow-100"
-            )
-      )}
+      className={cn("rounded text-sm font-bold", {
+        "bg-transparent border border-slate6 text-slate12 group-hover:text-slate12 uppercase p-1 leading-4":
+          outline,
+        "text-slate12 px-1": !outline,
+        "bg-blue4 text-slate12": !isSelected && !outline,
+        "bg-blue8": isSelected && !outline,
+      })}
     >
       {children}
     </span>

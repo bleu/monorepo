@@ -8,6 +8,7 @@ import { Dialog } from "#/components/Dialog";
 import { Tooltip } from "#/components/Tooltip";
 import { NetworksContext } from "#/contexts/networks";
 
+import { useAccount } from "wagmi";
 import { PoolMetadataItemForm } from "./PoolMetadataForm";
 import { TransactionModal } from "./TransactionModal";
 
@@ -21,8 +22,9 @@ export function Actions({
   metadataUpdated: boolean;
 }) {
   const { mismatchedNetworks } = useContext(NetworksContext);
+  const account = useAccount();
 
-  if (mismatchedNetworks)
+  if (mismatchedNetworks || !account.isConnected)
     return (
       <div className="mt-2 flex justify-end">
         <Tooltip content="You'll be able to edit the metadata if the connected wallet is the pool owner and it's on the same network the pool is deployed to.">

@@ -23,12 +23,20 @@ export default async function Page({
 
   const pool = metadataRegistry.pools[0];
 
-  const data =
-    pool && pool.metadataCID
-      ? await fetch(
-          `https://bleu.infura-ipfs.io/ipfs/${pool.metadataCID}`
-        ).then((res) => res.json())
-      : null;
+  if (!pool || !pool?.metadataCID) return null;
+
+  const link = `https://ipfs.io/ipfs/${pool.metadataCID}`;
+
+  const response = await fetch(link);
+
+  let data,
+    error = undefined;
+
+  if (response.ok) {
+    data = await response.json();
+  } else {
+    error = response.statusText;
+  }
 
   return (
     <div className="h-full flex-1 py-5 text-white">

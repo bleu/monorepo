@@ -7,7 +7,7 @@ import { Select, SelectItem } from "#/components/Select";
 import Sidebar from "#/components/Sidebar";
 import { ActionAttribute, useAdminTools } from "#/contexts/AdminToolsContext";
 import { hardcodedData } from "#/utils/hardcodedData";
-import { truncateAddress } from "#/utils/truncateAddress";
+import { truncate } from "#/utils/truncate";
 
 interface IFilter {
   name: string;
@@ -91,7 +91,7 @@ export function DaoAdminSidebar() {
                     </Badge>
                   )}
                   <p className="text-sm leading-tight text-gray-500 group-hover:text-gray-400">
-                    {truncateAddress(item.contractAddress)}
+                    {truncate(item.contractAddress)}
                   </p>
                 </div>
               </Sidebar.Item>

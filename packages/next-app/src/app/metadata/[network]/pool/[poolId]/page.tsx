@@ -44,7 +44,9 @@ export default async function Page({
         poolId={params.poolId}
         network={params.network}
         poolOwner={poolOwner.pool?.owner}
+        cid={pool.metadataCID}
         data={data}
+        error={error}
       />
     </div>
   );

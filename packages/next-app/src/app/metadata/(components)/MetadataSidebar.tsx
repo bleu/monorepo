@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Badge } from "#/components/Badge";
 import Sidebar from "#/components/Sidebar";
 import { usePoolMetadata } from "#/contexts/PoolMetadataContext";
-import { truncateAddress } from "#/utils/truncateAddress";
+import { truncate } from "#/utils/truncate";
 import { useNetwork } from "#/wagmi";
 
 export function MetadataSidebar() {
@@ -66,7 +66,7 @@ export function OwnedPool({
       <div className="flex w-full items-center space-x-3">
         <Badge isOutlined>{poolType}</Badge>
         <p className="text-sm leading-tight text-gray-500 group-hover:text-gray-400">
-          {truncateAddress(id)}
+          {truncate(id)}
         </p>
       </div>
     </>

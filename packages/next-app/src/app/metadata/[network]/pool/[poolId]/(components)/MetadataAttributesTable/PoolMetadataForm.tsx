@@ -90,7 +90,7 @@ export function PoolMetadataItemForm({
       <div className="mb-2">
         <Controller
           control={control}
-          name={"typename"}
+          name="typename"
           defaultValue={data?.typename || "text"}
           render={({ field: { onChange, value, ref } }) => (
             <Select
@@ -100,7 +100,9 @@ export function PoolMetadataItemForm({
               disabled={mode === "edit"}
             >
               {inputTypenames.map(({ value, label }) => (
-                <SelectItem value={value}>{label}</SelectItem>
+                <SelectItem key={`${label}-${value}`} value={value}>
+                  {label}
+                </SelectItem>
               ))}
             </Select>
           )}

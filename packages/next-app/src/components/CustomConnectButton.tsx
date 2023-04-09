@@ -2,7 +2,7 @@ import { CaretDownIcon } from "@radix-ui/react-icons";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
 
-import { truncateAddress } from "#/utils/truncateAddress";
+import { truncate } from "#/utils/truncate";
 
 import { Button } from "./Button";
 
@@ -57,7 +57,7 @@ export function CustomConnectButton() {
                     className="bg-blue-500 text-gray-50 hover:bg-blue-400 focus-visible:outline-blue-500 disabled:bg-gray-600"
                     type="button"
                   >
-                    {truncateAddress(account.address)}
+                    {truncate(account.address)}
                   </Button>
                   <Button
                     onClick={openChainModal}

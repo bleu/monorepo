@@ -2,13 +2,13 @@
 
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { useContext } from "react";
+import { useAccount } from "wagmi";
 
 import { Button } from "#/components";
 import { Dialog } from "#/components/Dialog";
 import { Tooltip } from "#/components/Tooltip";
 import { NetworksContext } from "#/contexts/networks";
 
-import { useAccount } from "wagmi";
 import { PoolMetadataItemForm } from "./PoolMetadataForm";
 import { TransactionModal } from "./TransactionModal";
 

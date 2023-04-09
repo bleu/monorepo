@@ -30,7 +30,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="pointer-events-auto relative mx-2 rounded">
               <button
                 type="button"
-                className="flex w-full items-center rounded-md m-2 text-sm leading-6 text-slate-400 shadow-sm"
+                className="m-2 flex w-full items-center rounded-md text-sm leading-6 text-slate-400 shadow-sm"
               >
                 <MagnifyingGlassIcon
                   width="21"

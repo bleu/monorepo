@@ -10,6 +10,7 @@ import cn from "classnames";
 import { TableHTMLAttributes, useEffect } from "react";
 import { useAccount, useNetwork } from "wagmi";
 
+import { ClickToCopy } from "#/components/ClickToCopy";
 import { Dialog } from "#/components/Dialog";
 import {
   PoolMetadataAttribute,
@@ -17,7 +18,7 @@ import {
 } from "#/contexts/PoolMetadataContext";
 import { isPoolOwner } from "#/utils/address";
 import { toSlug } from "#/utils/formatStringCase";
-import { truncateAddress } from "#/utils/truncateAddress";
+import { truncate } from "#/utils/truncate";
 
 import { Actions } from "./Actions";
 import { PoolMetadataItemForm } from "./PoolMetadataForm";
@@ -137,12 +138,16 @@ export default function MetadataAttributesTable({
   poolId,
   network,
   poolOwner,
+  cid,
   data,
+  error,
 }: {
   poolId: `0x${string}`;
   poolOwner: `0x${string}`;
   network: Network;
-  data: PoolMetadataAttribute[];
+  cid?: string | null;
+  data?: PoolMetadataAttribute[];
+  error?: string | null;
 }) {
   const {
     metadata,
@@ -169,41 +174,58 @@ export default function MetadataAttributesTable({
       <div className="pr-4 sm:pr-6 lg:pr-12">
         <div className="sm:flex sm:items-center">
           <div className="sm:flex-auto">
-            <h1 className="mx-1 flex text-2xl font-medium text-gray-400">
-              Metadata attributes - Pool
+            <h1 className="flex text-2xl">Pool attributes</h1>
+            <div className="">
+              <div className="flex flex-row space-x-2">
+                <h2>Pool ID:</h2>
+                <ClickToCopy text={poolId}>{truncate(poolId)}</ClickToCopy>
+              </div>
+
               <a
                 target="_blank"
                 href={balancerPoolLink}
-                className="flex flex-row items-center justify-center"
+                className="flex flex-row items-center"
               >
-                #{truncateAddress(poolId)}{" "}
-                <ArrowTopRightIcon width={25} height={25} fontWeight={25} />
+                Open pool on app.balancer.fi
+                <ArrowTopRightIcon
+                  width={16}
+                  height={16}
+                  fontWeight={16}
+                  className="ml-1"
+                />
               </a>
-            </h1>
+
+              <div className="flex flex-row space-x-2">
+                <h2>Current metadata CID:</h2>
+                <ClickToCopy text={poolId}>{truncate(cid)}</ClickToCopy>
+              </div>
+            </div>
           </div>
         </div>
+        {error ?? (
+          <div>
+            <div className="mt-4 flow-root max-h-[30rem] overflow-y-scroll rounded-md border border-gray-700 bg-gray-800">
+              <table className="min-w-full divide-y divide-gray-700">
+                <Header />
 
-        <div className="mt-4 flow-root max-h-[30rem] overflow-y-scroll rounded-md border border-gray-700 bg-gray-800">
-          <table className="min-w-full divide-y divide-gray-700">
-            <Header />
-
-            <tbody className="divide-y divide-gray-800">
-              {metadata.map((item) => (
-                <Row
-                  key={toSlug(item.key)}
-                  data={item}
-                  mode={isOwner ? "edit" : "view"}
-                />
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <Actions
-          poolId={poolId}
-          isOwner={isOwner}
-          metadataUpdated={metadataUpdated}
-        />
+                <tbody className="divide-y divide-gray-800">
+                  {metadata.map((item) => (
+                    <Row
+                      key={toSlug(item.key)}
+                      data={item}
+                      mode={isOwner ? "edit" : "view"}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <Actions
+              poolId={poolId}
+              isOwner={isOwner}
+              metadataUpdated={metadataUpdated}
+            />
+          </div>
+        )}{" "}
       </div>
     </div>
   );

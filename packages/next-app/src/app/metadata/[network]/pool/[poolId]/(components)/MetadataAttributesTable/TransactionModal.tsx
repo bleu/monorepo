@@ -17,44 +17,44 @@ type Stage = {
 
 const STAGE_CN_MAPPING: Record<TransactionStatus, Stage> = {
   [TransactionStatus.PINNING]: {
-    pinningStep: "border-amber6 text-amber10",
-    transitionLine: "bg-blue4",
-    writingOnChainStep: "border-slate6 text-slate12",
+    pinningStep: "border-amber10 text-amber10",
+    transitionLine: "bg-slate10",
+    writingOnChainStep: "border-slate10 text-slate12",
   },
   [TransactionStatus.CONFIRMING]: {
-    pinningStep: "border-green6 text-green4",
-    transitionLine: "bg-green4",
-    writingOnChainStep: "border-amber6 text-amber10",
+    pinningStep: "border-green10 text-green10",
+    transitionLine: "bg-green10",
+    writingOnChainStep: "border-amber10 text-amber10",
   },
   [TransactionStatus.SUBMITTING]: {
-    pinningStep: "border-green6 text-green4",
-    transitionLine: "bg-green4",
-    writingOnChainStep: "border-amber6 text-amber10",
+    pinningStep: "border-green10 text-green10",
+    transitionLine: "bg-green10",
+    writingOnChainStep: "border-amber10 text-amber10",
   },
   [TransactionStatus.CONFIRMED]: {
-    pinningStep: "border-green6 text-green4",
-    transitionLine: "bg-green4",
-    writingOnChainStep: "border-green6 text-green4",
+    pinningStep: "border-green10 text-green10",
+    transitionLine: "bg-green10",
+    writingOnChainStep: "border-green10 text-green10",
   },
   [TransactionStatus.PINNING_ERROR]: {
-    pinningStep: "border-tomato6 text-tomato10",
-    transitionLine: "bg-blue4",
-    writingOnChainStep: "border-slate6 text-slate12",
+    pinningStep: "border-tomato10 text-tomato10",
+    transitionLine: "bg-slate10",
+    writingOnChainStep: "border-slate10 text-slate12",
   },
   [TransactionStatus.WRITE_ERROR]: {
-    pinningStep: "border-green6 text-green4",
-    transitionLine: "bg-green4",
-    writingOnChainStep: "border-tomato6 text-tomato10",
+    pinningStep: "border-green10 text-green10",
+    transitionLine: "bg-green10",
+    writingOnChainStep: "border-tomato10 text-tomato10",
   },
   [TransactionStatus.AUTHORIZING]: {
-    pinningStep: "border-amber6 text-amber10",
-    transitionLine: "bg-blue4",
-    writingOnChainStep: "border-slate6 text-slate12",
+    pinningStep: "border-amber10 text-amber10",
+    transitionLine: "bg-slate10",
+    writingOnChainStep: "border-slate10 text-slate12",
   },
   [TransactionStatus.WAITING_APPROVAL]: {
-    pinningStep: "border-green6 text-green4",
-    transitionLine: "bg-green4",
-    writingOnChainStep: "border-amber6 text-amber10",
+    pinningStep: "border-green10 text-green10",
+    transitionLine: "bg-green10",
+    writingOnChainStep: "border-amber10 text-amber10",
   },
 };
 
@@ -113,7 +113,7 @@ function ProgressLine({ stage }: { stage: Stage }) {
 
 function Loading() {
   return (
-    <div className="border-6 mx-2 h-4 w-4 animate-spin rounded-full border-solid border-amber6 border-l-slate7"></div>
+    <div className="border-6 mx-2 h-4 w-4 animate-spin rounded-full border-solid border-amber10 border-l-slate7"></div>
   );
 }
 

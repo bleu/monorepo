@@ -7,7 +7,10 @@ import { PropsWithChildren, useState } from "react";
 import { Button } from "#/components";
 import { Toast } from "#/components/Toast";
 import { usePoolMetadata } from "#/contexts/PoolMetadataContext";
-import { TransactionStatus, useTransaction } from "#/hooks/useTransaction";
+import {
+  TransactionStatus,
+  useMetadataTransaction,
+} from "#/hooks/useTransaction";
 
 type Stage = {
   pinningStep: string;
@@ -117,7 +120,7 @@ function Loading() {
   );
 }
 
-function ToastContent({
+export function ToastContent({
   title,
   description,
   link,
@@ -151,7 +154,7 @@ function ProcessTransaction({ poolId }: { poolId: `0x${string}` }) {
     transactionStatus,
     setIsNotifierOpen,
     transactionUrl,
-  } = useTransaction({ poolId, metadata });
+  } = useMetadataTransaction({ poolId, metadata });
 
   const stage = STAGE_CN_MAPPING[transactionStatus];
 

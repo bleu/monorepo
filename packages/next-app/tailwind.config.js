@@ -26,6 +26,10 @@ module.exports = {
         ...greenDark,
       },
       keyframes: {
+        hide: {
+          from: { opacity: 1 },
+          to: { opacity: 0 },
+        },
         overlayShow: {
           from: { opacity: 0 },
           to: { opacity: 1 },

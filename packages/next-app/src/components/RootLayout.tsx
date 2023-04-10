@@ -7,6 +7,8 @@ import React from "react";
 import { WagmiConfig } from "#/wagmi";
 import { chains, client } from "#/wagmi/client";
 
+import { ToastProvider } from "./Toast";
+
 export function RootLayout({ children }: React.PropsWithChildren) {
   return (
     <WagmiConfig client={client}>
@@ -15,7 +17,9 @@ export function RootLayout({ children }: React.PropsWithChildren) {
         modalSize="compact"
         theme={CustomTheme}
       >
-        <div className="h-screen w-screen bg-blue1">{children}</div>
+        <div className="h-screen w-screen bg-blue1">
+          <ToastProvider>{children}</ToastProvider>
+        </div>
       </RainbowKitProvider>
     </WagmiConfig>
   );

@@ -48,3 +48,6 @@ next-env.d.ts
 
 **/wagmi/generated.ts
 **/wagmi*.mjs
+
+# Sentry
+.sentryclirc

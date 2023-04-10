@@ -1,11 +1,11 @@
 import tokensInfo from "public/tokens.json";
 
-function getTokenDictionary(json: any): {
+interface TokenInfo {
   [address: string]: { name: string; symbol: string; decimals: number };
-} {
-  const dictionary: {
-    [address: string]: { name: string; symbol: string; decimals: number };
-  } = {};
+}
+
+function createTokenAddressInfoMapping(json: any): TokenInfo {
+  const dictionary: TokenInfo = {};
 
   for (const url in json) {
     const tokens = json[url].tokens;
@@ -24,4 +24,4 @@ function getTokenDictionary(json: any): {
   return dictionary;
 }
 
-export const tokenDictionary = getTokenDictionary(tokensInfo);
+export const tokenDictionary = createTokenAddressInfoMapping(tokensInfo);

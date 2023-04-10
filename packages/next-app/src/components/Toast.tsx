@@ -34,26 +34,32 @@ export function Toast({
   }
 
   return (
-    <ToastPrimitive.Provider swipeDirection="right">
-      <ToastPrimitive.Root
-        duration={30000}
-        open={isOpen}
-        onOpenChange={setIsOpen}
-        className={cn(
-          "data-[state=open]:animate-slideIn data-[state=closed]:animate-hide data-[swipe=end]:animate-swipeOut mb-2 grid grid-cols-[auto_max-content] items-center shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] [grid-template-areas:_'title_action'_'description_action'] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=cancel]:translate-x-0 data-[swipe=cancel]:transition-[transform_200ms_ease-out]",
-          bgColor
-        )}
-      >
-        <div className="relative w-full">
-          <div className="absolute w-full">
-            <ProgressBar variant={variant} />
-          </div>
-          {React.cloneElement(React.Children.only(content), {
-            close: () => setIsOpen(false),
-          })}
+    <ToastPrimitive.Root
+      duration={30000}
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      className={cn(
+        "data-[state=open]:animate-slideIn data-[state=closed]:animate-hide data-[swipe=end]:animate-swipeOut mb-2 grid grid-cols-[auto_max-content] items-center shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] [grid-template-areas:_'title_action'_'description_action'] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=cancel]:translate-x-0 data-[swipe=cancel]:transition-[transform_200ms_ease-out]",
+        bgColor
+      )}
+    >
+      <div className="relative w-full">
+        <div className="absolute w-full">
+          <ProgressBar variant={variant} />
         </div>
-      </ToastPrimitive.Root>
-      <ToastPrimitive.Viewport className="[--viewport-padding:_25px] fixed bottom-0 right-0 flex flex-col p-[var(--viewport-padding)] gap-[10px] w-[390px] max-w-[100vw] m-0 list-none z-[2147483647] outline-none" />
+        {React.cloneElement(React.Children.only(content), {
+          close: () => setIsOpen(false),
+        })}
+      </div>
+    </ToastPrimitive.Root>
+  );
+}
+
+export function ToastProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <ToastPrimitive.Provider>
+      {children}
+      <ToastPrimitive.Viewport className="fixed bottom-0 right-0 z-[2147483647] m-0 flex w-[350px] max-w-[100vw] list-none flex-col gap-[10px] p-[var(--viewport-padding)] outline-none [--viewport-padding:_25px]" />
     </ToastPrimitive.Provider>
   );
 }

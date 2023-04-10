@@ -10,16 +10,19 @@ import { Tooltip } from "#/components/Tooltip";
 import { NetworksContext } from "#/contexts/networks";
 
 import { PoolMetadataItemForm } from "./PoolMetadataForm";
+import { PredefinedMetadataModal } from "./PredefinedMetadataModal";
 import { TransactionModal } from "./TransactionModal";
 
 export function Actions({
   poolId,
   isOwner,
   metadataUpdated,
+  isMetadataValid,
 }: {
   poolId: `0x${string}`;
   isOwner: boolean;
   metadataUpdated: boolean;
+  isMetadataValid: boolean;
 }) {
   const { mismatchedNetworks } = useContext(NetworksContext);
   const account = useAccount();
@@ -49,24 +52,37 @@ export function Actions({
           </span>
         </Tooltip>
 
-        <Button shade="light" variant="outline">
-          Import template
-        </Button>
+        <Tooltip
+          content={"You are not the pool owner"}
+          disableTooltip={isOwner}
+        >
+          <span tabIndex={0}>
+            <Dialog title="Add attribute" content={<PredefinedMetadataModal />}>
+              <Button shade="light" variant="outline" disabled={!isOwner}>
+                Import template
+              </Button>
+            </Dialog>
+          </span>
+        </Tooltip>
       </div>
+
       <Tooltip
         content={
           !isOwner
             ? "You are not the pool owner"
             : "You need to make changes to the metadata first"
         }
-        disableTooltip={isOwner && metadataUpdated}
+        disableTooltip={isOwner && metadataUpdated && isMetadataValid}
       >
         <span tabIndex={0}>
           <Dialog
             title="Update metadata"
             content={<TransactionModal poolId={poolId} />}
           >
-            <Button color="cyan" disabled={!metadataUpdated || !isOwner}>
+            <Button
+              color="cyan"
+              disabled={!metadataUpdated || !isOwner || !isMetadataValid}
+            >
               Update metadata
             </Button>
           </Dialog>

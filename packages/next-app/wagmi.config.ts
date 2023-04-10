@@ -3,8 +3,19 @@ import { defineConfig } from "@wagmi/cli";
 import { foundry, react } from "@wagmi/cli/plugins";
 import * as chains from "wagmi/chains";
 
+import { vaultAbi } from "./src/abis/vault";
+
 export default defineConfig({
   out: "src/wagmi/generated.ts",
+  contracts: [
+    {
+      name: "vault",
+      abi: vaultAbi,
+      address: {
+        [chains.goerli.id]: "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
+      },
+    },
+  ],
   plugins: [
     foundry({
       artifacts: "out/PoolMetadataRegistry.sol",

@@ -79,7 +79,7 @@ const networkUrls = {
   42161: "https://arbiscan.io/tx/",
 };
 
-export function useTransaction({
+export function useMetadataTransaction({
   poolId,
   metadata,
 }: {

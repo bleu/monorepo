@@ -53,8 +53,7 @@ export function Toast({
           })}
         </div>
       </ToastPrimitive.Root>
-
-      <ToastPrimitive.Viewport className="fixed bottom-[-14rem] right-[-32rem] z-[2147483647] m-0 flex w-[350px] max-w-[100vw] list-none flex-col gap-[10px] p-[var(--viewport-padding)] outline-none [--viewport-padding:_25px]" />
+      <ToastPrimitive.Viewport className="[--viewport-padding:_25px] fixed bottom-0 right-0 flex flex-col p-[var(--viewport-padding)] gap-[10px] w-[390px] max-w-[100vw] m-0 list-none z-[2147483647] outline-none" />
     </ToastPrimitive.Provider>
   );
 }

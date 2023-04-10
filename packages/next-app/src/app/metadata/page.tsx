@@ -19,7 +19,7 @@ export default function Page() {
   }
 
   return (
-    <div className="space-y-4 w-full rounded-3xl py-16 px-12 md:py-20">
+    <div className="w-full rounded-3xl items-center py-16 px-12 md:py-20 flex flex-col">
       <div className="text-center text-amber9 text-3xl">
         Pick a pool on the side
       </div>

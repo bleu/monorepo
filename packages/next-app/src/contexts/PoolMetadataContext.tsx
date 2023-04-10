@@ -66,7 +66,7 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
   const [originalMetadata, setOriginalMetadata] = useState<
     PoolMetadataAttribute[]
   >([]);
-  const [isMetadataValid, setIsMetadataValid] = useState<boolean>(false);
+  const [isMetadataValid, setIsMetadataValid] = useState(false);
 
   function handleAddMetadata(data: PoolMetadataAttribute) {
     setMetadata((state) => [data, ...state]);

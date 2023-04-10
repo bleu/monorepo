@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import * as React from "react";
 
 import balancerSymbol from "#/assets/balancer-symbol.svg";
-import { Footer } from "#/components/Footer";
 import { Header } from "#/components/Header";
 
 import { InternalManagerProvider } from "./(components)/InternalManagerProvider";
@@ -21,10 +20,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         imageSrc={balancerSymbol}
       />
       <InternalManagerProvider>{children}</InternalManagerProvider>
-      <Footer
-        githubLink="https://github.com/bleu-studio/balancer-pool-metadata"
-        discordLink="https://discord.balancer.fi/"
-      />
     </div>
   );
 }

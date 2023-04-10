@@ -136,7 +136,7 @@ export function ToastContent({
         <h3 className="mb-2 leading-3 text-slate12">{description}</h3>
       </div>
       {link && (
-        <a target="_blank" href={link}>
+        <a target="_blank" href={link} className="text-slate12">
           <ArrowTopRightIcon width={24} height={24} />
         </a>
       )}

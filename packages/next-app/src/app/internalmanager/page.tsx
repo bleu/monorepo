@@ -10,13 +10,6 @@ import { impersonateWhetherDAO, pools } from "#/lib/gql";
 import { tokenDictionary } from "#/utils/getTokenInfo";
 import { writeWithdrawInternalBalance } from "#/wagmi/withdrawInternalBalance";
 
-export enum UserBalanceOpKind {
-  DEPOSIT_INTERNAL,
-  WITHDRAW_INTERNAL,
-  TRANSFER_INTERNAL,
-  TRANSFER_EXTERNAL,
-}
-
 enum NotificationVariant {
   NOTIFICATION = "notification",
   PENDING = "pending",

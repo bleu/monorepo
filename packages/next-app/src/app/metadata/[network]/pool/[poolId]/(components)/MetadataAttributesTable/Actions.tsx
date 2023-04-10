@@ -39,10 +39,7 @@ export function Actions({
   return (
     <div className="mt-5 w-full justify-between sm:flex sm:items-center">
       <div className="flex gap-4">
-        <Tooltip
-          content={"You are not the pool owner"}
-          disableTooltip={isOwner}
-        >
+        <Tooltip content="You are not the pool owner" disableTooltip={isOwner}>
           <span tabIndex={0}>
             <Dialog title="Add attribute" content={<PoolMetadataItemForm />}>
               <Button shade="light" disabled={!isOwner}>
@@ -52,14 +49,14 @@ export function Actions({
           </span>
         </Tooltip>
 
-        <Tooltip
-          content={"You are not the pool owner"}
-          disableTooltip={isOwner}
-        >
+        <Tooltip content="You are not the pool owner" disableTooltip={isOwner}>
           <span tabIndex={0}>
-            <Dialog title="Add attribute" content={<PredefinedMetadataModal />}>
+            <Dialog
+              title="Add predefined attributes"
+              content={<PredefinedMetadataModal />}
+            >
               <Button shade="light" variant="outline" disabled={!isOwner}>
-                Import template
+                Add predefined attributes
               </Button>
             </Dialog>
           </span>

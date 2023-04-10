@@ -13,39 +13,39 @@ import { Checkbox } from "#/components/Checkbox";
 import { usePoolMetadata } from "#/contexts/PoolMetadataContext";
 import { toSlug } from "#/utils/formatStringCase";
 
-interface Itemplate {
+interface ITemplate {
   name: string;
   options: {
-    name: string;
-    type: (typeof TypenameEnum.enum)[keyof typeof TypenameEnum.enum];
+    key: string;
+    typename: (typeof TypenameEnum.enum)[keyof typeof TypenameEnum.enum];
   }[];
 }
 
-export const ATTRIBUTES_TEMPLATE: Itemplate[] = [
+export const ATTRIBUTES_TEMPLATE: ITemplate[] = [
   {
     name: "Basic Data",
     options: [
-      { name: "Name", type: "text" },
-      { name: "Symbol", type: "text" },
-      { name: "Creator", type: "text" },
-      { name: "Date creation", type: "date" },
-      { name: "Website", type: "url" },
+      { key: "Name", typename: "text" },
+      { key: "Symbol", typename: "text" },
+      { key: "Creator", typename: "text" },
+      { key: "Date creation", typename: "date" },
+      { key: "Website", typename: "url" },
     ],
   },
   {
     name: "Managed Pools",
     options: [
-      { name: "Report", type: "text" },
-      { name: "History", type: "text" },
-      { name: "Changelog", type: "text" },
+      { key: "Report", typename: "text" },
+      { key: "History", typename: "text" },
+      { key: "Changelog", typename: "text" },
     ],
   },
   {
     name: "Boosted Pools",
     options: [
-      { name: "Summary", type: "text" },
-      { name: "Changelog", type: "text" },
-      { name: "Risks", type: "text" },
+      { key: "Summary", typename: "text" },
+      { key: "Changelog", typename: "text" },
+      { key: "Risks", typename: "text" },
     ],
   },
 ];
@@ -69,7 +69,7 @@ export function PredefinedMetadataModal({ close }: { close?: () => void }) {
       const options = attribute.options.reduce(
         (opt, option) => ({
           ...opt,
-          [option.name]: false,
+          [option.key]: false,
         }),
         { selectAll: false }
       );
@@ -104,11 +104,11 @@ export function PredefinedMetadataModal({ close }: { close?: () => void }) {
     const selectedAttributes: PoolMetadataAttribute[] = [];
     for (const attribute of ATTRIBUTES_TEMPLATE) {
       for (const option of attribute.options) {
-        const { name, type } = option;
-        if (checkboxes[attribute.name][name]) {
+        const { key, typename } = option;
+        if (checkboxes[attribute.name][key]) {
           selectedAttributes.push({
-            typename: type,
-            key: toSlug(name),
+            typename,
+            key: toSlug(key),
             value: null,
             description: null,
           });
@@ -131,40 +131,29 @@ export function PredefinedMetadataModal({ close }: { close?: () => void }) {
 
   return (
     <form onSubmit={onSubmit}>
-      <Accordion.Root
-        className="my-4 w-full"
-        type="single"
-        defaultValue="item-1"
-        collapsible
-      >
-        {ATTRIBUTES_TEMPLATE.map((attribute) => (
-          <AccordionItem value={attribute.name}>
-            <AccordionTrigger>{attribute.name}</AccordionTrigger>
+      <Accordion.Root className="my-4 w-full" type="single" collapsible>
+        {ATTRIBUTES_TEMPLATE.map(({ name, options }) => (
+          <AccordionItem value={name}>
+            <AccordionTrigger>{name}</AccordionTrigger>
             <AccordionContent>
               <div className="my-0 flex items-center">
                 <Checkbox
-                  id={`select-all-${attribute.name}`}
-                  checked={checkboxes[attribute.name].selectAll}
-                  onChange={() =>
-                    handleCheckboxChange(attribute.name, "selectAll")
-                  }
+                  id={`select-all-${name}`}
+                  checked={checkboxes[name].selectAll}
+                  onChange={() => handleCheckboxChange(name, "selectAll")}
                   label={
-                    checkboxes[attribute.name].selectAll
-                      ? "Uncheck all"
-                      : "Check all"
+                    checkboxes[name].selectAll ? "Uncheck all" : "Check all"
                   }
                 />
               </div>
               <div className="ml-2 flex flex-col">
-                {attribute.options.map((option) => (
-                  <div key={option.name} className="flex items-center">
+                {options.map((option) => (
+                  <div key={option.key} className="flex items-center">
                     <Checkbox
-                      id={`${attribute.name}-${option.name}`}
-                      checked={checkboxes[attribute.name][option.name]}
-                      onChange={() =>
-                        handleCheckboxChange(attribute.name, option.name)
-                      }
-                      label={option.name}
+                      id={`${name}-${option.key}`}
+                      checked={checkboxes[name][option.key]}
+                      onChange={() => handleCheckboxChange(name, option.key)}
+                      label={option.key}
                     />
                   </div>
                 ))}
@@ -176,18 +165,11 @@ export function PredefinedMetadataModal({ close }: { close?: () => void }) {
 
       <div className="flex w-full items-center justify-end gap-2">
         <Dialog.Close asChild>
-          <Button
-            type="button"
-            className="border border-indigo-500 bg-gray-700 text-indigo-400 hover:bg-gray-600 focus-visible:outline-indigo-500"
-          >
+          <Button shade="light" variant="outline">
             Cancel
           </Button>
         </Dialog.Close>
-        <Button
-          className="bg-indigo-500 text-white hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-indigo-400"
-          type="submit"
-          disabled={false}
-        >
+        <Button shade="light" type="submit">
           Add attributes
         </Button>
       </div>

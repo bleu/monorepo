@@ -51,6 +51,9 @@ function ClampedText({ text }: { text: string }) {
 
   useLayoutEffect(() => {
     if (textRef.current) {
+      // calculate the number of lines of text by dividing the height of the text element
+      // by the height of a single line. this code assumes that each line of text has a
+      // height of around 16px (tailwind default base font size).
       const numLines = textRef.current?.getBoundingClientRect().height / 16;
       setHasOverflow(numLines >= 4);
     }
@@ -65,13 +68,11 @@ function ClampedText({ text }: { text: string }) {
     <div>
       <div
         ref={textRef}
-        className={cn(
-          "break-all",
-          !isExpanded && hasBigword
-            ? "overflow-hidden text-ellipsis line-clamp-3"
-            : "",
-          !isExpanded && hasOverflow ? "line-clamp-3" : ""
-        )}
+        className={cn("break-all", {
+          "overflow-hidden text-ellipsis line-clamp-3":
+            !isExpanded && hasBigword,
+          "line-clamp-3": !isExpanded && hasOverflow,
+        })}
       >
         {text}
       </div>
@@ -171,16 +172,14 @@ function Row({
         )}
       </Td>
       <Td className="min-w-[5rem] max-w-[10rem]">
-        {!data.value || !data.description ? (
-          <div className="flex justify-between">
-            <ClampedText text={data.key} />
-            <span className="inline-flex items-center rounded-md bg-red-200 p-0.5 text-xs font-semibold text-red-600">
+        <div className="flex justify-between">
+          <ClampedText text={data.key} />
+          {(!data.value || !data.description) && (
+            <span className="inline-flex items-center rounded-md bg-tomato12 p-0.5 text-xs font-semibold text-tomato9">
               NEEDS EDIT
             </span>
-          </div>
-        ) : (
-          <ClampedText text={data.key} />
-        )}
+          )}
+        </div>
       </Td>
       <Td>
         <ClampedText text={data.typename} />

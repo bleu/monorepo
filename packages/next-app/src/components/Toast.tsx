@@ -20,16 +20,16 @@ export function Toast({
   let bgColor;
   switch (variant) {
     case "notification":
-      bgColor = "bg-blue-100";
+      bgColor = "bg-blue1";
       break;
     case "pending":
-      bgColor = "bg-yellow-100";
+      bgColor = "bg-amber1";
       break;
     case "alert":
-      bgColor = "bg-red-100";
+      bgColor = "bg-tomato1";
       break;
     case "success":
-      bgColor = "bg-green-100";
+      bgColor = "bg-green1";
       break;
   }
 
@@ -54,7 +54,7 @@ export function Toast({
         </div>
       </ToastPrimitive.Root>
 
-      <ToastPrimitive.Viewport className="fixed right-[-32rem] bottom-[-14rem] z-[2147483647] m-0 flex w-[350px] max-w-[100vw] list-none flex-col gap-[10px] p-[var(--viewport-padding)] outline-none [--viewport-padding:_25px]" />
+      <ToastPrimitive.Viewport className="fixed bottom-[-14rem] right-[-32rem] z-[2147483647] m-0 flex w-[350px] max-w-[100vw] list-none flex-col gap-[10px] p-[var(--viewport-padding)] outline-none [--viewport-padding:_25px]" />
     </ToastPrimitive.Provider>
   );
 }

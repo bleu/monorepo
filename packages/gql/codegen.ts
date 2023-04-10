@@ -65,19 +65,35 @@ const generates = Object.assign(
   {},
   ...Object.values(SUBGRAPHS).map(({ name, endpoints }) =>
     Object.fromEntries(
-      Object.entries(endpoints()).map(([network, endpoint]) => [
-        `./src/${name}/__generated__/${network}.ts`,
-        {
-          schema: endpoint,
-          documents: [`src/${name}/**/*.ts`],
-          plugins: [
-            "typescript",
-            "typescript-operations",
-            "typescript-graphql-request",
-            "plugin-typescript-swr",
+      Object.entries(endpoints())
+        .map(([network, endpoint]) => [
+          [
+            `./src/${name}/__generated__/${network}.ts`,
+            {
+              schema: endpoint,
+              documents: [`src/${name}/**/*.ts`],
+              plugins: [
+                "typescript",
+                "typescript-operations",
+                "typescript-graphql-request",
+                "plugin-typescript-swr",
+              ],
+            },
           ],
-        },
-      ])
+          [
+            `./src/${name}/__generated__/${network}.server.ts`,
+            {
+              schema: endpoint,
+              documents: [`src/${name}/**/*.ts`],
+              plugins: [
+                "typescript",
+                "typescript-operations",
+                "typescript-graphql-request",
+              ],
+            },
+          ],
+        ])
+        .flat(1)
     )
   )
 );

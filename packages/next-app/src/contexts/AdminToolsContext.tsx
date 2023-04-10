@@ -8,7 +8,8 @@ import {
   useContext,
   useState,
 } from "react";
-import { Chain } from "wagmi";
+
+import { Chain } from "#/wagmi";
 
 type ValidationFunctions = "poolExists" | "gaugeExists";
 

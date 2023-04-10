@@ -8,37 +8,28 @@ export function Footer({
   discordLink: string;
 }) {
   return (
-    <footer className="mt-auto flex h-14 border-t border-gray-700 bg-gray-800 px-6 py-4 md:flex md:items-center md:justify-between">
-      <span className="text-sm text-gray-300 sm:text-center">
-        Proudly powered by{" "}
+    <footer className="flex w-full justify-between bg-blue2 p-4">
+      <span className="text-sm text-slate12/90">
+        developed by&nbsp;
         <a
           target="_blank"
           href="https://github.com/bleu-studio"
-          className="font-bold text-blue-500"
+          className="font-bold text-blue8"
         >
-          Bleu Studio
-        </a>{" "}
-        through Balancer Grants
+          bleu
+        </a>
       </span>
-      <div className="mt-4 flex space-x-6 sm:justify-center md:mt-0">
+      <div className="float-right flex flex-row items-center space-x-4">
         {githubLink && (
-          <a
-            target="_blank"
-            href={githubLink}
-            className="text-gray-300 hover:text-white"
-          >
-            <GitHubLogoIcon width={30} height={30} />
+          <a target="_blank" href={githubLink} className="text-slate12/90">
+            <GitHubLogoIcon width={20} height={20} />
             <span className="sr-only">GitHub account</span>
           </a>
         )}
         {discordLink && (
-          <a
-            target="_blank"
-            href={discordLink}
-            className="text-gray-300 hover:text-white"
-          >
-            <DiscordLogoIcon width={30} height={30} />
-            <span className="sr-only">GitHub account</span>
+          <a target="_blank" href={discordLink} className="text-slate12/90">
+            <DiscordLogoIcon width={20} height={20} />
+            <span className="sr-only">Discord account</span>
           </a>
         )}
       </div>

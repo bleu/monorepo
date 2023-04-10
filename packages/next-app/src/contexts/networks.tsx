@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { useNetwork } from "wagmi";
+
+import { useNetwork } from "#/wagmi";
 
 interface NetworksContextI {
   urlPathNetwork?: number;
@@ -51,3 +52,5 @@ export const NetworksContextProvider = ({
     </NetworksContext.Provider>
   );
 };
+
+export const useNetworks = () => React.useContext(NetworksContext);

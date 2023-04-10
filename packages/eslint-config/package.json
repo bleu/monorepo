@@ -7,18 +7,20 @@
   ],
   "devDependencies": {
     "@balancer-pool-metadata/shared": "workspace:^",
-    "@next/eslint-plugin-next": "^13.2.4",
+    "@next/eslint-plugin-next": "^13.3.0",
     "@typescript-eslint/eslint-plugin": "latest",
-    "eslint": "latest",
+    "eslint": "^8.38.0",
     "eslint-config-next": "latest",
-    "eslint-config-prettier": "latest",
-    "eslint-import-resolver-typescript": "^3.5.3",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-import-resolver-typescript": "^3.5.5",
     "eslint-plugin-compat": "latest",
     "eslint-plugin-graphql": "latest",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-prettier": "latest",
     "eslint-plugin-react-hooks": "latest",
     "eslint-plugin-simple-import-sort": "latest",
-    "eslint-plugin-tailwindcss": "latest"
+    "eslint-plugin-tailwindcss": "^3.11.0",
+    "prettier": "^2.8.7",
+    "prettier-plugin-tailwindcss": "^0.2.7"
   }
 }

@@ -5,7 +5,7 @@ import { useContext, useEffect } from "react";
 
 import { NetworksContext } from "#/contexts/networks";
 
-export default function Page({
+export default function Layout({
   children,
   params,
 }: React.PropsWithChildren<{

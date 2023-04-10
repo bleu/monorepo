@@ -1,25 +1,24 @@
 import Image from "next/image";
-import { usePathname } from "next/navigation";
 
+import SearchPoolForm from "#/app/metadata/(components)/SearchPoolForm";
 import ConnectWalletImage from "#/assets/connect-wallet.svg";
 
-export default function WalletNotConnected() {
-  const pathname = usePathname();
-  const message =
-    pathname === "/metadata"
-      ? "metadata pools"
-      : pathname === "/daoadmin"
-      ? "actions"
-      : "";
+import { Dialog } from "./Dialog";
 
+export default function WalletNotConnected() {
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center bg-gray-900">
-      <h1 className="flex h-12 items-center text-center text-3xl font-medium not-italic text-gray-400">
-        Your {message} will appear here
-      </h1>
-      <h1 className="mb-4 flex h-12 items-center text-center	 text-3xl font-medium not-italic text-yellow-300">
-        Please, connect your wallet
-      </h1>
+    <div className="w-full rounded-3xl items-center py-16 px-12 md:py-20 flex flex-col">
+      <div className="text-center text-amber9 text-3xl">
+        Please connect your wallet
+      </div>
+      <div className="text-center text-slate11 text-lg">
+        {/* TODO: */}
+        Alternatively, open a pool directly clicking&nbsp;
+        <Dialog title="Go to pool" content={<SearchPoolForm />}>
+          <span className="cursor-pointer text-slate12"> here</span>
+        </Dialog>
+      </div>
+
       <Image src={ConnectWalletImage} height={500} width={500} alt="" />
     </div>
   );

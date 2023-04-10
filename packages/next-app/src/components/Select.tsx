@@ -19,9 +19,9 @@ interface ISelectItem extends SelectItemProps {
   theme?: "dark" | "light";
 }
 const baseDark =
-  "bg-blue3 text-white data-[highlighted]:bg-blue9 data-[highlighted]:text-blue1";
+  "bg-blue4 text-white data-[highlighted]:bg-blue6 data-[highlighted]:text-slate-12";
 const baseLight =
-  "bg-white text-gray-400 data-[highlighted]:bg-gray-500 data-[highlighted]:text-white";
+  "bg-white text-slate12 data-[highlighted]:bg-blue5 data-[highlighted]:text-white";
 
 export const Select = forwardRef<HTMLButtonElement, ISelect>(
   ({ children, theme = "dark", ...props }, forwardedRef) => {
@@ -33,7 +33,7 @@ export const Select = forwardRef<HTMLButtonElement, ISelect>(
             "inline-flex h-[35px] outline-none items-center justify-center gap-[5px] rounded px-[15px] text-[13px] leading-none ",
             baseTheme,
             theme === "dark"
-              ? "shadow-blue1/10  hover:bg-blue3 focus:shadow-[0_0_0_2px] focus:shadow-blue1 disabled:bg-blackA9 data-[placeholder]:text-blue9 shadow-[0_2px_10px]"
+              ? "shadow-blue1/10 border-blue6 border hover:bg-blue4 focus:shadow-[0_0_0_2px] focus:shadow-blue1 disabled:bg-blackA9 data-[placeholder]:text-blue9 shadow-[0_2px_10px]"
               : ""
           )}
           ref={forwardedRef}

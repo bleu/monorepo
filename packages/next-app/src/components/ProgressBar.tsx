@@ -12,16 +12,16 @@ export function ProgressBar({ variant = "notification" }: IProgressBar) {
   let bgColor;
   switch (variant) {
     case "notification":
-      bgColor = "bg-blue-600";
+      bgColor = "bg-blue6";
       break;
     case "pending":
-      bgColor = "bg-yellow-600";
+      bgColor = "bg-amber6";
       break;
     case "alert":
-      bgColor = "bg-red-600";
+      bgColor = "bg-tomato6";
       break;
     case "success":
-      bgColor = "bg-green-600";
+      bgColor = "bg-green6";
       break;
   }
 

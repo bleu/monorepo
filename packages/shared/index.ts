@@ -21,12 +21,14 @@ export const networkIdEnumMap = {
 };
 
 export function networkFor(key: string | number) {
-  return (
-    networkIdEnumMap[key.toString() as keyof typeof networkIdEnumMap] || ""
-  );
+  return networkIdEnumMap[key.toString() as keyof typeof networkIdEnumMap];
 }
 
-export function networkIdFor(name: string) {
+export function networkIdFor(name?: string) {
+  if (!name) {
+    return "1";
+  }
+
   return (
     Object.keys(networkIdEnumMap).find(
       (key) => networkIdEnumMap[key as keyof typeof networkIdEnumMap] === name

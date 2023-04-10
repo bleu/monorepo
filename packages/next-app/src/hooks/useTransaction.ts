@@ -1,8 +1,8 @@
 import { Dispatch, useEffect, useState } from "react";
-import { useNetwork } from "wagmi";
 
 import { PoolMetadataAttribute } from "#/contexts/PoolMetadataContext";
 import { pinJSON } from "#/lib/ipfs";
+import { useNetwork } from "#/wagmi";
 import { writeSetPoolMetadata } from "#/wagmi/setPoolMetadata";
 
 export enum TransactionStatus {
@@ -117,7 +117,7 @@ export function useTransaction({
       // Once the transaction is approved and the metadata is pinned, update the transaction status to CONFIRMING
       try {
         const value = await pinJSON(poolId, metadata);
-        setIpfsCID(value.IpfsHash);
+        setIpfsCID(value);
         setTransactionStatus(TransactionStatus.CONFIRMING);
         setNotification(NOTIFICATION_MAP[TransactionStatus.CONFIRMING]);
         setIsTransactionDisabled(false);

@@ -1,0 +1,64 @@
+ARG NODE_VERSION=lts
+ARG IMAGE_VARIANT=slim
+
+FROM node:${NODE_VERSION}-${IMAGE_VARIANT} AS builder
+ENV NODE_ENV=production
+ENV NEXTJS_IGNORE_ESLINT=1
+ENV NEXTJS_IGNORE_TYPECHECK=0
+
+RUN apt-get update && apt-get install -y rsync make rsync python3 build-essential curl bash git && ln -sf /usr/bin/python3 /usr/bin/python
+RUN corepack enable && corepack prepare pnpm@latest --activate
+ENV PNPM_HOME="/root/.local/share/pnpm"
+ENV PATH="${PATH}:${PNPM_HOME}"
+RUN pnpm install -g @graphql-codegen/cli
+
+RUN mkdir -p $HOME/.foundry/bin
+RUN curl -# -L https://raw.githubusercontent.com/foundry-rs/foundry/master/foundryup/foundryup -o $HOME/.foundry/foundryup
+RUN chmod +x $HOME/.foundry/foundryup
+RUN bash $HOME/.foundry/foundryup
+ENV PATH="/root/.foundry/bin:${PATH}"
+RUN forge --version
+
+WORKDIR /app
+
+COPY .npmrc package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+RUN pnpm fetch --prod=false
+RUN pnpm install -g @graphql-codegen/cli
+
+COPY . .
+# COPY --from=deps /workspace-install ./
+RUN pnpm install --frozen-lockfile --prod=false
+
+RUN cd packages/contracts && make patch && forge build
+RUN pnpm run -C=packages/gql graphql:update-types
+RUN pnpm run --filter "{packages/next-app}..." build:prepare:wagmi
+RUN pnpm run --filter "{packages/next-app}..." build
+
+FROM node:${NODE_VERSION}-${IMAGE_VARIANT} AS runner
+
+WORKDIR /app
+
+ENV NODE_ENV production
+
+RUN groupadd --system --gid 1001 nodejs && useradd --system --uid 1001 nextjs
+
+COPY --from=builder /app/packages/next-app/next.config.js \
+                    /app/packages/next-app/package.json \
+                    ./packages/next-app/
+COPY --from=builder /app/packages/next-app/public ./packages/next-app/public
+COPY --from=builder --chown=nextjs:nodejs /app/packages/next-app/.next ./packages/next-app/.next
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/packages/next-app/node_modules ./packages/next-app/node_modules
+COPY --from=builder /app/package.json ./package.json
+
+USER nextjs
+
+EXPOSE 3000
+
+ENV PORT 3000
+ENV NEXT_TELEMETRY_DISABLED 1
+
+WORKDIR /app/packages/next-app
+
+CMD ["node_modules/.bin/next", "start"]

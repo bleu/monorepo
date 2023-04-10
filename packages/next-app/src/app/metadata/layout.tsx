@@ -1,57 +1,52 @@
+"use client";
+
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import type { Metadata } from "next";
+import * as Separator from "@radix-ui/react-separator";
 import * as React from "react";
+import { Suspense } from "react";
 
 import balancerSymbol from "#/assets/balancer-symbol.svg";
 import { Dialog } from "#/components/Dialog";
-import { Footer } from "#/components/Footer";
 import { Header, HeaderNetworkMismatchAlert } from "#/components/Header";
+import Sidebar from "#/components/Sidebar";
+import Spinner from "#/components/Spinner";
 import { NetworksContextProvider } from "#/contexts/networks";
+import { PoolMetadataProvider } from "#/contexts/PoolMetadataContext";
 
-import { MetadataProvider } from "./(components)/MetadataProvider";
+import OwnedPoolsSidebarItems from "./(components)/OwnedPoolsSidebarItems";
 import SearchPoolForm from "./(components)/SearchPoolForm";
-
-export const metadata: Metadata = {
-  title: "Balancer Pool Metadata",
-  description: "Welcome to Balancer Pool Metadata",
-};
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex h-screen flex-col">
-      <NetworksContextProvider>
-        <HeaderNetworkMismatchAlert />
-        <Header
-          linkUrl={"/metadata"}
-          title={"Pool Metadata"}
-          imageSrc={balancerSymbol}
-        >
-          <Dialog title={"Search pool"} content={<SearchPoolForm />}>
-            <div className="pointer-events-auto relative rounded bg-white">
-              <button
-                type="button"
-                className="flex w-full items-center rounded-md py-1.5 pl-2 pr-3 text-sm leading-6 text-slate-400 shadow-sm ring-1 ring-slate-900/10 hover:ring-slate-300 lg:flex"
-              >
-                <MagnifyingGlassIcon
-                  width="21"
-                  height="21"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1}
-                  className="mr-3 flex-none"
-                />
-                Search pool...
-              </button>
-            </div>
-          </Dialog>
-        </Header>
-        <MetadataProvider>{children}</MetadataProvider>
-        <Footer
-          githubLink="https://github.com/bleu-studio/balancer-pool-metadata"
-          discordLink="https://discord.balancer.fi/"
-        />
-      </NetworksContextProvider>
-    </div>
+    <NetworksContextProvider>
+      <HeaderNetworkMismatchAlert />
+      <Header
+        linkUrl={"/metadata"}
+        title={"Pool Metadata"}
+        imageSrc={balancerSymbol}
+      />
+      <div className="flex h-full w-full space-x-2">
+        <div>
+          <Sidebar isFloating>
+            <Dialog title="Go  to pool" content={<SearchPoolForm />}>
+              <span className="text-sm font-normal text-slate12 cursor-pointer flex items-center space-x-2">
+                <MagnifyingGlassIcon width="16" height="16" strokeWidth={1} />
+                <span>Open a pool directly</span>
+              </span>
+            </Dialog>
+            <Separator.Root className="bg-blue6 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px my-5" />
+
+            <Sidebar.Header name="Owned pools" />
+            <Sidebar.Content>
+              <Suspense fallback={<Spinner />}>
+                <OwnedPoolsSidebarItems />
+              </Suspense>
+            </Sidebar.Content>
+          </Sidebar>
+        </div>
+
+        <PoolMetadataProvider>{children}</PoolMetadataProvider>
+      </div>
+    </NetworksContextProvider>
   );
 }

@@ -3,15 +3,18 @@ import "@rainbow-me/rainbowkit/styles.css";
 
 import * as React from "react";
 
+import { Footer } from "#/components/Footer";
 import { RootLayout } from "#/components/RootLayout";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <div className="h-screen w-screen bg-gray-900">
-          <RootLayout>{children}</RootLayout>
-        </div>
+        <RootLayout>{children}</RootLayout>
+        <Footer
+          githubLink="https://github.com/bleu-studio/balancer-pool-metadata"
+          discordLink="https://discord.balancer.fi/"
+        />
       </body>
     </html>
   );

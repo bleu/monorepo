@@ -2,13 +2,17 @@ module.exports = {
   parserOptions: {
     sourceType: "module",
   },
-  env: { es6: true },
-  plugins: ["simple-import-sort", "import"],
+  env: {
+    browser: true,
+    es2021: true,
+  },
+  plugins: ["simple-import-sort", "import", "tailwindcss"],
   extends: [
     "plugin:@typescript-eslint/recommended",
     "plugin:tailwindcss/recommended",
     "plugin:@next/next/recommended",
     "plugin:import/typescript",
+    "prettier",
   ],
   parser: "@typescript-eslint/parser",
   rules: {
@@ -26,7 +30,7 @@ module.exports = {
       "error",
       { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
     ],
-    "tailwindcss/classnames-order": "warn",
+    "tailwindcss/classnames-order": "off",
     "tailwindcss/enforces-negative-arbitrary-values": "warn",
     "tailwindcss/enforces-shorthand": "warn",
     "tailwindcss/migration-from-tailwind-2": "warn",

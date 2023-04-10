@@ -8,19 +8,17 @@ import {
 } from "@radix-ui/react-icons";
 import cn from "classnames";
 import { TableHTMLAttributes, useEffect } from "react";
-import useSWR from "swr";
 import { useAccount, useNetwork } from "wagmi";
 
+import { ClickToCopy } from "#/components/ClickToCopy";
 import { Dialog } from "#/components/Dialog";
 import {
   PoolMetadataAttribute,
   usePoolMetadata,
 } from "#/contexts/PoolMetadataContext";
-import { pools, poolsMetadata } from "#/lib/gql";
 import { isPoolOwner } from "#/utils/address";
-import { fetcher } from "#/utils/fetcher";
 import { toSlug } from "#/utils/formatStringCase";
-import { truncateAddress } from "#/utils/truncateAddress";
+import { truncate } from "#/utils/truncate";
 
 import { Actions } from "./Actions";
 import { PoolMetadataItemForm } from "./PoolMetadataForm";
@@ -66,7 +64,7 @@ const Header = () => {
 
 const Td = ({ className, children }: CellProps) => {
   return (
-    <td className={cn("whitespace py-4 px-3 text-sm text-gray-300", className)}>
+    <td className={cn("whitespace py-4 px-3 text-sm text-slate12", className)}>
       {children}
     </td>
   );
@@ -80,13 +78,6 @@ const AttributeLink = ({ data }: { data: PoolMetadataAttribute }) => {
           <ArrowTopRightIcon className="text-white" />
         </button>
       );
-    // TODO: decide whether we want to have an image type and create it accordingly
-    // case "image":
-    //   return (
-    //     <button>
-    //       <ImageDialog src={data.value as string} />
-    //     </button>
-    //   );
     default:
       return <></>;
   }
@@ -110,14 +101,18 @@ function Row({
               className="flex items-center"
               onClick={() => handleRemoveMetadataAttr(data.key)}
             >
-              <TrashIcon className="text-red-400" width={16} height={16} />
+              <TrashIcon
+                className="text-tomato9 hover:text-tomato10"
+                width={16}
+                height={16}
+              />
             </button>
             <Dialog
               title={"Edit attribute"}
               content={<PoolMetadataItemForm data={data} mode="edit" />}
             >
               <button className="flex items-center">
-                <Pencil2Icon className="text-yellow-400" />
+                <Pencil2Icon className="hover:text-amber100 text-amber10" />
               </button>
             </Dialog>
           </div>
@@ -139,9 +134,17 @@ function Row({
 export default function MetadataAttributesTable({
   poolId,
   network,
+  poolOwner,
+  cid,
+  data,
+  error,
 }: {
   poolId: `0x${string}`;
+  poolOwner: `0x${string}`;
   network: Network;
+  cid?: string | null;
+  data?: PoolMetadataAttribute[];
+  error?: string | null;
 }) {
   const {
     metadata,
@@ -154,23 +157,6 @@ export default function MetadataAttributesTable({
   const { address } = useAccount();
 
   const chainId = networkIdFor(network) ?? chain?.id.toString();
-  const { data: poolOwner } = pools.gql(chainId).usePoolOwner({
-    poolId,
-  });
-  const { data: poolsData } = poolsMetadata.gql(chainId).useMetadataPool({
-    poolId,
-  });
-
-  const pool = poolsData?.pools[0];
-  const { data } = useSWR(
-    pool?.metadataCID
-      ? `https://gateway.pinata.cloud/ipfs/${pool.metadataCID}`
-      : null,
-    fetcher,
-    {
-      revalidateOnMount: true,
-    }
-  );
 
   useEffect(() => {
     handleSetMetadata(data ? (data as PoolMetadataAttribute[]) : []);
@@ -178,48 +164,74 @@ export default function MetadataAttributesTable({
   }, [data]);
 
   const balancerPoolLink = `https://app.balancer.fi/#/${network}/pool/${poolId}`;
-  const isOwner = isPoolOwner(chainId, poolOwner?.pool?.owner, address);
+  const isOwner = isPoolOwner(chainId, poolOwner, address);
 
   return (
-    <div className="w-full bg-gray-900">
+    <div className="w-full bg-blue1">
       <div className="pr-4 sm:pr-6 lg:pr-12">
         <div className="sm:flex sm:items-center">
           <div className="sm:flex-auto">
-            <h1 className="mx-1 flex text-2xl font-medium text-gray-400">
-              Metadata attributes - Pool
+            <h1 className="flex text-2xl">Pool attributes</h1>
+            <div className="inline-block">
               <a
                 target="_blank"
                 href={balancerPoolLink}
-                className="flex flex-row items-center justify-center"
+                className="flex flex-row items-center text-slate11"
               >
-                #{truncateAddress(poolId)}{" "}
-                <ArrowTopRightIcon width={25} height={25} fontWeight={25} />
+                Open on app.balancer.fi
+                <ArrowTopRightIcon
+                  width={16}
+                  height={16}
+                  fontWeight={16}
+                  className="ml-1"
+                />
               </a>
-            </h1>
+            </div>
+
+            <table>
+              <tr>
+                <td>Pool ID:</td>
+                <td>
+                  <ClickToCopy text={poolId}>{truncate(poolId)}</ClickToCopy>
+                </td>
+              </tr>
+              <tr>
+                <td>Metadata CID:</td>
+                <td>
+                  {cid ? (
+                    <ClickToCopy text={cid}>{truncate(cid)}</ClickToCopy>
+                  ) : (
+                    <></>
+                  )}
+                </td>
+              </tr>
+            </table>
           </div>
         </div>
+        {error ?? (
+          <div>
+            <div className="mt-4 flow-root max-h-[30rem] overflow-y-scroll rounded-md border border-blue6 bg-blue3">
+              <table className="min-w-full divide-y divide-blue6">
+                <Header />
 
-        <div className="mt-4 flow-root max-h-[30rem] overflow-y-scroll rounded-md border border-gray-700 bg-gray-800">
-          <table className="min-w-full divide-y divide-gray-700">
-            <Header />
-
-            <tbody className="divide-y divide-gray-800">
-              {metadata.map((item) => (
-                <Row
-                  key={toSlug(item.key)}
-                  data={item}
-                  mode={isOwner ? "edit" : "view"}
-                />
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <Actions
-          poolId={poolId}
-          isOwner={isOwner}
-          metadataUpdated={metadataUpdated}
-        />
+                <tbody className="divide-y divide-blue6">
+                  {metadata.map((item) => (
+                    <Row
+                      key={toSlug(item.key)}
+                      data={item}
+                      mode={isOwner ? "edit" : "view"}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <Actions
+              poolId={poolId}
+              isOwner={isOwner}
+              metadataUpdated={metadataUpdated}
+            />
+          </div>
+        )}{" "}
       </div>
     </div>
   );

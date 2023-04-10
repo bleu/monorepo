@@ -23,19 +23,16 @@ export default async function Page({
 
   const pool = metadataRegistry.pools[0];
 
-  if (!pool || !pool?.metadataCID) return null;
-
-  const link = `https://ipfs.io/ipfs/${pool.metadataCID}`;
-
-  const response = await fetch(link);
-
   let data,
     error = undefined;
+  if (pool) {
+    const response = await fetch(`https://ipfs.io/ipfs/${pool.metadataCID}`);
 
-  if (response.ok) {
-    data = await response.json();
-  } else {
-    error = response.statusText;
+    if (response.ok) {
+      data = await response.json();
+    } else {
+      error = response.statusText;
+    }
   }
 
   return (
@@ -44,7 +41,7 @@ export default async function Page({
         poolId={params.poolId}
         network={params.network}
         poolOwner={poolOwner.pool?.owner}
-        cid={pool.metadataCID}
+        cid={pool?.metadataCID}
         data={data}
         error={error}
       />

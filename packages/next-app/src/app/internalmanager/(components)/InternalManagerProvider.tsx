@@ -16,5 +16,5 @@ export function InternalManagerProvider({ children }: React.PropsWithChildren) {
     if (chain) push("/internalmanager");
   }, [chain]);
 
-  return isConnected ? children : <WalletNotConnected />;
+  return <>{isConnected ? children : <WalletNotConnected />}</>;
 }

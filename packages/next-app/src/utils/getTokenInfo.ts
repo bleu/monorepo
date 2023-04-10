@@ -4,6 +4,7 @@ interface TokenInfo {
   [address: string]: { name: string; symbol: string; decimals: number };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function createTokenAddressInfoMapping(json: any): TokenInfo {
   const dictionary: TokenInfo = {};
 

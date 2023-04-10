@@ -7,7 +7,13 @@ import {
   TrashIcon,
 } from "@radix-ui/react-icons";
 import cn from "classnames";
-import { TableHTMLAttributes, useEffect } from "react";
+import {
+  TableHTMLAttributes,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { useAccount, useNetwork } from "wagmi";
 
 import { ClickToCopy } from "#/components/ClickToCopy";
@@ -36,6 +42,52 @@ const Th = ({ className, children }: CellProps) => (
     {children}
   </th>
 );
+
+function ClampedText({ text }: { text: string }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [hasOverflow, setHasOverflow] = useState(false);
+  const [hasBigword, setHasBigword] = useState(false);
+  const textRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    if (textRef.current) {
+      const numLines = textRef.current?.getBoundingClientRect().height / 16;
+      setHasOverflow(numLines >= 4);
+    }
+    setHasBigword(text.split(" ").some((word) => word.length > 20));
+  }, []);
+
+  const toggleExpanded = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  return (
+    <div>
+      <div
+        ref={textRef}
+        className={cn(
+          "break-all",
+          !isExpanded && hasBigword
+            ? "overflow-hidden text-ellipsis line-clamp-3"
+            : "",
+          !isExpanded && hasOverflow ? "line-clamp-3" : ""
+        )}
+      >
+        {text}
+      </div>
+      {hasOverflow &&
+        (isExpanded ? (
+          <button className="block text-blue-400" onClick={toggleExpanded}>
+            see less
+          </button>
+        ) : (
+          <button className="block text-blue-400" onClick={toggleExpanded}>
+            see more
+          </button>
+        ))}
+    </div>
+  );
+}
 
 const Header = () => {
   const cols = [
@@ -118,14 +170,33 @@ function Row({
           </div>
         )}
       </Td>
-      <Td className="min-w-[10rem]">{data.key}</Td>
-      <Td>{data.typename}</Td>
-      <Td>{data.description}</Td>
+      <Td className="min-w-[5rem] max-w-[10rem]">
+        {!data.value || !data.description ? (
+          <div className="flex justify-between">
+            <ClampedText text={data.key} />
+            <span className="inline-flex items-center rounded-md bg-red-200 p-0.5 text-xs font-semibold text-red-600">
+              NEEDS EDIT
+            </span>
+          </div>
+        ) : (
+          <ClampedText text={data.key} />
+        )}
+      </Td>
       <Td>
-        <div className="flex justify-between gap-2">
-          <>{data.value}</>
-          <AttributeLink data={data} />
-        </div>
+        <ClampedText text={data.typename} />
+      </Td>
+      <Td className="max-w-[15rem]">
+        <ClampedText text={data.description ?? "..."} />
+      </Td>
+      <Td className="min-w-[10rem]">
+        {data.value ? (
+          <div className="flex justify-between gap-2">
+            <ClampedText text={data.value} />
+            <AttributeLink data={data} />
+          </div>
+        ) : (
+          "..."
+        )}
       </Td>
     </tr>
   );
@@ -151,6 +222,7 @@ export default function MetadataAttributesTable({
     handleSetMetadata,
     handleSetOriginalMetadata,
     metadataUpdated,
+    isMetadataValid,
   } = usePoolMetadata();
 
   const { chain } = useNetwork();
@@ -229,6 +301,7 @@ export default function MetadataAttributesTable({
               poolId={poolId}
               isOwner={isOwner}
               metadataUpdated={metadataUpdated}
+              isMetadataValid={isMetadataValid}
             />
           </div>
         )}{" "}

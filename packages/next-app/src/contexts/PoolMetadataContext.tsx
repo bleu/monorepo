@@ -8,6 +8,7 @@ import {
   ReactNode,
   SetStateAction,
   useContext,
+  useEffect,
   useState,
 } from "react";
 
@@ -17,8 +18,8 @@ import { toSlug } from "#/utils/formatStringCase";
 export interface PoolMetadataAttribute {
   typename: (typeof TypenameEnum.enum)[keyof typeof TypenameEnum.enum];
   key: string;
-  description: string;
-  value: string;
+  description: string | null;
+  value: string | null;
 }
 
 interface PoolMetadataContextType {
@@ -32,6 +33,7 @@ interface PoolMetadataContextType {
   setStatus: Dispatch<SetStateAction<UpdateStatus>>;
   metadataUpdated: boolean;
   handleRemoveMetadataAttr: (key: string) => void;
+  isMetadataValid: boolean;
 }
 
 export enum UpdateStatus {
@@ -50,6 +52,10 @@ export enum StatusLabels {
   "Close",
 }
 
+function hasNull(element: PoolMetadataAttribute) {
+  return Object.values(element).includes(null);
+}
+
 export const PoolMetadataContext = createContext({} as PoolMetadataContextType);
 
 export function PoolMetadataProvider({ children }: { children: ReactNode }) {
@@ -60,6 +66,7 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
   const [originalMetadata, setOriginalMetadata] = useState<
     PoolMetadataAttribute[]
   >([]);
+  const [isMetadataValid, setIsMetadataValid] = useState<boolean>(false);
 
   function handleAddMetadata(data: PoolMetadataAttribute) {
     setMetadata((state) => [data, ...state]);
@@ -83,6 +90,10 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
 
   const metadataUpdated = !isEqual(metadata, originalMetadata);
 
+  useEffect(() => {
+    setIsMetadataValid(!metadata.some(hasNull));
+  }, [metadata]);
+
   return (
     <PoolMetadataContext.Provider
       value={{
@@ -96,6 +107,7 @@ export function PoolMetadataProvider({ children }: { children: ReactNode }) {
         metadataUpdated,
         handleSetOriginalMetadata: setOriginalMetadata,
         handleRemoveMetadataAttr,
+        isMetadataValid,
       }}
     >
       {children}

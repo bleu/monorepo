@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 
-module.exports = {
+const { withSentryConfig } = require("@sentry/nextjs");
+
+const moduleExports = {
   transpilePackages: [
     "@balancer-pool-metadata/gql",
     "@balancer-pool-metadata/schema",
@@ -20,4 +22,13 @@ module.exports = {
       },
     ];
   },
+  sentry: {
+    hideSourceMaps: true,
+  },
 };
+
+const sentryWebpackPluginOptions = {
+  silent: true,
+};
+
+module.exports = withSentryConfig(moduleExports, sentryWebpackPluginOptions);

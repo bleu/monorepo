@@ -38,9 +38,9 @@
     "@types/node": "^18.15.11",
     "concurrently": "^8.0.1",
     "ghooks": "^2.0.4",
-    "lint-staged": "^13.2.0",
+    "lint-staged": "^13.2.1",
     "prettier": "^2.8.7",
-    "typescript": "^5.0.3"
+    "typescript": "^5.0.4"
   },
   "pnpm": {
     "overrides": {

@@ -71,7 +71,7 @@ export default function Page() {
   address = impersonateWhetherDAO(chain?.id.toString() || "1", address);
 
   const { data } = pools.gql(chain!.id.toString()).useInternalBalance({
-    userAddress: address ? address.toLowerCase() : "",
+    userAddress: "",
   });
 
   const tokensWithBalance = data?.user?.userInternalBalances?.filter(

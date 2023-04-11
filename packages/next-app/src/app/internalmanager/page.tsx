@@ -1,4 +1,5 @@
 "use client";
+import { NetworkChainId } from "@balancer-pool-metadata/shared";
 import { useEffect, useState } from "react";
 import { useAccount, useNetwork } from "wagmi";
 
@@ -54,10 +55,10 @@ const NOTIFICATION_MAP = {
 };
 
 const networkUrls = {
-  1: "https://etherscan.io/tx/",
-  5: "https://goerli.etherscan.io/tx/",
-  137: "https://polygonscan.com/tx/",
-  42161: "https://arbiscan.io/tx/",
+  [NetworkChainId.MAINNET]: "https://etherscan.io/tx/",
+  [NetworkChainId.GOERLI]: "https://goerli.etherscan.io/tx/",
+  [NetworkChainId.POLYGON]: "https://polygonscan.com/tx/",
+  [NetworkChainId.ARBITRUM]: "https://arbiscan.io/tx/",
 };
 
 export default function Page() {
@@ -70,8 +71,10 @@ export default function Page() {
   let { address } = useAccount();
   address = impersonateWhetherDAO(chain?.id.toString() || "1", address);
 
+  const addressLower = address ? address?.toLowerCase() : "";
+
   const { data } = pools.gql(chain!.id.toString()).useInternalBalance({
-    userAddress: "",
+    userAddress: addressLower,
   });
 
   const tokensWithBalance = data?.user?.userInternalBalances?.filter(
@@ -95,13 +98,12 @@ export default function Page() {
   }, [transaction]);
 
   async function handleWithdraw(tokenAddress: `0x${string}`, balance: string) {
-    setTransaction({
-      hash: undefined,
+    setTransaction((prev) => ({
+      ...prev,
       status: TransactionStatus.WAITING_APPROVAL,
-      link: undefined,
-    });
+    }));
     const { wait, hash } = await writeWithdrawInternalBalance(
-      address!,
+      addressLower as `0x${string}`,
       tokenAddress,
       balance
     );

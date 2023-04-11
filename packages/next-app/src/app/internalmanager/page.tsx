@@ -70,8 +70,10 @@ export default function Page() {
   let { address } = useAccount();
   address = impersonateWhetherDAO(chain?.id.toString() || "1", address);
 
+  const lowerCaseAddress = address ? address.toLowerCase() : "";
+
   const { data } = pools.gql(chain!.id.toString()).useInternalBalance({
-    userAddress: address!.toLowerCase(),
+    userAddress: lowerCaseAddress,
   });
 
   const handleNotifier = () => {

@@ -1,4 +1,4 @@
-import tokensInfo from "public/tokens.json";
+import tokensInfo from "public/tokens/5.json";
 
 interface TokenInfo {
   [address: string]: { name: string; symbol: string; decimals: number };

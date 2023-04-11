@@ -22,7 +22,7 @@ interface IHeader {
 
 export function Header({ linkUrl, imageSrc, title, children }: IHeader) {
   return (
-    <div className="flex h-20 w-full items-center border border-b-blue3 bg-blue2 p-4 text-white">
+    <div className="flex h-20 w-full items-center border-b border-b-blue3 bg-blue2 p-4 text-white">
       <div className="mr-auto flex flex-1 justify-start">
         <Link
           href={linkUrl}

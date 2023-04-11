@@ -76,6 +76,10 @@ export default function Page() {
     userAddress: lowerCaseAddress,
   });
 
+  const tokensWithBalance = data?.user?.userInternalBalances?.filter(
+    (token) => token.balance > 0
+  );
+
   const handleNotifier = () => {
     if (isNotifierOpen) {
       setIsNotifierOpen(false);
@@ -126,10 +130,6 @@ export default function Page() {
       }));
     }
   }
-
-  const tokensWithBalance = data?.user?.userInternalBalances?.filter(
-    (token) => token.balance > 0
-  );
 
   return (
     <div className="h-full flex-1 flex w-full justify-center text-white">

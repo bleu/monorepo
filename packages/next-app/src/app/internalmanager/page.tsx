@@ -124,22 +124,27 @@ export default function Page() {
       }));
     }
   }
+
+  const tokensWithBalance = data?.user?.userInternalBalances?.filter(
+    (token) => token.balance > 0
+  );
+
   return (
     <div className="h-full flex-1 flex w-full justify-center text-white">
       <div className="mt-10">
-        <Table>
-          <Table.HeaderRow>
-            <Table.HeaderCell>Token Symbol</Table.HeaderCell>
-            <Table.HeaderCell>Address</Table.HeaderCell>
-            <Table.HeaderCell>Balance</Table.HeaderCell>
-            <Table.HeaderCell>
-              <span className="sr-only">Withdraw</span>
-            </Table.HeaderCell>
-          </Table.HeaderRow>
-          <Table.Body>
-            {data?.user?.userInternalBalances?.map((token) => (
-              <>
-                {token.balance > 0 && (
+        {tokensWithBalance && tokensWithBalance?.length > 0 && (
+          <Table>
+            <Table.HeaderRow>
+              <Table.HeaderCell>Token Symbol</Table.HeaderCell>
+              <Table.HeaderCell>Address</Table.HeaderCell>
+              <Table.HeaderCell>Balance</Table.HeaderCell>
+              <Table.HeaderCell>
+                <span className="sr-only">Withdraw</span>
+              </Table.HeaderCell>
+            </Table.HeaderRow>
+            <Table.Body>
+              {tokensWithBalance.map((token) => (
+                <>
                   <Table.BodyRow key={token.token}>
                     <Table.BodyCell>
                       {tokenDictionary[token.token].symbol}
@@ -158,11 +163,11 @@ export default function Page() {
                       </Button>
                     </Table.BodyCell>
                   </Table.BodyRow>
-                )}
-              </>
-            ))}
-          </Table.Body>
-        </Table>
+                </>
+              ))}
+            </Table.Body>
+          </Table>
+        )}
       </div>
       {transaction.status && (
         <Toast

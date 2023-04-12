@@ -1,7 +1,12 @@
 import tokensInfo from "public/tokens/5.json";
 
-interface TokenInfo {
-  [address: string]: { name: string; symbol: string; decimals: number };
+export interface TokenInfo {
+  [address: string]: {
+    name: string;
+    symbol: string;
+    decimals: number;
+    logoURI: string;
+  };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -18,6 +23,7 @@ function createTokenAddressInfoMapping(json: any): TokenInfo {
         name: token.name,
         symbol: token.symbol,
         decimals: token.decimals,
+        logoURI: token.logoURI,
       };
     }
   }

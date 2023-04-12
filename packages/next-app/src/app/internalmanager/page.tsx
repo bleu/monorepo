@@ -1,4 +1,5 @@
 "use client";
+import { NetworkChainId } from "@balancer-pool-metadata/shared";
 import { useEffect, useState } from "react";
 import { useAccount, useNetwork } from "wagmi";
 
@@ -54,10 +55,10 @@ const NOTIFICATION_MAP = {
 };
 
 const networkUrls = {
-  1: "https://etherscan.io/tx/",
-  5: "https://goerli.etherscan.io/tx/",
-  137: "https://polygonscan.com/tx/",
-  42161: "https://arbiscan.io/tx/",
+  [NetworkChainId.MAINNET]: "https://etherscan.io/tx/",
+  [NetworkChainId.GOERLI]: "https://goerli.etherscan.io/tx/",
+  [NetworkChainId.POLYGON]: "https://polygonscan.com/tx/",
+  [NetworkChainId.ARBITRUM]: "https://arbiscan.io/tx/",
 };
 
 export default function Page() {
@@ -70,9 +71,15 @@ export default function Page() {
   let { address } = useAccount();
   address = impersonateWhetherDAO(chain?.id.toString() || "1", address);
 
+  const addressLower = address ? address?.toLowerCase() : "";
+
   const { data } = pools.gql(chain!.id.toString()).useInternalBalance({
-    userAddress: address!.toLowerCase(),
+    userAddress: addressLower,
   });
+
+  const tokensWithBalance = data?.user?.userInternalBalances?.filter(
+    (token) => token.balance > 0
+  );
 
   const handleNotifier = () => {
     if (isNotifierOpen) {
@@ -91,13 +98,12 @@ export default function Page() {
   }, [transaction]);
 
   async function handleWithdraw(tokenAddress: `0x${string}`, balance: string) {
-    setTransaction({
-      hash: undefined,
+    setTransaction((prev) => ({
+      ...prev,
       status: TransactionStatus.WAITING_APPROVAL,
-      link: undefined,
-    });
+    }));
     const { wait, hash } = await writeWithdrawInternalBalance(
-      address!,
+      addressLower as `0x${string}`,
       tokenAddress,
       balance
     );
@@ -124,22 +130,23 @@ export default function Page() {
       }));
     }
   }
+
   return (
     <div className="h-full flex-1 flex w-full justify-center text-white">
       <div className="mt-10">
-        <Table>
-          <Table.HeaderRow>
-            <Table.HeaderCell>Token Symbol</Table.HeaderCell>
-            <Table.HeaderCell>Address</Table.HeaderCell>
-            <Table.HeaderCell>Balance</Table.HeaderCell>
-            <Table.HeaderCell>
-              <span className="sr-only">Withdraw</span>
-            </Table.HeaderCell>
-          </Table.HeaderRow>
-          <Table.Body>
-            {data?.user?.userInternalBalances?.map((token) => (
-              <>
-                {token.balance > 0 && (
+        {tokensWithBalance && tokensWithBalance?.length > 0 && (
+          <Table>
+            <Table.HeaderRow>
+              <Table.HeaderCell>Token Symbol</Table.HeaderCell>
+              <Table.HeaderCell>Address</Table.HeaderCell>
+              <Table.HeaderCell>Balance</Table.HeaderCell>
+              <Table.HeaderCell>
+                <span className="sr-only">Withdraw</span>
+              </Table.HeaderCell>
+            </Table.HeaderRow>
+            <Table.Body>
+              {tokensWithBalance.map((token) => (
+                <>
                   <Table.BodyRow key={token.token}>
                     <Table.BodyCell>
                       {tokenDictionary[token.token].symbol}
@@ -158,11 +165,11 @@ export default function Page() {
                       </Button>
                     </Table.BodyCell>
                   </Table.BodyRow>
-                )}
-              </>
-            ))}
-          </Table.Body>
-        </Table>
+                </>
+              ))}
+            </Table.Body>
+          </Table>
+        )}
       </div>
       {transaction.status && (
         <Toast

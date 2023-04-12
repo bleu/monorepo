@@ -5,6 +5,13 @@ export enum Network {
   Goerli = "Goerli",
 }
 
+export enum NetworkChainId {
+  MAINNET = 1,
+  GOERLI = 5,
+  POLYGON = 137,
+  ARBITRUM = 42161,
+}
+
 export const DELEGATE_OWNER = "0xBA1BA1ba1BA1bA1bA1Ba1BA1ba1BA1bA1ba1ba1B";
 
 export const networkMultisigs = {

@@ -105,14 +105,14 @@ export default function Page() {
       });
 
     if (user?.userInternalBalances) {
-      const tokensWithBalance = user.userInternalBalances.filter(
+      const tokensWithBalanceRaw = user.userInternalBalances.filter(
         (token) => token.balance > 0
       );
 
       const incompletedTokens: { token: string; balance: number }[] = [];
       const alreadyCompletedTokens: IToken[] = [];
 
-      tokensWithBalance.forEach((token) => {
+      tokensWithBalanceRaw.forEach((token) => {
         if (token.token in tokenDictionary) {
           const symbol = tokenDictionary[token.token].symbol;
           const decimals = tokenDictionary[token.token].decimals;

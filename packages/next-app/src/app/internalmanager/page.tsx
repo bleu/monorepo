@@ -1,7 +1,8 @@
 "use client";
 import { NetworkChainId } from "@balancer-pool-metadata/shared";
+import { parseFixed } from "@ethersproject/bignumber";
 import { useEffect, useState } from "react";
-import { useAccount, useNetwork } from "wagmi";
+import { Chain, useAccount, useNetwork } from "wagmi";
 
 import { ToastContent } from "#/app/metadata/[network]/pool/[poolId]/(components)/MetadataAttributesTable/TransactionModal";
 import { Button } from "#/components";
@@ -9,7 +10,17 @@ import Table from "#/components/Table";
 import { Toast } from "#/components/Toast";
 import { impersonateWhetherDAO, pools } from "#/lib/gql";
 import { tokenDictionary } from "#/utils/getTokenInfo";
-import { writeWithdrawInternalBalance } from "#/wagmi/withdrawInternalBalance";
+import {
+  usePrepareVaultManageUserBalance,
+  useVaultManageUserBalance,
+} from "#/wagmi/generated";
+
+export enum UserBalanceOpKind {
+  DEPOSIT_INTERNAL,
+  WITHDRAW_INTERNAL,
+  TRANSFER_INTERNAL,
+  TRANSFER_EXTERNAL,
+}
 
 enum NotificationVariant {
   NOTIFICATION = "notification",
@@ -66,6 +77,7 @@ export default function Page() {
   const [transaction, setTransaction] = useState<ITransaction>(
     {} as ITransaction
   );
+
   const { chain } = useNetwork();
 
   let { address } = useAccount();
@@ -97,40 +109,6 @@ export default function Page() {
     handleNotifier();
   }, [transaction]);
 
-  async function handleWithdraw(tokenAddress: `0x${string}`, balance: string) {
-    setTransaction((prev) => ({
-      ...prev,
-      status: TransactionStatus.WAITING_APPROVAL,
-    }));
-    const { wait, hash } = await writeWithdrawInternalBalance(
-      addressLower as `0x${string}`,
-      tokenAddress,
-      balance
-    );
-    if (hash) {
-      const baseTxUrl = networkUrls[chain!.id as keyof typeof networkUrls];
-      setTransaction({
-        hash,
-        status: TransactionStatus.SUBMITTING,
-        link: `${baseTxUrl}${hash}`,
-      });
-    }
-
-    try {
-      const receipt = await wait();
-      if (receipt.status)
-        setTransaction((prev) => ({
-          ...prev,
-          status: TransactionStatus.CONFIRMED,
-        }));
-    } catch (error) {
-      setTransaction((prev) => ({
-        ...prev,
-        status: TransactionStatus.WRITE_ERROR,
-      }));
-    }
-  }
-
   return (
     <div className="h-full flex-1 flex w-full justify-center text-white">
       <div className="mt-10">
@@ -146,26 +124,13 @@ export default function Page() {
             </Table.HeaderRow>
             <Table.Body>
               {tokensWithBalance.map((token) => (
-                <>
-                  <Table.BodyRow key={token.token}>
-                    <Table.BodyCell>
-                      {tokenDictionary[token.token].symbol}
-                    </Table.BodyCell>
-                    <Table.BodyCell>{token.token}</Table.BodyCell>
-                    <Table.BodyCell>{token.balance}</Table.BodyCell>
-                    <Table.BodyCell>
-                      <Button
-                        type="button"
-                        className="bg-indigo-500 text-gray-50 hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-gray-600 disabled:text-gray-500 border border-transparent"
-                        onClick={() =>
-                          handleWithdraw(token.token, token.balance)
-                        }
-                      >
-                        Withdraw<span className="sr-only"> token</span>
-                      </Button>
-                    </Table.BodyCell>
-                  </Table.BodyRow>
-                </>
+                <TableRow
+                  key={token.token}
+                  token={token}
+                  userAddress={addressLower as `0x${string}`}
+                  setTransaction={setTransaction}
+                  chain={chain}
+                />
               ))}
             </Table.Body>
           </Table>
@@ -186,5 +151,105 @@ export default function Page() {
         />
       )}
     </div>
+  );
+}
+
+function TableRow({
+  token,
+  userAddress,
+  setTransaction,
+  chain,
+}: {
+  token: {
+    __typename?: "UserInternalBalance" | undefined;
+    token: `0x${string}`;
+    balance: string;
+  };
+  userAddress: `0x${string}`;
+  setTransaction: React.Dispatch<React.SetStateAction<ITransaction>>;
+  chain?: Chain;
+}) {
+  const [transferKind, setTransferKind] = useState<UserBalanceOpKind>();
+  const userBalanceOp = {
+    kind: transferKind as number,
+    asset: token.token,
+    amount: parseFixed(token.balance, tokenDictionary[token.token].decimals),
+    sender: userAddress as `0x${string}`,
+    recipient: userAddress as `0x${string}`,
+  };
+  const { config } = usePrepareVaultManageUserBalance({
+    args: [[userBalanceOp]],
+  });
+  const { data, write } = useVaultManageUserBalance(config);
+
+  function handleWithdraw() {
+    setTransferKind(UserBalanceOpKind.WITHDRAW_INTERNAL);
+    setTransaction((prev) => ({
+      ...prev,
+      status: TransactionStatus.WAITING_APPROVAL,
+    }));
+  }
+
+  useEffect(() => {
+    if (!data) return;
+    const { hash, wait } = data;
+    switch (transferKind) {
+      case UserBalanceOpKind.WITHDRAW_INTERNAL: {
+        async function handleTransactionStatus() {
+          if (hash) {
+            if (chain) {
+              const baseTxUrl =
+                networkUrls[chain.id as keyof typeof networkUrls];
+              setTransaction({
+                hash,
+                status: TransactionStatus.SUBMITTING,
+                link: `${baseTxUrl}${hash}`,
+              });
+            }
+          }
+          try {
+            const receipt = await wait();
+            if (receipt.status)
+              setTransaction((prev) => ({
+                ...prev,
+                status: TransactionStatus.CONFIRMED,
+              }));
+          } catch (error) {
+            setTransaction((prev) => ({
+              ...prev,
+              status: TransactionStatus.WRITE_ERROR,
+            }));
+          }
+          return;
+        }
+        handleTransactionStatus();
+      }
+      default:
+        return;
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (!transferKind) return;
+    if (write) {
+      write();
+    }
+  }, [transferKind]);
+
+  return (
+    <Table.BodyRow key={token.token}>
+      <Table.BodyCell>{tokenDictionary[token.token].symbol}</Table.BodyCell>
+      <Table.BodyCell>{token.token}</Table.BodyCell>
+      <Table.BodyCell>{token.balance}</Table.BodyCell>
+      <Table.BodyCell>
+        <Button
+          type="button"
+          className="bg-indigo-500 text-gray-50 hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-gray-600 disabled:text-gray-500 border border-transparent"
+          onClick={() => handleWithdraw()}
+        >
+          Withdraw<span className="sr-only"> token</span>
+        </Button>
+      </Table.BodyCell>
+    </Table.BodyRow>
   );
 }

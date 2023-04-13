@@ -196,16 +196,13 @@ function TableRow({
     switch (transferKind) {
       case UserBalanceOpKind.WITHDRAW_INTERNAL: {
         async function handleTransactionStatus() {
-          if (hash) {
-            if (chain) {
-              const baseTxUrl =
-                networkUrls[chain.id as keyof typeof networkUrls];
-              setTransaction({
-                hash,
-                status: TransactionStatus.SUBMITTING,
-                link: `${baseTxUrl}${hash}`,
-              });
-            }
+          if (hash && chain) {
+            const baseTxUrl = networkUrls[chain.id as keyof typeof networkUrls];
+            setTransaction({
+              hash,
+              status: TransactionStatus.SUBMITTING,
+              link: `${baseTxUrl}${hash}`,
+            });
           }
           try {
             const receipt = await wait();

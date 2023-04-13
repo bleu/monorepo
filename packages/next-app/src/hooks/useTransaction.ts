@@ -1,9 +1,9 @@
+import { SendTransactionResult } from "@wagmi/core";
 import { Dispatch, useEffect, useState } from "react";
 
 import { PoolMetadataAttribute } from "#/contexts/PoolMetadataContext";
 import { pinJSON } from "#/lib/ipfs";
 import { useNetwork } from "#/wagmi";
-import { writeSetPoolMetadata } from "#/wagmi/setPoolMetadata";
 
 export enum TransactionStatus {
   AUTHORIZING = "Approve this transaction",
@@ -37,6 +37,8 @@ type TransactionHookResult = {
   isNotifierOpen: boolean;
   setIsNotifierOpen: Dispatch<boolean>;
   transactionUrl: string | undefined;
+  ipfsCID: string;
+  setRequestData: Dispatch<SendTransactionResult | undefined>;
 };
 
 const NOTIFICATION_MAP = {
@@ -87,6 +89,7 @@ export function useMetadataTransaction({
   metadata: PoolMetadataAttribute[];
 }): TransactionHookResult {
   const [ipfsCID, setIpfsCID] = useState("");
+  const [requestData, setRequestData] = useState<SendTransactionResult>();
   const [isNotifierOpen, setIsNotifierOpen] = useState(false);
   const [isTransactionDisabled, setIsTransactionDisabled] = useState(false);
   const [notification, setNotification] = useState<Notification | null>(null);
@@ -130,22 +133,17 @@ export function useMetadataTransaction({
       // Call function to set metadata on-chain here
       try {
         setTransactionStatus(TransactionStatus.WAITING_APPROVAL);
-
-        // call function to set metadata on-chain
-        const { wait, hash } = await writeSetPoolMetadata(
-          poolId,
-          ipfsCID,
-          // @ts-ignore
-          chain?.id
-        );
-        handleSetTransactionLink(hash);
-        // Once the metadata is set on-chain, update the transaction status to SUBMITTING
-        setTransactionStatus(TransactionStatus.SUBMITTING);
-        setNotification(NOTIFICATION_MAP[TransactionStatus.SUBMITTING]);
-        const receipt = await wait();
-        if (receipt.status) {
-          setTransactionStatus(TransactionStatus.CONFIRMED);
-          setNotification(NOTIFICATION_MAP[TransactionStatus.CONFIRMED]);
+        if (requestData) {
+          const { wait, hash } = requestData;
+          handleSetTransactionLink(hash);
+          // Once the metadata is set on-chain, update the transaction status to SUBMITTING
+          setTransactionStatus(TransactionStatus.SUBMITTING);
+          setNotification(NOTIFICATION_MAP[TransactionStatus.SUBMITTING]);
+          const receipt = await wait();
+          if (receipt.status) {
+            setTransactionStatus(TransactionStatus.CONFIRMED);
+            setNotification(NOTIFICATION_MAP[TransactionStatus.CONFIRMED]);
+          }
         }
       } catch (error) {
         setTransactionStatus(TransactionStatus.WRITE_ERROR);
@@ -179,5 +177,7 @@ export function useMetadataTransaction({
     isNotifierOpen,
     setIsNotifierOpen,
     transactionUrl,
+    ipfsCID,
+    setRequestData,
   };
 }

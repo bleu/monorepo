@@ -2,7 +2,7 @@
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import cn from "classnames";
-import { PropsWithChildren, useEffect, useState } from "react";
+import { PropsWithChildren, useState } from "react";
 
 import { Button } from "#/components";
 import { Toast } from "#/components/Toast";
@@ -11,10 +11,6 @@ import {
   TransactionStatus,
   useMetadataTransaction,
 } from "#/hooks/useTransaction";
-import {
-  usePoolMetadataRegistrySetPoolMetadata,
-  usePreparePoolMetadataRegistrySetPoolMetadata,
-} from "#/wagmi/generated";
 
 type Stage = {
   pinningStep: string;
@@ -158,26 +154,7 @@ function ProcessTransaction({ poolId }: { poolId: `0x${string}` }) {
     transactionStatus,
     setIsNotifierOpen,
     transactionUrl,
-    ipfsCID,
-    setRequestData,
   } = useMetadataTransaction({ poolId, metadata });
-  const { config } = usePreparePoolMetadataRegistrySetPoolMetadata({
-    args: [poolId, ipfsCID],
-  });
-  const { write, data } = usePoolMetadataRegistrySetPoolMetadata(config);
-
-  useEffect(() => {
-    if (transactionStatus === TransactionStatus.WAITING_APPROVAL && write) {
-      write();
-    }
-  }, [transactionStatus]);
-
-  useEffect(() => {
-    if (!data) return;
-    if (data.hash) {
-      setRequestData(data);
-    }
-  }, [data]);
 
   const stage = STAGE_CN_MAPPING[transactionStatus];
 

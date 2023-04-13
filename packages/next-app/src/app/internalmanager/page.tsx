@@ -228,9 +228,7 @@ function TableRow({
 
   useEffect(() => {
     if (!transferKind) return;
-    if (write) {
-      write();
-    }
+    write?.();
   }, [transferKind]);
 
   return (

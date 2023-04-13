@@ -2,25 +2,19 @@
 import { NetworkChainId } from "@balancer-pool-metadata/shared";
 import { parseFixed } from "@ethersproject/bignumber";
 import { useEffect, useState } from "react";
-import { Chain, useAccount, useNetwork } from "wagmi";
+import { Chain, useAccount, useNetwork, useWaitForTransaction } from "wagmi";
 
 import { ToastContent } from "#/app/metadata/[network]/pool/[poolId]/(components)/MetadataAttributesTable/TransactionModal";
 import { Button } from "#/components";
 import Table from "#/components/Table";
 import { Toast } from "#/components/Toast";
 import { impersonateWhetherDAO, pools } from "#/lib/gql";
+import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
 import { tokenDictionary } from "#/utils/getTokenInfo";
 import {
   usePrepareVaultManageUserBalance,
   useVaultManageUserBalance,
 } from "#/wagmi/generated";
-
-export enum UserBalanceOpKind {
-  DEPOSIT_INTERNAL,
-  WITHDRAW_INTERNAL,
-  TRANSFER_INTERNAL,
-  TRANSFER_EXTERNAL,
-}
 
 enum NotificationVariant {
   NOTIFICATION = "notification",
@@ -169,9 +163,9 @@ function TableRow({
   setTransaction: React.Dispatch<React.SetStateAction<ITransaction>>;
   chain?: Chain;
 }) {
-  const [transferKind, setTransferKind] = useState<UserBalanceOpKind>();
+  const [operationKind, setOperationKind] = useState<UserBalanceOpKind>();
   const userBalanceOp = {
-    kind: transferKind as number,
+    kind: operationKind as number,
     asset: token.token,
     amount: parseFixed(token.balance, tokenDictionary[token.token].decimals),
     sender: userAddress as `0x${string}`,
@@ -182,8 +176,24 @@ function TableRow({
   });
   const { data, write } = useVaultManageUserBalance(config);
 
+  useWaitForTransaction({
+    hash: data?.hash,
+    onSuccess() {
+      setTransaction((prev) => ({
+        ...prev,
+        status: TransactionStatus.CONFIRMED,
+      }));
+    },
+    onError() {
+      setTransaction((prev) => ({
+        ...prev,
+        status: TransactionStatus.WRITE_ERROR,
+      }));
+    },
+  });
+
   function handleWithdraw() {
-    setTransferKind(UserBalanceOpKind.WITHDRAW_INTERNAL);
+    setOperationKind(UserBalanceOpKind.WITHDRAW_INTERNAL);
     setTransaction((prev) => ({
       ...prev,
       status: TransactionStatus.WAITING_APPROVAL,
@@ -192,8 +202,8 @@ function TableRow({
 
   useEffect(() => {
     if (!data) return;
-    const { hash, wait } = data;
-    switch (transferKind) {
+    const { hash } = data;
+    switch (operationKind) {
       case UserBalanceOpKind.WITHDRAW_INTERNAL: {
         async function handleTransactionStatus() {
           if (hash && chain) {
@@ -204,20 +214,6 @@ function TableRow({
               link: `${baseTxUrl}${hash}`,
             });
           }
-          try {
-            const receipt = await wait();
-            if (receipt.status)
-              setTransaction((prev) => ({
-                ...prev,
-                status: TransactionStatus.CONFIRMED,
-              }));
-          } catch (error) {
-            setTransaction((prev) => ({
-              ...prev,
-              status: TransactionStatus.WRITE_ERROR,
-            }));
-          }
-          return;
         }
         handleTransactionStatus();
       }
@@ -227,9 +223,9 @@ function TableRow({
   }, [data]);
 
   useEffect(() => {
-    if (!transferKind) return;
+    if (!operationKind) return;
     write?.();
-  }, [transferKind]);
+  }, [operationKind]);
 
   return (
     <Table.BodyRow key={token.token}>

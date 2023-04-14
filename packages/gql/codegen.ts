@@ -5,6 +5,7 @@ export enum Subgraph {
   BalancerPoolsMetadata = "balancer-pools-metadata",
   BalancerGauges = "balancer-gauges",
   BalancerPools = "balancer-pools",
+  BalancerInternalManager = "balancer-internal-manager",
 }
 
 export const SUBGRAPHS = {
@@ -52,6 +53,24 @@ export const SUBGRAPHS = {
         [Network.Mainnet]: `${baseEndpoint}/balancer-v2`,
         [Network.Polygon]: `${baseEndpoint}/balancer-polygon-v2`,
         [Network.Arbitrum]: `${baseEndpoint}/balancer-arbitrum-v2`,
+        [Network.Goerli]: `${baseEndpoint}/balancer-goerli-v2`,
+      };
+    },
+    endpointFor(network: Network) {
+      return this.endpoints()[network];
+    },
+  },
+  [Subgraph.BalancerInternalManager]: {
+    name: Subgraph.BalancerInternalManager,
+    endpoints() {
+      const baseEndpoint = "https://api.thegraph.com/subgraphs/name/bleu-llc";
+
+      return {
+        //TODO: deploy subgraph on mainnet, polygon and arbitrum
+        // https://linear.app/bleu-llc/issue/BAL-290/deploy-subgraph-with-token-relation-on-other-networks
+        [Network.Mainnet]: `${baseEndpoint}/balancer-goerli-v2`,
+        [Network.Polygon]: `${baseEndpoint}/balancer-goerli-v2`,
+        [Network.Arbitrum]: `${baseEndpoint}/balancer-goerli-v2`,
         [Network.Goerli]: `${baseEndpoint}/balancer-goerli-v2`,
       };
     },

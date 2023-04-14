@@ -203,18 +203,17 @@ function TableRow({
   useEffect(() => {
     if (!data) return;
     const { hash } = data;
+    async function handleTransactionStatus() {
+      if (!hash || !chain) return;
+      const baseTxUrl = networkUrls[chain.id as keyof typeof networkUrls];
+      setTransaction({
+        hash,
+        status: TransactionStatus.SUBMITTING,
+        link: `${baseTxUrl}${hash}`,
+      });
+    }
     switch (operationKind) {
       case UserBalanceOpKind.WITHDRAW_INTERNAL: {
-        async function handleTransactionStatus() {
-          if (hash && chain) {
-            const baseTxUrl = networkUrls[chain.id as keyof typeof networkUrls];
-            setTransaction({
-              hash,
-              status: TransactionStatus.SUBMITTING,
-              link: `${baseTxUrl}${hash}`,
-            });
-          }
-        }
         handleTransactionStatus();
       }
       default:

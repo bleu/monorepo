@@ -9,7 +9,7 @@ import genericTokenLogo from "#/assets/generic-token-logo.png";
 import { Button } from "#/components";
 import Table from "#/components/Table";
 import { Toast } from "#/components/Toast";
-import { impersonateWhetherDAO, pools } from "#/lib/gql";
+import { impersonateWhetherDAO, internalBalances } from "#/lib/gql";
 import { tokenDictionary } from "#/utils/getTokenInfo";
 import { writeWithdrawInternalBalance } from "#/wagmi/withdrawInternalBalance";
 
@@ -56,13 +56,6 @@ const NOTIFICATION_MAP = {
   },
 };
 
-interface IToken {
-  symbol: string;
-  token: string;
-  balance: number;
-  decimals: number;
-}
-
 const networkUrls = {
   [NetworkChainId.MAINNET]: "https://etherscan.io/tx/",
   [NetworkChainId.GOERLI]: "https://goerli.etherscan.io/tx/",
@@ -72,8 +65,6 @@ const networkUrls = {
 
 export default function Page() {
   const [isNotifierOpen, setIsNotifierOpen] = useState(false);
-  const [tokensWithBalance, setTokensWithBalance] = useState<IToken[]>([]);
-
   const [transaction, setTransaction] = useState<ITransaction>(
     {} as ITransaction
   );
@@ -94,73 +85,17 @@ export default function Page() {
       setIsNotifierOpen(true);
     }
   };
+  const { data } = internalBalances
+    .gql(chain?.id.toString() || "1")
+    .useInternalBalance({
+      userAddress: addressLower as `0x${string}`,
+    });
 
-  async function getInternalBalances() {
-    if (!addressLower) return;
-
-    const { user } = await pools
-      .gql(chain?.id.toString() || "1")
-      .InternalBalance({
-        userAddress: addressLower as `0x${string}`,
-      });
-
-    if (user?.userInternalBalances) {
-      const tokensWithBalanceRaw = user.userInternalBalances.filter(
-        (token) => token.balance > 0
-      );
-
-      const incompletedTokens: { token: string; balance: number }[] = [];
-      const alreadyCompletedTokens: IToken[] = [];
-
-      tokensWithBalanceRaw.forEach((token) => {
-        if (token.token in tokenDictionary) {
-          const symbol = tokenDictionary[token.token].symbol;
-          const decimals = tokenDictionary[token.token].decimals;
-          alreadyCompletedTokens.push({ ...token, symbol, decimals });
-        } else {
-          incompletedTokens.push({
-            token: token.token,
-            balance: token.balance,
-          });
-        }
-      });
-
-      const incompletedTokensAddressList = incompletedTokens.map(
-        (token) => token.token
-      );
-
-      const incompletedTokensInfo = await pools
-        .gql(chain?.id.toString() || "1")
-        .InternalBalanceTokenInfo({
-          tokenAddress: incompletedTokensAddressList,
-        });
-
-      const completedTokens: IToken[] = incompletedTokensInfo.tokens.map(
-        (tokenGql) => {
-          const matchingObject = incompletedTokens.find(
-            (tokenBal) => tokenBal.token === tokenGql.id
-          );
-          if (matchingObject) {
-            return {
-              symbol: tokenGql.symbol as string,
-              decimals: tokenGql.decimals,
-              ...matchingObject,
-            };
-          } else
-            return {
-              symbol: tokenGql.symbol as string,
-              decimals: tokenGql.decimals,
-              token: "",
-              balance: 0,
-            };
-        }
-      );
-      setTokensWithBalance([...completedTokens, ...alreadyCompletedTokens]);
-    }
-  }
+  const tokensWithBalance = data?.user?.userInternalBalances?.filter(
+    (token) => token.balance > 0
+  );
 
   useEffect(() => {
-    getInternalBalances();
     if (!transaction.status) return;
     handleNotifier();
   }, [transaction]);
@@ -215,14 +150,14 @@ export default function Page() {
             </Table.HeaderRow>
             <Table.Body>
               {tokensWithBalance.map((token) => (
-                <Table.BodyRow key={token.token}>
+                <Table.BodyRow key={token.tokenInfo.address}>
                   <Table.BodyCell>
                     <div className="flex justify-center items-center">
                       <Image
                         src={
-                          tokenDictionary[token.token]
-                            ? tokenDictionary[token.token].logoURI
-                              ? tokenDictionary[token.token].logoURI
+                          tokenDictionary[token.tokenInfo.address]
+                            ? tokenDictionary[token.tokenInfo.address].logoURI
+                              ? tokenDictionary[token.tokenInfo.address].logoURI
                               : genericTokenLogo
                             : genericTokenLogo
                         }
@@ -233,12 +168,8 @@ export default function Page() {
                       />
                     </div>
                   </Table.BodyCell>
-                  <Table.BodyCell>
-                    {tokenDictionary[token.token]
-                      ? tokenDictionary[token.token].symbol
-                      : token.symbol}
-                  </Table.BodyCell>
-                  <Table.BodyCell>{token.token}</Table.BodyCell>
+                  <Table.BodyCell>{token.tokenInfo.symbol}</Table.BodyCell>
+                  <Table.BodyCell>{token.tokenInfo.address}</Table.BodyCell>
                   <Table.BodyCell>{token.balance}</Table.BodyCell>
                   <Table.BodyCell>
                     <Button
@@ -246,7 +177,7 @@ export default function Page() {
                       className="bg-indigo-500 text-gray-50 hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-gray-600 disabled:text-gray-500 border border-transparent"
                       onClick={() =>
                         handleWithdraw(
-                          token.token as `0x${string}`,
+                          token.tokenInfo.address as `0x${string}`,
                           String(token.balance)
                         )
                       }

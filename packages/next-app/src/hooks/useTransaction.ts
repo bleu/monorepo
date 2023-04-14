@@ -3,7 +3,10 @@ import { Dispatch, useEffect, useState } from "react";
 import { PoolMetadataAttribute } from "#/contexts/PoolMetadataContext";
 import { pinJSON } from "#/lib/ipfs";
 import { useNetwork } from "#/wagmi";
-import { writeSetPoolMetadata } from "#/wagmi/setPoolMetadata";
+import {
+  usePoolMetadataRegistrySetPoolMetadata,
+  usePreparePoolMetadataRegistrySetPoolMetadata,
+} from "#/wagmi/generated";
 
 export enum TransactionStatus {
   AUTHORIZING = "Approve this transaction",
@@ -95,12 +98,34 @@ export function useMetadataTransaction({
   );
   const [transactionUrl, setTransactionUrl] = useState<string | undefined>();
 
+  const { config } = usePreparePoolMetadataRegistrySetPoolMetadata({
+    args: [poolId, ipfsCID],
+  });
+  const { write, data } = usePoolMetadataRegistrySetPoolMetadata(config);
   const { chain } = useNetwork();
 
   const handleSetTransactionLink = (hash: `0x${string}`) => {
     const baseTxUrl = networkUrls[chain!.id as keyof typeof networkUrls];
     setTransactionUrl(`${baseTxUrl}${hash}`);
   };
+
+  useEffect(() => {
+    if (!data) return;
+    const { wait, hash } = data;
+    async function waitTransaction() {
+      handleSetTransactionLink(hash);
+      // Once the metadata is set on-chain, update the transaction status to SUBMITTING
+      setTransactionStatus(TransactionStatus.SUBMITTING);
+      setNotification(NOTIFICATION_MAP[TransactionStatus.SUBMITTING]);
+      const receipt = await wait();
+
+      if (receipt.status) {
+        setTransactionStatus(TransactionStatus.CONFIRMED);
+        setNotification(NOTIFICATION_MAP[TransactionStatus.CONFIRMED]);
+      }
+    }
+    waitTransaction();
+  }, [data]);
 
   const handleTransaction = async () => {
     if (isTransactionDisabled) {
@@ -130,23 +155,7 @@ export function useMetadataTransaction({
       // Call function to set metadata on-chain here
       try {
         setTransactionStatus(TransactionStatus.WAITING_APPROVAL);
-
-        // call function to set metadata on-chain
-        const { wait, hash } = await writeSetPoolMetadata(
-          poolId,
-          ipfsCID,
-          // @ts-ignore
-          chain?.id
-        );
-        handleSetTransactionLink(hash);
-        // Once the metadata is set on-chain, update the transaction status to SUBMITTING
-        setTransactionStatus(TransactionStatus.SUBMITTING);
-        setNotification(NOTIFICATION_MAP[TransactionStatus.SUBMITTING]);
-        const receipt = await wait();
-        if (receipt.status) {
-          setTransactionStatus(TransactionStatus.CONFIRMED);
-          setNotification(NOTIFICATION_MAP[TransactionStatus.CONFIRMED]);
-        }
+        write?.();
       } catch (error) {
         setTransactionStatus(TransactionStatus.WRITE_ERROR);
         setNotification(NOTIFICATION_MAP[TransactionStatus.WRITE_ERROR]);

@@ -1,16 +1,20 @@
 "use client";
+import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
 import { NetworkChainId } from "@balancer-pool-metadata/shared";
 import { parseFixed } from "@ethersproject/bignumber";
+import Image from "next/image";
+import { tokenLogoUri } from "public/tokens/logoUri";
 import { useEffect, useState } from "react";
 import { Chain, useAccount, useNetwork, useWaitForTransaction } from "wagmi";
 
 import { ToastContent } from "#/app/metadata/[network]/pool/[poolId]/(components)/MetadataAttributesTable/TransactionModal";
+import genericTokenLogo from "#/assets/generic-token-logo.png";
 import { Button } from "#/components";
 import Table from "#/components/Table";
 import { Toast } from "#/components/Toast";
-import { impersonateWhetherDAO, pools } from "#/lib/gql";
+import { impersonateWhetherDAO, internalBalances } from "#/lib/gql";
 import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
-import { tokenDictionary } from "#/utils/getTokenInfo";
+import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 import {
   usePrepareVaultManageUserBalance,
   useVaultManageUserBalance,
@@ -79,14 +83,6 @@ export default function Page() {
 
   const addressLower = address ? address?.toLowerCase() : "";
 
-  const { data } = pools.gql(chain!.id.toString()).useInternalBalance({
-    userAddress: addressLower,
-  });
-
-  const tokensWithBalance = data?.user?.userInternalBalances?.filter(
-    (token) => token.balance > 0
-  );
-
   const handleNotifier = () => {
     if (isNotifierOpen) {
       setIsNotifierOpen(false);
@@ -97,6 +93,15 @@ export default function Page() {
       setIsNotifierOpen(true);
     }
   };
+  const { data } = internalBalances
+    .gql(chain?.id.toString() || "1")
+    .useInternalBalance({
+      userAddress: addressLower as `0x${string}`,
+    });
+
+  const tokensWithBalance = data?.user?.userInternalBalances?.filter(
+    (token) => token.balance > 0
+  );
 
   useEffect(() => {
     if (!transaction.status) return;
@@ -109,7 +114,8 @@ export default function Page() {
         {tokensWithBalance && tokensWithBalance?.length > 0 && (
           <Table>
             <Table.HeaderRow>
-              <Table.HeaderCell>Token Symbol</Table.HeaderCell>
+              <Table.HeaderCell>Token Logo</Table.HeaderCell>
+              <Table.HeaderCell>Symbol</Table.HeaderCell>
               <Table.HeaderCell>Address</Table.HeaderCell>
               <Table.HeaderCell>Balance</Table.HeaderCell>
               <Table.HeaderCell>
@@ -119,7 +125,7 @@ export default function Page() {
             <Table.Body>
               {tokensWithBalance.map((token) => (
                 <TableRow
-                  key={token.token}
+                  key={token.tokenInfo.address}
                   token={token}
                   userAddress={addressLower as `0x${string}`}
                   setTransaction={setTransaction}
@@ -154,11 +160,7 @@ function TableRow({
   setTransaction,
   chain,
 }: {
-  token: {
-    __typename?: "UserInternalBalance" | undefined;
-    token: `0x${string}`;
-    balance: string;
-  };
+  token: ArrElement<GetDeepProp<InternalBalanceQuery, "userInternalBalances">>;
   userAddress: `0x${string}`;
   setTransaction: React.Dispatch<React.SetStateAction<ITransaction>>;
   chain?: Chain;
@@ -166,8 +168,8 @@ function TableRow({
   const [operationKind, setOperationKind] = useState<UserBalanceOpKind>();
   const userBalanceOp = {
     kind: operationKind as number,
-    asset: token.token,
-    amount: parseFixed(token.balance, tokenDictionary[token.token].decimals),
+    asset: token.tokenInfo.address as `0x${string}`,
+    amount: parseFixed(token.balance, token.tokenInfo.decimals),
     sender: userAddress as `0x${string}`,
     recipient: userAddress as `0x${string}`,
   };
@@ -227,9 +229,24 @@ function TableRow({
   }, [operationKind]);
 
   return (
-    <Table.BodyRow key={token.token}>
-      <Table.BodyCell>{tokenDictionary[token.token].symbol}</Table.BodyCell>
-      <Table.BodyCell>{token.token}</Table.BodyCell>
+    <Table.BodyRow key={token.tokenInfo.address}>
+      <Table.BodyCell>
+        <div className="flex justify-center items-center">
+          <Image
+            src={
+              tokenLogoUri[
+                token?.tokenInfo?.symbol as keyof typeof tokenLogoUri
+              ] || genericTokenLogo
+            }
+            alt="Token Logo"
+            height={28}
+            width={28}
+            quality={100}
+          />
+        </div>
+      </Table.BodyCell>
+      <Table.BodyCell>{token.tokenInfo.symbol}</Table.BodyCell>
+      <Table.BodyCell>{token.tokenInfo.address}</Table.BodyCell>
       <Table.BodyCell>{token.balance}</Table.BodyCell>
       <Table.BodyCell>
         <Button

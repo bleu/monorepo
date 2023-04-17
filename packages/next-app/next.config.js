@@ -25,6 +25,22 @@ const moduleExports = {
   sentry: {
     hideSourceMaps: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'assets.coingecko.com',
+        port: '',
+        pathname: '/coins/images/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'raw.githubusercontent.com',
+        port: '',
+        pathname: '/trustwallet/assets/master/blockchains/ethereum/assets/**',
+      }
+    ],
+  },
 };
 
 const sentryWebpackPluginOptions = {

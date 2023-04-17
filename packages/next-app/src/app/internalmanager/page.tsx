@@ -5,10 +5,14 @@ import { useAccount, useNetwork } from "wagmi";
 import { ToastContent } from "#/app/metadata/[network]/pool/[poolId]/(components)/MetadataAttributesTable/TransactionModal";
 import genericTokenLogo from "#/assets/generic-token-logo.png";
 import { Button } from "#/components";
+import { Dialog } from "#/components/Dialog";
 import Table from "#/components/Table";
 import { Toast } from "#/components/Toast";
 import { useInternalBalancesTransaction } from "#/hooks/useTransaction";
 import { impersonateWhetherDAO, pools } from "#/lib/gql";
+import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
+
+import { TransactionModal } from "./(components)/TransactionModal";
 
 export default function Page() {
   const { chain } = useNetwork();
@@ -73,7 +77,8 @@ function TableRow({
 }) {
   const {
     transactionUrl,
-    handleWithdraw,
+    operationKind,
+    setOperationKind,
     isNotifierOpen,
     setIsNotifierOpen,
     notification,
@@ -100,13 +105,20 @@ function TableRow({
         <Table.BodyCell>{token.token}</Table.BodyCell>
         <Table.BodyCell>{token.balance}</Table.BodyCell>
         <Table.BodyCell>
-          <Button
-            type="button"
-            className="bg-indigo-500 text-gray-50 hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-gray-600 disabled:text-gray-500 border border-transparent"
-            onClick={() => handleWithdraw()}
+          <Dialog
+            content={<TransactionModal operationKind={operationKind} />}
+            isBig={true}
           >
-            Withdraw<span className="sr-only"> token</span>
-          </Button>
+            <Button
+              type="button"
+              className="bg-indigo-500 text-gray-50 hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-gray-600 disabled:text-gray-500 border border-transparent"
+              onClick={() => {
+                setOperationKind(UserBalanceOpKind.WITHDRAW_INTERNAL);
+              }}
+            >
+              Withdraw<span className="sr-only"> token</span>
+            </Button>
+          </Dialog>
         </Table.BodyCell>
       </Table.BodyRow>
       {notification && (

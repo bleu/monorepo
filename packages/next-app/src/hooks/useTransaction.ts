@@ -255,17 +255,16 @@ export function useInternalBalancesTransaction({
 
   //trigger transaction
   function handleWithdraw() {
-    setOperationKind(UserBalanceOpKind.WITHDRAW_INTERNAL);
     setNotification(
       NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WAITING_APPROVAL]
     );
   }
 
-  //trigger the actual transaction
-  useEffect(() => {
-    if (!operationKind) return;
-    write?.();
-  }, [operationKind]);
+  // //trigger the actual transaction
+  // useEffect(() => {
+  //   if (!operationKind) return;
+  //   write?.();
+  // }, [operationKind]);
 
   //handle transaction status
   useEffect(() => {
@@ -326,5 +325,6 @@ export function useInternalBalancesTransaction({
     handleWithdraw,
     notification,
     transactionUrl,
+    setOperationKind,
   };
 }

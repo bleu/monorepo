@@ -1,8 +1,4 @@
-interface ITokenLogoUri {
-  [key: string]: string;
-}
-
-export const tokenLogoUri: ITokenLogoUri = {
+export const tokenLogoUri = {
   DAI: "https://assets.coingecko.com/coins/images/9956/small/4943.png?1636636734",
   WETH: "https://assets.coingecko.com/coins/images/2518/small/weth.png?1628852295",
   BAL: "https://assets.coingecko.com/coins/images/11683/small/Balancer.png?1592792958",
@@ -20,4 +16,4 @@ export const tokenLogoUri: ITokenLogoUri = {
     "https://assets.coingecko.com/coins/images/25883/small/bb-a-dai.png?1654347111",
   miMATIC:
     "https://assets.coingecko.com/coins/images/15264/small/mimatic-red.png?1620281018",
-};
+} as const;

@@ -1,4 +1,5 @@
 "use client";
+import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
 import { NetworkChainId } from "@balancer-pool-metadata/shared";
 import { parseFixed } from "@ethersproject/bignumber";
 import Image from "next/image";
@@ -13,6 +14,7 @@ import Table from "#/components/Table";
 import { Toast } from "#/components/Toast";
 import { impersonateWhetherDAO, internalBalances } from "#/lib/gql";
 import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
+import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 import {
   usePrepareVaultManageUserBalance,
   useVaultManageUserBalance,
@@ -158,16 +160,7 @@ function TableRow({
   setTransaction,
   chain,
 }: {
-  token: {
-    __typename?: "UserInternalBalance" | undefined;
-    balance: string;
-    tokenInfo: {
-      __typename?: "Token" | undefined;
-      symbol?: string | null | undefined;
-      address: string;
-      decimals: number;
-    };
-  };
+  token: ArrElement<GetDeepProp<InternalBalanceQuery, "userInternalBalances">>;
   userAddress: `0x${string}`;
   setTransaction: React.Dispatch<React.SetStateAction<ITransaction>>;
   chain?: Chain;
@@ -241,11 +234,9 @@ function TableRow({
         <div className="flex justify-center items-center">
           <Image
             src={
-              token.tokenInfo.symbol
-                ? tokenLogoUri[token.tokenInfo.symbol]
-                  ? tokenLogoUri[token.tokenInfo.symbol]
-                  : genericTokenLogo
-                : genericTokenLogo
+              tokenLogoUri[
+                token?.tokenInfo?.symbol as keyof typeof tokenLogoUri
+              ] || genericTokenLogo
             }
             alt="Token Logo"
             height={28}

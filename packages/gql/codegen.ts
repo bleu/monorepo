@@ -63,6 +63,7 @@ export const SUBGRAPHS = {
   [Subgraph.BalancerInternalManager]: {
     name: Subgraph.BalancerInternalManager,
     endpoints() {
+      //This is a fork of the pools subgraph that's to be merged to Balancer's own subgraph
       const baseEndpoint = "https://api.thegraph.com/subgraphs/name/bleu-llc";
 
       return {

@@ -1,11 +1,18 @@
+import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
+import { getNetworkUrl } from "@balancer-pool-metadata/shared";
+import { parseFixed } from "@ethersproject/bignumber";
 import { Dispatch, useEffect, useState } from "react";
 
 import { PoolMetadataAttribute } from "#/contexts/PoolMetadataContext";
+import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
 import { pinJSON } from "#/lib/ipfs";
-import { useNetwork } from "#/wagmi";
+import { ArrElement, GetDeepProp } from "#/utils/getTypes";
+import { useNetwork, useWaitForTransaction } from "#/wagmi";
 import {
   usePoolMetadataRegistrySetPoolMetadata,
   usePreparePoolMetadataRegistrySetPoolMetadata,
+  usePrepareVaultManageUserBalance,
+  useVaultManageUserBalance,
 } from "#/wagmi/generated";
 
 export enum TransactionStatus {
@@ -75,12 +82,28 @@ const NOTIFICATION_MAP = {
   },
 };
 
-const networkUrls = {
-  1: "https://etherscan.io/tx/",
-  5: "https://goerli.etherscan.io/tx/",
-  137: "https://polygonscan.com/tx/",
-  42161: "https://arbiscan.io/tx/",
-};
+export const NOTIFICATION_MAP_INTERNAL_BALANCES = {
+  [TransactionStatus.WAITING_APPROVAL]: {
+    title: "Confirme pending... ",
+    description: "Waiting for your wallet approvement",
+    variant: NotificationVariant.PENDING,
+  },
+  [TransactionStatus.SUBMITTING]: {
+    title: "Wait just a little longer",
+    description: "Your transaction is being made",
+    variant: NotificationVariant.NOTIFICATION,
+  },
+  [TransactionStatus.CONFIRMED]: {
+    title: "Great!",
+    description: "The transaction was a success!",
+    variant: NotificationVariant.SUCCESS,
+  },
+  [TransactionStatus.WRITE_ERROR]: {
+    title: "Error!",
+    description: "the transaction has failed",
+    variant: NotificationVariant.ALERT,
+  },
+} as const;
 
 export function useMetadataTransaction({
   poolId,
@@ -105,7 +128,7 @@ export function useMetadataTransaction({
   const { chain } = useNetwork();
 
   const handleSetTransactionLink = (hash: `0x${string}`) => {
-    const baseTxUrl = networkUrls[chain!.id as keyof typeof networkUrls];
+    const baseTxUrl = getNetworkUrl(chain!.id);
     setTransactionUrl(`${baseTxUrl}${hash}`);
   };
 
@@ -187,6 +210,104 @@ export function useMetadataTransaction({
     transactionStatus,
     isNotifierOpen,
     setIsNotifierOpen,
+    transactionUrl,
+  };
+}
+
+export function useInternalBalancesTransaction({
+  userAddress,
+  token,
+}: {
+  userAddress: `0x${string}`;
+  token: ArrElement<GetDeepProp<InternalBalanceQuery, "userInternalBalances">>;
+}) {
+  const { chain } = useNetwork();
+  const [isNotifierOpen, setIsNotifierOpen] = useState(false);
+  const [notification, setNotification] = useState<Notification | null>(null);
+  const [transactionUrl, setTransactionUrl] = useState<string>();
+  const [operationKind, setOperationKind] = useState<UserBalanceOpKind>();
+
+  //Prepare data for transaction
+  const userBalanceOp = {
+    kind: operationKind as number,
+    asset: token.tokenInfo.address as `0x${string}`,
+    amount: parseFixed(token.balance, 18),
+    sender: userAddress as `0x${string}`,
+    recipient: userAddress as `0x${string}`,
+  };
+
+  const { config } = usePrepareVaultManageUserBalance({
+    args: [[userBalanceOp]],
+  });
+
+  const { data, write } = useVaultManageUserBalance(config);
+
+  //trigger transaction
+  function handleWithdraw() {
+    setOperationKind(UserBalanceOpKind.WITHDRAW_INTERNAL);
+    setNotification(
+      NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WAITING_APPROVAL]
+    );
+  }
+
+  //trigger the actual transaction
+  useEffect(() => {
+    if (!operationKind) return;
+    write?.();
+  }, [operationKind]);
+
+  //handle transaction status
+  useEffect(() => {
+    if (!data) return;
+    const { hash } = data;
+    function handleTransactionStatus() {
+      if (!hash || !chain) return;
+      const baseTxUrl = getNetworkUrl(chain!.id);
+      setNotification(
+        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.SUBMITTING]
+      );
+      setTransactionUrl(`${baseTxUrl}${hash}`);
+    }
+    handleTransactionStatus();
+  }, [data]);
+
+  //check if transaction is confirmed
+  useWaitForTransaction({
+    hash: data?.hash,
+    onSuccess() {
+      setNotification(
+        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.CONFIRMED]
+      );
+    },
+    onError() {
+      setNotification(
+        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WRITE_ERROR]
+      );
+    },
+  });
+
+  const handleNotifier = () => {
+    if (isNotifierOpen) {
+      setIsNotifierOpen(false);
+      setTimeout(() => {
+        setIsNotifierOpen(true);
+      }, 100);
+    } else {
+      setIsNotifierOpen(true);
+    }
+  };
+
+  useEffect(() => {
+    if (!notification) return;
+    handleNotifier();
+  }, [notification]);
+
+  return {
+    isNotifierOpen,
+    setIsNotifierOpen,
+    operationKind,
+    handleWithdraw,
+    notification,
     transactionUrl,
   };
 }

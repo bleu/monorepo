@@ -64,15 +64,16 @@ export const SUBGRAPHS = {
     name: Subgraph.BalancerInternalManager,
     endpoints() {
       //This is a fork of the pools subgraph that's to be merged to Balancer's own subgraph
-      const baseEndpoint = "https://api.thegraph.com/subgraphs/name/bleu-llc";
+      const baseEndpoint =
+        "https://api.thegraph.com/subgraphs/name/bleu-studio";
 
       return {
         //TODO: deploy subgraph on mainnet, polygon and arbitrum
         // https://linear.app/bleu-llc/issue/BAL-290/deploy-subgraph-with-token-relation-on-other-networks
-        [Network.Mainnet]: `${baseEndpoint}/balancer-goerli-v2`,
-        [Network.Polygon]: `${baseEndpoint}/balancer-goerli-v2`,
-        [Network.Arbitrum]: `${baseEndpoint}/balancer-goerli-v2`,
-        [Network.Goerli]: `${baseEndpoint}/balancer-goerli-v2`,
+        [Network.Mainnet]: `${baseEndpoint}/balancer-v2-goerli`,
+        [Network.Polygon]: `${baseEndpoint}/balancer-v2-goerli`,
+        [Network.Arbitrum]: `${baseEndpoint}/balancer-v2-goerli`,
+        [Network.Goerli]: `${baseEndpoint}/balancer-v2-goerli`,
       };
     },
     endpointFor(network: Network) {

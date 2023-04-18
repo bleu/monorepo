@@ -1,10 +1,12 @@
-import { NetworkChainId } from "@balancer-pool-metadata/shared";
+import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
+import { getNetworkUrl } from "@balancer-pool-metadata/shared";
 import { parseFixed } from "@ethersproject/bignumber";
 import { Dispatch, useEffect, useState } from "react";
 
 import { PoolMetadataAttribute } from "#/contexts/PoolMetadataContext";
 import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
 import { pinJSON } from "#/lib/ipfs";
+import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 import { useNetwork, useWaitForTransaction } from "#/wagmi";
 import {
   usePoolMetadataRegistrySetPoolMetadata,
@@ -102,17 +104,6 @@ export const NOTIFICATION_MAP_INTERNAL_BALANCES = {
     variant: NotificationVariant.ALERT,
   },
 } as const;
-
-export const networkUrls = {
-  [NetworkChainId.MAINNET]: "https://etherscan.io/tx/",
-  [NetworkChainId.GOERLI]: "https://goerli.etherscan.io/tx/",
-  [NetworkChainId.POLYGON]: "https://polygonscan.com/tx/",
-  [NetworkChainId.ARBITRUM]: "https://arbiscan.io/tx/",
-};
-
-function getNetworkUrl(chainId: NetworkChainId) {
-  return networkUrls[chainId as keyof typeof networkUrls];
-}
 
 export function useMetadataTransaction({
   poolId,
@@ -228,9 +219,7 @@ export function useInternalBalancesTransaction({
   token,
 }: {
   userAddress: `0x${string}`;
-  //TODO change to useInternalBalances when subgraph is updated
-  //https://linear.app/bleu-llc/issue/BAL-272/fix-internal-balance-token-attribute-on-subgraph
-  token: any;
+  token: ArrElement<GetDeepProp<InternalBalanceQuery, "userInternalBalances">>;
 }) {
   const { chain } = useNetwork();
   const [isNotifierOpen, setIsNotifierOpen] = useState(false);
@@ -241,7 +230,7 @@ export function useInternalBalancesTransaction({
   //Prepare data for transaction
   const userBalanceOp = {
     kind: operationKind as number,
-    asset: token.token as `0x${string}`,
+    asset: token.tokenInfo.address as `0x${string}`,
     amount: parseFixed(token.balance, 18),
     sender: userAddress as `0x${string}`,
     recipient: userAddress as `0x${string}`,
@@ -271,7 +260,7 @@ export function useInternalBalancesTransaction({
   useEffect(() => {
     if (!data) return;
     const { hash } = data;
-    async function handleTransactionStatus() {
+    function handleTransactionStatus() {
       if (!hash || !chain) return;
       const baseTxUrl = getNetworkUrl(chain!.id);
       setNotification(
@@ -279,13 +268,7 @@ export function useInternalBalancesTransaction({
       );
       setTransactionUrl(`${baseTxUrl}${hash}`);
     }
-    switch (operationKind) {
-      case UserBalanceOpKind.WITHDRAW_INTERNAL: {
-        handleTransactionStatus();
-      }
-      default:
-        return;
-    }
+    handleTransactionStatus();
   }, [data]);
 
   //check if transaction is confirmed

@@ -12,6 +12,17 @@ export enum NetworkChainId {
   ARBITRUM = 42161,
 }
 
+export const networkUrls = {
+  [NetworkChainId.MAINNET]: "https://etherscan.io/tx/",
+  [NetworkChainId.GOERLI]: "https://goerli.etherscan.io/tx/",
+  [NetworkChainId.POLYGON]: "https://polygonscan.com/tx/",
+  [NetworkChainId.ARBITRUM]: "https://arbiscan.io/tx/",
+};
+
+export function getNetworkUrl(chainId: NetworkChainId) {
+  return networkUrls[chainId as keyof typeof networkUrls];
+}
+
 export const DELEGATE_OWNER = "0xBA1BA1ba1BA1bA1bA1Ba1BA1ba1BA1bA1ba1ba1B";
 
 export const networkMultisigs = {

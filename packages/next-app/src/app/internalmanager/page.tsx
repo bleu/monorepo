@@ -101,7 +101,7 @@ function TableRow({
             className="bg-indigo-500 text-gray-50 hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-gray-600 disabled:text-gray-500 border border-transparent"
             onClick={() => handleWithdraw()}
           >
-            Withdraw<span className="sr-only"> token</span>
+            Withdraw<span className="sr-only">token</span>
           </Button>
         </Table.BodyCell>
       </Table.BodyRow>

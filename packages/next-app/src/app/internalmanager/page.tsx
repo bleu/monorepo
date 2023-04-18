@@ -1,4 +1,5 @@
 "use client";
+import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
 import Image from "next/image";
 import { useAccount, useNetwork } from "wagmi";
 
@@ -9,8 +10,9 @@ import { Dialog } from "#/components/Dialog";
 import Table from "#/components/Table";
 import { Toast } from "#/components/Toast";
 import { useInternalBalancesTransaction } from "#/hooks/useTransaction";
-import { impersonateWhetherDAO, pools } from "#/lib/gql";
+import { impersonateWhetherDAO, internalBalances } from "#/lib/gql";
 import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
+import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
 import { TransactionModal } from "./(components)/TransactionModal";
 
@@ -21,9 +23,7 @@ export default function Page() {
 
   const addressLower = address ? address?.toLowerCase() : "";
 
-  //TODO change to useInternalBalances when subgraph is updated
-  //https://linear.app/bleu-llc/issue/BAL-272/fix-internal-balance-token-attribute-on-subgraph
-  const { data: internalBalanceData } = pools
+  const { data: internalBalanceData } = internalBalances
     .gql(chain?.id.toString() || "1")
     .useInternalBalance({
       userAddress: addressLower as `0x${string}`,
@@ -51,10 +51,8 @@ export default function Page() {
             <Table.Body>
               {tokensWithBalance.map((token) => (
                 <TableRow
-                  key={token.token}
-                  //TODO change to useInternalBalances when subgraph is updated
-                  //https://linear.app/bleu-llc/issue/BAL-272/fix-internal-balance-token-attribute-on-subgraph
-                  token={token as any}
+                  key={token.tokenInfo.address}
+                  token={token}
                   userAddress={addressLower as `0x${string}`}
                 />
               ))}
@@ -70,9 +68,7 @@ function TableRow({
   token,
   userAddress,
 }: {
-  //TODO change to useInternalBalances when subgraph is updated
-  //https://linear.app/bleu-llc/issue/BAL-272/fix-internal-balance-token-attribute-on-subgraph
-  token: any;
+  token: ArrElement<GetDeepProp<InternalBalanceQuery, "userInternalBalances">>;
   userAddress: `0x${string}`;
 }) {
   const {
@@ -89,7 +85,7 @@ function TableRow({
 
   return (
     <>
-      <Table.BodyRow key={token.token}>
+      <Table.BodyRow key={token.tokenInfo.address}>
         <Table.BodyCell>
           <div className="flex justify-center items-center">
             <Image
@@ -102,7 +98,7 @@ function TableRow({
           </div>
         </Table.BodyCell>
         <Table.BodyCell>{"token.tokenInfo.symbol"}</Table.BodyCell>
-        <Table.BodyCell>{token.token}</Table.BodyCell>
+        <Table.BodyCell>{token.tokenInfo.address}</Table.BodyCell>
         <Table.BodyCell>{token.balance}</Table.BodyCell>
         <Table.BodyCell>
           <Dialog

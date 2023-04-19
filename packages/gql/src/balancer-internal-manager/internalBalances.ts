@@ -6,6 +6,7 @@ export const internalBalance = gql`
       id
       userInternalBalances {
         tokenInfo {
+          name
           symbol
           address
           decimals

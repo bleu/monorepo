@@ -9,11 +9,11 @@ export function Dialog({
   children,
   content,
   title,
-  isBig = false,
+  customWidth,
 }: React.PropsWithChildren<{
   content: React.ReactElement;
   title?: string;
-  isBig?: boolean;
+  customWidth?: string;
 }>) {
   const [open, setOpen] = React.useState(false);
 
@@ -30,7 +30,7 @@ export function Dialog({
         <DialogPrimitive.Content
           className={cn(
             "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-[6px] bg-blue3 p-[25px] shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] focus:outline-none",
-            isBig ? "w-7/12" : "w-[90vw] max-w-[450px]"
+            customWidth ? customWidth : "w-[90vw] max-w-[450px]"
           )}
         >
           <DialogPrimitive.Title className="text-2xl font-medium text-slate12">

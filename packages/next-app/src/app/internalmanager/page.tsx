@@ -99,7 +99,7 @@ function TableRow({ token, userAddress }: useInternalBalancesTransactionProps) {
               operationKind={operationKind}
             />
           }
-          isBig={true}
+          customWidth="w-9/12"
         >
           <Button
             type="button"

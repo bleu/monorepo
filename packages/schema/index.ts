@@ -51,6 +51,20 @@ export const PoolMetadataSchema = z
   .array(MetadataItemSchema)
   .describe("My neat object schema");
 
+export const getInternalBalanceSchema = (totalBalance: number) => {
+  const InternalBalanceSchema = z.object({
+    tokenAddress: z.string().min(1),
+    amount: z
+      .number({
+        //if input is empty NaN is returned, which is not considered a number
+        invalid_type_error: "Amount is required",
+      })
+      .gt(0, { message: "Amount must be greater than 0" })
+      .lte(totalBalance, { message: "Insufficient balance" }),
+  });
+  return InternalBalanceSchema;
+};
+
 // export const jsonSchema = zodToJsonSchema(
 //   PoolMetadataSchema,
 //   "PoolMetadataSchema"

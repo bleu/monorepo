@@ -217,15 +217,16 @@ export function useMetadataTransaction({
 export function useInternalBalancesTransaction({
   userAddress,
   token,
+  operationKind,
 }: {
   userAddress: `0x${string}`;
   token: ArrElement<GetDeepProp<InternalBalanceQuery, "userInternalBalances">>;
+  operationKind: UserBalanceOpKind;
 }) {
   const { chain } = useNetwork();
   const [isNotifierOpen, setIsNotifierOpen] = useState(false);
   const [notification, setNotification] = useState<Notification | null>(null);
   const [transactionUrl, setTransactionUrl] = useState<string>();
-  const [operationKind, setOperationKind] = useState<UserBalanceOpKind>();
 
   //Prepare data for transaction
   const userBalanceOp = {
@@ -244,10 +245,10 @@ export function useInternalBalancesTransaction({
 
   //trigger transaction
   function handleWithdraw() {
-    setOperationKind(UserBalanceOpKind.WITHDRAW_INTERNAL);
     setNotification(
       NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WAITING_APPROVAL]
     );
+    write?.();
   }
 
   // //trigger the actual transaction
@@ -306,7 +307,6 @@ export function useInternalBalancesTransaction({
     isNotifierOpen,
     setIsNotifierOpen,
     operationKind,
-    setOperationKind,
     handleWithdraw,
     notification,
     transactionUrl,

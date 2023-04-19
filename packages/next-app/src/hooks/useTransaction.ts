@@ -2,6 +2,7 @@ import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-i
 import { getNetworkUrl } from "@balancer-pool-metadata/shared";
 import { parseFixed } from "@ethersproject/bignumber";
 import { Dispatch, useEffect, useState } from "react";
+import { FieldValues } from "react-hook-form";
 
 import { PoolMetadataAttribute } from "#/contexts/PoolMetadataContext";
 import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
@@ -37,6 +38,12 @@ type Notification = {
   title: string;
   description: string;
   variant: NotificationVariant;
+};
+
+type SubmitData = {
+  receiverAddress: `0x${string}`;
+  tokenAddress: `0x${string}`;
+  tokenAmount: string;
 };
 
 type TransactionHookResult = {
@@ -227,14 +234,19 @@ export function useInternalBalancesTransaction({
   const [isNotifierOpen, setIsNotifierOpen] = useState(false);
   const [notification, setNotification] = useState<Notification | null>(null);
   const [transactionUrl, setTransactionUrl] = useState<string>();
+  const [submitData, setSubmitData] = useState<SubmitData | null>(null);
 
   //Prepare data for transaction
   const userBalanceOp = {
     kind: operationKind as number,
     asset: token.tokenInfo.address as `0x${string}`,
-    amount: parseFixed(token.balance, 18),
+    //TODO get this if tokenAmount is not defined a better solution than 0 to initialize the value
+    amount: parseFixed(
+      submitData?.tokenAmount ? submitData.tokenAmount : "0",
+      18
+    ),
     sender: userAddress as `0x${string}`,
-    recipient: userAddress as `0x${string}`,
+    recipient: submitData?.receiverAddress as `0x${string}`,
   };
 
   const { config } = usePrepareVaultManageUserBalance({
@@ -244,12 +256,25 @@ export function useInternalBalancesTransaction({
   const { data, write } = useVaultManageUserBalance(config);
 
   //trigger transaction
-  function handleWithdraw() {
+  function handleWithdraw(data: FieldValues) {
+    setSubmitData({
+      tokenAddress: data.tokenAddress,
+      tokenAmount: data.tokenAmount,
+      receiverAddress: data.receiverAddress,
+    });
+    // setNotification(
+    //   NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WAITING_APPROVAL]
+    // );
+    // write?.();
+  }
+
+  useEffect(() => {
+    if (!submitData) return;
     setNotification(
       NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WAITING_APPROVAL]
     );
     write?.();
-  }
+  }, [submitData]);
 
   // //trigger the actual transaction
   // useEffect(() => {

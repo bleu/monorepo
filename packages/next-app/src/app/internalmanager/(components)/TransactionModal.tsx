@@ -88,8 +88,8 @@ export function TransactionModal({
                   type="number"
                   label="Amount"
                   placeholder={token.balance}
-                  {...register("amount", {
-                    valueAsNumber: true,
+                  {...register("tokenAmount", {
+                    //TODO return error message from zod if value > balance (value is curently a string)
                     validate: (value) => {
                       if (value > token.balance) {
                         return "Insufficient balance";
@@ -97,14 +97,16 @@ export function TransactionModal({
                       return false;
                     },
                   })}
-                  errorMessage={formState.errors?.amount?.message as string}
+                  errorMessage={
+                    formState.errors?.tokenAmount?.message as string
+                  }
                 />
               </div>
               <button
                 type="button"
                 className="bg-blue4 text-blue9 w-fit px-3 h-[35px] mb-11 rounded-[4px] shadow-[0_0_0_1px] shadow-blue6 outline-none"
                 onClick={() => {
-                  setValue("amount", token.balance);
+                  setValue("tokenAmount", token.balance);
                 }}
               >
                 Max

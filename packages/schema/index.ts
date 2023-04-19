@@ -61,6 +61,10 @@ export const getInternalBalanceSchema = (totalBalance: number) => {
       })
       .gt(0, { message: "Amount must be greater than 0" })
       .lte(totalBalance, { message: "Insufficient balance" }),
+    receiverAddress: z
+      .string()
+      .min(1)
+      .regex(/0x[a-fA-F0-9]{40}/, { message: "Invalid address" }),
   });
   return InternalBalanceSchema;
 };

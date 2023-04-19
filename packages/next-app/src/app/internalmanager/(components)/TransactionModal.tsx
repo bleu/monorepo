@@ -69,42 +69,68 @@ export function TransactionModal({
         <div className="self-center font-bold">
           {modalTitle} Internal Balance
         </div>
-        <div className="flex justify-between">
-          <Input
-            readOnly
-            type="text"
-            label="Token"
-            placeholder={token.tokenInfo.name as string}
-            customWidth="w-96"
-            value={token.tokenInfo.address}
-            {...register("tokenAddress")}
-            errorMessage={formState.errors?.tokenAddress?.message as string}
-          />
+        <div>
+          <div className="flex justify-between gap-7">
+            <div className="w-1/2">
+              <Input
+                readOnly
+                type="text"
+                label="Token"
+                placeholder={token.tokenInfo.name as string}
+                value={token.tokenInfo.address}
+                {...register("tokenAddress")}
+                errorMessage={formState.errors?.tokenAddress?.message as string}
+              />
+            </div>
+            <div className="flex gap-2 items-end w-1/2">
+              <div className="w-full">
+                <Input
+                  type="number"
+                  label="Amount"
+                  placeholder={token.balance}
+                  {...register("amount", {
+                    valueAsNumber: true,
+                    validate: (value) => {
+                      if (value > token.balance) {
+                        return "Insufficient balance";
+                      }
+                      return false;
+                    },
+                  })}
+                  errorMessage={formState.errors?.amount?.message as string}
+                />
+              </div>
+              <button
+                type="button"
+                className="bg-blue4 text-blue9 w-fit px-3 h-[35px] mb-11 rounded-[4px] shadow-[0_0_0_1px] shadow-blue6 outline-none"
+                onClick={() => {
+                  setValue("amount", token.balance);
+                }}
+              >
+                Max
+              </button>
+            </div>
+          </div>
           <div className="flex gap-2 items-end">
-            <Input
-              type="number"
-              label="Amount"
-              customWidth="w-80"
-              placeholder={token.balance}
-              {...register("amount", {
-                valueAsNumber: true,
-                validate: (value) => {
-                  if (value > token.balance) {
-                    return "Insufficient balance";
-                  }
-                  return false;
-                },
-              })}
-              errorMessage={formState.errors?.amount?.message as string}
-            />
+            <div className="w-9/12">
+              <Input
+                type="string"
+                label="Receiver Address"
+                placeholder={userAddress}
+                {...register("receiverAddress")}
+                errorMessage={
+                  formState.errors?.receiverAddress?.message as string
+                }
+              />
+            </div>
             <button
               type="button"
-              className="bg-blue4 text-blue9 w-14 h-[35px] mb-11 rounded-[4px] shadow-[0_0_0_1px] shadow-blue6 outline-none"
+              className="w-3/12 inline-block bg-blue4 text-blue9 h-[35px] px-3 mb-11 rounded-[4px] shadow-[0_0_0_1px] shadow-blue6 outline-none"
               onClick={() => {
-                setValue("amount", token.balance);
+                setValue("receiverAddress", userAddress);
               }}
             >
-              Max
+              Use Current Address
             </button>
           </div>
         </div>

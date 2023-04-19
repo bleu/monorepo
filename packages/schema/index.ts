@@ -54,13 +54,13 @@ export const PoolMetadataSchema = z
 export const getInternalBalanceSchema = (totalBalance: number) => {
   const InternalBalanceSchema = z.object({
     tokenAddress: z.string().min(1),
-    amount: z
-      .number({
-        //if input is empty NaN is returned, which is not considered a number
-        invalid_type_error: "Amount is required",
-      })
-      .gt(0, { message: "Amount must be greater than 0" })
-      .lte(totalBalance, { message: "Insufficient balance" }),
+    tokenAmount: z.string().min(1),
+    // .number({
+    //   //if input is empty NaN is returned, which is not considered a number
+    //   invalid_type_error: "Amount is required",
+    // })
+    // .gt(0, { message: "Amount must be greater than 0" })
+    // .lte(totalBalance, { message: "Insufficient balance" }),
     receiverAddress: z
       .string()
       .min(1)

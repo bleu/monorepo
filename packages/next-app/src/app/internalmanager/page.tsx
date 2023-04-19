@@ -1,20 +1,24 @@
 "use client";
 import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
 import Image from "next/image";
+import { tokenLogoUri } from "public/tokens/logoUri";
+import { useState } from "react";
 import { useAccount, useNetwork } from "wagmi";
 
-import { ToastContent } from "#/app/metadata/[network]/pool/[poolId]/(components)/MetadataAttributesTable/TransactionModal";
 import genericTokenLogo from "#/assets/generic-token-logo.png";
 import { Button } from "#/components";
 import { Dialog } from "#/components/Dialog";
 import Table from "#/components/Table";
-import { Toast } from "#/components/Toast";
-import { useInternalBalancesTransaction } from "#/hooks/useTransaction";
 import { impersonateWhetherDAO, internalBalances } from "#/lib/gql";
 import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
 import { TransactionModal } from "./(components)/TransactionModal";
+
+export type useInternalBalancesTransactionProps = {
+  token: ArrElement<GetDeepProp<InternalBalanceQuery, "userInternalBalances">>;
+  userAddress: `0x${string}`;
+};
 
 export default function Page() {
   const { chain } = useNetwork();
@@ -64,73 +68,50 @@ export default function Page() {
   );
 }
 
-function TableRow({
-  token,
-  userAddress,
-}: {
-  token: ArrElement<GetDeepProp<InternalBalanceQuery, "userInternalBalances">>;
-  userAddress: `0x${string}`;
-}) {
-  const {
-    transactionUrl,
-    operationKind,
-    setOperationKind,
-    isNotifierOpen,
-    setIsNotifierOpen,
-    notification,
-  } = useInternalBalancesTransaction({
-    userAddress,
-    token,
-  });
-
+function TableRow({ token, userAddress }: useInternalBalancesTransactionProps) {
+  const [operationKind, setOperationKind] = useState<UserBalanceOpKind>();
   return (
-    <>
-      <Table.BodyRow key={token.tokenInfo.address}>
-        <Table.BodyCell>
-          <div className="flex justify-center items-center">
-            <Image
-              src={genericTokenLogo}
-              alt="Token Logo"
-              height={28}
-              width={28}
-              quality={100}
-            />
-          </div>
-        </Table.BodyCell>
-        <Table.BodyCell>{"token.tokenInfo.symbol"}</Table.BodyCell>
-        <Table.BodyCell>{token.tokenInfo.address}</Table.BodyCell>
-        <Table.BodyCell>{token.balance}</Table.BodyCell>
-        <Table.BodyCell>
-          <Dialog
-            content={<TransactionModal operationKind={operationKind} />}
-            isBig={true}
-          >
-            <Button
-              type="button"
-              className="bg-indigo-500 text-gray-50 hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-gray-600 disabled:text-gray-500 border border-transparent"
-              onClick={() => {
-                setOperationKind(UserBalanceOpKind.WITHDRAW_INTERNAL);
-              }}
-            >
-              Withdraw<span className="sr-only"> token</span>
-            </Button>
-          </Dialog>
-        </Table.BodyCell>
-      </Table.BodyRow>
-      {notification && (
-        <Toast
+    <Table.BodyRow key={token.tokenInfo.address}>
+      <Table.BodyCell>
+        <div className="flex justify-center items-center">
+          <Image
+            src={
+              tokenLogoUri[
+                token?.tokenInfo?.symbol as keyof typeof tokenLogoUri
+              ] || genericTokenLogo
+            }
+            alt="Token Logo"
+            height={28}
+            width={28}
+            quality={100}
+          />
+        </div>
+      </Table.BodyCell>
+      <Table.BodyCell>{token.tokenInfo.symbol}</Table.BodyCell>
+      <Table.BodyCell>{token.tokenInfo.address}</Table.BodyCell>
+      <Table.BodyCell>{token.balance}</Table.BodyCell>
+      <Table.BodyCell>
+        <Dialog
           content={
-            <ToastContent
-              title={notification.title}
-              description={notification.description}
-              link={transactionUrl}
+            <TransactionModal
+              token={token}
+              userAddress={userAddress}
+              operationKind={operationKind}
             />
           }
-          isOpen={isNotifierOpen}
-          setIsOpen={setIsNotifierOpen}
-          variant={notification.variant}
-        />
-      )}
-    </>
+          isBig={true}
+        >
+          <Button
+            type="button"
+            className="bg-indigo-500 text-gray-50 hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-gray-600 disabled:text-gray-500 border border-transparent"
+            onClick={() => {
+              setOperationKind(UserBalanceOpKind.WITHDRAW_INTERNAL);
+            }}
+          >
+            Withdraw<span className="sr-only"> token</span>
+          </Button>
+        </Dialog>
+      </Table.BodyCell>
+    </Table.BodyRow>
   );
 }

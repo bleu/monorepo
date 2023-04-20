@@ -100,22 +100,17 @@ function TableRow({ token, userAddress }: useInternalBalancesTransactionProps) {
             />
           }
           customWidth="w-9/12"
-        ></Dialog>
-        ß
-      </Table.BodyCell>
-      <Table.BodyCell>{token.tokenInfo.symbol}</Table.BodyCell>
-      <Table.BodyCell>{token.tokenInfo.address}</Table.BodyCell>
-      <Table.BodyCell>{token.balance}</Table.BodyCell>
-      <Table.BodyCell>
-        <Button
-          type="button"
-          className="bg-indigo-500 text-gray-50 hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-gray-600 disabled:text-gray-500 border border-transparent"
-          onClick={() => {
-            setOperationKind(UserBalanceOpKind.WITHDRAW_INTERNAL);
-          }}
         >
-          Withdraw<span className="sr-only"> token</span>
-        </Button>
+          <Button
+            type="button"
+            className="bg-indigo-500 text-gray-50 hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-gray-600 disabled:text-gray-500 border border-transparent"
+            onClick={() => {
+              setOperationKind(UserBalanceOpKind.WITHDRAW_INTERNAL);
+            }}
+          >
+            Withdraw<span className="sr-only"> token</span>
+          </Button>
+        </Dialog>
       </Table.BodyCell>
     </Table.BodyRow>
   );

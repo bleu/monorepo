@@ -70,7 +70,7 @@ export const SUBGRAPHS = {
       return {
         //TODO: deploy subgraph on mainnet, polygon and arbitrum
         // https://linear.app/bleu-llc/issue/BAL-290/deploy-subgraph-with-token-relation-on-other-networks
-        [Network.Mainnet]: `${baseEndpoint}/balancer-v2-goerli`,
+        [Network.Mainnet]: `https://api.thegraph.com/subgraphs/name/bleu-llc/balancer-goerli-v2`,
         [Network.Polygon]: `${baseEndpoint}/balancer-v2-goerli`,
         [Network.Arbitrum]: `${baseEndpoint}/balancer-v2-goerli`,
         [Network.Goerli]: `${baseEndpoint}/balancer-v2-goerli`,

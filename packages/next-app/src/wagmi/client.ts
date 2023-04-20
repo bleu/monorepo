@@ -1,24 +1,31 @@
 import { getDefaultWallets } from "@rainbow-me/rainbowkit";
-import { goerli, polygon } from "wagmi/chains";
+import { goerli, mainnet, polygon } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 
 import { configureChains, createClient } from "#/wagmi";
 
-const { chains, provider, webSocketProvider } = configureChains(
-  [polygon, goerli],
-  [publicProvider()]
-);
+export function getWagmiClient(routerPath: string) {
+  const walletChains =
+    routerPath === "/internalmanager"
+      ? [mainnet, goerli, polygon]
+      : [polygon, goerli];
 
-const { connectors } = getDefaultWallets({
-  appName: "Balancer Pool Metadata",
-  chains,
-});
+  const { chains, provider, webSocketProvider } = configureChains(
+    walletChains,
+    [publicProvider()]
+  );
 
-export const client = createClient({
-  autoConnect: true,
-  connectors,
-  provider,
-  webSocketProvider,
-});
+  const { connectors } = getDefaultWallets({
+    appName: "Balancer Pool Metadata",
+    chains,
+  });
 
-export { chains };
+  const client = createClient({
+    autoConnect: true,
+    connectors,
+    provider,
+    webSocketProvider,
+  });
+
+  return { client, chains };
+}

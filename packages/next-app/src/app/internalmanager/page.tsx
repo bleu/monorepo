@@ -92,7 +92,7 @@ function TableRow({
             />
           </div>
         </Table.BodyCell>
-        <Table.BodyCell>{"token.tokenInfo.symbol"}</Table.BodyCell>
+        <Table.BodyCell>{token.tokenInfo.symbol}</Table.BodyCell>
         <Table.BodyCell>{token.tokenInfo.address}</Table.BodyCell>
         <Table.BodyCell>{token.balance}</Table.BodyCell>
         <Table.BodyCell>

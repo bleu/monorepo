@@ -162,18 +162,10 @@ export default function Page({
             <div className="flex gap-2 items-end w-1/2">
               <div className="w-full">
                 <Input
-                  type="number"
+                  type="string"
                   label="Amount"
                   placeholder={token.balance}
-                  {...register("tokenAmount", {
-                    //TODO return error message from zod if value > balance (value is curently a string)
-                    validate: (value) => {
-                      if (value > token.balance) {
-                        return "Insufficient balance";
-                      }
-                      return false;
-                    },
-                  })}
+                  {...register("tokenAmount")}
                   errorMessage={
                     formState.errors?.tokenAmount?.message as string
                   }

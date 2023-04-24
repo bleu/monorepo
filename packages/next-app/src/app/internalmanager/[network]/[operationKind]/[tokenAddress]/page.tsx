@@ -3,6 +3,8 @@
 import { getInternalBalanceSchema } from "@balancer-pool-metadata/schema";
 import { Network } from "@balancer-pool-metadata/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowLeftIcon } from "@radix-ui/react-icons";
+import Link from "next/link";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useAccount, useNetwork } from "wagmi";
@@ -119,8 +121,17 @@ export default function Page({
         onSubmit={handleSubmit(handleWithdraw)}
         className="flex flex-col text-white gap-y-6 bg-blue3 h-full w-full rounded-lg p-14"
       >
-        <div className="self-center font-bold">
-          {modalTitle} Internal Balance
+        <div className="relative w-full flex justify-center">
+          <Link href={"/internalmanager"}>
+            <div className="absolute left-0 flex h-full items-center">
+              <ArrowLeftIcon
+                height={20}
+                width={20}
+                className="hover:text-amber10 duration-200"
+              />
+            </div>
+          </Link>
+          <div className="font-bold">{modalTitle} Internal Balance</div>
         </div>
         <div>
           <div className="flex justify-between gap-7">

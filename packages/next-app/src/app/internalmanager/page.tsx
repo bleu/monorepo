@@ -10,7 +10,7 @@ export default function Page() {
   const { isConnected, isReconnecting, isConnecting } = useAccount();
 
   if (!isConnected && !isReconnecting && !isConnecting) {
-    return <WalletNotConnected isInternal />;
+    return <WalletNotConnected isInternalManager />;
   }
 
   if (isConnecting || isReconnecting) {

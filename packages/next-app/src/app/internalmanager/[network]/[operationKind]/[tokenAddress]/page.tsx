@@ -115,6 +115,19 @@ export default function Page({
     return <Spinner />;
   }
 
+  if (chain?.name.toLowerCase() !== params.network) {
+    return (
+      <div className="w-full rounded-3xl items-center py-16 px-12 md:py-20 flex flex-col h-full">
+        <div className="text-center text-amber9 text-3xl">
+          You are on the wrong network
+        </div>
+        <div className="text-white text-xl">
+          Please change to {params.network}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex items-center justify-center h-fit p-14">
       <form

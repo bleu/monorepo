@@ -246,7 +246,7 @@ export function useInternalBalancesTransaction({
   //Prepare data for transaction
   const userBalanceOp = {
     kind: operationKind as number,
-    asset: token.tokenInfo?.address as `0x${string}`,
+    asset: submitData?.tokenAddress as `0x${string}`,
     //TODO get this if tokenAmount is not defined a better solution than 0 to initialize the value
     amount: parseFixed(
       submitData?.tokenAmount ? submitData.tokenAmount : "0",

@@ -16,3 +16,20 @@ export const internalBalance = gql`
     }
   }
 `;
+
+export const singleInternalBalance = gql`
+  query SingleInternalBalance($userAddress: ID!, $tokenAddress: Bytes!) {
+    user(id: $userAddress) {
+      id
+      userInternalBalances(where: { token: $tokenAddress }) {
+        tokenInfo {
+          name
+          symbol
+          address
+          decimals
+        }
+        balance
+      }
+    }
+  }
+`;

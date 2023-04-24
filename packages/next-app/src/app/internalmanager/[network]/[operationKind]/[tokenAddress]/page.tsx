@@ -106,7 +106,7 @@ export default function Page({
   });
 
   if (!isConnected && !isReconnecting && !isConnecting) {
-    return <WalletNotConnected isInternal />;
+    return <WalletNotConnected isInternalManager />;
   }
 
   if (isConnecting || isReconnecting || !token.tokenInfo) {

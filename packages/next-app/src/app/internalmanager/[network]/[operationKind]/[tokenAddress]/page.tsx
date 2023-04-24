@@ -1,27 +1,68 @@
-/* eslint-disable no-console */
+"use client";
+
 import { getInternalBalanceSchema } from "@balancer-pool-metadata/schema";
+import { Network } from "@balancer-pool-metadata/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useAccount, useNetwork } from "wagmi";
 
 import { ToastContent } from "#/app/metadata/[network]/pool/[poolId]/(components)/MetadataAttributesTable/TransactionModal";
 import { Button } from "#/components";
 import { Input } from "#/components/Input";
+import Spinner from "#/components/Spinner";
 import { Toast } from "#/components/Toast";
+import WalletNotConnected from "#/components/WalletNotConnected";
+import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { useInternalBalancesTransaction } from "#/hooks/useTransaction";
+import { impersonateWhetherDAO, internalBalances } from "#/lib/gql";
 import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
 
-import { useInternalBalancesTransactionProps } from "../page";
+export default function Page({
+  params,
+}: {
+  params: {
+    tokenAddress: `0x${string}`;
+    network: Network;
+    operationKind: string;
+  };
+}) {
+  const { chain } = useNetwork();
+  const { isConnected, isReconnecting, isConnecting } = useAccount();
+  let { address } = useAccount();
+  address = impersonateWhetherDAO(chain?.id.toString() || "1", address);
 
-interface ITransactionModal extends useInternalBalancesTransactionProps {
-  operationKind: UserBalanceOpKind | undefined;
-}
+  const addressLower = address ? address?.toLowerCase() : "";
 
-export function TransactionModal({
-  token,
-  userAddress,
-  operationKind,
-}: ITransactionModal) {
-  if (!operationKind) return null;
+  const {
+    token,
+    setToken,
+    setUserAddress,
+    userAddress,
+    notification,
+    clearNotification,
+    setIsNotifierOpen,
+    isNotifierOpen,
+    transactionUrl,
+  } = useInternalBalance();
+
+  useEffect(() => {
+    clearNotification();
+    setUserAddress(addressLower as `0x${string}`);
+    if (!token.tokenInfo) {
+      internalBalances
+        .gql(chain?.id.toString() || "1")
+        .SingleInternalBalance({
+          userAddress: addressLower as `0x${string}`,
+          tokenAddress: params.tokenAddress,
+        })
+        .then((data) => {
+          if (data.user?.userInternalBalances) {
+            setToken(data.user?.userInternalBalances[0]);
+          }
+        });
+    }
+  }, [isConnecting]);
 
   const InternalBalanceSchema = getInternalBalanceSchema(token.balance);
 
@@ -29,42 +70,54 @@ export function TransactionModal({
     resolver: zodResolver(InternalBalanceSchema),
   });
 
-  const {
-    transactionUrl,
-    isNotifierOpen,
-    setIsNotifierOpen,
-    notification,
-    handleWithdraw,
-  } = useInternalBalancesTransaction({
-    userAddress,
-    token,
-    operationKind,
-  });
-
-  function getModalTitle({
-    operationKind,
-  }: {
-    operationKind: UserBalanceOpKind;
-  }) {
+  function getOperationKindData({ operationKind }: { operationKind: string }) {
     switch (operationKind) {
-      case UserBalanceOpKind.DEPOSIT_INTERNAL:
-        return "Deposit to";
-      case UserBalanceOpKind.WITHDRAW_INTERNAL:
-        return "Withdraw from";
-      case UserBalanceOpKind.TRANSFER_INTERNAL:
-        return "Transfer to";
+      case "deposit":
+        return {
+          modalTitle: "Deposit to",
+          operationKindEnum: UserBalanceOpKind.DEPOSIT_INTERNAL,
+        };
+      case "withdraw":
+        return {
+          modalTitle: "Withdraw from",
+          operationKindEnum: UserBalanceOpKind.WITHDRAW_INTERNAL,
+        };
+      case "transfer":
+        return {
+          modalTitle: "Transfer to",
+          operationKindEnum: UserBalanceOpKind.TRANSFER_INTERNAL,
+        };
       default:
-        return "";
+        return {
+          modalTitle: "Unknown operation",
+          operationKindEnum: null,
+        };
     }
   }
 
-  const modalTitle = getModalTitle({ operationKind });
+  const { modalTitle, operationKindEnum } = getOperationKindData({
+    operationKind: params.operationKind,
+  });
+
+  const { handleWithdraw } = useInternalBalancesTransaction({
+    userAddress,
+    token,
+    operationKind: operationKindEnum,
+  });
+
+  if (!isConnected && !isReconnecting && !isConnecting) {
+    return <WalletNotConnected isInternal />;
+  }
+
+  if (isConnecting || isReconnecting || !token.tokenInfo) {
+    return <Spinner />;
+  }
 
   return (
-    <>
+    <div className="flex items-center justify-center h-fit p-14">
       <form
         onSubmit={handleSubmit(handleWithdraw)}
-        className="mx-6 flex flex-col text-white gap-y-6"
+        className="flex flex-col text-white gap-y-6 bg-blue3 h-full w-full rounded-lg p-14"
       >
         <div className="self-center font-bold">
           {modalTitle} Internal Balance
@@ -159,6 +212,6 @@ export function TransactionModal({
           variant={notification.variant}
         />
       )}
-    </>
+    </div>
   );
 }

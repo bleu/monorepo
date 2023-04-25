@@ -17,7 +17,7 @@ function useTableContext() {
 export default function Table({ children }: React.PropsWithChildren) {
   return (
     <TableContext.Provider value={{}}>
-      <table className="block min-w-full divide-y divide-gray-900 overflow-auto rounded bg-gray-800">
+      <table className="block min-w-full divide-y divide-gray-700 overflow-auto rounded bg-gray-800 border border-gray-700">
         {children}
       </table>
     </TableContext.Provider>
@@ -38,7 +38,7 @@ function HeaderCell({ children }: React.PropsWithChildren) {
   return (
     <th
       scope="col"
-      className="text-gray-40 py-3.5 px-3 text-left text-sm font-semibold"
+      className="text-gray-40 p-4 text-left text-sm font-semibold"
     >
       {children}
     </th>
@@ -57,9 +57,7 @@ function BodyRow({ children }: React.PropsWithChildren) {
 
 function BodyCell({ children }: React.PropsWithChildren) {
   useTableContext();
-  return (
-    <td className="w-fit px-3 py-3.5 text-sm text-gray-500">{children}</td>
-  );
+  return <td className="w-fit p-4 text-sm text-gray-500">{children}</td>;
 }
 
 Table.HeaderRow = HeaderRow;

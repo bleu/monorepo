@@ -38,8 +38,8 @@ export function TokenTable() {
   const tokensWithBalance = internalBalanceData?.user?.userInternalBalances;
 
   return (
-    <div className="h-full flex-1 flex w-full justify-center text-white">
-      <div className="mt-10">
+    <div className="flex-1 flex w-full text-white justify-center">
+      <div>
         {tokensWithBalance && tokensWithBalance?.length > 0 && (
           <Table>
             <Table.HeaderRow>
@@ -113,11 +113,15 @@ function TableRow({
         </div>
       </Table.BodyCell>
       <Table.BodyCell>
-        {token.tokenInfo.name} ({token.tokenInfo.symbol})
+        <span className="pr-8">
+          {token.tokenInfo.name} ({token.tokenInfo.symbol})
+        </span>
       </Table.BodyCell>
-      <Table.BodyCell>{token.balance}</Table.BodyCell>
       <Table.BodyCell>
-        <div className="flex items-center gap-2">
+        <span className="pr-8">{token.balance}</span>
+      </Table.BodyCell>
+      <Table.BodyCell>
+        <div className="flex items-center gap-2 pr-8">
           {transactionButtons.map((button) => (
             <TransactionButton
               key={button.operation}
@@ -126,6 +130,7 @@ function TableRow({
               network={network}
               token={token}
               setToken={setToken}
+              disabled={button?.disabled}
               userAddress={userAddress}
               setUserAddress={setUserAddress}
             />
@@ -139,18 +144,15 @@ function TableRow({
 const transactionButtons = [
   {
     icon: <PlusCircledIcon width={22} height={22} />,
-    operation: "withdraw",
+    operation: "deposit",
+    disabled: true,
   },
   {
     icon: <MinusCircledIcon width={22} height={22} />,
-    operation: "deposit",
+    operation: "withdraw",
   },
   {
-    icon: (
-      <div className="rounded-full border-[1.5px] border-gray-500 h-5 w-5 flex justify-center items-center">
-        <WidthIcon height={16} width={16} />
-      </div>
-    ),
+    icon: <WidthIcon height={22} width={22} />,
     operation: "transfer",
   },
 ];
@@ -163,6 +165,7 @@ function TransactionButton({
   setUserAddress,
   icon,
   operation,
+  disabled = false,
 }: {
   network: string;
   token: ArrElement<GetDeepProp<InternalBalanceQuery, "userInternalBalances">>;
@@ -173,22 +176,35 @@ function TransactionButton({
   setUserAddress: React.Dispatch<`0x${string}`>;
   icon: React.ReactElement;
   operation: string;
+  disabled?: boolean;
 }) {
   return (
-    <Link
-      href={`/internalmanager/${network}/${operation}/${token.tokenInfo.address}`}
-      className="leading-none"
-    >
-      <button
-        type="button"
-        className="leading-none"
-        onClick={() => {
-          setToken(token);
-          setUserAddress(userAddress);
-        }}
-      >
-        {icon}
-      </button>
-    </Link>
+    <>
+      {!disabled ? (
+        <Link
+          href={`/internalmanager/${network}/${operation}/${token.tokenInfo.address}`}
+          className="leading-none"
+        >
+          <button
+            type="button"
+            className="leading-none"
+            onClick={() => {
+              setToken(token);
+              setUserAddress(userAddress);
+            }}
+          >
+            {icon}
+          </button>
+        </Link>
+      ) : (
+        <button
+          type="button"
+          className="leading-none disabled:cursor-not-allowed disabled:text-gray-600"
+          disabled={disabled}
+        >
+          {icon}
+        </button>
+      )}
+    </>
   );
 }

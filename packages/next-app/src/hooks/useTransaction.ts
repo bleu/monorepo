@@ -56,7 +56,7 @@ const NOTIFICATION_MAP = {
     variant: NotificationVariant.NOTIFICATION,
   },
   [TransactionStatus.CONFIRMING]: {
-    title: "Confirme pending... ",
+    title: "Confirm pending... ",
     description: "Set metadata on-chain",
     variant: NotificationVariant.PENDING,
   },
@@ -84,7 +84,7 @@ const NOTIFICATION_MAP = {
 
 export const NOTIFICATION_MAP_INTERNAL_BALANCES = {
   [TransactionStatus.WAITING_APPROVAL]: {
-    title: "Confirme pending... ",
+    title: "Confirm pending... ",
     description: "Waiting for your wallet approvement",
     variant: NotificationVariant.PENDING,
   },
@@ -231,7 +231,7 @@ export function useInternalBalancesTransaction({
   const userBalanceOp = {
     kind: operationKind as number,
     asset: token.tokenInfo.address as `0x${string}`,
-    amount: parseFixed(token.balance, 18),
+    amount: parseFixed(token.balance, token.tokenInfo.decimals),
     sender: userAddress as `0x${string}`,
     recipient: userAddress as `0x${string}`,
   };
@@ -254,6 +254,7 @@ export function useInternalBalancesTransaction({
   useEffect(() => {
     if (!operationKind) return;
     write?.();
+    setOperationKind(undefined);
   }, [operationKind]);
 
   //handle transaction status

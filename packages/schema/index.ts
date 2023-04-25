@@ -79,6 +79,7 @@ export const getInternalBalanceSchema = (totalBalance: number) => {
           message: "Amount exceeds total balance",
         });
       }
+      return val;
     }),
     receiverAddress: z
       .string()

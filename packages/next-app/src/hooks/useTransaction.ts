@@ -65,7 +65,7 @@ const NOTIFICATION_MAP = {
     variant: NotificationVariant.NOTIFICATION,
   },
   [TransactionStatus.CONFIRMING]: {
-    title: "Confirme pending... ",
+    title: "Confirm pending... ",
     description: "Set metadata on-chain",
     variant: NotificationVariant.PENDING,
   },
@@ -93,7 +93,7 @@ const NOTIFICATION_MAP = {
 
 export const NOTIFICATION_MAP_INTERNAL_BALANCES = {
   [TransactionStatus.WAITING_APPROVAL]: {
-    title: "Confirme pending... ",
+    title: "Confirm pending... ",
     description: "Waiting for your wallet approvement",
     variant: NotificationVariant.PENDING,
   },

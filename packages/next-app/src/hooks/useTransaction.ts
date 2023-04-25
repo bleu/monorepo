@@ -1,8 +1,11 @@
 import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
 import { getNetworkUrl } from "@balancer-pool-metadata/shared";
 import { parseFixed } from "@ethersproject/bignumber";
+import { useRouter } from "next/navigation";
 import { Dispatch, useEffect, useState } from "react";
+import { FieldValues } from "react-hook-form";
 
+import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { PoolMetadataAttribute } from "#/contexts/PoolMetadataContext";
 import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
 import { pinJSON } from "#/lib/ipfs";
@@ -33,10 +36,16 @@ enum NotificationVariant {
   SUCCESS = "success",
 }
 
-type Notification = {
+export type Notification = {
   title: string;
   description: string;
   variant: NotificationVariant;
+};
+
+type SubmitData = {
+  receiverAddress: `0x${string}`;
+  tokenAddress: `0x${string}`;
+  tokenAmount: string;
 };
 
 type TransactionHookResult = {
@@ -217,23 +226,34 @@ export function useMetadataTransaction({
 export function useInternalBalancesTransaction({
   userAddress,
   token,
+  operationKind,
 }: {
   userAddress: `0x${string}`;
   token: ArrElement<GetDeepProp<InternalBalanceQuery, "userInternalBalances">>;
+  operationKind: UserBalanceOpKind | null;
 }) {
+  const {
+    setNotification,
+    setTransactionUrl,
+    isNotifierOpen,
+    setIsNotifierOpen,
+    notification,
+  } = useInternalBalance();
+  const { push } = useRouter();
   const { chain } = useNetwork();
-  const [isNotifierOpen, setIsNotifierOpen] = useState(false);
-  const [notification, setNotification] = useState<Notification | null>(null);
-  const [transactionUrl, setTransactionUrl] = useState<string>();
-  const [operationKind, setOperationKind] = useState<UserBalanceOpKind>();
+  const [submitData, setSubmitData] = useState<SubmitData | null>(null);
 
   //Prepare data for transaction
   const userBalanceOp = {
     kind: operationKind as number,
-    asset: token.tokenInfo.address as `0x${string}`,
-    amount: parseFixed(token.balance, token.tokenInfo.decimals),
+    asset: submitData?.tokenAddress as `0x${string}`,
+    //TODO get this if tokenAmount is not defined a better solution than 0 to initialize the value
+    amount: parseFixed(
+      submitData?.tokenAmount ? submitData.tokenAmount : "0",
+      token.tokenInfo?.decimals
+    ),
     sender: userAddress as `0x${string}`,
-    recipient: userAddress as `0x${string}`,
+    recipient: submitData?.receiverAddress as `0x${string}`,
   };
 
   const { config } = usePrepareVaultManageUserBalance({
@@ -243,19 +263,22 @@ export function useInternalBalancesTransaction({
   const { data, write } = useVaultManageUserBalance(config);
 
   //trigger transaction
-  function handleWithdraw() {
-    setOperationKind(UserBalanceOpKind.WITHDRAW_INTERNAL);
+  function handleWithdraw(data: FieldValues) {
+    setSubmitData({
+      tokenAddress: data.tokenAddress,
+      tokenAmount: data.tokenAmount,
+      receiverAddress: data.receiverAddress,
+    });
+  }
+
+  // //trigger the actual transaction
+  useEffect(() => {
+    if (!submitData) return;
     setNotification(
       NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WAITING_APPROVAL]
     );
-  }
-
-  //trigger the actual transaction
-  useEffect(() => {
-    if (!operationKind) return;
     write?.();
-    setOperationKind(undefined);
-  }, [operationKind]);
+  }, [submitData]);
 
   //handle transaction status
   useEffect(() => {
@@ -276,11 +299,13 @@ export function useInternalBalancesTransaction({
   useWaitForTransaction({
     hash: data?.hash,
     onSuccess() {
+      push(`/internalmanager`);
       setNotification(
         NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.CONFIRMED]
       );
     },
     onError() {
+      push(`/internalmanager`);
       setNotification(
         NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WRITE_ERROR]
       );
@@ -304,11 +329,6 @@ export function useInternalBalancesTransaction({
   }, [notification]);
 
   return {
-    isNotifierOpen,
-    setIsNotifierOpen,
-    operationKind,
     handleWithdraw,
-    notification,
-    transactionUrl,
   };
 }

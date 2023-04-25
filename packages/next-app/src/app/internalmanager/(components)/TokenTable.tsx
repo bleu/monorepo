@@ -31,10 +31,7 @@ export function TokenTable() {
       userAddress: addressLower as `0x${string}`,
     });
 
-  const tokensWithBalance =
-    internalBalanceData?.user?.userInternalBalances?.filter(
-      (token) => token.balance > 0
-    );
+  const tokensWithBalance = internalBalanceData?.user?.userInternalBalances;
 
   return (
     <div className="h-full flex-1 flex w-full justify-center text-white">

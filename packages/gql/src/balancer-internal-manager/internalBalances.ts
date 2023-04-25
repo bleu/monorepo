@@ -4,7 +4,7 @@ export const internalBalance = gql`
   query InternalBalance($userAddress: ID!) {
     user(id: $userAddress) {
       id
-      userInternalBalances {
+      userInternalBalances(where: { balance_gt: 0 }) {
         tokenInfo {
           name
           symbol
@@ -21,7 +21,7 @@ export const singleInternalBalance = gql`
   query SingleInternalBalance($userAddress: ID!, $tokenAddress: Bytes!) {
     user(id: $userAddress) {
       id
-      userInternalBalances(where: { token: $tokenAddress }) {
+      userInternalBalances(where: { token: $tokenAddress, balance_gt: 0 }) {
         tokenInfo {
           name
           symbol

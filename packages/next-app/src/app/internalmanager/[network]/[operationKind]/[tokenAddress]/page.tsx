@@ -51,7 +51,7 @@ export default function Page({
   useEffect(() => {
     clearNotification();
     setUserAddress(addressLower as `0x${string}`);
-    if (!token.tokenInfo) {
+    if (!token?.tokenInfo) {
       internalBalances
         .gql(chain?.id.toString() || "1")
         .SingleInternalBalance({
@@ -65,6 +65,36 @@ export default function Page({
         });
     }
   }, [isConnecting]);
+
+  if (!token?.balance) {
+    return (
+      <div className="w-full rounded-3xl items-center py-16 px-12 md:py-20 flex flex-col h-full">
+        <div className="text-center text-amber9 text-3xl">
+          Looks like you don't have this token
+        </div>
+        <div className="text-white text-xl">
+          Please click
+          <Link href={"/internalmanager"}>
+            <span className="text-gray-400"> here </span>
+          </Link>
+          to check which tokens you have
+        </div>
+      </div>
+    );
+  }
+
+  if (chain?.name.toLowerCase() !== params.network) {
+    return (
+      <div className="w-full rounded-3xl items-center py-16 px-12 md:py-20 flex flex-col h-full">
+        <div className="text-center text-amber9 text-3xl">
+          You are on the wrong network
+        </div>
+        <div className="text-white text-xl">
+          Please change to {params.network}
+        </div>
+      </div>
+    );
+  }
 
   const InternalBalanceSchema = getInternalBalanceSchema(token.balance);
 
@@ -113,19 +143,6 @@ export default function Page({
 
   if (isConnecting || isReconnecting || !token.tokenInfo) {
     return <Spinner />;
-  }
-
-  if (chain?.name.toLowerCase() !== params.network) {
-    return (
-      <div className="w-full rounded-3xl items-center py-16 px-12 md:py-20 flex flex-col h-full">
-        <div className="text-center text-amber9 text-3xl">
-          You are on the wrong network
-        </div>
-        <div className="text-white text-xl">
-          Please change to {params.network}
-        </div>
-      </div>
-    );
   }
 
   return (

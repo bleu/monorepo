@@ -51,7 +51,7 @@ export default function Page({
   useEffect(() => {
     clearNotification();
     setUserAddress(addressLower as `0x${string}`);
-    if (!token.tokenInfo) {
+    if (!token?.tokenInfo) {
       internalBalances
         .gql(chain?.id.toString() || "1")
         .SingleInternalBalance({
@@ -66,7 +66,7 @@ export default function Page({
     }
   }, [isConnecting]);
 
-  const InternalBalanceSchema = getInternalBalanceSchema(token.balance);
+  const InternalBalanceSchema = getInternalBalanceSchema(token?.balance);
 
   const { register, handleSubmit, setValue, formState } = useForm({
     resolver: zodResolver(InternalBalanceSchema),
@@ -128,6 +128,22 @@ export default function Page({
     );
   }
 
+  if (token?.balance === "0") {
+    return (
+      <div className="w-full rounded-3xl items-center py-16 px-12 md:py-20 flex flex-col h-full">
+        <div className="text-center text-amber9 text-3xl">
+          Looks like you don't have this token
+        </div>
+        <div className="text-white text-xl">
+          Please click
+          <Link href={"/internalmanager"}>
+            <span className="text-gray-400"> here </span>
+          </Link>
+          to check which tokens you have
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="flex items-center justify-center h-fit p-14">
       <form

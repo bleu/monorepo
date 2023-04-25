@@ -1,3 +1,4 @@
+import { ethers } from "ethers";
 import { z } from "zod";
 
 export const TypenameEnum = z.enum(["text", "url", "date", "datetime-local"]);
@@ -53,7 +54,12 @@ export const PoolMetadataSchema = z
 
 export const getInternalBalanceSchema = (totalBalance: number) => {
   const InternalBalanceSchema = z.object({
-    tokenAddress: z.string().min(1),
+    tokenAddress: z
+      .string()
+      .min(1)
+      .refine((value) => ethers.utils.isAddress(value), {
+        message: "Provided address is invalid",
+      }),
     tokenAmount: z.string().transform((val, ctx) => {
       if (val === "") {
         ctx.addIssue({
@@ -73,11 +79,14 @@ export const getInternalBalanceSchema = (totalBalance: number) => {
           message: "Amount exceeds total balance",
         });
       }
+      return val;
     }),
     receiverAddress: z
       .string()
       .min(1)
-      .regex(/0x[a-fA-F0-9]{40}/, { message: "Invalid address" }),
+      .refine((value) => ethers.utils.isAddress(value), {
+        message: "Provided address is invalid",
+      }),
   });
   return InternalBalanceSchema;
 };

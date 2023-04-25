@@ -35,10 +35,7 @@ export function TokenTable() {
       userAddress: addressLower as `0x${string}`,
     });
 
-  const tokensWithBalance =
-    internalBalanceData?.user?.userInternalBalances?.filter(
-      (token) => token.balance > 0
-    );
+  const tokensWithBalance = internalBalanceData?.user?.userInternalBalances;
 
   return (
     <div className="h-full flex-1 flex w-full justify-center text-white">
@@ -101,7 +98,11 @@ function TableRow({
         <div className="flex justify-center items-center">
           <div className="bg-white rounded-full p-1">
             <Image
-              src={tokenLogoUri["USDC"] || genericTokenLogo}
+              src={
+                tokenLogoUri[
+                  token?.tokenInfo?.symbol as keyof typeof tokenLogoUri
+                ] || genericTokenLogo
+              }
               className="rounded-full"
               alt="Token Logo"
               height={28}

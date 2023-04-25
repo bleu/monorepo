@@ -1,6 +1,11 @@
 "use client";
 import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
 import { networkFor } from "@balancer-pool-metadata/shared";
+import {
+  MinusCircledIcon,
+  PlusCircledIcon,
+  WidthIcon,
+} from "@radix-ui/react-icons";
 import Image from "next/image";
 import Link from "next/link";
 import { tokenLogoUri } from "public/tokens/logoUri";
@@ -8,7 +13,6 @@ import { useAccount, useNetwork } from "wagmi";
 
 import { ToastContent } from "#/app/metadata/[network]/pool/[poolId]/(components)/MetadataAttributesTable/TransactionModal";
 import genericTokenLogo from "#/assets/generic-token-logo.png";
-import { Button } from "#/components";
 import Table from "#/components/Table";
 import { Toast } from "#/components/Toast";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
@@ -42,13 +46,12 @@ export function TokenTable() {
         {tokensWithBalance && tokensWithBalance?.length > 0 && (
           <Table>
             <Table.HeaderRow>
-              <Table.HeaderCell>Token Logo</Table.HeaderCell>
-              <Table.HeaderCell>Symbol</Table.HeaderCell>
-              <Table.HeaderCell>Address</Table.HeaderCell>
-              <Table.HeaderCell>Balance</Table.HeaderCell>
               <Table.HeaderCell>
-                <span className="sr-only">Withdraw</span>
+                <span className="sr-only">Token Logo</span>
               </Table.HeaderCell>
+              <Table.HeaderCell>Token</Table.HeaderCell>
+              <Table.HeaderCell>Balance</Table.HeaderCell>
+              <Table.HeaderCell>Manage</Table.HeaderCell>
             </Table.HeaderRow>
             <Table.Body>
               {tokensWithBalance.map((token) => (
@@ -96,38 +99,95 @@ function TableRow({
     <Table.BodyRow key={token.tokenInfo.address}>
       <Table.BodyCell>
         <div className="flex justify-center items-center">
-          <Image
-            src={
-              tokenLogoUri[
-                token?.tokenInfo?.symbol as keyof typeof tokenLogoUri
-              ] || genericTokenLogo
-            }
-            alt="Token Logo"
-            height={28}
-            width={28}
-            quality={100}
-          />
+          <div className="bg-white rounded-full p-1">
+            <Image
+              src={tokenLogoUri["USDC"] || genericTokenLogo}
+              className="rounded-full"
+              alt="Token Logo"
+              height={28}
+              width={28}
+              quality={100}
+            />
+          </div>
         </div>
       </Table.BodyCell>
-      <Table.BodyCell>{token.tokenInfo.symbol}</Table.BodyCell>
-      <Table.BodyCell>{token.tokenInfo.address}</Table.BodyCell>
+      <Table.BodyCell>
+        {token.tokenInfo.name} ({token.tokenInfo.symbol})
+      </Table.BodyCell>
       <Table.BodyCell>{token.balance}</Table.BodyCell>
       <Table.BodyCell>
-        <Link
-          href={`/internalmanager/${network}/withdraw/${token.tokenInfo.address}`}
-        >
-          <Button
-            type="button"
-            className="bg-indigo-500 text-gray-50 hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-gray-600 disabled:text-gray-500 border border-transparent"
-            onClick={() => {
-              setToken(token);
-              setUserAddress(userAddress);
-            }}
-          >
-            Withdraw<span className="sr-only"> token</span>
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          {transactionButtons.map((button) => (
+            <TransactionButton
+              key={button.operation}
+              icon={button.icon}
+              operation={button.operation}
+              network={network}
+              token={token}
+              setToken={setToken}
+              userAddress={userAddress}
+              setUserAddress={setUserAddress}
+            />
+          ))}
+        </div>
       </Table.BodyCell>
     </Table.BodyRow>
+  );
+}
+
+const transactionButtons = [
+  {
+    icon: <PlusCircledIcon width={22} height={22} />,
+    operation: "withdraw",
+  },
+  {
+    icon: <MinusCircledIcon width={22} height={22} />,
+    operation: "deposit",
+  },
+  {
+    icon: (
+      <div className="rounded-full border-[1.5px] border-gray-500 h-5 w-5 flex justify-center items-center">
+        <WidthIcon height={16} width={16} />
+      </div>
+    ),
+    operation: "transfer",
+  },
+];
+
+function TransactionButton({
+  network,
+  token,
+  userAddress,
+  setToken,
+  setUserAddress,
+  icon,
+  operation,
+}: {
+  network: string;
+  token: ArrElement<GetDeepProp<InternalBalanceQuery, "userInternalBalances">>;
+  userAddress: `0x${string}`;
+  setToken: React.Dispatch<
+    ArrElement<GetDeepProp<InternalBalanceQuery, "userInternalBalances">>
+  >;
+  setUserAddress: React.Dispatch<`0x${string}`>;
+  icon: React.ReactElement;
+  operation: string;
+}) {
+  return (
+    <Link
+      href={`/internalmanager/${network}/${operation}/${token.tokenInfo.address}`}
+      className="leading-none"
+    >
+      <button
+        type="button"
+        className="leading-none"
+        onClick={() => {
+          setToken(token);
+          setUserAddress(userAddress);
+        }}
+      >
+        {icon}
+      </button>
+    </Link>
   );
 }

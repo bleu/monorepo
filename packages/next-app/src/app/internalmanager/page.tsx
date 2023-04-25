@@ -31,7 +31,11 @@ export default function Page() {
             </span>
           </div>
           <div className="flex gap-4">
-            <Button className="flex items-center gap-1" disabled={true}>
+            <Button
+              className="flex items-center gap-1"
+              disabled={true}
+              title="New deposit"
+            >
               <PlusIcon />
               Deposit
             </Button>
@@ -40,6 +44,7 @@ export default function Page() {
               shade="light"
               variant="outline"
               disabled={true}
+              title="Withdraw all"
             >
               <MinusIcon />
               Withdraw

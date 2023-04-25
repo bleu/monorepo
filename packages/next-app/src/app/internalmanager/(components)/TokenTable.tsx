@@ -6,6 +6,7 @@ import {
   PlusCircledIcon,
   WidthIcon,
 } from "@radix-ui/react-icons";
+import { upperFirst } from "lodash";
 import Image from "next/image";
 import Link from "next/link";
 import { tokenLogoUri } from "public/tokens/logoUri";
@@ -181,6 +182,7 @@ function TransactionButton({
         >
           <button
             type="button"
+            title={upperFirst(operation)}
             className="leading-none"
             onClick={() => {
               setToken(token);
@@ -193,6 +195,7 @@ function TransactionButton({
       ) : (
         <button
           type="button"
+          title={upperFirst(operation)}
           className="leading-none disabled:cursor-not-allowed disabled:text-gray-600"
           disabled={disabled}
         >

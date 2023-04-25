@@ -4,6 +4,8 @@ import { getInternalBalanceSchema } from "@balancer-pool-metadata/schema";
 import { Network } from "@balancer-pool-metadata/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
+import cn from "classnames";
+import { upperFirst } from "lodash";
 import Link from "next/link";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -66,7 +68,11 @@ export default function Page({
     }
   }, [isConnecting]);
 
-  const InternalBalanceSchema = getInternalBalanceSchema(token?.balance);
+  const InternalBalanceSchema = getInternalBalanceSchema({
+    totalBalance: token?.balance,
+    userAddress: addressLower,
+    operationKind: params.operationKind,
+  });
 
   const { register, handleSubmit, setValue, formState } = useForm({
     resolver: zodResolver(InternalBalanceSchema),
@@ -76,28 +82,32 @@ export default function Page({
     switch (operationKind) {
       case "deposit":
         return {
-          modalTitle: "Deposit to",
+          title: "Deposit to",
+          description: "Deposit from your wallet to an internal balance",
           operationKindEnum: UserBalanceOpKind.DEPOSIT_INTERNAL,
         };
       case "withdraw":
         return {
-          modalTitle: "Withdraw from",
+          title: "Withdraw from",
+          description: "Withdraw from your internal balance to a wallet",
           operationKindEnum: UserBalanceOpKind.WITHDRAW_INTERNAL,
         };
       case "transfer":
         return {
-          modalTitle: "Transfer to",
+          title: "Transfer to",
+          description:
+            "Transfer from your internal balance to another internal balance",
           operationKindEnum: UserBalanceOpKind.TRANSFER_INTERNAL,
         };
       default:
         return {
-          modalTitle: "Unknown operation",
+          title: "Unknown operation",
           operationKindEnum: null,
         };
     }
   }
 
-  const { modalTitle, operationKindEnum } = getOperationKindData({
+  const { title, description, operationKindEnum } = getOperationKindData({
     operationKind: params.operationKind,
   });
 
@@ -160,7 +170,10 @@ export default function Page({
               />
             </div>
           </Link>
-          <div className="font-bold">{modalTitle} Internal Balance</div>
+          <div className="flex flex-col items-center">
+            <div className="font-bold">{title} Internal Balance</div>
+            <span>{description}</span>
+          </div>
         </div>
         <div>
           <div className="flex justify-between gap-7">
@@ -199,7 +212,13 @@ export default function Page({
             </div>
           </div>
           <div className="flex gap-2 items-end">
-            <div className="w-9/12">
+            <div
+              className={cn(
+                operationKindEnum !== UserBalanceOpKind.TRANSFER_INTERNAL
+                  ? "w-9/12"
+                  : "w-full"
+              )}
+            >
               <Input
                 type="string"
                 label="Receiver Address"
@@ -210,15 +229,17 @@ export default function Page({
                 }
               />
             </div>
-            <button
-              type="button"
-              className="w-3/12 inline-block bg-blue4 text-blue9 h-[35px] px-3 mb-11 rounded-[4px] shadow-[0_0_0_1px] shadow-blue6 outline-none"
-              onClick={() => {
-                setValue("receiverAddress", userAddress);
-              }}
-            >
-              Use Current Address
-            </button>
+            {operationKindEnum !== UserBalanceOpKind.TRANSFER_INTERNAL && (
+              <button
+                type="button"
+                className="w-3/12 inline-block bg-blue4 text-blue9 h-[35px] px-3 mb-11 rounded-[4px] shadow-[0_0_0_1px] shadow-blue6 outline-none"
+                onClick={() => {
+                  setValue("receiverAddress", userAddress);
+                }}
+              >
+                Use Current Address
+              </button>
+            )}
           </div>
         </div>
         <div className="flex justify-center">
@@ -226,7 +247,8 @@ export default function Page({
             type="submit"
             className="bg-indigo-500  text-gray-50 hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-gray-600 disabled:text-gray-500 border border-transparent"
           >
-            Withdraw<span className="sr-only"> token</span>
+            {upperFirst(params.operationKind)}
+            <span className="sr-only"> token</span>
           </Button>
         </div>
       </form>

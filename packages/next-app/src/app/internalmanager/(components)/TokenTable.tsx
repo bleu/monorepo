@@ -39,30 +39,28 @@ export function TokenTable() {
 
   return (
     <div className="flex-1 flex w-full text-white justify-center">
-      <div>
-        {tokensWithBalance && tokensWithBalance?.length > 0 && (
-          <Table>
-            <Table.HeaderRow>
-              <Table.HeaderCell>
-                <span className="sr-only">Token Logo</span>
-              </Table.HeaderCell>
-              <Table.HeaderCell>Token</Table.HeaderCell>
-              <Table.HeaderCell>Balance</Table.HeaderCell>
-              <Table.HeaderCell>Manage</Table.HeaderCell>
-            </Table.HeaderRow>
-            <Table.Body>
-              {tokensWithBalance.map((token) => (
-                <TableRow
-                  key={token.tokenInfo.address}
-                  token={token}
-                  chainId={chain!.id?.toString?.()}
-                  userAddress={addressLower as `0x${string}`}
-                />
-              ))}
-            </Table.Body>
-          </Table>
-        )}
-      </div>
+      {tokensWithBalance && tokensWithBalance?.length > 0 && (
+        <Table>
+          <Table.HeaderRow>
+            <Table.HeaderCell>
+              <span className="sr-only">Token Logo</span>
+            </Table.HeaderCell>
+            <Table.HeaderCell>Token</Table.HeaderCell>
+            <Table.HeaderCell>Balance</Table.HeaderCell>
+            <Table.HeaderCell>Manage</Table.HeaderCell>
+          </Table.HeaderRow>
+          <Table.Body>
+            {tokensWithBalance.map((token) => (
+              <TableRow
+                key={token.tokenInfo.address}
+                token={token}
+                chainId={chain!.id?.toString?.()}
+                userAddress={addressLower as `0x${string}`}
+              />
+            ))}
+          </Table.Body>
+        </Table>
+      )}
       {notification && (
         <Toast
           content={
@@ -113,15 +111,11 @@ function TableRow({
         </div>
       </Table.BodyCell>
       <Table.BodyCell>
-        <span className="pr-8">
-          {token.tokenInfo.name} ({token.tokenInfo.symbol})
-        </span>
+        {token.tokenInfo.name} ({token.tokenInfo.symbol})
       </Table.BodyCell>
+      <Table.BodyCell>{token.balance}</Table.BodyCell>
       <Table.BodyCell>
-        <span className="pr-8">{token.balance}</span>
-      </Table.BodyCell>
-      <Table.BodyCell>
-        <div className="flex items-center gap-2 pr-8">
+        <div className="flex items-center gap-2">
           {transactionButtons.map((button) => (
             <TransactionButton
               key={button.operation}

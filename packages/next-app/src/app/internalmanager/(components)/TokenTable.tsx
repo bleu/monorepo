@@ -1,6 +1,5 @@
 "use client";
 import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
-import { networkFor } from "@balancer-pool-metadata/shared";
 import {
   MinusCircledIcon,
   PlusCircledIcon,
@@ -39,29 +38,32 @@ export function TokenTable() {
   const tokensWithBalance = internalBalanceData?.user?.userInternalBalances;
 
   return (
-    <div className="flex-1 flex w-full text-white justify-center">
-      {tokensWithBalance && tokensWithBalance?.length > 0 && (
-        <Table>
-          <Table.HeaderRow>
-            <Table.HeaderCell>
-              <span className="sr-only">Token Logo</span>
-            </Table.HeaderCell>
-            <Table.HeaderCell>Token</Table.HeaderCell>
-            <Table.HeaderCell>Balance</Table.HeaderCell>
-            <Table.HeaderCell>Manage</Table.HeaderCell>
-          </Table.HeaderRow>
-          <Table.Body>
-            {tokensWithBalance.map((token) => (
-              <TableRow
-                key={token.tokenInfo.address}
-                token={token}
-                chainId={chain!.id?.toString?.()}
-                userAddress={addressLower as `0x${string}`}
-              />
-            ))}
-          </Table.Body>
-        </Table>
-      )}
+    <div className="h-full flex-1 flex w-full justify-center text-white">
+      <div className="mt-10">
+        {tokensWithBalance && tokensWithBalance?.length > 0 && (
+          <Table>
+            <Table.HeaderRow>
+              <Table.HeaderCell>Token Logo</Table.HeaderCell>
+              <Table.HeaderCell>Symbol</Table.HeaderCell>
+              <Table.HeaderCell>Address</Table.HeaderCell>
+              <Table.HeaderCell>Balance</Table.HeaderCell>
+              <Table.HeaderCell>
+                <span className="sr-only">Withdraw</span>
+              </Table.HeaderCell>
+            </Table.HeaderRow>
+            <Table.Body>
+              {tokensWithBalance.map((token) => (
+                <TableRow
+                  key={token.tokenInfo.address}
+                  token={token}
+                  chainName={chain!.name}
+                  userAddress={addressLower as `0x${string}`}
+                />
+              ))}
+            </Table.Body>
+          </Table>
+        )}
+      </div>
       {notification && (
         <Toast
           content={
@@ -82,14 +84,15 @@ export function TokenTable() {
 
 function TableRow({
   token,
-  chainId,
+  chainName,
   userAddress,
 }: {
   token: ArrElement<GetDeepProp<InternalBalanceQuery, "userInternalBalances">>;
-  chainId: string;
+  chainName: string;
   userAddress: `0x${string}`;
 }) {
-  const network = networkFor(chainId).toLowerCase();
+  const network = chainName.toLowerCase();
+
   const { setToken, setUserAddress } = useInternalBalance();
   return (
     <Table.BodyRow key={token.tokenInfo.address}>

@@ -6,8 +6,7 @@
     "@balancer-pool-metadata/shared": "workspace:^",
     "@balancer-pool-metadata/tsconfig": "workspace:*",
     "ts-node": "^10.9.1",
-    "zod": "^3.21.4",
-    "ethers": "^5.7.2"
+    "zod": "^3.21.4"
   },
   "dependencies": {
     "typescript": "^5.0.3"

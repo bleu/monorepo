@@ -14,7 +14,7 @@ jobs:
     # Only run one deployment at a time per PR.
     concurrency:
       group: pr-${{ github.event.number }}
-
+      cancel-in-progress: true
     # Create a GitHub deployment environment per staging app so it shows up
     # in the pull request UI.
     environment:
@@ -28,7 +28,7 @@ jobs:
 
       - name: Deploy
         id: deploy
-        uses: superfly/fly-pr-review-apps@1
+        uses: superfly/fly-pr-review-apps@1.0.0
 
       - name: Clean up GitHub environment
         uses: strumwolf/delete-deployment-environment@v2

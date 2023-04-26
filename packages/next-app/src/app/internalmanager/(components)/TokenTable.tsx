@@ -1,6 +1,5 @@
 "use client";
 import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
-import { networkFor } from "@balancer-pool-metadata/shared";
 import Image from "next/image";
 import Link from "next/link";
 import { tokenLogoUri } from "public/tokens/logoUri";
@@ -52,7 +51,7 @@ export function TokenTable() {
                 <TableRow
                   key={token.tokenInfo.address}
                   token={token}
-                  chainId={chain!.id?.toString?.()}
+                  chainName={chain!.name}
                   userAddress={addressLower as `0x${string}`}
                 />
               ))}
@@ -80,14 +79,15 @@ export function TokenTable() {
 
 function TableRow({
   token,
-  chainId,
+  chainName,
   userAddress,
 }: {
   token: ArrElement<GetDeepProp<InternalBalanceQuery, "userInternalBalances">>;
-  chainId: string;
+  chainName: string;
   userAddress: `0x${string}`;
 }) {
-  const network = networkFor(chainId).toLowerCase();
+  const network = chainName.toLowerCase();
+
   const { setToken, setUserAddress } = useInternalBalance();
   return (
     <Table.BodyRow key={token.tokenInfo.address}>

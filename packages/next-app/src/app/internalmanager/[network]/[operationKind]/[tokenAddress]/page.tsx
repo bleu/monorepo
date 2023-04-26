@@ -5,7 +5,7 @@ import { Network } from "@balancer-pool-metadata/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAccount, useNetwork } from "wagmi";
 
@@ -31,6 +31,8 @@ export default function Page({
 }) {
   const { chain } = useNetwork();
   const { isConnected, isReconnecting, isConnecting } = useAccount();
+  const [hasBalance, setHasBalance] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   let { address } = useAccount();
   address = impersonateWhetherDAO(chain?.id.toString() || "1", address);
 
@@ -61,6 +63,12 @@ export default function Page({
         .then((data) => {
           if (data.user?.userInternalBalances) {
             setToken(data.user?.userInternalBalances[0]);
+            setIsLoading(false);
+            setHasBalance(true);
+          }
+          if (data.user === null) {
+            setIsLoading(false);
+            setHasBalance(false);
           }
         });
     }
@@ -111,7 +119,7 @@ export default function Page({
     return <WalletNotConnected isInternalManager />;
   }
 
-  if (isConnecting || isReconnecting || !token.tokenInfo) {
+  if (isConnecting || isReconnecting || isLoading) {
     return <Spinner />;
   }
 
@@ -128,7 +136,7 @@ export default function Page({
     );
   }
 
-  if (token?.balance === "0") {
+  if (token?.balance === "0" || !hasBalance) {
     return (
       <div className="w-full rounded-3xl items-center py-16 px-12 md:py-20 flex flex-col h-full">
         <div className="text-center text-amber9 text-3xl">

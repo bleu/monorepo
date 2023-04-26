@@ -1,4 +1,3 @@
-import { ethers } from "ethers";
 import { z } from "zod";
 
 export const TypenameEnum = z.enum(["text", "url", "date", "datetime-local"]);
@@ -51,45 +50,6 @@ export const MetadataItemSchema = z.union([
 export const PoolMetadataSchema = z
   .array(MetadataItemSchema)
   .describe("My neat object schema");
-
-export const getInternalBalanceSchema = (totalBalance: number) => {
-  const InternalBalanceSchema = z.object({
-    tokenAddress: z
-      .string()
-      .min(1)
-      .refine((value) => ethers.utils.isAddress(value), {
-        message: "Provided address is invalid",
-      }),
-    tokenAmount: z.string().transform((val, ctx) => {
-      if (val === "") {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Token amount cannot be empty",
-        });
-      }
-      if (Number(val) <= 0) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Token amount must be greater than 0",
-        });
-      }
-      if (Number(val) > totalBalance) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Amount exceeds total balance",
-        });
-      }
-      return val;
-    }),
-    receiverAddress: z
-      .string()
-      .min(1)
-      .refine((value) => ethers.utils.isAddress(value), {
-        message: "Provided address is invalid",
-      }),
-  });
-  return InternalBalanceSchema;
-};
 
 // export const jsonSchema = zodToJsonSchema(
 //   PoolMetadataSchema,

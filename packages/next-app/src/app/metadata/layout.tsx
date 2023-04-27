@@ -25,7 +25,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         title={"Pool Metadata"}
         imageSrc={balancerSymbol}
       />
-      <div className="flex h-full w-full space-x-2">
+      <div className="flex w-full space-x-2">
         <div>
           <Sidebar isFloating>
             <Dialog title="Go  to pool" content={<SearchPoolForm />}>

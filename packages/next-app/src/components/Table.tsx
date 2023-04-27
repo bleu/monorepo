@@ -1,3 +1,4 @@
+import cn from "classnames";
 import { createContext, useContext } from "react";
 
 const TableContext = createContext({});
@@ -17,9 +18,11 @@ function useTableContext() {
 export default function Table({ children }: React.PropsWithChildren) {
   return (
     <TableContext.Provider value={{}}>
-      <table className="block min-w-full divide-y divide-gray-900 overflow-auto rounded bg-gray-800">
-        {children}
-      </table>
+      <div className="min-w-full  border-gray-700 rounded border">
+        <table className="divide-y divide-gray-700 bg-gray-800 min-w-full rounded">
+          {children}
+        </table>
+      </div>
     </TableContext.Provider>
   );
 }
@@ -38,7 +41,7 @@ function HeaderCell({ children }: React.PropsWithChildren) {
   return (
     <th
       scope="col"
-      className="text-gray-40 py-3.5 px-3 text-left text-sm font-semibold"
+      className="text-gray-40 p-4 text-left text-sm font-semibold"
     >
       {children}
     </th>
@@ -47,7 +50,7 @@ function HeaderCell({ children }: React.PropsWithChildren) {
 
 function Body({ children }: React.PropsWithChildren) {
   useTableContext();
-  return <tbody className="overflow-auto">{children}</tbody>;
+  return <tbody>{children}</tbody>;
 }
 
 function BodyRow({ children }: React.PropsWithChildren) {
@@ -55,10 +58,20 @@ function BodyRow({ children }: React.PropsWithChildren) {
   return <tr>{children}</tr>;
 }
 
-function BodyCell({ children }: React.PropsWithChildren) {
+function BodyCell({
+  children,
+  customWidth,
+}: React.PropsWithChildren<{ customWidth?: string }>) {
   useTableContext();
   return (
-    <td className="w-fit px-3 py-3.5 text-sm text-gray-500">{children}</td>
+    <td
+      className={cn(
+        "whitespace-nowrap text-sm text-gray-500",
+        customWidth ? cn(customWidth, "pl-4") : "p-4"
+      )}
+    >
+      {children}
+    </td>
   );
 }
 

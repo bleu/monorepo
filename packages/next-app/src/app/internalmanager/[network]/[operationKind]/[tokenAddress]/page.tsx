@@ -53,6 +53,10 @@ export default function Page({
   useEffect(() => {
     clearNotification();
     setUserAddress(addressLower as `0x${string}`);
+    if (token?.tokenInfo) {
+      setIsLoading(false);
+      setHasBalance(true);
+    }
     if (!token?.tokenInfo) {
       internalBalances
         .gql(chain?.id.toString() || "1")

@@ -22,6 +22,12 @@ import { useInternalBalancesTransaction } from "#/hooks/useTransaction";
 import { impersonateWhetherDAO, internalBalances } from "#/lib/gql";
 import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
 
+enum operationKind {
+  "deposit" = UserBalanceOpKind.DEPOSIT_INTERNAL,
+  "withdraw" = UserBalanceOpKind.WITHDRAW_INTERNAL,
+  "transfer" = UserBalanceOpKind.TRANSFER_INTERNAL,
+}
+
 export default function Page({
   params,
 }: {
@@ -90,38 +96,29 @@ export default function Page({
     resolver: zodResolver(InternalBalanceSchema),
   });
 
-  function getOperationKindData({ operationKind }: { operationKind: string }) {
-    switch (operationKind) {
-      case "deposit":
-        return {
-          title: "Deposit to",
-          description: "Deposit from your wallet to an internal balance",
-          operationKindEnum: UserBalanceOpKind.DEPOSIT_INTERNAL,
-        };
-      case "withdraw":
-        return {
-          title: "Withdraw from",
-          description: "Withdraw from your internal balance to a wallet",
-          operationKindEnum: UserBalanceOpKind.WITHDRAW_INTERNAL,
-        };
-      case "transfer":
-        return {
-          title: "Transfer to",
-          description:
-            "Transfer from your internal balance to another internal balance",
-          operationKindEnum: UserBalanceOpKind.TRANSFER_INTERNAL,
-        };
-      default:
-        return {
-          title: "Unknown operation",
-          operationKindEnum: null,
-        };
-    }
-  }
+  const operationKindData = {
+    [UserBalanceOpKind.DEPOSIT_INTERNAL]: {
+      title: "Deposit to",
+      description: "Deposit from your wallet to an internal balance",
+      operationKindEnum: UserBalanceOpKind.DEPOSIT_INTERNAL,
+    },
+    [UserBalanceOpKind.WITHDRAW_INTERNAL]: {
+      title: "Withdraw from",
+      description: "Withdraw from your internal balance to a wallet",
+      operationKindEnum: UserBalanceOpKind.WITHDRAW_INTERNAL,
+    },
+    [UserBalanceOpKind.TRANSFER_INTERNAL]: {
+      title: "Transfer to",
+      description:
+        "Transfer from your internal balance to another internal balance",
+      operationKindEnum: UserBalanceOpKind.TRANSFER_INTERNAL,
+    },
+  };
 
-  const { title, description, operationKindEnum } = getOperationKindData({
-    operationKind: params.operationKind,
-  });
+  const { title, description, operationKindEnum } =
+    operationKindData[
+      operationKind[params.operationKind as keyof typeof operationKind]
+    ];
 
   const { handleWithdraw } = useInternalBalancesTransaction({
     userAddress,

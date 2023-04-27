@@ -109,23 +109,23 @@ export function PoolMetadataItemForm({
         placeholder={"Define an attribute key"}
         disabled={mode === "edit"}
         {...register("key")}
+        errorMessage={errors.key?.message}
       />
-      <p>{errors.key?.message}</p>
 
       <Input
         label="Description"
         placeholder={"Short attribute description"}
         {...register("description")}
+        errorMessage={errors.description?.message}
       />
-      <p>{errors.description?.message}</p>
 
       <Input
         type={selectedTypename}
         label="Value"
         placeholder="Attribute value"
         {...register("value")}
+        errorMessage={errors.value?.message}
       />
-      <p>{errors.value?.message}</p>
 
       <div className="mt-4 flex items-center justify-end gap-3">
         <Dialog.Close asChild>

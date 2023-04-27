@@ -8,8 +8,8 @@ import { RootLayout } from "#/components/RootLayout";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" className="h-full">
+      <body className="h-full flex flex-col">
         <RootLayout>{children}</RootLayout>
         <Footer
           githubLink="https://github.com/bleu-studio/balancer-pool-metadata"

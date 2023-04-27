@@ -17,9 +17,9 @@ export function RootLayout({ children }: React.PropsWithChildren) {
         modalSize="compact"
         theme={CustomTheme}
       >
-        <div className="h-screen w-screen bg-blue1">
-          <ToastProvider>{children}</ToastProvider>
-        </div>
+        <ToastProvider>
+          <div className="h-full w-full bg-blue1">{children}</div>
+        </ToastProvider>
       </RainbowKitProvider>
     </WagmiConfig>
   );

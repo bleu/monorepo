@@ -22,40 +22,41 @@ export default function Layout({ children }: React.PropsWithChildren) {
   const { chain } = useNetwork();
   return (
     <NetworksContextProvider>
-      <HeaderNetworkMismatchAlert />
-      <Header
-        linkUrl={"/metadata"}
-        title={"Pool Metadata"}
-        imageSrc={balancerSymbol}
-      />
-      <div className="flex w-full space-x-2">
-        <div>
-          <Sidebar isFloating>
-            <Dialog title="Go  to pool" content={<SearchPoolForm />}>
-              <span className="text-sm font-normal text-slate12 cursor-pointer flex items-center space-x-2">
-                <MagnifyingGlassIcon width="16" height="16" strokeWidth={1} />
-                <span>Open a pool directly</span>
-              </span>
-            </Dialog>
-            <Separator.Root className="bg-blue6 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px my-5" />
+      <div className="flex flex-col h-full">
+        <HeaderNetworkMismatchAlert />
+        <Header
+          linkUrl={"/metadata"}
+          title={"Pool Metadata"}
+          imageSrc={balancerSymbol}
+        />
+        <div className="flex flex-1 gap-x-8">
+          <div>
+            <Sidebar isFloating>
+              <Dialog title="Go  to pool" content={<SearchPoolForm />}>
+                <span className="text-sm font-normal text-slate12 cursor-pointer flex items-center space-x-2">
+                  <MagnifyingGlassIcon width="16" height="16" strokeWidth={1} />
+                  <span>Open a pool directly</span>
+                </span>
+              </Dialog>
+              <Separator.Root className="bg-blue6 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px my-5" />
 
-            <Sidebar.Header name="Owned pools" />
-            <Sidebar.Content>
-              <Suspense fallback={<Spinner />}>
-                <OwnedPoolsSidebarItems />
-              </Suspense>
-            </Sidebar.Content>
-          </Sidebar>
+              <Sidebar.Header name="Owned pools" />
+              <Sidebar.Content>
+                <Suspense fallback={<Spinner />}>
+                  <OwnedPoolsSidebarItems />
+                </Suspense>
+              </Sidebar.Content>
+            </Sidebar>
+          </div>
+          <PoolMetadataProvider>
+            <CheckUnsupportedChain
+              unsupportedChain="Ethereum"
+              chainName={chain?.name}
+            >
+              {children}
+            </CheckUnsupportedChain>
+          </PoolMetadataProvider>
         </div>
-        <PoolMetadataProvider>
-          <CheckUnsupportedChain
-            unsupportedChain="Ethereum"
-            chainName={chain?.name}
-            isMetadata
-          >
-            {children}
-          </CheckUnsupportedChain>
-        </PoolMetadataProvider>
       </div>
     </NetworksContextProvider>
   );

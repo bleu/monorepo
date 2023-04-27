@@ -158,7 +158,7 @@ const transactionButtons = [
   },
   {
     icon: (
-      <div className="flex h-5 w-5 border-gray-500 items-center justify-center rounded-full border-[1Ípx]">
+      <div className="flex h-5 w-5 border-gray-500 items-center justify-center rounded-full border-[1px]">
         <WidthIcon width={16} height={16} />
       </div>
     ),

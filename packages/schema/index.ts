@@ -52,7 +52,15 @@ export const PoolMetadataSchema = z
   .array(MetadataItemSchema)
   .describe("My neat object schema");
 
-export const getInternalBalanceSchema = (totalBalance: number) => {
+export const getInternalBalanceSchema = ({
+  totalBalance,
+  userAddress,
+  operationKind,
+}: {
+  totalBalance: number;
+  userAddress: string;
+  operationKind: string;
+}) => {
   const InternalBalanceSchema = z.object({
     tokenAddress: z
       .string()
@@ -86,6 +94,18 @@ export const getInternalBalanceSchema = (totalBalance: number) => {
       .min(1)
       .refine((value) => ethers.utils.isAddress(value), {
         message: "Provided address is invalid",
+      })
+      .transform((val, ctx) => {
+        if (
+          operationKind === "transfer" &&
+          val.toLowerCase() === userAddress.toLowerCase()
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Receiver address cannot be the same as sender address",
+          });
+        }
+        return val;
       }),
   });
   return InternalBalanceSchema;

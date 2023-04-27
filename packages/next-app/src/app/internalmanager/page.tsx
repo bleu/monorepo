@@ -26,9 +26,6 @@ export default function Page() {
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-1">
             <h1 className="text-gray-400 text-3xl">My Internal Balances</h1>
-            <span className="text-gray-200">
-              Lorem ipsum dolor sit amet, consectetur dolor amet
-            </span>
           </div>
           <div className="flex gap-4">
             <Button

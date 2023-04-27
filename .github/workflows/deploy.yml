@@ -5,13 +5,20 @@ on:
     branches:
       - main
 
+env:
+  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
 jobs:
   deploy:
     name: Deploy next-app
     runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    environment:
+      name: production
+      url: ${{ steps.step_id.outputs.url_output }}
     steps:
-      - uses: styfle/cancel-workflow-action@0.11.0
-
       - uses: actions/checkout@v3
         with:
           submodules: recursive
@@ -19,5 +26,3 @@ jobs:
       - uses: superfly/flyctl-actions/setup-flyctl@master
 
       - run: flyctl deploy --remote-only
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

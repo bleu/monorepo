@@ -5,10 +5,9 @@ import { publicProvider } from "wagmi/providers/public";
 import { configureChains, createClient } from "#/wagmi";
 
 export function getWagmiClient(routerPath: string) {
-  const walletChains =
-    routerPath === "/internalmanager"
-      ? [mainnet, goerli, polygon]
-      : [polygon, goerli];
+  const walletChains = /^\/internalmanager/.test(routerPath)
+    ? [mainnet, goerli, polygon]
+    : [polygon, goerli];
 
   const { chains, provider, webSocketProvider } = configureChains(
     walletChains,

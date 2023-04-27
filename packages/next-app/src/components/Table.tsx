@@ -1,3 +1,4 @@
+import cn from "classnames";
 import { createContext, useContext } from "react";
 
 const TableContext = createContext({});
@@ -57,10 +58,20 @@ function BodyRow({ children }: React.PropsWithChildren) {
   return <tr>{children}</tr>;
 }
 
-function BodyCell({ children }: React.PropsWithChildren) {
+function BodyCell({
+  children,
+  customWidth,
+}: React.PropsWithChildren<{ customWidth?: string }>) {
   useTableContext();
   return (
-    <td className="whitespace-nowrap p-4 text-sm  text-gray-500">{children}</td>
+    <td
+      className={cn(
+        "whitespace-nowrap text-sm text-gray-500",
+        customWidth ? cn(customWidth, "pl-4") : "p-4"
+      )}
+    >
+      {children}
+    </td>
   );
 }
 

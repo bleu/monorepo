@@ -1,6 +1,5 @@
 "use client";
 import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
-import { networkFor } from "@balancer-pool-metadata/shared";
 import {
   MinusCircledIcon,
   PlusCircledIcon,
@@ -39,7 +38,17 @@ export function TokenTable() {
   const tokensWithBalance = internalBalanceData?.user?.userInternalBalances;
 
   return (
-    <div className="flex-1 flex w-full text-white justify-center">
+    <div className="h-full flex-1 flex w-full justify-center text-white">
+      {(internalBalanceData?.user === null ||
+        tokensWithBalance?.length === 0) && (
+        <div className="flex flex-col items-center justify-center mt-24">
+          <div className="text-2xl font-semibold">No tokens found</div>
+          <div className="text-sm text-gray-400 flex flex-col items-center">
+            You don&apos;t have any tokens in your internal balance on{" "}
+            <span>{chain?.name}, make a deposit or change the network.</span>
+          </div>
+        </div>
+      )}
       {tokensWithBalance && tokensWithBalance?.length > 0 && (
         <Table>
           <Table.HeaderRow>
@@ -55,7 +64,7 @@ export function TokenTable() {
               <TableRow
                 key={token.tokenInfo.address}
                 token={token}
-                chainId={chain!.id?.toString?.()}
+                chainName={chain!.name}
                 userAddress={addressLower as `0x${string}`}
               />
             ))}
@@ -82,18 +91,19 @@ export function TokenTable() {
 
 function TableRow({
   token,
-  chainId,
+  chainName,
   userAddress,
 }: {
   token: ArrElement<GetDeepProp<InternalBalanceQuery, "userInternalBalances">>;
-  chainId: string;
+  chainName: string;
   userAddress: `0x${string}`;
 }) {
-  const network = networkFor(chainId).toLowerCase();
+  const network = chainName.toLowerCase();
+
   const { setToken, setUserAddress } = useInternalBalance();
   return (
     <Table.BodyRow key={token.tokenInfo.address}>
-      <Table.BodyCell>
+      <Table.BodyCell customWidth="w-12">
         <div className="flex justify-center items-center">
           <div className="bg-white rounded-full p-1">
             <Image
@@ -147,7 +157,11 @@ const transactionButtons = [
     operation: "withdraw",
   },
   {
-    icon: <WidthIcon height={22} width={22} />,
+    icon: (
+      <div className="flex h-5 w-5 border-gray-500 items-center justify-center rounded-full border-[1Ípx]">
+        <WidthIcon width={16} height={16} />
+      </div>
+    ),
     operation: "transfer",
   },
 ];
@@ -178,7 +192,7 @@ function TransactionButton({
       {!disabled ? (
         <Link
           href={`/internalmanager/${network}/${operation}/${token.tokenInfo.address}`}
-          className="leading-none"
+          className="leading-none h-[22px] w-[22px] flex justify-center items-center"
         >
           <button
             type="button"

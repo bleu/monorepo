@@ -4,27 +4,19 @@ import { publicProvider } from "wagmi/providers/public";
 
 import { configureChains, createClient } from "#/wagmi";
 
-export function getWagmiClient(routerPath: string) {
-  const walletChains = /^\/internalmanager/.test(routerPath)
-    ? [mainnet, goerli, polygon]
-    : [polygon, goerli];
+export const { chains, provider, webSocketProvider } = configureChains(
+  [mainnet, goerli, polygon],
+  [publicProvider()]
+);
 
-  const { chains, provider, webSocketProvider } = configureChains(
-    walletChains,
-    [publicProvider()]
-  );
+const { connectors } = getDefaultWallets({
+  appName: "Balancer Pool Metadata",
+  chains,
+});
 
-  const { connectors } = getDefaultWallets({
-    appName: "Balancer Pool Metadata",
-    chains,
-  });
-
-  const client = createClient({
-    autoConnect: true,
-    connectors,
-    provider,
-    webSocketProvider,
-  });
-
-  return { client, chains };
-}
+export const client = createClient({
+  autoConnect: true,
+  connectors,
+  provider,
+  webSocketProvider,
+});

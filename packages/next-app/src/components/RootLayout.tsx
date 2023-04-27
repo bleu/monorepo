@@ -2,17 +2,14 @@
 
 import { darkTheme, RainbowKitProvider, Theme } from "@rainbow-me/rainbowkit";
 import merge from "lodash.merge";
-import { usePathname } from "next/navigation";
 import React from "react";
 
 import { WagmiConfig } from "#/wagmi";
-import { getWagmiClient } from "#/wagmi/client";
+import { chains, client } from "#/wagmi/client";
 
 import { ToastProvider } from "./Toast";
 
 export function RootLayout({ children }: React.PropsWithChildren) {
-  const path = usePathname();
-  const { client, chains } = getWagmiClient(path);
   return (
     <WagmiConfig client={client}>
       <RainbowKitProvider

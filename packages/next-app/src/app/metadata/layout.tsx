@@ -4,19 +4,22 @@ import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import * as Separator from "@radix-ui/react-separator";
 import * as React from "react";
 import { Suspense } from "react";
+import { useNetwork } from "wagmi";
 
 import balancerSymbol from "#/assets/balancer-symbol.svg";
 import { Dialog } from "#/components/Dialog";
 import { Header, HeaderNetworkMismatchAlert } from "#/components/Header";
 import Sidebar from "#/components/Sidebar";
 import Spinner from "#/components/Spinner";
+import { CheckUnsupportedChain } from "#/components/UnsupportedChain";
 import { NetworksContextProvider } from "#/contexts/networks";
 import { PoolMetadataProvider } from "#/contexts/PoolMetadataContext";
 
 import OwnedPoolsSidebarItems from "./(components)/OwnedPoolsSidebarItems";
 import SearchPoolForm from "./(components)/SearchPoolForm";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function Layout({ children }: React.PropsWithChildren) {
+  const { chain } = useNetwork();
   return (
     <NetworksContextProvider>
       <HeaderNetworkMismatchAlert />
@@ -44,8 +47,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </Sidebar.Content>
           </Sidebar>
         </div>
-
-        <PoolMetadataProvider>{children}</PoolMetadataProvider>
+        <PoolMetadataProvider>
+          <CheckUnsupportedChain
+            unsupportedChain="Ethereum"
+            chainName={chain?.name}
+            isMetadata
+          >
+            {children}
+          </CheckUnsupportedChain>
+        </PoolMetadataProvider>
       </div>
     </NetworksContextProvider>
   );

@@ -5,7 +5,7 @@ import isEqual from "lodash/isEqual";
 import {
   createContext,
   Dispatch,
-  ReactNode,
+  PropsWithChildren,
   SetStateAction,
   useContext,
   useEffect,
@@ -58,7 +58,7 @@ function hasNull(element: PoolMetadataAttribute) {
 
 export const PoolMetadataContext = createContext({} as PoolMetadataContextType);
 
-export function PoolMetadataProvider({ children }: { children: ReactNode }) {
+export function PoolMetadataProvider({ children }: PropsWithChildren) {
   const [metadata, setMetadata] = useState<PoolMetadataAttribute[]>([]);
   const [updateStatus, setStatus] = useState<UpdateStatus>(
     UpdateStatus.PINNING

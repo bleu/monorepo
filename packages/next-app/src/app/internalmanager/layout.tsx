@@ -5,9 +5,10 @@ import { useNetwork } from "wagmi";
 
 import balancerSymbol from "#/assets/balancer-symbol.svg";
 import { Header } from "#/components/Header";
-import { CheckUnsupportedChain } from "#/components/UnsupportedChain";
+import { CheckSupportedChains } from "#/components/SupportedChain";
 import { InternalManagerProvider } from "#/contexts/InternalManagerContext";
 import { NetworksContextProvider } from "#/contexts/networks";
+import { chains } from "#/wagmi/client";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { chain } = useNetwork();
@@ -20,12 +21,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           imageSrc={balancerSymbol}
         />
         <InternalManagerProvider>
-          <CheckUnsupportedChain
-            unsupportedChain="Polygon"
-            chainName={chain?.name}
+          <CheckSupportedChains
+            supportedChains={["Ethereum", "Goerli"]}
+            chainName={chain?.name as (typeof chains)[number]["name"]}
           >
             {children}
-          </CheckUnsupportedChain>
+          </CheckSupportedChains>
         </InternalManagerProvider>
       </div>
     </NetworksContextProvider>

@@ -11,9 +11,10 @@ import { Dialog } from "#/components/Dialog";
 import { Header, HeaderNetworkMismatchAlert } from "#/components/Header";
 import Sidebar from "#/components/Sidebar";
 import Spinner from "#/components/Spinner";
-import { CheckUnsupportedChain } from "#/components/UnsupportedChain";
+import { CheckSupportedChains } from "#/components/SupportedChain";
 import { NetworksContextProvider } from "#/contexts/networks";
 import { PoolMetadataProvider } from "#/contexts/PoolMetadataContext";
+import { chains } from "#/wagmi/client";
 
 import OwnedPoolsSidebarItems from "./(components)/OwnedPoolsSidebarItems";
 import SearchPoolForm from "./(components)/SearchPoolForm";
@@ -49,12 +50,12 @@ export default function Layout({ children }: React.PropsWithChildren) {
             </Sidebar>
           </div>
           <PoolMetadataProvider>
-            <CheckUnsupportedChain
-              unsupportedChain="Ethereum"
-              chainName={chain?.name}
+            <CheckSupportedChains
+              supportedChains={["Goerli", "Polygon"]}
+              chainName={chain?.name as (typeof chains)[number]["name"]}
             >
               {children}
-            </CheckUnsupportedChain>
+            </CheckSupportedChains>
           </PoolMetadataProvider>
         </div>
       </div>

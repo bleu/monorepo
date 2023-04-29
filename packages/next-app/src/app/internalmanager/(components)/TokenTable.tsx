@@ -17,6 +17,7 @@ import Table from "#/components/Table";
 import { Toast } from "#/components/Toast";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { impersonateWhetherDAO, internalBalances } from "#/lib/gql";
+import { refetchRequest } from "#/utils/fetcher";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
 export function TokenTable() {
@@ -29,11 +30,17 @@ export function TokenTable() {
   const { notification, setIsNotifierOpen, isNotifierOpen, transactionUrl } =
     useInternalBalance();
 
-  const { data: internalBalanceData } = internalBalances
+  const { data: internalBalanceData, mutate } = internalBalances
     .gql(chain?.id.toString() || "1")
     .useInternalBalance({
       userAddress: addressLower as `0x${string}`,
     });
+
+  refetchRequest({
+    mutate,
+    chainId: chain?.id.toString() || "1",
+    userAddress: addressLower as `0x${string}`,
+  });
 
   const tokensWithBalance = internalBalanceData?.user?.userInternalBalances;
 
@@ -65,7 +72,6 @@ export function TokenTable() {
                 key={token.tokenInfo.address}
                 token={token}
                 chainName={chain!.name}
-                userAddress={addressLower as `0x${string}`}
               />
             ))}
           </Table.Body>
@@ -92,15 +98,12 @@ export function TokenTable() {
 function TableRow({
   token,
   chainName,
-  userAddress,
 }: {
   token: ArrElement<GetDeepProp<InternalBalanceQuery, "userInternalBalances">>;
   chainName: string;
-  userAddress: `0x${string}`;
 }) {
   const network = chainName.toLowerCase();
 
-  const { setToken, setUserAddress } = useInternalBalance();
   return (
     <Table.BodyRow key={token.tokenInfo.address}>
       <Table.BodyCell customWidth="w-12">
@@ -130,14 +133,11 @@ function TableRow({
           {transactionButtons.map((button) => (
             <TransactionButton
               key={button.operation}
+              tokenAddress={token.tokenInfo.address as `0x${string}`}
               icon={button.icon}
               operation={button.operation}
               network={network}
-              token={token}
-              setToken={setToken}
               disabled={button?.disabled}
-              userAddress={userAddress}
-              setUserAddress={setUserAddress}
             />
           ))}
         </div>
@@ -168,40 +168,28 @@ const transactionButtons = [
 
 function TransactionButton({
   network,
-  token,
-  userAddress,
-  setToken,
-  setUserAddress,
   icon,
   operation,
   disabled = false,
+  tokenAddress,
 }: {
   network: string;
-  token: ArrElement<GetDeepProp<InternalBalanceQuery, "userInternalBalances">>;
-  userAddress: `0x${string}`;
-  setToken: React.Dispatch<
-    ArrElement<GetDeepProp<InternalBalanceQuery, "userInternalBalances">>
-  >;
-  setUserAddress: React.Dispatch<`0x${string}`>;
   icon: React.ReactElement;
   operation: string;
+  tokenAddress: `0x${string}`;
   disabled?: boolean;
 }) {
   return (
     <>
       {!disabled ? (
         <Link
-          href={`/internalmanager/${network}/${operation}/${token.tokenInfo.address}`}
+          href={`/internalmanager/${network}/${operation}/${tokenAddress}`}
           className="leading-none h-[22px] w-[22px] flex justify-center items-center"
         >
           <button
             type="button"
             title={upperFirst(operation)}
             className="leading-none"
-            onClick={() => {
-              setToken(token);
-              setUserAddress(userAddress);
-            }}
           >
             {icon}
           </button>

@@ -9,7 +9,6 @@ export const internalBalance = gql`
           name
           symbol
           address
-          decimals
         }
         balance
       }

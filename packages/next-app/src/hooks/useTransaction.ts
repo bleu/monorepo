@@ -1,4 +1,3 @@
-import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
 import { getNetworkUrl } from "@balancer-pool-metadata/shared";
 import { parseFixed } from "@ethersproject/bignumber";
 import { useRouter } from "next/navigation";
@@ -9,7 +8,6 @@ import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { PoolMetadataAttribute } from "#/contexts/PoolMetadataContext";
 import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
 import { pinJSON } from "#/lib/ipfs";
-import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 import { useNetwork, useWaitForTransaction } from "#/wagmi";
 import {
   usePoolMetadataRegistrySetPoolMetadata,
@@ -225,11 +223,11 @@ export function useMetadataTransaction({
 
 export function useInternalBalancesTransaction({
   userAddress,
-  token,
+  tokenDecimals,
   operationKind,
 }: {
   userAddress: `0x${string}`;
-  token: ArrElement<GetDeepProp<InternalBalanceQuery, "userInternalBalances">>;
+  tokenDecimals: number;
   operationKind: UserBalanceOpKind | null;
 }) {
   const {
@@ -250,7 +248,7 @@ export function useInternalBalancesTransaction({
     //TODO get this if tokenAmount is not defined a better solution than 0 to initialize the value
     amount: parseFixed(
       submitData?.tokenAmount ? submitData.tokenAmount : "0",
-      token.tokenInfo?.decimals
+      tokenDecimals
     ),
     sender: userAddress as `0x${string}`,
     recipient: submitData?.receiverAddress as `0x${string}`,

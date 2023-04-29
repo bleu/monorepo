@@ -16,10 +16,6 @@ export type useInternalBalancesTransactionProps = {
 };
 
 type InternalManagerContextType = {
-  token: tokenProps;
-  setToken: (token: tokenProps) => void;
-  userAddress: `0x${string}`;
-  setUserAddress: (userAddress: `0x${string}`) => void;
   isNotifierOpen: boolean;
   setIsNotifierOpen: (isNotifierOpen: boolean) => void;
   notification: Notification | null;
@@ -34,10 +30,6 @@ export const InternalManagerContext = createContext(
 );
 
 export function InternalManagerProvider({ children }: PropsWithChildren) {
-  const [token, setToken] = useState<tokenProps>({} as tokenProps);
-  const [userAddress, setUserAddress] = useState<`0x${string}`>(
-    "0x" as `0x${string}`
-  );
   const [isNotifierOpen, setIsNotifierOpen] = useState(false);
   const [notification, setNotification] = useState<Notification | null>(null);
   const [transactionUrl, setTransactionUrl] = useState<string>();
@@ -50,10 +42,6 @@ export function InternalManagerProvider({ children }: PropsWithChildren) {
   return (
     <InternalManagerContext.Provider
       value={{
-        token,
-        setToken,
-        userAddress,
-        setUserAddress,
         isNotifierOpen,
         setIsNotifierOpen,
         notification,

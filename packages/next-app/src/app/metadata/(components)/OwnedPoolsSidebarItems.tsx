@@ -8,6 +8,7 @@ import EmptyWalletImage from "#/assets/empty-wallet.svg";
 import { Badge } from "#/components/Badge";
 import Sidebar from "#/components/Sidebar";
 import { impersonateWhetherDAO, pools } from "#/lib/gql";
+import { refetchRequest } from "#/utils/fetcher";
 import { truncate } from "#/utils/truncate";
 import { useAccount, useNetwork } from "#/wagmi";
 
@@ -41,7 +42,16 @@ function OwnedPoolsSidebarItems({
 }) {
   const { poolId } = useParams();
 
-  const { data } = pools.gql(chainId).usePools({ owner }, { suspense: true });
+  const { data, mutate } = pools
+    .gql(chainId)
+    .usePools({ owner }, { suspense: true });
+
+  refetchRequest({
+    mutate,
+    chainId: chainId,
+    userAddress: owner,
+  });
+
   const network = networkFor(chainId);
   if (!data?.pools?.length)
     return (

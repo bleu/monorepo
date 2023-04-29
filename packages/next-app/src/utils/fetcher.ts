@@ -1,4 +1,4 @@
-import { pools } from "#/lib/gql";
+import { useEffect } from "react";
 
 export async function fetcher<JSON = unknown>(
   input: RequestInfo,
@@ -8,18 +8,16 @@ export async function fetcher<JSON = unknown>(
   return res.json();
 }
 
-export async function fetchOwnedPools(address: string, chainId: string) {
-  if (!address) return { pools: [] };
-  const data = await pools.gql(chainId).Pools({
-    owner: address,
-  });
-  return data;
-}
-
-export async function fetchExistingPool(poolId: string, chainId: string) {
-  if (!poolId) return { pool: {} };
-  const data = await pools.gql(chainId).Pool({
-    poolId: poolId,
-  });
-  return data;
+export function refetchRequest({
+  mutate,
+  userAddress,
+  chainId,
+}: {
+  mutate: () => void;
+  userAddress: `0x${string}`;
+  chainId?: string;
+}) {
+  useEffect(() => {
+    mutate();
+  }, [userAddress, chainId]);
 }

@@ -9,9 +9,10 @@ import cn from "classnames";
 import { upperFirst } from "lodash";
 import Link from "next/link";
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 import { useAccount, useNetwork } from "wagmi";
 
+import { TokenSelect } from "#/app/internalmanager/(components)/TokenSelect";
 import { ToastContent } from "#/app/metadata/[network]/pool/[poolId]/(components)/MetadataAttributesTable/TransactionModal";
 import { Button } from "#/components";
 import { Input } from "#/components/Input";
@@ -25,7 +26,7 @@ import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
 import { refetchRequest } from "#/utils/fetcher";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
-enum operationKindType {
+export enum operationKindType {
   "deposit" = UserBalanceOpKind.DEPOSIT_INTERNAL,
   "withdraw" = UserBalanceOpKind.WITHDRAW_INTERNAL,
   "transfer" = UserBalanceOpKind.TRANSFER_INTERNAL,
@@ -181,9 +182,17 @@ function TransactionCard({
     operationKind: operationKindParam,
   });
 
+  const { selectedToken } = useInternalBalance();
+
   const { register, handleSubmit, setValue, formState } = useForm({
     resolver: zodResolver(InternalBalanceSchema),
   });
+
+  register("tokenAddress");
+
+  useEffect(() => {
+    setValue("tokenAddress", selectedToken?.address);
+  }, [selectedToken]);
 
   const { handleWithdraw } = useInternalBalancesTransaction({
     userAddress: userAddress,
@@ -191,10 +200,15 @@ function TransactionCard({
     operationKind: operationKindEnum,
   });
 
+  function handleOnSubtmit(data: FieldValues) {
+    setValue("tokenAddress", selectedToken?.address);
+    handleWithdraw(data);
+  }
+
   return (
     <div className="flex items-center justify-center h-fit p-14">
       <form
-        onSubmit={handleSubmit(handleWithdraw)}
+        onSubmit={handleSubmit(handleOnSubtmit)}
         className="flex flex-col text-white gap-y-6 bg-blue3 h-full w-full rounded-lg p-14"
       >
         <div className="relative w-full flex justify-center">
@@ -215,7 +229,8 @@ function TransactionCard({
         <div>
           <div className="flex justify-between gap-7">
             <div className="w-1/2">
-              <Input
+              <TokenSelect />
+              {/* <Input
                 readOnly
                 type="text"
                 label="Token"
@@ -223,7 +238,7 @@ function TransactionCard({
                 value={tokenData.tokenInfo.address}
                 {...register("tokenAddress")}
                 errorMessage={formState.errors?.tokenAddress?.message as string}
-              />
+              /> */}
             </div>
             <div className="flex gap-2 items-end w-1/2">
               <div className="w-full">

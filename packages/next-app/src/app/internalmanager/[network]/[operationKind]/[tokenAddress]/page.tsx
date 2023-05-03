@@ -2,11 +2,13 @@
 
 import { SingleInternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
 import { getInternalBalanceSchema } from "@balancer-pool-metadata/schema";
-import { Network } from "@balancer-pool-metadata/shared";
+import {
+  getNetworkUrl,
+  Network,
+  NetworkChainId,
+} from "@balancer-pool-metadata/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
-import cn from "classnames";
-import { upperFirst } from "lodash";
 import Link from "next/link";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -121,6 +123,7 @@ export default function Page({
           operationKindParam={params.operationKind as unknown as string}
           userAddress={addressLower as `0x${string}`}
           tokenData={tokenData}
+          chainId={chain!.id}
         />
       )}
       {notification && (
@@ -145,12 +148,14 @@ function TransactionCard({
   operationKindParam,
   userAddress,
   tokenData,
+  chainId,
 }: {
   operationKindParam: string;
   userAddress: `0x${string}`;
   tokenData: ArrElement<
     GetDeepProp<SingleInternalBalanceQuery, "userInternalBalances">
   >;
+  chainId: NetworkChainId;
 }) {
   const operationKindData = {
     [UserBalanceOpKind.DEPOSIT_INTERNAL]: {
@@ -170,7 +175,7 @@ function TransactionCard({
       operationKindEnum: UserBalanceOpKind.TRANSFER_INTERNAL,
     },
   };
-  const { title, description, operationKindEnum } =
+  const { title, operationKindEnum } =
     operationKindData[
       operationKindType[operationKindParam as keyof typeof operationKindType]
     ];
@@ -181,7 +186,7 @@ function TransactionCard({
     operationKind: operationKindParam,
   });
 
-  const { register, handleSubmit, setValue, formState } = useForm({
+  const { register, handleSubmit, setValue, formState, watch } = useForm({
     resolver: zodResolver(InternalBalanceSchema),
   });
 
@@ -191,55 +196,72 @@ function TransactionCard({
     operationKind: operationKindEnum,
   });
 
+  const chainUrlData = getNetworkUrl(chainId);
+
+  const receiverAddressValue = watch("receiverAddress");
+
+  const addressRegex = /0x[a-fA-F0-9]{40}/;
+
   return (
-    <div className="flex items-center justify-center h-fit p-14">
+    <div className="flex items-center justify-center h-fit pt-32">
       <form
         onSubmit={handleSubmit(handleWithdraw)}
-        className="flex flex-col text-white gap-y-6 bg-blue3 h-full w-full rounded-lg p-14"
+        className="flex flex-col text-white bg-blue3 h-full w-fit rounded-lg divide-y divide-gray-700 border border-gray-700"
       >
-        <div className="relative w-full flex justify-center">
+        <div className="relative w-full flex justify-center h-full">
           <Link href={"/internalmanager"}>
-            <div className="absolute left-0 flex h-full items-center">
+            <div className="absolute left-8 flex h-full items-center">
               <ArrowLeftIcon
-                height={20}
-                width={20}
-                className="hover:text-amber10 duration-200"
+                height={16}
+                width={16}
+                className="text-gray-500 hover:text-amber10 duration-200"
               />
             </div>
           </Link>
-          <div className="flex flex-col items-center">
-            <div className="font-bold">{title} Internal Balance</div>
-            <span>{description}</span>
+          <div className="flex flex-col items-center py-3 px-32">
+            <div className="text-xl">{title} Internal Balance</div>
+            <span className="text-gray-200 text-sm">
+              Lorem ipsum dolor sit amet
+            </span>
           </div>
         </div>
-        <div>
-          <div className="flex justify-between gap-7">
-            <div className="w-1/2">
-              <Input
-                readOnly
-                type="text"
-                label="Token"
-                placeholder={tokenData.tokenInfo.name as string}
-                value={tokenData.tokenInfo.address}
-                {...register("tokenAddress")}
-                errorMessage={formState.errors?.tokenAddress?.message as string}
-              />
-            </div>
-            <div className="flex gap-2 items-end w-1/2">
-              <div className="w-full">
+        <div className="p-9 flex flex-col gap-y-6">
+          <div>
+            <div className="flex justify-between gap-7 h-fit">
+              <div className="w-1/2">
                 <Input
-                  type="string"
-                  label="Amount"
-                  placeholder={tokenData.balance}
-                  {...register("tokenAmount")}
+                  readOnly
+                  type="text"
+                  label="Token"
+                  placeholder={tokenData.tokenInfo.name as string}
+                  value={tokenData.tokenInfo.address}
+                  {...register("tokenAddress")}
                   errorMessage={
-                    formState.errors?.tokenAmount?.message as string
+                    formState.errors?.tokenAddress?.message as string
                   }
                 />
               </div>
+              <div className="flex gap-2 items-end w-1/2">
+                <div className="w-full">
+                  <Input
+                    type="string"
+                    label="Amount"
+                    placeholder={tokenData.balance}
+                    {...register("tokenAmount")}
+                    errorMessage={
+                      formState.errors?.tokenAmount?.message as string
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="mt-2 text-xs flex gap-x-1">
+              <span className="text-gray-400">
+                Wallet Balance: {tokenData.balance}
+              </span>
               <button
                 type="button"
-                className="bg-blue4 text-blue9 w-fit px-3 h-[35px] mb-11 rounded-[4px] shadow-[0_0_0_1px] shadow-blue6 outline-none"
+                className="outline-none text-blue9 hover:text-amber9"
                 onClick={() => {
                   setValue("tokenAmount", tokenData.balance);
                 }}
@@ -248,14 +270,8 @@ function TransactionCard({
               </button>
             </div>
           </div>
-          <div className="flex gap-2 items-end">
-            <div
-              className={cn(
-                operationKindEnum !== UserBalanceOpKind.TRANSFER_INTERNAL
-                  ? "w-9/12"
-                  : "w-full"
-              )}
-            >
+          <div>
+            <div>
               <Input
                 type="string"
                 label="Receiver Address"
@@ -265,28 +281,41 @@ function TransactionCard({
                   formState.errors?.receiverAddress?.message as string
                 }
               />
+              <div className="mt-2 text-xs flex gap-x-1">
+                {operationKindEnum === UserBalanceOpKind.TRANSFER_INTERNAL ? (
+                  !addressRegex.test(receiverAddressValue) ? (
+                    <span className="outline-none text-blue8 hover:cursor-not-allowed">
+                      View on {chainUrlData.name}
+                    </span>
+                  ) : (
+                    <a
+                      href={`${chainUrlData.url}/address/${receiverAddressValue}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="outline-none text-blue9 hover:text-amber9"
+                    >
+                      View on {chainUrlData.name}
+                    </a>
+                  )
+                ) : (
+                  <button
+                    type="button"
+                    className="outline-none text-blue9 hover:text-amber9"
+                    onClick={() => {
+                      setValue("receiverAddress", userAddress);
+                    }}
+                  >
+                    Use Current Address
+                  </button>
+                )}
+              </div>
             </div>
-            {operationKindEnum !== UserBalanceOpKind.TRANSFER_INTERNAL && (
-              <button
-                type="button"
-                className="w-3/12 inline-block bg-blue4 text-blue9 h-[35px] px-3 mb-11 rounded-[4px] shadow-[0_0_0_1px] shadow-blue6 outline-none"
-                onClick={() => {
-                  setValue("receiverAddress", userAddress);
-                }}
-              >
-                Use Current Address
-              </button>
-            )}
           </div>
-        </div>
-        <div className="flex justify-center">
-          <Button
-            type="submit"
-            className="bg-indigo-500  text-gray-50 hover:bg-indigo-400 focus-visible:outline-indigo-500 disabled:bg-gray-600 disabled:text-gray-500 border border-transparent"
-          >
-            {upperFirst(operationKindParam)}
-            <span className="sr-only"> token</span>
-          </Button>
+          <div className="flex justify-center">
+            <Button type="submit" className="w-full">
+              <span>{title} Internal Balance</span>
+            </Button>
+          </div>
         </div>
       </form>
     </div>

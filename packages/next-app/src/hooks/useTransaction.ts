@@ -135,8 +135,8 @@ export function useMetadataTransaction({
   const { chain } = useNetwork();
 
   const handleSetTransactionLink = (hash: `0x${string}`) => {
-    const baseTxUrl = getNetworkUrl(chain!.id);
-    setTransactionUrl(`${baseTxUrl}${hash}`);
+    const baseTxUrl = getNetworkUrl(chain!.id).url;
+    setTransactionUrl(`${baseTxUrl}tx/${hash}`);
   };
 
   useEffect(() => {
@@ -284,11 +284,11 @@ export function useInternalBalancesTransaction({
     const { hash } = data;
     function handleTransactionStatus() {
       if (!hash || !chain) return;
-      const baseTxUrl = getNetworkUrl(chain!.id);
+      const baseTxUrl = getNetworkUrl(chain!.id).url;
       setNotification(
         NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.SUBMITTING]
       );
-      setTransactionUrl(`${baseTxUrl}${hash}`);
+      setTransactionUrl(`${baseTxUrl}tx/${hash}`);
     }
     handleTransactionStatus();
   }, [data]);

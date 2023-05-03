@@ -13,10 +13,16 @@ export enum NetworkChainId {
 }
 
 export const networkUrls = {
-  [NetworkChainId.MAINNET]: "https://etherscan.io/tx/",
-  [NetworkChainId.GOERLI]: "https://goerli.etherscan.io/tx/",
-  [NetworkChainId.POLYGON]: "https://polygonscan.com/tx/",
-  [NetworkChainId.ARBITRUM]: "https://arbiscan.io/tx/",
+  [NetworkChainId.MAINNET]: { url: "https://etherscan.io/", name: "Etherscan" },
+  [NetworkChainId.GOERLI]: {
+    url: "https://goerli.etherscan.io/",
+    name: "Goerli Etherscan",
+  },
+  [NetworkChainId.POLYGON]: {
+    url: "https://polygonscan.com/",
+    name: "PolygonScan",
+  },
+  [NetworkChainId.ARBITRUM]: { url: "https://arbiscan.io/", name: "Arbiscan" },
 };
 
 export function getNetworkUrl(chainId: NetworkChainId) {

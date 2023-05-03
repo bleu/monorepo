@@ -104,28 +104,30 @@ export function PoolMetadataItemForm({
           )}
         />
       </div>
-      <Input
-        label="Key"
-        placeholder={"Define an attribute key"}
-        disabled={mode === "edit"}
-        {...register("key")}
-        errorMessage={errors.key?.message}
-      />
+      <div className="flex flex-col gap-y-4">
+        <Input
+          label="Key"
+          placeholder={"Define an attribute key"}
+          disabled={mode === "edit"}
+          {...register("key")}
+          errorMessage={errors.key?.message}
+        />
 
-      <Input
-        label="Description"
-        placeholder={"Short attribute description"}
-        {...register("description")}
-        errorMessage={errors.description?.message}
-      />
+        <Input
+          label="Description"
+          placeholder={"Short attribute description"}
+          {...register("description")}
+          errorMessage={errors.description?.message}
+        />
 
-      <Input
-        type={selectedTypename}
-        label="Value"
-        placeholder="Attribute value"
-        {...register("value")}
-        errorMessage={errors.value?.message}
-      />
+        <Input
+          type={selectedTypename}
+          label="Value"
+          placeholder="Attribute value"
+          {...register("value")}
+          errorMessage={errors.value?.message}
+        />
+      </div>
 
       <div className="mt-4 flex items-center justify-end gap-3">
         <Dialog.Close asChild>

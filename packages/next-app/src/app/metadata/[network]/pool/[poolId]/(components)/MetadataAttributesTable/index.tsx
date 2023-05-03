@@ -26,7 +26,7 @@ import { truncate } from "#/utils/truncate";
 import { usePreparePoolMetadataRegistrySetPoolMetadata } from "#/wagmi/generated";
 
 import { Actions } from "./Actions";
-import { PoolMetadataItemForm } from "./PoolMetadataForm";
+import PoolMetadataForm from "./PoolMetadataForm";
 
 type CellProps = TableHTMLAttributes<HTMLTableCellElement>;
 
@@ -161,7 +161,7 @@ function Row({
             </button>
             <Dialog
               title={"Edit attribute"}
-              content={<PoolMetadataItemForm data={data} mode="edit" />}
+              content={<PoolMetadataForm data={data} mode="edit" />}
             >
               <button className="flex items-center">
                 <Pencil2Icon className="hover:text-amber100 text-amber10" />

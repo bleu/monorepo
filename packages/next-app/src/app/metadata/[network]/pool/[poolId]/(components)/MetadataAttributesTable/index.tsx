@@ -1,6 +1,6 @@
 "use client";
 
-import { Network, networkIdFor } from "@balancer-pool-metadata/shared";
+import { Network } from "@balancer-pool-metadata/shared";
 import {
   ArrowTopRightIcon,
   Pencil2Icon,
@@ -14,7 +14,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { useAccount, useNetwork } from "wagmi";
 
 import { ClickToCopy } from "#/components/ClickToCopy";
 import { Dialog } from "#/components/Dialog";
@@ -22,9 +21,9 @@ import {
   PoolMetadataAttribute,
   usePoolMetadata,
 } from "#/contexts/PoolMetadataContext";
-import { isPoolOwner } from "#/utils/address";
 import { toSlug } from "#/utils/formatStringCase";
 import { truncate } from "#/utils/truncate";
+import { usePreparePoolMetadataRegistrySetPoolMetadata } from "#/wagmi/generated";
 
 import { Actions } from "./Actions";
 import { PoolMetadataItemForm } from "./PoolMetadataForm";
@@ -204,7 +203,6 @@ function Row({
 export default function MetadataAttributesTable({
   poolId,
   network,
-  poolOwner,
   cid,
   data,
   error,
@@ -224,18 +222,17 @@ export default function MetadataAttributesTable({
     isMetadataValid,
   } = usePoolMetadata();
 
-  const { chain } = useNetwork();
-  const { address } = useAccount();
-
-  const chainId = networkIdFor(network) ?? chain?.id.toString();
-
   useEffect(() => {
     handleSetMetadata(data ? (data as PoolMetadataAttribute[]) : []);
     handleSetOriginalMetadata(data ? (data as PoolMetadataAttribute[]) : []);
   }, [data]);
 
   const balancerPoolLink = `https://app.balancer.fi/#/${network}/pool/${poolId}`;
-  const isOwner = isPoolOwner(chainId, poolOwner, address);
+
+  const { isSuccess: canEditMetadata } =
+    usePreparePoolMetadataRegistrySetPoolMetadata({
+      args: [poolId, "QmcyM2d9Tm5yg3Mh7g2psYPsLZW8rzWtAZtMqw2GnGAMoa"],
+    });
 
   return (
     <div className="w-full bg-blue1">
@@ -290,7 +287,7 @@ export default function MetadataAttributesTable({
                     <Row
                       key={toSlug(item.key)}
                       data={item}
-                      mode={isOwner ? "edit" : "view"}
+                      mode={canEditMetadata ? "edit" : "view"}
                     />
                   ))}
                 </tbody>
@@ -298,7 +295,7 @@ export default function MetadataAttributesTable({
             </div>
             <Actions
               poolId={poolId}
-              isOwner={isOwner}
+              canEditMetadata={canEditMetadata}
               metadataUpdated={metadataUpdated}
               isMetadataValid={isMetadataValid}
             />

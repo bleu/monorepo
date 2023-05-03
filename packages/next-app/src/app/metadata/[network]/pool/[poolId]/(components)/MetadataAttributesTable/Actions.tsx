@@ -9,9 +9,14 @@ import { Dialog } from "#/components/Dialog";
 import { Tooltip } from "#/components/Tooltip";
 import { NetworksContext } from "#/contexts/networks";
 
-import { PoolMetadataItemForm } from "./PoolMetadataForm";
+import PoolMetadataForm from "./PoolMetadataForm";
 import { PredefinedMetadataModal } from "./PredefinedMetadataModal";
 import { TransactionModal } from "./TransactionModal";
+
+const DISABLED_REASONS = {
+  NOT_ALLOWED: "You are not allowed to update this pool's metadata",
+  NOT_VALID: "You need to make changes to the metadata first",
+} as const;
 
 export function Actions({
   poolId,
@@ -40,18 +45,18 @@ export function Actions({
     <div className="mt-5 w-full justify-between sm:flex sm:items-center">
       <div className="flex gap-4">
         <Tooltip
-          content="You are not the pool owner"
+          content={DISABLED_REASONS.NOT_ALLOWED}
           disableTooltip={canEditMetadata}
         >
           <span tabIndex={0}>
-            <Dialog title="Add attribute" content={<PoolMetadataItemForm />}>
+            <Dialog title="Add attribute" content={<PoolMetadataForm />}>
               <Button shade="light">Add attribute</Button>
             </Dialog>
           </span>
         </Tooltip>
 
         <Tooltip
-          content="You are not the pool owner"
+          content={DISABLED_REASONS.NOT_ALLOWED}
           disableTooltip={canEditMetadata}
         >
           <span tabIndex={0}>
@@ -70,8 +75,8 @@ export function Actions({
       <Tooltip
         content={
           !canEditMetadata
-            ? "You are not allowed to update this pool's metadata"
-            : "You need to make changes to the metadata first"
+            ? DISABLED_REASONS.NOT_ALLOWED
+            : DISABLED_REASONS.NOT_VALID
         }
         disableTooltip={canEditMetadata && metadataUpdated && isMetadataValid}
       >

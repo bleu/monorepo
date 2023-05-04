@@ -3,6 +3,23 @@ import { createContext, useContext } from "react";
 
 const TableContext = createContext({});
 
+const predefinedClasses = {
+  gray: {
+    solid: {
+      dark: "bg-gray-800 border border-gray-700",
+    },
+  },
+  blue: {
+    solid: {
+      dark: "bg-blue3",
+    },
+  },
+} as const;
+
+type TableColor = keyof typeof predefinedClasses;
+type TableVariant = keyof typeof predefinedClasses.blue;
+type TableShade = keyof typeof predefinedClasses.blue.solid;
+
 function useTableContext() {
   const context = useContext(TableContext);
 
@@ -15,11 +32,25 @@ function useTableContext() {
   return context;
 }
 
-export default function Table({ children }: React.PropsWithChildren) {
+export default function Table({
+  children,
+  color = "gray",
+  variant = "solid",
+  shade = "dark",
+}: React.PropsWithChildren<{
+  color?: TableColor;
+  variant?: TableVariant;
+  shade?: TableShade;
+}>) {
   return (
     <TableContext.Provider value={{}}>
-      <div className="min-w-full  border-gray-700 rounded border">
-        <table className="divide-y divide-gray-700 bg-gray-800 min-w-full rounded">
+      <div className="min-w-full rounded">
+        <table
+          className={cn(
+            "divide-y divide-gray-700 min-w-full rounded",
+            predefinedClasses[color][variant][shade]
+          )}
+        >
           {children}
         </table>
       </div>

@@ -40,8 +40,9 @@ export function TokenSelect() {
     <Dialog
       content={<TokenModal handleSelectToken={handleSelectToken} />}
       customWidth="w-8/12"
+      hasNoPadding
     >
-      <div className="mb-4 flex flex-col">
+      <div className="flex flex-col">
         <span className="mb-2 block text-sm text-slate12">Token</span>
         <button
           type="button"
@@ -122,17 +123,21 @@ function TokenModal({
   }, [internalBalanceData]);
 
   return (
-    <div className="text-white">
-      <Input
-        type="text"
-        label="Select a token"
-        placeholder={"Search name or paste address"}
-        value={tokenSearch}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          setTokenSearch(e.target.value)
-        }
-      />
-      <Table>
+    <div className="text-white divide-y divide-gray-700">
+      <div className="w-full flex flex-col justify-center items-center h-full py-4 gap-y-4">
+        <div className="text-xl">Token Search</div>
+        <div className="w-full px-10">
+          <Input
+            type="text"
+            placeholder={"Search name or paste address"}
+            value={tokenSearch}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setTokenSearch(e.target.value)
+            }
+          />
+        </div>
+      </div>
+      <Table color="blue">
         <Table.HeaderRow>
           <Table.HeaderCell>
             <span className="sr-only">Token Logo</span>

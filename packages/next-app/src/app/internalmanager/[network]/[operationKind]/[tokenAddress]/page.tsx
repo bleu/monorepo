@@ -33,7 +33,7 @@ import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
 import { refetchRequest } from "#/utils/fetcher";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
-export enum operationKindType {
+enum operationKindType {
   "deposit" = UserBalanceOpKind.DEPOSIT_INTERNAL,
   "withdraw" = UserBalanceOpKind.WITHDRAW_INTERNAL,
   "transfer" = UserBalanceOpKind.TRANSFER_INTERNAL,

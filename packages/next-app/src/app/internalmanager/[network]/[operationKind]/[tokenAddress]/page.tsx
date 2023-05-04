@@ -3,7 +3,7 @@
 import { SingleInternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
 import { getInternalBalanceSchema } from "@balancer-pool-metadata/schema";
 import {
-  getNetworkUrl,
+  buildExplorerAddressURL,
   Network,
   NetworkChainId,
 } from "@balancer-pool-metadata/shared";
@@ -205,7 +205,10 @@ function TransactionCard({
     operationKind: operationKindEnum,
   });
 
-  const chainUrlData = getNetworkUrl(chainId);
+  const explorerData = buildExplorerAddressURL({
+    chainId,
+    address: userAddress,
+  });
 
   const receiverAddressValue = watch("receiverAddress");
 
@@ -289,16 +292,16 @@ function TransactionCard({
                 {operationKindEnum === UserBalanceOpKind.TRANSFER_INTERNAL ? (
                   !addressRegex.test(receiverAddressValue) ? (
                     <span className="outline-none text-blue8 hover:cursor-not-allowed">
-                      View on {chainUrlData.name}
+                      View on {explorerData.name}
                     </span>
                   ) : (
                     <a
-                      href={`${chainUrlData.url}/address/${receiverAddressValue}`}
+                      href={explorerData.url}
                       target="_blank"
                       rel="noreferrer"
                       className="outline-none text-blue9 hover:text-amber9"
                     >
-                      View on {chainUrlData.name}
+                      View on {explorerData.name}
                     </a>
                   )
                 ) : (

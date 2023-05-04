@@ -20,7 +20,7 @@ export const Input = React.forwardRef<HTMLInputElement, IInput>(
           )}
         />
         {errorMessage && (
-          <div className="h-6 mt-1 text-red-800 text-xs">
+          <div className="h-6 mt-1 text-tomato7 text-xs">
             <span>{errorMessage}</span>
           </div>
         )}

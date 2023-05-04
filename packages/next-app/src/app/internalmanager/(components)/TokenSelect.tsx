@@ -40,7 +40,7 @@ export function TokenSelect() {
     <Dialog
       content={<TokenModal handleSelectToken={handleSelectToken} />}
       customWidth="w-8/12"
-      hasNoPadding
+      noPadding
     >
       <div className="flex flex-col">
         <span className="mb-2 block text-sm text-slate12">Token</span>

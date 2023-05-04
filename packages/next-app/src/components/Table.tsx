@@ -6,7 +6,7 @@ const TableContext = createContext({});
 const predefinedClasses = {
   gray: {
     solid: {
-      dark: "bg-gray-800 border border-gray-700",
+      dark: "bg-gray-800",
     },
   },
   blue: {
@@ -44,7 +44,7 @@ export default function Table({
 }>) {
   return (
     <TableContext.Provider value={{}}>
-      <div className="min-w-full rounded">
+      <div className="min-w-full  border-gray-700 rounded border">
         <table
           className={cn(
             "divide-y divide-gray-700 min-w-full rounded",

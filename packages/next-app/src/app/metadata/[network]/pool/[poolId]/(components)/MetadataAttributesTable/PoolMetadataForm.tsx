@@ -21,7 +21,7 @@ const inputTypenames = [
   { value: "datetime-local", label: "Datetime" },
 ];
 
-export function PoolMetadataItemForm({
+export default function PoolMetadataForm({
   data,
   mode = "add",
   close,

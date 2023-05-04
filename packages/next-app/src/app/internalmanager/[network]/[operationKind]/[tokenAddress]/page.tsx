@@ -203,10 +203,10 @@ function TransactionCard({
   const addressRegex = /0x[a-fA-F0-9]{40}/;
 
   return (
-    <div className="flex items-center justify-center h-fit pt-32">
+    <div className="flex items-center justify-center h-full">
       <form
         onSubmit={handleSubmit(handleWithdraw)}
-        className="flex flex-col text-white bg-blue3 h-full w-fit rounded-lg divide-y divide-gray-700 border border-gray-700"
+        className="flex flex-col text-white bg-blue3 h-fit my-4 w-fit rounded-lg divide-y divide-gray-700 border border-gray-700"
       >
         <div className="relative w-full flex justify-center h-full">
           <Link href={"/internalmanager"}>

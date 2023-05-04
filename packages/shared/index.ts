@@ -25,8 +25,29 @@ export const networkUrls = {
   [NetworkChainId.ARBITRUM]: { url: "https://arbiscan.io/", name: "Arbiscan" },
 };
 
-export function getNetworkUrl(chainId: NetworkChainId) {
-  return networkUrls[chainId as keyof typeof networkUrls];
+export function buildBlockExplorerTxURL({
+  chainId,
+  txHash,
+}: {
+  chainId: NetworkChainId;
+  txHash: `0x${string}`;
+}) {
+  const networkUrl = networkUrls[chainId as keyof typeof networkUrls];
+  return `${networkUrl.url}tx/${txHash}`;
+}
+
+export function buildExplorerAddressURL({
+  chainId,
+  address,
+}: {
+  chainId: NetworkChainId;
+  address: `0x${string}`;
+}) {
+  const networkUrl = networkUrls[chainId as keyof typeof networkUrls];
+  return {
+    url: `${networkUrl.url}address/${address}`,
+    name: networkUrl.name,
+  };
 }
 
 export const DELEGATE_OWNER = "0xBA1BA1ba1BA1bA1bA1Ba1BA1ba1BA1bA1ba1ba1B";

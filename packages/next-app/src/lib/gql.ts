@@ -17,7 +17,11 @@ export function impersonateWhetherDAO(
 ) {
   const network = networkFor(chainId);
 
-  if (network !== Network.Goerli && networkMultisigs[network] === address) {
+  if (
+    network !== Network.Goerli &&
+    network !== Network.Sepolia &&
+    networkMultisigs[network] === address
+  ) {
     return DELEGATE_OWNER;
   }
   return address;

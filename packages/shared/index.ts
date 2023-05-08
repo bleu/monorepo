@@ -3,6 +3,7 @@ export enum Network {
   Polygon = "Polygon",
   Arbitrum = "Arbitrum",
   Goerli = "Goerli",
+  Sepolia = "Sepolia",
 }
 
 export enum NetworkChainId {
@@ -10,6 +11,7 @@ export enum NetworkChainId {
   GOERLI = 5,
   POLYGON = 137,
   ARBITRUM = 42161,
+  SEPOLIA = 11155111,
 }
 
 export const networkUrls = {
@@ -23,6 +25,10 @@ export const networkUrls = {
     name: "PolygonScan",
   },
   [NetworkChainId.ARBITRUM]: { url: "https://arbiscan.io/", name: "Arbiscan" },
+  [NetworkChainId.SEPOLIA]: {
+    url: "https://sepolia.etherscan.io/",
+    name: "Sepolia Etherscan",
+  },
 };
 
 export function buildBlockExplorerTxURL({
@@ -63,6 +69,7 @@ export const networkIdEnumMap = {
   "5": Network.Goerli,
   "137": Network.Polygon,
   "42161": Network.Arbitrum,
+  "11155111": Network.Sepolia,
 };
 
 export function networkFor(key: string | number) {

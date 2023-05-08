@@ -20,6 +20,7 @@ export const SUBGRAPHS = {
         [Network.Goerli]: `${baseEndpoint}/balancer-metadata-goerli`,
         // TODO: https://linear.app/bleu-llc/issue/BAL-131/deploy-contracts-in-all-networks-that-balancer-is-deployed
         [Network.Arbitrum]: `${baseEndpoint}/balancer-metadata-goerli`,
+        [Network.Sepolia]: `${baseEndpoint}/balancer-metadata-goerli`,
       };
     },
     endpointFor(network: Network) {
@@ -37,6 +38,8 @@ export const SUBGRAPHS = {
         [Network.Polygon]: `${baseEndpoint}-polygon`,
         [Network.Arbitrum]: `${baseEndpoint}-arbitrum`,
         [Network.Goerli]: `${baseEndpoint}-goerli`,
+        // TODO: https://linear.app/bleu-llc/issue/BAL-131/deploy-contracts-in-all-networks-that-balancer-is-deployed
+        [Network.Sepolia]: `${baseEndpoint}-goerli`,
       };
     },
     endpointFor(network: Network) {
@@ -54,6 +57,8 @@ export const SUBGRAPHS = {
         [Network.Polygon]: `${baseEndpoint}/balancer-polygon-v2`,
         [Network.Arbitrum]: `${baseEndpoint}/balancer-arbitrum-v2`,
         [Network.Goerli]: `${baseEndpoint}/balancer-goerli-v2`,
+        // TODO: https://linear.app/bleu-llc/issue/BAL-131/deploy-contracts-in-all-networks-that-balancer-is-deployed
+        [Network.Sepolia]: `${baseEndpoint}/balancer-goerli-v2`,
       };
     },
     endpointFor(network: Network) {
@@ -74,6 +79,7 @@ export const SUBGRAPHS = {
         [Network.Polygon]: `${baseEndpoint}/balancer-v2-goerli`,
         [Network.Arbitrum]: `${baseEndpoint}/balancer-v2-goerli`,
         [Network.Goerli]: `${baseEndpoint}/balancer-v2-goerli`,
+        [Network.Sepolia]: `https://api.studio.thegraph.com/query/46539/balancer-sepolia-v2/v0.0.1`,
       };
     },
     endpointFor(network: Network) {

@@ -10,12 +10,14 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
+import { tokenLogoUri } from "public/tokens/logoUri";
 import { useEffect } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { useAccount, useNetwork } from "wagmi";
 
 import { TokenSelect } from "#/app/internalmanager/(components)/TokenSelect";
 import { ToastContent } from "#/app/metadata/[network]/pool/[poolId]/(components)/MetadataAttributesTable/TransactionModal";
+import genericTokenLogo from "#/assets/generic-token-logo.png";
 import { Button } from "#/components";
 import { Input } from "#/components/Input";
 import Spinner from "#/components/Spinner";
@@ -56,13 +58,14 @@ export default function Page({
     setIsNotifierOpen,
     isNotifierOpen,
     transactionUrl,
+    setSelectedToken,
   } = useInternalBalance();
 
   const { data: internalBalanceTokenData, mutate } = internalBalances
     .gql(chain?.id.toString() || "1")
     .useSingleInternalBalance({
       userAddress: addressLower as `0x${string}`,
-      tokenAddress: params.tokenAddress,
+      tokenAddress: params.tokenAddress, // aqui acho que era pra ser selectedToken.address e refazer p hook toda vez que mudar o token
     });
 
   const tokenData = internalBalanceTokenData?.user?.userInternalBalances
@@ -74,6 +77,18 @@ export default function Page({
     chainId: chain?.id.toString() || "1",
     userAddress: addressLower as `0x${string}`,
   });
+
+  useEffect(() => {
+    if (!tokenData) return;
+    setSelectedToken({
+      address: tokenData?.tokenInfo.address as `0x${string}`,
+      symbol: tokenData?.tokenInfo.symbol as string,
+      logoUrl:
+        tokenLogoUri[
+          tokenData?.tokenInfo?.symbol as keyof typeof tokenLogoUri
+        ] || genericTokenLogo,
+    });
+  }, [internalBalanceTokenData]);
 
   useEffect(() => {
     clearNotification();
@@ -199,7 +214,7 @@ function TransactionCard({
     setValue("tokenAddress", selectedToken?.address);
   }, [selectedToken]);
 
-  const { handleWithdraw } = useInternalBalancesTransaction({
+  const { handleTransaction } = useInternalBalancesTransaction({
     userAddress: userAddress,
     tokenDecimals: tokenData.tokenInfo.decimals,
     operationKind: operationKindEnum,
@@ -216,7 +231,7 @@ function TransactionCard({
 
   function handleOnSubtmit(data: FieldValues) {
     setValue("tokenAddress", selectedToken?.address);
-    handleWithdraw(data);
+    handleTransaction(data);
   }
 
   return (
@@ -319,9 +334,15 @@ function TransactionCard({
             </div>
           </div>
           <div className="flex justify-center">
-            <Button type="submit" className="w-full">
-              <span>{title} Internal Balance</span>
-            </Button>
+            {operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL ? (
+              <Button type="submit" className="w-full">
+                <span>Approve use of {tokenData.tokenInfo.symbol}</span>
+              </Button>
+            ) : (
+              <Button type="submit" className="w-full">
+                <span>{title} Internal Balance</span>
+              </Button>
+            )}
           </div>
         </div>
       </form>

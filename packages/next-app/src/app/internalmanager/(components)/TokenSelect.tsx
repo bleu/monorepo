@@ -50,7 +50,7 @@ export function TokenSelect() {
         >
           <div className="flex items-center gap-1">
             <Image
-              src={genericTokenLogo}
+              src={selectedToken?.logoUrl || genericTokenLogo}
               className="rounded-full"
               alt="Token Logo"
               height={28}

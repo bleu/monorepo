@@ -1,4 +1,7 @@
-import { Pool } from "@balancer-pool-metadata/gql/src/balancer-pools/__generated__/Mainnet";
+import {
+  Pool,
+  PoolsQuery,
+} from "@balancer-pool-metadata/gql/src/balancer-pools/__generated__/Mainnet";
 import { networkFor, networkIdFor } from "@balancer-pool-metadata/shared";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,6 +12,7 @@ import { Badge } from "#/components/Badge";
 import Sidebar from "#/components/Sidebar";
 import { impersonateWhetherDAO, pools } from "#/lib/gql";
 import { refetchRequest } from "#/utils/fetcher";
+import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 import { truncate } from "#/utils/truncate";
 import { useAccount, useNetwork } from "#/wagmi";
 
@@ -64,7 +68,7 @@ function OwnedPoolsSidebarItems({
 
   return (
     <>
-      {data?.pools.map((item) => (
+      {data?.pools.map((item: ArrElement<GetDeepProp<PoolsQuery, "pools">>) => (
         <Link key={item.id} href={`/metadata/${network}/pool/${item.id}`}>
           <Sidebar.Item isSelected={item.id === poolId}>
             <PoolCard isSelected={item.id === poolId} pool={item as Pool} />

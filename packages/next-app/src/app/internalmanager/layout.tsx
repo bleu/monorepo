@@ -22,7 +22,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         />
         <InternalManagerProvider>
           <CheckSupportedChains
-            supportedChains={["Ethereum", "Goerli"]}
+            supportedChains={["Ethereum", "Goerli", "Sepolia"]}
             chainName={chain?.name as (typeof chains)[number]["name"]}
           >
             {children}

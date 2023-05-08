@@ -3,6 +3,7 @@ export enum Network {
   Polygon = "Polygon",
   Arbitrum = "Arbitrum",
   Goerli = "Goerli",
+  Sepolia = "Sepolia",
 }
 
 export enum NetworkChainId {
@@ -10,6 +11,7 @@ export enum NetworkChainId {
   GOERLI = 5,
   POLYGON = 137,
   ARBITRUM = 42161,
+  SEPOLIA = 11155111,
 }
 
 export const networkUrls = {
@@ -17,6 +19,7 @@ export const networkUrls = {
   [NetworkChainId.GOERLI]: "https://goerli.etherscan.io/tx/",
   [NetworkChainId.POLYGON]: "https://polygonscan.com/tx/",
   [NetworkChainId.ARBITRUM]: "https://arbiscan.io/tx/",
+  [NetworkChainId.SEPOLIA]: "https://sepolia.etherscan.io/tx/",
 };
 
 export function getNetworkUrl(chainId: NetworkChainId) {
@@ -36,6 +39,7 @@ export const networkIdEnumMap = {
   "5": Network.Goerli,
   "137": Network.Polygon,
   "42161": Network.Arbitrum,
+  "11155111": Network.Sepolia,
 };
 
 export function networkFor(key: string | number) {

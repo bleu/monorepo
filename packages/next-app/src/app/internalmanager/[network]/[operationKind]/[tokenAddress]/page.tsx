@@ -233,7 +233,7 @@ function TransactionCard({
     setValue("tokenAddress", selectedToken?.address);
   }, [selectedToken]);
 
-  const { handleWithdraw } = useInternalBalancesTransaction({
+  const { handleTransaction } = useInternalBalancesTransaction({
     userAddress: userAddress,
     tokenDecimals: tokenData.tokenInfo.decimals,
     operationKind: operationKindEnum,
@@ -250,7 +250,7 @@ function TransactionCard({
 
   function handleOnSubmit(data: FieldValues) {
     setValue("tokenAddress", selectedToken?.address);
-    handleWithdraw(data);
+    handleTransaction(data);
   }
 
   return (

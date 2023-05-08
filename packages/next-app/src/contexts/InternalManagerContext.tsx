@@ -3,7 +3,7 @@
 import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
 import { createContext, PropsWithChildren, useContext, useState } from "react";
 
-import { Notification } from "#/hooks/useTransaction";
+import { Notification, TransactionStatus } from "#/hooks/useTransaction";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
 export interface SelectedToken {
@@ -31,6 +31,8 @@ type InternalManagerContextType = {
   clearNotification: () => void;
   selectedToken?: SelectedToken;
   setSelectedToken: (token: SelectedToken) => void;
+  transactionStatus: TransactionStatus;
+  setTransactionStatus: (status: TransactionStatus) => void;
 };
 
 export const InternalManagerContext = createContext(
@@ -42,6 +44,9 @@ export function InternalManagerProvider({ children }: PropsWithChildren) {
   const [notification, setNotification] = useState<Notification | null>(null);
   const [transactionUrl, setTransactionUrl] = useState<string>();
   const [selectedToken, setSelectedToken] = useState<SelectedToken>();
+  const [transactionStatus, setTransactionStatus] = useState<TransactionStatus>(
+    TransactionStatus.AUTHORIZING
+  );
 
   function clearNotification() {
     setNotification(null);
@@ -60,6 +65,8 @@ export function InternalManagerProvider({ children }: PropsWithChildren) {
         clearNotification,
         selectedToken,
         setSelectedToken,
+        transactionStatus,
+        setTransactionStatus,
       }}
     >
       {children}

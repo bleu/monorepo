@@ -24,7 +24,10 @@ import Spinner from "#/components/Spinner";
 import { Toast } from "#/components/Toast";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
-import { useInternalBalancesTransaction } from "#/hooks/useTransaction";
+import {
+  TransactionStatus,
+  useInternalBalancesTransaction,
+} from "#/hooks/useTransaction";
 import { impersonateWhetherDAO, internalBalances } from "#/lib/gql";
 import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
 import { refetchRequest } from "#/utils/fetcher";
@@ -214,7 +217,7 @@ function TransactionCard({
     setValue("tokenAddress", selectedToken?.address);
   }, [selectedToken]);
 
-  const { handleWithdraw } = useInternalBalancesTransaction({
+  const { handleTransaction } = useInternalBalancesTransaction({
     userAddress: userAddress,
     tokenDecimals: tokenData.tokenInfo.decimals,
     operationKind: operationKindEnum,
@@ -229,15 +232,15 @@ function TransactionCard({
 
   const addressRegex = /0x[a-fA-F0-9]{40}/;
 
-  function handleOnSubtmit(data: FieldValues) {
+  function handleOnSubmit(data: FieldValues) {
     setValue("tokenAddress", selectedToken?.address);
-    handleWithdraw(data);
+    handleTransaction(data);
   }
 
   return (
     <div className="flex items-center justify-center h-full">
       <form
-        onSubmit={handleSubmit(handleOnSubtmit)}
+        onSubmit={handleSubmit(handleOnSubmit)}
         className="flex flex-col text-white bg-blue3 h-fit my-4 w-fit rounded-lg divide-y divide-gray-700 border border-gray-700"
       >
         <div className="relative w-full flex justify-center h-full">
@@ -347,5 +350,33 @@ function TransactionCard({
         </div>
       </form>
     </div>
+  );
+}
+
+function OperationButton({
+  operationKindEnum,
+  tokenSymbol,
+  title,
+}: {
+  operationKindEnum: UserBalanceOpKind;
+  tokenSymbol: string;
+  title: string;
+}) {
+  const { transactionStatus } = useInternalBalance();
+
+  if (
+    operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL &&
+    transactionStatus === TransactionStatus.AUTHORIZING
+  ) {
+    return (
+      <Button type="submit" className="w-full">
+        <span>Approve use of {tokenSymbol}</span>
+      </Button>
+    );
+  }
+  return (
+    <Button type="submit" className="w-full">
+      <span>{title} Internal Balance</span>
+    </Button>
   );
 }

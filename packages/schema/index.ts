@@ -1,4 +1,5 @@
-import { ethers } from "ethers";
+import { parseFixed } from "@ethersproject/bignumber";
+import { BigNumber, ethers } from "ethers";
 import { z } from "zod";
 
 export const TypenameEnum = z.enum(["text", "url", "date", "datetime-local"]);
@@ -56,10 +57,12 @@ export const getInternalBalanceSchema = ({
   totalBalance,
   userAddress,
   operationKind,
+  decimals,
 }: {
-  totalBalance: number;
+  totalBalance: string | BigNumber;
   userAddress: string;
   operationKind: string;
+  decimals: number;
 }) => {
   const InternalBalanceSchema = z.object({
     tokenAddress: z
@@ -81,11 +84,20 @@ export const getInternalBalanceSchema = ({
           message: "Token amount must be greater than 0",
         });
       }
-      if (Number(val) > totalBalance) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Amount exceeds total balance",
-        });
+      if (typeof totalBalance === "string") {
+        if (parseFixed(val, decimals).gt(parseFixed(totalBalance, decimals))) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Amount exceeds total balance",
+          });
+        }
+      } else {
+        if (parseFixed(val, decimals).gt(totalBalance)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Amount exceeds total balance",
+          });
+        }
       }
       return val;
     }),

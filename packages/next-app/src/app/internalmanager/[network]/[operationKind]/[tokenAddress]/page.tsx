@@ -7,13 +7,14 @@ import {
   Network,
   NetworkChainId,
 } from "@balancer-pool-metadata/shared";
+import { BigNumber } from "@ethersproject/bignumber";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { tokenLogoUri } from "public/tokens/logoUri";
 import { useEffect } from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useBalance, useNetwork } from "wagmi";
 
 import { TokenSelect } from "#/app/internalmanager/(components)/TokenSelect";
 import { ToastContent } from "#/app/metadata/[network]/pool/[poolId]/(components)/MetadataAttributesTable/TransactionModal";
@@ -93,6 +94,11 @@ export default function Page({
     });
   }, [internalBalanceTokenData]);
 
+  const { data: walletAmount } = useBalance({
+    address: addressLower as `0x${string}`,
+    token: params.tokenAddress,
+  });
+
   useEffect(() => {
     clearNotification();
   }, [isConnecting, addressLower]);
@@ -143,6 +149,8 @@ export default function Page({
           userAddress={addressLower as `0x${string}`}
           tokenData={tokenData}
           chainId={chain!.id}
+          walletAmount={walletAmount!.formatted}
+          walletAmountBigNumber={walletAmount!.value}
         />
       )}
       {notification && (
@@ -168,6 +176,8 @@ function TransactionCard({
   userAddress,
   tokenData,
   chainId,
+  walletAmount,
+  walletAmountBigNumber,
 }: {
   operationKindParam: string;
   userAddress: `0x${string}`;
@@ -175,6 +185,8 @@ function TransactionCard({
     GetDeepProp<SingleInternalBalanceQuery, "userInternalBalances">
   >;
   chainId: NetworkChainId;
+  walletAmount: string;
+  walletAmountBigNumber: BigNumber;
 }) {
   const operationKindData = {
     [UserBalanceOpKind.DEPOSIT_INTERNAL]: {
@@ -200,9 +212,13 @@ function TransactionCard({
     ];
 
   const InternalBalanceSchema = getInternalBalanceSchema({
-    totalBalance: tokenData.balance,
+    totalBalance:
+      operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL
+        ? walletAmountBigNumber
+        : tokenData.balance,
     userAddress: userAddress,
     operationKind: operationKindParam,
+    decimals: tokenData.tokenInfo.decimals,
   });
 
   const { register, handleSubmit, setValue, formState, watch } = useForm({
@@ -271,7 +287,11 @@ function TransactionCard({
                   <Input
                     type="string"
                     label="Amount"
-                    placeholder={tokenData.balance}
+                    placeholder={
+                      operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL
+                        ? walletAmount
+                        : tokenData.balance
+                    }
                     {...register("tokenAmount")}
                     errorMessage={
                       formState.errors?.tokenAmount?.message as string
@@ -282,13 +302,19 @@ function TransactionCard({
             </div>
             <div className="mt-2 text-xs flex gap-x-1">
               <span className="text-gray-400">
-                Wallet Balance: {tokenData.balance}
+                {operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL ? (
+                  <span>Wallet Balance: {walletAmount}</span>
+                ) : (
+                  <span>Internal Balance: {tokenData.balance}</span>
+                )}
               </span>
               <button
                 type="button"
                 className="outline-none text-blue9 hover:text-amber9"
                 onClick={() => {
-                  setValue("tokenAmount", tokenData.balance);
+                  operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL
+                    ? setValue("tokenAmount", walletAmount)
+                    : setValue("tokenAmount", tokenData.balance);
                 }}
               >
                 Max

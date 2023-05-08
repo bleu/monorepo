@@ -38,6 +38,7 @@ export const SUBGRAPHS = {
         [Network.Polygon]: `${baseEndpoint}-polygon`,
         [Network.Arbitrum]: `${baseEndpoint}-arbitrum`,
         [Network.Goerli]: `${baseEndpoint}-goerli`,
+        // TODO: https://linear.app/bleu-llc/issue/BAL-131/deploy-contracts-in-all-networks-that-balancer-is-deployed
         [Network.Sepolia]: `${baseEndpoint}-goerli`,
       };
     },
@@ -56,6 +57,7 @@ export const SUBGRAPHS = {
         [Network.Polygon]: `${baseEndpoint}/balancer-polygon-v2`,
         [Network.Arbitrum]: `${baseEndpoint}/balancer-arbitrum-v2`,
         [Network.Goerli]: `${baseEndpoint}/balancer-goerli-v2`,
+        // TODO: https://linear.app/bleu-llc/issue/BAL-131/deploy-contracts-in-all-networks-that-balancer-is-deployed
         [Network.Sepolia]: `${baseEndpoint}/balancer-goerli-v2`,
       };
     },

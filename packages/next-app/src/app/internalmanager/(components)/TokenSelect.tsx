@@ -33,7 +33,7 @@ export function TokenSelect({
   token,
   operationKind,
 }: {
-  token: ArrElement<
+  token?: ArrElement<
     GetDeepProp<SingleInternalBalanceQuery, "userInternalBalances">
   >;
   operationKind: string;
@@ -63,7 +63,7 @@ export function TokenSelect({
               width={28}
               quality={100}
             />
-            <div>{token.tokenInfo.symbol}</div>
+            <div>{token?.tokenInfo.symbol}</div>
           </div>
           <ChevronDownIcon />
         </button>

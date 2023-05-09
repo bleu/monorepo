@@ -10,10 +10,10 @@ export async function moralisGetTokens({
   chain,
 }: {
   userAddress: string;
-  chain: "Ethereum" | "Goerli";
+  chain: "Ethereum" | "Goerli" | "Sepolia";
 }) {
   const chainMoralis =
-    chain === "Ethereum" ? EvmChain.ETHEREUM : EvmChain.GOERLI;
+    chain === "Ethereum" ? EvmChain.ETHEREUM : chain=== "Goerli"  ? EvmChain.GOERLI : EvmChain.SEPOLIA;
 
   const response = await Moralis.EvmApi.token.getWalletTokenBalances({
     address: userAddress,

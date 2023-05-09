@@ -1,6 +1,6 @@
 "use client";
 
-import { Network, operationKindType } from "@balancer-pool-metadata/shared";
+import { Network } from "@balancer-pool-metadata/shared";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { useEffect } from "react";
@@ -18,6 +18,12 @@ import WalletNotConnected from "#/components/WalletNotConnected";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { impersonateWhetherDAO } from "#/lib/gql";
 import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
+
+enum operationKindType {
+  "deposit" = UserBalanceOpKind.DEPOSIT_INTERNAL,
+  "withdraw" = UserBalanceOpKind.WITHDRAW_INTERNAL,
+  "transfer" = UserBalanceOpKind.TRANSFER_INTERNAL,
+}
 
 export default function Page({
   params,

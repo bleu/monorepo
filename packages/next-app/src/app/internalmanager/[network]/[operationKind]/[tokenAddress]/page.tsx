@@ -363,15 +363,11 @@ function TransactionCard({
             </div>
           </div>
           <div className="flex justify-center">
-            {operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL ? (
-              <Button type="submit" className="w-full">
-                <span>Approve use of {tokenData.tokenInfo.symbol}</span>
-              </Button>
-            ) : (
-              <Button type="submit" className="w-full">
-                <span>{title} Internal Balance</span>
-              </Button>
-            )}
+            <OperationButton
+              operationKindEnum={operationKindEnum}
+              tokenSymbol={tokenData.tokenInfo.symbol as string}
+              title={title}
+            />
           </div>
         </div>
       </form>

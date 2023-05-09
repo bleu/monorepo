@@ -31,6 +31,10 @@ export default function Page() {
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-1">
             <h1 className="text-gray-400 text-3xl">My Internal Balances</h1>
+            <span className="text-gray-900 bg-amber9 p-2 rounded">
+              Currently, you can only deposit tokens that you already have on
+              your Internal Balance
+            </span>
           </div>
           <div className="flex gap-4">
             <Link href={`/internalmanager/${network}/deposit/`}>

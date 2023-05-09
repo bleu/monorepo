@@ -6,6 +6,7 @@ import {
   buildExplorerAddressURL,
   Network,
   NetworkChainId,
+  operationKindType,
 } from "@balancer-pool-metadata/shared";
 import { BigNumber } from "@ethersproject/bignumber";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,6 +22,10 @@ import { Button } from "#/components";
 import { Input } from "#/components/Input";
 import Spinner from "#/components/Spinner";
 import { Toast } from "#/components/Toast";
+import {
+  STAGE_CN_MAPPING,
+  TransactionProgressBar,
+} from "#/components/TransactionProgressBar";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import {
@@ -31,12 +36,6 @@ import { impersonateWhetherDAO, internalBalances } from "#/lib/gql";
 import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
 import { refetchRequest } from "#/utils/fetcher";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
-
-enum operationKindType {
-  "deposit" = UserBalanceOpKind.DEPOSIT_INTERNAL,
-  "withdraw" = UserBalanceOpKind.WITHDRAW_INTERNAL,
-  "transfer" = UserBalanceOpKind.TRANSFER_INTERNAL,
-}
 
 export default function Page({
   params,
@@ -234,6 +233,10 @@ function TransactionCard({
     handleTransaction(data);
   }
 
+  const { transactionStatus } = useInternalBalance();
+
+  const stage = STAGE_CN_MAPPING[transactionStatus];
+
   return (
     <div className="flex items-center justify-center h-full">
       <form
@@ -346,6 +349,9 @@ function TransactionCard({
               </div>
             </div>
           </div>
+          {operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL && (
+            <TransactionProgressBar stage={stage} />
+          )}
           <div className="flex justify-center">
             <OperationButton
               operationKindEnum={operationKindEnum}

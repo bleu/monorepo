@@ -94,12 +94,12 @@ const NOTIFICATION_MAP = {
 export const NOTIFICATION_MAP_INTERNAL_BALANCES = {
   [TransactionStatus.AUTHORIZING]: {
     title: "Approve this transaction",
-    description: "Waiting for your wallet approvement",
+    description: "Waiting for your approval",
     variant: NotificationVariant.PENDING,
   },
   [TransactionStatus.WAITING_APPROVAL]: {
     title: "Confirm pending... ",
-    description: "Waiting for your wallet approvement",
+    description: "Waiting for your approval",
     variant: NotificationVariant.PENDING,
   },
   [TransactionStatus.SUBMITTING]: {
@@ -109,7 +109,7 @@ export const NOTIFICATION_MAP_INTERNAL_BALANCES = {
   },
   [TransactionStatus.CONFIRMING]: {
     title: "Great!",
-    description: "The approval was a success!",
+    description: "The approval was successful!",
     variant: NotificationVariant.SUCCESS,
   },
   [TransactionStatus.CONFIRMED]: {

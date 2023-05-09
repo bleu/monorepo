@@ -6,7 +6,6 @@ import {
   buildExplorerAddressURL,
   Network,
   NetworkChainId,
-  operationKindType,
 } from "@balancer-pool-metadata/shared";
 import { BigNumber } from "@ethersproject/bignumber";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,6 +35,12 @@ import { impersonateWhetherDAO, internalBalances } from "#/lib/gql";
 import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
 import { refetchRequest } from "#/utils/fetcher";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
+
+enum operationKindType {
+  "deposit" = UserBalanceOpKind.DEPOSIT_INTERNAL,
+  "withdraw" = UserBalanceOpKind.WITHDRAW_INTERNAL,
+  "transfer" = UserBalanceOpKind.TRANSFER_INTERNAL,
+}
 
 export default function Page({
   params,

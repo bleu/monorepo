@@ -1,4 +1,4 @@
-import { getNetworkUrl } from "@balancer-pool-metadata/shared";
+import { buildBlockExplorerTxURL } from "@balancer-pool-metadata/shared";
 import { parseFixed } from "@ethersproject/bignumber";
 import { useRouter } from "next/navigation";
 import { Dispatch, useEffect, useState } from "react";
@@ -135,8 +135,8 @@ export function useMetadataTransaction({
   const { chain } = useNetwork();
 
   const handleSetTransactionLink = (hash: `0x${string}`) => {
-    const baseTxUrl = getNetworkUrl(chain!.id);
-    setTransactionUrl(`${baseTxUrl}${hash}`);
+    const txUrl = buildBlockExplorerTxURL({ chainId: chain!.id, txHash: hash });
+    setTransactionUrl(txUrl);
   };
 
   useEffect(() => {
@@ -284,11 +284,14 @@ export function useInternalBalancesTransaction({
     const { hash } = data;
     function handleTransactionStatus() {
       if (!hash || !chain) return;
-      const baseTxUrl = getNetworkUrl(chain!.id);
+      const txUrl = buildBlockExplorerTxURL({
+        chainId: chain!.id,
+        txHash: hash,
+      });
       setNotification(
         NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.SUBMITTING]
       );
-      setTransactionUrl(`${baseTxUrl}${hash}`);
+      setTransactionUrl(txUrl);
     }
     handleTransactionStatus();
   }, [data]);

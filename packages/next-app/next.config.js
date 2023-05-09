@@ -38,6 +38,12 @@ const moduleExports = {
         hostname: 'raw.githubusercontent.com',
         port: '',
         pathname: '/trustwallet/assets/master/blockchains/ethereum/assets/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.moralis.io',
+        port: '',
+        pathname: '/**',
       }
     ],
   },

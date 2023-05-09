@@ -18,7 +18,7 @@ jobs:
     # Create a GitHub deployment environment per staging app so it shows up
     # in the pull request UI.
     environment:
-      name: pr-${{ github.event.number }}-preview
+      name: bleu-balancer-tools-pr-${{ github.event.number }}-preview
       url: ${{ steps.deploy.outputs.url }}
 
     steps:
@@ -29,6 +29,8 @@ jobs:
       - name: Deploy
         id: deploy
         uses: superfly/fly-pr-review-apps@1.0.0
+        with:
+          name: bleu-balancer-tools-pr-${{ github.event.number }}-preview
 
       - name: Clean up GitHub environment
         uses: strumwolf/delete-deployment-environment@v2
@@ -36,4 +38,4 @@ jobs:
         with:
           # ⚠️ The provided token needs permission for admin write:org
           token: ${{ secrets.GITHUB_TOKEN }}
-          environment: pr-${{ github.event.number }}
+          name: bleu-balancer-tools-pr-${{ github.event.number }}-preview

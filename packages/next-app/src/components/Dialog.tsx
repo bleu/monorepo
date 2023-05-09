@@ -10,13 +10,14 @@ export function Dialog({
   content,
   title,
   customWidth,
+  noPadding = false,
 }: React.PropsWithChildren<{
   content: React.ReactElement;
   title?: string;
   customWidth?: string;
+  noPadding?: boolean;
 }>) {
   const [open, setOpen] = React.useState(false);
-
   return (
     <DialogPrimitive.Root open={open} onOpenChange={setOpen}>
       <DialogPrimitive.Trigger asChild>{children}</DialogPrimitive.Trigger>
@@ -29,8 +30,9 @@ export function Dialog({
         />
         <DialogPrimitive.Content
           className={cn(
-            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-[6px] bg-blue3 p-[25px] shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] focus:outline-none  overflow-y-auto",
-            customWidth ? customWidth : "w-[90vw] max-w-[450px]"
+            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-[6px] bg-blue3 shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] focus:outline-none",
+            customWidth ? customWidth : "w-[90vw] max-w-[450px]",
+            noPadding ? "p-0" : "p-[25px]"
           )}
         >
           <DialogPrimitive.Title className="text-2xl font-medium text-slate12">

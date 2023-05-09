@@ -15,15 +15,45 @@ export enum NetworkChainId {
 }
 
 export const networkUrls = {
-  [NetworkChainId.MAINNET]: "https://etherscan.io/tx/",
-  [NetworkChainId.GOERLI]: "https://goerli.etherscan.io/tx/",
-  [NetworkChainId.POLYGON]: "https://polygonscan.com/tx/",
-  [NetworkChainId.ARBITRUM]: "https://arbiscan.io/tx/",
-  [NetworkChainId.SEPOLIA]: "https://sepolia.etherscan.io/tx/",
+  [NetworkChainId.MAINNET]: { url: "https://etherscan.io/", name: "Etherscan" },
+  [NetworkChainId.GOERLI]: {
+    url: "https://goerli.etherscan.io/",
+    name: "Goerli Etherscan",
+  },
+  [NetworkChainId.POLYGON]: {
+    url: "https://polygonscan.com/",
+    name: "PolygonScan",
+  },
+  [NetworkChainId.ARBITRUM]: { url: "https://arbiscan.io/", name: "Arbiscan" },
+  [NetworkChainId.SEPOLIA]: {
+    url: "https://sepolia.etherscan.io/",
+    name: "Sepolia Etherscan",
+  },
 };
 
-export function getNetworkUrl(chainId: NetworkChainId) {
-  return networkUrls[chainId as keyof typeof networkUrls];
+export function buildBlockExplorerTxURL({
+  chainId,
+  txHash,
+}: {
+  chainId: NetworkChainId;
+  txHash: `0x${string}`;
+}) {
+  const networkUrl = networkUrls[chainId as keyof typeof networkUrls];
+  return `${networkUrl.url}tx/${txHash}`;
+}
+
+export function buildExplorerAddressURL({
+  chainId,
+  address,
+}: {
+  chainId: NetworkChainId;
+  address: `0x${string}`;
+}) {
+  const networkUrl = networkUrls[chainId as keyof typeof networkUrls];
+  return {
+    url: `${networkUrl.url}address/${address}`,
+    name: networkUrl.name,
+  };
 }
 
 export const DELEGATE_OWNER = "0xBA1BA1ba1BA1bA1bA1Ba1BA1ba1BA1bA1ba1ba1B";

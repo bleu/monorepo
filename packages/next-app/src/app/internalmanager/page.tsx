@@ -15,7 +15,7 @@ export default function Page() {
 
   const { chain } = useNetwork();
 
-  const network = chain!.name?.toLowerCase();
+  const network = chain?.name?.toLowerCase();
 
   if (!isConnected && !isReconnecting && !isConnecting) {
     return <WalletNotConnected isInternalManager />;

@@ -87,3 +87,9 @@ export function networkIdFor(name?: string) {
     ) || "1"
   );
 }
+
+export enum operationKindTypeName {
+  DEPOSIT = "deposit",
+  WITHDRAW = "withdraw",
+  TRANSFER = "transfer",
+}

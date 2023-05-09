@@ -6,6 +6,7 @@ import {
   buildExplorerAddressURL,
   Network,
   NetworkChainId,
+  operationKindType,
 } from "@balancer-pool-metadata/shared";
 import { BigNumber } from "@ethersproject/bignumber";
 import { zodResolver } from "@hookform/resolvers/zod";

@@ -1,7 +1,10 @@
 "use client";
 
+import { SingleInternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
+import Link from "next/link";
+import { tokenLogoUri } from "public/tokens/logoUri";
 import React, { useEffect, useState } from "react";
 import { useAccount, useNetwork } from "wagmi";
 
@@ -9,13 +12,10 @@ import genericTokenLogo from "#/assets/generic-token-logo.png";
 import { Dialog } from "#/components/Dialog";
 import { Input } from "#/components/Input";
 import Table from "#/components/Table";
-import {
-  SelectedToken,
-  useInternalBalance,
-} from "#/contexts/InternalManagerContext";
 import { impersonateWhetherDAO, internalBalances } from "#/lib/gql";
 import { moralisGetTokens } from "#/lib/moralis";
 import { refetchRequest } from "#/utils/fetcher";
+import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
 interface tokenItem {
   token_address: string;
@@ -29,16 +29,18 @@ interface tokenItem {
   internalBalance?: string;
 }
 
-export function TokenSelect() {
-  const { selectedToken, setSelectedToken } = useInternalBalance();
-
-  const handleSelectToken = (token: SelectedToken) => {
-    setSelectedToken(token);
-  };
-
+export function TokenSelect({
+  token,
+  operationKind,
+}: {
+  token: ArrElement<
+    GetDeepProp<SingleInternalBalanceQuery, "userInternalBalances">
+  >;
+  operationKind: string;
+}) {
   return (
     <Dialog
-      content={<TokenModal handleSelectToken={handleSelectToken} />}
+      content={<TokenModal operationKind={operationKind} />}
       customWidth="w-8/12"
       noPadding
     >
@@ -50,14 +52,18 @@ export function TokenSelect() {
         >
           <div className="flex items-center gap-1">
             <Image
-              src={selectedToken?.logoUrl || genericTokenLogo}
+              src={
+                tokenLogoUri[
+                  token?.tokenInfo?.symbol as keyof typeof tokenLogoUri
+                ] || genericTokenLogo
+              }
               className="rounded-full"
               alt="Token Logo"
               height={28}
               width={28}
               quality={100}
             />
-            <div>{selectedToken?.symbol}</div>
+            <div>{token.tokenInfo.symbol}</div>
           </div>
           <ChevronDownIcon />
         </button>
@@ -67,11 +73,11 @@ export function TokenSelect() {
 }
 
 function TokenModal({
-  handleSelectToken,
   close,
+  operationKind,
 }: {
-  handleSelectToken: (token: SelectedToken) => void;
   close?: () => void;
+  operationKind: string;
 }) {
   const [tokenSearch, setTokenSearch] = useState<string>();
   const { chain } = useNetwork();
@@ -150,84 +156,101 @@ function TokenModal({
           {tokens.map((token) => {
             if (token) {
               return (
-                <Table.BodyRow key={token.token_address}>
-                  <Table.BodyCell customWidth="w-12">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        handleSelectToken({
-                          address: token.token_address,
-                          symbol: token.symbol,
-                          logoUrl: token.logo,
-                        });
-                        close?.();
-                      }}
-                    >
-                      <div className="flex justify-center items-center">
-                        <div className="bg-white rounded-full p-1">
-                          <Image
-                            src={token.logo || genericTokenLogo}
-                            className="rounded-full"
-                            alt="Token Logo"
-                            height={28}
-                            width={28}
-                            quality={100}
-                          />
-                        </div>
-                      </div>
-                    </button>
-                  </Table.BodyCell>
-                  <Table.BodyCell>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        handleSelectToken({
-                          address: token.token_address,
-                          symbol: token.symbol,
-                          logoUrl: token.logo,
-                        });
-                        close?.();
-                      }}
-                    >
-                      {token.name} ({token.symbol})
-                    </button>
-                  </Table.BodyCell>
-                  <Table.BodyCell>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        handleSelectToken({
-                          address: token.token_address,
-                          symbol: token.symbol,
-                          logoUrl: token.logo,
-                        });
-                        close?.();
-                      }}
-                    >
-                      {token.internalBalance}
-                    </button>
-                  </Table.BodyCell>
-                  <Table.BodyCell>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        handleSelectToken({
-                          address: token.token_address,
-                          symbol: token.symbol,
-                          logoUrl: token.logo,
-                        });
-                        close?.();
-                      }}
-                    >
-                      {token.balance}
-                    </button>
-                  </Table.BodyCell>
-                </Table.BodyRow>
+                <TokenRow
+                  token={token}
+                  operationKind={operationKind}
+                  close={close}
+                  chainName={chain!.name.toLowerCase()}
+                />
               );
             }
           })}
         </Table.Body>
       </Table>
     </div>
+  );
+}
+
+function TokenRow({
+  token,
+  operationKind,
+  close,
+  chainName,
+}: {
+  token: tokenItem;
+  operationKind: string;
+  close?: () => void;
+  chainName: string;
+}) {
+  return (
+    <Table.BodyRow key={token.token_address}>
+      <Table.BodyCell customWidth="w-12">
+        <Link
+          href={`/internalmanager/${chainName}/${operationKind}/${token.token_address}`}
+        >
+          <button
+            type="button"
+            onClick={() => {
+              close?.();
+            }}
+          >
+            <div className="flex justify-center items-center">
+              <div className="bg-white rounded-full p-1">
+                <Image
+                  src={token.logo || genericTokenLogo}
+                  className="rounded-full"
+                  alt="Token Logo"
+                  height={28}
+                  width={28}
+                  quality={100}
+                />
+              </div>
+            </div>
+          </button>
+        </Link>
+      </Table.BodyCell>
+      <Table.BodyCell>
+        <Link
+          href={`/internalmanager/${chainName}/${operationKind}/${token.token_address}`}
+        >
+          <button
+            type="button"
+            onClick={() => {
+              close?.();
+            }}
+          >
+            {token.name} ({token.symbol})
+          </button>
+        </Link>
+      </Table.BodyCell>
+      <Table.BodyCell>
+        <Link
+          href={`/internalmanager/${chainName}/${operationKind}/${token.token_address}`}
+        >
+          <button
+            type="button"
+            onClick={() => {
+              close?.();
+            }}
+          >
+            {token.internalBalance}
+          </button>
+        </Link>
+      </Table.BodyCell>
+      <Table.BodyCell>
+        <Link
+          href={`/internalmanager/${chainName}/${operationKind}/${token.token_address}`}
+        >
+          <button
+            type="button"
+            onClick={() => {
+              close?.();
+            }}
+          >
+            {token.balance}
+          </button>
+        </Link>
+      </Table.BodyCell>
+    </Table.BodyRow>
   );
 }

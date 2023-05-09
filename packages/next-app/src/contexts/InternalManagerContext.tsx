@@ -29,8 +29,6 @@ type InternalManagerContextType = {
   transactionUrl: string | undefined;
   setTransactionUrl: (transactionUrl: string | undefined) => void;
   clearNotification: () => void;
-  selectedToken?: SelectedToken;
-  setSelectedToken: (token: SelectedToken) => void;
   transactionStatus: TransactionStatus;
   setTransactionStatus: (status: TransactionStatus) => void;
 };
@@ -43,7 +41,6 @@ export function InternalManagerProvider({ children }: PropsWithChildren) {
   const [isNotifierOpen, setIsNotifierOpen] = useState(false);
   const [notification, setNotification] = useState<Notification | null>(null);
   const [transactionUrl, setTransactionUrl] = useState<string>();
-  const [selectedToken, setSelectedToken] = useState<SelectedToken>();
   const [transactionStatus, setTransactionStatus] = useState<TransactionStatus>(
     TransactionStatus.AUTHORIZING
   );
@@ -63,8 +60,6 @@ export function InternalManagerProvider({ children }: PropsWithChildren) {
         transactionUrl,
         setTransactionUrl,
         clearNotification,
-        selectedToken,
-        setSelectedToken,
         transactionStatus,
         setTransactionStatus,
       }}

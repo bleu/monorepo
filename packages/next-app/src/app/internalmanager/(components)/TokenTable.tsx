@@ -150,7 +150,7 @@ const transactionButtons = [
   {
     icon: <PlusCircledIcon width={22} height={22} />,
     operation: "deposit",
-    disabled: true,
+    disabled: false,
   },
   {
     icon: <MinusCircledIcon width={22} height={22} />,

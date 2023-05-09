@@ -1,5 +1,6 @@
 import { buildBlockExplorerTxURL } from "@balancer-pool-metadata/shared";
 import { parseFixed } from "@ethersproject/bignumber";
+import { prepareWriteContract, writeContract } from "@wagmi/core";
 import { useRouter } from "next/navigation";
 import { Dispatch, useEffect, useState } from "react";
 import { FieldValues } from "react-hook-form";
@@ -8,12 +9,13 @@ import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { PoolMetadataAttribute } from "#/contexts/PoolMetadataContext";
 import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
 import { pinJSON } from "#/lib/ipfs";
-import { useNetwork, useWaitForTransaction } from "#/wagmi";
+import { erc20ABI, useNetwork, useWaitForTransaction } from "#/wagmi";
 import {
   usePoolMetadataRegistrySetPoolMetadata,
   usePreparePoolMetadataRegistrySetPoolMetadata,
   usePrepareVaultManageUserBalance,
   useVaultManageUserBalance,
+  vaultAddress,
 } from "#/wagmi/generated";
 
 export enum TransactionStatus {
@@ -90,15 +92,25 @@ const NOTIFICATION_MAP = {
 };
 
 export const NOTIFICATION_MAP_INTERNAL_BALANCES = {
+  [TransactionStatus.AUTHORIZING]: {
+    title: "Approve this transaction",
+    description: "Waiting for your approval",
+    variant: NotificationVariant.PENDING,
+  },
   [TransactionStatus.WAITING_APPROVAL]: {
     title: "Confirm pending... ",
-    description: "Waiting for your wallet approvement",
+    description: "Waiting for your approval",
     variant: NotificationVariant.PENDING,
   },
   [TransactionStatus.SUBMITTING]: {
     title: "Wait just a little longer",
     description: "Your transaction is being made",
     variant: NotificationVariant.NOTIFICATION,
+  },
+  [TransactionStatus.CONFIRMING]: {
+    title: "Great!",
+    description: "The approval was successful!",
+    variant: NotificationVariant.SUCCESS,
   },
   [TransactionStatus.CONFIRMED]: {
     title: "Great!",
@@ -236,6 +248,8 @@ export function useInternalBalancesTransaction({
     isNotifierOpen,
     setIsNotifierOpen,
     notification,
+    transactionStatus,
+    setTransactionStatus,
   } = useInternalBalance();
   const { push } = useRouter();
   const { chain } = useNetwork();
@@ -260,8 +274,39 @@ export function useInternalBalancesTransaction({
 
   const { data, write } = useVaultManageUserBalance(config);
 
+  //function to prepare depoist transaction
+  async function approveToken() {
+    if (!submitData) return;
+    setTransactionStatus(TransactionStatus.AUTHORIZING);
+    setNotification(
+      NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.AUTHORIZING]
+    );
+    const config = await prepareWriteContract({
+      address: submitData?.tokenAddress as `0x${string}`,
+      abi: erc20ABI,
+      functionName: "approve",
+      args: [
+        vaultAddress[5],
+        parseFixed(
+          submitData?.tokenAmount ? submitData.tokenAmount : "0",
+          tokenDecimals
+        ),
+      ],
+    });
+    const data = await writeContract(config);
+    const { hash, wait } = data;
+    handleTransactionStatus({ hash });
+    const receipt = await wait();
+    if (receipt.status) {
+      setTransactionStatus(TransactionStatus.CONFIRMING);
+      setNotification(
+        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.CONFIRMING]
+      );
+    }
+  }
+
   //trigger transaction
-  function handleWithdraw(data: FieldValues) {
+  function handleTransaction(data: FieldValues) {
     setSubmitData({
       tokenAddress: data.tokenAddress,
       tokenAmount: data.tokenAmount,
@@ -272,28 +317,37 @@ export function useInternalBalancesTransaction({
   // //trigger the actual transaction
   useEffect(() => {
     if (!submitData) return;
+    setTransactionUrl(undefined);
     setNotification(
       NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WAITING_APPROVAL]
     );
-    write?.();
+    if (
+      operationKind === UserBalanceOpKind.DEPOSIT_INTERNAL &&
+      transactionStatus === TransactionStatus.AUTHORIZING
+    ) {
+      approveToken();
+    } else {
+      write?.();
+    }
   }, [submitData]);
+
+  function handleTransactionStatus({ hash }: { hash: `0x${string}` }) {
+    if (!hash || !chain) return;
+    const txUrl = buildBlockExplorerTxURL({
+      chainId: chain!.id,
+      txHash: hash,
+    });
+    setNotification(
+      NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.SUBMITTING]
+    );
+    setTransactionUrl(txUrl);
+  }
 
   //handle transaction status
   useEffect(() => {
     if (!data) return;
     const { hash } = data;
-    function handleTransactionStatus() {
-      if (!hash || !chain) return;
-      const txUrl = buildBlockExplorerTxURL({
-        chainId: chain!.id,
-        txHash: hash,
-      });
-      setNotification(
-        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.SUBMITTING]
-      );
-      setTransactionUrl(txUrl);
-    }
-    handleTransactionStatus();
+    handleTransactionStatus({ hash });
   }, [data]);
 
   //check if transaction is confirmed
@@ -330,6 +384,6 @@ export function useInternalBalancesTransaction({
   }, [notification]);
 
   return {
-    handleWithdraw,
+    handleTransaction,
   };
 }

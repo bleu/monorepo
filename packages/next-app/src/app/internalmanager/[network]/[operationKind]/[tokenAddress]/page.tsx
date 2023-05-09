@@ -7,13 +7,14 @@ import {
   Network,
   NetworkChainId,
 } from "@balancer-pool-metadata/shared";
+import { BigNumber } from "@ethersproject/bignumber";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { tokenLogoUri } from "public/tokens/logoUri";
 import { useEffect } from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useBalance, useNetwork } from "wagmi";
 
 import { TokenSelect } from "#/app/internalmanager/(components)/TokenSelect";
 import { ToastContent } from "#/app/metadata/[network]/pool/[poolId]/(components)/MetadataAttributesTable/TransactionModal";
@@ -24,7 +25,10 @@ import Spinner from "#/components/Spinner";
 import { Toast } from "#/components/Toast";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
-import { useInternalBalancesTransaction } from "#/hooks/useTransaction";
+import {
+  TransactionStatus,
+  useInternalBalancesTransaction,
+} from "#/hooks/useTransaction";
 import { impersonateWhetherDAO, internalBalances } from "#/lib/gql";
 import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
 import { refetchRequest } from "#/utils/fetcher";
@@ -90,6 +94,11 @@ export default function Page({
     });
   }, [internalBalanceTokenData]);
 
+  const { data: walletAmount } = useBalance({
+    address: addressLower as `0x${string}`,
+    token: params.tokenAddress,
+  });
+
   useEffect(() => {
     clearNotification();
   }, [isConnecting, addressLower]);
@@ -140,6 +149,8 @@ export default function Page({
           userAddress={addressLower as `0x${string}`}
           tokenData={tokenData}
           chainId={chain!.id}
+          walletAmount={walletAmount!.formatted}
+          walletAmountBigNumber={walletAmount!.value}
         />
       )}
       {notification && (
@@ -165,6 +176,8 @@ function TransactionCard({
   userAddress,
   tokenData,
   chainId,
+  walletAmount,
+  walletAmountBigNumber,
 }: {
   operationKindParam: string;
   userAddress: `0x${string}`;
@@ -172,6 +185,8 @@ function TransactionCard({
     GetDeepProp<SingleInternalBalanceQuery, "userInternalBalances">
   >;
   chainId: NetworkChainId;
+  walletAmount: string;
+  walletAmountBigNumber: BigNumber;
 }) {
   const operationKindData = {
     [UserBalanceOpKind.DEPOSIT_INTERNAL]: {
@@ -197,9 +212,13 @@ function TransactionCard({
     ];
 
   const InternalBalanceSchema = getInternalBalanceSchema({
-    totalBalance: tokenData.balance,
+    totalBalance:
+      operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL
+        ? walletAmountBigNumber
+        : tokenData.balance,
     userAddress: userAddress,
     operationKind: operationKindParam,
+    decimals: tokenData.tokenInfo.decimals,
   });
 
   const { register, handleSubmit, setValue, formState, watch } = useForm({
@@ -214,7 +233,7 @@ function TransactionCard({
     setValue("tokenAddress", selectedToken?.address);
   }, [selectedToken]);
 
-  const { handleWithdraw } = useInternalBalancesTransaction({
+  const { handleTransaction } = useInternalBalancesTransaction({
     userAddress: userAddress,
     tokenDecimals: tokenData.tokenInfo.decimals,
     operationKind: operationKindEnum,
@@ -229,15 +248,15 @@ function TransactionCard({
 
   const addressRegex = /0x[a-fA-F0-9]{40}/;
 
-  function handleOnSubtmit(data: FieldValues) {
+  function handleOnSubmit(data: FieldValues) {
     setValue("tokenAddress", selectedToken?.address);
-    handleWithdraw(data);
+    handleTransaction(data);
   }
 
   return (
     <div className="flex items-center justify-center h-full">
       <form
-        onSubmit={handleSubmit(handleOnSubtmit)}
+        onSubmit={handleSubmit(handleOnSubmit)}
         className="flex flex-col text-white bg-blue3 h-fit my-4 w-fit rounded-lg divide-y divide-gray-700 border border-gray-700"
       >
         <div className="relative w-full flex justify-center h-full">
@@ -268,7 +287,11 @@ function TransactionCard({
                   <Input
                     type="string"
                     label="Amount"
-                    placeholder={tokenData.balance}
+                    placeholder={
+                      operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL
+                        ? walletAmount
+                        : tokenData.balance
+                    }
                     {...register("tokenAmount")}
                     errorMessage={
                       formState.errors?.tokenAmount?.message as string
@@ -279,13 +302,19 @@ function TransactionCard({
             </div>
             <div className="mt-2 text-xs flex gap-x-1">
               <span className="text-gray-400">
-                Wallet Balance: {tokenData.balance}
+                {operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL ? (
+                  <span>Wallet Balance: {walletAmount}</span>
+                ) : (
+                  <span>Internal Balance: {tokenData.balance}</span>
+                )}
               </span>
               <button
                 type="button"
                 className="outline-none text-blue9 hover:text-amber9"
                 onClick={() => {
-                  setValue("tokenAmount", tokenData.balance);
+                  operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL
+                    ? setValue("tokenAmount", walletAmount)
+                    : setValue("tokenAmount", tokenData.balance);
                 }}
               >
                 Max
@@ -334,18 +363,42 @@ function TransactionCard({
             </div>
           </div>
           <div className="flex justify-center">
-            {operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL ? (
-              <Button type="submit" className="w-full">
-                <span>Approve use of {tokenData.tokenInfo.symbol}</span>
-              </Button>
-            ) : (
-              <Button type="submit" className="w-full">
-                <span>{title} Internal Balance</span>
-              </Button>
-            )}
+            <OperationButton
+              operationKindEnum={operationKindEnum}
+              tokenSymbol={tokenData.tokenInfo.symbol as string}
+              title={title}
+            />
           </div>
         </div>
       </form>
     </div>
+  );
+}
+
+function OperationButton({
+  operationKindEnum,
+  tokenSymbol,
+  title,
+}: {
+  operationKindEnum: UserBalanceOpKind;
+  tokenSymbol: string;
+  title: string;
+}) {
+  const { transactionStatus } = useInternalBalance();
+
+  if (
+    operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL &&
+    transactionStatus === TransactionStatus.AUTHORIZING
+  ) {
+    return (
+      <Button type="submit" className="w-full">
+        <span>Approve use of {tokenSymbol}</span>
+      </Button>
+    );
+  }
+  return (
+    <Button type="submit" className="w-full">
+      <span>{title} Internal Balance</span>
+    </Button>
   );
 }

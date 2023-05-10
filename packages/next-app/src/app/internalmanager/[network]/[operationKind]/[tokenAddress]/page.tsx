@@ -39,12 +39,6 @@ import {
 import { refetchRequest } from "#/utils/fetcher";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
-enum operationKindType {
-  "deposit" = UserBalanceOpKind.DEPOSIT_INTERNAL,
-  "withdraw" = UserBalanceOpKind.WITHDRAW_INTERNAL,
-  "transfer" = UserBalanceOpKind.TRANSFER_INTERNAL,
-}
-
 export default function Page({
   params,
 }: {

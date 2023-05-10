@@ -84,22 +84,21 @@ function TransactionCard({
   const operationKindData = {
     [UserBalanceOpKind.DEPOSIT_INTERNAL]: {
       title: "Deposit to",
-      description: "Deposit from your wallet to an internal balance",
+      description: "Deposit from your wallet to an Internal Balance",
       operationKindEnum: UserBalanceOpKind.DEPOSIT_INTERNAL,
     },
     [UserBalanceOpKind.WITHDRAW_INTERNAL]: {
       title: "Withdraw from",
-      description: "Withdraw from your internal balance to a wallet",
+      description: "Withdraw from your Internal Balance to a wallet",
       operationKindEnum: UserBalanceOpKind.WITHDRAW_INTERNAL,
     },
     [UserBalanceOpKind.TRANSFER_INTERNAL]: {
       title: "Transfer to",
-      description:
-        "Transfer from your internal balance to another internal balance",
+      description: "Transfer between Internal Balances",
       operationKindEnum: UserBalanceOpKind.TRANSFER_INTERNAL,
     },
   };
-  const { title, operationKindEnum } =
+  const { title, description, operationKindEnum } =
     operationKindData[
       operationKindType[operationKindParam as keyof typeof operationKindType]
     ];
@@ -123,9 +122,7 @@ function TransactionCard({
           </Link>
           <div className="flex flex-col items-center py-3 min-w-[530px]">
             <div className="text-xl">{title} Internal Balance</div>
-            <span className="text-gray-200 text-sm">
-              Lorem ipsum dolor sit amet
-            </span>
+            <span className="text-gray-200 text-sm">{description}</span>
           </div>
         </div>
         <div className="p-9 flex flex-col gap-y-6">

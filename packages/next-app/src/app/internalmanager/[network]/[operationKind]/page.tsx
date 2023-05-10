@@ -17,13 +17,10 @@ import {
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { impersonateWhetherDAO } from "#/lib/gql";
-import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
-
-enum operationKindType {
-  "deposit" = UserBalanceOpKind.DEPOSIT_INTERNAL,
-  "withdraw" = UserBalanceOpKind.WITHDRAW_INTERNAL,
-  "transfer" = UserBalanceOpKind.TRANSFER_INTERNAL,
-}
+import {
+  operationKindType,
+  UserBalanceOpKind,
+} from "#/lib/internal-balance-helper";
 
 export default function Page({
   params,

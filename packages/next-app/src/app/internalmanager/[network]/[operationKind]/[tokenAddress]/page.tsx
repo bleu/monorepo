@@ -11,18 +11,20 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
-import { tokenLogoUri } from "public/tokens/logoUri";
 import { useEffect } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { useAccount, useBalance, useNetwork } from "wagmi";
 
 import { TokenSelect } from "#/app/internalmanager/(components)/TokenSelect";
 import { ToastContent } from "#/app/metadata/[network]/pool/[poolId]/(components)/MetadataAttributesTable/TransactionModal";
-import genericTokenLogo from "#/assets/generic-token-logo.png";
 import { Button } from "#/components";
 import { Input } from "#/components/Input";
 import Spinner from "#/components/Spinner";
 import { Toast } from "#/components/Toast";
+import {
+  STAGE_CN_MAPPING,
+  TransactionProgressBar,
+} from "#/components/TransactionProgressBar";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import {
@@ -30,15 +32,12 @@ import {
   useInternalBalancesTransaction,
 } from "#/hooks/useTransaction";
 import { impersonateWhetherDAO, internalBalances } from "#/lib/gql";
-import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
+import {
+  operationKindType,
+  UserBalanceOpKind,
+} from "#/lib/internal-balance-helper";
 import { refetchRequest } from "#/utils/fetcher";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
-
-enum operationKindType {
-  "deposit" = UserBalanceOpKind.DEPOSIT_INTERNAL,
-  "withdraw" = UserBalanceOpKind.WITHDRAW_INTERNAL,
-  "transfer" = UserBalanceOpKind.TRANSFER_INTERNAL,
-}
 
 export default function Page({
   params,
@@ -62,14 +61,13 @@ export default function Page({
     setIsNotifierOpen,
     isNotifierOpen,
     transactionUrl,
-    setSelectedToken,
   } = useInternalBalance();
 
   const { data: internalBalanceTokenData, mutate } = internalBalances
     .gql(chain?.id.toString() || "1")
     .useSingleInternalBalance({
       userAddress: addressLower as `0x${string}`,
-      tokenAddress: params.tokenAddress, // aqui acho que era pra ser selectedToken.address e refazer p hook toda vez que mudar o token
+      tokenAddress: params.tokenAddress,
     });
 
   const tokenData = internalBalanceTokenData?.user?.userInternalBalances
@@ -81,18 +79,6 @@ export default function Page({
     chainId: chain?.id.toString() || "1",
     userAddress: addressLower as `0x${string}`,
   });
-
-  useEffect(() => {
-    if (!tokenData) return;
-    setSelectedToken({
-      address: tokenData?.tokenInfo.address as `0x${string}`,
-      symbol: tokenData?.tokenInfo.symbol as string,
-      logoUrl:
-        tokenLogoUri[
-          tokenData?.tokenInfo?.symbol as keyof typeof tokenLogoUri
-        ] || genericTokenLogo,
-    });
-  }, [internalBalanceTokenData]);
 
   const { data: walletAmount } = useBalance({
     address: addressLower as `0x${string}`,
@@ -191,22 +177,21 @@ function TransactionCard({
   const operationKindData = {
     [UserBalanceOpKind.DEPOSIT_INTERNAL]: {
       title: "Deposit to",
-      description: "Deposit from your wallet to an internal balance",
+      description: "Deposit from your wallet to an Internal Balance",
       operationKindEnum: UserBalanceOpKind.DEPOSIT_INTERNAL,
     },
     [UserBalanceOpKind.WITHDRAW_INTERNAL]: {
       title: "Withdraw from",
-      description: "Withdraw from your internal balance to a wallet",
+      description: "Withdraw from your Internal Balance to a wallet",
       operationKindEnum: UserBalanceOpKind.WITHDRAW_INTERNAL,
     },
     [UserBalanceOpKind.TRANSFER_INTERNAL]: {
       title: "Transfer to",
-      description:
-        "Transfer from your internal balance to another internal balance",
+      description: "Transfer between Internal Balances",
       operationKindEnum: UserBalanceOpKind.TRANSFER_INTERNAL,
     },
   };
-  const { title, operationKindEnum } =
+  const { title, description, operationKindEnum } =
     operationKindData[
       operationKindType[operationKindParam as keyof typeof operationKindType]
     ];
@@ -225,13 +210,10 @@ function TransactionCard({
     resolver: zodResolver(InternalBalanceSchema),
   });
 
-  const { selectedToken } = useInternalBalance();
-
-  register("tokenAddress");
-
   useEffect(() => {
-    setValue("tokenAddress", selectedToken?.address);
-  }, [selectedToken]);
+    register("receiverAddress");
+    setValue("tokenAddress", tokenData.tokenInfo.address);
+  }, []);
 
   const { handleTransaction } = useInternalBalancesTransaction({
     userAddress: userAddress,
@@ -249,9 +231,12 @@ function TransactionCard({
   const addressRegex = /0x[a-fA-F0-9]{40}/;
 
   function handleOnSubmit(data: FieldValues) {
-    setValue("tokenAddress", selectedToken?.address);
     handleTransaction(data);
   }
+
+  const { transactionStatus } = useInternalBalance();
+
+  const stage = STAGE_CN_MAPPING[transactionStatus];
 
   return (
     <div className="flex items-center justify-center h-full">
@@ -269,18 +254,19 @@ function TransactionCard({
               />
             </div>
           </Link>
-          <div className="flex flex-col items-center py-3 px-32">
+          <div className="flex flex-col items-center py-3 min-w-[530px]">
             <div className="text-xl">{title} Internal Balance</div>
-            <span className="text-gray-200 text-sm">
-              Lorem ipsum dolor sit amet
-            </span>
+            <span className="text-gray-200 text-sm">{description}</span>
           </div>
         </div>
         <div className="p-9 flex flex-col gap-y-6">
           <div>
             <div className="flex justify-between gap-7 h-fit">
               <div className="w-1/2">
-                <TokenSelect />
+                <TokenSelect
+                  token={tokenData}
+                  operationKind={operationKindParam}
+                />
               </div>
               <div className="flex gap-2 items-end w-1/2">
                 <div className="w-full">
@@ -362,6 +348,9 @@ function TransactionCard({
               </div>
             </div>
           </div>
+          {operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL && (
+            <TransactionProgressBar stage={stage} />
+          )}
           <div className="flex justify-center">
             <OperationButton
               operationKindEnum={operationKindEnum}

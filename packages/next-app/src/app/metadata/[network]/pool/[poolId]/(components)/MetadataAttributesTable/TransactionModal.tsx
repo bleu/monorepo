@@ -2,64 +2,19 @@
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import cn from "classnames";
-import { PropsWithChildren, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "#/components";
 import { Toast } from "#/components/Toast";
+import {
+  STAGE_CN_MAPPING,
+  TransactionProgressBar,
+} from "#/components/TransactionProgressBar";
 import { usePoolMetadata } from "#/contexts/PoolMetadataContext";
 import {
   TransactionStatus,
   useMetadataTransaction,
 } from "#/hooks/useTransaction";
-
-type Stage = {
-  pinningStep: string;
-  transitionLine: string;
-  writingOnChainStep: string;
-};
-
-const STAGE_CN_MAPPING: Record<TransactionStatus, Stage> = {
-  [TransactionStatus.PINNING]: {
-    pinningStep: "border-amber10 text-amber10",
-    transitionLine: "bg-slate10",
-    writingOnChainStep: "border-slate10 text-slate12",
-  },
-  [TransactionStatus.CONFIRMING]: {
-    pinningStep: "border-green10 text-green10",
-    transitionLine: "bg-green10",
-    writingOnChainStep: "border-amber10 text-amber10",
-  },
-  [TransactionStatus.SUBMITTING]: {
-    pinningStep: "border-green10 text-green10",
-    transitionLine: "bg-green10",
-    writingOnChainStep: "border-amber10 text-amber10",
-  },
-  [TransactionStatus.CONFIRMED]: {
-    pinningStep: "border-green10 text-green10",
-    transitionLine: "bg-green10",
-    writingOnChainStep: "border-green10 text-green10",
-  },
-  [TransactionStatus.PINNING_ERROR]: {
-    pinningStep: "border-tomato10 text-tomato10",
-    transitionLine: "bg-slate10",
-    writingOnChainStep: "border-slate10 text-slate12",
-  },
-  [TransactionStatus.WRITE_ERROR]: {
-    pinningStep: "border-green10 text-green10",
-    transitionLine: "bg-green10",
-    writingOnChainStep: "border-tomato10 text-tomato10",
-  },
-  [TransactionStatus.AUTHORIZING]: {
-    pinningStep: "border-amber10 text-amber10",
-    transitionLine: "bg-slate10",
-    writingOnChainStep: "border-slate10 text-slate12",
-  },
-  [TransactionStatus.WAITING_APPROVAL]: {
-    pinningStep: "border-green10 text-green10",
-    transitionLine: "bg-green10",
-    writingOnChainStep: "border-amber10 text-amber10",
-  },
-};
 
 function ConfirmationAlert({ handleSubmit }: { handleSubmit: () => void }) {
   return (
@@ -79,37 +34,6 @@ function ConfirmationAlert({ handleSubmit }: { handleSubmit: () => void }) {
           I'm sure
         </Button>
       </div>
-    </div>
-  );
-}
-
-function StepCircle({
-  classNames,
-  children,
-}: PropsWithChildren<{ classNames: string }>) {
-  return (
-    <div
-      className={cn(
-        "w-8 h-8 rounded-full flex items-center justify-center",
-        "font-bold text-lg border-[1px]",
-        classNames
-      )}
-    >
-      {children}
-    </div>
-  );
-}
-
-function Line({ classNames }: { classNames: string }) {
-  return <div className={cn("h-[1px] w-20", classNames)} />;
-}
-
-function ProgressLine({ stage }: { stage: Stage }) {
-  return (
-    <div className="mt-44 flex items-center justify-center">
-      <StepCircle classNames={stage.pinningStep}>1</StepCircle>
-      <Line classNames={stage.transitionLine} />
-      <StepCircle classNames={stage.writingOnChainStep}>2</StepCircle>
     </div>
   );
 }
@@ -170,7 +94,9 @@ function ProcessTransaction({ poolId }: { poolId: `0x${string}` }) {
     <div className="mt-4 px-1">
       <div className="w-full space-y-6">
         <span className="my-5 text-lg text-slate12">{modalDescription}</span>
-        <ProgressLine stage={stage} />
+        <div className="mt-44">
+          <TransactionProgressBar stage={stage} />
+        </div>
         <Toast
           content={
             <ToastContent

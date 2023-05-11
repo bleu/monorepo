@@ -2,6 +2,7 @@
 
 import { SingleInternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Ethereum";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
+import { fetchBalance, FetchBalanceResult } from "@wagmi/core";
 import Image from "next/image";
 import Link from "next/link";
 import { tokenLogoUri } from "public/tokens/logoUri";
@@ -10,23 +11,18 @@ import { useAccount, useNetwork } from "wagmi";
 
 import genericTokenLogo from "#/assets/generic-token-logo.png";
 import { Dialog } from "#/components/Dialog";
-import { Input } from "#/components/Input";
 import Table from "#/components/Table";
 import { impersonateWhetherDAO, internalBalances } from "#/lib/gql";
-import { moralisGetTokens } from "#/lib/moralis";
 import { refetchRequest } from "#/utils/fetcher";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
-interface tokenItem {
-  token_address: string;
-  name: string;
-  symbol: string;
-  logo?: string | undefined;
-  thumbnail?: string | undefined;
-  decimals: number;
-  balance: string;
-  possible_spam: boolean;
-  internalBalance?: string;
+interface TokenWalletBalance extends FetchBalanceResult {
+  tokenAddress: string;
+}
+
+interface TokenItem extends TokenWalletBalance {
+  name?: string | null;
+  internalBalance?: string | null;
 }
 
 export function TokenSelect({
@@ -79,11 +75,10 @@ function TokenModal({
   close?: () => void;
   operationKind: string;
 }) {
-  const [tokenSearch, setTokenSearch] = useState<string>();
   const { chain } = useNetwork();
   let { address } = useAccount();
   address = impersonateWhetherDAO(chain?.id.toString() || "1", address);
-  const [tokens, setTokens] = useState<(tokenItem | undefined)[]>([]);
+  const [tokens, setTokens] = useState<(TokenItem | undefined)[]>([]);
 
   const addressLower = address ? address?.toLowerCase() : "";
 
@@ -99,17 +94,37 @@ function TokenModal({
     userAddress: addressLower as `0x${string}`,
   });
 
-  useEffect(() => {
-    moralisGetTokens({
-      userAddress: addressLower,
-      chain: chain!.name as "Goerli",
-    }).then((res) => {
+  const internalBalancesTokenAdresses = internalBalanceData?.user
+    ?.userInternalBalances
+    ? internalBalanceData.user.userInternalBalances.map(
+        (token) => token.tokenInfo.address
+      )
+    : [];
+
+  async function getWalletBalance(
+    internalBalancesTokenAdresses: `0x${string}`[]
+  ) {
+    const walletBalanceData: TokenWalletBalance[] = [];
+    const walletBalancePromises = internalBalancesTokenAdresses.map(
+      async (tokenAddress) => {
+        const tokenData = await fetchBalance({
+          address: addressLower as `0x${string}`,
+          token: tokenAddress,
+        });
+        walletBalanceData.push({
+          ...tokenData,
+          tokenAddress: tokenAddress,
+        });
+      }
+    );
+    await Promise.all(walletBalancePromises);
+    if (walletBalanceData) {
       setTokens([]);
-      res.forEach((token) => {
+      walletBalanceData.forEach((token) => {
         const internalBalance =
           internalBalanceData?.user?.userInternalBalances?.find(
             (internalBalanceInfo) =>
-              internalBalanceInfo.tokenInfo.address === token.token_address
+              internalBalanceInfo.tokenInfo.address === token.tokenAddress
           );
 
         if (internalBalance) {
@@ -117,31 +132,24 @@ function TokenModal({
             ...prev,
             {
               ...token,
-              balance: (
-                Number(token.balance) / Math.pow(10, token.decimals)
-              ).toFixed(token.decimals),
               internalBalance: internalBalance.balance,
+              name: internalBalance.tokenInfo.name,
             },
           ]);
         }
       });
-    });
+    }
+  }
+
+  useEffect(() => {
+    if (!internalBalanceData?.user?.userInternalBalances) return;
+    getWalletBalance(internalBalancesTokenAdresses as `0x${string}`[]);
   }, [internalBalanceData]);
 
   return (
     <div className="text-white divide-y divide-gray-700">
       <div className="w-full flex flex-col justify-center items-center h-full py-4 gap-y-4">
         <div className="text-xl">Token Search</div>
-        <div className="w-full px-10">
-          <Input
-            type="text"
-            placeholder={"Search name or paste address"}
-            value={tokenSearch}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setTokenSearch(e.target.value)
-            }
-          />
-        </div>
       </div>
       <Table color="blue">
         <Table.HeaderRow>
@@ -178,16 +186,16 @@ function TokenRow({
   close,
   chainName,
 }: {
-  token: tokenItem;
+  token: TokenItem;
   operationKind: string;
   close?: () => void;
   chainName: string;
 }) {
   return (
-    <Table.BodyRow key={token.token_address}>
+    <Table.BodyRow key={token.tokenAddress}>
       <Table.BodyCell customWidth="w-12">
         <Link
-          href={`/internalmanager/${chainName}/${operationKind}/${token.token_address}`}
+          href={`/internalmanager/${chainName}/${operationKind}/${token.tokenAddress}`}
         >
           <button
             type="button"
@@ -198,7 +206,10 @@ function TokenRow({
             <div className="flex justify-center items-center">
               <div className="bg-white rounded-full p-1">
                 <Image
-                  src={token.logo || genericTokenLogo}
+                  src={
+                    tokenLogoUri[token.symbol as keyof typeof tokenLogoUri] ||
+                    genericTokenLogo
+                  }
                   className="rounded-full"
                   alt="Token Logo"
                   height={28}
@@ -212,7 +223,7 @@ function TokenRow({
       </Table.BodyCell>
       <Table.BodyCell>
         <Link
-          href={`/internalmanager/${chainName}/${operationKind}/${token.token_address}`}
+          href={`/internalmanager/${chainName}/${operationKind}/${token.tokenAddress}`}
         >
           <button
             type="button"
@@ -226,7 +237,7 @@ function TokenRow({
       </Table.BodyCell>
       <Table.BodyCell>
         <Link
-          href={`/internalmanager/${chainName}/${operationKind}/${token.token_address}`}
+          href={`/internalmanager/${chainName}/${operationKind}/${token.tokenAddress}`}
         >
           <button
             type="button"
@@ -240,7 +251,7 @@ function TokenRow({
       </Table.BodyCell>
       <Table.BodyCell>
         <Link
-          href={`/internalmanager/${chainName}/${operationKind}/${token.token_address}`}
+          href={`/internalmanager/${chainName}/${operationKind}/${token.tokenAddress}`}
         >
           <button
             type="button"
@@ -248,7 +259,7 @@ function TokenRow({
               close?.();
             }}
           >
-            {token.balance}
+            {token.formatted}
           </button>
         </Link>
       </Table.BodyCell>

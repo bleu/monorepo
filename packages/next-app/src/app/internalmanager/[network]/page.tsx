@@ -28,7 +28,7 @@ export default function Page() {
   return (
     <div className="w-full flex justify-center">
       <div className="flex flex-col mt-20 gap-y-5 w-4/6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-x-8">
           <div className="flex flex-col gap-1">
             <h1 className="text-gray-400 text-3xl">My Internal Balances</h1>
             <span className="text-gray-900 bg-amber9 p-2 rounded">

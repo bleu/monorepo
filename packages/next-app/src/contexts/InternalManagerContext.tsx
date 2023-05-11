@@ -1,6 +1,6 @@
 "use client";
 
-import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
+import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Ethereum";
 import { createContext, PropsWithChildren, useContext, useState } from "react";
 
 import { Notification, TransactionStatus } from "#/hooks/useTransaction";

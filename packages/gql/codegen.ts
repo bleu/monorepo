@@ -15,7 +15,7 @@ export const SUBGRAPHS = {
       const baseEndpoint = "https://api.thegraph.com/subgraphs/name/bleu-llc";
 
       return {
-        [Network.Mainnet]: `${baseEndpoint}/balancer-pools-metadata`,
+        [Network.Ethereum]: `${baseEndpoint}/balancer-pools-metadata`,
         [Network.Polygon]: `${baseEndpoint}/balancer-metadata-polygon`,
         [Network.Goerli]: `${baseEndpoint}/balancer-metadata-goerli`,
         // TODO: https://linear.app/bleu-llc/issue/BAL-131/deploy-contracts-in-all-networks-that-balancer-is-deployed
@@ -34,7 +34,7 @@ export const SUBGRAPHS = {
         "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-gauges";
 
       return {
-        [Network.Mainnet]: `${baseEndpoint}`,
+        [Network.Ethereum]: `${baseEndpoint}`,
         [Network.Polygon]: `${baseEndpoint}-polygon`,
         [Network.Arbitrum]: `${baseEndpoint}-arbitrum`,
         [Network.Goerli]: `${baseEndpoint}-goerli`,
@@ -53,7 +53,7 @@ export const SUBGRAPHS = {
         "https://api.thegraph.com/subgraphs/name/balancer-labs";
 
       return {
-        [Network.Mainnet]: `${baseEndpoint}/balancer-v2`,
+        [Network.Ethereum]: `${baseEndpoint}/balancer-v2`,
         [Network.Polygon]: `${baseEndpoint}/balancer-polygon-v2`,
         [Network.Arbitrum]: `${baseEndpoint}/balancer-arbitrum-v2`,
         [Network.Goerli]: `${baseEndpoint}/balancer-goerli-v2`,
@@ -75,7 +75,7 @@ export const SUBGRAPHS = {
       return {
         //TODO: deploy subgraph on mainnet, polygon and arbitrum
         // https://linear.app/bleu-llc/issue/BAL-290/deploy-subgraph-with-token-relation-on-other-networks
-        [Network.Mainnet]: `https://api.thegraph.com/subgraphs/name/bleu-llc/balancer-goerli-v2`,
+        [Network.Ethereum]: `https://api.thegraph.com/subgraphs/name/bleu-llc/balancer-goerli-v2`,
         [Network.Polygon]: `${baseEndpoint}/balancer-v2-goerli`,
         [Network.Arbitrum]: `${baseEndpoint}/balancer-v2-goerli`,
         [Network.Goerli]: `${baseEndpoint}/balancer-v2-goerli`,

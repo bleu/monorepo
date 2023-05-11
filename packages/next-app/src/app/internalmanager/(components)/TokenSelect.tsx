@@ -1,6 +1,6 @@
 "use client";
 
-import { SingleInternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
+import { SingleInternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Ethereum";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import Link from "next/link";
@@ -157,6 +157,7 @@ function TokenModal({
             if (token) {
               return (
                 <TokenRow
+                  key={token.token_address}
                   token={token}
                   operationKind={operationKind}
                   close={close}

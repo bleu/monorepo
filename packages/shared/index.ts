@@ -1,5 +1,5 @@
 export enum Network {
-  Mainnet = "Mainnet",
+  Ethereum = "Ethereum",
   Polygon = "Polygon",
   Arbitrum = "Arbitrum",
   Goerli = "Goerli",
@@ -7,7 +7,7 @@ export enum Network {
 }
 
 export enum NetworkChainId {
-  MAINNET = 1,
+  ETHEREUM = 1,
   GOERLI = 5,
   POLYGON = 137,
   ARBITRUM = 42161,
@@ -15,7 +15,10 @@ export enum NetworkChainId {
 }
 
 export const networkUrls = {
-  [NetworkChainId.MAINNET]: { url: "https://etherscan.io/", name: "Etherscan" },
+  [NetworkChainId.ETHEREUM]: {
+    url: "https://etherscan.io/",
+    name: "Etherscan",
+  },
   [NetworkChainId.GOERLI]: {
     url: "https://goerli.etherscan.io/",
     name: "Goerli Etherscan",
@@ -59,13 +62,13 @@ export function buildExplorerAddressURL({
 export const DELEGATE_OWNER = "0xBA1BA1ba1BA1bA1bA1Ba1BA1ba1BA1bA1ba1ba1B";
 
 export const networkMultisigs = {
-  [Network.Mainnet]: "0x10A19e7eE7d7F8a52822f6817de8ea18204F2e4f",
+  [Network.Ethereum]: "0x10A19e7eE7d7F8a52822f6817de8ea18204F2e4f",
   [Network.Polygon]: "0xeE071f4B516F69a1603dA393CdE8e76C40E5Be85",
   [Network.Arbitrum]: "0xaF23DC5983230E9eEAf93280e312e57539D098D0",
 };
 
 export const networkIdEnumMap = {
-  "1": Network.Mainnet,
+  "1": Network.Ethereum,
   "5": Network.Goerli,
   "137": Network.Polygon,
   "42161": Network.Arbitrum,

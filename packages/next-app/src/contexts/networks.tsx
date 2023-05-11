@@ -36,11 +36,12 @@ export const NetworksContextProvider = ({
     if (!network.chain?.id) setSelectedNetwork(undefined);
     setSelectedNetwork(network.chain?.id);
     if (
+      network.chain?.id &&
       networkConnectedToWallet !== undefined &&
       networkConnectedToWallet !== network.chain?.id
     ) {
       push(
-        `/${appName}/${networkFor(network.chain!.id).toLowerCase()}` as Route
+        `/${appName}/${networkFor(network.chain.id).toLowerCase()}` as Route
       );
     }
   }, [network]);

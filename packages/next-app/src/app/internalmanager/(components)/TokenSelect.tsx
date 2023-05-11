@@ -165,7 +165,7 @@ function TokenModal({
             if (token) {
               return (
                 <TokenRow
-                  key={token.token_address}
+                  key={token.tokenAddress}
                   token={token}
                   operationKind={operationKind}
                   close={close}

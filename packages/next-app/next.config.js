@@ -17,7 +17,17 @@ const moduleExports = {
     return [
       {
         source: "/",
-        destination: "/metadata",
+        destination: "/metadata/ethereum",
+        permanent: false,
+      },
+      {
+        source: "/metadata",
+        destination: "/metadata/ethereum",
+        permanent: false,
+      },
+      {
+        source: "/internalmanager",
+        destination: "/internalmanager/ethereum",
         permanent: false,
       },
     ];

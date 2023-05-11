@@ -1,9 +1,9 @@
 export enum Network {
-  Ethereum = "Ethereum",
-  Polygon = "Polygon",
-  Arbitrum = "Arbitrum",
-  Goerli = "Goerli",
-  Sepolia = "Sepolia",
+  Ethereum = "ethereum",
+  Polygon = "polygon",
+  Arbitrum = "arbitrum",
+  Goerli = "goerli",
+  Sepolia = "sepolia",
 }
 
 export enum NetworkChainId {

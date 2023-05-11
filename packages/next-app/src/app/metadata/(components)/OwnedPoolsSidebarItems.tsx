@@ -1,7 +1,7 @@
 import {
   Pool,
   PoolsQuery,
-} from "@balancer-pool-metadata/gql/src/balancer-pools/__generated__/Mainnet";
+} from "@balancer-pool-metadata/gql/src/balancer-pools/__generated__/Ethereum";
 import { networkFor, networkIdFor } from "@balancer-pool-metadata/shared";
 import Image from "next/image";
 import Link from "next/link";
@@ -56,7 +56,8 @@ function OwnedPoolsSidebarItems({
     userAddress: owner,
   });
 
-  const network = networkFor(chainId);
+  const network = networkFor(chainId).toLowerCase();
+
   if (!data?.pools?.length)
     return (
       <>

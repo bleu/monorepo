@@ -8,14 +8,14 @@ import Spinner from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { useAccount, useNetwork } from "#/wagmi";
 
-import { TokenTable } from "./(components)/TokenTable";
+import { TokenTable } from "../(components)/TokenTable";
 
 export default function Page() {
   const { isConnected, isReconnecting, isConnecting } = useAccount();
 
   const { chain } = useNetwork();
 
-  const network = chain?.name?.toLowerCase();
+  const network = chain?.name.toLowerCase();
 
   if (!isConnected && !isReconnecting && !isConnecting) {
     return <WalletNotConnected isInternalManager />;

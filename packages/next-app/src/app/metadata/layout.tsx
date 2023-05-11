@@ -21,12 +21,14 @@ import SearchPoolForm from "./(components)/SearchPoolForm";
 
 export default function Layout({ children }: React.PropsWithChildren) {
   const { chain } = useNetwork();
+  const network = chain?.name.toLowerCase();
+
   return (
     <NetworksContextProvider>
       <div className="flex flex-col h-full">
         <HeaderNetworkMismatchAlert />
         <Header
-          linkUrl={"/metadata"}
+          linkUrl={`/metadata/${network}/`}
           title={"Pool Metadata"}
           imageSrc={balancerSymbol}
         />

@@ -523,10 +523,10 @@ export function _spotPriceAfterSwapExactTokenInForTokenOut(
     true,
     false
   );
-  // ans = MathSol.divDownFixed(
-  //   MathSol.ONE,
-  //   MathSol.mulDownFixed(ans, feeComplement)
-  // );
+  ans = MathSol.divDownFixed(
+    MathSol.ONE,
+    MathSol.mulDownFixed(ans, feeComplement)
+  );
   return ans;
 }
 
@@ -828,97 +828,69 @@ export function _currentSpotPrice(
   return MathSol.mulDownFixed(spotPriceWithoutFee, feeComplement);
 }
 
-// export function _calcInGivenSpotPrice(
-//   amp: bigint,
-//   balances: bigint[],
-//   tokenIndexIn: number,
-//   tokenIndexOut: number,
-//   spotPrice: bigint,
-//   fee: bigint,
-//   inGuess = MathSol.mulUpFixed(balances[tokenIndexIn], BigInt(1e-2 * 1e18)),
-//   spotPricePrecision = BigInt(0.001e18)
-// ): bigint {
-//   console.log("inGuess:", Number(inGuess) / 1e18);
+export function _calcInGivenSpotPrice(
+  amp: bigint,
+  balances: bigint[],
+  tokenIndexIn: number,
+  tokenIndexOut: number,
+  spotPrice: bigint,
+  fee: bigint,
+  inGuess = MathSol.mulUpFixed(balances[tokenIndexIn], BigInt(1e-2 * 1e18)),
+  spotPricePrecision = BigInt(0.001e18)
+): bigint {
+  console.log("inGuess:", Number(inGuess) / 1e18);
+  const iterationBalances = [...balances];
+  const guessedSpotPrice = _spotPriceAfterSwapExactTokenInForTokenOut(
+    amp,
+    iterationBalances,
+    tokenIndexIn,
+    tokenIndexOut,
+    inGuess,
+    fee
+  );
 
-//   // const outGivenIn = _calcOutGivenIn(
-//   //   amp,
-//   //   [...balances],
-//   //   tokenIndexIn,
-//   //   tokenIndexOut,
-//   //   inGuess,
-//   //   fee
-//   // );
+  console.log("guessedSpotPrice:", Number(guessedSpotPrice) / 1e18);
+  console.log(
+    "diff to spot price:",
+    Number(spotPrice - guessedSpotPrice) / 1e18
+  );
 
-//   // console.log("outGivenIn:", Number(outGivenIn) / 1e18);
+  const diffFromSpotPrice = spotPrice - guessedSpotPrice;
+  let absDiffFromSpotPrice = diffFromSpotPrice;
+  if (absDiffFromSpotPrice < 0n) {
+    absDiffFromSpotPrice = -diffFromSpotPrice;
+  }
+  if (diffFromSpotPrice <= spotPricePrecision) {
+    return inGuess;
+  }
 
-//   const iterationBalances = [...balances];
-//   // iterationBalances[tokenIndexIn] = MathSol.add(
-//   //   balances[tokenIndexIn],
-//   //   inGuess
-//   // );
-//   // iterationBalances[tokenIndexOut] = MathSol.sub(
-//   //   balances[tokenIndexOut],
-//   //   outGivenIn
-//   // );
-//   // const guessedSpotPrice = _currentSpotPrice(
-//   //   amp,
-//   //   iterationBalances,
-//   //   tokenIndexIn,
-//   //   tokenIndexOut,
-//   //   fee
-//   // );
-//   // console.log("iterationBalances:", iterationBalances);
-//   const guessedSpotPrice = _spotPriceAfterSwapExactTokenInForTokenOut(
-//     amp,
-//     iterationBalances,
-//     tokenIndexIn,
-//     tokenIndexOut,
-//     inGuess,
-//     fee
-//   );
+  const spotPriceDerivative = _poolDerivatives(
+    amp,
+    iterationBalances,
+    tokenIndexIn,
+    tokenIndexOut,
+    false,
+    false
+  );
 
-//   // console.log("iterationBalances:", iterationBalances);
-//   console.log("guessedSpotPrice:", Number(guessedSpotPrice) / 1e18);
-//   console.log(
-//     "diff to spot price:",
-//     Number(spotPrice - guessedSpotPrice) / 1e18
-//   );
+  const newInGuess = MathSol.add(
+    inGuess,
+    MathSol.divUpFixed(diffFromSpotPrice, spotPriceDerivative)
+  );
 
-//   let diffFromSpotPrice = spotPrice - guessedSpotPrice;
-//   if (diffFromSpotPrice < 0n) {
-//     diffFromSpotPrice = -diffFromSpotPrice;
-//   }
-//   if (diffFromSpotPrice <= spotPricePrecision) {
-//     return inGuess;
-//   }
+  console.log("newInGuess:", Number(newInGuess) / 1e18);
 
-//   const spotPriceDerivative = _poolDerivatives(
-//     amp,
-//     iterationBalances,
-//     tokenIndexIn,
-//     tokenIndexOut,
-//     false,
-//     false
-//   );
-
-//   console.log("spotPriceDerivative:", spotPriceDerivative);
-//   const newInGuess = MathSol.sub(
-//     inGuess,
-//     MathSol.divUpFixed(guessedSpotPrice, spotPriceDerivative)
-//   );
-
-//   console.log("newInGuess:", newInGuess);
-//   return _calcInGivenSpotPrice(
-//     amp,
-//     balances,
-//     tokenIndexIn,
-//     tokenIndexOut,
-//     fee,
-//     spotPrice,
-//     newInGuess,
-//     spotPricePrecision
-//   );
-// }
+  return _calcInGivenSpotPrice(
+    amp,
+    balances,
+    tokenIndexIn,
+    tokenIndexOut,
+    fee,
+    spotPrice,
+    newInGuess,
+    spotPricePrecision
+  );
+}
 
 // def calculate_value_to_spot_price(self, x_name, y_name, price):
 //   constant_balances = self._get_constant_balances(x_name, y_name)
@@ -952,28 +924,29 @@ export function _currentSpotPrice(
 //   possible_results = [abs(decimal.Decimal(r.real)-initial_x) for r in roots if r.imag==0]
 //   return min(possible_results)
 
-export function _calcInGivenSpotPrice(
-  amp: bigint,
-  balances: bigint[],
-  tokenIndexIn: number,
-  tokenIndexOut: number,
-  spotPrice: bigint
-): bigint {
-  const constant_balances = [...balances];
-  const A = BigInt(Number(amp) * 1e15);
-  delete constant_balances[tokenIndexIn];
-  delete constant_balances[tokenIndexOut];
-  const n = balances.length;
-  let S = 0n;
-  let P = 1n;
-  if (n > 2) {
-    S = constant_balances.reduce((a, b) => a + b);
-    P = constant_balances.reduce((a, b) => a * b);
-  }
-  const D = _calculateInvariant(amp, balances);
-  const dy = -spotPrice;
-  const initial_x = balances[tokenIndexIn];
-  const c1 = D / (A * BigInt(n ** n * 1e18) + S - D);
-  const c2 =
-    -(D ** BigInt((n + 1) * 1e18)) / (A * BigInt(n ** (2 * n) * 1e18) * P);
-}
+// export function _calcInGivenSpotPrice(
+//   amp: bigint,
+//   balances: bigint[],
+//   tokenIndexIn: number,
+//   tokenIndexOut: number,
+//   spotPrice: bigint
+// ): bigint {
+//   const constant_balances = [...balances];
+//   const A = BigInt(Number(amp) * 1e15);
+//   delete constant_balances[tokenIndexIn];
+//   delete constant_balances[tokenIndexOut];
+//   const n = balances.length;
+//   let S = 0n;
+//   let P = 1n;
+//   if (n > 2) {
+//     S = constant_balances.reduce((a, b) => a + b);
+//     P = constant_balances.reduce((a, b) => a * b);
+//   }
+//   const D = _calculateInvariant(amp, balances);
+//   const dy = -spotPrice;
+//   const initial_x = balances[tokenIndexIn];
+//   const c1 = D / (A * BigInt(n ** n * 1e18) + S - D);
+//   const c2 =
+//     -(D ** BigInt((n + 1) * 1e18)) / (A * BigInt(n ** (2 * n) * 1e18) * P);
+//   const;
+// }

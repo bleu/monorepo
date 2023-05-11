@@ -8,7 +8,7 @@ import * as React from "react";
 import { ReactNode } from "react";
 import { UrlObject } from "url";
 
-import { NetworksContext } from "#/contexts/networks";
+import { useNetworks } from "#/contexts/networks";
 import { useSwitchNetwork } from "#/wagmi";
 
 import { CustomConnectButton } from "./CustomConnectButton";
@@ -43,8 +43,7 @@ export function Header({ linkUrl, imageSrc, title, children }: IHeader) {
 }
 
 export function HeaderNetworkMismatchAlert() {
-  const { mismatchedNetworks, urlPathNetwork } =
-    React.useContext(NetworksContext);
+  const { mismatchedNetworks, urlPathNetwork } = useNetworks();
 
   const { switchNetwork } = useSwitchNetwork({ chainId: urlPathNetwork });
 
@@ -53,10 +52,7 @@ export function HeaderNetworkMismatchAlert() {
   return (
     <div className="flex min-h-[50px] flex-row items-center justify-center bg-tomato3 text-white">
       <ExclamationTriangleIcon className="mr-3 h-4 w-4" />
-      <p className="pr-4">
-        You're seeing a pool in {networkFor(urlPathNetwork)}. Please switch
-        networks to be able to edit it.
-      </p>
+      <p className="pr-4">Please switch to {networkFor(urlPathNetwork)}</p>
       <button
         className="inline-block h-6 cursor-pointer rounded-lg border-none bg-tomato4 px-2 text-xs text-white shadow hover:bg-tomato6 hover:text-white hover:shadow-none"
         onClick={() => switchNetwork?.()}

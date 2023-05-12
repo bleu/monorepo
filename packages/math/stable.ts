@@ -128,7 +128,8 @@ function _tokenInForExactSpotPriceAfterSwap(
   inGuess = poolPairData.allBalances[poolPairData.tokenIndexIn].times(
     bnum(0.01)
   ),
-  spotPricePrecision = bnum(0.0000001)
+  spotPricePrecision = bnum(0.0000001),
+  iteration_number = 0
 ): OldBigNumber {
   const guessedSpotPrice =
     StableMaths._spotPriceAfterSwapExactTokenInForTokenOut(inGuess, {
@@ -139,6 +140,10 @@ function _tokenInForExactSpotPriceAfterSwap(
     return inGuess;
   }
 
+  iteration_number += 1;
+  if (iteration_number > 255) {
+    throw new Error("Max iterations reached");
+  }
   const spotPriceDerivative =
     StableMaths._derivativeSpotPriceAfterSwapExactTokenInForTokenOut(inGuess, {
       ...poolPairData,
@@ -148,7 +153,8 @@ function _tokenInForExactSpotPriceAfterSwap(
     spotPrice,
     poolPairData,
     newInGuess,
-    spotPricePrecision
+    spotPricePrecision,
+    iteration_number
   );
 }
 

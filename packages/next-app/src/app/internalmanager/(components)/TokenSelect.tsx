@@ -219,6 +219,7 @@ function TokenModal({
       return regex.test(Object.values(token).join(","));
     }
   }
+  const network = getNetwork(chain?.name);
 
   return (
     <div className="text-white divide-y divide-gray-700 max-h-[30rem] overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-blue3">

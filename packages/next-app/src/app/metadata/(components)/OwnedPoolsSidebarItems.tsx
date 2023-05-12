@@ -56,7 +56,7 @@ function OwnedPoolsSidebarItems({
     userAddress: owner,
   });
 
-  const network = networkFor(chainId).toLowerCase();
+  const network = networkFor(chainId);
 
   if (!data?.pools?.length)
     return (

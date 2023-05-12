@@ -12,7 +12,7 @@ import { Header, HeaderNetworkMismatchAlert } from "#/components/Header";
 import Sidebar from "#/components/Sidebar";
 import Spinner from "#/components/Spinner";
 import { CheckSupportedChains } from "#/components/SupportedChain";
-import { NetworksContextProvider } from "#/contexts/networks";
+import { getNetwork, NetworksContextProvider } from "#/contexts/networks";
 import { PoolMetadataProvider } from "#/contexts/PoolMetadataContext";
 import { chains } from "#/wagmi/client";
 
@@ -21,7 +21,8 @@ import SearchPoolForm from "./(components)/SearchPoolForm";
 
 export default function Layout({ children }: React.PropsWithChildren) {
   const { chain } = useNetwork();
-  const network = chain?.name.toLowerCase();
+
+  const network = getNetwork(chain?.name);
 
   return (
     <NetworksContextProvider>

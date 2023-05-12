@@ -16,6 +16,7 @@ import {
 } from "#/components/TransactionProgressBar";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
+import { getNetwork } from "#/contexts/networks";
 import { impersonateWhetherDAO } from "#/lib/gql";
 import {
   operationKindType,
@@ -51,7 +52,9 @@ export default function Page({
     return <Spinner />;
   }
 
-  if (chain?.name.toLowerCase() !== params.network) {
+  const network = getNetwork(chain?.name);
+
+  if (network !== params.network) {
     return (
       <div className="w-full rounded-3xl items-center py-16 px-12 md:py-20 flex flex-col h-full">
         <div className="text-center text-amber9 text-3xl">

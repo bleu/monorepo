@@ -12,6 +12,7 @@ import { useAccount, useNetwork } from "wagmi";
 import genericTokenLogo from "#/assets/generic-token-logo.png";
 import { Dialog } from "#/components/Dialog";
 import Table from "#/components/Table";
+import { getNetwork } from "#/contexts/networks";
 import { impersonateWhetherDAO, internalBalances } from "#/lib/gql";
 import { refetchRequest } from "#/utils/fetcher";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
@@ -146,6 +147,8 @@ function TokenModal({
     getWalletBalance(internalBalancesTokenAdresses as `0x${string}`[]);
   }, [internalBalanceData]);
 
+  const network = getNetwork(chain?.name);
+
   return (
     <div className="text-white divide-y divide-gray-700">
       <div className="w-full flex flex-col justify-center items-center h-full py-4 gap-y-4">
@@ -169,7 +172,7 @@ function TokenModal({
                   token={token}
                   operationKind={operationKind}
                   close={close}
-                  chainName={chain!.name.toLowerCase()}
+                  chainName={network}
                 />
               );
             }

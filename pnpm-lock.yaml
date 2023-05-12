@@ -106,6 +106,9 @@ importers:
       graphql-tag:
         specifier: '>=2'
         version: 2.12.6(graphql@16.6.0)
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
       swr:
         specifier: 2.0.0
         version: 2.0.0(react@18.2.0)
@@ -131,6 +134,9 @@ importers:
       '@graphql-codegen/typescript-operations':
         specifier: 3.0.3
         version: 3.0.3(graphql@16.6.0)
+      '@types/lodash':
+        specifier: ^4.14.192
+        version: 4.14.192
       '@types/node':
         specifier: 18.15.11
         version: 18.15.11

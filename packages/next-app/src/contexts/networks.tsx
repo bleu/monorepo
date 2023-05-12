@@ -1,11 +1,19 @@
 "use client";
 
-import { networkFor } from "@balancer-pool-metadata/shared";
+import { Network, networkFor } from "@balancer-pool-metadata/shared";
 import { Route } from "next";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 
 import { useNetwork } from "#/wagmi";
+
+export function getNetwork(chainName?: string) {
+  const network =
+    chainName?.toLowerCase() === "arbitrum one"
+      ? "arbitrum"
+      : chainName?.toLowerCase();
+  return network as Network;
+}
 
 interface NetworksContextI {
   urlPathNetwork?: number;

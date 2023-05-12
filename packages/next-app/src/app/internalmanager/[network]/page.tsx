@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Button } from "#/components";
 import Spinner from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
+import { getNetwork } from "#/contexts/networks";
 import { useAccount, useNetwork } from "#/wagmi";
 
 import { TokenTable } from "../(components)/TokenTable";
@@ -15,7 +16,7 @@ export default function Page() {
 
   const { chain } = useNetwork();
 
-  const network = chain?.name.toLowerCase();
+  const network = getNetwork(chain?.name);
 
   if (!isConnected && !isReconnecting && !isConnecting) {
     return <WalletNotConnected isInternalManager />;

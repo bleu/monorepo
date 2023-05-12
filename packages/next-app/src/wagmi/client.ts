@@ -1,11 +1,19 @@
 import { getDefaultWallets } from "@rainbow-me/rainbowkit";
-import { goerli, mainnet, polygon, sepolia } from "wagmi/chains";
+import {
+  arbitrum,
+  gnosis,
+  goerli,
+  mainnet,
+  optimism,
+  polygon,
+  sepolia,
+} from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 
 import { configureChains, createClient } from "#/wagmi";
 
 export const { chains, provider, webSocketProvider } = configureChains(
-  [mainnet, goerli, polygon, sepolia],
+  [mainnet, polygon, arbitrum, gnosis, optimism, goerli, sepolia],
   [publicProvider()]
 );
 

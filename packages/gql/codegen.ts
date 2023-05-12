@@ -1,5 +1,6 @@
 import { Network } from "@balancer-pool-metadata/shared";
 import { CodegenConfig } from "@graphql-codegen/cli";
+import { upperFirst } from "lodash";
 
 export enum Subgraph {
   BalancerPoolsMetadata = "balancer-pools-metadata",
@@ -17,9 +18,11 @@ export const SUBGRAPHS = {
       return {
         [Network.Ethereum]: `${baseEndpoint}/balancer-pools-metadata`,
         [Network.Polygon]: `${baseEndpoint}/balancer-metadata-polygon`,
-        [Network.Goerli]: `${baseEndpoint}/balancer-metadata-goerli`,
         // TODO: https://linear.app/bleu-llc/issue/BAL-131/deploy-contracts-in-all-networks-that-balancer-is-deployed
         [Network.Arbitrum]: `${baseEndpoint}/balancer-metadata-goerli`,
+        [Network.Gnosis]: `${baseEndpoint}/balancer-metadata-goerli`,
+        [Network.Optimism]: `${baseEndpoint}/balancer-metadata-goerli`,
+        [Network.Goerli]: `${baseEndpoint}/balancer-metadata-goerli`,
         [Network.Sepolia]: `${baseEndpoint}/balancer-metadata-goerli`,
       };
     },
@@ -37,8 +40,10 @@ export const SUBGRAPHS = {
         [Network.Ethereum]: `${baseEndpoint}`,
         [Network.Polygon]: `${baseEndpoint}-polygon`,
         [Network.Arbitrum]: `${baseEndpoint}-arbitrum`,
-        [Network.Goerli]: `${baseEndpoint}-goerli`,
+        [Network.Gnosis]: `${baseEndpoint}-goerli`,
+        [Network.Optimism]: `${baseEndpoint}-goerli`,
         // TODO: https://linear.app/bleu-llc/issue/BAL-131/deploy-contracts-in-all-networks-that-balancer-is-deployed
+        [Network.Goerli]: `${baseEndpoint}-goerli`,
         [Network.Sepolia]: `${baseEndpoint}-goerli`,
       };
     },
@@ -56,8 +61,10 @@ export const SUBGRAPHS = {
         [Network.Ethereum]: `${baseEndpoint}/balancer-v2`,
         [Network.Polygon]: `${baseEndpoint}/balancer-polygon-v2`,
         [Network.Arbitrum]: `${baseEndpoint}/balancer-arbitrum-v2`,
-        [Network.Goerli]: `${baseEndpoint}/balancer-goerli-v2`,
+        [Network.Gnosis]: `${baseEndpoint}/balancer-goerli-v2`,
+        [Network.Optimism]: `${baseEndpoint}/balancer-goerli-v2`,
         // TODO: https://linear.app/bleu-llc/issue/BAL-131/deploy-contracts-in-all-networks-that-balancer-is-deployed
+        [Network.Goerli]: `${baseEndpoint}/balancer-goerli-v2`,
         [Network.Sepolia]: `${baseEndpoint}/balancer-goerli-v2`,
       };
     },
@@ -71,13 +78,14 @@ export const SUBGRAPHS = {
       //This is a fork of the pools subgraph that's to be merged to Balancer's own subgraph
       const baseEndpoint =
         "https://api.thegraph.com/subgraphs/name/bleu-studio";
-
       return {
         //TODO: deploy subgraph on mainnet, polygon and arbitrum
         // https://linear.app/bleu-llc/issue/BAL-290/deploy-subgraph-with-token-relation-on-other-networks
-        [Network.Ethereum]: `https://api.thegraph.com/subgraphs/name/bleu-llc/balancer-goerli-v2`,
-        [Network.Polygon]: `${baseEndpoint}/balancer-v2-goerli`,
-        [Network.Arbitrum]: `${baseEndpoint}/balancer-v2-goerli`,
+        [Network.Ethereum]: `${baseEndpoint}/balancer-mainnet-v2`,
+        [Network.Polygon]: `${baseEndpoint}/balancer-polygon-v2`,
+        [Network.Arbitrum]: `${baseEndpoint}/balancer-arbitrum-v2`,
+        [Network.Gnosis]: `${baseEndpoint}/balancer-gnosis-v2`,
+        [Network.Optimism]: `${baseEndpoint}/balancer-optimism-v2`,
         [Network.Goerli]: `${baseEndpoint}/balancer-v2-goerli`,
         [Network.Sepolia]: `https://api.studio.thegraph.com/query/46539/balancer-sepolia-v2/v0.0.1`,
       };
@@ -95,7 +103,7 @@ const generates = Object.assign(
       Object.entries(endpoints())
         .map(([network, endpoint]) => [
           [
-            `./src/${name}/__generated__/${network}.ts`,
+            `./src/${name}/__generated__/${upperFirst(network)}.ts`,
             {
               schema: endpoint,
               documents: [`src/${name}/**/*.ts`],
@@ -108,7 +116,7 @@ const generates = Object.assign(
             },
           ],
           [
-            `./src/${name}/__generated__/${network}.server.ts`,
+            `./src/${name}/__generated__/${upperFirst(network)}.server.ts`,
             {
               schema: endpoint,
               documents: [`src/${name}/**/*.ts`],

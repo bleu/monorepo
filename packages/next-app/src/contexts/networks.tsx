@@ -8,6 +8,7 @@ import React, { useEffect } from "react";
 import { useNetwork } from "#/wagmi";
 
 export function getNetwork(chainName?: string) {
+  if (!chainName) return Network.Ethereum;
   const network =
     chainName?.toLowerCase() === "arbitrum one"
       ? "arbitrum"

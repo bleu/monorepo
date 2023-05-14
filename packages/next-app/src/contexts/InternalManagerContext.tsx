@@ -82,7 +82,7 @@ export function InternalManagerProvider({ children }: PropsWithChildren) {
         (token: { chainId: number }) =>
           token.chainId === networkConnectedToWallet
       );
-      setTokenList(tokenListCurrentChain);
+      setTokenList(tokenListCurrentChain.slice(0, 19));
     });
   }, [networkConnectedToWallet]);
 

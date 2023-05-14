@@ -2,6 +2,7 @@
 
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import * as Separator from "@radix-ui/react-separator";
+import { Route } from "next";
 import * as React from "react";
 import { Suspense } from "react";
 import { useNetwork } from "wagmi";
@@ -29,7 +30,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
       <div className="flex flex-col h-full">
         <HeaderNetworkMismatchAlert />
         <Header
-          linkUrl={`/metadata/${network}/`}
+          linkUrl={`/metadata/${network}/` as Route}
           title={"Pool Metadata"}
           imageSrc={balancerSymbol}
         />

@@ -105,7 +105,7 @@ function TokenModal({
     : [];
 
   const tokenListAdresses = tokenList
-    ? tokenList.map((token) => token.address.toLocaleLowerCase())
+    ? tokenList.map((token) => token.address.toLowerCase())
     : [];
 
   const tokenAdresses = [

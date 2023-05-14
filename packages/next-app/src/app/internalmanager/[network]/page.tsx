@@ -1,6 +1,7 @@
 "use client";
 
 import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
+import { Route } from "next";
 import Link from "next/link";
 
 import { Button } from "#/components";
@@ -38,7 +39,7 @@ export default function Page() {
             </span>
           </div>
           <div className="flex gap-4">
-            <Link href={`/internalmanager/${network}/deposit/`}>
+            <Link href={`/internalmanager/${network}/deposit/` as Route}>
               <Button
                 className="flex items-center gap-1"
                 disabled={false}

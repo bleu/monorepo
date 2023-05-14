@@ -162,7 +162,7 @@ function TokenModal({
   }, [internalBalanceData]);
 
   return (
-    <div className="text-white divide-y divide-gray-700">
+    <div className="text-white divide-y divide-gray-700 max-h-[30rem] overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-blue3">
       <div className="w-full flex flex-col justify-center items-center h-full py-4 gap-y-4">
         <div className="text-xl">Token Search</div>
       </div>

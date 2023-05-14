@@ -1,5 +1,6 @@
 "use client";
 
+import { Route } from "next";
 import * as React from "react";
 import { useNetwork } from "wagmi";
 
@@ -20,7 +21,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <div className="flex h-full flex-col">
         <HeaderNetworkMismatchAlert />
         <Header
-          linkUrl={`/internalmanager/${network}`}
+          linkUrl={`/internalmanager/${network}` as Route}
           title={"Internal Manager"}
           imageSrc={balancerSymbol}
         />

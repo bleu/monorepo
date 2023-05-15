@@ -322,6 +322,9 @@ importers:
       postcss:
         specifier: ^8.4.21
         version: 8.4.21
+      tailwind-scrollbar:
+        specifier: ^3.0.3
+        version: 3.0.3(tailwindcss@3.3.1)
       tailwindcss:
         specifier: ^3.3.1
         version: 3.3.1(postcss@8.4.21)
@@ -13450,6 +13453,15 @@ packages:
       deep-extend: 0.6.0
       typical: 5.2.0
       wordwrapjs: 4.0.1
+    dev: true
+
+  /tailwind-scrollbar@3.0.3(tailwindcss@3.3.1):
+    resolution: {integrity: sha512-g0yBeQODAHERnyNejtHrYMTuifhRKtNYC9zKtmhi3dtNlOdUtSrvXlJKWljgzDgdpUixbhKMgD7G636DFTI8Rw==}
+    engines: {node: '>=12.13.0'}
+    peerDependencies:
+      tailwindcss: 3.x
+    dependencies:
+      tailwindcss: 3.3.1(postcss@8.4.21)
     dev: true
 
   /tailwindcss@3.3.1(postcss@8.4.21):

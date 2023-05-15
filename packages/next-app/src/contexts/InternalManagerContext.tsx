@@ -1,15 +1,32 @@
 "use client";
 
 import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
-import { createContext, PropsWithChildren, useContext, useState } from "react";
+import {
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
+import { getTokensData } from "#/app/_serverActions";
 import { Notification, TransactionStatus } from "#/hooks/useTransaction";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
+
+import { useNetworks } from "./networks";
 
 export interface SelectedToken {
   address: string;
   symbol: string;
   logoUrl?: string;
+}
+
+interface tokenListItem {
+  address: string;
+  chainId: number;
+  decimals: number;
+  name: string;
+  symbol: string;
 }
 
 type tokenProps = ArrElement<
@@ -31,6 +48,7 @@ type InternalManagerContextType = {
   clearNotification: () => void;
   transactionStatus: TransactionStatus;
   setTransactionStatus: (status: TransactionStatus) => void;
+  tokenList: tokenListItem[];
 };
 
 export const InternalManagerContext = createContext(
@@ -44,11 +62,21 @@ export function InternalManagerProvider({ children }: PropsWithChildren) {
   const [transactionStatus, setTransactionStatus] = useState<TransactionStatus>(
     TransactionStatus.AUTHORIZING
   );
+  const [tokenList, setTokenList] = useState<tokenListItem[]>([]);
+
+  const { networkConnectedToWallet } = useNetworks();
 
   function clearNotification() {
     setNotification(null);
     setIsNotifierOpen(false);
   }
+
+  useEffect(() => {
+    if (!networkConnectedToWallet) return;
+    getTokensData({ networkConnectedToWallet }).then((tokens) => {
+      setTokenList(tokens);
+    });
+  }, [networkConnectedToWallet]);
 
   return (
     <InternalManagerContext.Provider
@@ -62,6 +90,7 @@ export function InternalManagerProvider({ children }: PropsWithChildren) {
         clearNotification,
         transactionStatus,
         setTransactionStatus,
+        tokenList,
       }}
     >
       {children}

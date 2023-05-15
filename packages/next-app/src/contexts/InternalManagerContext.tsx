@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 
+import { getTokensData } from "#/app/_serverActions";
 import { Notification, TransactionStatus } from "#/hooks/useTransaction";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
@@ -71,18 +72,9 @@ export function InternalManagerProvider({ children }: PropsWithChildren) {
   }
 
   useEffect(() => {
-    async function getTokensData() {
-      const res = await fetch(
-        "https://raw.githubusercontent.com/balancer/tokenlists/main/generated/balancer.tokenlist.json"
-      );
-      return await res.json();
-    }
-    getTokensData().then((data) => {
-      const tokenListCurrentChain = data.tokens.filter(
-        (token: { chainId: number }) =>
-          token.chainId === networkConnectedToWallet
-      );
-      setTokenList(tokenListCurrentChain.slice(0, 19));
+    if (!networkConnectedToWallet) return;
+    getTokensData({ networkConnectedToWallet }).then((tokens) => {
+      setTokenList(tokens);
     });
   }, [networkConnectedToWallet]);
 

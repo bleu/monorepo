@@ -3,6 +3,7 @@
 import { SingleInternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
 import { getInternalBalanceSchema } from "@balancer-pool-metadata/schema";
 import {
+  addressRegex,
   buildExplorerAddressURL,
   Network,
   NetworkChainId,
@@ -11,7 +12,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { useAccount, useBalance, useNetwork } from "wagmi";
 
@@ -39,16 +40,22 @@ import {
 import { refetchRequest } from "#/utils/fetcher";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
+type TokenData = Omit<
+  ArrElement<GetDeepProp<SingleInternalBalanceQuery, "userInternalBalances">>,
+  "__typename"
+>;
+
 export default function Page({
   params,
 }: {
   params: {
     tokenAddress: `0x${string}`;
     network: Network;
-    operationKind: operationKindType;
+    operationKind: "deposit" | "withdraw" | "transfer";
   };
 }) {
   const { chain } = useNetwork();
+  const [tokenData, setTokenData] = useState<TokenData | undefined>(undefined);
   const { isConnected, isReconnecting, isConnecting } = useAccount();
   let { address } = useAccount();
   address = impersonateWhetherDAO(chain?.id.toString() || "1", address);
@@ -70,10 +77,6 @@ export default function Page({
       tokenAddress: params.tokenAddress,
     });
 
-  const tokenData = internalBalanceTokenData?.user?.userInternalBalances
-    ? internalBalanceTokenData?.user?.userInternalBalances[0]
-    : undefined;
-
   refetchRequest({
     mutate,
     chainId: chain?.id.toString() || "1",
@@ -84,6 +87,22 @@ export default function Page({
     address: addressLower as `0x${string}`,
     token: params.tokenAddress,
   });
+
+  useEffect(() => {
+    const tokenInfo = internalBalanceTokenData?.user
+      ?.userInternalBalances?.[0] || {
+      balance: "0",
+      tokenInfo: {
+        __typename: "Token",
+        address: params.tokenAddress,
+        decimals: walletAmount?.decimals || 0,
+        symbol: walletAmount?.symbol || "",
+        name: walletAmount?.symbol || "",
+      },
+    };
+
+    setTokenData(tokenInfo);
+  }, []);
 
   useEffect(() => {
     clearNotification();
@@ -109,8 +128,12 @@ export default function Page({
       </div>
     );
   }
-
-  if (tokenData?.balance === "0" || internalBalanceTokenData?.user === null) {
+  if (
+    (params.operationKind !== "deposit" &&
+      (tokenData?.balance === "0" ||
+        internalBalanceTokenData?.user === null)) ||
+    (params.operationKind === "deposit" && walletAmount?.value.eq(0))
+  ) {
     return (
       <div className="w-full rounded-3xl items-center py-16 px-12 md:py-20 flex flex-col h-full">
         <div className="text-center text-amber9 text-3xl">
@@ -227,8 +250,6 @@ function TransactionCard({
   });
 
   const receiverAddressValue = watch("receiverAddress");
-
-  const addressRegex = /0x[a-fA-F0-9]{40}/;
 
   function handleOnSubmit(data: FieldValues) {
     handleTransaction(data);

@@ -13,3 +13,4 @@ generated**
 **/out/**
 
 manifest.template.yaml
+packages/

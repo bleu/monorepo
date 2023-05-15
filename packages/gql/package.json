@@ -13,21 +13,21 @@
   "devDependencies": {
     "@balancer-pool-metadata/shared": "workspace:^",
     "@balancer-pool-metadata/tsconfig": "workspace:*",
-    "@graphql-codegen/cli": "3.3.0",
-    "@graphql-codegen/client-preset": "^3.0.0",
-    "@graphql-codegen/typescript": "3.0.3",
+    "@graphql-codegen/cli": "3.3.1",
+    "@graphql-codegen/client-preset": "^3.0.1",
+    "@graphql-codegen/typescript": "3.0.4",
     "@graphql-codegen/typescript-graphql-request": "4.5.9",
-    "@graphql-codegen/typescript-operations": "3.0.3",
+    "@graphql-codegen/typescript-operations": "3.0.4",
     "@types/node": "18.15.11",
-    "@types/react": "18.0.33",
-    "@types/react-dom": "18.0.11",
+    "@types/react": "18.2.6",
+    "@types/react-dom": "18.2.4",
     "graphql": "16.6.0",
     "graphql-codegen-plugin-typescript-swr": "0.8.3",
     "graphql-request": "5.1.0",
     "micromatch": "4.0.5",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "typescript": "5.0.3"
+    "typescript": "5.0.4"
   },
   "peerDependencies": {
     "@types/react": ">=17",

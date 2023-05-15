@@ -15,8 +15,8 @@
   "devDependencies": {
     "@balancer-pool-metadata/shared": "workspace:^",
     "@balancer-pool-metadata/tsconfig": "workspace:*",
-    "@graphprotocol/graph-cli": "0.45.0",
-    "@graphprotocol/graph-ts": "0.29.3",
+    "@graphprotocol/graph-cli": "0.49.0",
+    "@graphprotocol/graph-ts": "0.30.0",
     "@types/fs-extra": "^11.0.1",
     "@types/js-yaml": "^4.0.5",
     "handlebars": "^4.7.7",

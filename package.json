@@ -20,8 +20,10 @@
     "type": "git",
     "url": "git+https://github.com/bleu-llc/balancer-pool-metadata.git"
   },
-  "lint-staged": {
-    "*.{md,html,mjml,json,graphql,yml,css,scss}": "prettier --write"
+  "config": {
+    "ghooks": {
+      "pre-commit": "npx lint-staged --relative"
+    }
   },
   "engines": {
     "node": ">=18",
@@ -38,8 +40,8 @@
     "@types/node": "^18.15.11",
     "concurrently": "^8.0.1",
     "ghooks": "^2.0.4",
-    "lint-staged": "^13.2.1",
-    "prettier": "^2.8.7",
+    "lint-staged": "^13.2.2",
+    "prettier": "^2.8.8",
     "typescript": "^5.0.4"
   },
   "pnpm": {

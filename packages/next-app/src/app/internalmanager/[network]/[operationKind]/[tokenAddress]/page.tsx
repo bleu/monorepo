@@ -135,8 +135,8 @@ export default function Page({
           userAddress={addressLower as `0x${string}`}
           tokenData={tokenData}
           chainId={chain!.id}
-          walletAmount={walletAmount!.formatted}
-          walletAmountBigNumber={walletAmount!.value}
+          walletAmount={walletAmount?.formatted}
+          walletAmountBigNumber={walletAmount?.value}
         />
       )}
       {notification && (
@@ -171,8 +171,8 @@ function TransactionCard({
     GetDeepProp<SingleInternalBalanceQuery, "userInternalBalances">
   >;
   chainId: NetworkChainId;
-  walletAmount: string;
-  walletAmountBigNumber: BigNumber;
+  walletAmount?: string;
+  walletAmountBigNumber?: BigNumber;
 }) {
   const operationKindData = {
     [UserBalanceOpKind.DEPOSIT_INTERNAL]: {

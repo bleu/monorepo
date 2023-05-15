@@ -162,7 +162,7 @@ function _tokenInForExactSpotPriceAfterSwap(
   );
 }
 
-const StableMath = {
+const ExtendedStableMath = {
   ...StableMaths,
   _poolDerivatives,
   _effectivePriceForExactTokenInSwap,
@@ -173,4 +173,4 @@ const StableMath = {
   _tokenInForExactSpotPriceAfterSwap,
 } as const;
 
-export default StableMath;
+export default ExtendedStableMath;

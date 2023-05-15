@@ -21,6 +21,7 @@ function _poolDerivatives(
   is_first_derivative: boolean,
   wrt_out: boolean
 ): OldBigNumber {
+  // This function was copied from @balancer/sor package, since was not exported
   const totalCoins = balances.length;
   const D = StableMaths._invariant(A, balances);
   let S = ZERO;
@@ -131,6 +132,9 @@ function _tokenInForExactSpotPriceAfterSwap(
   spotPricePrecision = bnum(0.0000001),
   iteration_number = 0
 ): OldBigNumber {
+  // Calculate the amount of tokenIn needed to reach the desired spotPrice
+  // The Newton-Raphson method is used to find the SpotPrice of the function
+  // Results could be inaccurate for very small amounts of tokenIn
   const guessedSpotPrice =
     StableMaths._spotPriceAfterSwapExactTokenInForTokenOut(inGuess, {
       ...poolPairData,

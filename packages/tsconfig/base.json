@@ -3,7 +3,6 @@
   "display": "Default",
   "compilerOptions": {
     "rootDir": "../../",
-    "target": "es2020",
     "allowSyntheticDefaultImports": true,
     "composite": false,
     "declaration": false,

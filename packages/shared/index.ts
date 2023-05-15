@@ -42,6 +42,17 @@ export function buildBlockExplorerTxURL({
   return `${networkUrl.url}tx/${txHash}`;
 }
 
+export function buildExplorerTokenURL({
+  chainId,
+  tokenAddress,
+}: {
+  chainId: NetworkChainId;
+  tokenAddress: `0x${string}`;
+}) {
+  const networkUrl = networkUrls[chainId as keyof typeof networkUrls];
+  return `${networkUrl.url}token/${tokenAddress}`;
+}
+
 export function buildExplorerAddressURL({
   chainId,
   address,
@@ -87,3 +98,5 @@ export function networkIdFor(name?: string) {
     ) || "1"
   );
 }
+
+export const addressRegex = /0x[a-fA-F0-9]{40}/;

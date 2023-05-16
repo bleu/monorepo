@@ -4,7 +4,7 @@ import { SingleInternalBalanceQuery } from "@balancer-pool-metadata/gql/src/bala
 import { getInternalBalanceSchema } from "@balancer-pool-metadata/schema";
 import {
   addressRegex,
-  buildExplorerAddressURL,
+  buildBlockExplorerAddressURL,
   Network,
   NetworkChainId,
 } from "@balancer-pool-metadata/shared";
@@ -244,7 +244,7 @@ function TransactionCard({
     operationKind: operationKindEnum,
   });
 
-  const explorerData = buildExplorerAddressURL({
+  const explorerData = buildBlockExplorerAddressURL({
     chainId,
     address: userAddress,
   });

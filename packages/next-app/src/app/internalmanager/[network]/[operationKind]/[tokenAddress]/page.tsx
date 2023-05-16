@@ -51,7 +51,7 @@ export default function Page({
   params: {
     tokenAddress: `0x${string}`;
     network: Network;
-    operationKind: "deposit" | "withdraw" | "transfer";
+    operationKind: keyof typeof operationKindType;
   };
 }) {
   const { chain } = useNetwork();
@@ -129,10 +129,11 @@ export default function Page({
     );
   }
   if (
-    (params.operationKind !== "deposit" &&
+    (operationKindType[params.operationKind] !== operationKindType.deposit &&
       (tokenData?.balance === "0" ||
         internalBalanceTokenData?.user === null)) ||
-    (params.operationKind === "deposit" && walletAmount?.value.eq(0))
+    (operationKindType[params.operationKind] !== operationKindType.deposit &&
+      walletAmount?.value.eq(0))
   ) {
     return (
       <div className="w-full rounded-3xl items-center py-16 px-12 md:py-20 flex flex-col h-full">

@@ -3,7 +3,7 @@
 import { SingleInternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
 import {
   addressRegex,
-  buildExplorerTokenURL,
+  buildBlockExplorerTokenURL,
 } from "@balancer-pool-metadata/shared";
 import { ChevronDownIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { fetchBalance, FetchBalanceResult } from "@wagmi/core";
@@ -172,7 +172,7 @@ function TokenModal({
     }
   }
 
-  const tokenExplorerUrl = buildExplorerTokenURL({
+  const tokenExplorerUrl = buildBlockExplorerTokenURL({
     chainId: chain!.id,
     tokenAddress: tokenSearch.toLowerCase() as `0x${string}`,
   });

@@ -42,7 +42,7 @@ export function buildBlockExplorerTxURL({
   return `${networkUrl.url}tx/${txHash}`;
 }
 
-export function buildExplorerTokenURL({
+export function buildBlockExplorerTokenURL({
   chainId,
   tokenAddress,
 }: {
@@ -53,7 +53,7 @@ export function buildExplorerTokenURL({
   return `${networkUrl.url}token/${tokenAddress}`;
 }
 
-export function buildExplorerAddressURL({
+export function buildBlockExplorerAddressURL({
   chainId,
   address,
 }: {

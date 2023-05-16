@@ -8,6 +8,15 @@ export enum Subgraph {
   BalancerInternalManager = "balancer-internal-manager",
 }
 
+// IMPORTANT NOTE:
+// The endpointFor function expects every network has an endpoint
+// If a network doesn't have an endpoint, it will throw an error
+// to not break the build and raise an error we used the Goerli endpoints for
+// all the networks that don't have an subgraph deployed yet
+// this will be removed once we have all the subgraphs deployed
+// TODO: https://linear.app/bleu-llc/issue/BAL-131/deploy-contracts-in-all-networks-that-balancer-is-deployed
+// https://linear.app/bleu-llc/issue/BAL-290/deploy-subgraph-with-token-relation-on-other-networks
+
 export const SUBGRAPHS = {
   [Subgraph.BalancerPoolsMetadata]: {
     name: Subgraph.BalancerPoolsMetadata,
@@ -17,7 +26,6 @@ export const SUBGRAPHS = {
       return {
         [Network.Ethereum]: `${baseEndpoint}/balancer-pools-metadata`,
         [Network.Polygon]: `${baseEndpoint}/balancer-metadata-polygon`,
-        // TODO: https://linear.app/bleu-llc/issue/BAL-131/deploy-contracts-in-all-networks-that-balancer-is-deployed
         [Network.Arbitrum]: `${baseEndpoint}/balancer-metadata-goerli`,
         [Network.Gnosis]: `${baseEndpoint}/balancer-metadata-goerli`,
         [Network.Optimism]: `${baseEndpoint}/balancer-metadata-goerli`,
@@ -41,7 +49,6 @@ export const SUBGRAPHS = {
         [Network.Arbitrum]: `${baseEndpoint}-arbitrum`,
         [Network.Gnosis]: `${baseEndpoint}-goerli`,
         [Network.Optimism]: `${baseEndpoint}-goerli`,
-        // TODO: https://linear.app/bleu-llc/issue/BAL-131/deploy-contracts-in-all-networks-that-balancer-is-deployed
         [Network.Goerli]: `${baseEndpoint}-goerli`,
         [Network.Sepolia]: `${baseEndpoint}-goerli`,
       };
@@ -62,7 +69,6 @@ export const SUBGRAPHS = {
         [Network.Arbitrum]: `${baseEndpoint}/balancer-arbitrum-v2`,
         [Network.Gnosis]: `${baseEndpoint}/balancer-goerli-v2`,
         [Network.Optimism]: `${baseEndpoint}/balancer-goerli-v2`,
-        // TODO: https://linear.app/bleu-llc/issue/BAL-131/deploy-contracts-in-all-networks-that-balancer-is-deployed
         [Network.Goerli]: `${baseEndpoint}/balancer-goerli-v2`,
         [Network.Sepolia]: `${baseEndpoint}/balancer-goerli-v2`,
       };
@@ -79,7 +85,6 @@ export const SUBGRAPHS = {
         "https://api.thegraph.com/subgraphs/name/bleu-studio";
       return {
         //TODO: deploy subgraph on mainnet, polygon and arbitrum
-        // https://linear.app/bleu-llc/issue/BAL-290/deploy-subgraph-with-token-relation-on-other-networks
         [Network.Ethereum]: `${baseEndpoint}/balancer-mainnet-v2`,
         [Network.Polygon]: `${baseEndpoint}/balancer-polygon-v2`,
         [Network.Arbitrum]: `${baseEndpoint}/balancer-arbitrum-v2`,

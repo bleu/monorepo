@@ -6,7 +6,7 @@
 app = "balancer-tools"
 primary_region = "bos"
 kill_signal = "SIGINT"
-kill_timeout = "5s"
+kill_timeout = 5
 
 [experimental]
 auto_rollback = true

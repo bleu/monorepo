@@ -89,21 +89,21 @@ export default function Page({
     token: params.tokenAddress,
   });
 
-  useEffect(() => {
-    const tokenInfo = internalBalanceTokenData?.user
-      ?.userInternalBalances?.[0] || {
-      balance: "0",
-      tokenInfo: {
-        __typename: "Token",
-        address: params.tokenAddress,
-        decimals: walletAmount?.decimals || 0,
-        symbol: walletAmount?.symbol || "",
-        name: walletAmount?.symbol || "",
-      },
-    };
+  const tokenInfo = internalBalanceTokenData?.user
+    ?.userInternalBalances?.[0] || {
+    balance: "0",
+    tokenInfo: {
+      __typename: "Token",
+      address: params.tokenAddress,
+      decimals: walletAmount?.decimals || 0,
+      symbol: walletAmount?.symbol || "",
+      name: walletAmount?.symbol || "",
+    },
+  };
 
+  useEffect(() => {
     setTokenData(tokenInfo);
-  }, []);
+  }, [internalBalanceTokenData]);
 
   useEffect(() => {
     clearNotification();
@@ -129,11 +129,12 @@ export default function Page({
       </div>
     );
   }
+
   if (
     (operationKindType[params.operationKind] !== operationKindType.deposit &&
       (tokenData?.balance === "0" ||
         internalBalanceTokenData?.user === null)) ||
-    (operationKindType[params.operationKind] !== operationKindType.deposit &&
+    (operationKindType[params.operationKind] === operationKindType.deposit &&
       walletAmount?.value.eq(0))
   ) {
     return (
@@ -159,7 +160,7 @@ export default function Page({
           operationKindParam={params.operationKind as unknown as string}
           userAddress={addressLower as Address}
           tokenData={tokenData}
-          chainId={chain!.id}
+          chainId={chain?.id}
           walletAmount={walletAmount?.formatted}
           walletAmountBigNumber={walletAmount?.value}
         />
@@ -195,7 +196,7 @@ function TransactionCard({
   tokenData: ArrElement<
     GetDeepProp<SingleInternalBalanceQuery, "userInternalBalances">
   >;
-  chainId: NetworkChainId;
+  chainId?: NetworkChainId;
   walletAmount?: string;
   walletAmountBigNumber?: BigNumber;
 }) {
@@ -342,7 +343,8 @@ function TransactionCard({
                 }
               />
               <div className="mt-2 text-xs flex gap-x-1">
-                {operationKindEnum === UserBalanceOpKind.TRANSFER_INTERNAL ? (
+                {operationKindEnum === UserBalanceOpKind.TRANSFER_INTERNAL &&
+                explorerData ? (
                   !addressRegex.test(receiverAddressValue) ? (
                     <span className="outline-none text-blue8 hover:cursor-not-allowed">
                       View on {explorerData.name}

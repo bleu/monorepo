@@ -12,6 +12,7 @@ import { useAccount, useNetwork } from "wagmi";
 import genericTokenLogo from "#/assets/generic-token-logo.png";
 import { Dialog } from "#/components/Dialog";
 import Table from "#/components/Table";
+import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { getNetwork } from "#/contexts/networks";
 import { impersonateWhetherDAO, internalBalances } from "#/lib/gql";
 import { refetchRequest } from "#/utils/fetcher";
@@ -83,6 +84,8 @@ function TokenModal({
 
   const addressLower = address ? address?.toLowerCase() : "";
 
+  const { tokenList } = useInternalBalance();
+
   const { data: internalBalanceData, mutate } = internalBalances
     .gql(chain?.id.toString() || "1")
     .useInternalBalance({
@@ -97,27 +100,31 @@ function TokenModal({
 
   const internalBalancesTokenAdresses = internalBalanceData?.user
     ?.userInternalBalances
-    ? internalBalanceData.user.userInternalBalances.map(
-        (token) => token.tokenInfo.address
+    ? internalBalanceData.user.userInternalBalances.map((token) =>
+        token.tokenInfo.address.toLowerCase()
       )
     : [];
 
-  async function getWalletBalance(
-    internalBalancesTokenAdresses: `0x${string}`[]
-  ) {
+  const tokenListAdresses = tokenList
+    ? tokenList.map((token) => token.address.toLowerCase())
+    : [];
+
+  const tokenAdresses = [
+    ...new Set([...internalBalancesTokenAdresses, ...tokenListAdresses]),
+  ];
+
+  async function getWalletBalance(tokenAdresses: `0x${string}`[]) {
     const walletBalanceData: TokenWalletBalance[] = [];
-    const walletBalancePromises = internalBalancesTokenAdresses.map(
-      async (tokenAddress) => {
-        const tokenData = await fetchBalance({
-          address: addressLower as `0x${string}`,
-          token: tokenAddress,
-        });
-        walletBalanceData.push({
-          ...tokenData,
-          tokenAddress: tokenAddress,
-        });
-      }
-    );
+    const walletBalancePromises = tokenAdresses.map(async (tokenAddress) => {
+      const tokenData = await fetchBalance({
+        address: addressLower as `0x${string}`,
+        token: tokenAddress,
+      });
+      walletBalanceData.push({
+        ...tokenData,
+        tokenAddress: tokenAddress,
+      });
+    });
     await Promise.all(walletBalancePromises);
     if (walletBalanceData) {
       setTokens([]);
@@ -137,6 +144,14 @@ function TokenModal({
               name: internalBalance.tokenInfo.name,
             },
           ]);
+        } else {
+          setTokens((prev) => [
+            ...prev,
+            {
+              ...token,
+              name: token.symbol,
+            },
+          ]);
         }
       });
     }
@@ -144,13 +159,13 @@ function TokenModal({
 
   useEffect(() => {
     if (!internalBalanceData?.user?.userInternalBalances) return;
-    getWalletBalance(internalBalancesTokenAdresses as `0x${string}`[]);
+    getWalletBalance(tokenAdresses as `0x${string}`[]);
   }, [internalBalanceData]);
 
   const network = getNetwork(chain?.name);
 
   return (
-    <div className="text-white divide-y divide-gray-700">
+    <div className="text-white divide-y divide-gray-700 max-h-[30rem] overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-blue3">
       <div className="w-full flex flex-col justify-center items-center h-full py-4 gap-y-4">
         <div className="text-xl">Token Search</div>
       </div>
@@ -164,19 +179,21 @@ function TokenModal({
           <Table.HeaderCell>Wallet Balance</Table.HeaderCell>
         </Table.HeaderRow>
         <Table.Body>
-          {tokens.map((token) => {
-            if (token) {
-              return (
-                <TokenRow
-                  key={token.tokenAddress}
-                  token={token}
-                  operationKind={operationKind}
-                  close={close}
-                  chainName={network}
-                />
-              );
-            }
-          })}
+          {tokens
+            .sort((a, b) => (a!.value < b!.value ? 1 : -1))
+            .map((token) => {
+              if (token) {
+                return (
+                  <TokenRow
+                    key={token.tokenAddress}
+                    token={token}
+                    operationKind={operationKind}
+                    close={close}
+                    chainName={network}
+                  />
+                );
+              }
+            })}
         </Table.Body>
       </Table>
     </div>

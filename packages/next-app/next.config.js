@@ -38,23 +38,23 @@ const moduleExports = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'assets.coingecko.com',
-        port: '',
-        pathname: '/coins/images/**',
+        protocol: "https",
+        hostname: "assets.coingecko.com",
+        port: "",
+        pathname: "/coins/images/**",
       },
       {
-        protocol: 'https',
-        hostname: 'raw.githubusercontent.com',
-        port: '',
-        pathname: '/trustwallet/assets/master/blockchains/ethereum/assets/**',
+        protocol: "https",
+        hostname: "raw.githubusercontent.com",
+        port: "",
+        pathname: "/trustwallet/assets/master/blockchains/ethereum/assets/**",
       },
       {
-        protocol: 'https',
-        hostname: 'cdn.moralis.io',
-        port: '',
-        pathname: '/**',
-      }
+        protocol: "https",
+        hostname: "cdn.moralis.io",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
 };

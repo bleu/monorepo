@@ -24,8 +24,10 @@ module.exports = {
     "import/newline-after-import": "error",
     "import/no-duplicates": "error",
     "import/no-named-as-default-member": "off",
+    "no-html-link-for-pages": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/simple-import-sort/exports": "off",
     "@typescript-eslint/no-unused-vars": [
       "error",
       { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },

@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "baseUrl": "src",
+    "paths": {
+      "*": ["*", "../*"]
+    },
+    "resolveJsonModule": true
+  },
+  "exclude": ["node_modules"],
+  "extends": "@balancer-pool-metadata/tsconfig/base.json",
+  "include": ["**/*.ts", "**/*.tsx"],
+  "references": []
+}

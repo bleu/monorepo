@@ -4,7 +4,11 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "packages/contracts/**"
   pull_request:
+    paths:
+      - "packages/contracts/**"
 
 env:
   FOUNDRY_PROFILE: ci

@@ -189,10 +189,7 @@ function TokenModal({
       return;
     }
     setIsTokenSearchDisabled(false);
-    if (
-      tokens.filter((token) => filterTokenInput({ tokenSearch, token }))
-        .length < 1
-    ) {
+    if (!tokens.some((token) => filterTokenInput({ tokenSearch, token }))) {
       fetchSingleTokenBalance({
         tokenAddress: tokenSearch.toLowerCase() as Address,
       }).then((tokenData) => {
@@ -216,12 +213,9 @@ function TokenModal({
     token?: TokenItem;
   }) {
     {
-      if (tokenSearch === "") return true;
-      const searchString = tokenSearch.toLowerCase();
-      if (token?.name?.toLowerCase().includes(searchString)) return true;
-      if (token?.symbol.toLowerCase().includes(searchString)) return true;
-      if (token?.tokenAddress.toLowerCase().includes(searchString)) return true;
-      return false;
+      if (!token) return false;
+      const regex = new RegExp(tokenSearch, "i");
+      return regex.test(Object.values(token).join(","));
     }
   }
 

@@ -31,32 +31,25 @@ export default function Page() {
         <div className="flex items-center justify-between gap-x-8">
           <div className="flex flex-col gap-1">
             <h1 className="text-gray-400 text-3xl">My Internal Balances</h1>
-            <span className="text-gray-900 bg-amber9 p-2 rounded">
-              Currently, you can only deposit tokens that you already have on
-              your Internal Balance
-            </span>
           </div>
           <div className="flex gap-4">
             <Link href={`/internalmanager/${network}/deposit/`}>
-              <Button
-                className="flex items-center gap-1"
-                disabled={false}
-                title="New deposit"
-              >
+              <Button className="flex items-center gap-1" title="New deposit">
                 <PlusIcon />
                 Deposit
               </Button>
             </Link>
-            <Button
-              className="flex items-center gap-1"
-              shade="light"
-              variant="outline"
-              disabled={true}
-              title="Withdraw all"
-            >
-              <MinusIcon />
-              Withdraw
-            </Button>
+            <Link href={`/internalmanager/${network}/withdraw/all`}>
+              <Button
+                className="flex items-center gap-1"
+                shade="light"
+                variant="outline"
+                title="Withdraw all"
+              >
+                <MinusIcon />
+                Withdraw
+              </Button>
+            </Link>
           </div>
         </div>
         <TokenTable />

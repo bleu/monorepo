@@ -1,3 +1,5 @@
+export type Address = `0x${string}`;
+
 export enum Network {
   Ethereum = "ethereum",
   Polygon = "polygon",
@@ -49,24 +51,38 @@ export const networkUrls = {
   },
 };
 
-export function buildBlockExplorerTxURL({
+export function buildBlockExplorerTxUrl({
   chainId,
   txHash,
 }: {
-  chainId: NetworkChainId;
-  txHash: `0x${string}`;
+  chainId?: NetworkChainId;
+  txHash: Address;
 }) {
+  if (!chainId) return undefined;
   const networkUrl = networkUrls[chainId as keyof typeof networkUrls];
   return `${networkUrl.url}tx/${txHash}`;
 }
 
-export function buildExplorerAddressURL({
+export function buildBlockExplorerTokenURL({
+  chainId,
+  tokenAddress,
+}: {
+  chainId?: NetworkChainId;
+  tokenAddress: Address;
+}) {
+  if (!chainId) return undefined;
+  const networkUrl = networkUrls[chainId as keyof typeof networkUrls];
+  return `${networkUrl.url}token/${tokenAddress}`;
+}
+
+export function buildBlockExplorerAddressURL({
   chainId,
   address,
 }: {
-  chainId: NetworkChainId;
-  address: `0x${string}`;
+  chainId?: NetworkChainId;
+  address: Address;
 }) {
+  if (!chainId) return undefined;
   const networkUrl = networkUrls[chainId as keyof typeof networkUrls];
   return {
     url: `${networkUrl.url}address/${address}`,
@@ -92,7 +108,10 @@ export const networkIdEnumMap = {
   "11155111": Network.Sepolia,
 };
 
-export function networkFor(key: string | number) {
+export function networkFor(key?: string | number) {
+  if (!key) {
+    return Network.Ethereum;
+  }
   return networkIdEnumMap[key.toString() as keyof typeof networkIdEnumMap];
 }
 
@@ -111,3 +130,4 @@ export function networkIdFor(name?: string) {
 export function capitalizeFirstLetter(word: string) {
   return word.charAt(0).toUpperCase() + word.slice(1);
 }
+export const addressRegex = /0x[a-fA-F0-9]{40}/;

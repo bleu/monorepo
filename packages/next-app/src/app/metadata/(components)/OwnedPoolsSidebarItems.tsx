@@ -2,7 +2,11 @@ import {
   Pool,
   PoolsQuery,
 } from "@balancer-pool-metadata/gql/src/balancer-pools/__generated__/Ethereum";
-import { networkFor, networkIdFor } from "@balancer-pool-metadata/shared";
+import {
+  Address,
+  networkFor,
+  networkIdFor,
+} from "@balancer-pool-metadata/shared";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -41,7 +45,7 @@ function OwnedPoolsSidebarItems({
   owner,
   chainId,
 }: {
-  owner: `0x${string}`;
+  owner: Address;
   chainId: string;
 }) {
   const { poolId } = useParams();

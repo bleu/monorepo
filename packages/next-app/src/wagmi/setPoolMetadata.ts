@@ -1,3 +1,4 @@
+import { Address } from "@balancer-pool-metadata/shared";
 import { prepareWriteContract, writeContract } from "@wagmi/core";
 
 import { poolMetadataRegistryABI } from "./generated";
@@ -8,7 +9,7 @@ const NETWORK_METADATA_CONTRACT_MAP = {
 } as const;
 
 export async function writeSetPoolMetadata(
-  poolId: `0x${string}`,
+  poolId: Address,
   metadataCID: string,
   networkId?: keyof typeof NETWORK_METADATA_CONTRACT_MAP
 ) {

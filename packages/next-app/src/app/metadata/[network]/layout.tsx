@@ -1,6 +1,6 @@
 "use client";
 
-import { Network, networkIdFor } from "@balancer-pool-metadata/shared";
+import { Address, Network, networkIdFor } from "@balancer-pool-metadata/shared";
 import { useContext, useEffect } from "react";
 
 import { NetworksContext } from "#/contexts/networks";
@@ -9,7 +9,7 @@ export default function Layout({
   children,
   params,
 }: React.PropsWithChildren<{
-  params: { poolId: `0x${string}`; network: Network };
+  params: { poolId: Address; network: Network };
 }>) {
   const { setUrlPathNetwork } = useContext(NetworksContext);
 

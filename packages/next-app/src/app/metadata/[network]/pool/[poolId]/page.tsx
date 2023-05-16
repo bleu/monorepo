@@ -1,4 +1,4 @@
-import { Network, networkIdFor } from "@balancer-pool-metadata/shared";
+import { Address, Network, networkIdFor } from "@balancer-pool-metadata/shared";
 
 import { pools, poolsMetadata } from "#/lib/gql/server";
 
@@ -7,7 +7,7 @@ import MetadataAttributesTable from "./(components)/MetadataAttributesTable";
 export default async function Page({
   params,
 }: {
-  params: { poolId: `0x${string}`; network: Network };
+  params: { poolId: Address; network: Network };
 }) {
   const chainId = networkIdFor(params.network);
   const poolId = params.poolId;

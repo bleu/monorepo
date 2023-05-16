@@ -6,7 +6,6 @@ import Image from "next/image";
 import Link from "next/link";
 import * as React from "react";
 import { ReactNode } from "react";
-import { UrlObject } from "url";
 
 import { useNetworks } from "#/contexts/networks";
 import { useSwitchNetwork } from "#/wagmi";
@@ -14,7 +13,7 @@ import { useSwitchNetwork } from "#/wagmi";
 import { CustomConnectButton } from "./CustomConnectButton";
 
 interface IHeader {
-  linkUrl: UrlObject | __next_route_internal_types__.RouteImpl<string>;
+  linkUrl: string;
   imageSrc?: string;
   title: string;
   children?: ReactNode;

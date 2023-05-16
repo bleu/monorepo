@@ -2,6 +2,7 @@
 
 import poolsSdks from "@balancer-pool-metadata/gql/src/balancer-pools";
 import {
+  Address,
   DELEGATE_OWNER,
   Network,
   networkFor,
@@ -14,7 +15,7 @@ import poolMetadataSdks from "@balancer-pool-metadata/gql/src/balancer-pools-met
 
 export function impersonateWhetherDAO(
   chainId: string,
-  address: `0x${string}` | undefined
+  address: Address | undefined
 ) {
   const network = networkFor(chainId);
 

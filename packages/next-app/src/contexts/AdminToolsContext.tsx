@@ -1,5 +1,6 @@
 "use client";
 
+import { Address } from "@balancer-pool-metadata/shared";
 import {
   createContext,
   Dispatch,
@@ -19,7 +20,7 @@ export interface ActionAttribute {
   name: string;
   description: string;
   operationResponsible: string;
-  contractAddress: `0x${string}`;
+  contractAddress: Address;
   contractUrl: string;
   fields: {
     label: string;

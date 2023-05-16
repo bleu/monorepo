@@ -1,6 +1,6 @@
 "use client";
 
-import { Network } from "@balancer-pool-metadata/shared";
+import { Address, Network } from "@balancer-pool-metadata/shared";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { useEffect } from "react";
@@ -71,7 +71,7 @@ export default function Page({
     <>
       <TransactionCard
         operationKindParam={params.operationKind as unknown as string}
-        userAddress={addressLower as `0x${string}`}
+        userAddress={addressLower as Address}
       />
     </>
   );
@@ -82,7 +82,7 @@ function TransactionCard({
   userAddress,
 }: {
   operationKindParam: string;
-  userAddress: `0x${string}`;
+  userAddress: Address;
 }) {
   const operationKindData = {
     [UserBalanceOpKind.DEPOSIT_INTERNAL]: {

@@ -1,7 +1,12 @@
 "use client";
 
 import { SingleInternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Ethereum";
-import { ChevronDownIcon } from "@radix-ui/react-icons";
+import {
+  Address,
+  addressRegex,
+  buildBlockExplorerTokenURL,
+} from "@balancer-pool-metadata/shared";
+import { ChevronDownIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { fetchBalance, FetchBalanceResult } from "@wagmi/core";
 import Image from "next/image";
 import Link from "next/link";
@@ -81,6 +86,9 @@ function TokenModal({
   let { address } = useAccount();
   address = impersonateWhetherDAO(chain?.id.toString() || "1", address);
   const [tokens, setTokens] = useState<(TokenItem | undefined)[]>([]);
+  const [tokenSearch, setTokenSearch] = useState("");
+  const [isTokenSearchDisabled, setIsTokenSearchDisabled] =
+    useState<boolean>(true);
 
   const addressLower = address ? address?.toLowerCase() : "";
 
@@ -89,13 +97,13 @@ function TokenModal({
   const { data: internalBalanceData, mutate } = internalBalances
     .gql(chain?.id.toString() || "1")
     .useInternalBalance({
-      userAddress: addressLower as `0x${string}`,
+      userAddress: addressLower as Address,
     });
 
   refetchRequest({
     mutate,
     chainId: chain?.id.toString() || "1",
-    userAddress: addressLower as `0x${string}`,
+    userAddress: addressLower as Address,
   });
 
   const internalBalancesTokenAdresses = internalBalanceData?.user
@@ -113,13 +121,21 @@ function TokenModal({
     ...new Set([...internalBalancesTokenAdresses, ...tokenListAdresses]),
   ];
 
-  async function getWalletBalance(tokenAdresses: `0x${string}`[]) {
+  async function fetchSingleTokenBalance({
+    tokenAddress,
+  }: {
+    tokenAddress: Address;
+  }) {
+    const tokenData = await fetchBalance({
+      address: addressLower as Address,
+      token: tokenAddress,
+    });
+    return tokenData;
+  }
+  async function getWalletBalance(tokenAdresses: Address[]) {
     const walletBalanceData: TokenWalletBalance[] = [];
     const walletBalancePromises = tokenAdresses.map(async (tokenAddress) => {
-      const tokenData = await fetchBalance({
-        address: addressLower as `0x${string}`,
-        token: tokenAddress,
-      });
+      const tokenData = await fetchSingleTokenBalance({ tokenAddress });
       walletBalanceData.push({
         ...tokenData,
         tokenAddress: tokenAddress,
@@ -157,17 +173,95 @@ function TokenModal({
     }
   }
 
+  const tokenExplorerUrl = buildBlockExplorerTokenURL({
+    chainId: chain?.id,
+    tokenAddress: tokenSearch.toLowerCase() as Address,
+  });
+
   useEffect(() => {
     if (!internalBalanceData?.user?.userInternalBalances) return;
-    getWalletBalance(tokenAdresses as `0x${string}`[]);
+    getWalletBalance(tokenAdresses as Address[]);
   }, [internalBalanceData]);
 
   const network = getNetwork(chain?.name);
+  useEffect(() => {
+    if (!addressRegex.test(tokenSearch)) {
+      setIsTokenSearchDisabled(true);
+      return;
+    }
+    setIsTokenSearchDisabled(false);
+    if (!tokens.some((token) => filterTokenInput({ tokenSearch, token }))) {
+      fetchSingleTokenBalance({
+        tokenAddress: tokenSearch.toLowerCase() as Address,
+      }).then((tokenData) => {
+        setTokens((prev) => [
+          ...prev,
+          {
+            ...tokenData,
+            name: tokenData.symbol,
+            tokenAddress: tokenSearch.toLowerCase() as Address,
+          },
+        ]);
+      });
+    }
+  }, [tokenSearch]);
+
+  function filterTokenInput({
+    tokenSearch,
+    token,
+  }: {
+    tokenSearch: string;
+    token?: TokenItem;
+  }) {
+    {
+      if (!token) return false;
+      const regex = new RegExp(tokenSearch, "i");
+      return regex.test(Object.values(token).join(","));
+    }
+  }
 
   return (
     <div className="text-white divide-y divide-gray-700 max-h-[30rem] overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-blue3">
       <div className="w-full flex flex-col justify-center items-center h-full py-4 gap-y-4">
         <div className="text-xl">Token Search</div>
+        <div className="w-full px-10 flex items-center">
+          <input
+            type="text"
+            placeholder="Search name or paste address"
+            className="bg-blue4 h-9 w-full appearance-none items-center justify-center rounded-l-[4px] px-[10px] text-sm leading-none text-slate12 outline-none"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setTokenSearch(e.target.value)
+            }
+            value={tokenSearch}
+          />
+          {isTokenSearchDisabled ? (
+            <button
+              className="h-9 rounded-r-[4px] bg-gray-200 px-2 leading-none outline-none transition hover:bg-gray-300 disabled:cursor-not-allowed"
+              disabled={isTokenSearchDisabled}
+            >
+              <MagnifyingGlassIcon
+                color="rgb(31 41 55)"
+                className="ml-1 font-semibold"
+                height={20}
+                width={20}
+              />
+            </button>
+          ) : (
+            <a
+              href={tokenExplorerUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="h-9 rounded-r-[4px] bg-white px-2 leading-none outline-none transition hover:bg-gray-300 flex justify-center items-center"
+            >
+              <MagnifyingGlassIcon
+                color="rgb(31 41 55)"
+                className="ml-1 font-semibold"
+                height={20}
+                width={20}
+              />
+            </a>
+          )}
+        </div>
       </div>
       <Table color="blue">
         <Table.HeaderRow>
@@ -180,6 +274,7 @@ function TokenModal({
         </Table.HeaderRow>
         <Table.Body>
           {tokens
+            .filter((token) => filterTokenInput({ tokenSearch, token }))
             .sort((a, b) => (a!.value < b!.value ? 1 : -1))
             .map((token) => {
               if (token) {

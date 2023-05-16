@@ -1,5 +1,6 @@
 "use client";
 import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Ethereum";
+import { Address } from "@balancer-pool-metadata/shared";
 import {
   MinusCircledIcon,
   PlusCircledIcon,
@@ -34,13 +35,13 @@ export function TokenTable() {
   const { data: internalBalanceData, mutate } = internalBalances
     .gql(chain?.id.toString() || "1")
     .useInternalBalance({
-      userAddress: addressLower as `0x${string}`,
+      userAddress: addressLower as Address,
     });
 
   refetchRequest({
     mutate,
     chainId: chain?.id.toString() || "1",
-    userAddress: addressLower as `0x${string}`,
+    userAddress: addressLower as Address,
   });
 
   const tokensWithBalance = internalBalanceData?.user?.userInternalBalances;
@@ -134,7 +135,7 @@ function TableRow({
           {transactionButtons.map((button) => (
             <TransactionButton
               key={button.operation}
-              tokenAddress={token.tokenInfo.address as `0x${string}`}
+              tokenAddress={token.tokenInfo.address as Address}
               icon={button.icon}
               operation={button.operation}
               network={network}
@@ -177,7 +178,7 @@ function TransactionButton({
   network: string;
   icon: React.ReactElement;
   operation: string;
-  tokenAddress: `0x${string}`;
+  tokenAddress: Address;
   disabled?: boolean;
 }) {
   return (

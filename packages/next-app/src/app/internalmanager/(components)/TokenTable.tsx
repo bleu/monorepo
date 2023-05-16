@@ -184,7 +184,7 @@ function TransactionButton({
     <>
       {!disabled ? (
         <Link
-          href={`/internalmanager/${network}/${operation}/${tokenAddress}`}
+          href={`/internalmanager/${network}/${operation}/token/${tokenAddress}`}
           className="leading-none h-[22px] w-[22px] flex justify-center items-center"
         >
           <button

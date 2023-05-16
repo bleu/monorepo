@@ -1,3 +1,4 @@
+import { Address } from "@balancer-pool-metadata/shared";
 import { useEffect } from "react";
 
 export async function fetcher<JSON = unknown>(
@@ -14,7 +15,7 @@ export function refetchRequest({
   chainId,
 }: {
   mutate: () => void;
-  userAddress: `0x${string}`;
+  userAddress: Address;
   chainId?: string;
 }) {
   useEffect(() => {

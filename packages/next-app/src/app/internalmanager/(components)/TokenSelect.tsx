@@ -2,6 +2,7 @@
 
 import { SingleInternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
 import {
+  Address,
   addressRegex,
   buildBlockExplorerTokenURL,
 } from "@balancer-pool-metadata/shared";
@@ -96,13 +97,13 @@ function TokenModal({
   const { data: internalBalanceData, mutate } = internalBalances
     .gql(chain?.id.toString() || "1")
     .useInternalBalance({
-      userAddress: addressLower as `0x${string}`,
+      userAddress: addressLower as Address,
     });
 
   refetchRequest({
     mutate,
     chainId: chain?.id.toString() || "1",
-    userAddress: addressLower as `0x${string}`,
+    userAddress: addressLower as Address,
   });
 
   const internalBalancesTokenAdresses = internalBalanceData?.user
@@ -123,15 +124,15 @@ function TokenModal({
   async function fetchSingleTokenBalance({
     tokenAddress,
   }: {
-    tokenAddress: `0x${string}`;
+    tokenAddress: Address;
   }) {
     const tokenData = await fetchBalance({
-      address: addressLower as `0x${string}`,
+      address: addressLower as Address,
       token: tokenAddress,
     });
     return tokenData;
   }
-  async function getWalletBalance(tokenAdresses: `0x${string}`[]) {
+  async function getWalletBalance(tokenAdresses: Address[]) {
     const walletBalanceData: TokenWalletBalance[] = [];
     const walletBalancePromises = tokenAdresses.map(async (tokenAddress) => {
       const tokenData = await fetchSingleTokenBalance({ tokenAddress });
@@ -174,12 +175,12 @@ function TokenModal({
 
   const tokenExplorerUrl = buildBlockExplorerTokenURL({
     chainId: chain!.id,
-    tokenAddress: tokenSearch.toLowerCase() as `0x${string}`,
+    tokenAddress: tokenSearch.toLowerCase() as Address,
   });
 
   useEffect(() => {
     if (!internalBalanceData?.user?.userInternalBalances) return;
-    getWalletBalance(tokenAdresses as `0x${string}`[]);
+    getWalletBalance(tokenAdresses as Address[]);
   }, [internalBalanceData]);
 
   useEffect(() => {
@@ -190,14 +191,14 @@ function TokenModal({
           .length < 1
       ) {
         fetchSingleTokenBalance({
-          tokenAddress: tokenSearch.toLowerCase() as `0x${string}`,
+          tokenAddress: tokenSearch.toLowerCase() as Address,
         }).then((tokenData) => {
           setTokens((prev) => [
             ...prev,
             {
               ...tokenData,
               name: tokenData.symbol,
-              tokenAddress: tokenSearch.toLowerCase() as `0x${string}`,
+              tokenAddress: tokenSearch.toLowerCase() as Address,
             },
           ]);
         });

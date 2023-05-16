@@ -1,7 +1,8 @@
 "use client";
 
-import { Network } from "@balancer-pool-metadata/shared";
+import { Address, Network } from "@balancer-pool-metadata/shared";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
+import { Route } from "next";
 import Link from "next/link";
 import { useEffect } from "react";
 import { useAccount, useNetwork } from "wagmi";
@@ -68,7 +69,7 @@ export default function Page({
     <>
       <TransactionCard
         operationKindParam={params.operationKind as unknown as string}
-        userAddress={addressLower as `0x${string}`}
+        userAddress={addressLower as Address}
       />
     </>
   );
@@ -79,7 +80,7 @@ function TransactionCard({
   userAddress,
 }: {
   operationKindParam: string;
-  userAddress: `0x${string}`;
+  userAddress: Address;
 }) {
   const operationKindData = {
     [UserBalanceOpKind.DEPOSIT_INTERNAL]: {
@@ -111,7 +112,7 @@ function TransactionCard({
     <div className="flex items-center justify-center h-full">
       <form className="flex flex-col text-white bg-blue3 h-fit my-4 w-fit rounded-lg divide-y divide-gray-700 border border-gray-700">
         <div className="relative w-full flex justify-center h-full">
-          <Link href={"/internalmanager"}>
+          <Link href={"/internalmanager" as Route}>
             <div className="absolute left-8 flex h-full items-center">
               <ArrowLeftIcon
                 height={16}

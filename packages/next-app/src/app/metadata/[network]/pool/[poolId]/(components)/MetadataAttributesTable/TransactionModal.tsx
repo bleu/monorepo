@@ -1,4 +1,5 @@
 "use client";
+import { Address } from "@balancer-pool-metadata/shared";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import cn from "classnames";
@@ -68,7 +69,7 @@ export function ToastContent({
   );
 }
 
-function ProcessTransaction({ poolId }: { poolId: `0x${string}` }) {
+function ProcessTransaction({ poolId }: { poolId: Address }) {
   const { metadata } = usePoolMetadata();
   const {
     handleTransaction,
@@ -134,7 +135,7 @@ function ProcessTransaction({ poolId }: { poolId: `0x${string}` }) {
 export function TransactionModal({
   poolId,
 }: React.PropsWithChildren<{
-  poolId: `0x${string}`;
+  poolId: Address;
 }>) {
   const [approved, setApproved] = useState(false);
 

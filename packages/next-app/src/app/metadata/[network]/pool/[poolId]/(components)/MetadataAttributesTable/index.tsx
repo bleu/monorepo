@@ -1,6 +1,6 @@
 "use client";
 
-import { Network } from "@balancer-pool-metadata/shared";
+import { Address, Network } from "@balancer-pool-metadata/shared";
 import {
   ArrowTopRightIcon,
   Pencil2Icon,
@@ -207,8 +207,8 @@ export default function MetadataAttributesTable({
   data,
   error,
 }: {
-  poolId: `0x${string}`;
-  poolOwner: `0x${string}`;
+  poolId: Address;
+  poolOwner: Address;
   network: Network;
   cid?: string | null;
   data?: PoolMetadataAttribute[];

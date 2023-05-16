@@ -3,6 +3,7 @@
 import { SingleInternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
 import { getInternalBalanceSchema } from "@balancer-pool-metadata/schema";
 import {
+  Address,
   addressRegex,
   buildBlockExplorerAddressURL,
   Network,
@@ -49,7 +50,7 @@ export default function Page({
   params,
 }: {
   params: {
-    tokenAddress: `0x${string}`;
+    tokenAddress: Address;
     network: Network;
     operationKind: keyof typeof operationKindType;
   };
@@ -73,18 +74,18 @@ export default function Page({
   const { data: internalBalanceTokenData, mutate } = internalBalances
     .gql(chain?.id.toString() || "1")
     .useSingleInternalBalance({
-      userAddress: addressLower as `0x${string}`,
+      userAddress: addressLower as Address,
       tokenAddress: params.tokenAddress,
     });
 
   refetchRequest({
     mutate,
     chainId: chain?.id.toString() || "1",
-    userAddress: addressLower as `0x${string}`,
+    userAddress: addressLower as Address,
   });
 
   const { data: walletAmount } = useBalance({
-    address: addressLower as `0x${string}`,
+    address: addressLower as Address,
     token: params.tokenAddress,
   });
 
@@ -156,7 +157,7 @@ export default function Page({
       {tokenData && (
         <TransactionCard
           operationKindParam={params.operationKind as unknown as string}
-          userAddress={addressLower as `0x${string}`}
+          userAddress={addressLower as Address}
           tokenData={tokenData}
           chainId={chain!.id}
           walletAmount={walletAmount?.formatted}
@@ -190,7 +191,7 @@ function TransactionCard({
   walletAmountBigNumber,
 }: {
   operationKindParam: string;
-  userAddress: `0x${string}`;
+  userAddress: Address;
   tokenData: ArrElement<
     GetDeepProp<SingleInternalBalanceQuery, "userInternalBalances">
   >;

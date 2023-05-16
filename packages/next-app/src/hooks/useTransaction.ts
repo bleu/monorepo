@@ -1,4 +1,7 @@
-import { buildBlockExplorerTxURL } from "@balancer-pool-metadata/shared";
+import {
+  Address,
+  buildBlockExplorerTxURL,
+} from "@balancer-pool-metadata/shared";
 import { parseFixed } from "@ethersproject/bignumber";
 import { prepareWriteContract, writeContract } from "@wagmi/core";
 import { useRouter } from "next/navigation";
@@ -43,7 +46,7 @@ export type Notification = {
 };
 
 type SubmitData = {
-  receiverAddress: `0x${string}`;
+  receiverAddress: Address;
   tokenAddress: `0x${string}`;
   tokenAmount: string;
 };

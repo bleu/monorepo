@@ -7,7 +7,6 @@ import {
   networkFor,
   networkIdFor,
 } from "@balancer-pool-metadata/shared";
-import { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -74,10 +73,7 @@ function OwnedPoolsSidebarItems({
   return (
     <>
       {data?.pools.map((item: ArrElement<GetDeepProp<PoolsQuery, "pools">>) => (
-        <Link
-          key={item.id}
-          href={`/metadata/${network}/pool/${item.id}` as Route}
-        >
+        <Link key={item.id} href={`/metadata/${network}/pool/${item.id}`}>
           <Sidebar.Item isSelected={item.id === poolId}>
             <PoolCard isSelected={item.id === poolId} pool={item as Pool} />
           </Sidebar.Item>

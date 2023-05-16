@@ -86,7 +86,7 @@ function TokenModal({
   let { address } = useAccount();
   address = impersonateWhetherDAO(chain?.id.toString() || "1", address);
   const [tokens, setTokens] = useState<(TokenItem | undefined)[]>([]);
-  const [tokenSearch, setTokenSearch] = useState<string>("");
+  const [tokenSearch, setTokenSearch] = useState("");
   const [isTokenSearchDisabled, setIsTokenSearchDisabled] =
     useState<boolean>(true);
 

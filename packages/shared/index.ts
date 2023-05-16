@@ -33,13 +33,14 @@ export const networkUrls = {
   },
 };
 
-export function buildBlockExplorerTxURL({
+export function buildBlockExplorerTxUrl({
   chainId,
   txHash,
 }: {
-  chainId: NetworkChainId;
+  chainId?: NetworkChainId;
   txHash: Address;
 }) {
+  if (!chainId) return undefined;
   const networkUrl = networkUrls[chainId as keyof typeof networkUrls];
   return `${networkUrl.url}tx/${txHash}`;
 }
@@ -48,9 +49,10 @@ export function buildBlockExplorerTokenURL({
   chainId,
   tokenAddress,
 }: {
-  chainId: NetworkChainId;
+  chainId?: NetworkChainId;
   tokenAddress: Address;
 }) {
+  if (!chainId) return undefined;
   const networkUrl = networkUrls[chainId as keyof typeof networkUrls];
   return `${networkUrl.url}token/${tokenAddress}`;
 }
@@ -59,9 +61,10 @@ export function buildBlockExplorerAddressURL({
   chainId,
   address,
 }: {
-  chainId: NetworkChainId;
+  chainId?: NetworkChainId;
   address: Address;
 }) {
+  if (!chainId) return undefined;
   const networkUrl = networkUrls[chainId as keyof typeof networkUrls];
   return {
     url: `${networkUrl.url}address/${address}`,

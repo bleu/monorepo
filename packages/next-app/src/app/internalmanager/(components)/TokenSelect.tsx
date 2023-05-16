@@ -174,7 +174,7 @@ function TokenModal({
   }
 
   const tokenExplorerUrl = buildBlockExplorerTokenURL({
-    chainId: chain!.id,
+    chainId: chain?.id,
     tokenAddress: tokenSearch.toLowerCase() as Address,
   });
 

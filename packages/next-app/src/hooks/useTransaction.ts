@@ -47,7 +47,7 @@ export type Notification = {
 
 type SubmitData = {
   receiverAddress: Address;
-  tokenAddress: `0x${string}`;
+  tokenAddress: Address;
   tokenAmount: string;
 };
 
@@ -131,7 +131,7 @@ export function useMetadataTransaction({
   poolId,
   metadata,
 }: {
-  poolId: `0x${string}`;
+  poolId: Address;
   metadata: PoolMetadataAttribute[];
 }): TransactionHookResult {
   const [ipfsCID, setIpfsCID] = useState("");
@@ -149,7 +149,7 @@ export function useMetadataTransaction({
   const { write, data } = usePoolMetadataRegistrySetPoolMetadata(config);
   const { chain } = useNetwork();
 
-  const handleSetTransactionLink = (hash: `0x${string}`) => {
+  const handleSetTransactionLink = (hash: Address) => {
     const txUrl = buildBlockExplorerTxURL({ chainId: chain!.id, txHash: hash });
     setTransactionUrl(txUrl);
   };
@@ -241,7 +241,7 @@ export function useInternalBalancesTransaction({
   tokenDecimals,
   operationKind,
 }: {
-  userAddress: `0x${string}`;
+  userAddress: Address;
   tokenDecimals: number;
   operationKind: UserBalanceOpKind | null;
 }) {
@@ -261,14 +261,14 @@ export function useInternalBalancesTransaction({
   //Prepare data for transaction
   const userBalanceOp = {
     kind: operationKind as number,
-    asset: submitData?.tokenAddress as `0x${string}`,
+    asset: submitData?.tokenAddress as Address,
     //TODO get this if tokenAmount is not defined a better solution than 0 to initialize the value
     amount: parseFixed(
       submitData?.tokenAmount ? submitData.tokenAmount : "0",
       tokenDecimals
     ),
-    sender: userAddress as `0x${string}`,
-    recipient: submitData?.receiverAddress as `0x${string}`,
+    sender: userAddress as Address,
+    recipient: submitData?.receiverAddress as Address,
   };
 
   const { config } = usePrepareVaultManageUserBalance({
@@ -285,7 +285,7 @@ export function useInternalBalancesTransaction({
       NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.AUTHORIZING]
     );
     const config = await prepareWriteContract({
-      address: submitData?.tokenAddress as `0x${string}`,
+      address: submitData?.tokenAddress as Address,
       abi: erc20ABI,
       functionName: "approve",
       args: [
@@ -334,7 +334,7 @@ export function useInternalBalancesTransaction({
     }
   }, [submitData]);
 
-  function handleTransactionStatus({ hash }: { hash: `0x${string}` }) {
+  function handleTransactionStatus({ hash }: { hash: Address }) {
     if (!hash || !chain) return;
     const txUrl = buildBlockExplorerTxURL({
       chainId: chain!.id,

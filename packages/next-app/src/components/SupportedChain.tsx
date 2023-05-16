@@ -1,12 +1,12 @@
-import { chains } from "#/wagmi/client";
+import { Network } from "@balancer-pool-metadata/shared";
 
 export function CheckSupportedChains({
   children,
   supportedChains,
   chainName,
 }: React.PropsWithChildren<{
-  supportedChains?: (typeof chains)[number]["name"][];
-  chainName?: (typeof chains)[number]["name"];
+  supportedChains?: Network[];
+  chainName?: Network;
   isMetadata?: boolean;
 }>) {
   if (supportedChains && chainName && !supportedChains.includes(chainName)) {

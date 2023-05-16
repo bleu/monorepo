@@ -1,5 +1,6 @@
 "use client";
 
+import { Network } from "@balancer-pool-metadata/shared";
 import { Route } from "next";
 import * as React from "react";
 import { useNetwork } from "wagmi";
@@ -9,7 +10,6 @@ import { Header, HeaderNetworkMismatchAlert } from "#/components/Header";
 import { CheckSupportedChains } from "#/components/SupportedChain";
 import { InternalManagerProvider } from "#/contexts/InternalManagerContext";
 import { getNetwork, NetworksContextProvider } from "#/contexts/networks";
-import { chains } from "#/wagmi/client";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { chain } = useNetwork();
@@ -28,14 +28,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <InternalManagerProvider>
           <CheckSupportedChains
             supportedChains={[
-              "Ethereum",
-              "Gnosis",
-              "Arbitrum One",
-              "Optimism",
-              "Goerli",
-              "Sepolia",
+              Network.Ethereum,
+              Network.Gnosis,
+              Network.Arbitrum,
+              Network.Optimism,
+              Network.Goerli,
+              Network.Sepolia,
             ]}
-            chainName={chain?.name as (typeof chains)[number]["name"]}
+            chainName={network}
           >
             {children}
           </CheckSupportedChains>

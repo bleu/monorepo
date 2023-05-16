@@ -1,6 +1,6 @@
 import {
   Address,
-  buildBlockExplorerTxURL,
+  buildBlockExplorerTxUrl,
 } from "@balancer-pool-metadata/shared";
 import { parseFixed } from "@ethersproject/bignumber";
 import { prepareWriteContract, writeContract } from "@wagmi/core";
@@ -150,7 +150,7 @@ export function useMetadataTransaction({
   const { chain } = useNetwork();
 
   const handleSetTransactionLink = (hash: Address) => {
-    const txUrl = buildBlockExplorerTxURL({ chainId: chain!.id, txHash: hash });
+    const txUrl = buildBlockExplorerTxUrl({ chainId: chain?.id, txHash: hash });
     setTransactionUrl(txUrl);
   };
 
@@ -336,8 +336,8 @@ export function useInternalBalancesTransaction({
 
   function handleTransactionStatus({ hash }: { hash: Address }) {
     if (!hash || !chain) return;
-    const txUrl = buildBlockExplorerTxURL({
-      chainId: chain!.id,
+    const txUrl = buildBlockExplorerTxUrl({
+      chainId: chain?.id,
       txHash: hash,
     });
     setNotification(

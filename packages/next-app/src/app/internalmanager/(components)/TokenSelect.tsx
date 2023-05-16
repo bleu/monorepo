@@ -184,27 +184,27 @@ function TokenModal({
   }, [internalBalanceData]);
 
   useEffect(() => {
-    if (addressRegex.test(tokenSearch)) {
-      setIsTokenSearchDisabled(false);
-      if (
-        tokens.filter((token) => filterTokenInput({ tokenSearch, token }))
-          .length < 1
-      ) {
-        fetchSingleTokenBalance({
-          tokenAddress: tokenSearch.toLowerCase() as Address,
-        }).then((tokenData) => {
-          setTokens((prev) => [
-            ...prev,
-            {
-              ...tokenData,
-              name: tokenData.symbol,
-              tokenAddress: tokenSearch.toLowerCase() as Address,
-            },
-          ]);
-        });
-      }
-    } else {
+    if (!addressRegex.test(tokenSearch)) {
       setIsTokenSearchDisabled(true);
+      return;
+    }
+    setIsTokenSearchDisabled(false);
+    if (
+      tokens.filter((token) => filterTokenInput({ tokenSearch, token }))
+        .length < 1
+    ) {
+      fetchSingleTokenBalance({
+        tokenAddress: tokenSearch.toLowerCase() as Address,
+      }).then((tokenData) => {
+        setTokens((prev) => [
+          ...prev,
+          {
+            ...tokenData,
+            name: tokenData.symbol,
+            tokenAddress: tokenSearch.toLowerCase() as Address,
+          },
+        ]);
+      });
     }
   }, [tokenSearch]);
 

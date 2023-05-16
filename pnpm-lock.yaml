@@ -106,9 +106,6 @@ importers:
       graphql-tag:
         specifier: '>=2'
         version: 2.12.6(graphql@16.6.0)
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
       swr:
         specifier: 2.0.0
         version: 2.0.0(react@18.2.0)

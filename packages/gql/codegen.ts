@@ -1,6 +1,5 @@
-import { Network } from "@balancer-pool-metadata/shared";
+import { capitalizeFirstLetter, Network } from "@balancer-pool-metadata/shared";
 import { CodegenConfig } from "@graphql-codegen/cli";
-import { upperFirst } from "lodash";
 
 export enum Subgraph {
   BalancerPoolsMetadata = "balancer-pools-metadata",
@@ -103,7 +102,7 @@ const generates = Object.assign(
       Object.entries(endpoints())
         .map(([network, endpoint]) => [
           [
-            `./src/${name}/__generated__/${upperFirst(network)}.ts`,
+            `./src/${name}/__generated__/${capitalizeFirstLetter(network)}.ts`,
             {
               schema: endpoint,
               documents: [`src/${name}/**/*.ts`],
@@ -116,7 +115,9 @@ const generates = Object.assign(
             },
           ],
           [
-            `./src/${name}/__generated__/${upperFirst(network)}.server.ts`,
+            `./src/${name}/__generated__/${capitalizeFirstLetter(
+              network
+            )}.server.ts`,
             {
               schema: endpoint,
               documents: [`src/${name}/**/*.ts`],

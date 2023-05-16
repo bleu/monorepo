@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/server";
 
-import { OgImage } from "../ogImage";
+import { OgImage } from "../../components/ogImage";
 
 export default function og() {
   return new ImageResponse(

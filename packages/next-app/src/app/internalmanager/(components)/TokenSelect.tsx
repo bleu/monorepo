@@ -8,7 +8,6 @@ import {
 } from "@balancer-pool-metadata/shared";
 import { ChevronDownIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { fetchBalance, FetchBalanceResult } from "@wagmi/core";
-import { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { tokenLogoUri } from "public/tokens/logoUri";
@@ -309,9 +308,7 @@ function TokenRow({
     <Table.BodyRow key={token.tokenAddress}>
       <Table.BodyCell customWidth="w-12">
         <Link
-          href={
-            `/internalmanager/${chainName}/${operationKind}/${token.tokenAddress}` as Route
-          }
+          href={`/internalmanager/${chainName}/${operationKind}/${token.tokenAddress}`}
         >
           <button
             type="button"
@@ -339,9 +336,7 @@ function TokenRow({
       </Table.BodyCell>
       <Table.BodyCell>
         <Link
-          href={
-            `/internalmanager/${chainName}/${operationKind}/${token.tokenAddress}` as Route
-          }
+          href={`/internalmanager/${chainName}/${operationKind}/${token.tokenAddress}`}
         >
           <button
             type="button"
@@ -355,9 +350,7 @@ function TokenRow({
       </Table.BodyCell>
       <Table.BodyCell>
         <Link
-          href={
-            `/internalmanager/${chainName}/${operationKind}/${token.tokenAddress}` as Route
-          }
+          href={`/internalmanager/${chainName}/${operationKind}/${token.tokenAddress}`}
         >
           <button
             type="button"
@@ -371,9 +364,7 @@ function TokenRow({
       </Table.BodyCell>
       <Table.BodyCell>
         <Link
-          href={
-            `/internalmanager/${chainName}/${operationKind}/${token.tokenAddress}` as Route
-          }
+          href={`/internalmanager/${chainName}/${operationKind}/${token.tokenAddress}`}
         >
           <button
             type="button"

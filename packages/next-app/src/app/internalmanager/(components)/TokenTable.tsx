@@ -7,7 +7,6 @@ import {
   WidthIcon,
 } from "@radix-ui/react-icons";
 import { upperFirst } from "lodash";
-import { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { tokenLogoUri } from "public/tokens/logoUri";
@@ -185,9 +184,7 @@ function TransactionButton({
     <>
       {!disabled ? (
         <Link
-          href={
-            `/internalmanager/${network}/${operation}/${tokenAddress}` as Route
-          }
+          href={`/internalmanager/${network}/${operation}/${tokenAddress}`}
           className="leading-none h-[22px] w-[22px] flex justify-center items-center"
         >
           <button

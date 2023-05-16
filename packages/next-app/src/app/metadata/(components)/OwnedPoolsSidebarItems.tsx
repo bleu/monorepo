@@ -2,7 +2,12 @@ import {
   Pool,
   PoolsQuery,
 } from "@balancer-pool-metadata/gql/src/balancer-pools/__generated__/Mainnet";
-import { networkFor, networkIdFor } from "@balancer-pool-metadata/shared";
+import {
+  Address,
+  networkFor,
+  networkIdFor,
+} from "@balancer-pool-metadata/shared";
+import { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -41,7 +46,7 @@ function OwnedPoolsSidebarItems({
   owner,
   chainId,
 }: {
-  owner: `0x${string}`;
+  owner: Address;
   chainId: string;
 }) {
   const { poolId } = useParams();
@@ -69,7 +74,10 @@ function OwnedPoolsSidebarItems({
   return (
     <>
       {data?.pools.map((item: ArrElement<GetDeepProp<PoolsQuery, "pools">>) => (
-        <Link key={item.id} href={`/metadata/${network}/pool/${item.id}`}>
+        <Link
+          key={item.id}
+          href={`/metadata/${network}/pool/${item.id}` as Route}
+        >
           <Sidebar.Item isSelected={item.id === poolId}>
             <PoolCard isSelected={item.id === poolId} pool={item as Pool} />
           </Sidebar.Item>

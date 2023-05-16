@@ -1,11 +1,13 @@
 "use client";
 import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
+import { Address } from "@balancer-pool-metadata/shared";
 import {
   MinusCircledIcon,
   PlusCircledIcon,
   WidthIcon,
 } from "@radix-ui/react-icons";
 import { upperFirst } from "lodash";
+import { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { tokenLogoUri } from "public/tokens/logoUri";
@@ -33,13 +35,13 @@ export function TokenTable() {
   const { data: internalBalanceData, mutate } = internalBalances
     .gql(chain?.id.toString() || "1")
     .useInternalBalance({
-      userAddress: addressLower as `0x${string}`,
+      userAddress: addressLower as Address,
     });
 
   refetchRequest({
     mutate,
     chainId: chain?.id.toString() || "1",
-    userAddress: addressLower as `0x${string}`,
+    userAddress: addressLower as Address,
   });
 
   const tokensWithBalance = internalBalanceData?.user?.userInternalBalances;
@@ -133,7 +135,7 @@ function TableRow({
           {transactionButtons.map((button) => (
             <TransactionButton
               key={button.operation}
-              tokenAddress={token.tokenInfo.address as `0x${string}`}
+              tokenAddress={token.tokenInfo.address as Address}
               icon={button.icon}
               operation={button.operation}
               network={network}
@@ -176,14 +178,16 @@ function TransactionButton({
   network: string;
   icon: React.ReactElement;
   operation: string;
-  tokenAddress: `0x${string}`;
+  tokenAddress: Address;
   disabled?: boolean;
 }) {
   return (
     <>
       {!disabled ? (
         <Link
-          href={`/internalmanager/${network}/${operation}/${tokenAddress}`}
+          href={
+            `/internalmanager/${network}/${operation}/${tokenAddress}` as Route
+          }
           className="leading-none h-[22px] w-[22px] flex justify-center items-center"
         >
           <button

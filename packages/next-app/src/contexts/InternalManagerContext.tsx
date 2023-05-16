@@ -1,6 +1,7 @@
 "use client";
 
 import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
+import { Address } from "@balancer-pool-metadata/shared";
 import {
   createContext,
   PropsWithChildren,
@@ -35,7 +36,7 @@ type tokenProps = ArrElement<
 
 export type useInternalBalancesTransactionProps = {
   token: tokenProps;
-  userAddress: `0x${string}`;
+  userAddress: Address;
 };
 
 type InternalManagerContextType = {

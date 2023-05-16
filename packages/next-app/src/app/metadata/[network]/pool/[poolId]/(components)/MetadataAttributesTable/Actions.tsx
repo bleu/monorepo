@@ -1,5 +1,6 @@
 "use client";
 
+import { Address } from "@balancer-pool-metadata/shared";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { useContext } from "react";
 import { useAccount } from "wagmi";
@@ -24,7 +25,7 @@ export function Actions({
   metadataUpdated,
   isMetadataValid,
 }: {
-  poolId: `0x${string}`;
+  poolId: Address;
   canEditMetadata: boolean;
   metadataUpdated: boolean;
   isMetadataValid: boolean;

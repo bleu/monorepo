@@ -1,3 +1,5 @@
+export type Address = `0x${string}`;
+
 export enum Network {
   Mainnet = "Mainnet",
   Polygon = "Polygon",
@@ -36,7 +38,7 @@ export function buildBlockExplorerTxURL({
   txHash,
 }: {
   chainId: NetworkChainId;
-  txHash: `0x${string}`;
+  txHash: Address;
 }) {
   const networkUrl = networkUrls[chainId as keyof typeof networkUrls];
   return `${networkUrl.url}tx/${txHash}`;
@@ -47,7 +49,7 @@ export function buildBlockExplorerTokenURL({
   tokenAddress,
 }: {
   chainId: NetworkChainId;
-  tokenAddress: `0x${string}`;
+  tokenAddress: Address;
 }) {
   const networkUrl = networkUrls[chainId as keyof typeof networkUrls];
   return `${networkUrl.url}token/${tokenAddress}`;
@@ -58,7 +60,7 @@ export function buildBlockExplorerAddressURL({
   address,
 }: {
   chainId: NetworkChainId;
-  address: `0x${string}`;
+  address: Address;
 }) {
   const networkUrl = networkUrls[chainId as keyof typeof networkUrls];
   return {

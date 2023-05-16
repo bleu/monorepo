@@ -1,5 +1,6 @@
 "use client";
 
+import { Network } from "@balancer-pool-metadata/shared";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import * as Separator from "@radix-ui/react-separator";
 import { Route } from "next";
@@ -15,7 +16,6 @@ import Spinner from "#/components/Spinner";
 import { CheckSupportedChains } from "#/components/SupportedChain";
 import { getNetwork, NetworksContextProvider } from "#/contexts/networks";
 import { PoolMetadataProvider } from "#/contexts/PoolMetadataContext";
-import { chains } from "#/wagmi/client";
 
 import OwnedPoolsSidebarItems from "./(components)/OwnedPoolsSidebarItems";
 import SearchPoolForm from "./(components)/SearchPoolForm";
@@ -55,8 +55,8 @@ export default function Layout({ children }: React.PropsWithChildren) {
           </div>
           <PoolMetadataProvider>
             <CheckSupportedChains
-              supportedChains={["Goerli", "Polygon"]}
-              chainName={chain?.name as (typeof chains)[number]["name"]}
+              supportedChains={[Network.Goerli, Network.Polygon]}
+              chainName={network}
             >
               {children}
             </CheckSupportedChains>

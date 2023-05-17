@@ -23,6 +23,7 @@ export default function Layout({children}: React.PropsWithChildren) {
         <div className="flex flex-1 gap-x-8">
           <div>
             <Sidebar isFloating>
+              {/* TODO: BAL-384 */}
               <Dialog title="Go  to pool" content={<></>}>
                 <span className="text-sm font-normal text-slate12 cursor-pointer flex items-center space-x-2">
                   <MagnifyingGlassIcon width="16" height="16" strokeWidth={1} />

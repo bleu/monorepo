@@ -18,7 +18,7 @@ export default function Layout({children}: React.PropsWithChildren) {
           linkUrl={"/stableswapsimulator"}
           title={"Stable Swap Simulator"}
           imageSrc={balancerSymbol}
-          withWallet={false}
+          wallet={false}
         />
         <div className="flex flex-1 gap-x-8">
           <div>

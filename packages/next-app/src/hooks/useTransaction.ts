@@ -1,6 +1,7 @@
 import {
   Address,
   buildBlockExplorerTxUrl,
+  networkFor,
 } from "@balancer-pool-metadata/shared";
 import { parseFixed } from "@ethersproject/bignumber";
 import { prepareWriteContract, writeContract } from "@wagmi/core";
@@ -257,6 +258,8 @@ export function useInternalBalancesTransaction({
   const { chain } = useNetwork();
   const [submitData, setSubmitData] = useState<SubmitData[]>([]);
 
+  const network = networkFor(chain?.id);
+
   //Prepare data for transaction
   const userBalancesOp = submitData.map((data) => {
     return {
@@ -367,13 +370,13 @@ export function useInternalBalancesTransaction({
   useWaitForTransaction({
     hash: data?.hash,
     onSuccess() {
-      push(`/internalmanager`);
+      push(`/internalmanager/${network}`);
       setNotification(
         NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.CONFIRMED]
       );
     },
     onError() {
-      push(`/internalmanager`);
+      push(`/internalmanager/${network}`);
       setNotification(
         NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WRITE_ERROR]
       );

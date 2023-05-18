@@ -6,8 +6,9 @@ import {
   addressRegex,
   buildBlockExplorerTokenURL,
 } from "@balancer-pool-metadata/shared";
+import { BigNumber, formatFixed } from "@ethersproject/bignumber";
 import { ChevronDownIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import { erc20ABI, fetchBalance, FetchBalanceResult, multicall } from "@wagmi/core";
+import { erc20ABI, fetchBalance, multicall } from "@wagmi/core";
 import Image from "next/image";
 import Link from "next/link";
 import { tokenLogoUri } from "public/tokens/logoUri";
@@ -23,12 +24,14 @@ import { impersonateWhetherDAO, internalBalances } from "#/lib/gql";
 import { refetchRequest } from "#/utils/fetcher";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
-interface TokenWalletBalance extends FetchBalanceResult {
+interface TokenWalletBalance {
   tokenAddress: string;
+  value: BigNumber;
+  symbol: string | null | undefined;
+  decimals: number | undefined;
 }
 
 interface TokenItem extends TokenWalletBalance {
-  name?: string | null;
   internalBalance?: string | null;
 }
 
@@ -133,27 +136,25 @@ function TokenModal({
     return tokenData;
   }
   async function getWalletBalance(tokenAdresses: Address[]) {
-    const walletBalanceData: TokenWalletBalance[] = [];
     const tokensContracts = tokenAdresses.map((tokenAddress) => ({
       abi: erc20ABI,
       address: tokenAddress,
-      functionName: 'balanceOf',
-      args: [addressLower]
+      functionName: "balanceOf",
+      args: [addressLower],
     }));
     const data = await multicall({ contracts: tokensContracts });
-    const walletBalance = tokenAdresses.map((tokenAddress, index) => ({
-      tokenAddress,
-      balance: data[index]
-    }));
-    console.log({walletBalance});
-    // const walletBalancePromises = tokenAdresses.map(async (tokenAddress) => {
-    //   const tokenData = await fetchSingleTokenBalance({ tokenAddress });
-    //   walletBalanceData.push({
-    //     ...tokenData,
-    //     tokenAddress: tokenAddress,
-    //   });
-    // });
-    // await Promise.all(walletBalancePromises);
+    const walletBalanceData = tokenAdresses.map((tokenAddress, index) => {
+      const token = tokenList.find(
+        (obj) => obj.address.toLowerCase() === tokenAddress.toLowerCase()
+      );
+      return {
+        tokenAddress,
+        value: data[index] as BigNumber,
+        symbol: token?.symbol,
+        decimals: token?.decimals,
+      };
+    });
+
     if (walletBalanceData) {
       setTokens([]);
       walletBalanceData.forEach((token) => {
@@ -167,9 +168,11 @@ function TokenModal({
           setTokens((prev) => [
             ...prev,
             {
-              ...token,
+              symbol: internalBalance.tokenInfo.symbol,
+              decimals: internalBalance.tokenInfo.decimals,
+              tokenAddress: internalBalance.tokenInfo.address,
               internalBalance: internalBalance.balance,
-              name: internalBalance.tokenInfo.name,
+              value: token.value,
             },
           ]);
         } else {
@@ -177,7 +180,6 @@ function TokenModal({
             ...prev,
             {
               ...token,
-              name: token.symbol,
             },
           ]);
         }
@@ -191,7 +193,6 @@ function TokenModal({
   });
 
   useEffect(() => {
-    if (!internalBalanceData?.user?.userInternalBalances) return;
     getWalletBalance(tokenAdresses as Address[]);
   }, [internalBalanceData]);
 
@@ -209,8 +210,9 @@ function TokenModal({
         setTokens((prev) => [
           ...prev,
           {
-            ...tokenData,
-            name: tokenData.symbol,
+            value: tokenData.value,
+            symbol: tokenData.symbol,
+            decimals: tokenData.decimals,
             tokenAddress: tokenSearch.toLowerCase() as Address,
           },
         ]);
@@ -357,7 +359,7 @@ function TokenRow({
               close?.();
             }}
           >
-            {token.name} ({token.symbol})
+            {token.symbol}
           </button>
         </Link>
       </Table.BodyCell>
@@ -385,7 +387,7 @@ function TokenRow({
               close?.();
             }}
           >
-            {token.formatted}
+            {token.value ? formatFixed(token.value, token.decimals) : ""}
           </button>
         </Link>
       </Table.BodyCell>

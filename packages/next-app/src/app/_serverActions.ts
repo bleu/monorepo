@@ -13,5 +13,4 @@ export async function getTokensData({
     .filter(
       (token: { chainId: number }) => token.chainId === networkConnectedToWallet
     )
-    .slice(0, 29);
 }

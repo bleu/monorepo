@@ -123,6 +123,15 @@ export const getInternalBalanceSchema = ({
   return InternalBalanceSchema;
 };
 
+export const AddressSchema = z.object({
+  receiverAddress: z
+    .string()
+    .min(1)
+    .refine((value) => ethers.utils.isAddress(value), {
+      message: "Provided address is invalid",
+    }),
+});
+
 // export const jsonSchema = zodToJsonSchema(
 //   PoolMetadataSchema,
 //   "PoolMetadataSchema"

@@ -1,5 +1,5 @@
 "use client";
-import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
+import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Ethereum";
 import { AddressSchema } from "@balancer-pool-metadata/schema";
 import { Address, networkFor } from "@balancer-pool-metadata/shared";
 import { zodResolver } from "@hookform/resolvers/zod";

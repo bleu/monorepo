@@ -12,7 +12,6 @@ env:
 jobs:
   preview_app:
     runs-on: ubuntu-latest
-
     # Only run one deployment at a time per PR.
     concurrency:
       group: pr-${{ github.event.number }}
@@ -33,6 +32,7 @@ jobs:
         uses: superfly/fly-pr-review-apps@1.0.0
         with:
           name: bleu-balancer-tools-pr-${{ github.event.number }}-preview
+          org: bleu
 
       - name: Clean up GitHub environment
         uses: strumwolf/delete-deployment-environment@v2
@@ -41,3 +41,4 @@ jobs:
           # ⚠️ The provided token needs permission for admin write:org
           token: ${{ secrets.GITHUB_TOKEN }}
           name: bleu-balancer-tools-pr-${{ github.event.number }}-preview
+          org: bleu

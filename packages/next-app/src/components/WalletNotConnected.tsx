@@ -1,7 +1,8 @@
 import Image from "next/image";
 
-import SearchPoolForm from "#/app/metadata/(components)/SearchPoolForm";
 import ConnectWalletImage from "#/assets/connect-wallet.svg";
+import SearchPoolForm from "#/components/SearchPoolForm";
+import { usePoolMetadata } from "#/contexts/PoolMetadataContext";
 
 import { Dialog } from "./Dialog";
 
@@ -19,7 +20,12 @@ export default function WalletNotConnected({
         <div className="text-center text-slate11 text-lg">
           {/* TODO: */}
           Alternatively, open a pool directly clicking&nbsp;
-          <Dialog title="Go to pool" content={<SearchPoolForm />}>
+          <Dialog
+            title="Go to pool"
+            content={
+              <SearchPoolForm onSubmit={usePoolMetadata().handleGoToPool} />
+            }
+          >
             <span className="cursor-pointer text-slate12"> here</span>
           </Dialog>
         </div>

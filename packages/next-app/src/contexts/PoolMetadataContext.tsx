@@ -1,7 +1,9 @@
 "use client";
 
 import { TypenameEnum } from "@balancer-pool-metadata/schema";
+import { networkIdEnumMap } from "@balancer-pool-metadata/shared";
 import isEqual from "lodash/isEqual";
+import { useRouter } from "next/navigation";
 import {
   createContext,
   Dispatch,
@@ -12,7 +14,9 @@ import {
   useState,
 } from "react";
 
+import { PoolAttribute } from "#/components/SearchPoolForm";
 import { toSlug } from "#/utils/formatStringCase";
+import { useNetwork } from "#/wagmi";
 
 // TODO: generate TS types from zod: https://github.com/sachinraja/zod-to-ts
 export interface PoolMetadataAttribute {
@@ -33,6 +37,7 @@ interface PoolMetadataContextType {
   setStatus: Dispatch<SetStateAction<UpdateStatus>>;
   metadataUpdated: boolean;
   handleRemoveMetadataAttr: (key: string) => void;
+  handleGoToPool: (formData: PoolAttribute) => void;
   isMetadataValid: boolean;
 }
 
@@ -88,6 +93,16 @@ export function PoolMetadataProvider({ children }: PropsWithChildren) {
     return metadata.every((item) => toSlug(item.key) !== toSlug(key));
   }
 
+  function handleGoToPool(formData: PoolAttribute) {
+    const { push } = useRouter();
+    const { chain } = useNetwork();
+
+    const networkId = formData.network ?? chain?.id.toString();
+    const networkName =
+      networkIdEnumMap[networkId as keyof typeof networkIdEnumMap];
+    push(`/metadata/${networkName}/pool/${formData.poolId}`);
+  }
+
   const metadataUpdated = !isEqual(metadata, originalMetadata);
 
   useEffect(() => {
@@ -107,6 +122,7 @@ export function PoolMetadataProvider({ children }: PropsWithChildren) {
         metadataUpdated,
         handleSetOriginalMetadata: setOriginalMetadata,
         handleRemoveMetadataAttr,
+        handleGoToPool,
         isMetadataValid,
       }}
     >

@@ -9,15 +9,18 @@ import { useNetwork } from "wagmi";
 import balancerSymbol from "#/assets/balancer-symbol.svg";
 import { Dialog } from "#/components/Dialog";
 import { Header, HeaderNetworkMismatchAlert } from "#/components/Header";
+import SearchPoolForm from "#/components/SearchPoolForm";
 import Sidebar from "#/components/Sidebar";
 import Spinner from "#/components/Spinner";
 import { CheckSupportedChains } from "#/components/SupportedChain";
 import { NetworksContextProvider } from "#/contexts/networks";
-import { PoolMetadataProvider } from "#/contexts/PoolMetadataContext";
+import {
+  PoolMetadataProvider,
+  usePoolMetadata,
+} from "#/contexts/PoolMetadataContext";
 import { chains } from "#/wagmi/client";
 
 import OwnedPoolsSidebarItems from "./(components)/OwnedPoolsSidebarItems";
-import SearchPoolForm from "./(components)/SearchPoolForm";
 
 export default function Layout({ children }: React.PropsWithChildren) {
   const { chain } = useNetwork();
@@ -33,7 +36,12 @@ export default function Layout({ children }: React.PropsWithChildren) {
         <div className="flex flex-1 gap-x-8">
           <div>
             <Sidebar isFloating>
-              <Dialog title="Go  to pool" content={<SearchPoolForm />}>
+              <Dialog
+                title="Go to pool"
+                content={
+                  <SearchPoolForm onSubmit={usePoolMetadata().handleGoToPool} />
+                }
+              >
                 <span className="text-sm font-normal text-slate12 cursor-pointer flex items-center space-x-2">
                   <MagnifyingGlassIcon width="16" height="16" strokeWidth={1} />
                   <span>Open a pool directly</span>

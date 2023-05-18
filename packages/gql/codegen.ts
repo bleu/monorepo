@@ -1,4 +1,4 @@
-import { Network } from "@balancer-pool-metadata/shared";
+import { capitalizeFirstLetter, Network } from "@balancer-pool-metadata/shared";
 import { CodegenConfig } from "@graphql-codegen/cli";
 
 export enum Subgraph {
@@ -8,6 +8,15 @@ export enum Subgraph {
   BalancerInternalManager = "balancer-internal-manager",
 }
 
+// IMPORTANT NOTE:
+// The endpointFor function expects every network has an endpoint
+// If a network doesn't have an endpoint, it will throw an error
+// to not break the build and raise an error we used the Goerli endpoints for
+// all the networks that don't have an subgraph deployed yet
+// this will be removed once we have all the subgraphs deployed
+// TODO: https://linear.app/bleu-llc/issue/BAL-131/deploy-contracts-in-all-networks-that-balancer-is-deployed
+// https://linear.app/bleu-llc/issue/BAL-290/deploy-subgraph-with-token-relation-on-other-networks
+
 export const SUBGRAPHS = {
   [Subgraph.BalancerPoolsMetadata]: {
     name: Subgraph.BalancerPoolsMetadata,
@@ -15,11 +24,12 @@ export const SUBGRAPHS = {
       const baseEndpoint = "https://api.thegraph.com/subgraphs/name/bleu-llc";
 
       return {
-        [Network.Mainnet]: `${baseEndpoint}/balancer-pools-metadata`,
+        [Network.Ethereum]: `${baseEndpoint}/balancer-pools-metadata`,
         [Network.Polygon]: `${baseEndpoint}/balancer-metadata-polygon`,
-        [Network.Goerli]: `${baseEndpoint}/balancer-metadata-goerli`,
-        // TODO: https://linear.app/bleu-llc/issue/BAL-131/deploy-contracts-in-all-networks-that-balancer-is-deployed
         [Network.Arbitrum]: `${baseEndpoint}/balancer-metadata-goerli`,
+        [Network.Gnosis]: `${baseEndpoint}/balancer-metadata-goerli`,
+        [Network.Optimism]: `${baseEndpoint}/balancer-metadata-goerli`,
+        [Network.Goerli]: `${baseEndpoint}/balancer-metadata-goerli`,
         [Network.Sepolia]: `${baseEndpoint}/balancer-metadata-goerli`,
       };
     },
@@ -34,11 +44,12 @@ export const SUBGRAPHS = {
         "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-gauges";
 
       return {
-        [Network.Mainnet]: `${baseEndpoint}`,
+        [Network.Ethereum]: `${baseEndpoint}`,
         [Network.Polygon]: `${baseEndpoint}-polygon`,
         [Network.Arbitrum]: `${baseEndpoint}-arbitrum`,
+        [Network.Gnosis]: `${baseEndpoint}-goerli`,
+        [Network.Optimism]: `${baseEndpoint}-goerli`,
         [Network.Goerli]: `${baseEndpoint}-goerli`,
-        // TODO: https://linear.app/bleu-llc/issue/BAL-131/deploy-contracts-in-all-networks-that-balancer-is-deployed
         [Network.Sepolia]: `${baseEndpoint}-goerli`,
       };
     },
@@ -53,11 +64,12 @@ export const SUBGRAPHS = {
         "https://api.thegraph.com/subgraphs/name/balancer-labs";
 
       return {
-        [Network.Mainnet]: `${baseEndpoint}/balancer-v2`,
+        [Network.Ethereum]: `${baseEndpoint}/balancer-v2`,
         [Network.Polygon]: `${baseEndpoint}/balancer-polygon-v2`,
         [Network.Arbitrum]: `${baseEndpoint}/balancer-arbitrum-v2`,
+        [Network.Gnosis]: `${baseEndpoint}/balancer-goerli-v2`,
+        [Network.Optimism]: `${baseEndpoint}/balancer-goerli-v2`,
         [Network.Goerli]: `${baseEndpoint}/balancer-goerli-v2`,
-        // TODO: https://linear.app/bleu-llc/issue/BAL-131/deploy-contracts-in-all-networks-that-balancer-is-deployed
         [Network.Sepolia]: `${baseEndpoint}/balancer-goerli-v2`,
       };
     },
@@ -71,13 +83,13 @@ export const SUBGRAPHS = {
       //This is a fork of the pools subgraph that's to be merged to Balancer's own subgraph
       const baseEndpoint =
         "https://api.thegraph.com/subgraphs/name/bleu-studio";
-
       return {
         //TODO: deploy subgraph on mainnet, polygon and arbitrum
-        // https://linear.app/bleu-llc/issue/BAL-290/deploy-subgraph-with-token-relation-on-other-networks
-        [Network.Mainnet]: `https://api.thegraph.com/subgraphs/name/bleu-llc/balancer-goerli-v2`,
-        [Network.Polygon]: `${baseEndpoint}/balancer-v2-goerli`,
-        [Network.Arbitrum]: `${baseEndpoint}/balancer-v2-goerli`,
+        [Network.Ethereum]: `${baseEndpoint}/balancer-mainnet-v2`,
+        [Network.Polygon]: `${baseEndpoint}/balancer-polygon-v2`,
+        [Network.Arbitrum]: `${baseEndpoint}/balancer-arbitrum-v2`,
+        [Network.Gnosis]: `${baseEndpoint}/balancer-gnosis-v2`,
+        [Network.Optimism]: `${baseEndpoint}/balancer-optimism-v2`,
         [Network.Goerli]: `${baseEndpoint}/balancer-v2-goerli`,
         [Network.Sepolia]: `https://api.studio.thegraph.com/query/46539/balancer-sepolia-v2/v0.0.1`,
       };
@@ -95,7 +107,7 @@ const generates = Object.assign(
       Object.entries(endpoints())
         .map(([network, endpoint]) => [
           [
-            `./src/${name}/__generated__/${network}.ts`,
+            `./src/${name}/__generated__/${capitalizeFirstLetter(network)}.ts`,
             {
               schema: endpoint,
               documents: [`src/${name}/**/*.ts`],
@@ -108,7 +120,9 @@ const generates = Object.assign(
             },
           ],
           [
-            `./src/${name}/__generated__/${network}.server.ts`,
+            `./src/${name}/__generated__/${capitalizeFirstLetter(
+              network
+            )}.server.ts`,
             {
               schema: endpoint,
               documents: [`src/${name}/**/*.ts`],

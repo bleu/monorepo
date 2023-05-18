@@ -49,6 +49,7 @@ type SubmitData = {
   receiverAddress: Address;
   tokenAddress: Address;
   tokenAmount: string;
+  tokenDecimals: number;
 };
 
 type TransactionHookResult = {
@@ -238,11 +239,9 @@ export function useMetadataTransaction({
 
 export function useInternalBalancesTransaction({
   userAddress,
-  tokenDecimals,
   operationKind,
 }: {
   userAddress: Address;
-  tokenDecimals: number;
   operationKind: UserBalanceOpKind | null;
 }) {
   const {
@@ -256,23 +255,25 @@ export function useInternalBalancesTransaction({
   } = useInternalBalance();
   const { push } = useRouter();
   const { chain } = useNetwork();
-  const [submitData, setSubmitData] = useState<SubmitData | null>(null);
+  const [submitData, setSubmitData] = useState<SubmitData[]>([]);
 
   //Prepare data for transaction
-  const userBalanceOp = {
-    kind: operationKind as number,
-    asset: submitData?.tokenAddress as Address,
-    //TODO get this if tokenAmount is not defined a better solution than 0 to initialize the value
-    amount: parseFixed(
-      submitData?.tokenAmount ? submitData.tokenAmount : "0",
-      tokenDecimals
-    ),
-    sender: userAddress as Address,
-    recipient: submitData?.receiverAddress as Address,
-  };
+  const userBalancesOp = submitData.map((data) => {
+    return {
+      kind: operationKind as number,
+      asset: data.tokenAddress as Address,
+      //TODO get this if tokenAmount is not defined a better solution than 0 to initialize the value
+      amount: parseFixed(
+        data.tokenAmount ? data.tokenAmount : "0",
+        data.tokenDecimals
+      ),
+      sender: userAddress as Address,
+      recipient: data.receiverAddress as Address,
+    };
+  });
 
   const { config } = usePrepareVaultManageUserBalance({
-    args: [[userBalanceOp]],
+    args: [userBalancesOp],
   });
 
   const { data, write } = useVaultManageUserBalance(config);
@@ -285,14 +286,14 @@ export function useInternalBalancesTransaction({
       NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.AUTHORIZING]
     );
     const config = await prepareWriteContract({
-      address: submitData?.tokenAddress as Address,
+      address: submitData[0].tokenAddress as Address,
       abi: erc20ABI,
       functionName: "approve",
       args: [
         vaultAddress[5],
         parseFixed(
-          submitData?.tokenAmount ? submitData.tokenAmount : "0",
-          tokenDecimals
+          submitData[0]?.tokenAmount ? submitData[0].tokenAmount : "0",
+          submitData[0]?.tokenDecimals ? submitData[0].tokenDecimals : "0"
         ),
       ],
     });
@@ -309,17 +310,26 @@ export function useInternalBalancesTransaction({
   }
 
   //trigger transaction
-  function handleTransaction(data: FieldValues) {
-    setSubmitData({
-      tokenAddress: data.tokenAddress,
-      tokenAmount: data.tokenAmount,
-      receiverAddress: data.receiverAddress,
-    });
+  function handleTransaction({
+    data,
+    decimals,
+  }: {
+    data: FieldValues;
+    decimals: number;
+  }) {
+    setSubmitData([
+      {
+        tokenAddress: data.tokenAddress,
+        tokenAmount: data.tokenAmount,
+        tokenDecimals: decimals,
+        receiverAddress: data.receiverAddress,
+      },
+    ]);
   }
 
   // //trigger the actual transaction
   useEffect(() => {
-    if (!submitData) return;
+    if (submitData.length === 0) return;
     setTransactionUrl(undefined);
     setNotification(
       NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WAITING_APPROVAL]
@@ -388,5 +398,6 @@ export function useInternalBalancesTransaction({
 
   return {
     handleTransaction,
+    setSubmitData,
   };
 }

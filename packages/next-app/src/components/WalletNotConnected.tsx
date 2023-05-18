@@ -1,8 +1,8 @@
 import Image from "next/image";
 
+import handleGoToPool from "#/app/metadata/(handles)/handleGoToPool";
 import ConnectWalletImage from "#/assets/connect-wallet.svg";
 import SearchPoolForm from "#/components/SearchPoolForm";
-import { usePoolMetadata } from "#/contexts/PoolMetadataContext";
 
 import { Dialog } from "./Dialog";
 
@@ -11,8 +11,6 @@ export default function WalletNotConnected({
 }: {
   isInternalManager?: boolean;
 }) {
-  const { handleGoToPool } = usePoolMetadata();
-
   return (
     <div className="w-full rounded-3xl items-center py-16 px-12 md:py-20 flex flex-col">
       <div className="text-center text-amber9 text-3xl">

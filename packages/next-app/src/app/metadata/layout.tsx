@@ -15,20 +15,14 @@ import Sidebar from "#/components/Sidebar";
 import Spinner from "#/components/Spinner";
 import { CheckSupportedChains } from "#/components/SupportedChain";
 import { getNetwork, NetworksContextProvider } from "#/contexts/networks";
-import {
-  PoolMetadataProvider,
-  usePoolMetadata,
-} from "#/contexts/PoolMetadataContext";
-import { chains } from "#/wagmi/client";
-
+import { PoolMetadataProvider } from "#/contexts/PoolMetadataContext";
 
 import OwnedPoolsSidebarItems from "./(components)/OwnedPoolsSidebarItems";
+import handleGoToPool from "./(handles)/handleGoToPool";
 
 export default function Layout({ children }: React.PropsWithChildren) {
   const { chain } = useNetwork();
   const network = getNetwork(chain?.name);
-
-  const { handleGoToPool } = usePoolMetadata();
 
   return (
     <NetworksContextProvider>

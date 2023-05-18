@@ -1,7 +1,7 @@
 import { gql } from "graphql-tag";
 
 export const poolWhereOwner = gql`
-  query Pools($owner: Bytes!) {
+  query PoolsWhereOwner($owner: Bytes!) {
     pools(where: { owner: $owner }) {
       poolType
       name
@@ -15,26 +15,43 @@ export const poolWhereOwner = gql`
   }
 `;
 
-export const poolSymbol = gql`
+export const poolWherePoolTypeInAndId = gql`
+  query PoolsWherePoolTypeInAndId(
+    $poolId: ID!
+    $poolTypes: [String!] = [
+      "Weighted"
+      "ComposableStable"
+      "Stable"
+      "MetaStable"
+      "Element"
+      "LiquidityBootstrapping"
+      "Linear"
+    ]
+  ) {
+    pools(where: { poolType_in: $poolTypes, id: $poolId }) {
+      id
+      address
+      name
+      poolType
+    }
+  }
+`;
+
+export const poolById = gql`
   query Pool($poolId: ID!) {
     pool(id: $poolId) {
-      symbol
-    }
-  }
-`;
-
-export const poolOwner = gql`
-  query PoolOwner($poolId: ID!) {
-    pool(id: $poolId) {
-      owner
-    }
-  }
-`;
-
-export const poolAddress = gql`
-  query PoolAddress($poolId: ID!) {
-    pool(id: $poolId) {
       address
+      owner
+      poolType
+      symbol
+      swapFee
+      amp
+      tokens {
+        symbol
+        balance
+        decimals
+        priceRate
+      }
     }
   }
 `;

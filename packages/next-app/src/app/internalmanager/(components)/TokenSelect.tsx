@@ -7,7 +7,7 @@ import {
   buildBlockExplorerTokenURL,
 } from "@balancer-pool-metadata/shared";
 import { ChevronDownIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import { fetchBalance, FetchBalanceResult } from "@wagmi/core";
+import { erc20ABI, fetchBalance, FetchBalanceResult, multicall } from "@wagmi/core";
 import Image from "next/image";
 import Link from "next/link";
 import { tokenLogoUri } from "public/tokens/logoUri";
@@ -134,14 +134,26 @@ function TokenModal({
   }
   async function getWalletBalance(tokenAdresses: Address[]) {
     const walletBalanceData: TokenWalletBalance[] = [];
-    const walletBalancePromises = tokenAdresses.map(async (tokenAddress) => {
-      const tokenData = await fetchSingleTokenBalance({ tokenAddress });
-      walletBalanceData.push({
-        ...tokenData,
-        tokenAddress: tokenAddress,
-      });
-    });
-    await Promise.all(walletBalancePromises);
+    const tokensContracts = tokenAdresses.map((tokenAddress) => ({
+      abi: erc20ABI,
+      address: tokenAddress,
+      functionName: 'balanceOf',
+      args: [addressLower]
+    }));
+    const data = await multicall({ contracts: tokensContracts });
+    const walletBalance = tokenAdresses.map((tokenAddress, index) => ({
+      tokenAddress,
+      balance: data[index]
+    }));
+    console.log({walletBalance});
+    // const walletBalancePromises = tokenAdresses.map(async (tokenAddress) => {
+    //   const tokenData = await fetchSingleTokenBalance({ tokenAddress });
+    //   walletBalanceData.push({
+    //     ...tokenData,
+    //     tokenAddress: tokenAddress,
+    //   });
+    // });
+    // await Promise.all(walletBalancePromises);
     if (walletBalanceData) {
       setTokens([]);
       walletBalanceData.forEach((token) => {

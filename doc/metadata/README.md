@@ -1,5 +1,5 @@
 ### Pool Metadata
-Pool Metadata is an open source tool designed to provide additional insights into pool types and compositions on Balancer. It aims to serve as a comprehensive and convenient way for pool owners to add metadata such as name, symbol, description, links, logos, change-logs for Managed Pools, and more to their pools. This tool is not exclusive to Balancer's front-end; any team building on Balancer (e.g., Fjord, Xave, Copper, etc) can consume the data and display it on their own UIs.
+Pool Metadata is an open source tool designed to provide additional insights into pool types and compositions on Balancer. It aims to serve as a comprehensive and convenient way for pool owners to add metadata such as name, symbol, description, links, logos, and more to their pools. This tool is not exclusive to Balancer's front-end; any team building on Balancer (e.g., Fjord, Xave, Copper, etc) can consume the data and display it on their own UIs.
 
 
 # Table of Contents

@@ -13,21 +13,23 @@ export default function Page({
     operationKind: keyof typeof operationKindType;
   };
 }) {
-  if (operationKindType[params.operationKind] !== operationKindType.withdraw) {
-    return (
-      <div className="flex flex-col items-center justify-center w-full p-5 h-full text-center">
-        <div className="text-3xl font-bold text-white">
-          You can not {params.operationKind} all of your tokens
-        </div>
-        <div className="text-xl font-medium text-white">
-          Please return to
-          <Link href="/internalmanager" className="text-amber9">
-            {" "}
-            the home page
-          </Link>
-        </div>
+  if (operationKindType[params.operationKind] === operationKindType.withdraw)
+    return <WithdrawAll />;
+  return (
+    <div className="flex flex-col items-center justify-center w-full p-5 h-full text-center">
+      <div className="text-3xl font-bold text-white">
+        You can not {params.operationKind} all of your tokens
       </div>
-    );
-  }
-  return <WithdrawAll />;
+      <div className="text-xl font-medium text-white">
+        Please return to
+        <Link
+          href={`/internalmanager/${params.network}`}
+          className="text-amber9"
+        >
+          {" "}
+          the home page
+        </Link>
+      </div>
+    </div>
+  );
 }

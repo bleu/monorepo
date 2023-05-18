@@ -1,5 +1,5 @@
 "use client";
-import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
+import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Ethereum";
 import { Address } from "@balancer-pool-metadata/shared";
 import {
   MinusCircledIcon,
@@ -17,6 +17,7 @@ import genericTokenLogo from "#/assets/generic-token-logo.png";
 import Table from "#/components/Table";
 import { Toast } from "#/components/Toast";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
+import { getNetwork } from "#/contexts/networks";
 import { impersonateWhetherDAO, internalBalances } from "#/lib/gql";
 import { refetchRequest } from "#/utils/fetcher";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
@@ -103,7 +104,7 @@ function TableRow({
   token: ArrElement<GetDeepProp<InternalBalanceQuery, "userInternalBalances">>;
   chainName: string;
 }) {
-  const network = chainName.toLowerCase();
+  const network = getNetwork(chainName);
 
   return (
     <Table.BodyRow key={token.tokenInfo.address}>

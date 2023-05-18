@@ -1,5 +1,6 @@
 "use client";
 
+import { Network } from "@balancer-pool-metadata/shared";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import * as Separator from "@radix-ui/react-separator";
 import * as React from "react";
@@ -13,17 +14,20 @@ import SearchPoolForm from "#/components/SearchPoolForm";
 import Sidebar from "#/components/Sidebar";
 import Spinner from "#/components/Spinner";
 import { CheckSupportedChains } from "#/components/SupportedChain";
-import { NetworksContextProvider } from "#/contexts/networks";
+import { getNetwork, NetworksContextProvider } from "#/contexts/networks";
 import {
   PoolMetadataProvider,
   usePoolMetadata,
 } from "#/contexts/PoolMetadataContext";
 import { chains } from "#/wagmi/client";
 
+
 import OwnedPoolsSidebarItems from "./(components)/OwnedPoolsSidebarItems";
 
 export default function Layout({ children }: React.PropsWithChildren) {
   const { chain } = useNetwork();
+  const network = getNetwork(chain?.name);
+
   const { handleGoToPool } = usePoolMetadata();
 
   return (
@@ -31,7 +35,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
       <div className="flex flex-col h-full">
         <HeaderNetworkMismatchAlert />
         <Header
-          linkUrl={"/metadata"}
+          linkUrl={`/metadata/${network}/`}
           title={"Pool Metadata"}
           imageSrc={balancerSymbol}
         />
@@ -63,8 +67,8 @@ export default function Layout({ children }: React.PropsWithChildren) {
               </Sidebar>
             </div>
             <CheckSupportedChains
-              supportedChains={["Goerli", "Polygon"]}
-              chainName={chain?.name as (typeof chains)[number]["name"]}
+              supportedChains={[Network.Goerli, Network.Polygon]}
+              chainName={network}
             >
               {children}
             </CheckSupportedChains>

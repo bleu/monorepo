@@ -22,6 +22,9 @@ export function impersonateWhetherDAO(
   if (
     network !== Network.Goerli &&
     network !== Network.Sepolia &&
+    network !== Network.Gnosis &&
+    network !== Network.Optimism &&
+    network !== Network.Arbitrum &&
     networkMultisigs[network] === address
   ) {
     return DELEGATE_OWNER;

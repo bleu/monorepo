@@ -1,21 +1,23 @@
 "use client";
 
 import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
+import { Route } from "next";
 import Link from "next/link";
 
 import { Button } from "#/components";
 import Spinner from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
+import { getNetwork } from "#/contexts/networks";
 import { useAccount, useNetwork } from "#/wagmi";
 
-import { TokenTable } from "./(components)/TokenTable";
+import { TokenTable } from "../(components)/TokenTable";
 
 export default function Page() {
   const { isConnected, isReconnecting, isConnecting } = useAccount();
 
   const { chain } = useNetwork();
 
-  const network = chain?.name?.toLowerCase();
+  const network = getNetwork(chain?.name);
 
   if (!isConnected && !isReconnecting && !isConnecting) {
     return <WalletNotConnected isInternalManager />;
@@ -37,7 +39,7 @@ export default function Page() {
             </span>
           </div>
           <div className="flex gap-4">
-            <Link href={`/internalmanager/${network}/deposit/`}>
+            <Link href={`/internalmanager/${network}/deposit/` as Route}>
               <Button
                 className="flex items-center gap-1"
                 disabled={false}

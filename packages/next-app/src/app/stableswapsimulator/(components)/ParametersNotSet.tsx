@@ -9,6 +9,7 @@ import { useStableSwap } from "#/contexts/StableSwapContext";
 
 export default function ParametersNotSet() {
   const { handleImportPoolParametersById } = useStableSwap();
+
   return (
     <div className="w-full rounded-3xl items-center py-16 px-12 md:py-20 flex flex-col">
       <div className="text-center text-amber9 text-3xl">

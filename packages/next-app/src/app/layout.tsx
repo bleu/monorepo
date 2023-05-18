@@ -6,6 +6,10 @@ import * as React from "react";
 import { Footer } from "#/components/Footer";
 import { RootLayout } from "#/components/RootLayout";
 
+export const metadata = {
+  metadataBase: new URL("https://tools.balancer.blue"),
+};
+
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full">

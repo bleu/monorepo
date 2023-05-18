@@ -70,6 +70,8 @@ export function InternalManagerProvider({ children }: PropsWithChildren) {
   function clearNotification() {
     setNotification(null);
     setIsNotifierOpen(false);
+    setTransactionStatus(TransactionStatus.AUTHORIZING);
+    setTransactionUrl(undefined);
   }
 
   useEffect(() => {

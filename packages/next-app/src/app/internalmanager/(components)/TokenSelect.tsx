@@ -323,7 +323,7 @@ function TokenRow({
     <Table.BodyRow key={token.tokenAddress}>
       <Table.BodyCell customWidth="w-12">
         <Link
-          href={`/internalmanager/${chainName}/${operationKind}/${token.tokenAddress}`}
+          href={`/internalmanager/${chainName}/${operationKind}/token/${token.tokenAddress}`}
         >
           <button
             type="button"
@@ -351,7 +351,7 @@ function TokenRow({
       </Table.BodyCell>
       <Table.BodyCell>
         <Link
-          href={`/internalmanager/${chainName}/${operationKind}/${token.tokenAddress}`}
+          href={`/internalmanager/${chainName}/${operationKind}/token/${token.tokenAddress}`}
         >
           <button
             type="button"
@@ -365,7 +365,7 @@ function TokenRow({
       </Table.BodyCell>
       <Table.BodyCell>
         <Link
-          href={`/internalmanager/${chainName}/${operationKind}/${token.tokenAddress}`}
+          href={`/internalmanager/${chainName}/${operationKind}/token/${token.tokenAddress}`}
         >
           <button
             type="button"
@@ -379,7 +379,7 @@ function TokenRow({
       </Table.BodyCell>
       <Table.BodyCell>
         <Link
-          href={`/internalmanager/${chainName}/${operationKind}/${token.tokenAddress}`}
+          href={`/internalmanager/${chainName}/${operationKind}/token/${token.tokenAddress}`}
         >
           <button
             type="button"

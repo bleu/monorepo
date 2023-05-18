@@ -249,7 +249,6 @@ function TransactionCard({
 
   const { handleTransaction } = useInternalBalancesTransaction({
     userAddress: userAddress,
-    tokenDecimals: tokenData.tokenInfo.decimals,
     operationKind: operationKindEnum,
   });
 
@@ -261,7 +260,7 @@ function TransactionCard({
   const receiverAddressValue = watch("receiverAddress");
 
   function handleOnSubmit(data: FieldValues) {
-    handleTransaction(data);
+    handleTransaction({ data, decimals: tokenData.tokenInfo.decimals });
   }
 
   const { transactionStatus } = useInternalBalance();

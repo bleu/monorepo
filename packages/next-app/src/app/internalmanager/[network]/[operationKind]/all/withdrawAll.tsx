@@ -1,7 +1,7 @@
 "use client";
 import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
 import { AddressSchema } from "@balancer-pool-metadata/schema";
-import { Address } from "@balancer-pool-metadata/shared";
+import { Address, networkFor } from "@balancer-pool-metadata/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
@@ -40,6 +40,8 @@ export function WithdrawAll() {
   address = impersonateWhetherDAO(chain?.id.toString() || "1", address);
 
   const addressLower = address ? address?.toLowerCase() : "";
+
+  const network = networkFor(chain?.id);
 
   const { data: tokenData, mutate } = internalBalances
     .gql(chain?.id.toString() || "1")
@@ -96,7 +98,7 @@ export function WithdrawAll() {
         className="flex flex-col text-white bg-blue3 h-fit my-4 w-fit rounded-lg divide-y divide-gray-700 border border-gray-700"
       >
         <div className="relative w-full flex justify-center h-full">
-          <Link href={"/internalmanager"}>
+          <Link href={`/internalmanager/${network}`}>
             <div className="absolute left-8 flex h-full items-center">
               <ArrowLeftIcon
                 height={16}

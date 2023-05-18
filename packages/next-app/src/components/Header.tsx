@@ -17,9 +17,10 @@ interface IHeader {
   imageSrc?: string;
   title: string;
   children?: ReactNode;
+  wallet?: boolean;
 }
 
-export function Header({ linkUrl, imageSrc, title, children }: IHeader) {
+export function Header({ linkUrl, imageSrc, title, children, wallet=true }: IHeader) {
   return (
     <div className="flex h-20 w-full items-center border-b border-b-blue3 bg-blue2 p-4 text-white">
       <div className="mr-auto flex flex-1 justify-start">
@@ -34,9 +35,10 @@ export function Header({ linkUrl, imageSrc, title, children }: IHeader) {
         </Link>
       </div>
       <div className="flex flex-1 justify-center">{children}</div>
+      {wallet && 
       <div className="ml-auto flex flex-1 justify-end">
         <CustomConnectButton />
-      </div>
+      </div>}
     </div>
   );
 }

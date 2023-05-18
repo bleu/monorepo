@@ -1,6 +1,6 @@
 "use client";
 
-import { PoolQuery } from "@balancer-pool-metadata/gql/src/balancer-pools/__generated__/Mainnet";
+import { PoolQuery } from "@balancer-pool-metadata/gql/src/balancer-pools/__generated__/Ethereum";
 import { createContext, PropsWithChildren, useContext, useState } from "react";
 
 import { PoolAttribute } from "#/components/SearchPoolForm";
@@ -13,13 +13,14 @@ export interface TokensData {
 }
 
 export interface AnalysisData {
-  tokens: TokensData[];
-  ampFactor: number;
-  swapFee: number;
+  tokens?: TokensData[] | undefined;
+  ampFactor?: number | undefined;
+  swapFee?: number | undefined;
 }
 
 interface StableSwapContextType {
   initialData: AnalysisData | null;
+  setInitialData: (data: AnalysisData | null) => void;
   handleImportPoolParametersById: (data: PoolAttribute) => void;
 }
 
@@ -55,6 +56,7 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
     <StableSwapContext.Provider
       value={{
         initialData,
+        setInitialData,
         handleImportPoolParametersById,
       }}
     >

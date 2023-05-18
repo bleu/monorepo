@@ -1,6 +1,6 @@
 "use client";
 
-import { SingleInternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
+import { SingleInternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Ethereum";
 import {
   Address,
   addressRegex,
@@ -18,6 +18,7 @@ import genericTokenLogo from "#/assets/generic-token-logo.png";
 import { Dialog } from "#/components/Dialog";
 import Table from "#/components/Table";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
+import { getNetwork } from "#/contexts/networks";
 import { impersonateWhetherDAO, internalBalances } from "#/lib/gql";
 import { refetchRequest } from "#/utils/fetcher";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
@@ -182,6 +183,7 @@ function TokenModal({
     getWalletBalance(tokenAdresses as Address[]);
   }, [internalBalanceData]);
 
+  const network = getNetwork(chain?.name);
   useEffect(() => {
     if (!addressRegex.test(tokenSearch)) {
       setIsTokenSearchDisabled(true);
@@ -217,7 +219,6 @@ function TokenModal({
       return regex.test(Object.values(token).join(","));
     }
   }
-
   return (
     <div className="text-white divide-y divide-gray-700 max-h-[30rem] overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-blue3">
       <div className="w-full flex flex-col justify-center items-center h-full py-4 gap-y-4">
@@ -282,7 +283,7 @@ function TokenModal({
                     token={token}
                     operationKind={operationKind}
                     close={close}
-                    chainName={chain!.name.toLowerCase()}
+                    chainName={network}
                   />
                 );
               }

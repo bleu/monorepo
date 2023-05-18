@@ -1,8 +1,20 @@
 "use client";
 
+import { Network, networkFor } from "@balancer-pool-metadata/shared";
+import { Route } from "next";
+import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 
 import { useNetwork } from "#/wagmi";
+
+export function getNetwork(chainName?: string) {
+  if (!chainName) return Network.Ethereum;
+  const network =
+    chainName?.toLowerCase() === "arbitrum one"
+      ? "arbitrum"
+      : chainName?.toLowerCase();
+  return network as Network;
+}
 
 interface NetworksContextI {
   urlPathNetwork?: number;
@@ -26,11 +38,21 @@ export const NetworksContextProvider = ({
     React.useState<number>();
 
   const network = useNetwork();
-
+  const { push } = useRouter();
+  const pathname = usePathname();
+  const appName = pathname.split("/")[1];
   useEffect(() => {
     if (!network.chain?.id) setSelectedNetwork(undefined);
-
     setSelectedNetwork(network.chain?.id);
+    if (
+      network.chain?.id &&
+      networkConnectedToWallet !== undefined &&
+      networkConnectedToWallet !== network.chain?.id
+    ) {
+      push(
+        `/${appName}/${networkFor(network.chain.id).toLowerCase()}` as Route
+      );
+    }
   }, [network]);
 
   const mismatchedNetworks =

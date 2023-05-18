@@ -1,7 +1,7 @@
 import {
   Pool,
   PoolsQuery,
-} from "@balancer-pool-metadata/gql/src/balancer-pools/__generated__/Mainnet";
+} from "@balancer-pool-metadata/gql/src/balancer-pools/__generated__/Ethereum";
 import {
   Address,
   networkFor,
@@ -61,6 +61,7 @@ function OwnedPoolsSidebarItems({
   });
 
   const network = networkFor(chainId);
+
   if (!data?.pools?.length)
     return (
       <>

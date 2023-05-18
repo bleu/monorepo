@@ -1,6 +1,6 @@
 "use client";
 
-import { SingleInternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
+import { SingleInternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Ethereum";
 import { getInternalBalanceSchema } from "@balancer-pool-metadata/schema";
 import {
   Address,
@@ -8,6 +8,7 @@ import {
   buildBlockExplorerAddressURL,
   Network,
   NetworkChainId,
+  networkFor,
 } from "@balancer-pool-metadata/shared";
 import { BigNumber } from "@ethersproject/bignumber";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,6 +30,7 @@ import {
 } from "#/components/TransactionProgressBar";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
+import { getNetwork } from "#/contexts/networks";
 import {
   TransactionStatus,
   useInternalBalancesTransaction,
@@ -117,7 +119,9 @@ export default function Page({
     return <Spinner />;
   }
 
-  if (chain?.name.toLowerCase() !== params.network) {
+  const network = getNetwork(chain?.name);
+
+  if (network !== params.network) {
     return (
       <div className="w-full rounded-3xl items-center py-16 px-12 md:py-20 flex flex-col h-full">
         <div className="text-center text-amber9 text-3xl">
@@ -200,6 +204,8 @@ function TransactionCard({
   walletAmount?: string;
   walletAmountBigNumber?: BigNumber;
 }) {
+  const network = networkFor(chainId);
+
   const operationKindData = {
     [UserBalanceOpKind.DEPOSIT_INTERNAL]: {
       title: "Deposit to",
@@ -268,7 +274,7 @@ function TransactionCard({
         className="flex flex-col text-white bg-blue3 h-fit my-4 w-fit rounded-lg divide-y divide-gray-700 border border-gray-700"
       >
         <div className="relative w-full flex justify-center h-full">
-          <Link href={"/internalmanager"}>
+          <Link href={`/internalmanager/${network}`}>
             <div className="absolute left-8 flex h-full items-center">
               <ArrowLeftIcon
                 height={16}

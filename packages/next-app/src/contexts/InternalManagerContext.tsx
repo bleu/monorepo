@@ -1,6 +1,6 @@
 "use client";
 
-import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Mainnet";
+import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Ethereum";
 import { Address } from "@balancer-pool-metadata/shared";
 import {
   createContext,

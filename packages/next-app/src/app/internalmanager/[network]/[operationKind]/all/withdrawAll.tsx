@@ -64,8 +64,6 @@ export function WithdrawAll() {
     operationKind: UserBalanceOpKind.WITHDRAW_INTERNAL,
   });
 
-  // const tokenInfo = watch("tokenInfo");
-
   function handleOnSubmit(data: FieldValues) {
     if (!tokenData?.user?.userInternalBalances) return;
     const tokenInfo = tokenData.user.userInternalBalances.map((token) => {

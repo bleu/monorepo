@@ -25,9 +25,9 @@ export default function SearchPoolForm({
   poolTypeFilter,
   onSubmit,
 }: {
+  onSubmit: (formData: PoolAttribute) => void;
   close?: () => void;
   poolTypeFilter?: string[];
-  onSubmit?: (formData: PoolAttribute) => void;
 }) {
   const {
     register,
@@ -43,14 +43,15 @@ export default function SearchPoolForm({
   const poolId = watch("poolId");
   const network = watch("network");
 
-  const gqlVariables = poolTypeFilter?.length
-    ? { poolId, poolTypes: poolTypeFilter }
-    : { poolId };
-  const { data: poolData } = pools
+  const gqlVariables = {
+    poolId,
+    ...(poolTypeFilter?.length ? { poolTypes: poolTypeFilter } : {}),
+  };
+  const { data: poolsData } = pools
     .gql(network || "1")
     .usePoolsWherePoolTypeInAndId(gqlVariables, { revalidateIfStale: true });
 
-  const isPool = !!poolData?.pools?.length;
+  const isPool = !!poolsData?.pools?.length;
 
   function handleSubmitForm(formData: PoolAttribute) {
     onSubmit?.(formData);
@@ -58,7 +59,7 @@ export default function SearchPoolForm({
   }
 
   React.useEffect(() => {
-    if (poolData && !poolData.pools && poolId) {
+    if (poolsData && !poolsData.pools && poolId) {
       setError(
         "poolId",
         {
@@ -71,7 +72,7 @@ export default function SearchPoolForm({
     } else {
       clearErrors("poolId");
     }
-  }, [poolData]);
+  }, [poolsData]);
 
   React.useLayoutEffect(() => {
     resetField("poolId");

@@ -47,6 +47,7 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
     const poolData = await pools.gql(formData.network || "1").Pool({
       poolId: formData.poolId,
     });
+    if (!poolData) return;
     setInitialData(convertGqlToAnalysisData(poolData));
   }
 

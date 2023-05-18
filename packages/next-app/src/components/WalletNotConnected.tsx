@@ -11,6 +11,8 @@ export default function WalletNotConnected({
 }: {
   isInternalManager?: boolean;
 }) {
+  const { handleGoToPool } = usePoolMetadata();
+
   return (
     <div className="w-full rounded-3xl items-center py-16 px-12 md:py-20 flex flex-col">
       <div className="text-center text-amber9 text-3xl">
@@ -22,9 +24,7 @@ export default function WalletNotConnected({
           Alternatively, open a pool directly clicking&nbsp;
           <Dialog
             title="Go to pool"
-            content={
-              <SearchPoolForm onSubmit={usePoolMetadata().handleGoToPool} />
-            }
+            content={<SearchPoolForm onSubmit={handleGoToPool} />}
           >
             <span className="cursor-pointer text-slate12"> here</span>
           </Dialog>

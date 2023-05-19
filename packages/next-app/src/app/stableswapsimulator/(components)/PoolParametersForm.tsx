@@ -20,7 +20,15 @@ export default function PoolParametersForm() {
       placeholder: `Define the initial ${label}`,
       value: formData?.[field],
       onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = parseFloat(e.target.value);
+        const value =
+          e.target.value == "" ? undefined : parseFloat(e.target.value);
+        if (value == undefined) {
+          setFormData({
+            ...formData,
+            [field]: undefined,
+          });
+          return;
+        }
         if (value < 0) return;
         setFormData({
           ...formData,

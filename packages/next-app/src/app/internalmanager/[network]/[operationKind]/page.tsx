@@ -119,13 +119,13 @@ function TransactionCard({
               <ArrowLeftIcon
                 height={16}
                 width={16}
-                className="text-gray-500 hover:text-amber10 duration-200"
+                className="text-gray10 hover:text-amber10 duration-200"
               />
             </div>
           </Link>
           <div className="flex flex-col items-center py-3 min-w-[530px]">
             <div className="text-xl">{title} Internal Balance</div>
-            <span className="text-gray-200 text-sm">{description}</span>
+            <span className="text-gray12 text-sm">{description}</span>
           </div>
         </div>
         <div className="p-9 flex flex-col gap-y-6">

@@ -101,7 +101,7 @@ export function WithdrawAll() {
               <ArrowLeftIcon
                 height={16}
                 width={16}
-                className="text-gray-500 hover:text-amber10 duration-200"
+                className="text-gray10 hover:text-amber10 duration-200"
               />
             </div>
           </Link>

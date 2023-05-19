@@ -52,7 +52,7 @@ export function TokenTable() {
         tokensWithBalance?.length === 0) && (
         <div className="flex flex-col items-center justify-center mt-24">
           <div className="text-2xl font-semibold">No tokens found</div>
-          <div className="text-sm text-gray-400 flex flex-col items-center">
+          <div className="text-sm text-gray11 flex flex-col items-center">
             You don&apos;t have any tokens in your internal balance on{" "}
             <span>{chain?.name}, make a deposit or change the network.</span>
           </div>

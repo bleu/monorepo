@@ -7,9 +7,9 @@ import { PoolAttribute } from "#/components/SearchPoolForm";
 import { pools } from "#/lib/gql";
 
 export interface TokensData {
-  symbol: string;
-  balance: number;
-  rate: number;
+  symbol: string | undefined;
+  balance: number | undefined;
+  rate: number | undefined;
 }
 
 export interface AnalysisData {
@@ -33,13 +33,13 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
     poolData: PoolQuery | undefined
   ): AnalysisData {
     return {
-      swapFee: poolData?.pool?.swapFee,
-      ampFactor: poolData?.pool?.amp,
+      swapFee: Number(poolData?.pool?.swapFee),
+      ampFactor: Number(poolData?.pool?.amp),
       tokens:
         poolData?.pool?.tokens?.map((token) => ({
           symbol: token?.symbol,
-          balance: token?.balance,
-          rate: token?.priceRate,
+          balance: Number(token?.balance),
+          rate: Number(token?.priceRate),
         })) || [],
     };
   }

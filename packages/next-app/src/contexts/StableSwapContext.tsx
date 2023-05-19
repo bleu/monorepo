@@ -7,27 +7,30 @@ import { PoolAttribute } from "#/components/SearchPoolForm";
 import { pools } from "#/lib/gql";
 
 export interface TokensData {
-  symbol: string | undefined;
-  balance: number | undefined;
-  rate: number | undefined;
+  symbol?: string;
+  balance?: number;
+  rate?: number;
 }
 
 export interface AnalysisData {
-  tokens?: TokensData[] | undefined;
-  ampFactor?: number | undefined;
-  swapFee?: number | undefined;
+  tokens?: TokensData[];
+  ampFactor?: number;
+  swapFee?: number;
 }
 
 interface StableSwapContextType {
   initialData: AnalysisData | null;
   setInitialData: (data: AnalysisData | null) => void;
   handleImportPoolParametersById: (data: PoolAttribute) => void;
+  newPoolImportedFlag: boolean;
 }
 
 export const StableSwapContext = createContext({} as StableSwapContextType);
 
 export function StableSwapProvider({ children }: PropsWithChildren) {
   const [initialData, setInitialData] = useState<AnalysisData | null>(null);
+  const [newPoolImportedFlag, setNewPoolImportedFlag] =
+    useState<boolean>(false);
 
   function convertGqlToAnalysisData(
     poolData: PoolQuery | undefined
@@ -49,6 +52,7 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
       poolId: formData.poolId,
     });
     if (!poolData) return;
+    setNewPoolImportedFlag(!newPoolImportedFlag);
     setInitialData(convertGqlToAnalysisData(poolData));
   }
 
@@ -58,6 +62,7 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
         initialData,
         setInitialData,
         handleImportPoolParametersById,
+        newPoolImportedFlag,
       }}
     >
       {children}

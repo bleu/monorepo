@@ -1,6 +1,6 @@
 import {
   Pool,
-  PoolsQuery,
+  PoolsWhereOwnerQuery,
 } from "@balancer-pool-metadata/gql/src/balancer-pools/__generated__/Ethereum";
 import {
   Address,
@@ -52,7 +52,7 @@ function OwnedPoolsSidebarItems({
 
   const { data, mutate } = pools
     .gql(chainId)
-    .usePools({ owner }, { suspense: true });
+    .usePoolsWhereOwner({ owner }, { suspense: true });
 
   refetchRequest({
     mutate,
@@ -73,13 +73,15 @@ function OwnedPoolsSidebarItems({
 
   return (
     <>
-      {data?.pools.map((item: ArrElement<GetDeepProp<PoolsQuery, "pools">>) => (
-        <Link key={item.id} href={`/metadata/${network}/pool/${item.id}`}>
-          <Sidebar.Item isSelected={item.id === poolId}>
-            <PoolCard isSelected={item.id === poolId} pool={item as Pool} />
-          </Sidebar.Item>
-        </Link>
-      ))}
+      {data?.pools.map(
+        (item: ArrElement<GetDeepProp<PoolsWhereOwnerQuery, "pools">>) => (
+          <Link key={item.id} href={`/metadata/${network}/pool/${item.id}`}>
+            <Sidebar.Item isSelected={item.id === poolId}>
+              <PoolCard isSelected={item.id === poolId} pool={item as Pool} />
+            </Sidebar.Item>
+          </Link>
+        )
+      )}
     </>
   );
 }

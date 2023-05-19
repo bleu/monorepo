@@ -1,7 +1,5 @@
 "use client";
 
-import { networkIdEnumMap } from "@balancer-pool-metadata/shared";
-import { useRouter } from "next/navigation";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 
@@ -9,9 +7,8 @@ import Button from "#/components/Button";
 import { Input } from "#/components/Input";
 import { Select, SelectItem } from "#/components/Select";
 import { pools } from "#/lib/gql";
-import { useNetwork } from "#/wagmi";
 
-export interface PoolMetadataAttribute {
+export interface PoolAttribute {
   poolId: string;
   network: string;
 }
@@ -23,7 +20,15 @@ const inputTypenames = [
   { value: "5", label: "Goerli" },
 ];
 
-export default function SearchPoolForm({ close }: { close?: () => void }) {
+export default function SearchPoolForm({
+  close,
+  poolTypeFilter,
+  onSubmit,
+}: {
+  onSubmit: (formData: PoolAttribute) => void;
+  close?: () => void;
+  poolTypeFilter?: string[];
+}) {
   const {
     register,
     handleSubmit,
@@ -33,33 +38,28 @@ export default function SearchPoolForm({ close }: { close?: () => void }) {
     clearErrors,
     resetField,
     formState: { errors },
-  } = useForm<PoolMetadataAttribute>();
-  const { push } = useRouter();
-  const { chain } = useNetwork();
+  } = useForm<PoolAttribute>();
 
   const poolId = watch("poolId");
   const network = watch("network");
 
-  const { data: poolAddress } = pools.gql(network || "1").usePoolAddress(
-    {
-      poolId,
-    },
-    { revalidateIfStale: true }
-  );
+  const gqlVariables = {
+    poolId,
+    ...(poolTypeFilter?.length ? { poolTypes: poolTypeFilter } : {}),
+  };
+  const { data: poolsData } = pools
+    .gql(network || "1")
+    .usePoolsWherePoolTypeInAndId(gqlVariables, { revalidateIfStale: true });
 
-  const isPool = poolAddress?.pool?.address ? true : false;
+  const isPool = !!poolsData?.pools?.length;
 
-  function handleSubmitForm(formData: PoolMetadataAttribute) {
-    const networkId = formData.network ?? chain?.id.toString();
-    const networkName =
-      networkIdEnumMap[networkId as keyof typeof networkIdEnumMap];
-    push(`/metadata/${networkName}/pool/${formData.poolId}`);
-
+  function handleSubmitForm(formData: PoolAttribute) {
+    onSubmit?.(formData);
     close?.();
   }
 
   React.useEffect(() => {
-    if (poolAddress && !poolAddress.pool && poolId) {
+    if (poolsData && !poolsData.pools && poolId) {
       setError(
         "poolId",
         {
@@ -72,7 +72,7 @@ export default function SearchPoolForm({ close }: { close?: () => void }) {
     } else {
       clearErrors("poolId");
     }
-  }, [poolAddress]);
+  }, [poolsData]);
 
   React.useLayoutEffect(() => {
     resetField("poolId");

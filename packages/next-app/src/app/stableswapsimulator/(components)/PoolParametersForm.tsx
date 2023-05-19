@@ -1,3 +1,13 @@
+"use client";
+
+import { useStableSwap } from "#/contexts/StableSwapContext";
+
 export default function PoolParametersForm() {
-    return <></> // TODO: BAL-385 and BAL-386
+  const { initialData } = useStableSwap();
+
+  return (
+    // Just to check if initial data is being updated
+    // TODO: BAL-385
+    <div className="text-white">{JSON.stringify(initialData)}</div>
+  );
 }

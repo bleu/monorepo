@@ -1,7 +1,8 @@
 import Image from "next/image";
 
-import SearchPoolForm from "#/app/metadata/(components)/SearchPoolForm";
+import handleGoToPool from "#/app/metadata/(handles)/handleGoToPool";
 import ConnectWalletImage from "#/assets/connect-wallet.svg";
+import SearchPoolForm from "#/components/SearchPoolForm";
 
 import { Dialog } from "./Dialog";
 
@@ -19,7 +20,10 @@ export default function WalletNotConnected({
         <div className="text-center text-slate11 text-lg">
           {/* TODO: */}
           Alternatively, open a pool directly clicking&nbsp;
-          <Dialog title="Go to pool" content={<SearchPoolForm />}>
+          <Dialog
+            title="Go to pool"
+            content={<SearchPoolForm onSubmit={handleGoToPool} />}
+          >
             <span className="cursor-pointer text-slate12"> here</span>
           </Dialog>
         </div>

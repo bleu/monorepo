@@ -1,4 +1,4 @@
-import { capitalizeFirstLetter, Network } from "@balancer-pool-metadata/shared";
+import { capitalize, Network } from "@balancer-pool-metadata/shared";
 import { CodegenConfig } from "@graphql-codegen/cli";
 
 export enum Subgraph {
@@ -107,10 +107,10 @@ const generates = Object.assign(
       Object.entries(endpoints())
         .map(([network, endpoint]) => [
           [
-            `./src/${name}/__generated__/${capitalizeFirstLetter(network)}.ts`,
+            `./src/${name}/__generated__/${capitalize(network)}.ts`,
             {
               schema: endpoint,
-              documents: [`src/${name}/**/*.ts`],
+              documents: [`src/${name}/*.ts`],
               plugins: [
                 "typescript",
                 "typescript-operations",
@@ -120,12 +120,12 @@ const generates = Object.assign(
             },
           ],
           [
-            `./src/${name}/__generated__/${capitalizeFirstLetter(
+            `./src/${name}/__generated__/${capitalize(
               network
             )}.server.ts`,
             {
               schema: endpoint,
-              documents: [`src/${name}/**/*.ts`],
+              documents: [`src/${name}/*.ts`],
               plugins: [
                 "typescript",
                 "typescript-operations",

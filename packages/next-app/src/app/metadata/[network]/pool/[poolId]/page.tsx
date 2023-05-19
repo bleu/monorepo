@@ -13,7 +13,7 @@ export default async function Page({
   const poolId = params.poolId;
 
   const [poolOwner, metadataRegistry] = await Promise.all([
-    pools.gql(chainId).PoolOwner({
+    pools.gql(chainId).Pool({
       poolId,
     }),
     poolsMetadata.gql(chainId).MetadataPool({

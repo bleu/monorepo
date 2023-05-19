@@ -9,11 +9,13 @@ export function Dialog({
   children,
   content,
   title,
+  subtitle,
   customWidth,
   noPadding = false,
 }: React.PropsWithChildren<{
   content: React.ReactElement;
   title?: string;
+  subtitle?: string;
   customWidth?: string;
   noPadding?: boolean;
 }>) {
@@ -38,6 +40,9 @@ export function Dialog({
           <DialogPrimitive.Title className="text-2xl font-medium text-slate12">
             {title}
           </DialogPrimitive.Title>
+          <DialogPrimitive.Description className="text-base text-slate11">
+            {subtitle}
+          </DialogPrimitive.Description>
 
           <div className="mt-2 w-full">
             {React.cloneElement(React.Children.only(content), {

@@ -63,7 +63,7 @@ importers:
         version: 8.40.0
       eslint-config-next:
         specifier: latest
-        version: 13.4.2(eslint@8.40.0)(typescript@5.0.4)
+        version: 13.4.3(eslint@8.40.0)(typescript@5.0.4)
       eslint-config-prettier:
         specifier: ^8.8.0
         version: 8.8.0(eslint@8.40.0)
@@ -73,6 +73,9 @@ importers:
       eslint-plugin-compat:
         specifier: latest
         version: 4.1.4(eslint@8.40.0)
+      eslint-plugin-custom-rules:
+        specifier: file:../eslint-custom-rules
+        version: file:packages/eslint-custom-rules
       eslint-plugin-graphql:
         specifier: latest
         version: 4.0.0(graphql@15.8.0)(typescript@5.0.4)
@@ -97,6 +100,8 @@ importers:
       prettier-plugin-tailwindcss:
         specifier: ^0.2.8
         version: 0.2.8(prettier@2.8.8)
+
+  packages/eslint-custom-rules: {}
 
   packages/gql:
     dependencies:
@@ -3270,6 +3275,12 @@ packages:
       glob: 7.1.7
     dev: true
 
+  /@next/eslint-plugin-next@13.4.3:
+    resolution: {integrity: sha512-5B0uOnh7wyUY9vNNdIA6NUvWozhrZaTMZOzdirYAefqD0ZBK5C/h3+KMYdCKrR7JrXGvVpWnHtv54b3dCzwICA==}
+    dependencies:
+      glob: 7.1.7
+    dev: true
+
   /@next/swc-darwin-arm64@13.4.2:
     resolution: {integrity: sha512-6BBlqGu3ewgJflv9iLCwO1v1hqlecaIH2AotpKfVUEzUxuuDNJQZ2a4KLb4MBl8T9/vca1YuWhSqtbF6ZuUJJw==}
     engines: {node: '>= 10'}
@@ -6006,7 +6017,7 @@ packages:
   /axios@1.4.0:
     resolution: {integrity: sha512-S4XCWMEmzvo64T9GfvQDOXgYRDJ/wsSZc7Jvdgx5u1sd0JwsuPLqb3SYmusag+edF6ziyMensPVqLTSc1PiSEA==}
     dependencies:
-      follow-redirects: 1.15.2(debug@4.3.4)
+      follow-redirects: 1.15.2
       form-data: 4.0.0
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
@@ -7812,8 +7823,8 @@ packages:
     resolution: {integrity: sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==}
     engines: {node: '>=10'}
 
-  /eslint-config-next@13.4.2(eslint@8.40.0)(typescript@5.0.4):
-    resolution: {integrity: sha512-zjLJ9B9bbeWSo5q+iHfdt8gVYyT+y2BpWDfjR6XMBtFRSMKRGjllDKxnuKBV1q2Y/QpwLM2PXHJTMRyblCmRAg==}
+  /eslint-config-next@13.4.3(eslint@8.40.0)(typescript@5.0.4):
+    resolution: {integrity: sha512-1lXwdFi29fKxzeugof/TUE7lpHyJQt5+U4LaUHyvQfHjvsWO77vFNicJv5sX6k0VDVSbnfz0lw+avxI+CinbMg==}
     peerDependencies:
       eslint: ^7.23.0 || ^8.0.0
       typescript: '>=3.3.1'
@@ -7821,7 +7832,7 @@ packages:
       typescript:
         optional: true
     dependencies:
-      '@next/eslint-plugin-next': 13.4.2
+      '@next/eslint-plugin-next': 13.4.3
       '@rushstack/eslint-patch': 1.2.0
       '@typescript-eslint/parser': 5.57.1(eslint@8.40.0)(typescript@5.0.4)
       eslint: 8.40.0
@@ -8696,6 +8707,7 @@ packages:
         optional: true
     dependencies:
       debug: 4.3.4
+    dev: true
 
   /for-each@0.3.3:
     resolution: {integrity: sha512-jqYfLp7mo9vIyQf8ykW2v7A+2N4QjeCeI5+Dz9XraiO1ign81wjiH7Fb9vSOWvQfNtmSa4H2RoQTrrXivdUZmw==}
@@ -14772,6 +14784,12 @@ packages:
       react: 18.2.0
       use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
+
+  file:packages/eslint-custom-rules:
+    resolution: {directory: packages/eslint-custom-rules, type: directory}
+    name: eslint-plugin-no-tailwind-colors
+    version: 1.0.0
+    dev: true
 
   github.com/edgeandnode/gluegun/b34b9003d7bf556836da41b57ef36eb21570620a(debug@4.3.4):
     resolution: {tarball: https://codeload.github.com/edgeandnode/gluegun/tar.gz/b34b9003d7bf556836da41b57ef36eb21570620a}

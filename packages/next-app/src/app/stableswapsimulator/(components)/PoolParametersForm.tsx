@@ -1,5 +1,6 @@
 "use client";
 
+import { capitalize } from "@balancer-pool-metadata/shared";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
@@ -22,7 +23,7 @@ export default function PoolParametersForm() {
     if (field == "tokens") return; // TODO: BAL 386
     return {
       ...register(field, { required: true, value: initialData?.[field] }),
-      label: label.charAt(0).toUpperCase() + label.slice(1),
+      label: capitalize(label),
       type: "number",
       placeholder: `Define the initial ${label}`,
       value: initialData?.[field],

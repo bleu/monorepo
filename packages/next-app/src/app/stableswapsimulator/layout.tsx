@@ -29,7 +29,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
       />
       <StableSwapProvider>
         <div className="flex flex-1 gap-x-8">
-          <div>
+          <div className="bg-blue2">
             <Sidebar isFloating>
               <Dialog
                 title="Import pool parameters"

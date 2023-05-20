@@ -140,3 +140,8 @@ export const AddressSchema = z.object({
 // const identifier = "PoolMetadataSchema";
 // export const { node } = zodToTs(PoolMetadataSchema, identifier);
 // export const typeAlias = createTypeAlias(node, identifier);
+
+export const StableSwapSimulatorInitialParametersSchema = z.object({
+  swapFee: z.number().positive(),
+  ampFactor: z.number().positive(),
+});

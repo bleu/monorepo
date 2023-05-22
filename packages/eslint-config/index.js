@@ -46,7 +46,8 @@ module.exports = {
     "**/node_modules/**",
     "**/.next/**",
     "**/__generated__/**",
-    "**/lib/**",
+    "**/lib/balancer-v2-monorepo/**",
+    "**/lib/forge-std/**",
     "** /.vercel/ **",
   ],
 };

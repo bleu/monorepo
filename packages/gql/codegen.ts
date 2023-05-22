@@ -120,9 +120,7 @@ const generates = Object.assign(
             },
           ],
           [
-            `./src/${name}/__generated__/${capitalize(
-              network
-            )}.server.ts`,
+            `./src/${name}/__generated__/${capitalize(network)}.server.ts`,
             {
               schema: endpoint,
               documents: [`src/${name}/*.ts`],

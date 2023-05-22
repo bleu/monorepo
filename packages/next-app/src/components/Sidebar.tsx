@@ -32,7 +32,7 @@ export default function Sidebar({
   return (
     <SidebarContext.Provider value={{ isFloating }}>
       <div
-        className={cn("w-full max-w-full py-5 h-full pl-4 pr-1", {
+        className={cn("w-full max-w-full py-5 h-full px-4", {
           "bg-blue2": !isFloating,
         })}
       >

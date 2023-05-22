@@ -77,7 +77,7 @@ function HeaderCell({ children }: React.PropsWithChildren) {
   return (
     <th
       scope="col"
-      className="text-gray-40 p-4 text-left text-sm font-semibold"
+      className="text-gray-40 px-1 py-4 text-left text-sm font-semibold"
     >
       {children}
     </th>
@@ -103,7 +103,7 @@ function BodyCell({
     <td
       className={cn(
         "whitespace-nowrap text-sm text-gray-500",
-        customWidth ? cn(customWidth, "pl-4") : "p-4"
+        customWidth ? cn(customWidth, "pl-4") : "px-1 py-4"
       )}
     >
       {children}

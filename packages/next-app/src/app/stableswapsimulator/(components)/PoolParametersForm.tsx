@@ -1,6 +1,8 @@
 "use client";
 
+import { StableSwapSimulatorDataSchema } from "@balancer-pool-metadata/schema";
 import { capitalize } from "@balancer-pool-metadata/shared";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
@@ -8,41 +10,32 @@ import Button from "#/components/Button";
 import { Input } from "#/components/Input";
 import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
 
+import { TokenTable } from "./TokenTable";
+
 export default function PoolParametersForm() {
-  const { initialData, setInitialData, newPoolImportedFlag } = useStableSwap();
+  const { initialData, newPoolImportedFlag } = useStableSwap();
   const {
     register,
     handleSubmit,
     clearErrors,
     setValue,
     formState: { errors },
-  } = useForm();
+  } = useForm<typeof StableSwapSimulatorDataSchema._type>({
+    resolver: zodResolver(StableSwapSimulatorDataSchema),
+  });
 
   const inputParameters = (field: keyof AnalysisData) => {
     const label = field.replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase();
     if (field == "tokens") return; // TODO: BAL 386
     return {
-      ...register(field, { required: true, value: initialData?.[field] }),
+      ...register(field, {
+        required: true,
+        value: initialData?.[field],
+        valueAsNumber: true,
+      }),
       label: capitalize(label),
-      type: "number",
       placeholder: `Define the initial ${label}`,
-      value: initialData?.[field],
-      onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value =
-          e.target.value == "" ? undefined : parseFloat(e.target.value);
-        if (value == undefined) {
-          setInitialData({
-            ...initialData,
-            [field]: undefined,
-          });
-          return;
-        }
-        if (value < 0) return;
-        setInitialData({
-          ...initialData,
-          [field]: value,
-        });
-      },
+      errorMessage: errors[field]?.message?.toString() || "",
     };
   };
 
@@ -61,18 +54,9 @@ export default function PoolParametersForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} id="initial-data-form">
       <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <Input {...inputParameters("swapFee")} />
-          {errors.swapFee && (
-            <p className="text-sm text-tomato10">This field is required</p>
-          )}
-        </div>
-        <div className="flex flex-col gap-2">
-          <Input {...inputParameters("ampFactor")} />
-          {errors.ampFactor && (
-            <p className="text-sm text-tomato10">This field is required</p>
-          )}
-        </div>
+        <Input {...inputParameters("swapFee")} />
+        <Input {...inputParameters("ampFactor")} />
+        <TokenTable />
         <Button
           form="initial-data-form"
           type="submit"

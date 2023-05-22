@@ -7,9 +7,9 @@ import { PoolAttribute } from "#/components/SearchPoolForm";
 import { pools } from "#/lib/gql";
 
 export interface TokensData {
-  symbol?: string;
-  balance?: number;
-  rate?: number;
+  symbol: string;
+  balance: number;
+  rate: number;
 }
 
 export interface AnalysisData {

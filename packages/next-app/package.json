@@ -19,6 +19,7 @@
     "@balancer-pool-metadata/gql": "workspace:*",
     "@balancer-pool-metadata/schema": "workspace:*",
     "@balancer-pool-metadata/tsconfig": "workspace:*",
+    "@balancer-pool-metadata/math": "workspace:*",
     "@hookform/resolvers": "^3.1.0",
     "@moralisweb3/common-evm-utils": "^2.21.0",
     "@radix-ui/colors": "^0.1.8",
@@ -55,6 +56,7 @@
   "devDependencies": {
     "@balancer-pool-metadata/eslint-config": "workspace:^",
     "@balancer-pool-metadata/shared": "workspace:^",
+    "@balancer-pool-metadata/math": "workspace:^",
     "@ethersproject/bignumber": "^5.7.0",
     "@types/lodash": "^4.14.194",
     "@types/lodash.merge": "^4.6.7",

@@ -19,8 +19,13 @@ export interface AnalysisData {
 }
 
 interface StableSwapContextType {
-  initialData: AnalysisData | null;
-  setInitialData: (data: AnalysisData | null) => void;
+  initialData?: AnalysisData;
+  newData?: AnalysisData;
+  indexAnalysisToken: number;
+  indexCurrentTabToken: number;
+  setIndexAnalysisToken: (index: number) => void;
+  setIndexCurrentTabToken: (index: number) => void;
+  setInitialData: (data: AnalysisData) => void;
   handleImportPoolParametersById: (data: PoolAttribute) => void;
   newPoolImportedFlag: boolean;
 }
@@ -28,7 +33,11 @@ interface StableSwapContextType {
 export const StableSwapContext = createContext({} as StableSwapContextType);
 
 export function StableSwapProvider({ children }: PropsWithChildren) {
-  const [initialData, setInitialData] = useState<AnalysisData | null>(null);
+  const [initialData, setInitialData] = useState<AnalysisData>();
+  const [newData, setNewData] = useState<AnalysisData>();
+  const [indexAnalysisToken, setIndexAnalysisToken] = useState<number>(0);
+  const [indexCurrentTabToken, setIndexCurrentTabToken] = useState<number>(1);
+
   const [newPoolImportedFlag, setNewPoolImportedFlag] =
     useState<boolean>(false);
 
@@ -54,12 +63,18 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
     if (!poolData) return;
     setNewPoolImportedFlag(!newPoolImportedFlag);
     setInitialData(convertGqlToAnalysisData(poolData));
+    setNewData(convertGqlToAnalysisData(poolData));
   }
 
   return (
     <StableSwapContext.Provider
       value={{
         initialData,
+        newData,
+        indexAnalysisToken,
+        setIndexAnalysisToken,
+        indexCurrentTabToken,
+        setIndexCurrentTabToken,
         setInitialData,
         handleImportPoolParametersById,
         newPoolImportedFlag,

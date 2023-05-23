@@ -12,20 +12,21 @@ import { TokensData, useStableSwap } from "#/contexts/StableSwapContext";
 
 import TokenForm from "./TokenForm";
 
+const customPadding = "py-4 px-1";
+
 export function TokenTable() {
   const { initialData } = useStableSwap();
-
   return (
     <div className="h-full flex-1 flex w-full justify-center text-white">
       <Table>
         <Table.HeaderRow>
-          <Table.HeaderCell>
+          <Table.HeaderCell padding={customPadding}>
             <span className="sr-only">Edit</span>
           </Table.HeaderCell>
-          <Table.HeaderCell>Symbol</Table.HeaderCell>
-          <Table.HeaderCell>Balance</Table.HeaderCell>
-          <Table.HeaderCell>Rate</Table.HeaderCell>
-          <Table.HeaderCell>
+          <Table.HeaderCell padding={customPadding}>Symbol</Table.HeaderCell>
+          <Table.HeaderCell padding={customPadding}>Balance</Table.HeaderCell>
+          <Table.HeaderCell padding={customPadding}>Rate</Table.HeaderCell>
+          <Table.HeaderCell padding={customPadding}>
             <ButtonToOpenTokenForm
               icon={
                 <PlusCircledIcon
@@ -78,7 +79,7 @@ function TableRow({ token }: { token: TokensData }) {
 
   return (
     <Table.BodyRow key={token.symbol}>
-      <Table.BodyCell>
+      <Table.BodyCell padding={customPadding}>
         <ButtonToOpenTokenForm
           icon={
             <Pencil1Icon
@@ -90,10 +91,14 @@ function TableRow({ token }: { token: TokensData }) {
           symbolToEdit={token.symbol}
         />
       </Table.BodyCell>
-      <Table.BodyCell>{token.symbol}</Table.BodyCell>
-      <Table.BodyCell>{token.balance?.toFixed()}</Table.BodyCell>
-      <Table.BodyCell>{token.rate?.toPrecision(2)}</Table.BodyCell>
-      <Table.BodyCell>
+      <Table.BodyCell padding={customPadding}>{token.symbol}</Table.BodyCell>
+      <Table.BodyCell padding={customPadding}>
+        {token.balance?.toFixed()}
+      </Table.BodyCell>
+      <Table.BodyCell padding={customPadding}>
+        {token.rate?.toPrecision(2)}
+      </Table.BodyCell>
+      <Table.BodyCell padding={customPadding}>
         <button
           type="button"
           className="flex items-center"

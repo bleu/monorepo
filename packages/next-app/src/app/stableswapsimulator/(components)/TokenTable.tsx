@@ -72,7 +72,7 @@ function TableRow({ token }: { token: TokensData }) {
   const deleteToken = (symbol?: string) => {
     setInitialData({
       ...initialData,
-      tokens: initialData?.tokens?.filter((token) => token.symbol !== symbol),
+      tokens: initialData.tokens.filter((token) => token.symbol !== symbol),
     });
   };
 

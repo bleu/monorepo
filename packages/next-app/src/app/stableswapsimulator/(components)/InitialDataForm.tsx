@@ -17,8 +17,8 @@ export default function InitialDataForm() {
   const {
     register,
     handleSubmit,
-    clearErrors,
     setValue,
+    clearErrors,
     formState: { errors },
   } = useForm<typeof StableSwapSimulatorDataSchema._type>({
     resolver: zodResolver(StableSwapSimulatorDataSchema),
@@ -46,18 +46,22 @@ export default function InitialDataForm() {
     // TODO: BAL 382
   };
 
+  useEffect(clearErrors, [newPoolImportedFlag]);
+
   useEffect(() => {
     // TODO: BAL 401
-    clearErrors();
-    if (!initialData?.swapFee || !initialData?.ampFactor) return;
-    setValue("swapFee", initialData?.swapFee);
-    setValue("ampFactor", initialData?.ampFactor);
-  }, [newPoolImportedFlag]);
+    if (initialData?.swapFee) setValue("swapFee", initialData?.swapFee);
+    if (initialData?.ampFactor) setValue("ampFactor", initialData?.ampFactor);
+    initialData?.tokens.forEach((token, i) => {
+      setValue(`tokens.${i}.symbol`, token.symbol);
+      setValue(`tokens.${i}.balance`, token.balance);
+      setValue(`tokens.${i}.rate`, token.rate);
+    });
+  }, [initialData]);
 
   return (
     <div className="flex flex-col gap-4">
       <form onSubmit={handleSubmit(onSubmit)} id="initial-data-form" />
-
       <Input {...inputParameters("swapFee")} />
       <Input {...inputParameters("ampFactor")} />
       <div className="flex flex-col">
@@ -68,19 +72,19 @@ export default function InitialDataForm() {
           </div>
         )}
         <div hidden={true}>
-          {initialData?.tokens?.map((token, i) => (
+          {initialData?.tokens.map((token, i) => (
             <>
               <input
                 form="initial-data-form"
-                {...(register(`tokens.${i}.symbol`), { value: token.symbol })}
+                {...register(`tokens.${i}.symbol`)}
               />
               <input
                 form="initial-data-form"
-                {...(register(`tokens.${i}.balance`), { value: token.balance })}
+                {...register(`tokens.${i}.balance`)}
               />
               <input
                 form="initial-data-form"
-                {...(register(`tokens.${i}.rate`), { value: token.rate })}
+                {...register(`tokens.${i}.rate`)}
               />
             </>
           ))}

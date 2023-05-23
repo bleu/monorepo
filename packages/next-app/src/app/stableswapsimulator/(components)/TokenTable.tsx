@@ -59,7 +59,7 @@ function ButtonToOpenTokenForm({
       title="Add token parameters"
       content={<TokenForm symbolToEdit={symbolToEdit} />}
     >
-      <button type="button" className="leading-none">
+      <button type="button" className="flex items-center">
         {icon}
       </button>
     </Dialog>
@@ -82,8 +82,8 @@ function TableRow({ token }: { token: TokensData }) {
         <ButtonToOpenTokenForm
           icon={
             <Pencil1Icon
-              width={22}
-              height={22}
+              width={19}
+              height={19}
               className="text-amber9 hover:text-amber11"
             />
           }
@@ -96,12 +96,12 @@ function TableRow({ token }: { token: TokensData }) {
       <Table.BodyCell>
         <button
           type="button"
-          className="leading-none"
+          className="flex items-center"
           onClick={() => deleteToken(token?.symbol)}
         >
           <MinusCircledIcon
-            width={22}
-            height={22}
+            width={20}
+            height={20}
             className="text-tomato9 hover:text-tomato11"
           />
         </button>

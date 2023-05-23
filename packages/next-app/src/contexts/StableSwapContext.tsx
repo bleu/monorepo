@@ -7,20 +7,20 @@ import { PoolAttribute } from "#/components/SearchPoolForm";
 import { pools } from "#/lib/gql";
 
 export interface TokensData {
-  symbol?: string;
-  balance?: number;
-  rate?: number;
+  symbol: string;
+  balance: number;
+  rate: number;
 }
 
 export interface AnalysisData {
-  tokens?: TokensData[];
+  tokens: TokensData[];
   ampFactor?: number;
   swapFee?: number;
 }
 
 interface StableSwapContextType {
-  initialData: AnalysisData | null;
-  setInitialData: (data: AnalysisData | null) => void;
+  initialData: AnalysisData;
+  setInitialData: (data: AnalysisData) => void;
   handleImportPoolParametersById: (data: PoolAttribute) => void;
   newPoolImportedFlag: boolean;
 }
@@ -28,13 +28,15 @@ interface StableSwapContextType {
 export const StableSwapContext = createContext({} as StableSwapContextType);
 
 export function StableSwapProvider({ children }: PropsWithChildren) {
-  const [initialData, setInitialData] = useState<AnalysisData | null>(null);
+  const [initialData, setInitialData] = useState<AnalysisData>({
+    ampFactor: undefined,
+    swapFee: undefined,
+    tokens: [],
+  });
   const [newPoolImportedFlag, setNewPoolImportedFlag] =
     useState<boolean>(false);
 
-  function convertGqlToAnalysisData(
-    poolData: PoolQuery | undefined
-  ): AnalysisData {
+  function convertGqlToAnalysisData(poolData: PoolQuery): AnalysisData {
     return {
       swapFee: Number(poolData?.pool?.swapFee),
       ampFactor: Number(poolData?.pool?.amp),

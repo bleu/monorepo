@@ -14,7 +14,7 @@ import {
   useStableSwap,
 } from "#/contexts/StableSwapContext";
 
-import PoolParameterForm from "./(components)/PoolParametersForm";
+import InitialDataForm from "./(components)/InitialDataForm";
 
 export default function Layout({ children }: React.PropsWithChildren) {
   const { handleImportPoolParametersById } = useStableSwap();
@@ -49,7 +49,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
               <Separator.Root className="bg-blue6 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px my-5" />
               <Sidebar.Header name="Initial parameters" />
               <Sidebar.Content>
-                <PoolParameterForm />
+                <InitialDataForm />
               </Sidebar.Content>
             </Sidebar>
           </div>

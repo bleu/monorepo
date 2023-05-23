@@ -16,37 +16,33 @@ export function TokenTable() {
   const { initialData } = useStableSwap();
 
   return (
-    <div>
-      <label className="mb-2 block text-sm text-slate12">Tokens</label>
-
-      <div className="h-full flex-1 flex w-full justify-center text-white">
-        <Table>
-          <Table.HeaderRow>
-            <Table.HeaderCell>
-              <span className="sr-only">Edit</span>
-            </Table.HeaderCell>
-            <Table.HeaderCell>Symbol</Table.HeaderCell>
-            <Table.HeaderCell>Balance</Table.HeaderCell>
-            <Table.HeaderCell>Rate</Table.HeaderCell>
-            <Table.HeaderCell>
-              <ButtonToOpenTokenForm
-                icon={
-                  <PlusCircledIcon
-                    width={22}
-                    height={22}
-                    className="text-green9 hover:text-green11"
-                  />
-                }
-              />
-            </Table.HeaderCell>
-          </Table.HeaderRow>
-          <Table.Body>
-            {initialData?.tokens?.map((token) => (
-              <TableRow token={token} key={token.symbol} />
-            ))}
-          </Table.Body>
-        </Table>
-      </div>
+    <div className="h-full flex-1 flex w-full justify-center text-white">
+      <Table>
+        <Table.HeaderRow>
+          <Table.HeaderCell>
+            <span className="sr-only">Edit</span>
+          </Table.HeaderCell>
+          <Table.HeaderCell>Symbol</Table.HeaderCell>
+          <Table.HeaderCell>Balance</Table.HeaderCell>
+          <Table.HeaderCell>Rate</Table.HeaderCell>
+          <Table.HeaderCell>
+            <ButtonToOpenTokenForm
+              icon={
+                <PlusCircledIcon
+                  width={22}
+                  height={22}
+                  className="text-green9 hover:text-green11"
+                />
+              }
+            />
+          </Table.HeaderCell>
+        </Table.HeaderRow>
+        <Table.Body>
+          {initialData?.tokens?.map((token) => (
+            <TableRow token={token} key={token.symbol} />
+          ))}
+        </Table.Body>
+      </Table>
     </div>
   );
 }
@@ -63,7 +59,9 @@ function ButtonToOpenTokenForm({
       title="Add token parameters"
       content={<TokenForm symbolToEdit={symbolToEdit} />}
     >
-      <button type="button">{icon}</button>
+      <button type="button" className="leading-none">
+        {icon}
+      </button>
     </Dialog>
   );
 }

@@ -12,7 +12,7 @@ import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
 
 import { TokenTable } from "./TokenTable";
 
-export default function PoolParametersForm() {
+export default function InitialDataForm() {
   const { initialData, newPoolImportedFlag } = useStableSwap();
   const {
     register,
@@ -22,11 +22,12 @@ export default function PoolParametersForm() {
     formState: { errors },
   } = useForm<typeof StableSwapSimulatorDataSchema._type>({
     resolver: zodResolver(StableSwapSimulatorDataSchema),
+    mode: "onSubmit",
   });
 
   const inputParameters = (field: keyof AnalysisData) => {
     const label = field.replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase();
-    if (field == "tokens") return; // TODO: BAL 386
+    if (field == "tokens") return;
     return {
       ...register(field, {
         required: true,
@@ -36,6 +37,7 @@ export default function PoolParametersForm() {
       label: capitalize(label),
       placeholder: `Define the initial ${label}`,
       errorMessage: errors[field]?.message?.toString() || "",
+      form: "initial-data-form",
     };
   };
 
@@ -47,25 +49,52 @@ export default function PoolParametersForm() {
   useEffect(() => {
     // TODO: BAL 401
     clearErrors();
+    if (!initialData?.swapFee || !initialData?.ampFactor) return;
     setValue("swapFee", initialData?.swapFee);
     setValue("ampFactor", initialData?.ampFactor);
   }, [newPoolImportedFlag]);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} id="initial-data-form">
-      <div className="flex flex-col gap-4">
-        <Input {...inputParameters("swapFee")} />
-        <Input {...inputParameters("ampFactor")} />
+    <div className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit(onSubmit)} id="initial-data-form" />
+
+      <Input {...inputParameters("swapFee")} />
+      <Input {...inputParameters("ampFactor")} />
+      <div className="flex flex-col">
+        <label className="mb-2 block text-sm text-slate12">Tokens</label>
+        {errors?.tokens?.message && (
+          <div className="h-6 mt-1 text-tomato10 text-sm">
+            <span>{errors?.tokens?.message}</span>
+          </div>
+        )}
+        <div hidden={true}>
+          {initialData?.tokens?.map((token, i) => (
+            <>
+              <input
+                form="initial-data-form"
+                {...(register(`tokens.${i}.symbol`), { value: token.symbol })}
+              />
+              <input
+                form="initial-data-form"
+                {...(register(`tokens.${i}.balance`), { value: token.balance })}
+              />
+              <input
+                form="initial-data-form"
+                {...(register(`tokens.${i}.rate`), { value: token.rate })}
+              />
+            </>
+          ))}
+        </div>
         <TokenTable />
-        <Button
-          form="initial-data-form"
-          type="submit"
-          shade="light"
-          className="w-32 h-min self-end"
-        >
-          Next step
-        </Button>
       </div>
-    </form>
+      <Button
+        form="initial-data-form"
+        type="submit"
+        shade="light"
+        className="w-32 h-min self-end"
+      >
+        Next step
+      </Button>
+    </div>
   );
 }

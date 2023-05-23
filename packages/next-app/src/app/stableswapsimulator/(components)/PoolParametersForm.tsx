@@ -1,6 +1,7 @@
 "use client";
 
 import { capitalize } from "@balancer-pool-metadata/shared";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
@@ -9,6 +10,7 @@ import { Input } from "#/components/Input";
 import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
 
 export default function PoolParametersForm() {
+  const { push } = useRouter();
   const { initialData, setInitialData, newPoolImportedFlag } = useStableSwap();
   const {
     register,
@@ -26,7 +28,7 @@ export default function PoolParametersForm() {
       label: capitalize(label),
       type: "number",
       placeholder: `Define the initial ${label}`,
-      value: initialData?.[field],
+      value: initialData?.[field] || "",
       onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
         const value =
           e.target.value == "" ? undefined : parseFloat(e.target.value);
@@ -47,6 +49,7 @@ export default function PoolParametersForm() {
   };
 
   const onSubmit = () => {
+    push("/stableswapsimulator/analysis");
     return;
     // TODO: BAL 382
   };

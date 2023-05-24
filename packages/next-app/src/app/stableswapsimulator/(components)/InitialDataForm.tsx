@@ -10,13 +10,17 @@ import { FieldValues, useForm } from "react-hook-form";
 import Button from "#/components/Button";
 import { Input } from "#/components/Input";
 import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
+import { GetDeepProp } from "#/utils/getTypes";
 
 import { TokenTable } from "./TokenTable";
 
+type StableSwapSimulatorDataSchemaType =
+  typeof StableSwapSimulatorDataSchema._type;
+
 interface InitialForm {
-  tokens: { symbol: string; balance: number; rate: number }[] | null;
-  swapFee: number | null;
-  ampFactor: number | null;
+  tokens: GetDeepProp<StableSwapSimulatorDataSchemaType, "tokens"> | null;
+  swapFee: GetDeepProp<StableSwapSimulatorDataSchemaType, "swapFee"> | null;
+  ampFactor: GetDeepProp<StableSwapSimulatorDataSchemaType, "ampFactor"> | null;
 }
 
 export default function InitialDataForm() {

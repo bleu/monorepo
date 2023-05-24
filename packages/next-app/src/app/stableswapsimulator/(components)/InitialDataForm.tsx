@@ -15,7 +15,7 @@ import { TokenTable } from "./TokenTable";
 
 export default function InitialDataForm() {
   const { push } = useRouter();
-  const { baselineData, setBaselineData, newPoolImportedFlag } =
+  const { baselineData, setBaselineData, setVariantData, newPoolImportedFlag } =
     useStableSwap();
   const {
     register,
@@ -45,24 +45,19 @@ export default function InitialDataForm() {
   };
 
   const onSubmit = (data: FieldValues) => {
-    // TODO: BAL 382
     setBaselineData(data as AnalysisData);
+    setVariantData(data as AnalysisData);
     push("/stableswapsimulator/analysis");
-    return;
   };
-
-  useEffect(clearErrors, [newPoolImportedFlag]);
 
   useEffect(() => {
     // TODO: BAL 401
     if (baselineData?.swapFee) setValue("swapFee", baselineData?.swapFee);
     if (baselineData?.ampFactor) setValue("ampFactor", baselineData?.ampFactor);
-    baselineData?.tokens.forEach((token, i) => {
-      setValue(`tokens.${i}.symbol`, token.symbol);
-      setValue(`tokens.${i}.balance`, token.balance);
-      setValue(`tokens.${i}.rate`, token.rate);
-    });
+    if (baselineData?.tokens) setValue("tokens", baselineData?.tokens);
   }, [baselineData]);
+
+  useEffect(clearErrors, [baselineData?.tokens, newPoolImportedFlag]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -80,16 +75,20 @@ export default function InitialDataForm() {
           {baselineData?.tokens.map((token, i) => (
             <div key={token.symbol}>
               <input
-                form="initial-data-form"
-                {...register(`tokens.${i}.symbol`)}
+                form="baseline-data-form"
+                {...register(`tokens.${i}.symbol`, {
+                  value: token.symbol,
+                })}
               />
               <input
-                form="initial-data-form"
-                {...register(`tokens.${i}.balance`)}
+                form="baseline-data-form"
+                {...register(`tokens.${i}.balance`, { value: token.balance })}
               />
               <input
-                form="initial-data-form"
-                {...register(`tokens.${i}.rate`)}
+                form="baseline-data-form"
+                {...register(`tokens.${i}.rate`, {
+                  value: token.rate,
+                })}
               />
             </div>
           ))}

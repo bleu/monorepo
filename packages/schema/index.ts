@@ -183,3 +183,10 @@ export const StableSwapSimulatorDataSchema = z.object({
   ampFactor: z.number().positive(),
   tokens: z.array(StableSwapTokensSchema).min(2),
 });
+
+export const getStableSwapNewDataSchema = (symbols: string[]) => {
+  const indexes = symbols.map((_, index) => index.toString());
+  return StableSwapSimulatorDataSchema.extend({
+    analysisIndex: z.enum(["", ...indexes]),
+  });
+};

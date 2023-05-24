@@ -25,14 +25,16 @@ function useSidebarContext() {
 export default function Sidebar({
   children,
   isFloating = false,
+  padding = "py-5 px-4",
 }: {
   children: React.ReactNode;
+  padding?: string;
   isFloating?: boolean;
 }) {
   return (
     <SidebarContext.Provider value={{ isFloating }}>
       <div
-        className={cn("w-full max-w-full py-5 h-full px-4", {
+        className={cn("w-full max-w-full h-full", padding, {
           "bg-blue2": !isFloating,
         })}
       >

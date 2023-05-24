@@ -140,3 +140,46 @@ export const AddressSchema = z.object({
 // const identifier = "PoolMetadataSchema";
 // export const { node } = zodToTs(PoolMetadataSchema, identifier);
 // export const typeAlias = createTypeAlias(node, identifier);
+
+export const getStableSwapSimulatorTokensSchema = ({
+  symbolToEdit,
+  existentSymbols,
+}: {
+  symbolToEdit?: string;
+  existentSymbols?: string[];
+}) => {
+  const StableSwapSimulatorTokensSchema = z.object({
+    symbol: z
+      .string()
+      .min(1)
+      .refine(
+        (value) => {
+          if (existentSymbols) {
+            if (value === symbolToEdit) {
+              return true;
+            }
+            return !existentSymbols.includes(value);
+          }
+          return true;
+        },
+        {
+          message: "Symbol already exists",
+        }
+      ),
+    balance: z.number().positive(),
+    rate: z.number().positive(),
+  });
+  return StableSwapSimulatorTokensSchema;
+};
+
+export const StableSwapTokensSchema = z.object({
+  symbol: z.string().min(1),
+  balance: z.number().positive(),
+  rate: z.number().positive(),
+});
+
+export const StableSwapSimulatorDataSchema = z.object({
+  swapFee: z.number().nonnegative(),
+  ampFactor: z.number().positive(),
+  tokens: z.array(StableSwapTokensSchema).min(2),
+});

@@ -9,7 +9,7 @@ import { Header } from "#/components/Header";
 import Sidebar from "#/components/Sidebar";
 import { StableSwapProvider } from "#/contexts/StableSwapContext";
 
-import PoolParameterForm from "./(components)/PoolParametersForm";
+import InitialDataForm from "./(components)/InitialDataForm";
 import { SearchPoolFormDialog } from "./(components)/SearchPoolFormDialog";
 
 export default function Layout({ children }: React.PropsWithChildren) {
@@ -34,7 +34,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
               <Separator.Root className="bg-blue6 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px my-5" />
               <Sidebar.Header name="Initial parameters" />
               <Sidebar.Content>
-                <PoolParameterForm />
+                <InitialDataForm />
               </Sidebar.Content>
             </Sidebar>
           </div>

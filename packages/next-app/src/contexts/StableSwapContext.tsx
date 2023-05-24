@@ -7,20 +7,22 @@ import { PoolAttribute } from "#/components/SearchPoolForm";
 import { pools } from "#/lib/gql";
 
 export interface TokensData {
-  symbol?: string;
-  balance?: number;
-  rate?: number;
+  symbol: string;
+  balance: number;
+  rate: number;
 }
 
 export interface AnalysisData {
-  tokens?: TokensData[];
+  tokens: TokensData[];
   ampFactor?: number;
   swapFee?: number;
 }
 
 interface StableSwapContextType {
-  initialData?: AnalysisData;
+  initialData: AnalysisData;
   newData?: AnalysisData;
+  areParamsLoading: boolean;
+  setAreParamsLoading: (loading: boolean) => void;
   indexAnalysisToken: number;
   indexCurrentTabToken: number;
   setIndexAnalysisToken: (index: number) => void;
@@ -28,22 +30,27 @@ interface StableSwapContextType {
   setInitialData: (data: AnalysisData) => void;
   handleImportPoolParametersById: (data: PoolAttribute) => void;
   newPoolImportedFlag: boolean;
+  defaultInitialData: AnalysisData;
 }
 
 export const StableSwapContext = createContext({} as StableSwapContextType);
 
 export function StableSwapProvider({ children }: PropsWithChildren) {
-  const [initialData, setInitialData] = useState<AnalysisData>();
+  const defaultInitialData: AnalysisData = {
+    ampFactor: undefined,
+    swapFee: undefined,
+    tokens: [],
+  };
+  const [initialData, setInitialData] =
+    useState<AnalysisData>(defaultInitialData);
   const [newData, setNewData] = useState<AnalysisData>();
+  const [areParamsLoading, setAreParamsLoading] = useState<boolean>(false);
   const [indexAnalysisToken, setIndexAnalysisToken] = useState<number>(0);
   const [indexCurrentTabToken, setIndexCurrentTabToken] = useState<number>(1);
-
   const [newPoolImportedFlag, setNewPoolImportedFlag] =
     useState<boolean>(false);
 
-  function convertGqlToAnalysisData(
-    poolData: PoolQuery | undefined
-  ): AnalysisData {
+  function convertGqlToAnalysisData(poolData: PoolQuery): AnalysisData {
     return {
       swapFee: Number(poolData?.pool?.swapFee),
       ampFactor: Number(poolData?.pool?.amp),
@@ -71,6 +78,8 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
       value={{
         initialData,
         newData,
+        areParamsLoading,
+        setAreParamsLoading,
         indexAnalysisToken,
         setIndexAnalysisToken,
         indexCurrentTabToken,
@@ -78,6 +87,7 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
         setInitialData,
         handleImportPoolParametersById,
         newPoolImportedFlag,
+        defaultInitialData,
       }}
     >
       {children}

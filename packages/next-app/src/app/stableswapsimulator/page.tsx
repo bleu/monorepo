@@ -7,9 +7,9 @@ import { useStableSwap } from "#/contexts/StableSwapContext";
 import ParametersNotSet from "./(components)/ParametersNotSet";
 
 export default function Page() {
-  const { setInitialData } = useStableSwap();
+  const { setInitialData, defaultInitialData } = useStableSwap();
   useEffect(() => {
-    setInitialData({});
+    setInitialData(defaultInitialData);
   }, []);
   return <ParametersNotSet />;
 }

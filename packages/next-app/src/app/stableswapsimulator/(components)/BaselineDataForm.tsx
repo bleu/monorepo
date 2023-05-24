@@ -48,13 +48,13 @@ export default function BaselineDataForm() {
     };
   };
 
-  const handleInputChange = () => {
+  const handleChange = () => {
     if (Object.keys(errors).length) return;
     const data = getValues();
     setBaselineData(data as AnalysisData);
   };
 
-  useEffect(handleInputChange, [debouncedSwapFee, debouncedAmpFactor, tokens]);
+  useEffect(handleChange, [debouncedSwapFee, debouncedAmpFactor, tokens]);
 
   useEffect(clearErrors, [baselineData?.tokens, newPoolImportedFlag]);
 

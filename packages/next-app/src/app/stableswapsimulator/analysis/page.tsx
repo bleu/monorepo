@@ -9,6 +9,7 @@ import StableCurve from "../(components)/StableCurve";
 export default function Page() {
   const { push } = useRouter();
   const { initialData } = useStableSwap();
+
   if (!initialData) {
     push("/stableswapsimulator");
   }

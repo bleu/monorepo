@@ -3,6 +3,7 @@
 import { StableSwapSimulatorDataSchema } from "@balancer-pool-metadata/schema";
 import { capitalize } from "@balancer-pool-metadata/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
@@ -13,6 +14,7 @@ import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
 import { TokenTable } from "./TokenTable";
 
 export default function InitialDataForm() {
+  const { push } = useRouter();
   const { initialData, newPoolImportedFlag } = useStableSwap();
   const {
     register,
@@ -42,6 +44,7 @@ export default function InitialDataForm() {
   };
 
   const onSubmit = () => {
+    push("/stableswapsimulator/analysis");
     return;
     // TODO: BAL 382
   };
@@ -73,7 +76,7 @@ export default function InitialDataForm() {
         )}
         <div hidden={true}>
           {initialData?.tokens.map((token, i) => (
-            <>
+            <div key={token.symbol}>
               <input
                 form="initial-data-form"
                 {...register(`tokens.${i}.symbol`)}
@@ -86,7 +89,7 @@ export default function InitialDataForm() {
                 form="initial-data-form"
                 {...register(`tokens.${i}.rate`)}
               />
-            </>
+            </div>
           ))}
         </div>
         <TokenTable />

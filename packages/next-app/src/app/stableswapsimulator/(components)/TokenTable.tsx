@@ -15,7 +15,7 @@ import TokenForm from "./TokenForm";
 const customPadding = "py-4 px-1";
 
 export function TokenTable() {
-  const { initialData } = useStableSwap();
+  const { baselineData } = useStableSwap();
   return (
     <div className="h-full flex-1 flex w-full justify-center text-white">
       <Table>
@@ -39,7 +39,7 @@ export function TokenTable() {
           </Table.HeaderCell>
         </Table.HeaderRow>
         <Table.Body>
-          {initialData?.tokens?.map((token) => (
+          {baselineData?.tokens?.map((token) => (
             <TableRow token={token} key={token.symbol} />
           ))}
         </Table.Body>
@@ -68,12 +68,12 @@ function ButtonToOpenTokenForm({
 }
 
 function TableRow({ token }: { token: TokensData }) {
-  const { setInitialData, initialData } = useStableSwap();
+  const { setBaselineData, baselineData } = useStableSwap();
 
   const deleteToken = (symbol?: string) => {
-    setInitialData({
-      ...initialData,
-      tokens: initialData.tokens.filter((token) => token.symbol !== symbol),
+    setBaselineData({
+      ...baselineData,
+      tokens: baselineData.tokens.filter((token) => token.symbol !== symbol),
     });
   };
 

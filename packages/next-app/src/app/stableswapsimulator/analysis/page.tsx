@@ -8,9 +8,9 @@ import { GraphView } from "../(components)/GraphView";
 
 export default function Page() {
   const { push } = useRouter();
-  const { initialData } = useStableSwap();
+  const { baselineData } = useStableSwap();
 
-  if (!initialData) {
+  if (!baselineData) {
     push("/stableswapsimulator");
   }
   return <GraphView />;

@@ -19,13 +19,13 @@ export interface AnalysisData {
 }
 
 interface StableSwapContextType {
-  initialData: AnalysisData;
-  newData?: AnalysisData;
+  baselineData: AnalysisData;
+  variantData?: AnalysisData;
   indexAnalysisToken: number;
   indexCurrentTabToken: number;
   setIndexAnalysisToken: (index: number) => void;
   setIndexCurrentTabToken: (index: number) => void;
-  setInitialData: (data: AnalysisData) => void;
+  setBaselineData: (data: AnalysisData) => void;
   handleImportPoolParametersById: (data: PoolAttribute) => void;
   newPoolImportedFlag: boolean;
   defaultInitialData: AnalysisData;
@@ -39,9 +39,9 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
     swapFee: undefined,
     tokens: [],
   };
-  const [initialData, setInitialData] =
+  const [baselineData, setBaselineData] =
     useState<AnalysisData>(defaultInitialData);
-  const [newData, setNewData] = useState<AnalysisData>();
+  const [variantData, setVariantData] = useState<AnalysisData>();
   const [indexAnalysisToken, setIndexAnalysisToken] = useState<number>(0);
   const [indexCurrentTabToken, setIndexCurrentTabToken] = useState<number>(1);
   const [newPoolImportedFlag, setNewPoolImportedFlag] =
@@ -66,20 +66,20 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
     });
     if (!poolData) return;
     setNewPoolImportedFlag(!newPoolImportedFlag);
-    setInitialData(convertGqlToAnalysisData(poolData));
-    setNewData(convertGqlToAnalysisData(poolData));
+    setBaselineData(convertGqlToAnalysisData(poolData));
+    setVariantData(convertGqlToAnalysisData(poolData));
   }
 
   return (
     <StableSwapContext.Provider
       value={{
-        initialData,
-        newData,
+        baselineData,
+        setBaselineData,
+        variantData,
         indexAnalysisToken,
         setIndexAnalysisToken,
         indexCurrentTabToken,
         setIndexCurrentTabToken,
-        setInitialData,
         handleImportPoolParametersById,
         newPoolImportedFlag,
         defaultInitialData,

@@ -15,7 +15,8 @@ import { TokenTable } from "./TokenTable";
 
 export default function InitialDataForm() {
   const { push } = useRouter();
-  const { initialData, setInitialData, newPoolImportedFlag } = useStableSwap();
+  const { baselineData, setBaselineData, newPoolImportedFlag } =
+    useStableSwap();
   const {
     register,
     handleSubmit,
@@ -33,7 +34,7 @@ export default function InitialDataForm() {
     return {
       ...register(field, {
         required: true,
-        value: initialData?.[field],
+        value: baselineData?.[field],
         valueAsNumber: true,
       }),
       label: capitalize(label),
@@ -45,7 +46,7 @@ export default function InitialDataForm() {
 
   const onSubmit = (data: FieldValues) => {
     // TODO: BAL 382
-    setInitialData(data as AnalysisData);
+    setBaselineData(data as AnalysisData);
     push("/stableswapsimulator/analysis");
     return;
   };
@@ -54,14 +55,14 @@ export default function InitialDataForm() {
 
   useEffect(() => {
     // TODO: BAL 401
-    if (initialData?.swapFee) setValue("swapFee", initialData?.swapFee);
-    if (initialData?.ampFactor) setValue("ampFactor", initialData?.ampFactor);
-    initialData?.tokens.forEach((token, i) => {
+    if (baselineData?.swapFee) setValue("swapFee", baselineData?.swapFee);
+    if (baselineData?.ampFactor) setValue("ampFactor", baselineData?.ampFactor);
+    baselineData?.tokens.forEach((token, i) => {
       setValue(`tokens.${i}.symbol`, token.symbol);
       setValue(`tokens.${i}.balance`, token.balance);
       setValue(`tokens.${i}.rate`, token.rate);
     });
-  }, [initialData]);
+  }, [baselineData]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -76,7 +77,7 @@ export default function InitialDataForm() {
           </div>
         )}
         <div hidden={true}>
-          {initialData?.tokens.map((token, i) => (
+          {baselineData?.tokens.map((token, i) => (
             <div key={token.symbol}>
               <input
                 form="initial-data-form"

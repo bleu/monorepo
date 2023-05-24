@@ -3,13 +3,17 @@
 import { useStableSwap } from "#/contexts/StableSwapContext";
 
 export default function StableCurve() {
-  const { initialData, newData, indexAnalysisToken, indexCurrentTabToken } =
-    useStableSwap();
+  const {
+    baselineData,
+    variantData,
+    indexAnalysisToken,
+    indexCurrentTabToken,
+  } = useStableSwap();
   const amountsAnalysisToken = calculateAmounts(
-    initialData?.tokens?.[indexAnalysisToken]?.balance
+    baselineData?.tokens?.[indexAnalysisToken]?.balance
   );
   const amountsTabToken = calculateAmounts(
-    newData?.tokens?.[indexAnalysisToken]?.balance
+    variantData?.tokens?.[indexAnalysisToken]?.balance
   );
   return (
     <>

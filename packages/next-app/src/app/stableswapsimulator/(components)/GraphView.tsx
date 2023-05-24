@@ -4,14 +4,15 @@ import { useRouter } from "next/navigation";
 
 import { useStableSwap } from "#/contexts/StableSwapContext";
 
-import { GraphView } from "../(components)/GraphView";
+import StableCurve from "./StableCurve";
 
-export default function Page() {
-  const { push } = useRouter();
+export function GraphView() {
   const { initialData } = useStableSwap();
+  const { push } = useRouter();
 
-  if (!initialData) {
+  if (!initialData.swapFee) {
     push("/stableswapsimulator");
   }
-  return <GraphView />;
+
+  return <StableCurve />;
 }

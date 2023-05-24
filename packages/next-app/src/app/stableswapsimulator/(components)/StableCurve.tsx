@@ -3,12 +3,12 @@
 import { StableMath } from "@balancer-pool-metadata/math/src";
 import Plot from "react-plotly.js";
 
-import Spinner from "#/components/Spinner";
+import { Spinner } from "#/components/Spinner";
 import { useStableSwap } from "#/contexts/StableSwapContext";
 
 export default function StableCurve() {
   const {
-    initialData,
+    baselineData,
     indexAnalysisToken,
     indexCurrentTabToken,
     preparePoolPairData,
@@ -16,23 +16,23 @@ export default function StableCurve() {
   } = useStableSwap();
 
   if (
-    !initialData ||
-    !initialData.swapFee ||
-    !initialData.ampFactor ||
-    !initialData.tokens
+    !baselineData ||
+    !baselineData.swapFee ||
+    !baselineData.ampFactor ||
+    !baselineData.tokens
   )
     return <Spinner />;
 
   const initialAmountsAnalysisToken = calculateAmounts({
-    balance: initialData?.tokens?.[indexAnalysisToken]?.balance,
+    balance: baselineData?.tokens?.[indexAnalysisToken]?.balance,
   });
 
   const initialPoolPairData = preparePoolPairData({
     indexIn: indexAnalysisToken,
     indexOut: indexCurrentTabToken,
-    swapFee: initialData?.swapFee,
-    allBalances: initialData?.tokens?.map((token) => token.balance),
-    amp: initialData?.ampFactor,
+    swapFee: baselineData?.swapFee,
+    allBalances: baselineData?.tokens?.map((token) => token.balance),
+    amp: baselineData?.ampFactor,
   });
 
   const initialAmountTabToken = initialAmountsAnalysisToken.map((amount) => {

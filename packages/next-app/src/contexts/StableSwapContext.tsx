@@ -3,7 +3,14 @@
 import { bnum, StablePool } from "@balancer-labs/sor";
 import { PoolQuery } from "@balancer-pool-metadata/gql/src/balancer-pools/__generated__/Ethereum";
 import { parseFixed } from "@ethersproject/bignumber";
-import { createContext, PropsWithChildren, useContext, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 import { PoolAttribute } from "#/components/SearchPoolForm";
 import { pools } from "#/lib/gql";
@@ -19,21 +26,23 @@ export interface TokensData {
 }
 
 export interface AnalysisData {
-  tokens?: TokensData[];
+  tokens: TokensData[];
   ampFactor?: number;
   swapFee?: number;
 }
 
 interface StableSwapContextType {
-  initialData?: AnalysisData;
-  newData?: AnalysisData;
+  baselineData: AnalysisData;
+  variantData?: AnalysisData;
   indexAnalysisToken: number;
   indexCurrentTabToken: number;
   setIndexAnalysisToken: (index: number) => void;
   setIndexCurrentTabToken: (index: number) => void;
-  setInitialData: (data: AnalysisData) => void;
+  setBaselineData: (data: AnalysisData) => void;
   handleImportPoolParametersById: (data: PoolAttribute) => void;
   newPoolImportedFlag: boolean;
+  isGraphLoading: boolean;
+  setIsGraphLoading: (value: boolean) => void;
   preparePoolPairData: ({
     indexIn,
     indexOut,
@@ -48,25 +57,29 @@ interface StableSwapContextType {
     amp: number;
   }) => StablePoolPairData;
   numberToOldBigNumber: (number: number, decimals?: number) => typeof bnum;
-  areParamsLoading: boolean;
-  setAreParamsLoading: (value: boolean) => void;
 }
 
 export const StableSwapContext = createContext({} as StableSwapContextType);
 
 export function StableSwapProvider({ children }: PropsWithChildren) {
-  const [initialData, setInitialData] = useState<AnalysisData>();
-  const [newData, setNewData] = useState<AnalysisData>();
+  const pathname = usePathname();
+  const { push } = useRouter();
+  const defaultBaselineData: AnalysisData = {
+    ampFactor: undefined,
+    swapFee: undefined,
+    tokens: [],
+  };
+  const [baselineData, setBaselineData] =
+    useState<AnalysisData>(defaultBaselineData);
+  const [variantData, setVariantData] = useState<AnalysisData>();
   const [indexAnalysisToken, setIndexAnalysisToken] = useState<number>(0);
   const [indexCurrentTabToken, setIndexCurrentTabToken] = useState<number>(1);
-  const [areParamsLoading, setAreParamsLoading] = useState<boolean>(false);
-
   const [newPoolImportedFlag, setNewPoolImportedFlag] =
     useState<boolean>(false);
 
-  function convertGqlToAnalysisData(
-    poolData: PoolQuery | undefined
-  ): AnalysisData {
+  const [isGraphLoading, setIsGraphLoading] = useState<boolean>(false);
+
+  function convertGqlToAnalysisData(poolData: PoolQuery): AnalysisData {
     return {
       swapFee: Number(poolData?.pool?.swapFee),
       ampFactor: Number(poolData?.pool?.amp),
@@ -85,8 +98,8 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
     });
     if (!poolData) return;
     setNewPoolImportedFlag(!newPoolImportedFlag);
-    setInitialData(convertGqlToAnalysisData(poolData));
-    setNewData(convertGqlToAnalysisData(poolData));
+    setBaselineData(convertGqlToAnalysisData(poolData));
+    setVariantData(convertGqlToAnalysisData(poolData));
   }
 
   function numberToBigNumber(number: number, decimals = 18) {
@@ -135,22 +148,39 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
     } as StablePoolPairData;
   }
 
+  useEffect(() => {
+    if (!baselineData.swapFee) {
+      push("/stableswapsimulator");
+    }
+    if (pathname === "/stableswapsimulator") {
+      setIsGraphLoading(false);
+      setBaselineData(defaultBaselineData);
+      setVariantData(undefined);
+    }
+  }, [pathname]);
+
+  useEffect(() => {
+    if (baselineData.ampFactor) {
+      push("/stableswapsimulator/analysis");
+    }
+  }, [baselineData]);
+
   return (
     <StableSwapContext.Provider
       value={{
-        initialData,
-        newData,
+        baselineData,
+        setBaselineData,
+        variantData,
         indexAnalysisToken,
         setIndexAnalysisToken,
         indexCurrentTabToken,
         setIndexCurrentTabToken,
-        setInitialData,
         handleImportPoolParametersById,
         newPoolImportedFlag,
+        isGraphLoading,
+        setIsGraphLoading,
         preparePoolPairData,
         numberToOldBigNumber,
-        areParamsLoading,
-        setAreParamsLoading,
       }}
     >
       {children}

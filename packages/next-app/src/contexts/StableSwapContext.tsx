@@ -21,8 +21,6 @@ export interface AnalysisData {
 interface StableSwapContextType {
   initialData: AnalysisData;
   newData?: AnalysisData;
-  areParamsLoading: boolean;
-  setAreParamsLoading: (loading: boolean) => void;
   indexAnalysisToken: number;
   indexCurrentTabToken: number;
   setIndexAnalysisToken: (index: number) => void;
@@ -44,7 +42,6 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
   const [initialData, setInitialData] =
     useState<AnalysisData>(defaultInitialData);
   const [newData, setNewData] = useState<AnalysisData>();
-  const [areParamsLoading, setAreParamsLoading] = useState<boolean>(false);
   const [indexAnalysisToken, setIndexAnalysisToken] = useState<number>(0);
   const [indexCurrentTabToken, setIndexCurrentTabToken] = useState<number>(1);
   const [newPoolImportedFlag, setNewPoolImportedFlag] =
@@ -78,8 +75,6 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
       value={{
         initialData,
         newData,
-        areParamsLoading,
-        setAreParamsLoading,
         indexAnalysisToken,
         setIndexAnalysisToken,
         indexCurrentTabToken,

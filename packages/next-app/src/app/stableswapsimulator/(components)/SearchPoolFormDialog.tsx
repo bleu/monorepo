@@ -9,11 +9,9 @@ import { useStableSwap } from "#/contexts/StableSwapContext";
 
 export function SearchPoolFormDialog({ children }: PropsWithChildren) {
   const { push } = useRouter();
-  const { handleImportPoolParametersById, setAreParamsLoading } =
-    useStableSwap();
+  const { handleImportPoolParametersById } = useStableSwap();
 
   function onSubmit(data: PoolAttribute) {
-    setAreParamsLoading(true);
     handleImportPoolParametersById(data);
     push("/stableswapsimulator/analysis");
   }

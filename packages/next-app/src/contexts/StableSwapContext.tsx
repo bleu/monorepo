@@ -1,7 +1,14 @@
 "use client";
 
 import { PoolQuery } from "@balancer-pool-metadata/gql/src/balancer-pools/__generated__/Ethereum";
-import { createContext, PropsWithChildren, useContext, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 import { PoolAttribute } from "#/components/SearchPoolForm";
 import { pools } from "#/lib/gql";
@@ -28,19 +35,20 @@ interface StableSwapContextType {
   setBaselineData: (data: AnalysisData) => void;
   handleImportPoolParametersById: (data: PoolAttribute) => void;
   newPoolImportedFlag: boolean;
-  defaultInitialData: AnalysisData;
 }
 
 export const StableSwapContext = createContext({} as StableSwapContextType);
 
 export function StableSwapProvider({ children }: PropsWithChildren) {
-  const defaultInitialData: AnalysisData = {
+  const pathname = usePathname();
+  const { push } = useRouter();
+  const defaultBaselineData: AnalysisData = {
     ampFactor: undefined,
     swapFee: undefined,
     tokens: [],
   };
   const [baselineData, setBaselineData] =
-    useState<AnalysisData>(defaultInitialData);
+    useState<AnalysisData>(defaultBaselineData);
   const [variantData, setVariantData] = useState<AnalysisData>();
   const [indexAnalysisToken, setIndexAnalysisToken] = useState<number>(0);
   const [indexCurrentTabToken, setIndexCurrentTabToken] = useState<number>(1);
@@ -70,6 +78,16 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
     setVariantData(convertGqlToAnalysisData(poolData));
   }
 
+  useEffect(() => {
+    if (pathname === "/stableswapsimulator") {
+      setBaselineData(defaultBaselineData);
+      setVariantData(undefined);
+    }
+    if (!baselineData.swapFee) {
+      push("/stableswapsimulator");
+    }
+  }, [pathname]);
+
   return (
     <StableSwapContext.Provider
       value={{
@@ -82,7 +100,6 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
         setIndexCurrentTabToken,
         handleImportPoolParametersById,
         newPoolImportedFlag,
-        defaultInitialData,
       }}
     >
       {children}

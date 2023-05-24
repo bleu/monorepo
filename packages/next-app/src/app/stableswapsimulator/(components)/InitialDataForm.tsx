@@ -5,7 +5,7 @@ import { capitalize } from "@balancer-pool-metadata/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 
 import Button from "#/components/Button";
 import { Input } from "#/components/Input";
@@ -15,7 +15,7 @@ import { TokenTable } from "./TokenTable";
 
 export default function InitialDataForm() {
   const { push } = useRouter();
-  const { initialData, newPoolImportedFlag } = useStableSwap();
+  const { initialData, setInitialData, newPoolImportedFlag } = useStableSwap();
   const {
     register,
     handleSubmit,
@@ -43,10 +43,11 @@ export default function InitialDataForm() {
     };
   };
 
-  const onSubmit = () => {
+  const onSubmit = (data: FieldValues) => {
+    // TODO: BAL 382
+    setInitialData(data as AnalysisData);
     push("/stableswapsimulator/analysis");
     return;
-    // TODO: BAL 382
   };
 
   useEffect(clearErrors, [newPoolImportedFlag]);

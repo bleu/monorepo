@@ -22,7 +22,7 @@ import { TokenSelect } from "#/app/internalmanager/(components)/TokenSelect";
 import { ToastContent } from "#/app/metadata/[network]/pool/[poolId]/(components)/MetadataAttributesTable/TransactionModal";
 import { Button } from "#/components";
 import { Input } from "#/components/Input";
-import Spinner from "#/components/Spinner";
+import { Spinner } from "#/components/Spinner";
 import { Toast } from "#/components/Toast";
 import {
   STAGE_CN_MAPPING,

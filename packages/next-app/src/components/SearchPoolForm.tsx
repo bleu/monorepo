@@ -89,7 +89,9 @@ export default function SearchPoolForm({
           render={({ field: { onChange, value, ref } }) => (
             <Select onValueChange={onChange} value={value} ref={ref}>
               {inputTypenames.map(({ value, label }) => (
-                <SelectItem value={value}>{label}</SelectItem>
+                <SelectItem key={value} value={value}>
+                  {label}
+                </SelectItem>
               ))}
             </Select>
           )}

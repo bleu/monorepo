@@ -14,10 +14,10 @@ export default function TokenForm({
   symbolToEdit?: string;
   close?: () => void;
 }) {
-  const { initialData, setInitialData } = useStableSwap();
+  const { baselineData, setBaselineData } = useStableSwap();
   const stableSwapTokensSchema = getStableSwapSimulatorTokensSchema({
     symbolToEdit,
-    existentSymbols: initialData?.tokens?.map((token: TokensData) => {
+    existentSymbols: baselineData?.tokens?.map((token: TokensData) => {
       return token.symbol;
     }),
   });
@@ -30,12 +30,12 @@ export default function TokenForm({
   });
 
   const currentToken =
-    initialData?.tokens?.find(
+    baselineData?.tokens?.find(
       (token: TokensData) => token.symbol == symbolToEdit
     ) || undefined;
 
   const validateUniqueSymbol = (symbol: string) => {
-    const tokensToCheck = initialData?.tokens?.filter(
+    const tokensToCheck = baselineData?.tokens?.filter(
       (token: TokensData) => token.symbol != symbolToEdit
     );
     const symbolsToCheck = tokensToCheck?.map(
@@ -49,9 +49,9 @@ export default function TokenForm({
 
   function addOrEditToken(data: TokensData) {
     if (symbolToEdit) {
-      setInitialData({
-        ...initialData,
-        tokens: initialData?.tokens?.map((token: TokensData) => {
+      setBaselineData({
+        ...baselineData,
+        tokens: baselineData?.tokens?.map((token: TokensData) => {
           if (token.symbol == symbolToEdit) {
             return {
               ...data,
@@ -61,10 +61,10 @@ export default function TokenForm({
         }),
       });
     } else {
-      setInitialData({
-        ...initialData,
+      setBaselineData({
+        ...baselineData,
         tokens: [
-          ...(initialData?.tokens || []),
+          ...(baselineData?.tokens || []),
           {
             ...data,
           },

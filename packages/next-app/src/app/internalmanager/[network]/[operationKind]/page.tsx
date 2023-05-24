@@ -9,7 +9,7 @@ import { useAccount, useNetwork } from "wagmi";
 import { TokenSelect } from "#/app/internalmanager/(components)/TokenSelect";
 import { Button } from "#/components";
 import { Input } from "#/components/Input";
-import Spinner from "#/components/Spinner";
+import { Spinner } from "#/components/Spinner";
 import {
   STAGE_CN_MAPPING,
   TransactionProgressBar,

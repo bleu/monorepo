@@ -5,9 +5,9 @@ import {
   SubgraphPoolBase,
 } from "@balancer-labs/sor";
 import { describe, expect, test } from "@jest/globals";
+import { StableMath } from "index";
 
 import poolsFromFile from "./fixtures/data.json";
-import StableMath from "./index";
 
 describe("Tests new stable math function based on package other functions", () => {
   const pool = poolsFromFile["pools"][0];

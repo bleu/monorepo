@@ -12,7 +12,7 @@ import { Dialog } from "#/components/Dialog";
 import { Header, HeaderNetworkMismatchAlert } from "#/components/Header";
 import SearchPoolForm from "#/components/SearchPoolForm";
 import Sidebar from "#/components/Sidebar";
-import Spinner from "#/components/Spinner";
+import { Spinner } from "#/components/Spinner";
 import { CheckSupportedChains } from "#/components/SupportedChain";
 import { getNetwork, NetworksContextProvider } from "#/contexts/networks";
 import { PoolMetadataProvider } from "#/contexts/PoolMetadataContext";

@@ -3,7 +3,7 @@
 import Image from "next/image";
 
 import SelectPoolImage from "#/assets/choose-pool.svg";
-import Spinner from "#/components/Spinner";
+import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { useAccount } from "#/wagmi";
 

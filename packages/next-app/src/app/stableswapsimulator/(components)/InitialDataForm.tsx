@@ -14,12 +14,12 @@ import { TokenTable } from "./TokenTable";
 
 export default function InitialDataForm() {
   const { push } = useRouter();
-  const { baselineData, setBaselineData, setVariantData, newPoolImportedFlag } =
-    useStableSwap();
+  const { baselineData, setBaselineData, setVariantData } = useStableSwap();
   const {
     register,
     handleSubmit,
     setValue,
+    getValues,
     clearErrors,
     formState: { errors },
   } = useForm<typeof StableSwapSimulatorDataSchema._type>({
@@ -35,12 +35,13 @@ export default function InitialDataForm() {
 
   useEffect(() => {
     // TODO: BAL 401
+    clearErrors();
+    if (baselineData == getValues()) return;
     if (baselineData?.swapFee) setValue("swapFee", baselineData?.swapFee);
     if (baselineData?.ampFactor) setValue("ampFactor", baselineData?.ampFactor);
     if (baselineData?.tokens) setValue("tokens", baselineData?.tokens);
   }, [baselineData]);
 
-  useEffect(clearErrors, [baselineData?.tokens, newPoolImportedFlag]);
   useEffect(() => {
     register("tokens", { required: true, value: baselineData?.tokens });
   }, []);

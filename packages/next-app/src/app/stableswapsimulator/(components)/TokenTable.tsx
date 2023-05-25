@@ -109,15 +109,15 @@ function TableRow({
           type="button"
           className="flex items-center"
           onClick={() => deleteToken(token?.symbol)}
-          disabled={minTokens <= baselineData?.tokens?.length}
+          disabled={minTokens >= baselineData?.tokens?.length}
         >
           <MinusCircledIcon
             width={20}
             height={20}
             className={
               minTokens >= baselineData?.tokens?.length
-                ? "text-tomato9 hover:text-tomato11"
-                : "text-gray9"
+                ? "text-gray9"
+                : "text-tomato9 hover:text-tomato11"
             }
           />
         </button>

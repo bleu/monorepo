@@ -12,13 +12,11 @@ import useDebounce from "#/hooks/useDebounce";
 import { TokenTable } from "./TokenTable";
 
 export default function BaselineDataForm() {
-  const { baselineData, setBaselineData, newPoolImportedFlag } =
-    useStableSwap();
+  const { baselineData, setBaselineData } = useStableSwap();
   const {
     register,
     getValues,
     setValue,
-    clearErrors,
     watch,
     formState: { errors },
   } = useForm<typeof StableSwapSimulatorDataSchema._type>({
@@ -40,14 +38,13 @@ export default function BaselineDataForm() {
 
   useEffect(() => {
     // TODO: BAL 401
+    if (baselineData == getValues()) return;
     if (baselineData?.swapFee) setValue("swapFee", baselineData?.swapFee);
     if (baselineData?.ampFactor) setValue("ampFactor", baselineData?.ampFactor);
     if (baselineData?.tokens) setValue("tokens", baselineData?.tokens);
   }, [baselineData]);
 
   useEffect(onSubmit, [debouncedSwapFee, debouncedAmpFactor, tokens]);
-
-  useEffect(clearErrors, [baselineData?.tokens, newPoolImportedFlag]);
 
   useEffect(() => {
     register("tokens", { required: true, value: baselineData?.tokens });

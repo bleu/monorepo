@@ -30,7 +30,16 @@ export default function BaselineDataForm() {
   const debouncedSwapFee = useDebounce(swapFee);
   const debouncedAmpFactor = useDebounce(ampFactor);
 
+  const baselineAndFieldsAreEqual = () => {
+    const ampIsEqual = baselineData?.ampFactor == getValues().ampFactor;
+    const swapFeeIsEqual = baselineData?.swapFee == getValues().swapFee;
+    const tokensAreEqual = baselineData?.tokens == getValues().tokens;
+    return ampIsEqual && swapFeeIsEqual && tokensAreEqual;
+  };
+
   const onSubmit = () => {
+    // console.log("onSubmit", baselineData == getValues());
+    if (baselineAndFieldsAreEqual()) return;
     if (Object.keys(errors).length) return;
     const data = getValues();
     setBaselineData(data as AnalysisData);
@@ -38,7 +47,7 @@ export default function BaselineDataForm() {
 
   useEffect(() => {
     // TODO: BAL 401
-    if (baselineData == getValues()) return;
+    if (baselineAndFieldsAreEqual()) return;
     if (baselineData?.swapFee) setValue("swapFee", baselineData?.swapFee);
     if (baselineData?.ampFactor) setValue("ampFactor", baselineData?.ampFactor);
     if (baselineData?.tokens) setValue("tokens", baselineData?.tokens);

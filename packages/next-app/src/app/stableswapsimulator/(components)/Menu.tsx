@@ -14,25 +14,25 @@ function AnalysisMenu() {
   return (
     <div>
       <Tabs.Root
-        className="flex flex-col w-full h-full shadow-[0_2px_10px] shadow-blue2 bg-blue2 text-gray-600"
+        className="flex flex-col w-full h-full shadow-[0_2px_10px] shadow-blue2 bg-blue2 text-gray8"
         defaultValue="variantData"
       >
         <Tabs.List className="shrink-0 flex border-b border-blue1 bg-blue3">
           <Tabs.Trigger
-            className="px-5 h-[45px] flex-1 flex items-center justify-center text-[15px] hover:text-white hover:bg-blue4 data-[state=active]:text-white data-[state=active]:shadow-[inset_0_-1px_0_0,0_1px_0_0] data-[state=active]:gray-800 data-[state=active]:focus:shadow-[0_0_0_2px] data-[state=active]:focus:shadow:gray-800 outline-none cursor-default"
+            className="px-5 h-[45px] flex-1 flex items-center justify-center text-[15px] hover:text-white hover:bg-blue4 data-[state=active]:text-white data-[state=active]:shadow-[inset_0_-1px_0_0,0_1px_0_0] data-[state=active]:shadow-blue7 data-[state=active]:focus:shadow-[0_0_0_2px] data-[state=active]:focus:shadow:blue7 outline-none cursor-default"
             value="baselineData"
           >
             <div className="flex justify-center items-center h-screen gap-x-3">
-              <div className="w-3 h-3 rounded-full bg-blue-700" />
+              <div className="w-3 h-3 rounded-full bg-blue7" />
               Initial
             </div>
           </Tabs.Trigger>
           <Tabs.Trigger
-            className="px-5 h-[45px] flex-1 flex items-center justify-center text-[15px] hover:text-white hover:bg-blue4 data-[state=active]:text-white data-[state=active]:shadow-[inset_0_-1px_0_0,0_1px_0_0] data-[state=active]:gray-800 data-[state=active]:focus:shadow-[0_0_0_2px] data-[state=active]:focus:shadow:gray-800 outline-none cursor-default"
+            className="px-5 h-[45px] flex-1 flex items-center justify-center text-[15px] hover:text-white hover:bg-blue4 data-[state=active]:text-white data-[state=active]:shadow-[inset_0_-1px_0_0,0_1px_0_0] data-[state=active]:shadow-amber9 data-[state=active]:focus:shadow-[0_0_0_2px] data-[state=active]:focus:shadow:amber9 outline-none cursor-default"
             value="variantData"
           >
             <div className="flex justify-center items-center h-screen gap-x-3">
-              <div className="w-3 h-3 rounded-full bg-yellow-700" />
+              <div className="w-3 h-3 rounded-full bg-amber9" />
               New
             </div>
           </Tabs.Trigger>

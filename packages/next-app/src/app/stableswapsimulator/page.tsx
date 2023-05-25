@@ -3,10 +3,14 @@
 import Image from "next/image";
 
 import ConnectWalletImage from "#/assets/connect-wallet.svg";
+import { Spinner } from "#/components/Spinner";
+import { useStableSwap } from "#/contexts/StableSwapContext";
 
 import { SearchPoolFormDialog } from "./(components)/SearchPoolFormDialog";
 
 export default function Page() {
+  const { isGraphLoading } = useStableSwap();
+  if (isGraphLoading) return <Spinner />;
   return (
     <div className="w-full rounded-3xl items-center py-16 px-12 md:py-20 flex flex-col">
       <div className="text-center text-amber9 text-3xl">

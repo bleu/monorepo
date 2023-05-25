@@ -109,19 +109,19 @@ export default function StableCurve() {
           },
           xaxis: {
             title: `Amount of ${tokensSymbol[indexAnalysisToken]}`,
-            gridcolor: grayDarkA.grayA12,
+            gridcolor: grayDarkA.grayA10,
             linecolor: grayDarkA.grayA12,
             linewidth: 0.5,
             automargin: true,
-            zerolinecolor: grayDarkA.grayA12,
+            zerolinecolor: grayDarkA.grayA10,
           },
           yaxis: {
             title: `Amount of ${tokensSymbol[indexCurrentTabToken]}`,
-            gridcolor: grayDarkA.grayA12,
+            gridcolor: grayDarkA.grayA10,
             linecolor: grayDarkA.grayA12,
             linewidth: 0.5,
             automargin: true,
-            zerolinecolor: grayDarkA.grayA12,
+            zerolinecolor: grayDarkA.grayA10,
           },
           modebar: {
             bgcolor: blueDarkA.blueA1,

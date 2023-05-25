@@ -86,7 +86,7 @@ export default function StableCurve() {
             type: "scatter",
             mode: "lines",
             marker: { color: blueDarkA.blueA9 },
-            hovertemplate: `Swap $%{x:.2f} ${tokensSymbol[indexAnalysisToken]} for ${formattedPoints?.y} ${tokensSymbol[indexCurrentTabToken]} <extra></extra>`,
+            hovertemplate: `Swap %{x:.2f} ${tokensSymbol[indexAnalysisToken]} for ${formattedPoints?.y} ${tokensSymbol[indexCurrentTabToken]} <extra></extra>`,
             showlegend: false,
           },
           {
@@ -95,7 +95,7 @@ export default function StableCurve() {
             type: "scatter",
             mode: "lines",
             marker: { color: blueDarkA.blueA9 },
-            hovertemplate: `Swap $%{y:.2f} ${tokensSymbol[indexCurrentTabToken]} for ${formattedPoints?.x} ${tokensSymbol[indexAnalysisToken]}<extra></extra>`,
+            hovertemplate: `Swap %{y:.2f} ${tokensSymbol[indexCurrentTabToken]} for ${formattedPoints?.x} ${tokensSymbol[indexAnalysisToken]}<extra></extra>`,
             showlegend: false,
           },
         ]}

@@ -106,7 +106,7 @@ function BodyCell({
   return (
     <td
       className={cn(
-        "whitespace-nowrap text-sm text-gray-500",
+        "whitespace-nowrap text-sm text-gray10",
         customWidth ? cn(customWidth, "pl-4") : padding
       )}
     >

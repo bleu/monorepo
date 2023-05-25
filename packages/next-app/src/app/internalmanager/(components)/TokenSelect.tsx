@@ -234,7 +234,7 @@ function TokenModal({
     }
   }
   return (
-    <div className="text-white divide-y divide-gray-700 max-h-[30rem] overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-blue3">
+    <div className="text-white divide-y divide-gray7 max-h-[30rem] overflow-y-scroll scrollbar-thin scrollbar-thumb-gray12 scrollbar-track-blue3">
       <div className="w-full flex flex-col justify-center items-center h-full py-4 gap-y-4">
         <div className="text-xl">Token Search</div>
         <div className="w-full px-10 flex items-center">
@@ -249,7 +249,7 @@ function TokenModal({
           />
           {isTokenSearchDisabled ? (
             <button
-              className="h-9 rounded-r-[4px] bg-gray-200 px-2 leading-none outline-none transition hover:bg-gray-300 disabled:cursor-not-allowed"
+              className="h-9 rounded-r-[4px] bg-gray12 px-2 leading-none outline-none transition hover:bg-gray11 disabled:cursor-not-allowed"
               disabled={isTokenSearchDisabled}
             >
               <MagnifyingGlassIcon
@@ -264,7 +264,7 @@ function TokenModal({
               href={tokenExplorerUrl}
               target="_blank"
               rel="noreferrer"
-              className="h-9 rounded-r-[4px] bg-white px-2 leading-none outline-none transition hover:bg-gray-300 flex justify-center items-center"
+              className="h-9 rounded-r-[4px] bg-white px-2 leading-none outline-none transition hover:bg-gray11 flex justify-center items-center"
             >
               <MagnifyingGlassIcon
                 color="rgb(31 41 55)"

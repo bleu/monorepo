@@ -4,18 +4,18 @@ import cn from "classnames";
 import React, { HTMLProps } from "react";
 
 interface IInput extends HTMLProps<HTMLInputElement> {
-  rightLabel?: string;
+  extraLabel?: string;
   errorMessage?: string;
 }
 
 export const Input = React.forwardRef<HTMLInputElement, IInput>(
-  ({ label, errorMessage, rightLabel, ...rest }: IInput, ref) => {
+  ({ label, errorMessage, extraLabel, ...rest }: IInput, ref) => {
     return (
       <div className="flex flex-col">
         <div className="flex flex-row justify-between">
           <label className="mb-2 block text-sm text-slate12">{label}</label>
           <label className="mb-2 block text-sm text-slate12">
-            {rightLabel}
+            {extraLabel}
           </label>
         </div>
         <input

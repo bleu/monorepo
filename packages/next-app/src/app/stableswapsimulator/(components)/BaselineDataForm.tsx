@@ -33,7 +33,9 @@ export default function BaselineDataForm() {
   const debouncedAmpFactor = useDebounce(ampFactor);
 
   const inputParameters = (field: keyof AnalysisData) => {
-    const label = field.replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase();
+    const fieldWithSpaces = field
+      .replace(/([a-z])([A-Z])/g, "$1 $2")
+      .toLowerCase();
     if (field == "tokens") return;
     return {
       ...register(field, {
@@ -41,8 +43,8 @@ export default function BaselineDataForm() {
         value: baselineData?.[field],
         valueAsNumber: true,
       }),
-      label: capitalize(label),
-      placeholder: `Define the initial ${label}`,
+      label: capitalize(fieldWithSpaces),
+      placeholder: `Define the initial ${fieldWithSpaces}`,
       errorMessage: errors[field]?.message?.toString() || "",
       form: "baseline-data-form",
     };
@@ -57,6 +59,9 @@ export default function BaselineDataForm() {
   useEffect(handleChange, [debouncedSwapFee, debouncedAmpFactor, tokens]);
 
   useEffect(clearErrors, [baselineData?.tokens, newPoolImportedFlag]);
+  useEffect(() => {
+    register("tokens", { required: true });
+  }, []);
 
   return (
     <div className="flex flex-col gap-4">
@@ -70,28 +75,6 @@ export default function BaselineDataForm() {
             <span>{errors?.tokens?.message}</span>
           </div>
         )}
-        <div hidden={true}>
-          {baselineData?.tokens.map((token, i) => (
-            <div key={token.symbol}>
-              <input
-                form="baseline-data-form"
-                {...register(`tokens.${i}.symbol`, {
-                  value: token.symbol,
-                })}
-              />
-              <input
-                form="baseline-data-form"
-                {...register(`tokens.${i}.balance`, { value: token.balance })}
-              />
-              <input
-                form="baseline-data-form"
-                {...register(`tokens.${i}.rate`, {
-                  value: token.rate,
-                })}
-              />
-            </div>
-          ))}
-        </div>
         <TokenTable />
       </div>
     </div>

@@ -63,7 +63,7 @@ export default function NewDataForm() {
           onChange: handleChange,
         })}
         label="Swap fee"
-        rightLabel={`baseline: ${baselineData?.swapFee}`}
+        extraLabel={`baseline: ${baselineData?.swapFee}`}
         placeholder="Define the new swap fee"
         errorMessage={errors?.swapFee?.message}
         form="new-data-form"
@@ -76,7 +76,7 @@ export default function NewDataForm() {
           onChange: handleChange,
         })}
         label="Amp Factor"
-        rightLabel={`baseline: ${baselineData?.ampFactor}`}
+        extraLabel={`baseline: ${baselineData?.ampFactor}`}
         placeholder="Define the new amp factor"
         errorMessage={errors?.ampFactor?.message}
         form="new-data-form"

@@ -25,10 +25,7 @@ export default function StableCurve() {
   )
     return <Spinner />;
 
-  const [formattedPoints, setFormattedPoints] = useState<{
-    x: string;
-    y: string;
-  }>();
+  const [hoverInfo, setHoverInfo] = useState<string>();
 
   const tokensSymbol = baselineData.tokens.map((token) => token.symbol);
 
@@ -76,27 +73,27 @@ export default function StableCurve() {
     }
   );
 
+  const initialPoolPairDataAnalysis = [
+    ...initialAmountsAnalysisTokenIn,
+    ...initialAmountsAnalysisTokenOut,
+  ];
+
+  const initialAmountTabToken = [
+    ...initialAmountTabTokenOut,
+    ...initialAmountTabTokenIn,
+  ];
+
   return (
     <div className="text-white">
       <Plot
         data={[
           {
-            x: initialAmountsAnalysisTokenIn,
-            y: initialAmountTabTokenOut,
+            x: initialPoolPairDataAnalysis,
+            y: initialAmountTabToken,
             type: "scatter",
             mode: "lines",
             marker: { color: blueDarkA.blueA9 },
-            hovertemplate: `Swap %{x:.2f} ${tokensSymbol[indexAnalysisToken]} for ${formattedPoints?.y} ${tokensSymbol[indexCurrentTabToken]} <extra></extra>`,
-            showlegend: false,
-          },
-          {
-            x: initialAmountsAnalysisTokenOut,
-            y: initialAmountTabTokenIn,
-            type: "scatter",
-            mode: "lines",
-            marker: { color: blueDarkA.blueA9 },
-            hovertemplate: `Swap %{y:.2f} ${tokensSymbol[indexCurrentTabToken]} for ${formattedPoints?.x} ${tokensSymbol[indexAnalysisToken]}<extra></extra>`,
-            showlegend: false,
+            hovertemplate: hoverInfo,
           },
         ]}
         layout={{
@@ -136,10 +133,23 @@ export default function StableCurve() {
           const yValue = hoverData.y?.valueOf() as number;
           const xValue = hoverData.x?.valueOf() as number;
 
-          setFormattedPoints({
-            x: Math.abs(xValue).toFixed(2),
-            y: Math.abs(yValue).toFixed(2),
-          });
+          if (yValue < 0)
+            setHoverInfo(
+              `Swap ${xValue.toFixed(2)} ${
+                tokensSymbol[indexAnalysisToken]
+              } for ${Math.abs(yValue).toFixed(2)} ${
+                tokensSymbol[indexCurrentTabToken]
+              } <extra></extra>`
+            );
+          else {
+            setHoverInfo(
+              `Swap ${yValue.toFixed(2)} ${
+                tokensSymbol[indexCurrentTabToken]
+              } for ${Math.abs(xValue).toFixed(2)} ${
+                tokensSymbol[indexAnalysisToken]
+              } <extra></extra>`
+            );
+          }
         }}
       />
     </div>

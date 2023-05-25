@@ -29,6 +29,7 @@ export default function BaselineDataForm() {
   const tokens = watch("tokens");
   const debouncedSwapFee = useDebounce(swapFee);
   const debouncedAmpFactor = useDebounce(ampFactor);
+  const debouncedTokens = useDebounce(tokens);
 
   const baselineAndFieldsAreEqual = () => {
     const ampIsEqual = baselineData?.ampFactor == getValues().ampFactor;
@@ -52,7 +53,7 @@ export default function BaselineDataForm() {
     if (baselineData?.tokens) setValue("tokens", baselineData?.tokens);
   }, [baselineData]);
 
-  useEffect(onSubmit, [debouncedSwapFee, debouncedAmpFactor, tokens]);
+  useEffect(onSubmit, [debouncedSwapFee, debouncedAmpFactor, debouncedTokens]);
 
   useEffect(() => {
     register("tokens", { required: true, value: baselineData?.tokens });

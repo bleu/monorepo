@@ -2,7 +2,6 @@
 
 import { StableSwapSimulatorDataSchema } from "@balancer-pool-metadata/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 import { Input } from "#/components/Input";
@@ -20,7 +19,6 @@ export default function NewDataForm() {
 
   const {
     register,
-    setValue,
     getValues,
     formState: { errors },
   } = useForm<typeof StableSwapSimulatorDataSchema._type>({
@@ -33,11 +31,6 @@ export default function NewDataForm() {
     const data = getValues();
     setVariantData(data as AnalysisData);
   };
-
-  useEffect(() => {
-    if (variantData?.swapFee) setValue("swapFee", variantData?.swapFee);
-    if (variantData?.ampFactor) setValue("ampFactor", variantData?.ampFactor);
-  }, [variantData]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -64,9 +57,9 @@ export default function NewDataForm() {
         })}
         label="Swap fee"
         extraLabel={`baseline: ${baselineData?.swapFee}`}
-        placeholder="Define the new swap fee"
+        placeholder="Define the variant swap fee"
         errorMessage={errors?.swapFee?.message}
-        form="new-data-form"
+        form="variant-data-form"
       />
       <Input
         {...register("ampFactor", {
@@ -77,9 +70,9 @@ export default function NewDataForm() {
         })}
         label="Amp Factor"
         extraLabel={`baseline: ${baselineData?.ampFactor}`}
-        placeholder="Define the new amp factor"
+        placeholder="Define the variant amp factor"
         errorMessage={errors?.ampFactor?.message}
-        form="new-data-form"
+        form="variant-data-form"
       />
     </div>
   );

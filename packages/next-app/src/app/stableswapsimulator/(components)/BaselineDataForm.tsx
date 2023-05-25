@@ -1,7 +1,6 @@
 "use client";
 
 import { StableSwapSimulatorDataSchema } from "@balancer-pool-metadata/schema";
-import { capitalize } from "@balancer-pool-metadata/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -18,6 +17,7 @@ export default function BaselineDataForm() {
   const {
     register,
     getValues,
+    setValue,
     clearErrors,
     watch,
     formState: { errors },
@@ -32,42 +32,52 @@ export default function BaselineDataForm() {
   const debouncedSwapFee = useDebounce(swapFee);
   const debouncedAmpFactor = useDebounce(ampFactor);
 
-  const inputParameters = (field: keyof AnalysisData) => {
-    const fieldWithSpaces = field
-      .replace(/([a-z])([A-Z])/g, "$1 $2")
-      .toLowerCase();
-    if (field == "tokens") return;
-    return {
-      ...register(field, {
-        required: true,
-        value: baselineData?.[field],
-        valueAsNumber: true,
-      }),
-      label: capitalize(fieldWithSpaces),
-      placeholder: `Define the initial ${fieldWithSpaces}`,
-      errorMessage: errors[field]?.message?.toString() || "",
-      form: "baseline-data-form",
-    };
-  };
-
-  const handleChange = () => {
+  const onSubmit = () => {
     if (Object.keys(errors).length) return;
     const data = getValues();
     setBaselineData(data as AnalysisData);
   };
 
-  useEffect(handleChange, [debouncedSwapFee, debouncedAmpFactor, tokens]);
+  useEffect(() => {
+    // TODO: BAL 401
+    if (baselineData?.swapFee) setValue("swapFee", baselineData?.swapFee);
+    if (baselineData?.ampFactor) setValue("ampFactor", baselineData?.ampFactor);
+    if (baselineData?.tokens) setValue("tokens", baselineData?.tokens);
+  }, [baselineData]);
+
+  useEffect(onSubmit, [debouncedSwapFee, debouncedAmpFactor, tokens]);
 
   useEffect(clearErrors, [baselineData?.tokens, newPoolImportedFlag]);
+
   useEffect(() => {
-    register("tokens", { required: true });
+    register("tokens", { required: true, value: baselineData?.tokens });
   }, []);
 
   return (
     <div className="flex flex-col gap-4">
       <form id="baseline-data-form" />
-      <Input {...inputParameters("swapFee")} />
-      <Input {...inputParameters("ampFactor")} />
+      <Input
+        {...register("swapFee", {
+          required: true,
+          value: baselineData?.swapFee,
+          valueAsNumber: true,
+        })}
+        label="Swap fee"
+        placeholder="Define the initial swap fee"
+        errorMessage={errors?.swapFee?.message}
+        form="baseline-data-form"
+      />
+      <Input
+        {...register("ampFactor", {
+          required: true,
+          value: baselineData?.ampFactor,
+          valueAsNumber: true,
+        })}
+        label="Amp factor"
+        placeholder="Define the initial amp factor"
+        errorMessage={errors?.ampFactor?.message}
+        form="baseline-data-form"
+      />
       <div className="flex flex-col">
         <label className="mb-2 block text-sm text-slate12">Tokens</label>
         {errors?.tokens?.message && (

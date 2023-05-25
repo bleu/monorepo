@@ -1,7 +1,6 @@
 "use client";
 
 import { StableSwapSimulatorDataSchema } from "@balancer-pool-metadata/schema";
-import { capitalize } from "@balancer-pool-metadata/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -28,24 +27,6 @@ export default function InitialDataForm() {
     mode: "onSubmit",
   });
 
-  const inputParameters = (field: keyof AnalysisData) => {
-    const fieldWithSpaces = field
-      .replace(/([a-z])([A-Z])/g, "$1 $2")
-      .toLowerCase();
-    if (field == "tokens") return;
-    return {
-      ...register(field, {
-        required: true,
-        value: baselineData?.[field],
-        valueAsNumber: true,
-      }),
-      label: capitalize(fieldWithSpaces),
-      placeholder: `Define the initial ${fieldWithSpaces}`,
-      errorMessage: errors[field]?.message?.toString() || "",
-      form: "initial-data-form",
-    };
-  };
-
   const onSubmit = (data: FieldValues) => {
     setBaselineData(data as AnalysisData);
     setVariantData(data as AnalysisData);
@@ -61,14 +42,34 @@ export default function InitialDataForm() {
 
   useEffect(clearErrors, [baselineData?.tokens, newPoolImportedFlag]);
   useEffect(() => {
-    register("tokens", { required: true });
+    register("tokens", { required: true, value: baselineData?.tokens });
   }, []);
 
   return (
     <div className="flex flex-col gap-4">
       <form onSubmit={handleSubmit(onSubmit)} id="initial-data-form" />
-      <Input {...inputParameters("swapFee")} />
-      <Input {...inputParameters("ampFactor")} />
+      <Input
+        {...register("swapFee", {
+          required: true,
+          value: baselineData?.swapFee,
+          valueAsNumber: true,
+        })}
+        label="Swap fee"
+        placeholder="Define the initial swap fee"
+        errorMessage={errors?.swapFee?.message}
+        form="initial-data-form"
+      />
+      <Input
+        {...register("ampFactor", {
+          required: true,
+          value: baselineData?.ampFactor,
+          valueAsNumber: true,
+        })}
+        label="Amp factor"
+        placeholder="Define the initial amp factor"
+        errorMessage={errors?.ampFactor?.message}
+        form="initial-data-form"
+      />
       <div className="flex flex-col">
         <label className="mb-2 block text-sm text-slate12">Tokens</label>
         {errors?.tokens?.message && (

@@ -90,7 +90,10 @@ export default function NewDataForm() {
         errorMessage={errors?.ampFactor?.message}
         form="variant-data-form"
       />
-      <TokenTable minTokens={2} variant={true} />
+      <div className="flex flex-col">
+        <label className="mb-2 block text-sm text-slate12">Tokens</label>
+        <TokenTable minTokens={2} variant={true} />
+      </div>
     </div>
   );
 }

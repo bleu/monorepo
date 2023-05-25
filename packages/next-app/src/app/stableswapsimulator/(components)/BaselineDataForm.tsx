@@ -85,11 +85,6 @@ export default function BaselineDataForm() {
       />
       <div className="flex flex-col">
         <label className="mb-2 block text-sm text-slate12">Tokens</label>
-        {errors?.tokens?.message && (
-          <div className="h-6 mt-1 text-tomato10 text-sm">
-            <span>{errors?.tokens?.message}</span>
-          </div>
-        )}
         <TokenTable minTokens={2} />
       </div>
     </div>

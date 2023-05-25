@@ -77,11 +77,11 @@ function ClampedText({ text }: { text: string }) {
       </div>
       {hasOverflow &&
         (isExpanded ? (
-          <button className="block text-blue11" onClick={toggleExpanded}>
+          <button className="block text-blue-400" onClick={toggleExpanded}>
             see less
           </button>
         ) : (
-          <button className="block text-blue11" onClick={toggleExpanded}>
+          <button className="block text-blue-400" onClick={toggleExpanded}>
             see more
           </button>
         ))}

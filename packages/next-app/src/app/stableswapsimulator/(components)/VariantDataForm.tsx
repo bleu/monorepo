@@ -10,6 +10,8 @@ import { Select, SelectItem } from "#/components/Select";
 import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
 import useDebounce from "#/hooks/useDebounce";
 
+import { TokenTable } from "./TokenTable";
+
 export default function NewDataForm() {
   const {
     baselineData,
@@ -40,6 +42,10 @@ export default function NewDataForm() {
     setVariantData(data as AnalysisData);
   };
 
+  useEffect(() => {
+    register("tokens", { required: true, value: variantData?.tokens });
+  }, []);
+
   useEffect(onSubmit, [debouncedSwapFee, debouncedAmpFactor]);
 
   return (
@@ -54,7 +60,9 @@ export default function NewDataForm() {
           defaultValue={indexAnalysisToken.toString()}
         >
           {baselineData?.tokens.map(({ symbol }, index) => (
-            <SelectItem value={index.toString()}>{symbol}</SelectItem>
+            <SelectItem value={index.toString()} key={symbol}>
+              {symbol}
+            </SelectItem>
           ))}
         </Select>
       </div>
@@ -82,6 +90,7 @@ export default function NewDataForm() {
         errorMessage={errors?.ampFactor?.message}
         form="variant-data-form"
       />
+      <TokenTable minTokens={2} variant={true} />
     </div>
   );
 }

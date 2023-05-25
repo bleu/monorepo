@@ -38,7 +38,6 @@ export default function BaselineDataForm() {
   };
 
   const onSubmit = () => {
-    // console.log("onSubmit", baselineData == getValues());
     if (baselineAndFieldsAreEqual()) return;
     if (Object.keys(errors).length) return;
     const data = getValues();
@@ -91,7 +90,7 @@ export default function BaselineDataForm() {
             <span>{errors?.tokens?.message}</span>
           </div>
         )}
-        <TokenTable />
+        <TokenTable minTokens={2} />
       </div>
     </div>
   );

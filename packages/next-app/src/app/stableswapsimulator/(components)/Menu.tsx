@@ -43,10 +43,6 @@ function AnalysisMenu() {
           className="grow p-5 bg-blue2 outline-none my-2"
           value="baselineData"
         >
-          {/* <Sidebar.Header name="Baseline parameters" />
-          <Sidebar.Content>
-            <BaselineDataForm />
-          </Sidebar.Content> */}
           <SearchPoolFormWithDataForm>
             <BaselineDataForm />
           </SearchPoolFormWithDataForm>

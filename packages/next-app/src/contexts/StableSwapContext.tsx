@@ -1,26 +1,39 @@
 "use client";
 
 import { PoolQuery } from "@balancer-pool-metadata/gql/src/balancer-pools/__generated__/Ethereum";
-import { createContext, PropsWithChildren, useContext, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 import { PoolAttribute } from "#/components/SearchPoolForm";
 import { pools } from "#/lib/gql";
 
 export interface TokensData {
-  symbol?: string;
-  balance?: number;
-  rate?: number;
+  symbol: string;
+  balance: number;
+  rate: number;
 }
 
 export interface AnalysisData {
-  tokens?: TokensData[];
+  tokens: TokensData[];
   ampFactor?: number;
   swapFee?: number;
 }
 
 interface StableSwapContextType {
-  initialData: AnalysisData | null;
-  setInitialData: (data: AnalysisData | null) => void;
+  baselineData: AnalysisData;
+  variantData?: AnalysisData;
+  indexAnalysisToken: number;
+  indexCurrentTabToken: number;
+  setIndexAnalysisToken: (index: number) => void;
+  setIndexCurrentTabToken: (index: number) => void;
+  setBaselineData: (data: AnalysisData) => void;
+  setVariantData: (data: AnalysisData) => void;
   handleImportPoolParametersById: (data: PoolAttribute) => void;
   newPoolImportedFlag: boolean;
 }
@@ -28,13 +41,22 @@ interface StableSwapContextType {
 export const StableSwapContext = createContext({} as StableSwapContextType);
 
 export function StableSwapProvider({ children }: PropsWithChildren) {
-  const [initialData, setInitialData] = useState<AnalysisData | null>(null);
+  const pathname = usePathname();
+  const { push } = useRouter();
+  const defaultBaselineData: AnalysisData = {
+    ampFactor: undefined,
+    swapFee: undefined,
+    tokens: [],
+  };
+  const [baselineData, setBaselineData] =
+    useState<AnalysisData>(defaultBaselineData);
+  const [variantData, setVariantData] = useState<AnalysisData>();
+  const [indexAnalysisToken, setIndexAnalysisToken] = useState<number>(0);
+  const [indexCurrentTabToken, setIndexCurrentTabToken] = useState<number>(1);
   const [newPoolImportedFlag, setNewPoolImportedFlag] =
     useState<boolean>(false);
 
-  function convertGqlToAnalysisData(
-    poolData: PoolQuery | undefined
-  ): AnalysisData {
+  function convertGqlToAnalysisData(poolData: PoolQuery): AnalysisData {
     return {
       swapFee: Number(poolData?.pool?.swapFee),
       ampFactor: Number(poolData?.pool?.amp),
@@ -53,14 +75,31 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
     });
     if (!poolData) return;
     setNewPoolImportedFlag(!newPoolImportedFlag);
-    setInitialData(convertGqlToAnalysisData(poolData));
+    setBaselineData(convertGqlToAnalysisData(poolData));
+    setVariantData(convertGqlToAnalysisData(poolData));
   }
+
+  useEffect(() => {
+    if (pathname === "/stableswapsimulator") {
+      setBaselineData(defaultBaselineData);
+      setVariantData(undefined);
+    }
+    if (!baselineData.swapFee) {
+      push("/stableswapsimulator");
+    }
+  }, [pathname]);
 
   return (
     <StableSwapContext.Provider
       value={{
-        initialData,
-        setInitialData,
+        baselineData,
+        setBaselineData,
+        variantData,
+        setVariantData,
+        indexAnalysisToken,
+        setIndexAnalysisToken,
+        indexCurrentTabToken,
+        setIndexCurrentTabToken,
         handleImportPoolParametersById,
         newPoolImportedFlag,
       }}

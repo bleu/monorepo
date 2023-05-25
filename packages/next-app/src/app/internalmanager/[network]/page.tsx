@@ -4,7 +4,7 @@ import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 
 import { Button } from "#/components";
-import Spinner from "#/components/Spinner";
+import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { getNetwork } from "#/contexts/networks";
 import { useAccount, useNetwork } from "#/wagmi";

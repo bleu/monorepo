@@ -72,10 +72,16 @@ function HeaderRow({ children }: React.PropsWithChildren) {
   );
 }
 
-function HeaderCell({ children }: React.PropsWithChildren) {
+function HeaderCell({
+  children,
+  padding = "p-4",
+}: React.PropsWithChildren<{ padding?: string }>) {
   useTableContext();
   return (
-    <th scope="col" className="text-gray12 p-4 text-left text-sm font-semibold">
+    <th
+      scope="col"
+      className={cn("text-gray-40 text-left text-sm font-semibold", padding)}
+    >
       {children}
     </th>
   );
@@ -94,13 +100,14 @@ function BodyRow({ children }: React.PropsWithChildren) {
 function BodyCell({
   children,
   customWidth,
-}: React.PropsWithChildren<{ customWidth?: string }>) {
+  padding = "p-4",
+}: React.PropsWithChildren<{ customWidth?: string; padding?: string }>) {
   useTableContext();
   return (
     <td
       className={cn(
         "whitespace-nowrap text-sm text-gray10",
-        customWidth ? cn(customWidth, "pl-4") : "p-4"
+        customWidth ? cn(customWidth, "pl-4") : padding
       )}
     >
       {children}

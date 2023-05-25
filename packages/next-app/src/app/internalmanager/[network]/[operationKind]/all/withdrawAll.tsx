@@ -15,7 +15,7 @@ import { ToastContent } from "#/app/metadata/[network]/pool/[poolId]/(components
 import genericTokenLogo from "#/assets/generic-token-logo.png";
 import { Button } from "#/components";
 import { Input } from "#/components/Input";
-import Spinner from "#/components/Spinner";
+import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
 import { Toast } from "#/components/Toast";
 import WalletNotConnected from "#/components/WalletNotConnected";

@@ -1,2 +1,2 @@
-export * as metastable from "./metastable";
-export * as stable from "./stable";
+export * as MetaStableMath from "./metastable";
+export { ExtendedStableMath as StableMath } from "./stable";

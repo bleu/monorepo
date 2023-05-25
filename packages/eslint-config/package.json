@@ -7,7 +7,6 @@
   ],
   "devDependencies": {
     "@balancer-pool-metadata/shared": "workspace:^",
-    "eslint-plugin-custom-rules": "file:../eslint-custom-rules",
     "@next/eslint-plugin-next": "^13.4.3",
     "@typescript-eslint/eslint-plugin": "latest",
     "eslint": "^8.41.0",

@@ -2,45 +2,49 @@
 
 import { StableSwapSimulatorDataSchema } from "@balancer-pool-metadata/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { FieldValues, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
-import Button from "#/components/Button";
 import { Input } from "#/components/Input";
 import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
+import useDebounce from "#/hooks/useDebounce";
 
 import { TokenTable } from "./TokenTable";
 
-export default function InitialDataForm() {
-  const { push } = useRouter();
-  const { baselineData, setBaselineData, setVariantData } = useStableSwap();
+export default function BaselineDataForm() {
+  const { baselineData, setBaselineData } = useStableSwap();
   const {
     register,
-    handleSubmit,
-    setValue,
     getValues,
-    clearErrors,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<typeof StableSwapSimulatorDataSchema._type>({
     resolver: zodResolver(StableSwapSimulatorDataSchema),
-    mode: "onSubmit",
+    mode: "onChange",
   });
 
-  const onSubmit = (data: FieldValues) => {
+  const swapFee = watch("swapFee");
+  const ampFactor = watch("ampFactor");
+  const tokens = watch("tokens");
+  const debouncedSwapFee = useDebounce(swapFee);
+  const debouncedAmpFactor = useDebounce(ampFactor);
+
+  const onSubmit = () => {
+    if (Object.keys(errors).length) return;
+    const data = getValues();
     setBaselineData(data as AnalysisData);
-    setVariantData(data as AnalysisData);
-    push("/stableswapsimulator/analysis");
   };
 
   useEffect(() => {
     // TODO: BAL 401
-    clearErrors();
     if (baselineData == getValues()) return;
     if (baselineData?.swapFee) setValue("swapFee", baselineData?.swapFee);
     if (baselineData?.ampFactor) setValue("ampFactor", baselineData?.ampFactor);
     if (baselineData?.tokens) setValue("tokens", baselineData?.tokens);
   }, [baselineData]);
+
+  useEffect(onSubmit, [debouncedSwapFee, debouncedAmpFactor, tokens]);
 
   useEffect(() => {
     register("tokens", { required: true, value: baselineData?.tokens });
@@ -48,7 +52,7 @@ export default function InitialDataForm() {
 
   return (
     <div className="flex flex-col gap-4">
-      <form onSubmit={handleSubmit(onSubmit)} id="initial-data-form" />
+      <form id="baseline-data-form" />
       <Input
         {...register("swapFee", {
           required: true,
@@ -58,7 +62,7 @@ export default function InitialDataForm() {
         label="Swap fee"
         placeholder="Define the initial swap fee"
         errorMessage={errors?.swapFee?.message}
-        form="initial-data-form"
+        form="baseline-data-form"
       />
       <Input
         {...register("ampFactor", {
@@ -69,7 +73,7 @@ export default function InitialDataForm() {
         label="Amp factor"
         placeholder="Define the initial amp factor"
         errorMessage={errors?.ampFactor?.message}
-        form="initial-data-form"
+        form="baseline-data-form"
       />
       <div className="flex flex-col">
         <label className="mb-2 block text-sm text-slate12">Tokens</label>
@@ -80,14 +84,6 @@ export default function InitialDataForm() {
         )}
         <TokenTable />
       </div>
-      <Button
-        form="initial-data-form"
-        type="submit"
-        shade="light"
-        className="w-32 h-min self-end"
-      >
-        Next step
-      </Button>
     </div>
   );
 }

@@ -33,6 +33,7 @@ interface StableSwapContextType {
   setIndexAnalysisToken: (index: number) => void;
   setIndexCurrentTabToken: (index: number) => void;
   setBaselineData: (data: AnalysisData) => void;
+  setVariantData: (data: AnalysisData) => void;
   handleImportPoolParametersById: (data: PoolAttribute) => void;
   newPoolImportedFlag: boolean;
 }
@@ -94,6 +95,7 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
         baselineData,
         setBaselineData,
         variantData,
+        setVariantData,
         indexAnalysisToken,
         setIndexAnalysisToken,
         indexCurrentTabToken,

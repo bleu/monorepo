@@ -80,7 +80,7 @@ function HeaderCell({
   return (
     <th
       scope="col"
-      className={cn("text-gray-40 text-left text-sm font-semibold", padding)}
+      className={cn("text-gray12 text-left text-sm font-semibold", padding)}
     >
       {children}
     </th>

@@ -160,7 +160,7 @@ const transactionButtons = [
   },
   {
     icon: (
-      <div className="flex h-5 w-5 border-gray-500 items-center justify-center rounded-full border-[1px]">
+      <div className="flex h-5 w-5 border-gray9 items-center justify-center rounded-full border-[1px]">
         <WidthIcon width={16} height={16} />
       </div>
     ),
@@ -200,7 +200,7 @@ function TransactionButton({
         <button
           type="button"
           title={upperFirst(operation)}
-          className="leading-none disabled:cursor-not-allowed disabled:text-gray-600"
+          className="leading-none disabled:cursor-not-allowed disabled:text-gray8"
           disabled={disabled}
         >
           {icon}

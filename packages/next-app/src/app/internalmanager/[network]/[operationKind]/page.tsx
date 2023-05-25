@@ -112,7 +112,7 @@ function TransactionCard({
 
   return (
     <div className="flex items-center justify-center h-full">
-      <form className="flex flex-col text-white bg-blue3 h-fit my-4 w-fit rounded-lg divide-y divide-gray-700 border border-gray-700">
+      <form className="flex flex-col text-white bg-blue3 h-fit my-4 w-fit rounded-lg divide-y divide-gray7 border border-gray7">
         <div className="relative w-full flex justify-center h-full">
           <Link href={"/internalmanager"}>
             <div className="absolute left-8 flex h-full items-center">

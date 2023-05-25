@@ -93,7 +93,7 @@ export function WithdrawAll() {
     <div className="flex items-center justify-center h-full">
       <form
         onSubmit={handleSubmit(handleOnSubmit)}
-        className="flex flex-col text-white bg-blue3 h-fit my-4 w-fit rounded-lg divide-y divide-gray-700 border border-gray-700"
+        className="flex flex-col text-white bg-blue3 h-fit my-4 w-fit rounded-lg divide-y divide-gray7 border border-gray7"
       >
         <div className="relative w-full flex justify-center h-full">
           <Link href={`/internalmanager/${network}`}>

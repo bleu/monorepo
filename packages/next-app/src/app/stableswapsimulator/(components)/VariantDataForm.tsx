@@ -44,7 +44,9 @@ export default function NewDataForm() {
           defaultValue={indexAnalysisToken.toString()}
         >
           {baselineData?.tokens.map(({ symbol }, index) => (
-            <SelectItem value={index.toString()}>{symbol}</SelectItem>
+            <SelectItem key={symbol} value={index.toString()}>
+              {symbol}
+            </SelectItem>
           ))}
         </Select>
       </div>

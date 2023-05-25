@@ -29,7 +29,9 @@ export default function InitialDataForm() {
   });
 
   const inputParameters = (field: keyof AnalysisData) => {
-    const label = field.replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase();
+    const fieldWithSpaces = field
+      .replace(/([a-z])([A-Z])/g, "$1 $2")
+      .toLowerCase();
     if (field == "tokens") return;
     return {
       ...register(field, {
@@ -37,8 +39,8 @@ export default function InitialDataForm() {
         value: baselineData?.[field],
         valueAsNumber: true,
       }),
-      label: capitalize(label),
-      placeholder: `Define the initial ${label}`,
+      label: capitalize(fieldWithSpaces),
+      placeholder: `Define the initial ${fieldWithSpaces}`,
       errorMessage: errors[field]?.message?.toString() || "",
       form: "initial-data-form",
     };
@@ -58,6 +60,9 @@ export default function InitialDataForm() {
   }, [baselineData]);
 
   useEffect(clearErrors, [baselineData?.tokens, newPoolImportedFlag]);
+  useEffect(() => {
+    register("tokens", { required: true });
+  }, []);
 
   return (
     <div className="flex flex-col gap-4">
@@ -71,28 +76,6 @@ export default function InitialDataForm() {
             <span>{errors?.tokens?.message}</span>
           </div>
         )}
-        <div hidden={true}>
-          {baselineData?.tokens.map((token, i) => (
-            <div key={token.symbol}>
-              <input
-                form="baseline-data-form"
-                {...register(`tokens.${i}.symbol`, {
-                  value: token.symbol,
-                })}
-              />
-              <input
-                form="baseline-data-form"
-                {...register(`tokens.${i}.balance`, { value: token.balance })}
-              />
-              <input
-                form="baseline-data-form"
-                {...register(`tokens.${i}.rate`, {
-                  value: token.rate,
-                })}
-              />
-            </div>
-          ))}
-        </div>
         <TokenTable />
       </div>
       <Button

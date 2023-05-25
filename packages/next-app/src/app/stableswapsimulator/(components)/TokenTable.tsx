@@ -14,7 +14,7 @@ import TokenForm from "./TokenForm";
 
 const customPadding = "py-4 px-1";
 
-export function TokenTable() {
+export function TokenTable({ minTokens = 0 }: { minTokens?: number }) {
   const { baselineData } = useStableSwap();
   return (
     <div className="h-full flex-1 flex w-full justify-center text-white">
@@ -40,7 +40,7 @@ export function TokenTable() {
         </Table.HeaderRow>
         <Table.Body>
           {baselineData?.tokens?.map((token) => (
-            <TableRow token={token} key={token.symbol} />
+            <TableRow token={token} minTokens={minTokens} key={token.symbol} />
           ))}
         </Table.Body>
       </Table>
@@ -67,7 +67,13 @@ function ButtonToOpenTokenForm({
   );
 }
 
-function TableRow({ token }: { token: TokensData }) {
+function TableRow({
+  token,
+  minTokens,
+}: {
+  token: TokensData;
+  minTokens: number;
+}) {
   const { setBaselineData, baselineData } = useStableSwap();
 
   const deleteToken = (symbol?: string) => {
@@ -103,11 +109,16 @@ function TableRow({ token }: { token: TokensData }) {
           type="button"
           className="flex items-center"
           onClick={() => deleteToken(token?.symbol)}
+          disabled={minTokens <= baselineData?.tokens?.length}
         >
           <MinusCircledIcon
             width={20}
             height={20}
-            className="text-tomato9 hover:text-tomato11"
+            className={
+              minTokens >= baselineData?.tokens?.length
+                ? "text-tomato9 hover:text-tomato11"
+                : "text-gray9"
+            }
           />
         </button>
       </Table.BodyCell>

@@ -15,7 +15,7 @@ module.exports = {
       ];
   
       function isTailwindColor(value) {
-        return tailwindColors.some((color) => value.startsWith(`text-${color}`) || value.startsWith(`bg-${color}`));
+        return tailwindColors.some((color) => value.includes(color));
       }
   
       return {

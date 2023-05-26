@@ -3,7 +3,7 @@
 import { PropsWithChildren } from "react";
 
 import { Dialog } from "#/components/Dialog";
-import SearchPoolForm, { PoolAttribute } from "#/components/SearchPoolForm";
+import SearchPoolForm from "#/components/SearchPoolForm";
 import { useStableSwap } from "#/contexts/StableSwapContext";
 
 export function SearchPoolFormDialog({ children }: PropsWithChildren) {

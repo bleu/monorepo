@@ -33,7 +33,7 @@ export interface AnalysisData {
 
 interface StableSwapContextType {
   baselineData: AnalysisData;
-  variantData?: AnalysisData;
+  variantData: AnalysisData;
   indexAnalysisToken: number;
   indexCurrentTabToken: number;
   setIndexAnalysisToken: (index: number) => void;
@@ -72,7 +72,8 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
   };
   const [baselineData, setBaselineData] =
     useState<AnalysisData>(defaultBaselineData);
-  const [variantData, setVariantData] = useState<AnalysisData>();
+  const [variantData, setVariantData] =
+    useState<AnalysisData>(defaultBaselineData);
   const [indexAnalysisToken, setIndexAnalysisToken] = useState<number>(0);
   const [indexCurrentTabToken, setIndexCurrentTabToken] = useState<number>(1);
   const [newPoolImportedFlag, setNewPoolImportedFlag] =
@@ -156,7 +157,7 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
     if (pathname === "/stableswapsimulator") {
       setIsGraphLoading(false);
       setBaselineData(defaultBaselineData);
-      setVariantData(undefined);
+      setVariantData(defaultBaselineData);
     }
   }, [pathname]);
 

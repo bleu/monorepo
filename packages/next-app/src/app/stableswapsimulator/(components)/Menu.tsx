@@ -40,16 +40,15 @@ function AnalysisMenu() {
         </Tabs.List>
 
         <Tabs.Content
-          className="grow p-5 bg-blue2 outline-none my-2"
+          className="grow py-5 bg-blue2 outline-none my-2"
           value="baselineData"
         >
-          <Sidebar.Header name="Baseline parameters" />
-          <Sidebar.Content>
+          <SearchPoolFormWithDataForm>
             <BaselineDataForm />
-          </Sidebar.Content>
+          </SearchPoolFormWithDataForm>
         </Tabs.Content>
         <Tabs.Content
-          className="grow p-5 bg-blue2 outline-none"
+          className="grow py-5 bg-blue2 outline-none"
           value="variantData"
         >
           <Sidebar.Header name="Variant parameters" />

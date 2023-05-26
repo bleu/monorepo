@@ -3,16 +3,11 @@
 import { PropsWithChildren } from "react";
 
 import { Dialog } from "#/components/Dialog";
-import SearchPoolForm, { PoolAttribute } from "#/components/SearchPoolForm";
+import SearchPoolForm from "#/components/SearchPoolForm";
 import { useStableSwap } from "#/contexts/StableSwapContext";
 
 export function SearchPoolFormDialog({ children }: PropsWithChildren) {
-  const { handleImportPoolParametersById, setIsGraphLoading } = useStableSwap();
-
-  function onSubmit(data: PoolAttribute) {
-    setIsGraphLoading(true);
-    handleImportPoolParametersById(data);
-  }
+  const { handleImportPoolParametersById } = useStableSwap();
 
   return (
     <Dialog
@@ -20,7 +15,7 @@ export function SearchPoolFormDialog({ children }: PropsWithChildren) {
       content={
         <SearchPoolForm
           poolTypeFilter={["Stable", "MetaStable"]}
-          onSubmit={onSubmit}
+          onSubmit={handleImportPoolParametersById}
         />
       }
     >

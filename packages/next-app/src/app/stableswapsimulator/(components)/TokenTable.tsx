@@ -118,7 +118,7 @@ function TableRow({
     });
   };
 
-  const bellowOrEqualLimit = baselineData?.tokens?.length <= minTokens;
+  const belowOrEqualLimit = baselineData?.tokens?.length <= minTokens;
 
   return (
     <Table.BodyRow key={token.symbol}>
@@ -142,7 +142,7 @@ function TableRow({
         {token.rate?.toPrecision(2)}
       </Table.BodyCell>
       <Table.BodyCell padding={customPadding}>
-        {bellowOrEqualLimit && (
+        {belowOrEqualLimit && (
           <Tooltip.Provider>
             <Tooltip.Root>
               <Tooltip.Trigger asChild>
@@ -166,7 +166,7 @@ function TableRow({
             </Tooltip.Root>
           </Tooltip.Provider>
         )}
-        {!bellowOrEqualLimit && (
+        {!belowOrEqualLimit && (
           <button
             type="button"
             className="flex items-center"

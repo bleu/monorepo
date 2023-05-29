@@ -1,6 +1,14 @@
 import { amberDarkA, blueDarkA, grayDarkA } from "@radix-ui/colors";
 import { merge } from "lodash";
-import PlotRoot, { PlotParams } from "react-plotly.js";
+import dynamic from "next/dynamic";
+import { PlotParams } from "react-plotly.js";
+
+import { Spinner } from "#/components/Spinner";
+
+const PlotRoot = dynamic(() => import("react-plotly.js"), {
+  ssr: false,
+  loading: () => <Spinner />,
+});
 
 export const defaultAxisLayout = {
   gridcolor: grayDarkA.grayA10,

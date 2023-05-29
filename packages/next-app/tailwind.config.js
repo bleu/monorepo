@@ -8,7 +8,6 @@ const {
   cyanDark,
   mintDark,
   greenDark,
-  grayDark,
 } = require("@radix-ui/colors");
 
 /** @type {import("tailwindcss").Config} */
@@ -25,7 +24,6 @@ module.exports = {
         ...cyanDark,
         ...mintDark,
         ...greenDark,
-        ...grayDark,
       },
       keyframes: {
         hide: {

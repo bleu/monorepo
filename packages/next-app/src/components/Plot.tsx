@@ -20,8 +20,8 @@ export const defaultPlotProps = {
       color: grayDarkA.grayA12,
       family: "Inter",
     },
-    xaxis: JSON.parse(JSON.stringify(defaultAxisLayout)),
-    yaxis: JSON.parse(JSON.stringify(defaultAxisLayout)),
+    xaxis: defaultAxisLayout,
+    yaxis: defaultAxisLayout,
     modebar: {
       bgcolor: blueDarkA.blueA1,
       color: grayDarkA.grayA12,
@@ -42,6 +42,7 @@ export const defaultPlotProps = {
 };
 
 export default function Plot(props: PlotParams) {
-  const plotProps = merge(JSON.parse(JSON.stringify(defaultPlotProps)), props);
-  return <PlotRoot {...plotProps} key={JSON.stringify(plotProps)} />;
+  const defaultPlotPropsDeepCopy = JSON.parse(JSON.stringify(defaultPlotProps));
+  const plotProps = merge(defaultPlotPropsDeepCopy, props); // deep copy is needed because merge mutates the first argument
+  return <PlotRoot {...plotProps} />;
 }

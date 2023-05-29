@@ -6,7 +6,7 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  plugins: ["simple-import-sort", "import", "tailwindcss","custom-rules"],
+  plugins: ["simple-import-sort", "import", "tailwindcss"],
   extends: [
     "plugin:@typescript-eslint/recommended",
     "plugin:tailwindcss/recommended",
@@ -39,7 +39,6 @@ module.exports = {
     "tailwindcss/no-arbitrary-value": "off",
     "tailwindcss/no-custom-classname": "off",
     "tailwindcss/no-contradicting-classname": "error",
-    "custom-rules/no-tailwind-colors": "error",
   },
   ignorePatterns: [
     "**/generated.ts",

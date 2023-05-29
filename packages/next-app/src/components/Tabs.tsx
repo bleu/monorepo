@@ -2,11 +2,6 @@ import * as TabsPrimitive from "@radix-ui/react-tabs";
 import cn from "classnames";
 import { createContext, useContext } from "react";
 
-enum Colors {
-  BLUE = "blue7",
-  AMBER = "amber9",
-}
-
 const TabContext = createContext({});
 
 function useTabContext() {
@@ -43,19 +38,18 @@ function TabItemTriggerWrapper({ children }: React.PropsWithChildren) {
 function TabItemTrigger({
   children,
   tabName,
-  color = "BLUE",
-}: React.PropsWithChildren<{ tabName: string; color?: keyof typeof Colors }>) {
+  color,
+}: React.PropsWithChildren<{ tabName: string; color?: string }>) {
   useTabContext();
-
   return (
     <TabsPrimitive.Trigger
       className={cn(
-        `px-5 h-[45px] flex-1 flex items-center justify-center text-[15px] hover:text-white hover:bg-blue4 data-[state=active]:text-white data-[state=active]:shadow-[inset_0_-1px_0_0,0_1px_0_0] outline-none cursor-default data-[state=active]:shadow-${Colors[color]} data-[state=active]:focus:shadow:${Colors[color]}`
+        "px-5 h-[45px] flex-1 flex items-center justify-center text-[15px] hover:text-white hover:bg-blue4 data-[state=active]:text-white outline-none cursor-defaul} data-[state=active]:shadow-[inset_0_-1px_0_0,0_1px_0_0]"
       )}
       value={tabName}
     >
       <div className="flex justify-center items-center gap-x-3">
-        <div className={cn(`w-3 h-3 rounded-full bg-${Colors[color]}`)} />
+        {color && <div className={cn(`w-3 h-3 rounded-full bg-${color}`)} />}
         {children}
       </div>
     </TabsPrimitive.Trigger>

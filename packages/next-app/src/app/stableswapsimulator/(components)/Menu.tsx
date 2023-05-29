@@ -16,10 +16,10 @@ function AnalysisMenu() {
     <div>
       <Tabs>
         <Tabs.ItemTriggerWrapper>
-          <Tabs.ItemTrigger tabName="baselineData">
+          <Tabs.ItemTrigger tabName="baselineData" color="blue7">
             <span>Baseline</span>
           </Tabs.ItemTrigger>
-          <Tabs.ItemTrigger tabName="variantData" color="AMBER">
+          <Tabs.ItemTrigger tabName="variantData" color="amber9">
             <span>Variant</span>
           </Tabs.ItemTrigger>
         </Tabs.ItemTriggerWrapper>

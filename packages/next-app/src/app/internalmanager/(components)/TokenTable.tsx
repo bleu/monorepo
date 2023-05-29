@@ -52,7 +52,7 @@ export function TokenTable() {
         tokensWithBalance?.length === 0) && (
         <div className="flex flex-col items-center justify-center mt-24">
           <div className="text-2xl font-semibold">No tokens found</div>
-          <div className="text-sm text-gray11 flex flex-col items-center">
+          <div className="text-sm text-slate11 flex flex-col items-center">
             You don&apos;t have any tokens in your internal balance on{" "}
             <span>{chain?.name}, make a deposit or change the network.</span>
           </div>
@@ -160,7 +160,7 @@ const transactionButtons = [
   },
   {
     icon: (
-      <div className="flex h-5 w-5 border-gray9 items-center justify-center rounded-full border-[1px]">
+      <div className="flex h-5 w-5 border-slate9 items-center justify-center rounded-full border-[1px]">
         <WidthIcon width={16} height={16} />
       </div>
     ),
@@ -200,7 +200,7 @@ function TransactionButton({
         <button
           type="button"
           title={upperFirst(operation)}
-          className="leading-none disabled:cursor-not-allowed disabled:text-gray8"
+          className="leading-none disabled:cursor-not-allowed disabled:text-slate8"
           disabled={disabled}
         >
           {icon}

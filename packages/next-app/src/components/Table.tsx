@@ -6,7 +6,7 @@ const TableContext = createContext({});
 const predefinedClasses = {
   gray: {
     solid: {
-      dark: { style: "bg-gray-800", border: "border border-gray-700 rounded" },
+      dark: { style: "bg-slate3", border: "border border-slate7 rounded" },
     },
   },
   blue: {
@@ -52,7 +52,7 @@ export default function Table({
       >
         <table
           className={cn(
-            "divide-y divide-gray-700 min-w-full rounded",
+            "divide-y divide-slate7 min-w-full rounded",
             predefinedClasses[color][variant][shade].style
           )}
         >
@@ -80,7 +80,7 @@ function HeaderCell({
   return (
     <th
       scope="col"
-      className={cn("text-gray12 text-left text-sm font-semibold", padding)}
+      className={cn("text-slate12 text-left text-sm font-semibold", padding)}
     >
       {children}
     </th>
@@ -106,7 +106,7 @@ function BodyCell({
   return (
     <td
       className={cn(
-        "whitespace-nowrap text-sm text-gray10",
+        "whitespace-nowrap text-sm text-slate10",
         customWidth ? cn(customWidth, "pl-4") : padding
       )}
     >

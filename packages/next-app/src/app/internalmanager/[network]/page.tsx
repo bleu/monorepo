@@ -31,7 +31,7 @@ export default function Page() {
       <div className="flex flex-col mt-20 gap-y-5 w-4/6">
         <div className="flex items-center justify-between gap-x-8">
           <div className="flex flex-col gap-1">
-            <h1 className="text-gray11 text-3xl">My Internal Balances</h1>
+            <h1 className="text-slate12 text-3xl">My Internal Balances</h1>
           </div>
           <div className="flex gap-4">
             <Link href={`/internalmanager/${network}/deposit/`}>

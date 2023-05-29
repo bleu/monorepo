@@ -116,7 +116,7 @@ function TableRow({
             height={20}
             className={
               minTokens >= baselineData?.tokens?.length
-                ? "text-gray9"
+                ? "text-slate9"
                 : "text-tomato9 hover:text-tomato11"
             }
           />

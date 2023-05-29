@@ -15,7 +15,7 @@ function AnalysisMenu() {
   return (
     <div>
       <Tabs.Root
-        className="flex flex-col w-full h-full shadow-[0_2px_10px] shadow-blue2 bg-blue2 text-gray8"
+        className="flex flex-col w-full h-full shadow-[0_2px_10px] shadow-blue2 bg-blue2 text-slate8"
         defaultValue="variantData"
       >
         <Tabs.List className="shrink-0 flex border-b border-blue1 bg-blue3">

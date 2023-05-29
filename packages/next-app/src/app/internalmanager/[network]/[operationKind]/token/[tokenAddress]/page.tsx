@@ -149,7 +149,7 @@ export default function Page({
         <div className="text-white text-xl">
           Please click
           <Link href={"/internalmanager"}>
-            <span className="text-gray11"> here </span>
+            <span className="text-slate11"> here </span>
           </Link>
           to check which tokens you have
         </div>
@@ -271,7 +271,7 @@ function TransactionCard({
     <div className="flex items-center justify-center h-full">
       <form
         onSubmit={handleSubmit(handleOnSubmit)}
-        className="flex flex-col text-white bg-blue3 h-fit my-4 w-fit rounded-lg divide-y divide-gray7 border border-gray7"
+        className="flex flex-col text-white bg-blue3 h-fit my-4 w-fit rounded-lg divide-y divide-slate7 border border-slate7"
       >
         <div className="relative w-full flex justify-center h-full">
           <Link href={`/internalmanager/${network}`}>
@@ -279,13 +279,13 @@ function TransactionCard({
               <ArrowLeftIcon
                 height={16}
                 width={16}
-                className="text-gray10 hover:text-amber10 duration-200"
+                className="text-slate10 hover:text-amber10 duration-200"
               />
             </div>
           </Link>
           <div className="flex flex-col items-center py-3 min-w-[530px]">
             <div className="text-xl">{title} Internal Balance</div>
-            <span className="text-gray12 text-sm">{description}</span>
+            <span className="text-slate11 text-sm">{description}</span>
           </div>
         </div>
         <div className="p-9 flex flex-col gap-y-6">
@@ -316,7 +316,7 @@ function TransactionCard({
               </div>
             </div>
             <div className="mt-2 text-xs flex gap-x-1">
-              <span className="text-gray10">
+              <span className="text-slate10">
                 {operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL ? (
                   <span>Wallet Balance: {walletAmount}</span>
                 ) : (

@@ -12,8 +12,12 @@ const StableCurve = dynamic(() => import("./StableCurve"), {
 });
 
 export function GraphView() {
-  const { baselineData, indexAnalysisToken, setIndexCurrentTabToken } =
-    useStableSwap();
+  const {
+    baselineData,
+    indexAnalysisToken,
+    setIndexCurrentTabToken,
+    indexCurrentTabToken,
+  } = useStableSwap();
   const tokensSymbol = baselineData.tokens.map((token) => token.symbol);
   const tabTokens = tokensSymbol.filter(
     (token, index) => index !== indexAnalysisToken
@@ -27,7 +31,7 @@ export function GraphView() {
 
   return (
     <div className="w-full">
-      <Tabs>
+      <Tabs defaultValue={tokensSymbol[indexCurrentTabToken]}>
         <Tabs.ItemTriggerWrapper>
           {tabTokens.map((symbol) => (
             <Tabs.ItemTrigger

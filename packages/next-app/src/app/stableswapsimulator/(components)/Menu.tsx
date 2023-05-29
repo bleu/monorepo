@@ -14,7 +14,7 @@ import VariantDataForm from "./VariantDataForm";
 function AnalysisMenu() {
   return (
     <div>
-      <Tabs>
+      <Tabs defaultValue="variantData">
         <Tabs.ItemTriggerWrapper>
           <Tabs.ItemTrigger tabName="baselineData" color="blue7">
             <span>Baseline</span>

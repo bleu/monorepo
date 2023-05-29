@@ -20,7 +20,7 @@ export function Tabs({ children }: React.PropsWithChildren) {
   return (
     <TabContext.Provider value={{}}>
       <TabsPrimitive.Root
-        className="flex flex-col w-full h-full shadow-[0_2px_10px] shadow-blue2 bg-blue2 text-slate8"
+        className="flex flex-col w-full h-full bg-blue2 text-slate8"
         defaultValue="variantData"
       >
         <TabsPrimitive.List className="shrink-0 flex border-b border-blue1 bg-blue3 flex-col">
@@ -39,7 +39,13 @@ function TabItemTrigger({
   children,
   tabName,
   color,
-}: React.PropsWithChildren<{ tabName: string; color?: string }>) {
+  onClick,
+}: React.PropsWithChildren<{
+  tabName: string;
+  color?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onClick?: (data: any) => void;
+}>) {
   useTabContext();
   return (
     <TabsPrimitive.Trigger
@@ -47,6 +53,7 @@ function TabItemTrigger({
         "px-5 h-[45px] flex-1 flex items-center justify-center text-[15px] hover:text-white hover:bg-blue4 data-[state=active]:text-white outline-none cursor-defaul} data-[state=active]:shadow-[inset_0_-1px_0_0,0_1px_0_0]"
       )}
       value={tabName}
+      onClick={onClick}
     >
       <div className="flex justify-center items-center gap-x-3">
         {color && <div className={cn(`w-3 h-3 rounded-full bg-${color}`)} />}
@@ -59,11 +66,12 @@ function TabItemTrigger({
 function TabItemContent({
   children,
   tabName,
-}: React.PropsWithChildren<{ tabName: string }>) {
+  bgColor = "blue2",
+}: React.PropsWithChildren<{ tabName: string; bgColor?: string }>) {
   useTabContext();
   return (
     <TabsPrimitive.Content
-      className="grow py-5 bg-blue2 outline-none"
+      className={`grow py-5 bg-${bgColor} outline-none`}
       value={tabName}
     >
       {children}

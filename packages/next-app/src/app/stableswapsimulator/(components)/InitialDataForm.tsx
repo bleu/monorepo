@@ -9,8 +9,18 @@ import { FieldValues, useForm } from "react-hook-form";
 import Button from "#/components/Button";
 import { Input } from "#/components/Input";
 import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
+import { GetDeepProp } from "#/utils/getTypes";
 
 import { TokenTable } from "./TokenTable";
+
+type StableSwapSimulatorDataSchemaType =
+  typeof StableSwapSimulatorDataSchema._type;
+
+interface InitialForm {
+  tokens: GetDeepProp<StableSwapSimulatorDataSchemaType, "tokens"> | null;
+  swapFee: GetDeepProp<StableSwapSimulatorDataSchemaType, "swapFee"> | null;
+  ampFactor: GetDeepProp<StableSwapSimulatorDataSchemaType, "ampFactor"> | null;
+}
 
 export default function InitialDataForm() {
   const { push } = useRouter();
@@ -21,8 +31,9 @@ export default function InitialDataForm() {
     setValue,
     getValues,
     clearErrors,
+    reset,
     formState: { errors },
-  } = useForm<typeof StableSwapSimulatorDataSchema._type>({
+  } = useForm<InitialForm>({
     resolver: zodResolver(StableSwapSimulatorDataSchema),
     mode: "onSubmit",
   });
@@ -34,9 +45,14 @@ export default function InitialDataForm() {
   };
 
   useEffect(() => {
+    //TODO: BAL 401
     // TODO: BAL 401
     clearErrors();
     if (baselineData == getValues()) return;
+    if (baselineData?.tokens?.length == 0) {
+      reset({ tokens: [], swapFee: null, ampFactor: null });
+      return;
+    }
     if (baselineData?.swapFee) setValue("swapFee", baselineData?.swapFee);
     if (baselineData?.ampFactor) setValue("ampFactor", baselineData?.ampFactor);
     if (baselineData?.tokens) setValue("tokens", baselineData?.tokens);

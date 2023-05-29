@@ -29,8 +29,17 @@ export default function BaselineDataForm() {
   const tokens = watch("tokens");
   const debouncedSwapFee = useDebounce(swapFee);
   const debouncedAmpFactor = useDebounce(ampFactor);
+  const debouncedTokens = useDebounce(tokens);
+
+  const baselineAndFieldsAreEqual = () => {
+    const ampIsEqual = baselineData?.ampFactor == getValues().ampFactor;
+    const swapFeeIsEqual = baselineData?.swapFee == getValues().swapFee;
+    const tokensAreEqual = baselineData?.tokens == getValues().tokens;
+    return ampIsEqual && swapFeeIsEqual && tokensAreEqual;
+  };
 
   const onSubmit = () => {
+    if (baselineAndFieldsAreEqual()) return;
     if (Object.keys(errors).length) return;
     const data = getValues();
     setBaselineData(data as AnalysisData);
@@ -38,13 +47,13 @@ export default function BaselineDataForm() {
 
   useEffect(() => {
     // TODO: BAL 401
-    if (baselineData == getValues()) return;
+    if (baselineAndFieldsAreEqual()) return;
     if (baselineData?.swapFee) setValue("swapFee", baselineData?.swapFee);
     if (baselineData?.ampFactor) setValue("ampFactor", baselineData?.ampFactor);
     if (baselineData?.tokens) setValue("tokens", baselineData?.tokens);
   }, [baselineData]);
 
-  useEffect(onSubmit, [debouncedSwapFee, debouncedAmpFactor, tokens]);
+  useEffect(onSubmit, [debouncedSwapFee, debouncedAmpFactor, debouncedTokens]);
 
   useEffect(() => {
     register("tokens", { required: true, value: baselineData?.tokens });
@@ -77,12 +86,7 @@ export default function BaselineDataForm() {
       />
       <div className="flex flex-col">
         <label className="mb-2 block text-sm text-slate12">Tokens</label>
-        {errors?.tokens?.message && (
-          <div className="h-6 mt-1 text-tomato10 text-sm">
-            <span>{errors?.tokens?.message}</span>
-          </div>
-        )}
-        <TokenTable />
+        <TokenTable minTokens={2} />
       </div>
     </div>
   );

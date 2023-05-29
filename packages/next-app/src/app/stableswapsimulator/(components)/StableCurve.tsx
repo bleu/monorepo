@@ -73,23 +73,21 @@ export default function StableCurve() {
     }
   );
 
-  const initialPoolPairDataAnalysis = [
-    ...initialAmountsAnalysisTokenIn,
-    ...initialAmountsAnalysisTokenOut,
-  ];
-
-  const initialAmountTabToken = [
-    ...initialAmountTabTokenOut,
-    ...initialAmountTabTokenIn,
-  ];
-
   return (
     <div className="text-white">
       <Plot
         data={[
           {
-            x: initialPoolPairDataAnalysis,
-            y: initialAmountTabToken,
+            x: initialAmountsAnalysisTokenIn,
+            y: initialAmountTabTokenOut,
+            type: "scatter",
+            mode: "lines",
+            marker: { color: blueDarkA.blueA9 },
+            hovertemplate: hoverInfo,
+          },
+          {
+            x: initialAmountsAnalysisTokenOut,
+            y: initialAmountTabTokenIn,
             type: "scatter",
             mode: "lines",
             marker: { color: blueDarkA.blueA9 },

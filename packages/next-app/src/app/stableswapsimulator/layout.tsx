@@ -25,7 +25,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
               <Menu />
             </Sidebar>
           </div>
-          {children}
+          <div className="w-full py-8 pr-8">{children}</div>
         </div>
       </StableSwapProvider>
     </div>

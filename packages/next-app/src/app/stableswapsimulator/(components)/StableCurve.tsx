@@ -1,16 +1,15 @@
 "use client";
 
 import { StableMath } from "@balancer-pool-metadata/math/src";
-import { blueDarkA, grayDarkA } from "@radix-ui/colors";
-import { useState } from "react";
-import Plot from "react-plotly.js";
 
+import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
 import { useStableSwap } from "#/contexts/StableSwapContext";
 
 export default function StableCurve() {
   const {
     baselineData,
+    variantData,
     indexAnalysisToken,
     indexCurrentTabToken,
     preparePoolPairData,
@@ -25,132 +24,165 @@ export default function StableCurve() {
   )
     return <Spinner />;
 
-  const [hoverInfo, setHoverInfo] = useState<string>();
-
   const tokensSymbol = baselineData.tokens.map((token) => token.symbol);
 
-  const initialAmountsAnalysisTokenIn = calculateAmounts({
-    balance: baselineData?.tokens?.[indexAnalysisToken]?.balance,
-  });
+  const calculateTokenAmounts = (
+    balance: number | undefined,
+    swapFee: number,
+    amp: number,
+    indexIn: number,
+    indexOut: number
+  ) => {
+    const amountsIn = calculateAmounts({ balance });
 
-  const initialAmountsAnalysisTokenOut = initialAmountsAnalysisTokenIn.map(
-    (amount) => -1 * amount //This is being multiplied by -1 because it is the OUT part of the trade
-  );
+    const amountsOut = amountsIn.map((amount) => -1 * amount);
 
-  const initialPoolPairDataAnalysisIn = preparePoolPairData({
-    indexIn: indexAnalysisToken,
-    indexOut: indexCurrentTabToken,
-    swapFee: baselineData?.swapFee,
-    allBalances: baselineData?.tokens?.map((token) => token.balance),
-    amp: baselineData?.ampFactor,
-  });
+    const poolPairDataIn = preparePoolPairData({
+      indexIn,
+      indexOut,
+      swapFee,
+      allBalances: baselineData.tokens.map((token) => token.balance),
+      amp,
+    });
 
-  const initialAmountTabTokenOut = initialAmountsAnalysisTokenIn.map(
-    (amount) => {
-      return (
+    const amountsTabTokenOut = amountsIn.map(
+      (amount) =>
         StableMath._exactTokenInForTokenOut(
           numberToOldBigNumber(amount),
-          initialPoolPairDataAnalysisIn
-        ).toNumber() * -1 //This is being multiplied by -1 because it is the OUT part of the trade
-      );
-    }
-  );
+          poolPairDataIn
+        ).toNumber() * -1
+    );
 
-  const initialPoolPairDataAnalysisOut = preparePoolPairData({
-    indexIn: indexCurrentTabToken,
-    indexOut: indexAnalysisToken,
-    swapFee: baselineData?.swapFee,
-    allBalances: baselineData?.tokens?.map((token) => token.balance),
-    amp: baselineData?.ampFactor,
-  });
+    const poolPairDataOut = preparePoolPairData({
+      indexIn: indexOut,
+      indexOut: indexIn,
+      swapFee,
+      allBalances: baselineData.tokens.map((token) => token.balance),
+      amp,
+    });
 
-  const initialAmountTabTokenIn = initialAmountsAnalysisTokenIn.map(
-    (amount) => {
-      return StableMath._exactTokenInForTokenOut(
+    const amountsTabTokenIn = amountsIn.map((amount) =>
+      StableMath._exactTokenInForTokenOut(
         numberToOldBigNumber(amount),
-        initialPoolPairDataAnalysisOut
-      ).toNumber();
-    }
+        poolPairDataOut
+      ).toNumber()
+    );
+
+    return {
+      amountsIn,
+      amountsOut,
+      amountsTabTokenOut,
+      amountsTabTokenIn,
+    };
+  };
+
+  const {
+    amountsIn: initialAmountsAnalysisTokenIn,
+    amountsOut: initialAmountsAnalysisTokenOut,
+    amountsTabTokenOut: initialAmountTabTokenOut,
+    amountsTabTokenIn: initialAmountTabTokenIn,
+  } = calculateTokenAmounts(
+    baselineData.tokens[indexAnalysisToken]?.balance,
+    baselineData.swapFee,
+    baselineData.ampFactor,
+    indexAnalysisToken,
+    indexCurrentTabToken
   );
 
-  const initialPoolPairDataAnalysis = [
-    ...initialAmountsAnalysisTokenIn,
-    ...initialAmountsAnalysisTokenOut,
-  ];
-
-  const initialAmountTabToken = [
-    ...initialAmountTabTokenOut,
-    ...initialAmountTabTokenIn,
-  ];
+  const {
+    amountsIn: variantAmountsAnalysisTokenIn,
+    amountsOut: variantAmountsAnalysisTokenOut,
+    amountsTabTokenOut: variantAmountTabTokenOut,
+    amountsTabTokenIn: variantAmountTabTokenIn,
+  } = calculateTokenAmounts(
+    variantData?.tokens?.[indexAnalysisToken]?.balance,
+    variantData?.swapFee ? variantData.swapFee : baselineData.swapFee,
+    variantData?.ampFactor ? variantData.ampFactor : baselineData.ampFactor,
+    indexAnalysisToken,
+    indexCurrentTabToken
+  );
 
   return (
     <div className="text-white">
       <Plot
         data={[
           {
-            x: initialPoolPairDataAnalysis,
-            y: initialAmountTabToken,
+            x: initialAmountsAnalysisTokenIn,
+            y: initialAmountTabTokenOut,
             type: "scatter",
             mode: "lines",
-            marker: { color: blueDarkA.blueA9 },
-            hovertemplate: hoverInfo,
+            legendgroup: "Baseline",
+            name: "Baseline",
+            hovertemplate: initialAmountsAnalysisTokenIn.map(
+              (amount, index) =>
+                `Swap ${amount.toFixed(2)} ${
+                  tokensSymbol[indexAnalysisToken]
+                } for ${(initialAmountTabTokenOut[index] * -1).toFixed(2)} ${
+                  tokensSymbol[indexCurrentTabToken]
+                } <extra></extra>`
+            ),
+          },
+          {
+            x: variantAmountsAnalysisTokenIn,
+            y: variantAmountTabTokenOut,
+            type: "scatter",
+            mode: "lines",
+            legendgroup: "Variant",
+            name: "Variant",
+            hovertemplate: variantAmountsAnalysisTokenIn.map(
+              (amount, index) =>
+                `Swap ${amount.toFixed(2)} ${
+                  tokensSymbol[indexAnalysisToken]
+                } for ${(variantAmountTabTokenOut[index] * -1).toFixed(2)} ${
+                  tokensSymbol[indexCurrentTabToken]
+                } <extra></extra>`
+            ),
+          },
+          {
+            x: initialAmountsAnalysisTokenOut,
+            y: initialAmountTabTokenIn,
+            type: "scatter",
+            mode: "lines",
+            legendgroup: "Baseline",
+            name: "Baseline",
+            showlegend: false,
+            hovertemplate: initialAmountsAnalysisTokenOut.map(
+              (amount, index) =>
+                `Swap ${initialAmountTabTokenIn[index].toFixed(2)} ${
+                  tokensSymbol[indexCurrentTabToken]
+                } for ${(amount * -1).toFixed(2)} ${
+                  tokensSymbol[indexAnalysisToken]
+                } <extra></extra>`
+            ),
+          },
+          {
+            x: variantAmountsAnalysisTokenOut,
+            y: variantAmountTabTokenIn,
+            type: "scatter",
+            mode: "lines",
+            legendgroup: "Variant",
+            name: "Variant",
+            showlegend: false,
+            hovertemplate: variantAmountsAnalysisTokenOut.map(
+              (amount, index) =>
+                `Swap ${variantAmountTabTokenIn[index].toFixed(2)} ${
+                  tokensSymbol[indexCurrentTabToken]
+                } for ${(amount * -1).toFixed(2)} ${
+                  tokensSymbol[indexAnalysisToken]
+                } <extra></extra>`
+            ),
           },
         ]}
         layout={{
           title: "<b> Swap Curve </b>",
-          plot_bgcolor: blueDarkA.blueA1,
-          paper_bgcolor: blueDarkA.blueA1,
-          font: {
-            color: grayDarkA.grayA12,
-            family: "Inter",
-          },
           xaxis: {
             title: `Amount of ${tokensSymbol[indexAnalysisToken]}`,
-            gridcolor: grayDarkA.grayA10,
-            linecolor: grayDarkA.grayA12,
-            linewidth: 0.5,
-            automargin: true,
-            zerolinecolor: grayDarkA.grayA10,
           },
           yaxis: {
             title: `Amount of ${tokensSymbol[indexCurrentTabToken]}`,
-            gridcolor: grayDarkA.grayA10,
-            linecolor: grayDarkA.grayA12,
-            linewidth: 0.5,
-            automargin: true,
-            zerolinecolor: grayDarkA.grayA10,
-          },
-          modebar: {
-            bgcolor: blueDarkA.blueA1,
-            color: grayDarkA.grayA12,
-            activecolor: grayDarkA.grayA12,
           },
         }}
         className="w-full h-1/2"
-        useResizeHandler={true}
-        onHover={(eventData) => {
-          const hoverData = eventData.points[0];
-          const yValue = hoverData.y?.valueOf() as number;
-          const xValue = hoverData.x?.valueOf() as number;
-
-          if (yValue < 0)
-            setHoverInfo(
-              `Swap ${xValue.toFixed(2)} ${
-                tokensSymbol[indexAnalysisToken]
-              } for ${Math.abs(yValue).toFixed(2)} ${
-                tokensSymbol[indexCurrentTabToken]
-              } <extra></extra>`
-            );
-          else {
-            setHoverInfo(
-              `Swap ${yValue.toFixed(2)} ${
-                tokensSymbol[indexCurrentTabToken]
-              } for ${Math.abs(xValue).toFixed(2)} ${
-                tokensSymbol[indexAnalysisToken]
-              } <extra></extra>`
-            );
-          }
-        }}
       />
     </div>
   );

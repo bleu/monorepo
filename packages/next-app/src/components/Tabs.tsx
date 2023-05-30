@@ -46,8 +46,7 @@ function TabItemTrigger({
 }: React.PropsWithChildren<{
   tabName: string;
   color?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onClick?: (data: any) => void;
+  onClick?: (event: React.FormEvent<HTMLButtonElement>) => void;
 }>) {
   useTabContext();
   return (

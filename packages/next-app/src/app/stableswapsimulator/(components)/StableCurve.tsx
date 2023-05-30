@@ -2,7 +2,6 @@
 
 import { StableMath } from "@balancer-pool-metadata/math/src";
 import { amberDarkA, blueDarkA, grayDarkA } from "@radix-ui/colors";
-import { useState } from "react";
 
 import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
@@ -25,8 +24,6 @@ export default function StableCurve() {
     !baselineData.tokens
   )
     return <Spinner />;
-
-  const [hoverInfo, setHoverInfo] = useState<string>();
 
   const tokensSymbol = baselineData.tokens.map((token) => token.symbol);
 
@@ -116,7 +113,16 @@ export default function StableCurve() {
             type: "scatter",
             mode: "lines",
             marker: { color: blueDarkA.blueA9 },
-            hovertemplate: hoverInfo,
+            legendgroup: "Baseline",
+            name: "Baseline",
+            hovertemplate: initialAmountsAnalysisTokenIn.map(
+              (amount, index) =>
+                `Swap ${amount.toFixed(2)} ${
+                  tokensSymbol[indexAnalysisToken]
+                } for ${(initialAmountTabTokenOut[index] * -1).toFixed(2)} ${
+                  tokensSymbol[indexCurrentTabToken]
+                } <extra></extra>`
+            ),
           },
           {
             x: initialAmountsAnalysisTokenOut,
@@ -124,7 +130,17 @@ export default function StableCurve() {
             type: "scatter",
             mode: "lines",
             marker: { color: blueDarkA.blueA9 },
-            hovertemplate: hoverInfo,
+            legendgroup: "Baseline",
+            name: "Baseline",
+            showlegend: false,
+            hovertemplate: initialAmountsAnalysisTokenOut.map(
+              (amount, index) =>
+                `Swap ${initialAmountTabTokenIn[index].toFixed(2)} ${
+                  tokensSymbol[indexCurrentTabToken]
+                } for ${(amount * -1).toFixed(2)} ${
+                  tokensSymbol[indexAnalysisToken]
+                } <extra></extra>`
+            ),
           },
           {
             x: variantAmountsAnalysisTokenIn,
@@ -132,7 +148,16 @@ export default function StableCurve() {
             type: "scatter",
             mode: "lines",
             marker: { color: amberDarkA.amberA9 },
-            hovertemplate: hoverInfo,
+            legendgroup: "Variant",
+            name: "Variant",
+            hovertemplate: variantAmountsAnalysisTokenIn.map(
+              (amount, index) =>
+                `Swap ${amount.toFixed(2)} ${
+                  tokensSymbol[indexAnalysisToken]
+                } for ${(variantAmountTabTokenOut[index] * -1).toFixed(2)} ${
+                  tokensSymbol[indexCurrentTabToken]
+                } <extra></extra>`
+            ),
           },
           {
             x: variantAmountsAnalysisTokenOut,
@@ -140,7 +165,17 @@ export default function StableCurve() {
             type: "scatter",
             mode: "lines",
             marker: { color: amberDarkA.amberA9 },
-            hovertemplate: hoverInfo,
+            legendgroup: "Variant",
+            name: "Variant",
+            showlegend: false,
+            hovertemplate: variantAmountsAnalysisTokenOut.map(
+              (amount, index) =>
+                `Swap ${variantAmountTabTokenIn[index].toFixed(2)} ${
+                  tokensSymbol[indexCurrentTabToken]
+                } for ${(amount * -1).toFixed(2)} ${
+                  tokensSymbol[indexAnalysisToken]
+                } <extra></extra>`
+            ),
           },
         ]}
         layout={{
@@ -157,33 +192,9 @@ export default function StableCurve() {
           yaxis: {
             title: `Amount of ${tokensSymbol[indexCurrentTabToken]}`,
           },
-          showlegend: false,
         }}
         className="w-full h-1/2"
         useResizeHandler={true}
-        onHover={(eventData) => {
-          const hoverData = eventData.points[0];
-          const yValue = hoverData.y?.valueOf() as number;
-          const xValue = hoverData.x?.valueOf() as number;
-
-          if (yValue < 0)
-            setHoverInfo(
-              `Swap ${xValue.toFixed(2)} ${
-                tokensSymbol[indexAnalysisToken]
-              } for ${Math.abs(yValue).toFixed(2)} ${
-                tokensSymbol[indexCurrentTabToken]
-              } <extra></extra>`
-            );
-          else {
-            setHoverInfo(
-              `Swap ${yValue.toFixed(2)} ${
-                tokensSymbol[indexCurrentTabToken]
-              } for ${Math.abs(xValue).toFixed(2)} ${
-                tokensSymbol[indexAnalysisToken]
-              } <extra></extra>`
-            );
-          }
-        }}
       />
     </div>
   );

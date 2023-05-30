@@ -1,7 +1,7 @@
 "use client";
 
 import { bnum } from "@balancer-labs/sor";
-import { MetaStableMath, StableMath } from "@balancer-pool-metadata/math/src";
+import { StableMath } from "@balancer-pool-metadata/math/src";
 import { PlotType } from "plotly.js";
 
 import Plot, { defaultAxisLayout } from "#/components/Plot";
@@ -51,12 +51,12 @@ export default function DepthCost() {
       type: "bar" as PlotType,
       legendgroup: "Baseline",
       name: "Baseline",
-      text: depthCostAmounts.baseline.in.map(
+      hovertemplate: depthCostAmounts.baseline.in.map(
         (amount, i) =>
-          `Swap ${amount} of ${tokenY?.symbol} for ${dataX[i]} to move the price ${dataX[i]}/${tokenY?.symbol} on -2%`
+          `Swap ${amount.toFixed()} of ${tokenY?.symbol} for ${
+            dataX[i]
+          } to move the price ${dataX[i]}/${tokenY?.symbol} on -2%`
       ),
-      textposition: "none" as const,
-      hoverinfo: "text" as const,
     },
     {
       x: dataX,
@@ -64,12 +64,12 @@ export default function DepthCost() {
       type: "bar" as PlotType,
       legendgroup: "Variant",
       name: "Variant",
-      text: depthCostAmounts.baseline.in.map(
+      hovertemplate: depthCostAmounts.baseline.in.map(
         (amount, i) =>
-          `Swap ${amount} of ${tokenY?.symbol} for ${dataX[i]} to move the price ${dataX[i]}/${tokenY?.symbol} on -2%`
+          `Swap ${amount.toFixed()} of ${tokenY?.symbol} for ${
+            dataX[i]
+          } to move the price ${dataX[i]}/${tokenY?.symbol} on -2%`
       ),
-      textposition: "none" as const,
-      hoverinfo: "text" as const,
     },
     {
       x: dataX,
@@ -80,12 +80,12 @@ export default function DepthCost() {
       showlegend: false,
       yaxis: "y2",
       xaxis: "x2",
-      text: depthCostAmounts.baseline.in.map(
+      hovertemplate: depthCostAmounts.baseline.in.map(
         (amount, i) =>
-          `Swap ${dataX[i]} for ${amount} of ${tokenY?.symbol} to move the price ${dataX[i]}/${tokenY?.symbol} on +2%`
+          `Swap ${dataX[i]} for ${amount.toFixed()} of ${
+            tokenY?.symbol
+          } to move the price ${dataX[i]}/${tokenY?.symbol} on +2%`
       ),
-      textposition: "none" as const,
-      hoverinfo: "text" as const,
     },
     {
       x: dataX,
@@ -96,19 +96,25 @@ export default function DepthCost() {
       showlegend: false,
       yaxis: "y2",
       xaxis: "x2",
-      text: depthCostAmounts.baseline.in.map(
+      hovertemplate: depthCostAmounts.baseline.in.map(
         (amount, i) =>
-          `Swap ${dataX[i]} for ${amount} of ${tokenY?.symbol} to move the price ${dataX[i]}/${tokenY?.symbol} on +2%`
+          `Swap ${dataX[i]} for ${amount.toFixed()} of ${
+            tokenY?.symbol
+          } to move the price ${dataX[i]}/${tokenY?.symbol} on +2%`
       ),
-      textposition: "none" as const,
-      hoverinfo: "text" as const,
     },
   ];
 
   const props = {
+    className: "h-full w-2/3",
     data: data,
     layout: {
-      title: "Depth Cost",
+      margin: {
+        l: 10,
+        r: 10,
+        b: 10,
+        t: 10,
+      },
       xaxis: {
         tickmode: "array" as const,
         tickvals: dataX,
@@ -121,20 +127,20 @@ export default function DepthCost() {
         ticktext: tokensX.map((token) => token.symbol),
       },
       yaxis: {
-        title: `${tokenY?.symbol} amount in`,
+        title: `${tokenY?.symbol} in`,
         range: [0, maxDepthCostAmount],
-        domain: [0, 0.9],
+        domain: [0, 0.85],
       },
       yaxis2: {
         ...defaultAxisLayout,
-        title: `${tokenY?.symbol} amount out`,
+        title: `${tokenY?.symbol} out`,
         range: [0, maxDepthCostAmount],
-        domain: [0, 0.9],
+        domain: [0, 0.85],
       },
       grid: { columns: 2, rows: 1, pattern: "independent" as const },
       annotations: [
         {
-          text: "-2% Price impact",
+          text: "-2% Depth Cost",
           font: {
             size: 16,
           },
@@ -146,7 +152,7 @@ export default function DepthCost() {
           yref: "paper" as const,
         },
         {
-          text: "+2% Price Impact",
+          text: "+2% Depth Cost",
           font: {
             size: 16,
           },
@@ -178,9 +184,6 @@ function calculateDepthCostAmount(
   const indexIn = poolSide === "in" ? indexAnalysisToken : indexX;
   const indexOut = poolSide === "in" ? indexX : indexAnalysisToken;
 
-  const rateIn = bnum(data?.tokens[indexIn].rate);
-  const rateOut = bnum(data?.tokens[indexOut].rate);
-
   const poolPairData = preparePoolPairData({
     indexIn: indexIn,
     indexOut: indexOut,
@@ -189,33 +192,21 @@ function calculateDepthCostAmount(
     amp: data?.ampFactor,
   });
 
-  const currentSpotPriceFromStableMath = MetaStableMath.priceFromStableMath(
-    StableMath._spotPrice(poolPairData),
-    rateIn,
-    rateOut
-  );
+  const currentSpotPriceFromStableMath = StableMath._spotPrice(poolPairData);
 
-  const newSpotPriceToStableMath = MetaStableMath.priceToStableMath(
-    currentSpotPriceFromStableMath.times(bnum(1.02)),
-    rateIn,
-    rateOut
+  const newSpotPriceToStableMath = currentSpotPriceFromStableMath.times(
+    bnum(1.02)
   );
 
   if (poolSide === "in") {
-    return MetaStableMath.amountFromStableMath(
-      StableMath._tokenInForExactSpotPriceAfterSwap(
-        newSpotPriceToStableMath,
-        poolPairData
-      ),
-      rateIn
-    ).toNumber();
-  }
-
-  return MetaStableMath.amountFromStableMath(
     StableMath._tokenInForExactSpotPriceAfterSwap(
       newSpotPriceToStableMath,
       poolPairData
-    ),
-    rateIn
+    ).toNumber();
+  }
+
+  return StableMath._tokenInForExactSpotPriceAfterSwap(
+    newSpotPriceToStableMath,
+    poolPairData
   ).toNumber();
 }

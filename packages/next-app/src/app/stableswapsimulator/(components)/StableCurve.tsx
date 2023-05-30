@@ -1,7 +1,7 @@
 "use client";
 
 import { StableMath } from "@balancer-pool-metadata/math/src";
-import { blueDarkA, grayDarkA } from "@radix-ui/colors";
+import { amberDarkA, blueDarkA, grayDarkA } from "@radix-ui/colors";
 import { useState } from "react";
 import Plot from "react-plotly.js";
 
@@ -11,6 +11,7 @@ import { useStableSwap } from "#/contexts/StableSwapContext";
 export default function StableCurve() {
   const {
     baselineData,
+    variantData,
     indexAnalysisToken,
     indexCurrentTabToken,
     preparePoolPairData,
@@ -29,48 +30,80 @@ export default function StableCurve() {
 
   const tokensSymbol = baselineData.tokens.map((token) => token.symbol);
 
-  const initialAmountsAnalysisTokenIn = calculateAmounts({
-    balance: baselineData?.tokens?.[indexAnalysisToken]?.balance,
-  });
+  const calculateTokenAmounts = (
+    balance: number | undefined,
+    swapFee: number,
+    amp: number,
+    indexIn: number,
+    indexOut: number
+  ) => {
+    const amountsIn = calculateAmounts({ balance });
 
-  const initialAmountsAnalysisTokenOut = initialAmountsAnalysisTokenIn.map(
-    (amount) => -1 * amount //This is being multiplied by -1 because it is the OUT part of the trade
-  );
+    const amountsOut = amountsIn.map((amount) => -1 * amount);
 
-  const initialPoolPairDataAnalysisIn = preparePoolPairData({
-    indexIn: indexAnalysisToken,
-    indexOut: indexCurrentTabToken,
-    swapFee: baselineData?.swapFee,
-    allBalances: baselineData?.tokens?.map((token) => token.balance),
-    amp: baselineData?.ampFactor,
-  });
+    const poolPairDataIn = preparePoolPairData({
+      indexIn,
+      indexOut,
+      swapFee,
+      allBalances: baselineData.tokens.map((token) => token.balance),
+      amp,
+    });
 
-  const initialAmountTabTokenOut = initialAmountsAnalysisTokenIn.map(
-    (amount) => {
-      return (
+    const amountsTabTokenOut = amountsIn.map(
+      (amount) =>
         StableMath._exactTokenInForTokenOut(
           numberToOldBigNumber(amount),
-          initialPoolPairDataAnalysisIn
-        ).toNumber() * -1 //This is being multiplied by -1 because it is the OUT part of the trade
-      );
-    }
+          poolPairDataIn
+        ).toNumber() * -1
+    );
+
+    const poolPairDataOut = preparePoolPairData({
+      indexIn: indexOut,
+      indexOut: indexIn,
+      swapFee,
+      allBalances: baselineData.tokens.map((token) => token.balance),
+      amp,
+    });
+
+    const amountsTabTokenIn = amountsIn.map((amount) =>
+      StableMath._exactTokenInForTokenOut(
+        numberToOldBigNumber(amount),
+        poolPairDataOut
+      ).toNumber()
+    );
+
+    return {
+      amountsIn,
+      amountsOut,
+      amountsTabTokenOut,
+      amountsTabTokenIn,
+    };
+  };
+
+  const {
+    amountsIn: initialAmountsAnalysisTokenIn,
+    amountsOut: initialAmountsAnalysisTokenOut,
+    amountsTabTokenOut: initialAmountTabTokenOut,
+    amountsTabTokenIn: initialAmountTabTokenIn,
+  } = calculateTokenAmounts(
+    baselineData.tokens[indexAnalysisToken]?.balance,
+    baselineData.swapFee,
+    baselineData.ampFactor,
+    indexAnalysisToken,
+    indexCurrentTabToken
   );
 
-  const initialPoolPairDataAnalysisOut = preparePoolPairData({
-    indexIn: indexCurrentTabToken,
-    indexOut: indexAnalysisToken,
-    swapFee: baselineData?.swapFee,
-    allBalances: baselineData?.tokens?.map((token) => token.balance),
-    amp: baselineData?.ampFactor,
-  });
-
-  const initialAmountTabTokenIn = initialAmountsAnalysisTokenIn.map(
-    (amount) => {
-      return StableMath._exactTokenInForTokenOut(
-        numberToOldBigNumber(amount),
-        initialPoolPairDataAnalysisOut
-      ).toNumber();
-    }
+  const {
+    amountsIn: variantAmountsAnalysisTokenIn,
+    amountsOut: variantAmountsAnalysisTokenOut,
+    amountsTabTokenOut: variantAmountTabTokenOut,
+    amountsTabTokenIn: variantAmountTabTokenIn,
+  } = calculateTokenAmounts(
+    variantData?.tokens?.[indexAnalysisToken]?.balance,
+    variantData?.swapFee ? variantData.swapFee : baselineData.swapFee,
+    variantData?.ampFactor ? variantData.ampFactor : baselineData.ampFactor,
+    indexAnalysisToken,
+    indexCurrentTabToken
   );
 
   return (
@@ -91,6 +124,22 @@ export default function StableCurve() {
             type: "scatter",
             mode: "lines",
             marker: { color: blueDarkA.blueA9 },
+            hovertemplate: hoverInfo,
+          },
+          {
+            x: variantAmountsAnalysisTokenIn,
+            y: variantAmountTabTokenOut,
+            type: "scatter",
+            mode: "lines",
+            marker: { color: amberDarkA.amberA9 },
+            hovertemplate: hoverInfo,
+          },
+          {
+            x: variantAmountsAnalysisTokenOut,
+            y: variantAmountTabTokenIn,
+            type: "scatter",
+            mode: "lines",
+            marker: { color: amberDarkA.amberA9 },
             hovertemplate: hoverInfo,
           },
         ]}
@@ -123,6 +172,7 @@ export default function StableCurve() {
             color: grayDarkA.grayA12,
             activecolor: grayDarkA.grayA12,
           },
+          showlegend: false,
         }}
         className="w-full h-1/2"
         useResizeHandler={true}

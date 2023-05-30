@@ -3,8 +3,8 @@
 import { StableMath } from "@balancer-pool-metadata/math/src";
 import { amberDarkA, blueDarkA, grayDarkA } from "@radix-ui/colors";
 import { useState } from "react";
-import Plot from "react-plotly.js";
 
+import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
 import { useStableSwap } from "#/contexts/StableSwapContext";
 
@@ -153,24 +153,9 @@ export default function StableCurve() {
           },
           xaxis: {
             title: `Amount of ${tokensSymbol[indexAnalysisToken]}`,
-            gridcolor: grayDarkA.grayA10,
-            linecolor: grayDarkA.grayA12,
-            linewidth: 0.5,
-            automargin: true,
-            zerolinecolor: grayDarkA.grayA10,
           },
           yaxis: {
             title: `Amount of ${tokensSymbol[indexCurrentTabToken]}`,
-            gridcolor: grayDarkA.grayA10,
-            linecolor: grayDarkA.grayA12,
-            linewidth: 0.5,
-            automargin: true,
-            zerolinecolor: grayDarkA.grayA10,
-          },
-          modebar: {
-            bgcolor: blueDarkA.blueA1,
-            color: grayDarkA.grayA12,
-            activecolor: grayDarkA.grayA12,
           },
           showlegend: false,
         }}

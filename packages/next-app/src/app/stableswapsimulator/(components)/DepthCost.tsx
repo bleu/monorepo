@@ -139,6 +139,7 @@ export default function DepthCost() {
       },
       grid: { columns: 2, rows: 1, pattern: "independent" as const },
       annotations: [
+        // subplot titles, manually centered is needed
         {
           text: "-2% Depth Cost",
           font: {
@@ -146,7 +147,7 @@ export default function DepthCost() {
           },
           showarrow: false,
           align: "center" as const,
-          x: 0.15,
+          x: 0.11,
           y: 1,
           xref: "paper" as const,
           yref: "paper" as const,
@@ -158,7 +159,7 @@ export default function DepthCost() {
           },
           showarrow: false,
           align: "center" as const,
-          x: 0.84,
+          x: 0.89,
           y: 1,
           xref: "paper" as const,
           yref: "paper" as const,

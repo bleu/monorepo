@@ -58,7 +58,7 @@ export function ToastContent({
     <div className="flex h-14 flex-row items-center justify-between px-4 py-8">
       <div className="flex flex-col justify-between space-y-1">
         <h1 className="text-xl font-medium text-slate12">{title}</h1>
-        <h3 className="mb-2 leading-3 text-slate12">{description}</h3>
+        <h3 className="mb-2 leading-3 text-slate11">{description}</h3>
       </div>
       {link && (
         <a target="_blank" href={link} className="text-slate12">

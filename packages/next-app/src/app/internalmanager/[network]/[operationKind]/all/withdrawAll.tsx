@@ -93,7 +93,7 @@ export function WithdrawAll() {
     <div className="flex items-center justify-center h-full">
       <form
         onSubmit={handleSubmit(handleOnSubmit)}
-        className="flex flex-col text-white bg-blue3 h-fit my-4 w-fit rounded-lg divide-y divide-gray-700 border border-gray-700"
+        className="flex flex-col text-white bg-blue3 h-fit my-4 w-fit rounded-lg divide-y divide-slate7 border border-slate7"
       >
         <div className="relative w-full flex justify-center h-full">
           <Link href={`/internalmanager/${network}`}>
@@ -101,7 +101,7 @@ export function WithdrawAll() {
               <ArrowLeftIcon
                 height={16}
                 width={16}
-                className="text-gray-500 hover:text-amber10 duration-200"
+                className="text-slate10 hover:text-amber10 duration-200"
               />
             </div>
           </Link>

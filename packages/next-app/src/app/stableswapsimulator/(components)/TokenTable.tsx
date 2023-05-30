@@ -150,17 +150,17 @@ function TableRow({
                   <MinusCircledIcon
                     width={20}
                     height={20}
-                    className="text-gray9"
+                    className="text-slate9"
                   />
                 </button>
               </Tooltip.Trigger>
               <Tooltip.Portal>
                 <Tooltip.Content
-                  className="data-[state=delayed-open]:data-[side=top]:animate-slideDownAndFade data-[state=delayed-open]:data-[side=right]:animate-slideLeftAndFade data-[state=delayed-open]:data-[side=left]:animate-slideRightAndFade data-[state=delayed-open]:data-[side=bottom]:animate-slideUpAndFade text-white select-none rounded-[4px] bg-gray4 px-[15px] py-[10px] text-[15px] leading-none shadow-[gray10_0px_10px_38px_-10px,gray10_0px_10px_20px_-15px] will-change-[transform,opacity]"
+                  className="data-[state=delayed-open]:data-[side=top]:animate-slideDownAndFade data-[state=delayed-open]:data-[side=right]:animate-slideLeftAndFade data-[state=delayed-open]:data-[side=left]:animate-slideRightAndFade data-[state=delayed-open]:data-[side=bottom]:animate-slideUpAndFade text-white select-none rounded-[4px] bg-slate4 px-[15px] py-[10px] text-[15px] leading-none shadow-[slate10_0px_10px_38px_-10px,slate10_0px_10px_20px_-15px] will-change-[transform,opacity]"
                   sideOffset={3}
                 >
                   The simulation needs at least {minTokens} tokens
-                  <Tooltip.Arrow className="fill-gray4" />
+                  <Tooltip.Arrow className="fill-slate4" />
                 </Tooltip.Content>
               </Tooltip.Portal>
             </Tooltip.Root>

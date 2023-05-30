@@ -36,7 +36,7 @@ export const defaultPlotProps = {
       activecolor: grayDarkA.grayA12,
       orientation: "h",
     },
-    colorway: [blueDarkA.blueA9, amberDarkA.amberA9],
+    colorway: [blueDarkA.blueA9, amberDarkA.amberA9], // this colors are intercalated, so the first trace will be blue, the second amber, the third blue, etc.
   },
   config: {
     displaylogo: false,

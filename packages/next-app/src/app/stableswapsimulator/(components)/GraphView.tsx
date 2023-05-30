@@ -1,15 +1,9 @@
 "use client";
 
-import dynamic from "next/dynamic";
-
-import { Spinner } from "#/components/Spinner";
 import { Tabs } from "#/components/Tabs";
 import { useStableSwap } from "#/contexts/StableSwapContext";
 
-const StableCurve = dynamic(() => import("./StableCurve"), {
-  ssr: false,
-  loading: () => <Spinner />,
-});
+import StableCurve from "./StableCurve";
 
 export function GraphView() {
   const {

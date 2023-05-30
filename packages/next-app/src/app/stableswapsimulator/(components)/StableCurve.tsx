@@ -1,7 +1,6 @@
 "use client";
 
 import { StableMath } from "@balancer-pool-metadata/math/src";
-import { amberDarkA, blueDarkA, grayDarkA } from "@radix-ui/colors";
 
 import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
@@ -112,7 +111,6 @@ export default function StableCurve() {
             y: initialAmountTabTokenOut,
             type: "scatter",
             mode: "lines",
-            marker: { color: blueDarkA.blueA9 },
             legendgroup: "Baseline",
             name: "Baseline",
             hovertemplate: initialAmountsAnalysisTokenIn.map(
@@ -125,11 +123,26 @@ export default function StableCurve() {
             ),
           },
           {
+            x: variantAmountsAnalysisTokenIn,
+            y: variantAmountTabTokenOut,
+            type: "scatter",
+            mode: "lines",
+            legendgroup: "Variant",
+            name: "Variant",
+            hovertemplate: variantAmountsAnalysisTokenIn.map(
+              (amount, index) =>
+                `Swap ${amount.toFixed(2)} ${
+                  tokensSymbol[indexAnalysisToken]
+                } for ${(variantAmountTabTokenOut[index] * -1).toFixed(2)} ${
+                  tokensSymbol[indexCurrentTabToken]
+                } <extra></extra>`
+            ),
+          },
+          {
             x: initialAmountsAnalysisTokenOut,
             y: initialAmountTabTokenIn,
             type: "scatter",
             mode: "lines",
-            marker: { color: blueDarkA.blueA9 },
             legendgroup: "Baseline",
             name: "Baseline",
             showlegend: false,
@@ -143,28 +156,10 @@ export default function StableCurve() {
             ),
           },
           {
-            x: variantAmountsAnalysisTokenIn,
-            y: variantAmountTabTokenOut,
-            type: "scatter",
-            mode: "lines",
-            marker: { color: amberDarkA.amberA9 },
-            legendgroup: "Variant",
-            name: "Variant",
-            hovertemplate: variantAmountsAnalysisTokenIn.map(
-              (amount, index) =>
-                `Swap ${amount.toFixed(2)} ${
-                  tokensSymbol[indexAnalysisToken]
-                } for ${(variantAmountTabTokenOut[index] * -1).toFixed(2)} ${
-                  tokensSymbol[indexCurrentTabToken]
-                } <extra></extra>`
-            ),
-          },
-          {
             x: variantAmountsAnalysisTokenOut,
             y: variantAmountTabTokenIn,
             type: "scatter",
             mode: "lines",
-            marker: { color: amberDarkA.amberA9 },
             legendgroup: "Variant",
             name: "Variant",
             showlegend: false,
@@ -180,12 +175,6 @@ export default function StableCurve() {
         ]}
         layout={{
           title: "<b> Swap Curve </b>",
-          plot_bgcolor: blueDarkA.blueA1,
-          paper_bgcolor: blueDarkA.blueA1,
-          font: {
-            color: grayDarkA.grayA12,
-            family: "Inter",
-          },
           xaxis: {
             title: `Amount of ${tokensSymbol[indexAnalysisToken]}`,
           },
@@ -194,7 +183,6 @@ export default function StableCurve() {
           },
         }}
         className="w-full h-1/2"
-        useResizeHandler={true}
       />
     </div>
   );

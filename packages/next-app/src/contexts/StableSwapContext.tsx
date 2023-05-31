@@ -1,8 +1,6 @@
 "use client";
 
-import { bnum, StablePool } from "@balancer-labs/sor";
 import { PoolQuery } from "@balancer-pool-metadata/gql/src/balancer-pools/__generated__/Ethereum";
-import { parseFixed } from "@ethersproject/bignumber";
 import { usePathname, useRouter } from "next/navigation";
 import {
   createContext,
@@ -14,10 +12,6 @@ import {
 
 import { PoolAttribute } from "#/components/SearchPoolForm";
 import { pools } from "#/lib/gql";
-
-type StablePoolPairData = ReturnType<
-  typeof StablePool.prototype.parsePoolPairData
->;
 
 export interface TokensData {
   symbol: string;
@@ -44,20 +38,6 @@ interface StableSwapContextType {
   newPoolImportedFlag: boolean;
   isGraphLoading: boolean;
   setIsGraphLoading: (value: boolean) => void;
-  preparePoolPairData: ({
-    indexIn,
-    indexOut,
-    swapFee,
-    allBalances,
-    amp,
-  }: {
-    indexIn: number;
-    indexOut: number;
-    swapFee: number;
-    allBalances: number[];
-    amp: number;
-  }) => StablePoolPairData;
-  numberToOldBigNumber: (number: number, decimals?: number) => typeof bnum;
 }
 
 export const StableSwapContext = createContext({} as StableSwapContextType);
@@ -104,52 +84,6 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
     setVariantData(convertGqlToAnalysisData(poolData));
   }
 
-  function numberToBigNumber(number: number, decimals = 18) {
-    return parseFixed(number.toString(), decimals);
-  }
-
-  function numberToOldBigNumber(number: number, decimals = 18) {
-    return bnum(number.toFixed(decimals));
-  }
-
-  function preparePoolPairData({
-    indexIn,
-    indexOut,
-    swapFee,
-    allBalances,
-    amp,
-  }: {
-    indexIn: number;
-    indexOut: number;
-    swapFee: number;
-    allBalances: number[];
-    amp: number;
-  }) {
-    const allBalancesOldBn = allBalances.map((balance) =>
-      numberToOldBigNumber(balance)
-    );
-    const allBalancesBn = allBalances.map((balance) =>
-      numberToBigNumber(balance)
-    );
-    return {
-      id: "0x",
-      address: "0x",
-      poolType: 1,
-      tokenIn: "0x",
-      tokenOut: "0x",
-      balanceIn: numberToBigNumber(allBalances[indexIn]),
-      balanceOut: numberToBigNumber(allBalances[indexOut]),
-      swapFee: numberToBigNumber(swapFee, 18),
-      allBalances: allBalancesOldBn,
-      allBalancesScaled: allBalancesBn,
-      amp: numberToBigNumber(amp, 3),
-      tokenIndexIn: indexIn,
-      tokenIndexOut: indexOut,
-      decimalsIn: 6,
-      decimalsOut: 18,
-    } as StablePoolPairData;
-  }
-
   useEffect(() => {
     if (!baselineData.swapFee) {
       push("/stableswapsimulator");
@@ -182,8 +116,6 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
         newPoolImportedFlag,
         isGraphLoading,
         setIsGraphLoading,
-        preparePoolPairData,
-        numberToOldBigNumber,
       }}
     >
       {children}

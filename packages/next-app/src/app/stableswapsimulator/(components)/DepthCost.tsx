@@ -108,16 +108,10 @@ export default function DepthCost() {
   ];
 
   const props = {
-    className: "h-full w-full",
+    className: "h-full w-3/4",
     data: data,
     layout: {
-      title: "<b>Depth cost</b>",
-      margin: {
-        l: 10,
-        r: 10,
-        b: 10,
-        t: 30,
-      },
+      title: "<b>Depth cost</b><br>(-2% and +2% of price impact)",
       xaxis: {
         tickmode: "array" as const,
         tickvals: dataX,
@@ -132,42 +126,15 @@ export default function DepthCost() {
       yaxis: {
         title: `${analysisToken?.symbol} in`,
         range: [0, maxDepthCostAmount],
-        domain: [0, 0.85],
+        domain: [0, 0.8],
       },
       yaxis2: {
         ...defaultAxisLayout,
         title: `${analysisToken?.symbol} out`,
         range: [0, maxDepthCostAmount],
-        domain: [0, 0.85],
+        domain: [0, 0.8],
       },
       grid: { columns: 2, rows: 1, pattern: "independent" as const },
-      annotations: [
-        // subplot titles, manually centered is needed
-        {
-          text: "<b>-2% Price Impact</b>",
-          font: {
-            size: 13,
-          },
-          showarrow: false,
-          align: "center" as const,
-          x: 0.16,
-          y: 1,
-          xref: "paper" as const,
-          yref: "paper" as const,
-        },
-        {
-          text: "<b>+2% Price Impact</b>",
-          font: {
-            size: 13,
-          },
-          showarrow: false,
-          align: "center" as const,
-          x: 0.83,
-          y: 1,
-          xref: "paper" as const,
-          yref: "paper" as const,
-        },
-      ],
     },
 
     config: { displayModeBar: false },

@@ -22,6 +22,10 @@ export const defaultPlotProps = {
   className: "w-full h-full",
   useResizeHandler: true,
   layout: {
+    margin: {
+      b: 10,
+      t: 30,
+    },
     plot_bgcolor: blueDarkA.blueA1,
     paper_bgcolor: blueDarkA.blueA1,
     font: {

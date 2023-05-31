@@ -6,7 +6,7 @@ import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
 import { useStableSwap } from "#/contexts/StableSwapContext";
 
-export default function StableCurve() {
+export function StableCurve() {
   const {
     baselineData,
     variantData,

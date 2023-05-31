@@ -210,5 +210,4 @@ export const ExtendedStableMath = {
   _priceImpactForExactTokenInSwap,
   _priceImpactForExactTokenOutSwap,
   _tokenInForExactSpotPriceAfterSwap,
-  _tokenOutForExactSpotPriceAfterSwap,
 } as const;

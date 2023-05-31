@@ -38,10 +38,10 @@ function preparePoolPairData({
   amp: number;
 }) {
   const allBalancesOldBn = balances.map((balance, i) =>
-    numberToOldBigNumber(balance).times(numberToBigNumber(rates[i]))
+    numberToOldBigNumber(balance).times(numberToOldBigNumber(rates[i]))
   );
   const allBalancesBn = balances.map((balance, i) =>
-    numberToBigNumber(balance).mul(numberToBigNumber(rates[i]))
+    numberToBigNumber(balance).mul(numberToBigNumber(rates[i])).div(ONE)
   );
 
   return {
@@ -57,8 +57,8 @@ function preparePoolPairData({
       .mul(numberToBigNumber(rates[indexOut]))
       .div(ONE),
     swapFee: numberToBigNumber(swapFee, 18),
-    rateIn: numberToBigNumber(rates[indexIn]),
-    rateOut: numberToBigNumber(rates[indexOut]),
+    rateIn: numberToOldBigNumber(rates[indexIn]),
+    rateOut: numberToOldBigNumber(rates[indexOut]),
     allBalances: allBalancesOldBn,
     allBalancesScaled: allBalancesBn,
     amp: numberToBigNumber(amp, 3),

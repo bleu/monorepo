@@ -3,8 +3,9 @@
 import { Tabs } from "#/components/Tabs";
 import { useStableSwap } from "#/contexts/StableSwapContext";
 
-import DepthCost from "./DepthCost";
-import StableCurve from "./StableCurve";
+import { DepthCost } from "./DepthCost";
+import { ImpactCurve } from "./ImpactCurve";
+import { StableCurve } from "./StableCurve";
 
 export function GraphView() {
   const {
@@ -48,6 +49,7 @@ export function GraphView() {
             <div key={symbol}>
               <Tabs.ItemContent tabName={symbol} bgColor="blue1">
                 <StableCurve />
+                <ImpactCurve />
               </Tabs.ItemContent>
             </div>
           ))}

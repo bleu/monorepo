@@ -6,7 +6,7 @@ import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
 import { useStableSwap } from "#/contexts/StableSwapContext";
 
-export function StableCurve() {
+export function ImpactCurve() {
   const {
     baselineData,
     variantData,
@@ -27,7 +27,7 @@ export function StableCurve() {
   const tokensSymbol = baselineData.tokens.map((token) => token.symbol);
 
   //TODO: move this function to outside the component once the math PR is merged
-  const calculateTokenAmounts = ({
+  const calculateTokenImpact = ({
     balance,
     swapFee,
     amp,
@@ -54,12 +54,12 @@ export function StableCurve() {
       amp,
     });
 
-    const amountsTabTokenOut = amountsIn.map(
+    const impactTabTokenOut = amountsIn.map(
       (amount) =>
-        StableMath._exactTokenInForTokenOut(
+        StableMath._priceImpactForExactTokenInSwap(
           numberToOldBigNumber(amount),
           poolPairDataIn
-        ).toNumber() * -1
+        ).toNumber() * 100
     );
 
     const poolPairDataOut = preparePoolPairData({
@@ -70,27 +70,28 @@ export function StableCurve() {
       amp,
     });
 
-    const amountsTabTokenIn = amountsIn.map((amount) =>
-      StableMath._exactTokenInForTokenOut(
-        numberToOldBigNumber(amount),
-        poolPairDataOut
-      ).toNumber()
+    const impactTabTokenIn = amountsIn.map(
+      (amount) =>
+        StableMath._priceImpactForExactTokenOutReversedSwap(
+          numberToOldBigNumber(amount),
+          poolPairDataOut
+        ).toNumber() * 100
     );
 
     return {
       amountsIn,
       amountsOut,
-      amountsTabTokenOut,
-      amountsTabTokenIn,
+      impactTabTokenOut,
+      impactTabTokenIn,
     };
   };
 
   const {
     amountsIn: initialAmountsAnalysisTokenIn,
+    impactTabTokenOut: initialImpactTabTokenOut,
     amountsOut: initialAmountsAnalysisTokenOut,
-    amountsTabTokenOut: initialAmountTabTokenOut,
-    amountsTabTokenIn: initialAmountTabTokenIn,
-  } = calculateTokenAmounts({
+    impactTabTokenIn: initialImpactTabTokenIn,
+  } = calculateTokenImpact({
     balance: baselineData.tokens[indexAnalysisToken]?.balance,
     swapFee: baselineData.swapFee,
     amp: baselineData.ampFactor,
@@ -101,10 +102,10 @@ export function StableCurve() {
 
   const {
     amountsIn: variantAmountsAnalysisTokenIn,
+    impactTabTokenOut: variantImpactTabTokenOut,
     amountsOut: variantAmountsAnalysisTokenOut,
-    amountsTabTokenOut: variantAmountTabTokenOut,
-    amountsTabTokenIn: variantAmountTabTokenIn,
-  } = calculateTokenAmounts({
+    impactTabTokenIn: variantImpactTabTokenIn,
+  } = calculateTokenImpact({
     balance: variantData?.tokens?.[indexAnalysisToken]?.balance,
     swapFee: variantData?.swapFee ? variantData.swapFee : baselineData.swapFee,
     amp: variantData?.ampFactor
@@ -120,7 +121,7 @@ export function StableCurve() {
       data={[
         {
           x: initialAmountsAnalysisTokenIn,
-          y: initialAmountTabTokenOut,
+          y: initialImpactTabTokenOut,
           type: "scatter",
           mode: "lines",
           legendgroup: "Baseline",
@@ -129,30 +130,39 @@ export function StableCurve() {
             (amount, index) =>
               `Swap ${amount.toFixed(2)} ${
                 tokensSymbol[indexAnalysisToken]
-              } for ${(initialAmountTabTokenOut[index] * -1).toFixed(2)} ${
+              } for ${
                 tokensSymbol[indexCurrentTabToken]
+              } causes a Price Impact of ${initialImpactTabTokenOut[
+                index
+              ].toFixed(2)}% ${tokensSymbol[indexCurrentTabToken]}/${
+                tokensSymbol[indexAnalysisToken]
               } <extra></extra>`
           ),
         },
         {
           x: variantAmountsAnalysisTokenIn,
-          y: variantAmountTabTokenOut,
+          y: variantImpactTabTokenOut,
           type: "scatter",
           mode: "lines",
           legendgroup: "Variant",
           name: "Variant",
+          showlegend: false,
           hovertemplate: variantAmountsAnalysisTokenIn.map(
             (amount, index) =>
               `Swap ${amount.toFixed(2)} ${
                 tokensSymbol[indexAnalysisToken]
-              } for ${(variantAmountTabTokenOut[index] * -1).toFixed(2)} ${
+              } for ${
                 tokensSymbol[indexCurrentTabToken]
+              } causes a Price Impact of ${variantImpactTabTokenOut[
+                index
+              ].toFixed(2)}% ${tokensSymbol[indexCurrentTabToken]}/${
+                tokensSymbol[indexAnalysisToken]
               } <extra></extra>`
           ),
         },
         {
           x: initialAmountsAnalysisTokenOut,
-          y: initialAmountTabTokenIn,
+          y: initialImpactTabTokenIn,
           type: "scatter",
           mode: "lines",
           legendgroup: "Baseline",
@@ -160,38 +170,45 @@ export function StableCurve() {
           showlegend: false,
           hovertemplate: initialAmountsAnalysisTokenOut.map(
             (amount, index) =>
-              `Swap ${initialAmountTabTokenIn[index].toFixed(2)} ${
-                tokensSymbol[indexCurrentTabToken]
-              } for ${(amount * -1).toFixed(2)} ${
+              `Swap ${tokensSymbol[indexCurrentTabToken]} for ${(
+                amount * -1
+              ).toFixed(2)} ${
+                tokensSymbol[indexAnalysisToken]
+              } causes a Price Impact of ${initialImpactTabTokenIn[
+                index
+              ].toFixed(2)}% ${tokensSymbol[indexCurrentTabToken]}/${
                 tokensSymbol[indexAnalysisToken]
               } <extra></extra>`
           ),
         },
         {
           x: variantAmountsAnalysisTokenOut,
-          y: variantAmountTabTokenIn,
+          y: variantImpactTabTokenIn,
           type: "scatter",
           mode: "lines",
           legendgroup: "Variant",
           name: "Variant",
-          showlegend: false,
           hovertemplate: variantAmountsAnalysisTokenOut.map(
             (amount, index) =>
-              `Swap ${variantAmountTabTokenIn[index].toFixed(2)} ${
-                tokensSymbol[indexCurrentTabToken]
-              } for ${(amount * -1).toFixed(2)} ${
+              `Swap ${tokensSymbol[indexCurrentTabToken]} for ${(
+                amount * -1
+              ).toFixed(2)} ${
+                tokensSymbol[indexAnalysisToken]
+              } causes a Price Impact of ${variantImpactTabTokenIn[
+                index
+              ].toFixed(2)}% ${tokensSymbol[indexCurrentTabToken]}/${
                 tokensSymbol[indexAnalysisToken]
               } <extra></extra>`
           ),
         },
       ]}
       layout={{
-        title: "<b> Swap Curve </b>",
+        title: "<b> Impact Curve </b>",
         xaxis: {
           title: `Amount of ${tokensSymbol[indexAnalysisToken]}`,
         },
         yaxis: {
-          title: `Amount of ${tokensSymbol[indexCurrentTabToken]}`,
+          title: `${tokensSymbol[indexCurrentTabToken]}/${tokensSymbol[indexAnalysisToken]} price impact (%)`,
         },
       }}
       className="w-full h-1/2"
@@ -201,7 +218,7 @@ export function StableCurve() {
 
 function calculateAmounts({
   balance,
-  start = 0,
+  start = 0.0001,
 }: {
   balance?: number;
   start?: number;
@@ -209,6 +226,7 @@ function calculateAmounts({
   if (!balance) return [];
   const numberOfPoints = 20;
   const resizedBalance = balance * 0.5;
+
   const step = (resizedBalance - start) / (numberOfPoints - 1);
 
   return Array.from(

@@ -7,7 +7,7 @@ import { PlotType } from "plotly.js";
 import Plot, { defaultAxisLayout } from "#/components/Plot";
 import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
 
-export default function DepthCost() {
+export function DepthCost() {
   const { indexAnalysisToken, baselineData, variantData } = useStableSwap();
 
   const analysisToken = baselineData?.tokens[indexAnalysisToken];
@@ -55,9 +55,11 @@ export default function DepthCost() {
       name: "Baseline",
       hovertemplate: depthCostAmounts.baseline.in.map(
         (amount, i) =>
-          `Swap ${amount.toFixed()} of ${analysisToken?.symbol} for ${
+          `Swap ${amount.toFixed()} ${analysisToken?.symbol} for ${
             dataX[i]
-          } to move the price ${dataX[i]}/${analysisToken?.symbol} on -2%`
+          } to move the price ${dataX[i]}/${
+            analysisToken?.symbol
+          } on -2% <extra></extra>`
       ),
     },
     {
@@ -68,9 +70,11 @@ export default function DepthCost() {
       name: "Variant",
       hovertemplate: depthCostAmounts.baseline.in.map(
         (amount, i) =>
-          `Swap ${amount.toFixed()} of ${analysisToken?.symbol} for ${
+          `Swap ${amount.toFixed()} ${analysisToken?.symbol} for ${
             dataX[i]
-          } to move the price ${dataX[i]}/${analysisToken?.symbol} on -2%`
+          } to move the price ${dataX[i]}/${
+            analysisToken?.symbol
+          } on -2% <extra></extra>`
       ),
     },
     {
@@ -84,9 +88,11 @@ export default function DepthCost() {
       xaxis: "x2",
       hovertemplate: depthCostAmounts.baseline.in.map(
         (amount, i) =>
-          `Swap ${dataX[i]} for ${amount.toFixed()} of ${
+          `Swap ${dataX[i]} for ${amount.toFixed()} ${
             analysisToken?.symbol
-          } to move the price ${dataX[i]}/${analysisToken?.symbol} on +2%`
+          } to move the price ${dataX[i]}/${
+            analysisToken?.symbol
+          } on +2% <extra></extra>`
       ),
     },
     {
@@ -100,9 +106,11 @@ export default function DepthCost() {
       xaxis: "x2",
       hovertemplate: depthCostAmounts.baseline.in.map(
         (amount, i) =>
-          `Swap ${dataX[i]} for ${amount.toFixed()} of ${
+          `Swap ${dataX[i]} for ${amount.toFixed()} ${
             analysisToken?.symbol
-          } to move the price ${dataX[i]}/${analysisToken?.symbol} on +2%`
+          } to move the price ${dataX[i]}/${
+            analysisToken?.symbol
+          } on +2% <extra></extra>`
       ),
     },
   ];

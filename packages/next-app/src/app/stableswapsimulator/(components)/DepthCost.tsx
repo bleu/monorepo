@@ -108,14 +108,15 @@ export default function DepthCost() {
   ];
 
   const props = {
-    className: "h-full w-2/3",
+    className: "h-full w-full",
     data: data,
     layout: {
+      title: "<b>Depth cost</b>",
       margin: {
         l: 10,
         r: 10,
         b: 10,
-        t: 10,
+        t: 30,
       },
       xaxis: {
         tickmode: "array" as const,
@@ -143,25 +144,25 @@ export default function DepthCost() {
       annotations: [
         // subplot titles, manually centered is needed
         {
-          text: "-2% Depth Cost",
+          text: "<b>-2% Price Impact</b>",
           font: {
-            size: 16,
+            size: 13,
           },
           showarrow: false,
           align: "center" as const,
-          x: 0.11,
+          x: 0.16,
           y: 1,
           xref: "paper" as const,
           yref: "paper" as const,
         },
         {
-          text: "+2% Depth Cost",
+          text: "<b>+2% Price Impact</b>",
           font: {
-            size: 16,
+            size: 13,
           },
           showarrow: false,
           align: "center" as const,
-          x: 0.89,
+          x: 0.83,
           y: 1,
           xref: "paper" as const,
           yref: "paper" as const,

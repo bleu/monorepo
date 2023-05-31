@@ -26,13 +26,19 @@ export default function StableCurve() {
 
   const tokensSymbol = baselineData.tokens.map((token) => token.symbol);
 
-  const calculateTokenAmounts = (
-    balance: number | undefined,
-    swapFee: number,
-    amp: number,
-    indexIn: number,
-    indexOut: number
-  ) => {
+  const calculateTokenAmounts = ({
+    balance,
+    swapFee,
+    amp,
+    indexIn,
+    indexOut,
+  }: {
+    balance: number | undefined;
+    swapFee: number;
+    amp: number;
+    indexIn: number;
+    indexOut: number;
+  }) => {
     const amountsIn = calculateAmounts({ balance });
 
     const amountsOut = amountsIn.map((amount) => -1 * amount);
@@ -81,26 +87,28 @@ export default function StableCurve() {
     amountsOut: initialAmountsAnalysisTokenOut,
     amountsTabTokenOut: initialAmountTabTokenOut,
     amountsTabTokenIn: initialAmountTabTokenIn,
-  } = calculateTokenAmounts(
-    baselineData.tokens[indexAnalysisToken]?.balance,
-    baselineData.swapFee,
-    baselineData.ampFactor,
-    indexAnalysisToken,
-    indexCurrentTabToken
-  );
+  } = calculateTokenAmounts({
+    balance: baselineData.tokens[indexAnalysisToken]?.balance,
+    swapFee: baselineData.swapFee,
+    amp: baselineData.ampFactor,
+    indexIn: indexAnalysisToken,
+    indexOut: indexCurrentTabToken,
+  });
 
   const {
     amountsIn: variantAmountsAnalysisTokenIn,
     amountsOut: variantAmountsAnalysisTokenOut,
     amountsTabTokenOut: variantAmountTabTokenOut,
     amountsTabTokenIn: variantAmountTabTokenIn,
-  } = calculateTokenAmounts(
-    variantData?.tokens?.[indexAnalysisToken]?.balance,
-    variantData?.swapFee ? variantData.swapFee : baselineData.swapFee,
-    variantData?.ampFactor ? variantData.ampFactor : baselineData.ampFactor,
-    indexAnalysisToken,
-    indexCurrentTabToken
-  );
+  } = calculateTokenAmounts({
+    balance: variantData?.tokens?.[indexAnalysisToken]?.balance,
+    swapFee: variantData?.swapFee ? variantData.swapFee : baselineData.swapFee,
+    amp: variantData?.ampFactor
+      ? variantData.ampFactor
+      : baselineData.ampFactor,
+    indexIn: indexAnalysisToken,
+    indexOut: indexCurrentTabToken,
+  });
 
   return (
     <div className="text-white">
@@ -197,10 +205,11 @@ function calculateAmounts({
 }) {
   if (!balance) return [];
   const numberOfPoints = 20;
-  const step = (balance - start) / (numberOfPoints - 1);
+  const resizedBalance = balance * 0.5;
+  const step = (resizedBalance - start) / (numberOfPoints - 1);
 
   return Array.from(
-    { length: (balance - start) / step + 1 },
+    { length: (resizedBalance - start) / step + 1 },
     (value, index) => start + index * step
   );
 }

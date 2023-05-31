@@ -40,6 +40,8 @@ export function TokenTable({
     const { variantData } = useStableSwap();
     tableData = variantData;
   }
+
+  const aboveOrEqualLimit = tableData?.tokens?.length >= 8;
   return (
     <div className="h-full flex-1 flex w-full justify-center text-white">
       <Table>
@@ -52,15 +54,28 @@ export function TokenTable({
             <Table.HeaderCell padding={customPadding}>Balance</Table.HeaderCell>
             <Table.HeaderCell padding={customPadding}>Rate</Table.HeaderCell>
             <Table.HeaderCell padding={customPadding}>
-              <ButtonToOpenTokenForm
-                icon={
-                  <PlusCircledIcon
-                    width={22}
-                    height={22}
-                    className="text-green9 hover:text-green11"
-                  />
-                }
-              />
+              {aboveOrEqualLimit && (
+                <Tooltip content="Balancer pools can't have more than 8 tokens">
+                  <button type="button" className="flex items-center" disabled>
+                    <PlusCircledIcon
+                      width={20}
+                      height={20}
+                      className="text-slate9"
+                    />
+                  </button>
+                </Tooltip>
+              )}
+              {!aboveOrEqualLimit && (
+                <ButtonToOpenTokenForm
+                  icon={
+                    <PlusCircledIcon
+                      width={22}
+                      height={22}
+                      className="text-green9 hover:text-green11"
+                    />
+                  }
+                />
+              )}
             </Table.HeaderCell>
           </Table.HeaderRow>
           <Table.Body>

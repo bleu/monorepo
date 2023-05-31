@@ -1,7 +1,7 @@
 "use client";
 
 import { bnum } from "@balancer-labs/sor";
-import { MetaStableMath } from "@balancer-pool-metadata/math/src";
+import { StableMath } from "@balancer-pool-metadata/math/src";
 import { PlotType } from "plotly.js";
 
 import Plot, { defaultAxisLayout } from "#/components/Plot";
@@ -183,34 +183,33 @@ function calculateDepthCostAmount(
 ) {
   if (!data.swapFee || !data.ampFactor) return;
 
-  const { indexAnalysisToken } = useStableSwap();
+  const { preparePoolPairData, indexAnalysisToken } = useStableSwap();
 
   const indexIn = poolSide === "in" ? indexAnalysisToken : pairTokenIndex;
   const indexOut = poolSide === "in" ? pairTokenIndex : indexAnalysisToken;
 
-  const poolPairData = MetaStableMath.preparePoolPairData({
+  const poolPairData = preparePoolPairData({
     indexIn: indexIn,
     indexOut: indexOut,
     swapFee: data?.swapFee,
-    balances: data?.tokens?.map((token) => token.balance),
-    rates: data?.tokens?.map((token) => token.rate),
+    allBalances: data?.tokens?.map((token) => token.balance),
     amp: data?.ampFactor,
   });
 
-  const currentSpotPriceFromStableMath = MetaStableMath.spotPrice(poolPairData);
+  const currentSpotPriceFromStableMath = StableMath._spotPrice(poolPairData);
 
   const newSpotPriceToStableMath = currentSpotPriceFromStableMath.times(
     bnum(1.02)
   );
 
   if (poolSide === "in") {
-    MetaStableMath.tokenInForExactSpotPriceAfterSwap(
+    StableMath._tokenInForExactSpotPriceAfterSwap(
       newSpotPriceToStableMath,
       poolPairData
     ).toNumber();
   }
 
-  return MetaStableMath.tokenOutForExactSpotPriceAfterSwap(
+  return StableMath._tokenInForExactSpotPriceAfterSwap(
     newSpotPriceToStableMath,
     poolPairData
   ).toNumber();

@@ -10,27 +10,29 @@ import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
 export default function DepthCost() {
   const { indexAnalysisToken, baselineData, variantData } = useStableSwap();
 
-  const tokenY = baselineData?.tokens[indexAnalysisToken];
-  const tokensX = baselineData?.tokens.filter(
-    (token) => token.symbol !== tokenY.symbol
+  const analysisToken = baselineData?.tokens[indexAnalysisToken];
+  const pairTokens = baselineData?.tokens.filter(
+    (token) => token.symbol !== analysisToken.symbol
   );
-  const indexesX = tokensX.map((token) => baselineData?.tokens.indexOf(token));
+  const pairTokensIndexes = pairTokens.map((token) =>
+    baselineData?.tokens.indexOf(token)
+  );
 
   const depthCostAmounts = {
     baseline: {
-      in: indexesX.map((indexX) =>
-        calculateDepthCostAmount(indexX, baselineData, "in")
+      in: pairTokensIndexes.map((pairTokenIndex) =>
+        calculateDepthCostAmount(pairTokenIndex, baselineData, "in")
       ),
-      out: indexesX.map((indexX) =>
-        calculateDepthCostAmount(indexX, baselineData, "out")
+      out: pairTokensIndexes.map((pairTokenIndex) =>
+        calculateDepthCostAmount(pairTokenIndex, baselineData, "out")
       ),
     },
     variant: {
-      in: indexesX.map((indexX) =>
-        calculateDepthCostAmount(indexX, variantData, "in")
+      in: pairTokensIndexes.map((pairTokenIndex) =>
+        calculateDepthCostAmount(pairTokenIndex, variantData, "in")
       ),
-      out: indexesX.map((indexX) =>
-        calculateDepthCostAmount(indexX, variantData, "out")
+      out: pairTokensIndexes.map((pairTokenIndex) =>
+        calculateDepthCostAmount(pairTokenIndex, variantData, "out")
       ),
     },
   };
@@ -42,7 +44,7 @@ export default function DepthCost() {
     ...depthCostAmounts.variant.out
   );
 
-  const dataX = tokensX.map((token) => token.symbol);
+  const dataX = pairTokens.map((token) => token.symbol);
 
   const data = [
     {
@@ -53,9 +55,9 @@ export default function DepthCost() {
       name: "Baseline",
       hovertemplate: depthCostAmounts.baseline.in.map(
         (amount, i) =>
-          `Swap ${amount.toFixed()} of ${tokenY?.symbol} for ${
+          `Swap ${amount.toFixed()} of ${analysisToken?.symbol} for ${
             dataX[i]
-          } to move the price ${dataX[i]}/${tokenY?.symbol} on -2%`
+          } to move the price ${dataX[i]}/${analysisToken?.symbol} on -2%`
       ),
     },
     {
@@ -66,9 +68,9 @@ export default function DepthCost() {
       name: "Variant",
       hovertemplate: depthCostAmounts.baseline.in.map(
         (amount, i) =>
-          `Swap ${amount.toFixed()} of ${tokenY?.symbol} for ${
+          `Swap ${amount.toFixed()} of ${analysisToken?.symbol} for ${
             dataX[i]
-          } to move the price ${dataX[i]}/${tokenY?.symbol} on -2%`
+          } to move the price ${dataX[i]}/${analysisToken?.symbol} on -2%`
       ),
     },
     {
@@ -83,8 +85,8 @@ export default function DepthCost() {
       hovertemplate: depthCostAmounts.baseline.in.map(
         (amount, i) =>
           `Swap ${dataX[i]} for ${amount.toFixed()} of ${
-            tokenY?.symbol
-          } to move the price ${dataX[i]}/${tokenY?.symbol} on +2%`
+            analysisToken?.symbol
+          } to move the price ${dataX[i]}/${analysisToken?.symbol} on +2%`
       ),
     },
     {
@@ -99,8 +101,8 @@ export default function DepthCost() {
       hovertemplate: depthCostAmounts.baseline.in.map(
         (amount, i) =>
           `Swap ${dataX[i]} for ${amount.toFixed()} of ${
-            tokenY?.symbol
-          } to move the price ${dataX[i]}/${tokenY?.symbol} on +2%`
+            analysisToken?.symbol
+          } to move the price ${dataX[i]}/${analysisToken?.symbol} on +2%`
       ),
     },
   ];
@@ -118,22 +120,22 @@ export default function DepthCost() {
       xaxis: {
         tickmode: "array" as const,
         tickvals: dataX,
-        ticktext: tokensX.map((token) => token.symbol),
+        ticktext: pairTokens.map((token) => token.symbol),
       },
       xaxis2: {
         ...defaultAxisLayout,
         tickmode: "array" as const,
         tickvals: dataX,
-        ticktext: tokensX.map((token) => token.symbol),
+        ticktext: pairTokens.map((token) => token.symbol),
       },
       yaxis: {
-        title: `${tokenY?.symbol} in`,
+        title: `${analysisToken?.symbol} in`,
         range: [0, maxDepthCostAmount],
         domain: [0, 0.85],
       },
       yaxis2: {
         ...defaultAxisLayout,
-        title: `${tokenY?.symbol} out`,
+        title: `${analysisToken?.symbol} out`,
         range: [0, maxDepthCostAmount],
         domain: [0, 0.85],
       },
@@ -174,7 +176,7 @@ export default function DepthCost() {
 }
 
 function calculateDepthCostAmount(
-  indexX: number,
+  pairTokenIndex: number,
   data: AnalysisData,
   poolSide: "in" | "out"
 ) {
@@ -182,8 +184,8 @@ function calculateDepthCostAmount(
 
   const { preparePoolPairData, indexAnalysisToken } = useStableSwap();
 
-  const indexIn = poolSide === "in" ? indexAnalysisToken : indexX;
-  const indexOut = poolSide === "in" ? indexX : indexAnalysisToken;
+  const indexIn = poolSide === "in" ? indexAnalysisToken : pairTokenIndex;
+  const indexOut = poolSide === "in" ? pairTokenIndex : indexAnalysisToken;
 
   const poolPairData = preparePoolPairData({
     indexIn: indexIn,

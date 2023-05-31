@@ -135,6 +135,27 @@ function tokenInForExactSpotPriceAfterSwap(
   );
 }
 
+function tokenOutForExactSpotPriceAfterSwap(
+  spotPriceAfterSwap: OldBigNumber,
+  poolPairData: MetaStablePoolPairData
+) {
+  const spotPriceAfterSwapToStableMath =
+    MetaStableConversions.priceToStableMath(
+      spotPriceAfterSwap,
+      poolPairData.rateIn,
+      poolPairData.rateOut
+    );
+  const amountOutToStableMath =
+    ExtendedStableMath._tokenOutForExactSpotPriceAfterSwap(
+      spotPriceAfterSwapToStableMath,
+      poolPairData
+    );
+  return MetaStableConversions.amountFromStableMath(
+    amountOutToStableMath,
+    poolPairData.rateOut
+  );
+}
+
 export const MetaStableMath = {
   numberToBigNumber,
   numberToOldBigNumber,
@@ -143,4 +164,5 @@ export const MetaStableMath = {
   tokenInForExactTokenOut,
   spotPrice,
   tokenInForExactSpotPriceAfterSwap,
+  tokenOutForExactSpotPriceAfterSwap,
 } as const;

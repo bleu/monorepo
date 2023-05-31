@@ -27,7 +27,7 @@ export function ImpactCurve() {
   const tokensSymbol = baselineData.tokens.map((token) => token.symbol);
 
   //TODO: move this function to outside the component once the math PR is merged
-  const calculateTokenAmounts = ({
+  const calculateTokenImpact = ({
     balance,
     swapFee,
     amp,
@@ -91,7 +91,7 @@ export function ImpactCurve() {
     impactTabTokenOut: initialImpactTabTokenOut,
     amountsOut: initialAmountsAnalysisTokenOut,
     impactTabTokenIn: initialImpactTabTokenIn,
-  } = calculateTokenAmounts({
+  } = calculateTokenImpact({
     balance: baselineData.tokens[indexAnalysisToken]?.balance,
     swapFee: baselineData.swapFee,
     amp: baselineData.ampFactor,
@@ -105,7 +105,7 @@ export function ImpactCurve() {
     impactTabTokenOut: variantImpactTabTokenOut,
     amountsOut: variantAmountsAnalysisTokenOut,
     impactTabTokenIn: variantImpactTabTokenIn,
-  } = calculateTokenAmounts({
+  } = calculateTokenImpact({
     balance: variantData?.tokens?.[indexAnalysisToken]?.balance,
     swapFee: variantData?.swapFee ? variantData.swapFee : baselineData.swapFee,
     amp: variantData?.ampFactor

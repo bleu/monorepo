@@ -174,6 +174,45 @@ function _tokenInForExactSpotPriceAfterSwap(
   );
 }
 
+function _tokenOutForExactSpotPriceAfterSwap(
+  spotPrice: OldBigNumber,
+  poolPairData: StablePoolPairData,
+  outGuess = poolPairData.allBalances[poolPairData.tokenIndexOut].times(
+    bnum(0.01)
+  ),
+  spotPricePrecision = bnum(0.0000001),
+  iteration_number = 0
+): OldBigNumber {
+  // Calculate the amount of tokenIn needed to reach the desired spotPrice
+  // The Newton-Raphson method is used to find the SpotPrice of the function
+  // Results could be inaccurate for very small amounts of tokenIn
+  const guessedSpotPrice =
+    StableMaths._spotPriceAfterSwapTokenInForExactTokenOut(outGuess, {
+      ...poolPairData,
+    });
+  const diffFromSpotPrice = spotPrice.minus(guessedSpotPrice);
+  if (diffFromSpotPrice.abs().lte(spotPricePrecision)) {
+    return outGuess;
+  }
+
+  iteration_number += 1;
+  if (iteration_number > 255) {
+    throw new Error("Max iterations reached");
+  }
+  const spotPriceDerivative =
+    StableMaths._derivativeSpotPriceAfterSwapTokenInForExactTokenOut(outGuess, {
+      ...poolPairData,
+    });
+  const newOutGuess = diffFromSpotPrice.div(spotPriceDerivative).plus(outGuess);
+  return _tokenInForExactSpotPriceAfterSwap(
+    spotPrice,
+    poolPairData,
+    newOutGuess,
+    spotPricePrecision,
+    iteration_number
+  );
+}
+
 export const ExtendedStableMath = {
   ...StableMaths,
   _poolDerivatives,

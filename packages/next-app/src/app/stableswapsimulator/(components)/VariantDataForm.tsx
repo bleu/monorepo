@@ -23,6 +23,7 @@ export default function NewDataForm() {
 
   const {
     register,
+    setValue,
     getValues,
     watch,
     formState: { errors },
@@ -45,6 +46,12 @@ export default function NewDataForm() {
   useEffect(() => {
     register("tokens", { required: true, value: variantData?.tokens });
   }, []);
+
+  useEffect(() => {
+    // TODO: BAL 401
+    if (variantData?.tokens == getValues().tokens) return;
+    if (variantData?.tokens) setValue("tokens", variantData?.tokens);
+  }, [variantData?.tokens]);
 
   useEffect(onSubmit, [debouncedSwapFee, debouncedAmpFactor]);
 

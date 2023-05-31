@@ -3,6 +3,7 @@
 import { Tabs } from "#/components/Tabs";
 import { useStableSwap } from "#/contexts/StableSwapContext";
 
+import DepthCost from "./DepthCost";
 import StableCurve from "./StableCurve";
 
 export function GraphView() {
@@ -24,27 +25,34 @@ export function GraphView() {
   }
 
   return (
-    <div className="w-full">
-      <Tabs defaultValue={tokensSymbol[indexCurrentTabToken]}>
-        <Tabs.ItemTriggerWrapper>
+    <div className="flex flex-col h-full w-full overflow-auto">
+      <div className="basis-1/3">
+        <div className="flex flex-row h-full w-full">
+          <DepthCost />;
+        </div>
+      </div>
+      <div className="basis-2/3">
+        <Tabs defaultValue={tokensSymbol[indexCurrentTabToken]}>
+          <Tabs.ItemTriggerWrapper>
+            {tabTokens.map((symbol) => (
+              <Tabs.ItemTrigger
+                tabName={symbol}
+                key={symbol}
+                onClick={handleTabClick}
+              >
+                <span>{symbol}</span>
+              </Tabs.ItemTrigger>
+            ))}
+          </Tabs.ItemTriggerWrapper>
           {tabTokens.map((symbol) => (
-            <Tabs.ItemTrigger
-              tabName={symbol}
-              key={symbol}
-              onClick={handleTabClick}
-            >
-              <span>{symbol}</span>
-            </Tabs.ItemTrigger>
+            <div key={symbol}>
+              <Tabs.ItemContent tabName={symbol} bgColor="blue1">
+                <StableCurve />
+              </Tabs.ItemContent>
+            </div>
           ))}
-        </Tabs.ItemTriggerWrapper>
-        {tabTokens.map((symbol) => (
-          <div key={symbol}>
-            <Tabs.ItemContent tabName={symbol} bgColor="blue1">
-              <StableCurve />
-            </Tabs.ItemContent>
-          </div>
-        ))}
-      </Tabs>
+        </Tabs>
+      </div>
     </div>
   );
 }

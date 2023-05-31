@@ -118,6 +118,8 @@ export function ImpactCurve() {
 
   return (
     <Plot
+      title="Impact Curve"
+      toolTip="Impact Curve"
       data={[
         {
           x: initialAmountsAnalysisTokenIn,
@@ -203,7 +205,6 @@ export function ImpactCurve() {
         },
       ]}
       layout={{
-        title: "<b> Impact Curve </b>",
         xaxis: {
           title: `Amount of ${tokensSymbol[indexAnalysisToken]}`,
         },

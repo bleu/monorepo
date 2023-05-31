@@ -1,9 +1,17 @@
-import { amberDarkA, blueDarkA, grayDarkA } from "@radix-ui/colors";
+import { amberDarkA, blueDarkA, grayDarkA, slateDarkA } from "@radix-ui/colors";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { merge } from "lodash";
 import dynamic from "next/dynamic";
 import { PlotParams } from "react-plotly.js";
 
 import { Spinner } from "#/components/Spinner";
+
+import { Tooltip } from "./Tooltip";
+
+interface PlotProps extends PlotParams {
+  title: string;
+  toolTip: string;
+}
 
 const PlotRoot = dynamic(() => import("react-plotly.js"), {
   ssr: false,
@@ -22,6 +30,9 @@ export const defaultPlotProps = {
   className: "w-full h-full",
   useResizeHandler: true,
   layout: {
+    margin: {
+      t: 30,
+    },
     plot_bgcolor: blueDarkA.blueA1,
     paper_bgcolor: blueDarkA.blueA1,
     font: {
@@ -49,8 +60,18 @@ export const defaultPlotProps = {
   revision: 0,
 };
 
-export default function Plot(props: PlotParams) {
+export default function Plot(props: PlotProps) {
   const defaultPlotPropsDeepCopy = JSON.parse(JSON.stringify(defaultPlotProps));
   const plotProps = merge(defaultPlotPropsDeepCopy, props); // deep copy is needed because merge mutates the first argument
-  return <PlotRoot {...plotProps} />;
+  return (
+    <div className="flex flex-col w-full">
+      <div className="flex justify-center items-center gap-x-2">
+        <h2 className="text-lg font-semibold text-white">{props.title}</h2>
+        <Tooltip content={props.toolTip}>
+          <InfoCircledIcon color={slateDarkA.slateA11} />
+        </Tooltip>
+      </div>
+      <PlotRoot {...plotProps} />
+    </div>
+  );
 }

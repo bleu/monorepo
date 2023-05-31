@@ -116,10 +116,11 @@ export function DepthCost() {
   ];
 
   const props = {
+    title: "Depth cost",
+    toolTip: "Depth cost",
     className: "h-full w-full",
     data: data,
     layout: {
-      title: "<b>Depth cost</b>",
       margin: {
         l: 10,
         r: 10,

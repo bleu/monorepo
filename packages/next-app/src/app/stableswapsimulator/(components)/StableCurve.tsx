@@ -117,6 +117,8 @@ export function StableCurve() {
 
   return (
     <Plot
+      title="Swap Curve"
+      toolTip="Swap Curve"
       data={[
         {
           x: initialAmountsAnalysisTokenIn,
@@ -186,7 +188,6 @@ export function StableCurve() {
         },
       ]}
       layout={{
-        title: "<b> Swap Curve </b>",
         xaxis: {
           title: `Amount of ${tokensSymbol[indexAnalysisToken]}`,
         },

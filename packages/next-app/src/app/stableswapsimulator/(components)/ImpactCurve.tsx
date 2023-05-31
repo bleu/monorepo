@@ -26,18 +26,21 @@ export function ImpactCurve() {
 
   const tokensSymbol = baselineData.tokens.map((token) => token.symbol);
 
+  //TODO: move this function to outside the component once the math PR is merged
   const calculateTokenAmounts = ({
     balance,
     swapFee,
     amp,
     indexIn,
     indexOut,
+    allBalances,
   }: {
     balance: number | undefined;
     swapFee: number;
     amp: number;
     indexIn: number;
     indexOut: number;
+    allBalances: number[];
   }) => {
     const amountsIn = calculateAmounts({ balance });
 
@@ -47,7 +50,7 @@ export function ImpactCurve() {
       indexIn,
       indexOut,
       swapFee,
-      allBalances: baselineData.tokens.map((token) => token.balance),
+      allBalances,
       amp,
     });
 
@@ -63,7 +66,7 @@ export function ImpactCurve() {
       indexIn: indexOut,
       indexOut: indexIn,
       swapFee,
-      allBalances: baselineData.tokens.map((token) => token.balance),
+      allBalances,
       amp,
     });
 
@@ -94,6 +97,7 @@ export function ImpactCurve() {
     amp: baselineData.ampFactor,
     indexIn: indexAnalysisToken,
     indexOut: indexCurrentTabToken,
+    allBalances: baselineData.tokens.map((token) => token.balance),
   });
 
   const {
@@ -109,107 +113,106 @@ export function ImpactCurve() {
       : baselineData.ampFactor,
     indexIn: indexAnalysisToken,
     indexOut: indexCurrentTabToken,
+    allBalances: baselineData.tokens.map((token) => token.balance),
   });
 
   return (
-    <div className="text-white">
-      <Plot
-        data={[
-          {
-            x: initialAmountsAnalysisTokenIn,
-            y: initialImpactTabTokenOut,
-            type: "scatter",
-            mode: "lines",
-            legendgroup: "Baseline",
-            name: "Baseline",
-            hovertemplate: initialAmountsAnalysisTokenIn.map(
-              (amount, index) =>
-                `Swap ${amount.toFixed(2)} ${
-                  tokensSymbol[indexAnalysisToken]
-                } for ${
-                  tokensSymbol[indexCurrentTabToken]
-                } causes a Price Impact of ${initialImpactTabTokenOut[
-                  index
-                ].toFixed(2)}% ${tokensSymbol[indexCurrentTabToken]}/${
-                  tokensSymbol[indexAnalysisToken]
-                } <extra></extra>`
-            ),
-          },
-          {
-            x: variantAmountsAnalysisTokenIn,
-            y: variantImpactTabTokenOut,
-            type: "scatter",
-            mode: "lines",
-            legendgroup: "Variant",
-            name: "Variant",
-            showlegend: false,
-            hovertemplate: variantAmountsAnalysisTokenIn.map(
-              (amount, index) =>
-                `Swap ${amount.toFixed(2)} ${
-                  tokensSymbol[indexAnalysisToken]
-                } for ${
-                  tokensSymbol[indexCurrentTabToken]
-                } causes a Price Impact of ${variantImpactTabTokenOut[
-                  index
-                ].toFixed(2)}% ${tokensSymbol[indexCurrentTabToken]}/${
-                  tokensSymbol[indexAnalysisToken]
-                } <extra></extra>`
-            ),
-          },
-          {
-            x: initialAmountsAnalysisTokenOut,
-            y: initialImpactTabTokenIn,
-            type: "scatter",
-            mode: "lines",
-            legendgroup: "Baseline",
-            name: "Baseline",
-            showlegend: false,
-            hovertemplate: initialAmountsAnalysisTokenOut.map(
-              (amount, index) =>
-                `Swap ${tokensSymbol[indexCurrentTabToken]} for ${(
-                  amount * -1
-                ).toFixed(2)} ${
-                  tokensSymbol[indexAnalysisToken]
-                } causes a Price Impact of ${initialImpactTabTokenIn[
-                  index
-                ].toFixed(2)}% ${tokensSymbol[indexCurrentTabToken]}/${
-                  tokensSymbol[indexAnalysisToken]
-                } <extra></extra>`
-            ),
-          },
-          {
-            x: variantAmountsAnalysisTokenOut,
-            y: variantImpactTabTokenIn,
-            type: "scatter",
-            mode: "lines",
-            legendgroup: "Variant",
-            name: "Variant",
-            hovertemplate: variantAmountsAnalysisTokenOut.map(
-              (amount, index) =>
-                `Swap ${tokensSymbol[indexCurrentTabToken]} for ${(
-                  amount * -1
-                ).toFixed(2)} ${
-                  tokensSymbol[indexAnalysisToken]
-                } causes a Price Impact of ${variantImpactTabTokenIn[
-                  index
-                ].toFixed(2)}% ${tokensSymbol[indexCurrentTabToken]}/${
-                  tokensSymbol[indexAnalysisToken]
-                } <extra></extra>`
-            ),
-          },
-        ]}
-        layout={{
-          title: "<b> Impact Curve </b>",
-          xaxis: {
-            title: `Amount of ${tokensSymbol[indexAnalysisToken]}`,
-          },
-          yaxis: {
-            title: `${tokensSymbol[indexCurrentTabToken]}/${tokensSymbol[indexAnalysisToken]} price impact (%)`,
-          },
-        }}
-        className="w-full h-1/2"
-      />
-    </div>
+    <Plot
+      data={[
+        {
+          x: initialAmountsAnalysisTokenIn,
+          y: initialImpactTabTokenOut,
+          type: "scatter",
+          mode: "lines",
+          legendgroup: "Baseline",
+          name: "Baseline",
+          hovertemplate: initialAmountsAnalysisTokenIn.map(
+            (amount, index) =>
+              `Swap ${amount.toFixed(2)} ${
+                tokensSymbol[indexAnalysisToken]
+              } for ${
+                tokensSymbol[indexCurrentTabToken]
+              } causes a Price Impact of ${initialImpactTabTokenOut[
+                index
+              ].toFixed(2)}% ${tokensSymbol[indexCurrentTabToken]}/${
+                tokensSymbol[indexAnalysisToken]
+              } <extra></extra>`
+          ),
+        },
+        {
+          x: variantAmountsAnalysisTokenIn,
+          y: variantImpactTabTokenOut,
+          type: "scatter",
+          mode: "lines",
+          legendgroup: "Variant",
+          name: "Variant",
+          showlegend: false,
+          hovertemplate: variantAmountsAnalysisTokenIn.map(
+            (amount, index) =>
+              `Swap ${amount.toFixed(2)} ${
+                tokensSymbol[indexAnalysisToken]
+              } for ${
+                tokensSymbol[indexCurrentTabToken]
+              } causes a Price Impact of ${variantImpactTabTokenOut[
+                index
+              ].toFixed(2)}% ${tokensSymbol[indexCurrentTabToken]}/${
+                tokensSymbol[indexAnalysisToken]
+              } <extra></extra>`
+          ),
+        },
+        {
+          x: initialAmountsAnalysisTokenOut,
+          y: initialImpactTabTokenIn,
+          type: "scatter",
+          mode: "lines",
+          legendgroup: "Baseline",
+          name: "Baseline",
+          showlegend: false,
+          hovertemplate: initialAmountsAnalysisTokenOut.map(
+            (amount, index) =>
+              `Swap ${tokensSymbol[indexCurrentTabToken]} for ${(
+                amount * -1
+              ).toFixed(2)} ${
+                tokensSymbol[indexAnalysisToken]
+              } causes a Price Impact of ${initialImpactTabTokenIn[
+                index
+              ].toFixed(2)}% ${tokensSymbol[indexCurrentTabToken]}/${
+                tokensSymbol[indexAnalysisToken]
+              } <extra></extra>`
+          ),
+        },
+        {
+          x: variantAmountsAnalysisTokenOut,
+          y: variantImpactTabTokenIn,
+          type: "scatter",
+          mode: "lines",
+          legendgroup: "Variant",
+          name: "Variant",
+          hovertemplate: variantAmountsAnalysisTokenOut.map(
+            (amount, index) =>
+              `Swap ${tokensSymbol[indexCurrentTabToken]} for ${(
+                amount * -1
+              ).toFixed(2)} ${
+                tokensSymbol[indexAnalysisToken]
+              } causes a Price Impact of ${variantImpactTabTokenIn[
+                index
+              ].toFixed(2)}% ${tokensSymbol[indexCurrentTabToken]}/${
+                tokensSymbol[indexAnalysisToken]
+              } <extra></extra>`
+          ),
+        },
+      ]}
+      layout={{
+        title: "<b> Impact Curve </b>",
+        xaxis: {
+          title: `Amount of ${tokensSymbol[indexAnalysisToken]}`,
+        },
+        yaxis: {
+          title: `${tokensSymbol[indexCurrentTabToken]}/${tokensSymbol[indexAnalysisToken]} price impact (%)`,
+        },
+      }}
+      className="w-full h-1/2"
+    />
   );
 }
 

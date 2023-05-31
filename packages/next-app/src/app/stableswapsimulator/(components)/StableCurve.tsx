@@ -26,18 +26,21 @@ export function StableCurve() {
 
   const tokensSymbol = baselineData.tokens.map((token) => token.symbol);
 
+  //TODO: move this function to outside the component once the math PR is merged
   const calculateTokenAmounts = ({
     balance,
     swapFee,
     amp,
     indexIn,
     indexOut,
+    allBalances,
   }: {
     balance: number | undefined;
     swapFee: number;
     amp: number;
     indexIn: number;
     indexOut: number;
+    allBalances: number[];
   }) => {
     const amountsIn = calculateAmounts({ balance });
 
@@ -47,7 +50,7 @@ export function StableCurve() {
       indexIn,
       indexOut,
       swapFee,
-      allBalances: baselineData.tokens.map((token) => token.balance),
+      allBalances,
       amp,
     });
 
@@ -63,7 +66,7 @@ export function StableCurve() {
       indexIn: indexOut,
       indexOut: indexIn,
       swapFee,
-      allBalances: baselineData.tokens.map((token) => token.balance),
+      allBalances,
       amp,
     });
 
@@ -93,6 +96,7 @@ export function StableCurve() {
     amp: baselineData.ampFactor,
     indexIn: indexAnalysisToken,
     indexOut: indexCurrentTabToken,
+    allBalances: baselineData.tokens.map((token) => token.balance),
   });
 
   const {
@@ -108,91 +112,90 @@ export function StableCurve() {
       : baselineData.ampFactor,
     indexIn: indexAnalysisToken,
     indexOut: indexCurrentTabToken,
+    allBalances: baselineData.tokens.map((token) => token.balance),
   });
 
   return (
-    <div className="text-white">
-      <Plot
-        data={[
-          {
-            x: initialAmountsAnalysisTokenIn,
-            y: initialAmountTabTokenOut,
-            type: "scatter",
-            mode: "lines",
-            legendgroup: "Baseline",
-            name: "Baseline",
-            hovertemplate: initialAmountsAnalysisTokenIn.map(
-              (amount, index) =>
-                `Swap ${amount.toFixed(2)} ${
-                  tokensSymbol[indexAnalysisToken]
-                } for ${(initialAmountTabTokenOut[index] * -1).toFixed(2)} ${
-                  tokensSymbol[indexCurrentTabToken]
-                } <extra></extra>`
-            ),
-          },
-          {
-            x: variantAmountsAnalysisTokenIn,
-            y: variantAmountTabTokenOut,
-            type: "scatter",
-            mode: "lines",
-            legendgroup: "Variant",
-            name: "Variant",
-            hovertemplate: variantAmountsAnalysisTokenIn.map(
-              (amount, index) =>
-                `Swap ${amount.toFixed(2)} ${
-                  tokensSymbol[indexAnalysisToken]
-                } for ${(variantAmountTabTokenOut[index] * -1).toFixed(2)} ${
-                  tokensSymbol[indexCurrentTabToken]
-                } <extra></extra>`
-            ),
-          },
-          {
-            x: initialAmountsAnalysisTokenOut,
-            y: initialAmountTabTokenIn,
-            type: "scatter",
-            mode: "lines",
-            legendgroup: "Baseline",
-            name: "Baseline",
-            showlegend: false,
-            hovertemplate: initialAmountsAnalysisTokenOut.map(
-              (amount, index) =>
-                `Swap ${initialAmountTabTokenIn[index].toFixed(2)} ${
-                  tokensSymbol[indexCurrentTabToken]
-                } for ${(amount * -1).toFixed(2)} ${
-                  tokensSymbol[indexAnalysisToken]
-                } <extra></extra>`
-            ),
-          },
-          {
-            x: variantAmountsAnalysisTokenOut,
-            y: variantAmountTabTokenIn,
-            type: "scatter",
-            mode: "lines",
-            legendgroup: "Variant",
-            name: "Variant",
-            showlegend: false,
-            hovertemplate: variantAmountsAnalysisTokenOut.map(
-              (amount, index) =>
-                `Swap ${variantAmountTabTokenIn[index].toFixed(2)} ${
-                  tokensSymbol[indexCurrentTabToken]
-                } for ${(amount * -1).toFixed(2)} ${
-                  tokensSymbol[indexAnalysisToken]
-                } <extra></extra>`
-            ),
-          },
-        ]}
-        layout={{
-          title: "<b> Swap Curve </b>",
-          xaxis: {
-            title: `Amount of ${tokensSymbol[indexAnalysisToken]}`,
-          },
-          yaxis: {
-            title: `Amount of ${tokensSymbol[indexCurrentTabToken]}`,
-          },
-        }}
-        className="w-full h-1/2"
-      />
-    </div>
+    <Plot
+      data={[
+        {
+          x: initialAmountsAnalysisTokenIn,
+          y: initialAmountTabTokenOut,
+          type: "scatter",
+          mode: "lines",
+          legendgroup: "Baseline",
+          name: "Baseline",
+          hovertemplate: initialAmountsAnalysisTokenIn.map(
+            (amount, index) =>
+              `Swap ${amount.toFixed(2)} ${
+                tokensSymbol[indexAnalysisToken]
+              } for ${(initialAmountTabTokenOut[index] * -1).toFixed(2)} ${
+                tokensSymbol[indexCurrentTabToken]
+              } <extra></extra>`
+          ),
+        },
+        {
+          x: variantAmountsAnalysisTokenIn,
+          y: variantAmountTabTokenOut,
+          type: "scatter",
+          mode: "lines",
+          legendgroup: "Variant",
+          name: "Variant",
+          hovertemplate: variantAmountsAnalysisTokenIn.map(
+            (amount, index) =>
+              `Swap ${amount.toFixed(2)} ${
+                tokensSymbol[indexAnalysisToken]
+              } for ${(variantAmountTabTokenOut[index] * -1).toFixed(2)} ${
+                tokensSymbol[indexCurrentTabToken]
+              } <extra></extra>`
+          ),
+        },
+        {
+          x: initialAmountsAnalysisTokenOut,
+          y: initialAmountTabTokenIn,
+          type: "scatter",
+          mode: "lines",
+          legendgroup: "Baseline",
+          name: "Baseline",
+          showlegend: false,
+          hovertemplate: initialAmountsAnalysisTokenOut.map(
+            (amount, index) =>
+              `Swap ${initialAmountTabTokenIn[index].toFixed(2)} ${
+                tokensSymbol[indexCurrentTabToken]
+              } for ${(amount * -1).toFixed(2)} ${
+                tokensSymbol[indexAnalysisToken]
+              } <extra></extra>`
+          ),
+        },
+        {
+          x: variantAmountsAnalysisTokenOut,
+          y: variantAmountTabTokenIn,
+          type: "scatter",
+          mode: "lines",
+          legendgroup: "Variant",
+          name: "Variant",
+          showlegend: false,
+          hovertemplate: variantAmountsAnalysisTokenOut.map(
+            (amount, index) =>
+              `Swap ${variantAmountTabTokenIn[index].toFixed(2)} ${
+                tokensSymbol[indexCurrentTabToken]
+              } for ${(amount * -1).toFixed(2)} ${
+                tokensSymbol[indexAnalysisToken]
+              } <extra></extra>`
+          ),
+        },
+      ]}
+      layout={{
+        title: "<b> Swap Curve </b>",
+        xaxis: {
+          title: `Amount of ${tokensSymbol[indexAnalysisToken]}`,
+        },
+        yaxis: {
+          title: `Amount of ${tokensSymbol[indexCurrentTabToken]}`,
+        },
+      }}
+      className="w-full h-1/2"
+    />
   );
 }
 

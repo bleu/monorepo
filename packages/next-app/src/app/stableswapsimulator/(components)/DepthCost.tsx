@@ -7,7 +7,7 @@ import { PlotType } from "plotly.js";
 import Plot, { defaultAxisLayout } from "#/components/Plot";
 import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
 
-export default function DepthCost() {
+export function DepthCost() {
   const { indexAnalysisToken, baselineData, variantData } = useStableSwap();
 
   const analysisToken = baselineData?.tokens[indexAnalysisToken];
@@ -55,9 +55,11 @@ export default function DepthCost() {
       name: "Baseline",
       hovertemplate: depthCostAmounts.baseline.in.map(
         (amount, i) =>
-          `Swap ${amount.toFixed()} of ${analysisToken?.symbol} for ${
+          `Swap ${amount.toFixed()} ${analysisToken?.symbol} for ${
             dataX[i]
-          } to move the price ${dataX[i]}/${analysisToken?.symbol} on -2%`
+          } to move the price ${dataX[i]}/${
+            analysisToken?.symbol
+          } on -2% <extra></extra>`
       ),
     },
     {
@@ -66,11 +68,13 @@ export default function DepthCost() {
       type: "bar" as PlotType,
       legendgroup: "Variant",
       name: "Variant",
-      hovertemplate: depthCostAmounts.baseline.in.map(
+      hovertemplate: depthCostAmounts.variant.in.map(
         (amount, i) =>
-          `Swap ${amount.toFixed()} of ${analysisToken?.symbol} for ${
+          `Swap ${amount.toFixed()} ${analysisToken?.symbol} for ${
             dataX[i]
-          } to move the price ${dataX[i]}/${analysisToken?.symbol} on -2%`
+          } to move the price ${dataX[i]}/${
+            analysisToken?.symbol
+          } on -2% <extra></extra>`
       ),
     },
     {
@@ -82,11 +86,13 @@ export default function DepthCost() {
       showlegend: false,
       yaxis: "y2",
       xaxis: "x2",
-      hovertemplate: depthCostAmounts.baseline.in.map(
+      hovertemplate: depthCostAmounts.variant.in.map(
         (amount, i) =>
-          `Swap ${dataX[i]} for ${amount.toFixed()} of ${
+          `Swap ${dataX[i]} for ${amount.toFixed()} ${
             analysisToken?.symbol
-          } to move the price ${dataX[i]}/${analysisToken?.symbol} on +2%`
+          } to move the price ${dataX[i]}/${
+            analysisToken?.symbol
+          } on +2% <extra></extra>`
       ),
     },
     {
@@ -98,44 +104,43 @@ export default function DepthCost() {
       showlegend: false,
       yaxis: "y2",
       xaxis: "x2",
-      hovertemplate: depthCostAmounts.baseline.in.map(
+      hovertemplate: depthCostAmounts.variant.in.map(
         (amount, i) =>
-          `Swap ${dataX[i]} for ${amount.toFixed()} of ${
+          `Swap ${dataX[i]} for ${amount.toFixed()} ${
             analysisToken?.symbol
-          } to move the price ${dataX[i]}/${analysisToken?.symbol} on +2%`
+          } to move the price ${dataX[i]}/${
+            analysisToken?.symbol
+          } on +2% <extra></extra>`
       ),
     },
   ];
 
   const props = {
-    className: "h-full w-3/4",
     data: data,
+    title: "Depth cost (-/+ 2% of price impact)",
+    toolTip:
+      "Indicates the amount of tokens needed on a swap to alter the Price Impact (rate between the price of both tokens) to -2% and +2%",
     layout: {
-      title: "<b>Depth cost</b><br>(-2% and +2% of price impact)",
+      margin: { l: 3, r: 3 },
       xaxis: {
         tickmode: "array" as const,
         tickvals: dataX,
         ticktext: pairTokens.map((token) => token.symbol),
-        domain: [0.05, 0.45],
       },
       xaxis2: {
         ...defaultAxisLayout,
         tickmode: "array" as const,
         tickvals: dataX,
         ticktext: pairTokens.map((token) => token.symbol),
-        domain: [0.55, 0.95],
       },
       yaxis: {
         title: `${analysisToken?.symbol} in`,
         range: [0, maxDepthCostAmount],
-        domain: [0, 0.8],
       },
       yaxis2: {
         ...defaultAxisLayout,
         title: `${analysisToken?.symbol} out`,
         range: [0, maxDepthCostAmount],
-        domain: [0, 0.8],
-        side: "right" as const,
       },
       grid: { columns: 2, rows: 1, pattern: "independent" as const },
     },

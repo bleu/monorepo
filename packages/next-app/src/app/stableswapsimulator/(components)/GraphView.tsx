@@ -3,8 +3,9 @@
 import { Tabs } from "#/components/Tabs";
 import { useStableSwap } from "#/contexts/StableSwapContext";
 
-import DepthCost from "./DepthCost";
-import StableCurve from "./StableCurve";
+import { DepthCost } from "./DepthCost";
+import { ImpactCurve } from "./ImpactCurve";
+import { StableCurve } from "./StableCurve";
 import { TokensDistribution } from "./TokensDistribution";
 
 export function GraphView() {
@@ -49,7 +50,10 @@ export function GraphView() {
           {tabTokens.map((symbol) => (
             <div key={symbol}>
               <Tabs.ItemContent tabName={symbol} bgColor="blue1">
-                <StableCurve />
+                <div className="flex flex-col gap-y-10 py-4">
+                  <StableCurve />
+                  <ImpactCurve />
+                </div>
               </Tabs.ItemContent>
             </div>
           ))}

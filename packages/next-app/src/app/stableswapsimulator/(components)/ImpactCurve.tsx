@@ -119,7 +119,7 @@ export function ImpactCurve() {
   return (
     <Plot
       title="Price Impact Curve"
-      toolTip="Impact Curve"
+      toolTip="Indicates how much the swapping of a particular amount of token effects on the Price Impact (rate between the price of both tokens)"
       data={[
         {
           x: initialAmountsAnalysisTokenIn,

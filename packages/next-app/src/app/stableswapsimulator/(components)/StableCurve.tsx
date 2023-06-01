@@ -118,7 +118,7 @@ export function StableCurve() {
   return (
     <Plot
       title="Swap Curve"
-      toolTip="Swap Curve"
+      toolTip="Considering a pair of tokens A and B. It indicates the quantity of token B that will be received when swapping a specific amount of token A"
       data={[
         {
           x: initialAmountsAnalysisTokenIn,

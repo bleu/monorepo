@@ -69,6 +69,7 @@ function TokenDistributionChart({ tokens }: { tokens: TokensData[] }) {
     <div className="flex-1 flex w-full h-5 overflow-hidden rounded-2xl">
       {balancesPercent.map((balancePercent, index) => (
         <Tooltip
+          key={tokens[index].symbol}
           content={`${tokens[index].symbol}: ${balancePercent.toFixed(2)}% (${
             tokens[index].balance
           })`}

@@ -118,7 +118,7 @@ export function ImpactCurve() {
 
   return (
     <Plot
-      title="Impact Curve"
+      title="Price Impact Curve"
       toolTip="Impact Curve"
       data={[
         {

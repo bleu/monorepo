@@ -116,12 +116,14 @@ export default function DepthCost() {
         tickmode: "array" as const,
         tickvals: dataX,
         ticktext: pairTokens.map((token) => token.symbol),
+        domain: [0.05, 0.45],
       },
       xaxis2: {
         ...defaultAxisLayout,
         tickmode: "array" as const,
         tickvals: dataX,
         ticktext: pairTokens.map((token) => token.symbol),
+        domain: [0.55, 0.95],
       },
       yaxis: {
         title: `${analysisToken?.symbol} in`,
@@ -133,6 +135,7 @@ export default function DepthCost() {
         title: `${analysisToken?.symbol} out`,
         range: [0, maxDepthCostAmount],
         domain: [0, 0.8],
+        side: "right" as const,
       },
       grid: { columns: 2, rows: 1, pattern: "independent" as const },
     },

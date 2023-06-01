@@ -202,8 +202,9 @@ function calculateDepthCostAmount(
     indexIn: indexIn,
     indexOut: indexOut,
     swapFee: data?.swapFee,
-    allBalances: data?.tokens?.map((token) => token.balance),
+    balances: data?.tokens?.map((token) => token.balance),
     amp: data?.ampFactor,
+    decimals: data?.tokens?.map((token) => token.decimal),
   });
 
   const currentSpotPriceFromStableMath = StableMath._spotPrice(poolPairData);

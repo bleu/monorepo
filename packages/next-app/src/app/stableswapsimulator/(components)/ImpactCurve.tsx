@@ -33,14 +33,16 @@ export function ImpactCurve() {
     amp,
     indexIn,
     indexOut,
-    allBalances,
+    balances,
+    decimals,
   }: {
     balance: number | undefined;
     swapFee: number;
     amp: number;
     indexIn: number;
     indexOut: number;
-    allBalances: number[];
+    balances: number[];
+    decimals: number[];
   }) => {
     const amountsIn = calculateAmounts({ balance });
 
@@ -50,14 +52,15 @@ export function ImpactCurve() {
       indexIn,
       indexOut,
       swapFee,
-      allBalances,
+      balances,
       amp,
+      decimals,
     });
 
     const impactTabTokenOut = amountsIn.map(
       (amount) =>
         StableMath._priceImpactForExactTokenInSwap(
-          numberToOldBigNumber(amount),
+          numberToOldBigNumber({ number: amount, decimals: decimals[indexIn] }),
           poolPairDataIn
         ).toNumber() * 100
     );
@@ -66,14 +69,15 @@ export function ImpactCurve() {
       indexIn: indexOut,
       indexOut: indexIn,
       swapFee,
-      allBalances,
+      balances,
       amp,
+      decimals,
     });
 
     const impactTabTokenIn = amountsIn.map(
       (amount) =>
         StableMath._priceImpactForExactTokenOutReversedSwap(
-          numberToOldBigNumber(amount),
+          numberToOldBigNumber({ number: amount, decimals: decimals[indexIn] }),
           poolPairDataOut
         ).toNumber() * 100
     );
@@ -97,7 +101,8 @@ export function ImpactCurve() {
     amp: baselineData.ampFactor,
     indexIn: indexAnalysisToken,
     indexOut: indexCurrentTabToken,
-    allBalances: baselineData.tokens.map((token) => token.balance),
+    balances: baselineData.tokens.map((token) => token.balance),
+    decimals: baselineData.tokens.map((token) => token.decimal),
   });
 
   const {
@@ -113,7 +118,8 @@ export function ImpactCurve() {
       : baselineData.ampFactor,
     indexIn: indexAnalysisToken,
     indexOut: indexCurrentTabToken,
-    allBalances: baselineData.tokens.map((token) => token.balance),
+    balances: variantData.tokens.map((token) => token.balance),
+    decimals: variantData.tokens.map((token) => token.decimal),
   });
 
   return (

@@ -33,14 +33,16 @@ export function StableCurve() {
     amp,
     indexIn,
     indexOut,
-    allBalances,
+    balances,
+    decimals,
   }: {
     balance: number | undefined;
     swapFee: number;
     amp: number;
     indexIn: number;
     indexOut: number;
-    allBalances: number[];
+    balances: number[];
+    decimals: number[];
   }) => {
     const amountsIn = calculateAmounts({ balance });
 
@@ -50,14 +52,15 @@ export function StableCurve() {
       indexIn,
       indexOut,
       swapFee,
-      allBalances,
+      balances,
       amp,
+      decimals,
     });
 
     const amountsTabTokenOut = amountsIn.map(
       (amount) =>
         StableMath._exactTokenInForTokenOut(
-          numberToOldBigNumber(amount),
+          numberToOldBigNumber({ number: amount, decimals: decimals[indexIn] }),
           poolPairDataIn
         ).toNumber() * -1
     );
@@ -66,13 +69,14 @@ export function StableCurve() {
       indexIn: indexOut,
       indexOut: indexIn,
       swapFee,
-      allBalances,
+      balances,
       amp,
+      decimals,
     });
 
     const amountsTabTokenIn = amountsIn.map((amount) =>
       StableMath._exactTokenInForTokenOut(
-        numberToOldBigNumber(amount),
+        numberToOldBigNumber({ number: amount, decimals: decimals[indexIn] }),
         poolPairDataOut
       ).toNumber()
     );
@@ -96,7 +100,8 @@ export function StableCurve() {
     amp: baselineData.ampFactor,
     indexIn: indexAnalysisToken,
     indexOut: indexCurrentTabToken,
-    allBalances: baselineData.tokens.map((token) => token.balance),
+    balances: baselineData.tokens.map((token) => token.balance),
+    decimals: baselineData.tokens.map((token) => token.decimal),
   });
 
   const {
@@ -112,7 +117,8 @@ export function StableCurve() {
       : baselineData.ampFactor,
     indexIn: indexAnalysisToken,
     indexOut: indexCurrentTabToken,
-    allBalances: baselineData.tokens.map((token) => token.balance),
+    balances: variantData.tokens.map((token) => token.balance),
+    decimals: variantData.tokens.map((token) => token.decimal),
   });
 
   return (

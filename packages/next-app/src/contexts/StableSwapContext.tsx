@@ -23,6 +23,7 @@ export interface TokensData {
   symbol: string;
   balance: number;
   rate: number;
+  decimal: number;
 }
 
 export interface AnalysisData {
@@ -48,16 +49,24 @@ interface StableSwapContextType {
     indexIn,
     indexOut,
     swapFee,
-    allBalances,
+    balances,
     amp,
+    decimals,
   }: {
     indexIn: number;
     indexOut: number;
     swapFee: number;
-    allBalances: number[];
+    balances: number[];
     amp: number;
+    decimals: number[];
   }) => StablePoolPairData;
-  numberToOldBigNumber: (number: number, decimals?: number) => typeof bnum;
+  numberToOldBigNumber: ({
+    number,
+    decimals,
+  }: {
+    number: number;
+    decimals?: number;
+  }) => typeof bnum;
 }
 
 export const StableSwapContext = createContext({} as StableSwapContextType);
@@ -90,6 +99,7 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
           symbol: token?.symbol,
           balance: Number(token?.balance),
           rate: Number(token?.priceRate),
+          decimal: Number(token?.decimals),
         })) || [],
     };
   }
@@ -104,11 +114,22 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
     setVariantData(convertGqlToAnalysisData(poolData));
   }
 
-  function numberToBigNumber(number: number, decimals = 18) {
+  function numberToBigNumber({
+    number,
+    decimals = 18,
+  }: {
+    number: number;
+    decimals?: number;
+  }) {
     return parseFixed(number.toString(), decimals);
   }
-
-  function numberToOldBigNumber(number: number, decimals = 18) {
+  function numberToOldBigNumber({
+    number,
+    decimals = 18,
+  }: {
+    number: number;
+    decimals?: number;
+  }) {
     return bnum(number.toFixed(decimals));
   }
 
@@ -116,20 +137,22 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
     indexIn,
     indexOut,
     swapFee,
-    allBalances,
+    balances,
     amp,
+    decimals,
   }: {
     indexIn: number;
     indexOut: number;
     swapFee: number;
-    allBalances: number[];
+    balances: number[];
     amp: number;
+    decimals: number[];
   }) {
-    const allBalancesOldBn = allBalances.map((balance) =>
-      numberToOldBigNumber(balance)
+    const allBalancesOldBn = balances.map((balance, i) =>
+      numberToOldBigNumber({ number: balance, decimals: decimals[i] })
     );
-    const allBalancesBn = allBalances.map((balance) =>
-      numberToBigNumber(balance)
+    const allBalancesBn = balances.map((balance, i) =>
+      numberToBigNumber({ number: balance, decimals: decimals[i] })
     );
     return {
       id: "0x",
@@ -137,12 +160,18 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
       poolType: 1,
       tokenIn: "0x",
       tokenOut: "0x",
-      balanceIn: numberToBigNumber(allBalances[indexIn]),
-      balanceOut: numberToBigNumber(allBalances[indexOut]),
-      swapFee: numberToBigNumber(swapFee, 18),
+      balanceIn: numberToBigNumber({
+        number: balances[indexIn],
+        decimals: decimals[indexIn],
+      }),
+      balanceOut: numberToBigNumber({
+        number: balances[indexOut],
+        decimals: decimals[indexOut],
+      }),
+      swapFee: numberToBigNumber({ number: swapFee, decimals: 18 }),
       allBalances: allBalancesOldBn,
       allBalancesScaled: allBalancesBn,
-      amp: numberToBigNumber(amp, 3),
+      amp: numberToBigNumber({ number: amp, decimals: 3 }),
       tokenIndexIn: indexIn,
       tokenIndexOut: indexOut,
       decimalsIn: 6,

@@ -86,7 +86,7 @@ export function DepthCost() {
       showlegend: false,
       yaxis: "y2",
       xaxis: "x2",
-      hovertemplate: depthCostAmounts.baseline.in.map(
+      hovertemplate: depthCostAmounts.variant.in.map(
         (amount, i) =>
           `Swap ${dataX[i]} for ${amount.toFixed()} ${
             analysisToken?.symbol

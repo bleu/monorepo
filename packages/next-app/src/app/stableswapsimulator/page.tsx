@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 import ConnectWalletImage from "#/assets/connect-wallet.svg";
 import { Spinner } from "#/components/Spinner";
@@ -8,19 +9,57 @@ import { useStableSwap } from "#/contexts/StableSwapContext";
 
 import { SearchPoolFormDialog } from "./(components)/SearchPoolFormDialog";
 
+enum dataStatus {
+  NONE = "none",
+  IMPORTED = "imported",
+}
+
+const content = {
+  [dataStatus.NONE]: {
+    title: "Please set the baseline parameters!",
+    subtitle: (
+      <>
+        Alternatively, import parameters from a pool clicking&nbsp;
+        <SearchPoolFormDialog>
+          <span className="cursor-pointer text-slate12">here</span>
+        </SearchPoolFormDialog>
+      </>
+    ),
+  },
+  [dataStatus.IMPORTED]: {
+    title: "Your parameters were successfully imported!",
+    subtitle: (
+      <div className="flex flex-col">
+        Feel free to change them or directly go to the next step.
+        <span>
+          Alternatively, import parameters from another pool clicking&nbsp;
+          <SearchPoolFormDialog>
+            <span className="cursor-pointer text-slate12">here</span>
+          </SearchPoolFormDialog>
+        </span>
+      </div>
+    ),
+  },
+};
+
 export default function Page() {
-  const { isGraphLoading } = useStableSwap();
+  const { isGraphLoading, baselineData } = useStableSwap();
+  const [poolDataStatus, setPoolDataStatus] = useState<dataStatus>(
+    dataStatus.NONE
+  );
   if (isGraphLoading) return <Spinner />;
+  useEffect(() => {
+    if (baselineData.ampFactor) {
+      setPoolDataStatus(dataStatus.IMPORTED);
+    }
+  }, [baselineData]);
   return (
     <div className="w-full rounded-3xl items-center py-16 px-12 md:py-20 flex flex-col">
       <div className="text-center text-amber9 text-3xl">
-        Please set the baseline parameters!
+        {content[poolDataStatus].title}
       </div>
       <div className="text-center text-slate11 text-lg">
-        Alternatively, import parameters from a pool clicking&nbsp;
-        <SearchPoolFormDialog>
-          <span className="cursor-pointer text-slate12"> here</span>
-        </SearchPoolFormDialog>
+        {content[poolDataStatus].subtitle}
       </div>
       <Image src={ConnectWalletImage} height={500} width={500} alt="" />
     </div>

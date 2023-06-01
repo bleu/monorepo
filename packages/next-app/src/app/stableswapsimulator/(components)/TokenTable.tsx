@@ -16,6 +16,8 @@ import TokenForm from "./TokenForm";
 
 const customPadding = "py-4 px-1";
 
+const maxTokens = 8; // Balancer pools are limited to 8 tokens
+
 const TokenTableContext = createContext(
   {} as {
     variant: boolean;
@@ -41,7 +43,7 @@ export function TokenTable({
     tableData = variantData;
   }
 
-  const aboveOrEqualLimit = tableData?.tokens?.length >= 8;
+  const aboveOrEqualLimit = tableData?.tokens?.length >= maxTokens;
   return (
     <div className="h-full flex-1 flex w-full justify-center text-white">
       <Table>
@@ -55,7 +57,9 @@ export function TokenTable({
             <Table.HeaderCell padding={customPadding}>Rate</Table.HeaderCell>
             <Table.HeaderCell padding={customPadding}>
               {aboveOrEqualLimit && (
-                <Tooltip content="Balancer pools can't have more than 8 tokens">
+                <Tooltip
+                  content={`Balancer pools can't have more than ${maxTokens} tokens.`}
+                >
                   <button type="button" className="flex items-center" disabled>
                     <PlusCircledIcon
                       width={20}

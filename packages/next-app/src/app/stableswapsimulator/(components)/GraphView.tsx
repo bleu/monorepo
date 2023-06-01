@@ -6,6 +6,7 @@ import { useStableSwap } from "#/contexts/StableSwapContext";
 import { DepthCost } from "./DepthCost";
 import { ImpactCurve } from "./ImpactCurve";
 import { StableCurve } from "./StableCurve";
+import { TokensDistribution } from "./TokensDistribution";
 
 export function GraphView() {
   const {
@@ -26,10 +27,11 @@ export function GraphView() {
   }
 
   return (
-    <div className="flex flex-col h-full w-full overflow-auto">
+    <div className="flex flex-col h-full w-full overflow-auto gap-y-2">
       <div className="basis-1/3">
         <div className="flex flex-row h-full w-full">
           <DepthCost />;
+          <TokensDistribution />
         </div>
       </div>
       <div className="basis-2/3">

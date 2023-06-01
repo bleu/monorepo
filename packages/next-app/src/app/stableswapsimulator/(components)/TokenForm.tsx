@@ -38,10 +38,10 @@ export default function TokenForm({
     resolver: zodResolver(stableSwapTokensSchema),
   });
 
-  const currentToken =
-    baselineData?.tokens?.find(
-      (token: TokensData) => token.symbol == symbolToEdit
-    ) || undefined;
+  const tokens = variant ? variantData?.tokens : baselineData?.tokens;
+  const currentToken = tokens?.find(
+    (token: TokensData) => token.symbol == symbolToEdit
+  );
 
   const validateUniqueSymbol = (symbol: string) => {
     const tokensToCheck = baselineData?.tokens?.filter(

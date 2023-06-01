@@ -161,12 +161,6 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
     }
   }, [pathname]);
 
-  useEffect(() => {
-    if (baselineData.ampFactor) {
-      push("/stableswapsimulator/analysis");
-    }
-  }, [baselineData]);
-
   return (
     <StableSwapContext.Provider
       value={{

@@ -9,6 +9,7 @@ import {
   tomatoDark,
 } from "@radix-ui/colors";
 
+import { PlotTitle } from "#/components/Plot";
 import { Tooltip } from "#/components/Tooltip";
 import { TokensData, useStableSwap } from "#/contexts/StableSwapContext";
 
@@ -27,8 +28,11 @@ export function TokensDistribution() {
   const { baselineData, variantData } = useStableSwap();
   return (
     <div className="flex flex-col w-1/3 gap-y-2 text-slate12">
-      <span className="text-md font-bold">Tokens distribution</span>
-
+      <PlotTitle
+        title="Tokens Distribution"
+        tooltip="Indicates how much each token balance represent of the pool total"
+        justifyCenter={false}
+      />
       <div className="flex flex-col gap-y-4">
         <div className="flex flex-col">
           <label className="mb-2 block text-sm">Baseline Distribution</label>

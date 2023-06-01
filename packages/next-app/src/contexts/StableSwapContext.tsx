@@ -174,8 +174,8 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
       amp: numberToBigNumber({ number: amp, decimals: 3 }),
       tokenIndexIn: indexIn,
       tokenIndexOut: indexOut,
-      decimalsIn: 6,
-      decimalsOut: 18,
+      decimalsIn: decimals[indexIn],
+      decimalsOut: decimals[indexOut],
     } as StablePoolPairData;
   }
 

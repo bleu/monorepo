@@ -104,7 +104,7 @@ export function DepthCost() {
       showlegend: false,
       yaxis: "y2",
       xaxis: "x2",
-      hovertemplate: depthCostAmounts.baseline.in.map(
+      hovertemplate: depthCostAmounts.variant.in.map(
         (amount, i) =>
           `Swap ${dataX[i]} for ${amount.toFixed()} ${
             analysisToken?.symbol
@@ -116,10 +116,12 @@ export function DepthCost() {
   ];
 
   const props = {
+    title: "Depth cost",
+    toolTip:
+      "Indicates the amount of tokens needed on a swap to alter the Price Impact (rate between the price of both tokens) to -2% and +2%",
     className: "h-full w-full",
     data: data,
     layout: {
-      title: "<b>Depth cost</b>",
       margin: {
         l: 10,
         r: 10,

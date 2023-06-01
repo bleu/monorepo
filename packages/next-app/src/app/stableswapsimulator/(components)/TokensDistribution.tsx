@@ -75,7 +75,7 @@ function TokenDistributionChart({ tokens }: { tokens: TokensData[] }) {
         >
           <div
             key={index}
-            className={`h-5`}
+            className="h-5"
             style={{
               width:
                 index + 1 == balancesPercent.length

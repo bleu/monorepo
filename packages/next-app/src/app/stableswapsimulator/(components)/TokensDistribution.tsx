@@ -41,7 +41,7 @@ export function TokensDistribution() {
       </div>
       <div className="flex h-1/3 gap-x-2">
         {baselineData?.tokens.map((token, index) => (
-          <div className="flex justify-center items-center gap-x-1 text-sm">
+          <div key={token.symbol} className="flex justify-center items-center gap-x-1 text-sm">
             <div
               className="w-3 h-3 rounded-full"
               style={{ backgroundColor: colors[index] }}

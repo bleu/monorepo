@@ -121,8 +121,16 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
     number: number;
     decimals?: number;
   }) {
-    return parseFixed(number.toString(), decimals);
+    const numberAsString = number.toString();
+    if (numberAsString.includes(".")) {
+      const [integerAsString, floatAsString] = numberAsString.split(".");
+      const floatAsStringTrimmed = floatAsString.slice(0, decimals);
+      const numberStringTrimmed = `${integerAsString}.${floatAsStringTrimmed}`;
+      return parseFixed(numberStringTrimmed, decimals);
+    }
+    return parseFixed(numberAsString, decimals);
   }
+
   function numberToOldBigNumber({
     number,
     decimals = 18,

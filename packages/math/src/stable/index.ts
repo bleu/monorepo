@@ -111,6 +111,18 @@ function _priceImpactForExactTokenInSwap(
   return ONE.minus(effectivePrice.div(spotPrice));
 }
 
+function _priceImpactForExactTokenOutReversedSwap(
+  amountOut: OldBigNumber,
+  poolPairData: StablePoolPairData
+) {
+  const effectivePrice = _effectivePriceForExactTokenOutSwap(
+    amountOut,
+    poolPairData
+  );
+  const spotPrice = _spotPrice(poolPairData);
+  return ONE.minus(spotPrice.div(effectivePrice));
+}
+
 function _priceImpactForExactTokenOutSwap(
   amountOut: OldBigNumber,
   poolPairData: StablePoolPairData
@@ -207,8 +219,9 @@ export const ExtendedStableMath = {
   _effectivePriceForExactTokenInSwap,
   _effectivePriceForExactTokenOutSwap,
   _spotPrice,
-  _priceImpactForExactTokenInSwap,
-  _priceImpactForExactTokenOutSwap,
   _tokenInForExactSpotPriceAfterSwap,
   _tokenOutForExactSpotPriceAfterSwap,
+  _priceImpactForExactTokenInSwap,
+  _priceImpactForExactTokenOutSwap,
+  _priceImpactForExactTokenOutReversedSwap,
 } as const;

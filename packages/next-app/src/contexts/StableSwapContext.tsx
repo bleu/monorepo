@@ -17,6 +17,7 @@ export interface TokensData {
   symbol: string;
   balance: number;
   rate: number;
+  decimal: number;
 }
 
 export interface AnalysisData {
@@ -70,6 +71,7 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
           symbol: token?.symbol,
           balance: Number(token?.balance),
           rate: Number(token?.priceRate),
+          decimal: Number(token?.decimals),
         })) || [],
     };
   }
@@ -94,12 +96,6 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
       setVariantData(defaultBaselineData);
     }
   }, [pathname]);
-
-  useEffect(() => {
-    if (baselineData.ampFactor) {
-      push("/stableswapsimulator/analysis");
-    }
-  }, [baselineData]);
 
   return (
     <StableSwapContext.Provider

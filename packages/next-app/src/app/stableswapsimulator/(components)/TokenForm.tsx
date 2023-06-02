@@ -38,10 +38,10 @@ export default function TokenForm({
     resolver: zodResolver(stableSwapTokensSchema),
   });
 
-  const currentToken =
-    baselineData?.tokens?.find(
-      (token: TokensData) => token.symbol == symbolToEdit
-    ) || undefined;
+  const tokens = variant ? variantData?.tokens : baselineData?.tokens;
+  const currentToken = tokens?.find(
+    (token: TokensData) => token.symbol == symbolToEdit
+  );
 
   const validateUniqueSymbol = (symbol: string) => {
     const tokensToCheck = baselineData?.tokens?.filter(
@@ -194,6 +194,17 @@ export default function TokenForm({
             required: true,
           })}
           errorMessage={errors?.balance?.message?.toString() || ""}
+        />
+        <Input
+          label="Decimals"
+          placeholder="Define the token decimals"
+          defaultValue={currentToken?.decimal}
+          {...register("decimal", {
+            valueAsNumber: true,
+            min: 0,
+            required: true,
+          })}
+          errorMessage={errors?.decimal?.message?.toString() || ""}
         />
         <Input
           label="Rate"

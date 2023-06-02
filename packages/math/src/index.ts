@@ -14,11 +14,30 @@ interface MetaStablePoolPairData extends StablePoolPairData {
   rateOut: OldBigNumber;
 }
 
-function numberToBigNumber(number: number, decimals = 18) {
-  return parseFixed(number.toString(), decimals);
+function numberToBigNumber({
+  number,
+  decimals = 18,
+}: {
+  number: number;
+  decimals?: number;
+}) {
+  const numberAsString = number.toString();
+  if (numberAsString.includes(".")) {
+    const [integerAsString, floatAsString] = numberAsString.split(".");
+    const floatAsStringTrimmed = floatAsString.slice(0, decimals);
+    const numberStringTrimmed = `${integerAsString}.${floatAsStringTrimmed}`;
+    return parseFixed(numberStringTrimmed, decimals);
+  }
+  return parseFixed(numberAsString, decimals);
 }
 
-function numberToOldBigNumber(number: number, decimals = 18) {
+function numberToOldBigNumber({
+  number,
+  decimals = 18,
+}: {
+  number: number;
+  decimals?: number;
+}) {
   return bnum(number.toFixed(decimals));
 }
 
@@ -29,6 +48,7 @@ function preparePoolPairData({
   balances,
   rates,
   amp,
+  decimals,
 }: {
   indexIn: number;
   indexOut: number;
@@ -36,12 +56,13 @@ function preparePoolPairData({
   balances: number[];
   rates: number[];
   amp: number;
+  decimals: number[];
 }) {
   const allBalancesOldBn = balances.map((balance, i) =>
-    numberToOldBigNumber(balance).times(numberToOldBigNumber(rates[i]))
+    numberToOldBigNumber({ number: balance, decimals: decimals[i] })
   );
   const allBalancesBn = balances.map((balance, i) =>
-    numberToBigNumber(balance).mul(numberToBigNumber(rates[i])).div(ONE)
+    numberToBigNumber({ number: balance, decimals: decimals[i] })
   );
 
   return {
@@ -50,22 +71,28 @@ function preparePoolPairData({
     poolType: 1,
     tokenIn: "0x",
     tokenOut: "0x",
-    balanceIn: numberToBigNumber(balances[indexIn])
-      .mul(numberToBigNumber(rates[indexIn]))
+    balanceIn: numberToBigNumber({
+      number: balances[indexIn],
+      decimals: decimals[indexIn],
+    })
+      .mul(numberToBigNumber({ number: rates[indexIn] }))
       .div(ONE),
-    balanceOut: numberToBigNumber(balances[indexOut])
-      .mul(numberToBigNumber(rates[indexOut]))
+    balanceOut: numberToBigNumber({
+      number: balances[indexOut],
+      decimals: decimals[indexOut],
+    })
+      .mul(numberToBigNumber({ number: rates[indexOut] }))
       .div(ONE),
-    swapFee: numberToBigNumber(swapFee, 18),
-    rateIn: numberToOldBigNumber(rates[indexIn]),
-    rateOut: numberToOldBigNumber(rates[indexOut]),
+    swapFee: numberToBigNumber({ number: swapFee, decimals: 18 }),
+    rateIn: numberToOldBigNumber({ number: rates[indexIn] }),
+    rateOut: numberToOldBigNumber({ number: rates[indexOut] }),
     allBalances: allBalancesOldBn,
     allBalancesScaled: allBalancesBn,
-    amp: numberToBigNumber(amp, 3),
+    amp: numberToBigNumber({ number: amp, decimals: 3 }),
     tokenIndexIn: indexIn,
     tokenIndexOut: indexOut,
-    decimalsIn: 6,
-    decimalsOut: 18,
+    decimalsIn: decimals[indexIn],
+    decimalsOut: decimals[indexOut],
   } as MetaStablePoolPairData;
 }
 
@@ -156,6 +183,70 @@ function tokenOutForExactSpotPriceAfterSwap(
   );
 }
 
+function effectivePriceForExactTokenInSwap(
+  amountIn: OldBigNumber,
+  poolPairData: MetaStablePoolPairData
+): OldBigNumber {
+  const amountInToStableMath = MetaStableConversions.amountToStableMath(
+    amountIn,
+    poolPairData.rateIn
+  );
+  const effectivePriceToStableMath =
+    ExtendedStableMath._effectivePriceForExactTokenInSwap(
+      amountInToStableMath,
+      poolPairData
+    );
+  return MetaStableConversions.priceFromStableMath(
+    effectivePriceToStableMath,
+    poolPairData.rateIn,
+    poolPairData.rateOut
+  );
+}
+
+function effectivePriceForExactTokenOutSwap(
+  amountOut: OldBigNumber,
+  poolPairData: MetaStablePoolPairData
+): OldBigNumber {
+  const amountOutToStableMath = MetaStableConversions.amountToStableMath(
+    amountOut,
+    poolPairData.rateOut
+  );
+  const effectivePriceToStableMath =
+    ExtendedStableMath._effectivePriceForExactTokenOutSwap(
+      amountOutToStableMath,
+      poolPairData
+    );
+  return MetaStableConversions.priceFromStableMath(
+    effectivePriceToStableMath,
+    poolPairData.rateIn,
+    poolPairData.rateOut
+  );
+}
+
+function priceImpactForExactTokenInSwap(
+  amountIn: OldBigNumber,
+  poolPairData: MetaStablePoolPairData
+): OldBigNumber {
+  const effectivePriceMetastable = effectivePriceForExactTokenInSwap(
+    amountIn,
+    poolPairData
+  );
+  const spotPriceMetastable = spotPrice(poolPairData);
+  return bnum(1).minus(effectivePriceMetastable.div(spotPriceMetastable));
+}
+
+function priceImpactForExactTokenOutReversedSwap(
+  amountOut: OldBigNumber,
+  poolPairData: MetaStablePoolPairData
+): OldBigNumber {
+  const effectivePriceMetastable = effectivePriceForExactTokenOutSwap(
+    amountOut,
+    poolPairData
+  );
+  const spotPriceMetastable = spotPrice(poolPairData);
+  return bnum(1).minus(spotPriceMetastable.div(effectivePriceMetastable));
+}
+
 export const MetaStableMath = {
   numberToBigNumber,
   numberToOldBigNumber,
@@ -165,4 +256,6 @@ export const MetaStableMath = {
   spotPrice,
   tokenInForExactSpotPriceAfterSwap,
   tokenOutForExactSpotPriceAfterSwap,
+  priceImpactForExactTokenInSwap,
+  priceImpactForExactTokenOutReversedSwap,
 } as const;

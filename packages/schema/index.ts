@@ -168,6 +168,7 @@ export const getStableSwapSimulatorTokensSchema = ({
       ),
     balance: z.number().positive(),
     rate: z.number().positive(),
+    decimal: z.number().positive(),
   });
   return StableSwapSimulatorTokensSchema;
 };

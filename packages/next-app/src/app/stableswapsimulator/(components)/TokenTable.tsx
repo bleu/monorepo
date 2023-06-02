@@ -5,16 +5,18 @@ import {
   Pencil1Icon,
   PlusCircledIcon,
 } from "@radix-ui/react-icons";
-import * as Tooltip from "@radix-ui/react-tooltip";
 import { createContext, useContext } from "react";
 
 import { Dialog } from "#/components/Dialog";
 import Table from "#/components/Table";
+import { Tooltip } from "#/components/Tooltip";
 import { TokensData, useStableSwap } from "#/contexts/StableSwapContext";
 
 import TokenForm from "./TokenForm";
 
 const customPadding = "py-4 px-1";
+
+const maxTokens = 8; // Balancer pools are limited to 8 tokens
 
 const TokenTableContext = createContext(
   {} as {
@@ -40,6 +42,8 @@ export function TokenTable({
     const { variantData } = useStableSwap();
     tableData = variantData;
   }
+
+  const aboveOrEqualLimit = tableData?.tokens?.length >= maxTokens;
   return (
     <div className="h-full flex-1 flex w-full justify-center text-white">
       <Table>
@@ -52,15 +56,30 @@ export function TokenTable({
             <Table.HeaderCell padding={customPadding}>Balance</Table.HeaderCell>
             <Table.HeaderCell padding={customPadding}>Rate</Table.HeaderCell>
             <Table.HeaderCell padding={customPadding}>
-              <ButtonToOpenTokenForm
-                icon={
-                  <PlusCircledIcon
-                    width={22}
-                    height={22}
-                    className="text-green9 hover:text-green11"
-                  />
-                }
-              />
+              {aboveOrEqualLimit && (
+                <Tooltip
+                  content={`Balancer pools can't have more than ${maxTokens} tokens.`}
+                >
+                  <button type="button" className="flex items-center" disabled>
+                    <PlusCircledIcon
+                      width={20}
+                      height={20}
+                      className="text-slate9"
+                    />
+                  </button>
+                </Tooltip>
+              )}
+              {!aboveOrEqualLimit && (
+                <ButtonToOpenTokenForm
+                  icon={
+                    <PlusCircledIcon
+                      width={22}
+                      height={22}
+                      className="text-green9 hover:text-green11"
+                    />
+                  }
+                />
+              )}
             </Table.HeaderCell>
           </Table.HeaderRow>
           <Table.Body>
@@ -143,28 +162,17 @@ function TableRow({
       </Table.BodyCell>
       <Table.BodyCell padding={customPadding}>
         {belowOrEqualLimit && (
-          <Tooltip.Provider>
-            <Tooltip.Root>
-              <Tooltip.Trigger asChild>
-                <button type="button" className="flex items-center" disabled>
-                  <MinusCircledIcon
-                    width={20}
-                    height={20}
-                    className="text-slate9"
-                  />
-                </button>
-              </Tooltip.Trigger>
-              <Tooltip.Portal>
-                <Tooltip.Content
-                  className="data-[state=delayed-open]:data-[side=top]:animate-slideDownAndFade data-[state=delayed-open]:data-[side=right]:animate-slideLeftAndFade data-[state=delayed-open]:data-[side=left]:animate-slideRightAndFade data-[state=delayed-open]:data-[side=bottom]:animate-slideUpAndFade text-white select-none rounded-[4px] bg-slate4 px-[15px] py-[10px] text-[15px] leading-none shadow-[slate10_0px_10px_38px_-10px,slate10_0px_10px_20px_-15px] will-change-[transform,opacity]"
-                  sideOffset={3}
-                >
-                  The simulation needs at least {minTokens} tokens
-                  <Tooltip.Arrow className="fill-slate4" />
-                </Tooltip.Content>
-              </Tooltip.Portal>
-            </Tooltip.Root>
-          </Tooltip.Provider>
+          <Tooltip
+            content={`The simulation needs at least ${minTokens} tokens`}
+          >
+            <button type="button" className="flex items-center" disabled>
+              <MinusCircledIcon
+                width={20}
+                height={20}
+                className="text-slate9"
+              />
+            </button>
+          </Tooltip>
         )}
         {!belowOrEqualLimit && (
           <button

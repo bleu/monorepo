@@ -116,18 +116,12 @@ export function DepthCost() {
   ];
 
   const props = {
-    title: "Depth cost",
+    data: data,
+    title: "Depth cost (-/+ 2% of price impact)",
     toolTip:
       "Indicates the amount of tokens needed on a swap to alter the Price Impact (rate between the price of both tokens) to -2% and +2%",
-    className: "h-full w-full",
-    data: data,
     layout: {
-      margin: {
-        l: 10,
-        r: 10,
-        b: 10,
-        t: 30,
-      },
+      margin: { l: 3, r: 3 },
       xaxis: {
         tickmode: "array" as const,
         tickvals: dataX,
@@ -142,42 +136,13 @@ export function DepthCost() {
       yaxis: {
         title: `${analysisToken?.symbol} in`,
         range: [0, maxDepthCostAmount],
-        domain: [0, 0.85],
       },
       yaxis2: {
         ...defaultAxisLayout,
         title: `${analysisToken?.symbol} out`,
         range: [0, maxDepthCostAmount],
-        domain: [0, 0.85],
       },
       grid: { columns: 2, rows: 1, pattern: "independent" as const },
-      annotations: [
-        // subplot titles, manually centered is needed
-        {
-          text: "<b>-2% Price Impact</b>",
-          font: {
-            size: 13,
-          },
-          showarrow: false,
-          align: "center" as const,
-          x: 0.16,
-          y: 1,
-          xref: "paper" as const,
-          yref: "paper" as const,
-        },
-        {
-          text: "<b>+2% Price Impact</b>",
-          font: {
-            size: 13,
-          },
-          showarrow: false,
-          align: "center" as const,
-          x: 0.83,
-          y: 1,
-          xref: "paper" as const,
-          yref: "paper" as const,
-        },
-      ],
     },
 
     config: { displayModeBar: false },

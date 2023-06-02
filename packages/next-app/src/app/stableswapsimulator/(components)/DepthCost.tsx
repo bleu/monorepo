@@ -66,7 +66,7 @@ export default function DepthCost() {
       type: "bar" as PlotType,
       legendgroup: "Variant",
       name: "Variant",
-      hovertemplate: depthCostAmounts.baseline.in.map(
+      hovertemplate: depthCostAmounts.variant.in.map(
         (amount, i) =>
           `Swap ${amount.toFixed()} of ${analysisToken?.symbol} for ${
             dataX[i]
@@ -82,7 +82,7 @@ export default function DepthCost() {
       showlegend: false,
       yaxis: "y2",
       xaxis: "x2",
-      hovertemplate: depthCostAmounts.baseline.in.map(
+      hovertemplate: depthCostAmounts.baseline.out.map(
         (amount, i) =>
           `Swap ${dataX[i]} for ${amount.toFixed()} of ${
             analysisToken?.symbol
@@ -98,7 +98,7 @@ export default function DepthCost() {
       showlegend: false,
       yaxis: "y2",
       xaxis: "x2",
-      hovertemplate: depthCostAmounts.baseline.in.map(
+      hovertemplate: depthCostAmounts.variant.out.map(
         (amount, i) =>
           `Swap ${dataX[i]} for ${amount.toFixed()} of ${
             analysisToken?.symbol

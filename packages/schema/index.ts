@@ -177,6 +177,7 @@ export const StableSwapTokensSchema = z.object({
   symbol: z.string().min(1),
   balance: z.number().positive(),
   rate: z.number().positive(),
+  decimal: z.number().positive(),
 });
 
 export const StableSwapSimulatorDataSchema = z.object({

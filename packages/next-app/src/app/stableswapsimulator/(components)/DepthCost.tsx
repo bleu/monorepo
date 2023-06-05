@@ -8,40 +8,40 @@ import Plot, { defaultAxisLayout } from "#/components/Plot";
 import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
 
 export function DepthCost() {
-  const { indexAnalysisToken, baselineData, variantData } = useStableSwap();
+  const { indexAnalysisToken, initialData, customData } = useStableSwap();
 
-  const analysisToken = baselineData?.tokens[indexAnalysisToken];
-  const pairTokens = baselineData?.tokens.filter(
+  const analysisToken = initialData?.tokens[indexAnalysisToken];
+  const pairTokens = initialData?.tokens.filter(
     (token) => token.symbol !== analysisToken.symbol
   );
   const pairTokensIndexes = pairTokens.map((token) =>
-    baselineData?.tokens.indexOf(token)
+    initialData?.tokens.indexOf(token)
   );
 
   const depthCostAmounts = {
-    baseline: {
+    initial: {
       in: pairTokensIndexes.map((pairTokenIndex) =>
-        calculateDepthCostAmount(pairTokenIndex, baselineData, "in")
+        calculateDepthCostAmount(pairTokenIndex, initialData, "in")
       ),
       out: pairTokensIndexes.map((pairTokenIndex) =>
-        calculateDepthCostAmount(pairTokenIndex, baselineData, "out")
+        calculateDepthCostAmount(pairTokenIndex, initialData, "out")
       ),
     },
-    variant: {
+    custom: {
       in: pairTokensIndexes.map((pairTokenIndex) =>
-        calculateDepthCostAmount(pairTokenIndex, variantData, "in")
+        calculateDepthCostAmount(pairTokenIndex, customData, "in")
       ),
       out: pairTokensIndexes.map((pairTokenIndex) =>
-        calculateDepthCostAmount(pairTokenIndex, variantData, "out")
+        calculateDepthCostAmount(pairTokenIndex, customData, "out")
       ),
     },
   };
 
   const maxDepthCostAmount = Math.max(
-    ...depthCostAmounts.baseline.in,
-    ...depthCostAmounts.baseline.out,
-    ...depthCostAmounts.variant.in,
-    ...depthCostAmounts.variant.out
+    ...depthCostAmounts.initial.in,
+    ...depthCostAmounts.initial.out,
+    ...depthCostAmounts.custom.in,
+    ...depthCostAmounts.custom.out
   );
 
   const dataX = pairTokens.map((token) => token.symbol);
@@ -49,11 +49,11 @@ export function DepthCost() {
   const data = [
     {
       x: dataX,
-      y: depthCostAmounts.baseline.in,
+      y: depthCostAmounts.initial.in,
       type: "bar" as PlotType,
-      legendgroup: "Baseline",
-      name: "Baseline",
-      hovertemplate: depthCostAmounts.baseline.in.map(
+      legendgroup: "Initial",
+      name: "Initial",
+      hovertemplate: depthCostAmounts.initial.in.map(
         (amount, i) =>
           `Swap ${amount.toFixed()} ${analysisToken?.symbol} for ${
             dataX[i]
@@ -64,11 +64,11 @@ export function DepthCost() {
     },
     {
       x: dataX,
-      y: depthCostAmounts.variant.in,
+      y: depthCostAmounts.custom.in,
       type: "bar" as PlotType,
-      legendgroup: "Variant",
-      name: "Variant",
-      hovertemplate: depthCostAmounts.variant.in.map(
+      legendgroup: "Custom",
+      name: "Custom",
+      hovertemplate: depthCostAmounts.custom.in.map(
         (amount, i) =>
           `Swap ${amount.toFixed()} ${analysisToken?.symbol} for ${
             dataX[i]
@@ -79,14 +79,14 @@ export function DepthCost() {
     },
     {
       x: dataX,
-      y: depthCostAmounts.baseline.out,
+      y: depthCostAmounts.initial.out,
       type: "bar" as PlotType,
-      legendgroup: "Baseline",
-      name: "Baseline",
+      legendgroup: "Initial",
+      name: "Initial",
       showlegend: false,
       yaxis: "y2",
       xaxis: "x2",
-      hovertemplate: depthCostAmounts.variant.in.map(
+      hovertemplate: depthCostAmounts.custom.in.map(
         (amount, i) =>
           `Swap ${dataX[i]} for ${amount.toFixed()} ${
             analysisToken?.symbol
@@ -97,14 +97,14 @@ export function DepthCost() {
     },
     {
       x: dataX,
-      y: depthCostAmounts.variant.out,
+      y: depthCostAmounts.custom.out,
       type: "bar" as PlotType,
-      legendgroup: "Variant",
-      name: "Variant",
+      legendgroup: "Custom",
+      name: "Custom",
       showlegend: false,
       yaxis: "y2",
       xaxis: "x2",
-      hovertemplate: depthCostAmounts.variant.in.map(
+      hovertemplate: depthCostAmounts.custom.in.map(
         (amount, i) =>
           `Swap ${dataX[i]} for ${amount.toFixed()} ${
             analysisToken?.symbol

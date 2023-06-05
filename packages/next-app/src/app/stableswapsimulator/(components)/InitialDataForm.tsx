@@ -46,7 +46,6 @@ export default function InitialDataForm() {
 
   useEffect(() => {
     //TODO: BAL 401
-    // TODO: BAL 401
     clearErrors();
     if (baselineData == getValues()) return;
     if (baselineData?.tokens?.length == 0) {

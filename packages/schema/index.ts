@@ -168,7 +168,7 @@ export const getStableSwapSimulatorTokensSchema = ({
       ),
     balance: z.number().positive(),
     rate: z.number().positive(),
-    decimal: z.number().positive(),
+    decimal: z.number().int().positive().max(60),
   });
   return StableSwapSimulatorTokensSchema;
 };
@@ -177,7 +177,7 @@ export const StableSwapTokensSchema = z.object({
   symbol: z.string().min(1),
   balance: z.number().positive(),
   rate: z.number().positive(),
-  decimal: z.number().positive(),
+  decimal: z.number().int().positive().max(60),
 });
 
 export const StableSwapSimulatorDataSchema = z.object({

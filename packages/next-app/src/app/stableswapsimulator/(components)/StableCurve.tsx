@@ -1,6 +1,6 @@
 "use client";
 
-import { StableMath } from "@balancer-pool-metadata/math/src";
+import { MetaStableMath } from "@balancer-pool-metadata/math/src";
 
 import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
@@ -12,8 +12,6 @@ export function StableCurve() {
     variantData,
     indexAnalysisToken,
     indexCurrentTabToken,
-    preparePoolPairData,
-    numberToOldBigNumber,
   } = useStableSwap();
 
   if (
@@ -34,6 +32,7 @@ export function StableCurve() {
     indexIn,
     indexOut,
     balances,
+    rates,
     decimals,
   }: {
     balance: number | undefined;
@@ -42,16 +41,18 @@ export function StableCurve() {
     indexIn: number;
     indexOut: number;
     balances: number[];
+    rates: number[];
     decimals: number[];
   }) => {
     const amountsIn = calculateAmounts({ balance });
 
     const amountsOut = amountsIn.map((amount) => -1 * amount);
 
-    const poolPairDataIn = preparePoolPairData({
+    const poolPairDataIn = MetaStableMath.preparePoolPairData({
       indexIn,
       indexOut,
       swapFee,
+      rates,
       balances,
       amp,
       decimals,
@@ -59,24 +60,31 @@ export function StableCurve() {
 
     const amountsTabTokenOut = amountsIn.map(
       (amount) =>
-        StableMath._exactTokenInForTokenOut(
-          numberToOldBigNumber({ number: amount, decimals: decimals[indexIn] }),
+        MetaStableMath.exactTokenInForTokenOut(
+          MetaStableMath.numberToOldBigNumber({
+            number: amount,
+            decimals: decimals[indexIn],
+          }),
           poolPairDataIn
         ).toNumber() * -1
     );
 
-    const poolPairDataOut = preparePoolPairData({
+    const poolPairDataOut = MetaStableMath.preparePoolPairData({
       indexIn: indexOut,
       indexOut: indexIn,
       swapFee,
+      rates,
       balances,
       amp,
       decimals,
     });
 
     const amountsTabTokenIn = amountsIn.map((amount) =>
-      StableMath._exactTokenInForTokenOut(
-        numberToOldBigNumber({ number: amount, decimals: decimals[indexIn] }),
+      MetaStableMath.exactTokenInForTokenOut(
+        MetaStableMath.numberToOldBigNumber({
+          number: amount,
+          decimals: decimals[indexIn],
+        }),
         poolPairDataOut
       ).toNumber()
     );
@@ -101,6 +109,7 @@ export function StableCurve() {
     indexIn: indexAnalysisToken,
     indexOut: indexCurrentTabToken,
     balances: baselineData.tokens.map((token) => token.balance),
+    rates: baselineData.tokens.map((token) => token.rate),
     decimals: baselineData.tokens.map((token) => token.decimal),
   });
 
@@ -118,6 +127,7 @@ export function StableCurve() {
     indexIn: indexAnalysisToken,
     indexOut: indexCurrentTabToken,
     balances: variantData.tokens.map((token) => token.balance),
+    rates: variantData.tokens.map((token) => token.rate),
     decimals: variantData.tokens.map((token) => token.decimal),
   });
 

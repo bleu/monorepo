@@ -179,7 +179,13 @@ function calculateDepthCostAmount(
     bnum(1.02)
   );
 
-  return MetaStableMath.tokenInForExactSpotPriceAfterSwap(
+  if (poolSide === "in") {
+    return MetaStableMath.tokenInForExactSpotPriceAfterSwap(
+      newSpotPriceToStableMath,
+      poolPairData
+    ).toNumber();
+  }
+  return MetaStableMath.tokenOutForExactSpotPriceAfterSwap(
     newSpotPriceToStableMath,
     poolPairData
   ).toNumber();

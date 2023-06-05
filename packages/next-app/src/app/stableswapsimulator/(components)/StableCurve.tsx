@@ -57,10 +57,7 @@ export function StableCurve() {
     const amountsTabTokenOut = amountsIn.map(
       (amount) =>
         MetaStableMath.exactTokenInForTokenOut(
-          MetaStableMath.numberToOldBigNumber({
-            number: amount,
-            decimals: decimals[indexIn],
-          }),
+          MetaStableMath.numberToOldBigNumber(amount),
           poolPairDataIn
         ).toNumber() * -1
     );
@@ -77,10 +74,7 @@ export function StableCurve() {
 
     const amountsTabTokenIn = amountsIn.map((amount) =>
       MetaStableMath.exactTokenInForTokenOut(
-        MetaStableMath.numberToOldBigNumber({
-          number: amount,
-          decimals: decimals[indexIn],
-        }),
+        MetaStableMath.numberToOldBigNumber(amount),
         poolPairDataOut
       ).toNumber()
     );

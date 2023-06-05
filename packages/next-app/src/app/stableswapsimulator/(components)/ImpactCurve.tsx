@@ -57,10 +57,7 @@ export function ImpactCurve() {
     const impactTabTokenOut = amountsIn.map(
       (amount) =>
         MetaStableMath.priceImpactForExactTokenInSwap(
-          MetaStableMath.numberToOldBigNumber({
-            number: amount,
-            decimals: decimals[indexIn],
-          }),
+          MetaStableMath.numberToOldBigNumber(amount),
           poolPairDataIn
         ).toNumber() * 100
     );
@@ -78,10 +75,7 @@ export function ImpactCurve() {
     const impactTabTokenIn = amountsIn.map(
       (amount) =>
         MetaStableMath.priceImpactForExactTokenOutReversedSwap(
-          MetaStableMath.numberToOldBigNumber({
-            number: amount,
-            decimals: decimals[indexIn],
-          }),
+          MetaStableMath.numberToOldBigNumber(amount),
           poolPairDataOut
         ).toNumber() * 100
     );

@@ -31,14 +31,8 @@ function numberToBigNumber({
   return parseFixed(numberAsString, decimals);
 }
 
-function numberToOldBigNumber({
-  number,
-  decimals = 18,
-}: {
-  number: number;
-  decimals?: number;
-}) {
-  return bnum(number.toFixed(decimals));
+function numberToOldBigNumber(number: number) {
+  return bnum(number);
 }
 
 function preparePoolPairData({
@@ -58,11 +52,11 @@ function preparePoolPairData({
   amp: number;
   decimals: number[];
 }) {
-  const allBalancesOldBn = balances.map((balance, i) =>
-    numberToOldBigNumber({ number: balance, decimals: decimals[i] })
+  const allBalancesOldBn = balances.map((balance) =>
+    numberToOldBigNumber(balance)
   );
-  const allBalancesBn = balances.map((balance, i) =>
-    numberToBigNumber({ number: balance, decimals: decimals[i] })
+  const allBalancesBn = balances.map((balance) =>
+    numberToBigNumber({ number: balance, decimals: 18 })
   );
 
   return {
@@ -84,8 +78,8 @@ function preparePoolPairData({
       .mul(numberToBigNumber({ number: rates[indexOut] }))
       .div(ONE),
     swapFee: numberToBigNumber({ number: swapFee, decimals: 18 }),
-    rateIn: numberToOldBigNumber({ number: rates[indexIn] }),
-    rateOut: numberToOldBigNumber({ number: rates[indexOut] }),
+    rateIn: numberToOldBigNumber(rates[indexIn]),
+    rateOut: numberToOldBigNumber(rates[indexOut]),
     allBalances: allBalancesOldBn,
     allBalancesScaled: allBalancesBn,
     amp: numberToBigNumber({ number: amp, decimals: 3 }),

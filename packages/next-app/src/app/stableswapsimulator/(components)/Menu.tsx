@@ -6,32 +6,32 @@ import { ReactElement } from "react";
 import Sidebar from "#/components/Sidebar";
 import { Tabs } from "#/components/Tabs";
 
-import BaselineDataForm from "./BaselineDataForm";
+import CustomDataForm from "./CustomDataForm";
 import InitialDataForm from "./InitialDataForm";
+import InitialEmptyDataForm from "./InitialEmptyDataForm";
 import { SearchPoolFormDialog } from "./SearchPoolFormDialog";
-import VariantDataForm from "./VariantDataForm";
 
 function AnalysisMenu() {
   return (
     <div>
-      <Tabs defaultValue="variantData">
+      <Tabs defaultValue="customData">
         <Tabs.ItemTriggerWrapper>
-          <Tabs.ItemTrigger tabName="baselineData" color="blue7">
-            <span>Baseline</span>
+          <Tabs.ItemTrigger tabName="initialData" color="blue7">
+            <span>Initial</span>
           </Tabs.ItemTrigger>
-          <Tabs.ItemTrigger tabName="variantData" color="amber9">
-            <span>Variant</span>
+          <Tabs.ItemTrigger tabName="customData" color="amber9">
+            <span>Custom</span>
           </Tabs.ItemTrigger>
         </Tabs.ItemTriggerWrapper>
-        <Tabs.ItemContent tabName="baselineData">
+        <Tabs.ItemContent tabName="initialData">
           <SearchPoolFormWithDataForm>
-            <BaselineDataForm />
+            <InitialDataForm />
           </SearchPoolFormWithDataForm>
         </Tabs.ItemContent>
-        <Tabs.ItemContent tabName="variantData">
-          <Sidebar.Header name="Variant parameters" />
+        <Tabs.ItemContent tabName="customData">
+          <Sidebar.Header name="Custom parameters" />
           <Sidebar.Content>
-            <VariantDataForm />
+            <CustomDataForm />
           </Sidebar.Content>
         </Tabs.ItemContent>
       </Tabs>
@@ -42,7 +42,7 @@ function AnalysisMenu() {
 function IndexMenu() {
   return (
     <SearchPoolFormWithDataForm>
-      <InitialDataForm />
+      <InitialEmptyDataForm />
     </SearchPoolFormWithDataForm>
   );
 }
@@ -57,7 +57,7 @@ function SearchPoolFormWithDataForm({ children }: { children: ReactElement }) {
         </span>
       </SearchPoolFormDialog>
       <Separator.Root className="bg-blue6 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px my-5" />
-      <Sidebar.Header name="Baseline parameters" />
+      <Sidebar.Header name="Initial parameters" />
       <Sidebar.Content>{children}</Sidebar.Content>
     </div>
   );

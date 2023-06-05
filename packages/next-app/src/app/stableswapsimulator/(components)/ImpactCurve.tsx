@@ -8,8 +8,8 @@ import { useStableSwap } from "#/contexts/StableSwapContext";
 
 export function ImpactCurve() {
   const {
-    baselineData,
-    variantData,
+    initialData,
+    customData,
     indexAnalysisToken,
     indexCurrentTabToken,
     preparePoolPairData,
@@ -17,14 +17,14 @@ export function ImpactCurve() {
   } = useStableSwap();
 
   if (
-    !baselineData ||
-    !baselineData.swapFee ||
-    !baselineData.ampFactor ||
-    !baselineData.tokens
+    !initialData ||
+    !initialData.swapFee ||
+    !initialData.ampFactor ||
+    !initialData.tokens
   )
     return <Spinner />;
 
-  const tokensSymbol = baselineData.tokens.map((token) => token.symbol);
+  const tokensSymbol = initialData.tokens.map((token) => token.symbol);
 
   //TODO: move this function to outside the component once the math PR is merged
   const calculateTokenImpact = ({
@@ -92,12 +92,12 @@ export function ImpactCurve() {
     amountsOut: initialAmountsAnalysisTokenOut,
     impactTabTokenIn: initialImpactTabTokenIn,
   } = calculateTokenImpact({
-    balance: baselineData.tokens[indexAnalysisToken]?.balance,
-    swapFee: baselineData.swapFee,
-    amp: baselineData.ampFactor,
+    balance: initialData.tokens[indexAnalysisToken]?.balance,
+    swapFee: initialData.swapFee,
+    amp: initialData.ampFactor,
     indexIn: indexAnalysisToken,
     indexOut: indexCurrentTabToken,
-    allBalances: baselineData.tokens.map((token) => token.balance),
+    allBalances: initialData.tokens.map((token) => token.balance),
   });
 
   const {
@@ -106,14 +106,12 @@ export function ImpactCurve() {
     amountsOut: variantAmountsAnalysisTokenOut,
     impactTabTokenIn: variantImpactTabTokenIn,
   } = calculateTokenImpact({
-    balance: variantData?.tokens?.[indexAnalysisToken]?.balance,
-    swapFee: variantData?.swapFee ? variantData.swapFee : baselineData.swapFee,
-    amp: variantData?.ampFactor
-      ? variantData.ampFactor
-      : baselineData.ampFactor,
+    balance: customData?.tokens?.[indexAnalysisToken]?.balance,
+    swapFee: customData?.swapFee ? customData.swapFee : initialData.swapFee,
+    amp: customData?.ampFactor ? customData.ampFactor : initialData.ampFactor,
     indexIn: indexAnalysisToken,
     indexOut: indexCurrentTabToken,
-    allBalances: baselineData.tokens.map((token) => token.balance),
+    allBalances: initialData.tokens.map((token) => token.balance),
   });
 
   return (
@@ -126,8 +124,8 @@ export function ImpactCurve() {
           y: initialImpactTabTokenOut,
           type: "scatter",
           mode: "lines",
-          legendgroup: "Baseline",
-          name: "Baseline",
+          legendgroup: "Initial",
+          name: "Initial",
           hovertemplate: initialAmountsAnalysisTokenIn.map(
             (amount, index) =>
               `Swap ${amount.toFixed(2)} ${
@@ -146,8 +144,8 @@ export function ImpactCurve() {
           y: variantImpactTabTokenOut,
           type: "scatter",
           mode: "lines",
-          legendgroup: "Variant",
-          name: "Variant",
+          legendgroup: "Custom",
+          name: "Custom",
           showlegend: false,
           hovertemplate: variantAmountsAnalysisTokenIn.map(
             (amount, index) =>
@@ -167,8 +165,8 @@ export function ImpactCurve() {
           y: initialImpactTabTokenIn,
           type: "scatter",
           mode: "lines",
-          legendgroup: "Baseline",
-          name: "Baseline",
+          legendgroup: "Initial",
+          name: "Initial",
           showlegend: false,
           hovertemplate: initialAmountsAnalysisTokenOut.map(
             (amount, index) =>
@@ -188,8 +186,8 @@ export function ImpactCurve() {
           y: variantImpactTabTokenIn,
           type: "scatter",
           mode: "lines",
-          legendgroup: "Variant",
-          name: "Variant",
+          legendgroup: "Custom",
+          name: "Custom",
           hovertemplate: variantAmountsAnalysisTokenOut.map(
             (amount, index) =>
               `Swap ${tokensSymbol[indexCurrentTabToken]} for ${(

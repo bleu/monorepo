@@ -8,8 +8,8 @@ import { useStableSwap } from "#/contexts/StableSwapContext";
 
 export function StableCurve() {
   const {
-    baselineData,
-    variantData,
+    initialData,
+    customData,
     indexAnalysisToken,
     indexCurrentTabToken,
     preparePoolPairData,
@@ -17,14 +17,14 @@ export function StableCurve() {
   } = useStableSwap();
 
   if (
-    !baselineData ||
-    !baselineData.swapFee ||
-    !baselineData.ampFactor ||
-    !baselineData.tokens
+    !initialData ||
+    !initialData.swapFee ||
+    !initialData.ampFactor ||
+    !initialData.tokens
   )
     return <Spinner />;
 
-  const tokensSymbol = baselineData.tokens.map((token) => token.symbol);
+  const tokensSymbol = initialData.tokens.map((token) => token.symbol);
 
   //TODO: move this function to outside the component once the math PR is merged
   const calculateTokenAmounts = ({
@@ -91,12 +91,12 @@ export function StableCurve() {
     amountsTabTokenOut: initialAmountTabTokenOut,
     amountsTabTokenIn: initialAmountTabTokenIn,
   } = calculateTokenAmounts({
-    balance: baselineData.tokens[indexAnalysisToken]?.balance,
-    swapFee: baselineData.swapFee,
-    amp: baselineData.ampFactor,
+    balance: initialData.tokens[indexAnalysisToken]?.balance,
+    swapFee: initialData.swapFee,
+    amp: initialData.ampFactor,
     indexIn: indexAnalysisToken,
     indexOut: indexCurrentTabToken,
-    allBalances: baselineData.tokens.map((token) => token.balance),
+    allBalances: initialData.tokens.map((token) => token.balance),
   });
 
   const {
@@ -105,14 +105,12 @@ export function StableCurve() {
     amountsTabTokenOut: variantAmountTabTokenOut,
     amountsTabTokenIn: variantAmountTabTokenIn,
   } = calculateTokenAmounts({
-    balance: variantData?.tokens?.[indexAnalysisToken]?.balance,
-    swapFee: variantData?.swapFee ? variantData.swapFee : baselineData.swapFee,
-    amp: variantData?.ampFactor
-      ? variantData.ampFactor
-      : baselineData.ampFactor,
+    balance: customData?.tokens?.[indexAnalysisToken]?.balance,
+    swapFee: customData?.swapFee ? customData.swapFee : initialData.swapFee,
+    amp: customData?.ampFactor ? customData.ampFactor : initialData.ampFactor,
     indexIn: indexAnalysisToken,
     indexOut: indexCurrentTabToken,
-    allBalances: baselineData.tokens.map((token) => token.balance),
+    allBalances: initialData.tokens.map((token) => token.balance),
   });
 
   return (
@@ -125,8 +123,8 @@ export function StableCurve() {
           y: initialAmountTabTokenOut,
           type: "scatter",
           mode: "lines",
-          legendgroup: "Baseline",
-          name: "Baseline",
+          legendgroup: "Initial",
+          name: "Initial",
           hovertemplate: initialAmountsAnalysisTokenIn.map(
             (amount, index) =>
               `Swap ${amount.toFixed(2)} ${
@@ -141,8 +139,8 @@ export function StableCurve() {
           y: variantAmountTabTokenOut,
           type: "scatter",
           mode: "lines",
-          legendgroup: "Variant",
-          name: "Variant",
+          legendgroup: "Custom",
+          name: "Custom",
           hovertemplate: variantAmountsAnalysisTokenIn.map(
             (amount, index) =>
               `Swap ${amount.toFixed(2)} ${
@@ -157,8 +155,8 @@ export function StableCurve() {
           y: initialAmountTabTokenIn,
           type: "scatter",
           mode: "lines",
-          legendgroup: "Baseline",
-          name: "Baseline",
+          legendgroup: "Initial",
+          name: "Initial",
           showlegend: false,
           hovertemplate: initialAmountsAnalysisTokenOut.map(
             (amount, index) =>
@@ -174,8 +172,8 @@ export function StableCurve() {
           y: variantAmountTabTokenIn,
           type: "scatter",
           mode: "lines",
-          legendgroup: "Variant",
-          name: "Variant",
+          legendgroup: "Custom",
+          name: "Custom",
           showlegend: false,
           hovertemplate: variantAmountsAnalysisTokenOut.map(
             (amount, index) =>

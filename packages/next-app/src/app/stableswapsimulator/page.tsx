@@ -16,7 +16,7 @@ enum dataStatus {
 
 const content = {
   [dataStatus.NONE]: {
-    title: "Please set the baseline parameters!",
+    title: "Please set the initial parameters!",
     subtitle: (
       <>
         Alternatively, import parameters from a pool clicking&nbsp;
@@ -43,16 +43,16 @@ const content = {
 };
 
 export default function Page() {
-  const { isGraphLoading, baselineData } = useStableSwap();
+  const { isGraphLoading, initialData } = useStableSwap();
   const [poolDataStatus, setPoolDataStatus] = useState<dataStatus>(
     dataStatus.NONE
   );
   if (isGraphLoading) return <Spinner />;
   useEffect(() => {
-    if (baselineData.ampFactor) {
+    if (initialData.ampFactor) {
       setPoolDataStatus(dataStatus.IMPORTED);
     }
-  }, [baselineData]);
+  }, [initialData]);
   return (
     <div className="w-full rounded-3xl items-center py-16 px-12 md:py-20 flex flex-col">
       <div className="text-center text-amber9 text-3xl">

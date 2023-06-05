@@ -2,58 +2,61 @@
 
 import { StableSwapSimulatorDataSchema } from "@balancer-pool-metadata/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 
+import Button from "#/components/Button";
 import { Input } from "#/components/Input";
 import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
-import useDebounce from "#/hooks/useDebounce";
+import { GetDeepProp } from "#/utils/getTypes";
 
 import { TokenTable } from "./TokenTable";
 
-export default function InitialDataForm() {
-  const { initialData, setInitialData } = useStableSwap();
+type StableSwapSimulatorDataSchemaType =
+  typeof StableSwapSimulatorDataSchema._type;
+
+interface InitialForm {
+  tokens: GetDeepProp<StableSwapSimulatorDataSchemaType, "tokens"> | null;
+  swapFee: GetDeepProp<StableSwapSimulatorDataSchemaType, "swapFee"> | null;
+  ampFactor: GetDeepProp<StableSwapSimulatorDataSchemaType, "ampFactor"> | null;
+}
+
+export default function InitialEmptyDataForm() {
+  const { push } = useRouter();
+  const { initialData, setInitialData, setCustomData } = useStableSwap();
   const {
     register,
-    getValues,
+    handleSubmit,
     setValue,
-    watch,
+    getValues,
+    clearErrors,
+    reset,
     formState: { errors },
-  } = useForm<typeof StableSwapSimulatorDataSchema._type>({
+  } = useForm<InitialForm>({
     resolver: zodResolver(StableSwapSimulatorDataSchema),
-    mode: "onChange",
+    mode: "onSubmit",
   });
 
-  const swapFee = watch("swapFee");
-  const ampFactor = watch("ampFactor");
-  const tokens = watch("tokens");
-  const debouncedSwapFee = useDebounce(swapFee);
-  const debouncedAmpFactor = useDebounce(ampFactor);
-  const debouncedTokens = useDebounce(tokens);
-
-  const baselineAndFieldsAreEqual = () => {
-    const ampIsEqual = initialData?.ampFactor == getValues().ampFactor;
-    const swapFeeIsEqual = initialData?.swapFee == getValues().swapFee;
-    const tokensAreEqual = initialData?.tokens == getValues().tokens;
-    return ampIsEqual && swapFeeIsEqual && tokensAreEqual;
-  };
-
-  const onSubmit = () => {
-    if (baselineAndFieldsAreEqual()) return;
-    if (Object.keys(errors).length) return;
-    const data = getValues();
+  const onSubmit = (data: FieldValues) => {
     setInitialData(data as AnalysisData);
+    setCustomData(data as AnalysisData);
+    push("/stableswapsimulator/analysis");
   };
 
   useEffect(() => {
+    //TODO: BAL 401
     // TODO: BAL 401
-    if (baselineAndFieldsAreEqual()) return;
+    clearErrors();
+    if (initialData == getValues()) return;
+    if (initialData?.tokens?.length == 0) {
+      reset({ tokens: [], swapFee: null, ampFactor: null });
+      return;
+    }
     if (initialData?.swapFee) setValue("swapFee", initialData?.swapFee);
     if (initialData?.ampFactor) setValue("ampFactor", initialData?.ampFactor);
     if (initialData?.tokens) setValue("tokens", initialData?.tokens);
   }, [initialData]);
-
-  useEffect(onSubmit, [debouncedSwapFee, debouncedAmpFactor, debouncedTokens]);
 
   useEffect(() => {
     register("tokens", { required: true, value: initialData?.tokens });
@@ -61,7 +64,7 @@ export default function InitialDataForm() {
 
   return (
     <div className="flex flex-col gap-4">
-      <form id="baseline-data-form" />
+      <form onSubmit={handleSubmit(onSubmit)} id="initial-data-form" />
       <Input
         {...register("swapFee", {
           required: true,
@@ -71,7 +74,7 @@ export default function InitialDataForm() {
         label="Swap fee"
         placeholder="Define the initial swap fee"
         errorMessage={errors?.swapFee?.message}
-        form="baseline-data-form"
+        form="initial-data-form"
       />
       <Input
         {...register("ampFactor", {
@@ -82,12 +85,25 @@ export default function InitialDataForm() {
         label="Amp factor"
         placeholder="Define the initial amp factor"
         errorMessage={errors?.ampFactor?.message}
-        form="baseline-data-form"
+        form="initial-data-form"
       />
       <div className="flex flex-col">
         <label className="mb-2 block text-sm text-slate12">Tokens</label>
-        <TokenTable minTokens={2} />
+        {errors?.tokens?.message && (
+          <div className="h-6 mt-1 text-tomato10 text-sm">
+            <span>{errors?.tokens?.message}</span>
+          </div>
+        )}
+        <TokenTable />
       </div>
+      <Button
+        form="initial-data-form"
+        type="submit"
+        shade="light"
+        className="w-32 h-min self-end"
+      >
+        Next step
+      </Button>
     </div>
   );
 }

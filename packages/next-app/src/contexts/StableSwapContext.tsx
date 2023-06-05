@@ -32,14 +32,14 @@ export interface AnalysisData {
 }
 
 interface StableSwapContextType {
-  baselineData: AnalysisData;
-  variantData: AnalysisData;
+  initialData: AnalysisData;
+  customData: AnalysisData;
   indexAnalysisToken: number;
   indexCurrentTabToken: number;
   setIndexAnalysisToken: (index: number) => void;
   setIndexCurrentTabToken: (index: number) => void;
-  setBaselineData: (data: AnalysisData) => void;
-  setVariantData: (data: AnalysisData) => void;
+  setInitialData: (data: AnalysisData) => void;
+  setCustomData: (data: AnalysisData) => void;
   handleImportPoolParametersById: (data: PoolAttribute) => void;
   newPoolImportedFlag: boolean;
   isGraphLoading: boolean;
@@ -70,9 +70,9 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
     swapFee: undefined,
     tokens: [],
   };
-  const [baselineData, setBaselineData] =
+  const [initialData, setInitialData] =
     useState<AnalysisData>(defaultBaselineData);
-  const [variantData, setVariantData] =
+  const [customData, setCustomData] =
     useState<AnalysisData>(defaultBaselineData);
   const [indexAnalysisToken, setIndexAnalysisToken] = useState<number>(0);
   const [indexCurrentTabToken, setIndexCurrentTabToken] = useState<number>(1);
@@ -102,8 +102,8 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
     });
     if (!poolData) return;
     setNewPoolImportedFlag(!newPoolImportedFlag);
-    setBaselineData(convertGqlToAnalysisData(poolData));
-    setVariantData(convertGqlToAnalysisData(poolData));
+    setInitialData(convertGqlToAnalysisData(poolData));
+    setCustomData(convertGqlToAnalysisData(poolData));
   }
 
   function numberToBigNumber(number: number, decimals = 18) {
@@ -153,23 +153,23 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
   }
 
   useEffect(() => {
-    if (!baselineData.swapFee) {
+    if (!initialData.swapFee) {
       push("/stableswapsimulator");
     }
     if (pathname === "/stableswapsimulator") {
       setIsGraphLoading(false);
-      setBaselineData(defaultBaselineData);
-      setVariantData(defaultBaselineData);
+      setInitialData(defaultBaselineData);
+      setCustomData(defaultBaselineData);
     }
   }, [pathname]);
 
   return (
     <StableSwapContext.Provider
       value={{
-        baselineData,
-        setBaselineData,
-        variantData,
-        setVariantData,
+        initialData,
+        setInitialData,
+        customData,
+        setCustomData,
         indexAnalysisToken,
         setIndexAnalysisToken,
         indexCurrentTabToken,

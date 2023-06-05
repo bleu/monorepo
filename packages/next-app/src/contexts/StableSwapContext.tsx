@@ -86,11 +86,13 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
       swapFee: Number(poolData?.pool?.swapFee),
       ampFactor: Number(poolData?.pool?.amp),
       tokens:
-        poolData?.pool?.tokens?.map((token) => ({
-          symbol: token?.symbol,
-          balance: Number(token?.balance),
-          rate: Number(token?.priceRate),
-        })) || [],
+        poolData?.pool?.tokens
+          ?.filter((token) => token.address !== poolData?.pool?.address) // filter out BPT
+          .map((token) => ({
+            symbol: token?.symbol,
+            balance: Number(token?.balance),
+            rate: Number(token?.priceRate),
+          })) || [],
     };
   }
 

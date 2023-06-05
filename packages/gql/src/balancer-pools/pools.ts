@@ -47,6 +47,7 @@ export const poolById = gql`
       swapFee
       amp
       tokens {
+        address
         symbol
         balance
         decimals

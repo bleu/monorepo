@@ -14,7 +14,7 @@ export function SearchPoolFormDialog({ children }: PropsWithChildren) {
       title="Import pool parameters"
       content={
         <SearchPoolForm
-          poolTypeFilter={["Stable", "MetaStable"]}
+          poolTypeFilter={["Stable", "MetaStable", "ComposableStable"]}
           onSubmit={handleImportPoolParametersById}
         />
       }

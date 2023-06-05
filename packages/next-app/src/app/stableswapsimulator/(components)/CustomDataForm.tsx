@@ -12,11 +12,11 @@ import useDebounce from "#/hooks/useDebounce";
 
 import { TokenTable } from "./TokenTable";
 
-export default function NewDataForm() {
+export default function CustomDataForm() {
   const {
-    baselineData,
-    variantData,
-    setVariantData,
+    initialData,
+    customData,
+    setCustomData,
     setIndexAnalysisToken,
     indexAnalysisToken,
   } = useStableSwap();
@@ -40,18 +40,18 @@ export default function NewDataForm() {
   const onSubmit = () => {
     if (Object.keys(errors).length) return;
     const data = getValues();
-    setVariantData(data as AnalysisData);
+    setCustomData(data as AnalysisData);
   };
 
   useEffect(() => {
-    register("tokens", { required: true, value: variantData?.tokens });
+    register("tokens", { required: true, value: customData?.tokens });
   }, []);
 
   useEffect(() => {
     // TODO: BAL 401
-    if (variantData?.tokens == getValues().tokens) return;
-    if (variantData?.tokens) setValue("tokens", variantData?.tokens);
-  }, [variantData?.tokens]);
+    if (customData?.tokens == getValues().tokens) return;
+    if (customData?.tokens) setValue("tokens", customData?.tokens);
+  }, [customData?.tokens]);
 
   useEffect(onSubmit, [debouncedSwapFee, debouncedAmpFactor]);
 
@@ -66,7 +66,7 @@ export default function NewDataForm() {
           onValueChange={(i) => setIndexAnalysisToken(Number(i))}
           defaultValue={indexAnalysisToken.toString()}
         >
-          {baselineData?.tokens.map(({ symbol }, index) => (
+          {initialData?.tokens.map(({ symbol }, index) => (
             <SelectItem key={symbol} value={index.toString()}>
               {symbol}
             </SelectItem>
@@ -76,11 +76,11 @@ export default function NewDataForm() {
       <Input
         {...register("swapFee", {
           required: true,
-          value: variantData?.swapFee,
+          value: customData?.swapFee,
           valueAsNumber: true,
         })}
         label="Swap fee"
-        extraLabel={`baseline: ${baselineData?.swapFee}`}
+        extraLabel={`baseline: ${initialData?.swapFee}`}
         placeholder="Define the variant swap fee"
         errorMessage={errors?.swapFee?.message}
         form="variant-data-form"
@@ -88,11 +88,11 @@ export default function NewDataForm() {
       <Input
         {...register("ampFactor", {
           required: true,
-          value: variantData?.ampFactor,
+          value: customData?.ampFactor,
           valueAsNumber: true,
         })}
         label="Amp Factor"
-        extraLabel={`baseline: ${baselineData?.ampFactor}`}
+        extraLabel={`baseline: ${initialData?.ampFactor}`}
         placeholder="Define the variant amp factor"
         errorMessage={errors?.ampFactor?.message}
         form="variant-data-form"

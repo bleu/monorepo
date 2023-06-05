@@ -20,13 +20,13 @@ export default function TokenForm({
   symbolToEdit?: string;
   close?: () => void;
 }) {
-  const { baselineData, setBaselineData, variantData, setVariantData } =
+  const { initialData, setInitialData, customData, setCustomData } =
     useStableSwap();
   const { variant } = useTokenTableContext();
 
   const stableSwapTokensSchema = getStableSwapSimulatorTokensSchema({
     symbolToEdit,
-    existentSymbols: baselineData?.tokens?.map((token: TokensData) => {
+    existentSymbols: initialData?.tokens?.map((token: TokensData) => {
       return token.symbol;
     }),
   });
@@ -38,13 +38,13 @@ export default function TokenForm({
     resolver: zodResolver(stableSwapTokensSchema),
   });
 
-  const tokens = variant ? variantData?.tokens : baselineData?.tokens;
+  const tokens = variant ? customData?.tokens : initialData?.tokens;
   const currentToken = tokens?.find(
     (token: TokensData) => token.symbol == symbolToEdit
   );
 
   const validateUniqueSymbol = (symbol: string) => {
-    const tokensToCheck = baselineData?.tokens?.filter(
+    const tokensToCheck = initialData?.tokens?.filter(
       (token: TokensData) => token.symbol != symbolToEdit
     );
     const symbolsToCheck = tokensToCheck?.map(
@@ -126,38 +126,38 @@ export default function TokenForm({
     // and the symbol on the baseline and variant
     if (variant) {
       editAll({
-        analysisData: variantData,
-        setAnalysisData: setVariantData,
+        analysisData: customData,
+        setAnalysisData: setCustomData,
         data,
       });
       editSymbol({
-        analysisData: baselineData,
-        setAnalysisData: setBaselineData,
+        analysisData: initialData,
+        setAnalysisData: setInitialData,
         data,
       });
       return;
     }
     editAll({
-      analysisData: baselineData,
-      setAnalysisData: setBaselineData,
+      analysisData: initialData,
+      setAnalysisData: setInitialData,
       data,
     });
     editSymbol({
-      analysisData: variantData,
-      setAnalysisData: setVariantData,
+      analysisData: customData,
+      setAnalysisData: setCustomData,
       data,
     });
   }
 
   function handleAdd(data: TokensData) {
     addToken({
-      analysisData: variantData,
-      setAnalysisData: setVariantData,
+      analysisData: customData,
+      setAnalysisData: setCustomData,
       data,
     });
     addToken({
-      analysisData: baselineData,
-      setAnalysisData: setBaselineData,
+      analysisData: initialData,
+      setAnalysisData: setInitialData,
       data,
     });
   }
@@ -225,7 +225,7 @@ export default function TokenForm({
           </Button>
         </Dialog.Close>
         <Button form="token-form" type="submit" shade="light">
-          Add
+          {symbolToEdit ? "Edit" : "Add"}
         </Button>
       </div>
     </form>

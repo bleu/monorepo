@@ -10,12 +10,12 @@ import { TokensDistribution } from "./TokensDistribution";
 
 export function GraphView() {
   const {
-    baselineData,
+    initialData,
     indexAnalysisToken,
     setIndexCurrentTabToken,
     indexCurrentTabToken,
   } = useStableSwap();
-  const tokensSymbol = baselineData.tokens.map((token) => token.symbol);
+  const tokensSymbol = initialData.tokens.map((token) => token.symbol);
   const tabTokens = tokensSymbol.filter(
     (token, index) => index !== indexAnalysisToken
   );

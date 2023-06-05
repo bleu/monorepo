@@ -36,11 +36,11 @@ export function TokenTable({
   variant?: boolean;
   minTokens?: number;
 }) {
-  const { baselineData } = useStableSwap();
-  let tableData = baselineData;
+  const { initialData } = useStableSwap();
+  let tableData = initialData;
   if (variant) {
-    const { variantData } = useStableSwap();
-    tableData = variantData;
+    const { customData } = useStableSwap();
+    tableData = customData;
   }
 
   const aboveOrEqualLimit = tableData?.tokens?.length >= maxTokens;
@@ -123,21 +123,21 @@ function TableRow({
   token: TokensData;
   minTokens: number;
 }) {
-  const { setBaselineData, baselineData, setVariantData, variantData } =
+  const { setInitialData, initialData, setCustomData, customData } =
     useStableSwap();
 
   const deleteToken = (symbol?: string) => {
-    setBaselineData({
-      ...baselineData,
-      tokens: baselineData.tokens.filter((token) => token.symbol !== symbol),
+    setInitialData({
+      ...initialData,
+      tokens: initialData.tokens.filter((token) => token.symbol !== symbol),
     });
-    setVariantData({
-      ...variantData,
-      tokens: variantData.tokens.filter((token) => token.symbol !== symbol),
+    setCustomData({
+      ...customData,
+      tokens: customData.tokens.filter((token) => token.symbol !== symbol),
     });
   };
 
-  const belowOrEqualLimit = baselineData?.tokens?.length <= minTokens;
+  const belowOrEqualLimit = initialData?.tokens?.length <= minTokens;
 
   return (
     <Table.BodyRow key={token.symbol}>

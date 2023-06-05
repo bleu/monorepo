@@ -25,7 +25,7 @@ const colors = [
 ];
 
 export function TokensDistribution() {
-  const { baselineData, variantData } = useStableSwap();
+  const { initialData, customData } = useStableSwap();
   return (
     <div className="flex flex-col w-1/3 gap-y-2 text-slate12">
       <PlotTitle
@@ -35,16 +35,16 @@ export function TokensDistribution() {
       />
       <div className="flex flex-col gap-y-4">
         <div className="flex flex-col">
-          <label className="mb-2 block text-sm">Baseline Distribution</label>
-          <TokenDistributionChart tokens={baselineData?.tokens} />
+          <label className="mb-2 block text-sm">Initial Distribution</label>
+          <TokenDistributionChart tokens={initialData?.tokens} />
         </div>
         <div className="flex flex-col">
-          <label className="mb-2 block text-sm ">Variant Distribution</label>
-          <TokenDistributionChart tokens={variantData?.tokens} />
+          <label className="mb-2 block text-sm ">Custom Distribution</label>
+          <TokenDistributionChart tokens={customData?.tokens} />
         </div>
       </div>
       <div className="flex h-1/3 gap-x-2">
-        {baselineData?.tokens.map((token, index) => (
+        {initialData?.tokens.map((token, index) => (
           <div
             key={token.symbol}
             className="flex justify-center items-center gap-x-1 text-sm"

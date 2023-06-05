@@ -7,22 +7,18 @@ import { Spinner } from "#/components/Spinner";
 import { useStableSwap } from "#/contexts/StableSwapContext";
 
 export function StableCurve() {
-  const {
-    baselineData,
-    variantData,
-    indexAnalysisToken,
-    indexCurrentTabToken,
-  } = useStableSwap();
+  const { initialData, customData, indexAnalysisToken, indexCurrentTabToken } =
+    useStableSwap();
 
   if (
-    !baselineData ||
-    !baselineData.swapFee ||
-    !baselineData.ampFactor ||
-    !baselineData.tokens
+    !initialData ||
+    !initialData.swapFee ||
+    !initialData.ampFactor ||
+    !initialData.tokens
   )
     return <Spinner />;
 
-  const tokensSymbol = baselineData.tokens.map((token) => token.symbol);
+  const tokensSymbol = initialData.tokens.map((token) => token.symbol);
 
   //TODO: move this function to outside the component once the math PR is merged
   const calculateTokenAmounts = ({
@@ -103,14 +99,14 @@ export function StableCurve() {
     amountsTabTokenOut: initialAmountTabTokenOut,
     amountsTabTokenIn: initialAmountTabTokenIn,
   } = calculateTokenAmounts({
-    balance: baselineData.tokens[indexAnalysisToken]?.balance,
-    swapFee: baselineData.swapFee,
-    amp: baselineData.ampFactor,
+    balance: initialData.tokens[indexAnalysisToken]?.balance,
+    swapFee: initialData.swapFee,
+    amp: initialData.ampFactor,
     indexIn: indexAnalysisToken,
     indexOut: indexCurrentTabToken,
-    balances: baselineData.tokens.map((token) => token.balance),
-    rates: baselineData.tokens.map((token) => token.rate),
-    decimals: baselineData.tokens.map((token) => token.decimal),
+    balances: initialData.tokens.map((token) => token.balance),
+    rates: initialData.tokens.map((token) => token.rate),
+    decimals: initialData.tokens.map((token) => token.decimal),
   });
 
   const {
@@ -119,16 +115,14 @@ export function StableCurve() {
     amountsTabTokenOut: variantAmountTabTokenOut,
     amountsTabTokenIn: variantAmountTabTokenIn,
   } = calculateTokenAmounts({
-    balance: variantData?.tokens?.[indexAnalysisToken]?.balance,
-    swapFee: variantData?.swapFee ? variantData.swapFee : baselineData.swapFee,
-    amp: variantData?.ampFactor
-      ? variantData.ampFactor
-      : baselineData.ampFactor,
+    balance: customData?.tokens?.[indexAnalysisToken]?.balance,
+    swapFee: customData?.swapFee ? customData.swapFee : initialData.swapFee,
+    amp: customData?.ampFactor ? customData.ampFactor : initialData.ampFactor,
     indexIn: indexAnalysisToken,
     indexOut: indexCurrentTabToken,
-    balances: variantData.tokens.map((token) => token.balance),
-    rates: variantData.tokens.map((token) => token.rate),
-    decimals: variantData.tokens.map((token) => token.decimal),
+    balances: customData.tokens.map((token) => token.balance),
+    rates: customData.tokens.map((token) => token.rate),
+    decimals: customData.tokens.map((token) => token.decimal),
   });
 
   return (
@@ -141,8 +135,8 @@ export function StableCurve() {
           y: initialAmountTabTokenOut,
           type: "scatter",
           mode: "lines",
-          legendgroup: "Baseline",
-          name: "Baseline",
+          legendgroup: "Initial",
+          name: "Initial",
           hovertemplate: initialAmountsAnalysisTokenIn.map(
             (amount, index) =>
               `Swap ${amount.toFixed(2)} ${
@@ -157,8 +151,8 @@ export function StableCurve() {
           y: variantAmountTabTokenOut,
           type: "scatter",
           mode: "lines",
-          legendgroup: "Variant",
-          name: "Variant",
+          legendgroup: "Custom",
+          name: "Custom",
           hovertemplate: variantAmountsAnalysisTokenIn.map(
             (amount, index) =>
               `Swap ${amount.toFixed(2)} ${
@@ -173,8 +167,8 @@ export function StableCurve() {
           y: initialAmountTabTokenIn,
           type: "scatter",
           mode: "lines",
-          legendgroup: "Baseline",
-          name: "Baseline",
+          legendgroup: "Initial",
+          name: "Initial",
           showlegend: false,
           hovertemplate: initialAmountsAnalysisTokenOut.map(
             (amount, index) =>
@@ -190,8 +184,8 @@ export function StableCurve() {
           y: variantAmountTabTokenIn,
           type: "scatter",
           mode: "lines",
-          legendgroup: "Variant",
-          name: "Variant",
+          legendgroup: "Custom",
+          name: "Custom",
           showlegend: false,
           hovertemplate: variantAmountsAnalysisTokenOut.map(
             (amount, index) =>

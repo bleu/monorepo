@@ -1,7 +1,7 @@
 "use client";
 
 import { PoolsWherePoolTypeQuery } from "@balancer-pool-metadata/gql/src/balancer-pools/__generated__/Ethereum";
-import React from "react";
+import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import Button from "#/components/Button";
@@ -9,6 +9,7 @@ import { Input } from "#/components/Input";
 import { Select, SelectItem } from "#/components/Select";
 import { pools } from "#/lib/gql";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
+import { truncate } from "#/utils/truncate";
 
 export interface PoolAttribute {
   poolId: string;
@@ -37,6 +38,7 @@ export function SearchPoolForm({
   poolTypeFilter?: string[];
   showPools?: boolean;
 }) {
+  const [comboBoxIsOpen, setComboBoxIsOpen] = useState(false);
   const {
     register,
     handleSubmit,
@@ -50,7 +52,6 @@ export function SearchPoolForm({
 
   const poolId = watch("poolId");
   const network = watch("network");
-  const poolSearch = watch("poolSearch");
 
   const gqlVariables = {
     poolId: poolId?.toLowerCase(),
@@ -60,7 +61,7 @@ export function SearchPoolForm({
     .gql(network || "1")
     .usePoolsWherePoolTypeInAndId(gqlVariables, { revalidateIfStale: true });
 
-  const { data: poolsDataList } = pools
+  const { data: poolsDataList, mutate: poolsDataListMutate } = pools
     .gql(network || "1")
     .usePoolsWherePoolType(
       poolTypeFilter?.length ? { poolTypes: poolTypeFilter } : {},
@@ -105,8 +106,15 @@ export function SearchPoolForm({
   }, [poolsData]);
 
   React.useLayoutEffect(() => {
+    poolsDataListMutate();
     resetField("poolId");
   }, [network]);
+
+  function closeCombobox() {
+    setTimeout(() => {
+      setComboBoxIsOpen(false);
+    }, 200);
+  }
 
   return (
     <form onSubmit={handleSubmit(handleSubmitForm)} className="px-2 pt-2">
@@ -127,50 +135,56 @@ export function SearchPoolForm({
           )}
         />
       </div>
-      {!showPools ? (
-        <>
-          <Input
-            label="Pool ID"
-            placeholder={"e.g 0x4467a48fjdan...0000692"}
-            {...register("poolId")}
-          />
-          <p className="text-sm text-tomato10">{errors.poolId?.message}</p>
-          <div className="mt-4 flex items-center justify-end">
-            <Button type="submit" disabled={!isPool || poolId === ""}>
-              Go
-            </Button>
+      <div className="relative">
+        <Input
+          label={!showPools ? "Pool ID" : "Pool Name or ID"}
+          placeholder={
+            !showPools
+              ? "e.g 0x4467a48fjdan...0000692"
+              : "Search Pool name or address"
+          }
+          {...register("poolId")}
+          onClick={!showPools ? undefined : () => setComboBoxIsOpen(true)}
+          onBlur={!showPools ? undefined : closeCombobox}
+        />
+        <p className="text-sm text-tomato10">{errors.poolId?.message}</p>
+        {comboBoxIsOpen && (
+          <div className="absolute max-h-52 overflow-y-scroll flex flex-col gap-y-2 my-2 scrollbar-thin scrollbar-thumb-slate12 scrollbar-track-blue2 bg-blue3 rounded z-50 border-[1px] border-blue6">
+            <div className="p-2">
+              {poolsDataList?.pools
+                .filter((pool) => filterPoolInput({ poolSearch: poolId, pool }))
+                ?.map((pool) => (
+                  <Button
+                    key={pool.id}
+                    type="button"
+                    className="bg-transparent border-transparent w-full"
+                    onClick={() => {
+                      resetField("poolId");
+                      handleSubmitForm({
+                        poolId: pool.id,
+                        network: network || "1",
+                      });
+                    }}
+                  >
+                    <div className="w-full flex flex-col items-start">
+                      <span>{pool.symbol}</span>
+                      <div className="w-full flex gap-x-1 text-slate9 items-center text-xs">
+                        <span>{truncate(pool.address)}</span>
+                        <span>|</span>
+                        <span>{pool.poolType}</span>
+                      </div>
+                    </div>
+                  </Button>
+                ))}
+            </div>
           </div>
-        </>
-      ) : (
-        <>
-          <Input
-            label="Pool Name or ID"
-            placeholder={"Search name or paste address"}
-            {...register("poolSearch")}
-          />
-          <p className="text-sm text-tomato10">{errors.poolId?.message}</p>
-          <div className="max-h-52 overflow-y-scroll flex flex-col gap-y-2 my-4 scrollbar-thin scrollbar-thumb-slate12 scrollbar-track-blue2">
-            {poolsDataList?.pools
-              .filter((pool) => filterPoolInput({ poolSearch, pool }))
-              ?.map((pool) => (
-                <Button
-                  key={pool.id}
-                  type="button"
-                  className="bg-transparent border-transparent"
-                  onClick={() => {
-                    resetField("poolId");
-                    handleSubmitForm({
-                      poolId: pool.id,
-                      network: network || "1",
-                    });
-                  }}
-                >
-                  {pool.name}
-                </Button>
-              ))}
-          </div>
-        </>
-      )}
+        )}
+      </div>
+      <div className="mt-4 flex items-center justify-end">
+        <Button type="submit" disabled={!isPool || poolId === ""}>
+          Go
+        </Button>
+      </div>
     </form>
   );
 }

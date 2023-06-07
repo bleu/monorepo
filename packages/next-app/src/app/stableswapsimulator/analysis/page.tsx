@@ -6,6 +6,7 @@ import { useStableSwap } from "#/contexts/StableSwapContext";
 import { DepthCost } from "../(components)/DepthCost";
 import { ImpactCurve } from "../(components)/ImpactCurve";
 import { StableCurve } from "../(components)/StableCurve";
+import { SwapSimulator } from "../(components)/SwapSimulator";
 import { TokensDistribution } from "../(components)/TokensDistribution";
 
 export default function Page() {
@@ -27,13 +28,17 @@ export default function Page() {
   }
 
   return (
-    <div className="flex flex-col h-full w-full overflow-auto gap-y-2">
+    <div className="flex flex-col h-full w-full overflow-auto gap-y-20">
       <div className="basis-1/3">
-        <div className="flex flex-row h-full w-full">
-          <DepthCost />;
+        <div className="flex flex-row h-full w-full gap-x-5">
+          <SwapSimulator />
           <TokensDistribution />
         </div>
       </div>
+      <div className="basis-1/3">
+        <DepthCost />
+      </div>
+
       <div className="basis-2/3">
         <Tabs defaultValue={tokensSymbol[indexCurrentTabToken]}>
           <Tabs.ItemTriggerWrapper>

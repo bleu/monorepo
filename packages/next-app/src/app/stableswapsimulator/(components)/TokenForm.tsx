@@ -196,6 +196,17 @@ export default function TokenForm({
           errorMessage={errors?.balance?.message?.toString() || ""}
         />
         <Input
+          label="Decimals"
+          placeholder="Define the token decimals"
+          defaultValue={currentToken?.decimal}
+          {...register("decimal", {
+            valueAsNumber: true,
+            min: 0,
+            required: true,
+          })}
+          errorMessage={errors?.decimal?.message?.toString() || ""}
+        />
+        <Input
           label="Rate"
           placeholder="Define the token price rate"
           defaultValue={currentToken?.rate}

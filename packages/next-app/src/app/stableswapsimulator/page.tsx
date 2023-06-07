@@ -51,6 +51,8 @@ export default function Page() {
   useEffect(() => {
     if (initialData.ampFactor) {
       setPoolDataStatus(dataStatus.IMPORTED);
+    } else {
+      setPoolDataStatus(dataStatus.NONE);
     }
   }, [initialData]);
   return (

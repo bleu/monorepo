@@ -54,6 +54,10 @@ export const poolWherePoolType = gql`
       address
       name
       poolType
+      symbol
+      tokens {
+        symbol
+      }
     }
   }
 `;

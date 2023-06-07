@@ -1,7 +1,7 @@
 "use client";
 
 import { bnum } from "@balancer-labs/sor";
-import { StableMath } from "@balancer-pool-metadata/math/src";
+import { MetaStableMath } from "@balancer-pool-metadata/math/src";
 import { PlotType } from "plotly.js";
 
 import Plot, { defaultAxisLayout } from "#/components/Plot";
@@ -86,7 +86,7 @@ export function DepthCost() {
       showlegend: false,
       yaxis: "y2",
       xaxis: "x2",
-      hovertemplate: depthCostAmounts.custom.in.map(
+      hovertemplate: depthCostAmounts.initial.out.map(
         (amount, i) =>
           `Swap ${dataX[i]} for ${amount.toFixed()} ${
             analysisToken?.symbol
@@ -104,7 +104,7 @@ export function DepthCost() {
       showlegend: false,
       yaxis: "y2",
       xaxis: "x2",
-      hovertemplate: depthCostAmounts.custom.in.map(
+      hovertemplate: depthCostAmounts.custom.out.map(
         (amount, i) =>
           `Swap ${dataX[i]} for ${amount.toFixed()} ${
             analysisToken?.symbol
@@ -158,33 +158,34 @@ function calculateDepthCostAmount(
 ) {
   if (!data.swapFee || !data.ampFactor) return;
 
-  const { preparePoolPairData, indexAnalysisToken } = useStableSwap();
+  const { indexAnalysisToken } = useStableSwap();
 
   const indexIn = poolSide === "in" ? indexAnalysisToken : pairTokenIndex;
   const indexOut = poolSide === "in" ? pairTokenIndex : indexAnalysisToken;
 
-  const poolPairData = preparePoolPairData({
+  const poolPairData = MetaStableMath.preparePoolPairData({
     indexIn: indexIn,
     indexOut: indexOut,
     swapFee: data?.swapFee,
-    allBalances: data?.tokens?.map((token) => token.balance),
+    balances: data?.tokens?.map((token) => token.balance),
+    rates: data?.tokens?.map((token) => token.rate),
     amp: data?.ampFactor,
+    decimals: data?.tokens?.map((token) => token.decimal),
   });
 
-  const currentSpotPriceFromStableMath = StableMath._spotPrice(poolPairData);
+  const currentSpotPriceFromStableMath = MetaStableMath.spotPrice(poolPairData);
 
   const newSpotPriceToStableMath = currentSpotPriceFromStableMath.times(
     bnum(1.02)
   );
 
   if (poolSide === "in") {
-    StableMath._tokenInForExactSpotPriceAfterSwap(
+    return MetaStableMath.tokenInForExactSpotPriceAfterSwap(
       newSpotPriceToStableMath,
       poolPairData
     ).toNumber();
   }
-
-  return StableMath._tokenInForExactSpotPriceAfterSwap(
+  return MetaStableMath.tokenOutForExactSpotPriceAfterSwap(
     newSpotPriceToStableMath,
     poolPairData
   ).toNumber();

@@ -1,20 +1,14 @@
 "use client";
 
-import { StableMath } from "@balancer-pool-metadata/math/src";
+import { MetaStableMath } from "@balancer-pool-metadata/math/src";
 
 import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
 import { useStableSwap } from "#/contexts/StableSwapContext";
 
 export function ImpactCurve() {
-  const {
-    initialData,
-    customData,
-    indexAnalysisToken,
-    indexCurrentTabToken,
-    preparePoolPairData,
-    numberToOldBigNumber,
-  } = useStableSwap();
+  const { initialData, customData, indexAnalysisToken, indexCurrentTabToken } =
+    useStableSwap();
 
   if (
     !initialData ||
@@ -33,47 +27,55 @@ export function ImpactCurve() {
     amp,
     indexIn,
     indexOut,
-    allBalances,
+    balances,
+    rates,
+    decimals,
   }: {
     balance: number | undefined;
     swapFee: number;
     amp: number;
     indexIn: number;
     indexOut: number;
-    allBalances: number[];
+    balances: number[];
+    rates: number[];
+    decimals: number[];
   }) => {
     const amountsIn = calculateAmounts({ balance });
 
     const amountsOut = amountsIn.map((amount) => -1 * amount);
 
-    const poolPairDataIn = preparePoolPairData({
+    const poolPairDataIn = MetaStableMath.preparePoolPairData({
       indexIn,
       indexOut,
       swapFee,
-      allBalances,
+      balances,
       amp,
+      rates,
+      decimals,
     });
 
     const impactTabTokenOut = amountsIn.map(
       (amount) =>
-        StableMath._priceImpactForExactTokenInSwap(
-          numberToOldBigNumber(amount),
+        MetaStableMath.priceImpactForExactTokenInSwap(
+          MetaStableMath.numberToOldBigNumber(amount),
           poolPairDataIn
         ).toNumber() * 100
     );
 
-    const poolPairDataOut = preparePoolPairData({
+    const poolPairDataOut = MetaStableMath.preparePoolPairData({
       indexIn: indexOut,
       indexOut: indexIn,
       swapFee,
-      allBalances,
+      balances,
       amp,
+      rates,
+      decimals,
     });
 
     const impactTabTokenIn = amountsIn.map(
       (amount) =>
-        StableMath._priceImpactForExactTokenOutReversedSwap(
-          numberToOldBigNumber(amount),
+        MetaStableMath.priceImpactForExactTokenOutReversedSwap(
+          MetaStableMath.numberToOldBigNumber(amount),
           poolPairDataOut
         ).toNumber() * 100
     );
@@ -97,7 +99,9 @@ export function ImpactCurve() {
     amp: initialData.ampFactor,
     indexIn: indexAnalysisToken,
     indexOut: indexCurrentTabToken,
-    allBalances: initialData.tokens.map((token) => token.balance),
+    balances: initialData.tokens.map((token) => token.balance),
+    rates: initialData.tokens.map((token) => token.rate),
+    decimals: initialData.tokens.map((token) => token.decimal),
   });
 
   const {
@@ -111,7 +115,9 @@ export function ImpactCurve() {
     amp: customData?.ampFactor ? customData.ampFactor : initialData.ampFactor,
     indexIn: indexAnalysisToken,
     indexOut: indexCurrentTabToken,
-    allBalances: initialData.tokens.map((token) => token.balance),
+    balances: customData.tokens.map((token) => token.balance),
+    rates: customData.tokens.map((token) => token.rate),
+    decimals: customData.tokens.map((token) => token.decimal),
   });
 
   return (

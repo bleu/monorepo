@@ -1,5 +1,5 @@
 import { OldBigNumber } from "@balancer-labs/sor";
-import { StableMath } from "@balancer-pool-metadata/math/src";
+import { MetaStableMath } from "@balancer-pool-metadata/math/src";
 import { Controller, useForm } from "react-hook-form";
 
 import { Input } from "#/components/Input";
@@ -205,41 +205,45 @@ function calculateSimulation({
     return;
   }
 
-  const { preparePoolPairData, numberToOldBigNumber } = useStableSwap();
-  const poolPairData = preparePoolPairData({
+  const poolPairData = MetaStableMath.preparePoolPairData({
     indexIn: tokenInIndex,
     indexOut: tokenOutIndex,
     swapFee: data?.swapFee,
-    allBalances: data?.tokens.map((token) => token.balance),
+    balances: data?.tokens.map((token) => token.balance),
     amp: data?.ampFactor,
+    rates: data?.tokens.map((token) => token.rate),
+    decimals: data?.tokens.map((token) => token.decimal),
   });
-  const OldBigNumberAmount = numberToOldBigNumber(amount) as OldBigNumber;
+
+  const OldBigNumberAmount = MetaStableMath.numberToOldBigNumber(
+    amount
+  ) as OldBigNumber;
 
   let amountIn = OldBigNumberAmount;
-  let amountOut = StableMath._exactTokenInForTokenOut(
+  let amountOut = MetaStableMath.exactTokenInForTokenOut(
     OldBigNumberAmount,
     poolPairData
   );
-  let effectivePrice = StableMath._effectivePriceForExactTokenInSwap(
+  let effectivePrice = MetaStableMath.effectivePriceForExactTokenInSwap(
     OldBigNumberAmount,
     poolPairData
   );
-  let priceImpact = StableMath._priceImpactForExactTokenInSwap(
+  let priceImpact = MetaStableMath.priceImpactForExactTokenInSwap(
     OldBigNumberAmount,
     poolPairData
   );
 
   if (swapType == "Exact Out") {
-    amountIn = StableMath._tokenInForExactTokenOut(
+    amountIn = MetaStableMath.tokenInForExactTokenOut(
       OldBigNumberAmount,
       poolPairData
     );
     amountOut = OldBigNumberAmount;
-    effectivePrice = StableMath._effectivePriceForExactTokenOutSwap(
+    effectivePrice = MetaStableMath.effectivePriceForExactTokenOutSwap(
       OldBigNumberAmount,
       poolPairData
     );
-    priceImpact = StableMath._priceImpactForExactTokenOutSwap(
+    priceImpact = MetaStableMath.priceImpactForExactTokenOutSwap(
       OldBigNumberAmount,
       poolPairData
     );

@@ -6,6 +6,8 @@ import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
 import { useStableSwap } from "#/contexts/StableSwapContext";
 
+import { calculateCurvePoints } from "./StableCurve";
+
 export function ImpactCurve() {
   const { initialData, customData, indexAnalysisToken, indexCurrentTabToken } =
     useStableSwap();
@@ -40,7 +42,7 @@ export function ImpactCurve() {
     rates: number[];
     decimals: number[];
   }) => {
-    const amountsIn = calculateAmounts({ balance });
+    const amountsIn = calculateCurvePoints({ balance, start: 0.001 });
 
     const amountsOut = amountsIn.map((amount) => -1 * amount);
 
@@ -211,31 +213,17 @@ export function ImpactCurve() {
       layout={{
         xaxis: {
           title: `Amount of ${tokensSymbol[indexAnalysisToken]}`,
+          range: [
+            initialAmountsAnalysisTokenOut[100],
+            initialAmountsAnalysisTokenIn[100],
+          ],
         },
         yaxis: {
           title: `${tokensSymbol[indexCurrentTabToken]}/${tokensSymbol[indexAnalysisToken]} price impact (%)`,
+          range: [initialImpactTabTokenOut[100], initialImpactTabTokenIn[100]],
         },
       }}
       className="w-full h-1/2"
     />
-  );
-}
-
-function calculateAmounts({
-  balance,
-  start = 0.0001,
-}: {
-  balance?: number;
-  start?: number;
-}) {
-  if (!balance) return [];
-  const numberOfPoints = 20;
-  const resizedBalance = balance * 0.5;
-
-  const step = (resizedBalance - start) / (numberOfPoints - 1);
-
-  return Array.from(
-    { length: (resizedBalance - start) / step + 1 },
-    (value, index) => start + index * step
   );
 }

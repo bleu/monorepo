@@ -2,9 +2,9 @@ import Image from "next/image";
 
 import handleGoToPool from "#/app/metadata/(handles)/handleGoToPool";
 import ConnectWalletImage from "#/assets/connect-wallet.svg";
-import SearchPoolForm from "#/components/SearchPoolForm";
 
 import { Dialog } from "./Dialog";
+import { SearchPoolForm } from "./SearchPoolForm";
 
 export default function WalletNotConnected({
   isInternalManager = false,
@@ -18,7 +18,6 @@ export default function WalletNotConnected({
       </div>
       {!isInternalManager && (
         <div className="text-center text-slate11 text-lg">
-          {/* TODO: */}
           Alternatively, open a pool directly clicking&nbsp;
           <Dialog
             title="Go to pool"

@@ -10,7 +10,7 @@ import { useNetwork } from "wagmi";
 import balancerSymbol from "#/assets/balancer-symbol.svg";
 import { Dialog } from "#/components/Dialog";
 import { Header, HeaderNetworkMismatchAlert } from "#/components/Header";
-import SearchPoolForm from "#/components/SearchPoolForm";
+import { SearchPoolForm } from "#/components/SearchPoolForm";
 import Sidebar from "#/components/Sidebar";
 import { Spinner } from "#/components/Spinner";
 import { CheckSupportedChains } from "#/components/SupportedChain";

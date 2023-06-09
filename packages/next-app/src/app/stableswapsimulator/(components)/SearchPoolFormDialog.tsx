@@ -3,7 +3,7 @@
 import { PropsWithChildren } from "react";
 
 import { Dialog } from "#/components/Dialog";
-import SearchPoolForm from "#/components/SearchPoolForm";
+import { SearchPoolForm } from "#/components/SearchPoolForm";
 import { useStableSwap } from "#/contexts/StableSwapContext";
 
 export function SearchPoolFormDialog({ children }: PropsWithChildren) {
@@ -16,6 +16,7 @@ export function SearchPoolFormDialog({ children }: PropsWithChildren) {
         <SearchPoolForm
           poolTypeFilter={["Stable", "MetaStable", "ComposableStable"]}
           onSubmit={handleImportPoolParametersById}
+          showPools
         />
       }
     >

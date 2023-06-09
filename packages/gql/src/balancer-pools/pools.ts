@@ -37,6 +37,31 @@ export const poolWherePoolTypeInAndId = gql`
   }
 `;
 
+export const poolWherePoolType = gql`
+  query PoolsWherePoolType(
+    $poolTypes: [String!] = [
+      "Weighted"
+      "ComposableStable"
+      "Stable"
+      "MetaStable"
+      "Element"
+      "LiquidityBootstrapping"
+      "Linear"
+    ]
+  ) {
+    pools(where: { poolType_in: $poolTypes }) {
+      id
+      address
+      name
+      poolType
+      symbol
+      tokens {
+        symbol
+      }
+    }
+  }
+`;
+
 export const poolById = gql`
   query Pool($poolId: ID!) {
     pool(id: $poolId) {

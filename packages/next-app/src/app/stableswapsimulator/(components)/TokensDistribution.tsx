@@ -27,23 +27,21 @@ const colors = [
 export function TokensDistribution() {
   const { initialData, customData } = useStableSwap();
   return (
-    <div className="flex flex-col w-1/3 gap-y-2 text-slate12">
+    <div className="flex flex-col w-1/4 gap-y-4 text-slate12">
       <PlotTitle
         title="Tokens Distribution"
         tooltip="Indicates how much each token balance represent of the pool total"
         justifyCenter={false}
       />
-      <div className="flex flex-col gap-y-4">
-        <div className="flex flex-col">
-          <label className="mb-2 block text-sm">Initial Distribution</label>
-          <TokenDistributionChart tokens={initialData?.tokens} />
-        </div>
-        <div className="flex flex-col">
-          <label className="mb-2 block text-sm ">Custom Distribution</label>
-          <TokenDistributionChart tokens={customData?.tokens} />
-        </div>
+      <div className="flex flex-col">
+        <label className="mb-2 block text-sm">Initial Distribution</label>
+        <TokenDistributionChart tokens={initialData?.tokens} />
       </div>
-      <div className="flex h-1/3 gap-x-2">
+      <div className="flex flex-col">
+        <label className="mb-2 block text-sm ">Custom Distribution</label>
+        <TokenDistributionChart tokens={customData?.tokens} />
+      </div>
+      <div className="flex flex-row gap-x-2">
         {initialData?.tokens.map((token, index) => (
           <div
             key={token.symbol}

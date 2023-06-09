@@ -241,6 +241,18 @@ function priceImpactForExactTokenInReversedSwap(
   return bnum(1).minus(spotPriceMetastable.div(effectivePriceMetastable));
 }
 
+function priceImpactForExactTokenOutSwap(
+  amountOut: OldBigNumber,
+  poolPairData: MetaStablePoolPairData
+): OldBigNumber {
+  const effectivePriceMetastable = effectivePriceForExactTokenOutSwap(
+    amountOut,
+    poolPairData
+  );
+  const spotPriceMetastable = spotPrice(poolPairData);
+  return bnum(1).minus(effectivePriceMetastable.div(spotPriceMetastable));
+}
+
 function priceImpactForExactTokenOutReversedSwap(
   amountOut: OldBigNumber,
   poolPairData: MetaStablePoolPairData
@@ -262,7 +274,10 @@ export const MetaStableMath = {
   spotPrice,
   tokenInForExactSpotPriceAfterSwap,
   tokenOutForExactSpotPriceAfterSwap,
+  effectivePriceForExactTokenInSwap,
+  effectivePriceForExactTokenOutSwap,
   priceImpactForExactTokenInSwap,
   priceImpactForExactTokenInReversedSwap,
+  priceImpactForExactTokenOutSwap,
   priceImpactForExactTokenOutReversedSwap,
 } as const;

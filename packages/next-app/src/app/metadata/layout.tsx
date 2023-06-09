@@ -1,8 +1,9 @@
 "use client";
 
-import { Network } from "@balancer-pool-metadata/shared";
+import { Network, networkIdEnumMap } from "@balancer-pool-metadata/shared";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import * as Separator from "@radix-ui/react-separator";
+import { useRouter } from "next/navigation";
 import * as React from "react";
 import { Suspense } from "react";
 import { useNetwork } from "wagmi";
@@ -10,7 +11,7 @@ import { useNetwork } from "wagmi";
 import balancerSymbol from "#/assets/balancer-symbol.svg";
 import { Dialog } from "#/components/Dialog";
 import { Header, HeaderNetworkMismatchAlert } from "#/components/Header";
-import SearchPoolForm from "#/components/SearchPoolForm";
+import { PoolAttribute, SearchPoolForm } from "#/components/SearchPoolForm";
 import Sidebar from "#/components/Sidebar";
 import { Spinner } from "#/components/Spinner";
 import { CheckSupportedChains } from "#/components/SupportedChain";
@@ -18,11 +19,18 @@ import { getNetwork, NetworksContextProvider } from "#/contexts/networks";
 import { PoolMetadataProvider } from "#/contexts/PoolMetadataContext";
 
 import OwnedPoolsSidebarItems from "./(components)/OwnedPoolsSidebarItems";
-import handleGoToPool from "./(handles)/handleGoToPool";
 
 export default function Layout({ children }: React.PropsWithChildren) {
+  const { push } = useRouter();
   const { chain } = useNetwork();
   const network = getNetwork(chain?.name);
+
+  function handleGoToPool(formData: PoolAttribute) {
+    const networkId = formData.network ?? chain?.id.toString();
+    const networkName =
+      networkIdEnumMap[networkId as keyof typeof networkIdEnumMap];
+    push(`/metadata/${networkName}/pool/${formData.poolId}`);
+  }
 
   return (
     <NetworksContextProvider>

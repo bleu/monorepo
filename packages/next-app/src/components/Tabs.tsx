@@ -19,11 +19,13 @@ function useTabContext() {
 export function Tabs({
   children,
   defaultValue,
-}: React.PropsWithChildren<{ defaultValue: string }>) {
+  value,
+}: React.PropsWithChildren<{ defaultValue: string; value?: string }>) {
   return (
     <TabContext.Provider value={{}}>
       <TabsPrimitive.Root
         className="flex flex-col w-full h-full bg-blue2 text-slate8"
+        value={value}
         defaultValue={defaultValue}
       >
         <TabsPrimitive.List className="shrink-0 flex border-b border-blue1 bg-blue3 flex-col">

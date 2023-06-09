@@ -19,6 +19,8 @@ export default function CustomDataForm() {
     setCustomData,
     setIndexAnalysisToken,
     indexAnalysisToken,
+    indexCurrentTabToken,
+    setIndexCurrentTabToken,
   } = useStableSwap();
 
   const {
@@ -63,7 +65,16 @@ export default function CustomDataForm() {
           Analysis Token
         </label>
         <Select
-          onValueChange={(i) => setIndexAnalysisToken(Number(i))}
+          onValueChange={(i) => {
+            if (indexCurrentTabToken === Number(i)) {
+              setIndexCurrentTabToken(
+                initialData?.tokens.findIndex(
+                  (value, index) => index !== Number(i)
+                )
+              );
+            }
+            setIndexAnalysisToken(Number(i));
+          }}
           defaultValue={indexAnalysisToken.toString()}
         >
           {initialData?.tokens.map(({ symbol }, index) => (

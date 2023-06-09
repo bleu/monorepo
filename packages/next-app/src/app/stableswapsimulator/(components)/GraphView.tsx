@@ -35,7 +35,10 @@ export function GraphView() {
         </div>
       </div>
       <div className="basis-2/3">
-        <Tabs defaultValue={tokensSymbol[indexCurrentTabToken]}>
+        <Tabs
+          defaultValue={tokensSymbol[indexCurrentTabToken]}
+          value={tokensSymbol[indexCurrentTabToken]}
+        >
           <Tabs.ItemTriggerWrapper>
             {tabTokens.map((symbol) => (
               <Tabs.ItemTrigger

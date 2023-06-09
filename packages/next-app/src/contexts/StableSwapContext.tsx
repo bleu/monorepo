@@ -97,6 +97,9 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
       setInitialData(defaultBaselineData);
       setCustomData(defaultBaselineData);
     }
+    if (pathname === "/stableswapsimulator/analysis") {
+      setIsGraphLoading(false);
+    }
   }, [pathname]);
 
   return (

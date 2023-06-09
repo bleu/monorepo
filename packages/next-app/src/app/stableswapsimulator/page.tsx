@@ -47,7 +47,6 @@ export default function Page() {
   const [poolDataStatus, setPoolDataStatus] = useState<dataStatus>(
     dataStatus.NONE
   );
-  if (isGraphLoading) return <Spinner />;
   useEffect(() => {
     if (initialData.ampFactor) {
       setPoolDataStatus(dataStatus.IMPORTED);
@@ -57,13 +56,19 @@ export default function Page() {
   }, [initialData]);
   return (
     <div className="w-full rounded-3xl items-center py-16 px-12 md:py-20 flex flex-col">
-      <div className="text-center text-amber9 text-3xl">
-        {content[poolDataStatus].title}
-      </div>
-      <div className="text-center text-slate11 text-lg">
-        {content[poolDataStatus].subtitle}
-      </div>
-      <Image src={ConnectWalletImage} height={500} width={500} alt="" />
+      {isGraphLoading ? (
+        <Spinner />
+      ) : (
+        <>
+          <div className="text-center text-amber9 text-3xl">
+            {content[poolDataStatus].title}
+          </div>
+          <div className="text-center text-slate11 text-lg">
+            {content[poolDataStatus].subtitle}
+          </div>
+          <Image src={ConnectWalletImage} height={500} width={500} alt="" />
+        </>
+      )}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { PoolsWherePoolTypeQuery } from "@balancer-pool-metadata/gql/src/balancer-pools/__generated__/Ethereum";
-import React, { useState } from "react";
+import React from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import Button from "#/components/Button";
@@ -38,7 +38,7 @@ export function SearchPoolForm({
   poolTypeFilter?: string[];
   showPools?: boolean;
 }) {
-  const [comboBoxIsOpen, setComboBoxIsOpen] = useState(false);
+  const [comboBoxIsOpen, setComboBoxIsOpen] = React.useState(false);
   const {
     register,
     handleSubmit,

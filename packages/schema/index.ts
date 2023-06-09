@@ -181,7 +181,7 @@ export const StableSwapTokensSchema = z.object({
 });
 
 export const StableSwapSimulatorDataSchema = z.object({
-  swapFee: z.number().nonnegative(),
+  swapFee: z.number().positive(),
   ampFactor: z.number().positive(),
   tokens: z.array(StableSwapTokensSchema).min(2),
 });

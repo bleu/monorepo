@@ -42,8 +42,6 @@ export function StableCurve() {
   }) => {
     const amountsIn = calculateCurvePoints({ balance });
 
-    const amountsOut = amountsIn.map((amount) => -1 * amount);
-
     const poolPairDataIn = MetaStableMath.preparePoolPairData({
       indexIn,
       indexOut,
@@ -72,18 +70,19 @@ export function StableCurve() {
       decimals,
     });
 
-    const amountsTabTokenIn = amountsIn.map((amount) =>
-      MetaStableMath.exactTokenInForTokenOut(
-        MetaStableMath.numberToOldBigNumber(amount),
-        poolPairDataOut
-      ).toNumber()
+    const amountsOut = amountsIn.map(
+      (amount) =>
+        MetaStableMath.exactTokenInForTokenOut(
+          MetaStableMath.numberToOldBigNumber(amount),
+          poolPairDataOut
+        ).toNumber() * -1
     );
 
     return {
       amountsIn,
       amountsOut,
       amountsTabTokenOut,
-      amountsTabTokenIn,
+      amountsTabTokenIn: amountsIn,
     };
   };
 
@@ -122,7 +121,7 @@ export function StableCurve() {
   return (
     <Plot
       title="Swap Curve"
-      toolTip="Considering a pair of tokens A and B. It indicates the quantity of token B that will be received when swapping a specific amount of token A"
+      toolTip="It indicates the quantity of token that will be received when swapping a specific amount of another token. The amount sign is based on the pool point of view."
       data={[
         {
           x: initialAmountsAnalysisTokenIn,

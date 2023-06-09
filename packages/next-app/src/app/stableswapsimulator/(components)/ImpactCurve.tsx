@@ -44,8 +44,6 @@ export function ImpactCurve() {
   }) => {
     const amountsIn = calculateCurvePoints({ balance, start: 0.001 });
 
-    const amountsOut = amountsIn.map((amount) => -1 * amount);
-
     const poolPairDataIn = MetaStableMath.preparePoolPairData({
       indexIn,
       indexOut,
@@ -74,9 +72,17 @@ export function ImpactCurve() {
       decimals,
     });
 
+    const amountsOut = amountsIn.map(
+      (amount) =>
+        MetaStableMath.exactTokenInForTokenOut(
+          MetaStableMath.numberToOldBigNumber(amount),
+          poolPairDataOut
+        ).toNumber() * -1
+    );
+
     const impactTabTokenIn = amountsIn.map(
       (amount) =>
-        MetaStableMath.priceImpactForExactTokenOutReversedSwap(
+        MetaStableMath.priceImpactForExactTokenInReversedSwap(
           MetaStableMath.numberToOldBigNumber(amount),
           poolPairDataOut
         ).toNumber() * 100
@@ -125,7 +131,7 @@ export function ImpactCurve() {
   return (
     <Plot
       title="Price Impact Curve"
-      toolTip="Indicates how much the swapping of a particular amount of token effects on the Price Impact (rate between the price of both tokens)"
+      toolTip="Indicates how much the swapping of a particular amount of token effects on the Price Impact (rate between the price of both tokens). The sign is based on the pool point of view."
       data={[
         {
           x: initialAmountsAnalysisTokenIn,
@@ -220,7 +226,7 @@ export function ImpactCurve() {
         },
         yaxis: {
           title: `${tokensSymbol[indexCurrentTabToken]}/${tokensSymbol[indexAnalysisToken]} price impact (%)`,
-          range: [initialImpactTabTokenOut[100], initialImpactTabTokenIn[100]],
+          range: [initialImpactTabTokenIn[100], initialImpactTabTokenOut[100]],
         },
       }}
       className="w-full h-1/2"

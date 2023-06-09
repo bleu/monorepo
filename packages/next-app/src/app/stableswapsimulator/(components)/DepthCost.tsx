@@ -117,9 +117,9 @@ export function DepthCost() {
 
   const props = {
     data: data,
-    title: "Depth cost (-/+ 2% of price impact)",
+    title: "Depth cost (-/+ 2% of price change)",
     toolTip:
-      "Indicates the amount of tokens needed on a swap to alter the Price Impact (rate between the price of both tokens) to -2% and +2%",
+      "Indicates the amount of tokens needed on a swap to alter the spot price (rate between the price of both tokens) to -2% and +2%",
     layout: {
       margin: { l: 3, r: 3 },
       xaxis: {

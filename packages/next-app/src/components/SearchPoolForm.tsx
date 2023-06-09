@@ -170,8 +170,6 @@ export function SearchPoolForm({
                       <span>{pool.symbol}</span>
                       <div className="w-full flex gap-x-1 text-slate9 items-center text-xs">
                         <span>{truncate(pool.address)}</span>
-                        <span>|</span>
-                        <span>{pool.poolType}</span>
                       </div>
                     </div>
                   </Button>

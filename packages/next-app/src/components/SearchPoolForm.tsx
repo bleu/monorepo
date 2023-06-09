@@ -151,29 +151,33 @@ export function SearchPoolForm({
         {comboBoxIsOpen && (
           <div className="absolute max-h-52 overflow-y-scroll flex flex-col gap-y-2 my-2 scrollbar-thin scrollbar-thumb-slate12 scrollbar-track-blue2 bg-blue3 rounded z-50 border-[1px] border-blue6">
             <div className="p-2">
-              {poolsDataList?.pools
-                .filter((pool) => filterPoolInput({ poolSearch: poolId, pool }))
-                ?.map((pool) => (
-                  <Button
-                    key={pool.id}
-                    type="button"
-                    className="bg-transparent border-transparent w-full"
-                    onClick={() => {
-                      resetField("poolId");
-                      handleSubmitForm({
-                        poolId: pool.id,
-                        network: network || "1",
-                      });
-                    }}
-                  >
-                    <div className="w-full flex flex-col items-start">
-                      <span>{pool.symbol}</span>
-                      <div className="w-full flex gap-x-1 text-slate9 items-center text-xs">
-                        <span>{truncate(pool.address)}</span>
+              {poolsDataList?.pools &&
+                poolsDataList?.pools.length > 0 &&
+                poolsDataList?.pools
+                  .filter((pool) =>
+                    filterPoolInput({ poolSearch: poolId, pool })
+                  )
+                  ?.map((pool) => (
+                    <Button
+                      key={pool.id}
+                      type="button"
+                      className="bg-transparent border-transparent w-full"
+                      onClick={() => {
+                        resetField("poolId");
+                        handleSubmitForm({
+                          poolId: pool.id,
+                          network: network || "1",
+                        });
+                      }}
+                    >
+                      <div className="w-full flex flex-col items-start">
+                        <span>{pool.symbol}</span>
+                        <div className="w-full flex gap-x-1 text-slate9 items-center text-xs">
+                          <span>{truncate(pool.address)}</span>
+                        </div>
                       </div>
-                    </div>
-                  </Button>
-                ))}
+                    </Button>
+                  ))}
             </div>
           </div>
         )}

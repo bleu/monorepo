@@ -210,12 +210,12 @@ export function StableCurve() {
 
 export function calculateCurvePoints({
   balance,
-  start = 10,
+  start = 0,
 }: {
   balance?: number;
   start?: number;
 }) {
-  if (!balance || !start) return [];
+  if (!balance || typeof start == "undefined") return [];
   const numberOfPoints = 100;
   const initialValue = balance * 0.001;
   const stepRatio = Math.pow(balance / initialValue, 1 / (numberOfPoints - 1));

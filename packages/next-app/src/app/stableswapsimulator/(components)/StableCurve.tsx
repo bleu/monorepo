@@ -22,7 +22,6 @@ export function StableCurve() {
 
   //TODO: move this function to outside the component once the math PR is merged
   const calculateTokenAmounts = ({
-    balance,
     swapFee,
     amp,
     indexIn,
@@ -31,7 +30,6 @@ export function StableCurve() {
     rates,
     decimals,
   }: {
-    balance: number | undefined;
     swapFee: number;
     amp: number;
     indexIn: number;
@@ -40,9 +38,12 @@ export function StableCurve() {
     rates: number[];
     decimals: number[];
   }) => {
-    const amountsIn = calculateAmounts({ balance });
-
-    const amountsOut = amountsIn.map((amount) => -1 * amount);
+    const amountsAnalysisTokenIn = calculateCurvePoints({
+      balance: balances[indexIn],
+    });
+    const amountsTabTokenIn = calculateCurvePoints({
+      balance: balances[indexOut],
+    });
 
     const poolPairDataIn = MetaStableMath.preparePoolPairData({
       indexIn,
@@ -54,7 +55,7 @@ export function StableCurve() {
       decimals,
     });
 
-    const amountsTabTokenOut = amountsIn.map(
+    const amountsTabTokenOut = amountsAnalysisTokenIn.map(
       (amount) =>
         MetaStableMath.exactTokenInForTokenOut(
           MetaStableMath.numberToOldBigNumber(amount),
@@ -72,28 +73,28 @@ export function StableCurve() {
       decimals,
     });
 
-    const amountsTabTokenIn = amountsIn.map((amount) =>
-      MetaStableMath.exactTokenInForTokenOut(
-        MetaStableMath.numberToOldBigNumber(amount),
-        poolPairDataOut
-      ).toNumber()
+    const amountsAnalysisTokenOut = amountsTabTokenIn.map(
+      (amount) =>
+        MetaStableMath.exactTokenInForTokenOut(
+          MetaStableMath.numberToOldBigNumber(amount),
+          poolPairDataOut
+        ).toNumber() * -1
     );
 
     return {
-      amountsIn,
-      amountsOut,
+      amountsAnalysisTokenIn,
+      amountsAnalysisTokenOut,
       amountsTabTokenOut,
       amountsTabTokenIn,
     };
   };
 
   const {
-    amountsIn: initialAmountsAnalysisTokenIn,
-    amountsOut: initialAmountsAnalysisTokenOut,
+    amountsAnalysisTokenIn: initialAmountsAnalysisTokenIn,
+    amountsAnalysisTokenOut: initialAmountsAnalysisTokenOut,
     amountsTabTokenOut: initialAmountTabTokenOut,
     amountsTabTokenIn: initialAmountTabTokenIn,
   } = calculateTokenAmounts({
-    balance: initialData.tokens[indexAnalysisToken]?.balance,
     swapFee: initialData.swapFee,
     amp: initialData.ampFactor,
     indexIn: indexAnalysisToken,
@@ -104,12 +105,11 @@ export function StableCurve() {
   });
 
   const {
-    amountsIn: variantAmountsAnalysisTokenIn,
-    amountsOut: variantAmountsAnalysisTokenOut,
+    amountsAnalysisTokenIn: variantAmountsAnalysisTokenIn,
+    amountsAnalysisTokenOut: variantAmountsAnalysisTokenOut,
     amountsTabTokenOut: variantAmountTabTokenOut,
     amountsTabTokenIn: variantAmountTabTokenIn,
   } = calculateTokenAmounts({
-    balance: customData?.tokens?.[indexAnalysisToken]?.balance,
     swapFee: customData?.swapFee ? customData.swapFee : initialData.swapFee,
     amp: customData?.ampFactor ? customData.ampFactor : initialData.ampFactor,
     indexIn: indexAnalysisToken,
@@ -122,7 +122,7 @@ export function StableCurve() {
   return (
     <Plot
       title="Swap Curve"
-      toolTip="Considering a pair of tokens A and B. It indicates the quantity of token B that will be received when swapping a specific amount of token A"
+      toolTip="It indicates the quantity of token that will be received when swapping a specific amount of another token. The amount sign is based on the pool point of view."
       data={[
         {
           x: initialAmountsAnalysisTokenIn,
@@ -194,9 +194,14 @@ export function StableCurve() {
       layout={{
         xaxis: {
           title: `Amount of ${tokensSymbol[indexAnalysisToken]}`,
+          range: [
+            initialAmountsAnalysisTokenOut[100],
+            initialAmountsAnalysisTokenIn[100],
+          ],
         },
         yaxis: {
           title: `Amount of ${tokensSymbol[indexCurrentTabToken]}`,
+          range: [initialAmountTabTokenOut[100], initialAmountTabTokenIn[100]],
         },
       }}
       className="w-full h-1/2"
@@ -204,20 +209,23 @@ export function StableCurve() {
   );
 }
 
-function calculateAmounts({
+export function calculateCurvePoints({
   balance,
   start = 0,
 }: {
   balance?: number;
   start?: number;
 }) {
-  if (!balance) return [];
-  const numberOfPoints = 20;
-  const resizedBalance = balance * 0.5;
-  const step = (resizedBalance - start) / (numberOfPoints - 1);
+  if (!balance || typeof start == "undefined") return [];
+  const numberOfPoints = 100;
+  const initialValue = balance * 0.001;
+  const stepRatio = Math.pow(balance / initialValue, 1 / (numberOfPoints - 1));
 
-  return Array.from(
-    { length: (resizedBalance - start) / step + 1 },
-    (value, index) => start + index * step
-  );
+  return [
+    start,
+    ...Array.from(
+      { length: numberOfPoints + 20 },
+      (_, index) => initialValue * stepRatio ** index
+    ),
+  ];
 }

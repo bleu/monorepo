@@ -34,6 +34,7 @@ export const defaultPlotProps = {
     margin: {
       b: 10,
       t: 30,
+      r: 200,
     },
     plot_bgcolor: blueDarkA.blueA1,
     paper_bgcolor: blueDarkA.blueA1,
@@ -58,6 +59,7 @@ export const defaultPlotProps = {
     showEditInChartStudio: false,
     showLink: false,
     watermark: false,
+    scrowZoom: true,
   },
   revision: 0,
 };

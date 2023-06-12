@@ -28,7 +28,8 @@ export default function Page() {
   }
 
   return (
-    <div className="flex flex-col h-full w-full overflow-auto gap-y-20">
+    <div className="flex flex-col w-full overflow-auto gap-y-20 pt-8 pr-8 max-h-[calc(100vh-132px)]">
+      {/* (h-screen - (header's height + footer's height)) = graph's height space */}
       <div className="basis-1/3">
         <div className="flex flex-row h-full w-full gap-x-5">
           <SwapSimulator />
@@ -38,7 +39,6 @@ export default function Page() {
       <div className="basis-1/3">
         <DepthCost />
       </div>
-
       <div className="basis-2/3">
         <Tabs
           defaultValue={tokensSymbol[indexCurrentTabToken]}

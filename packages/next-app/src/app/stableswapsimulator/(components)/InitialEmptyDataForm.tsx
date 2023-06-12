@@ -24,7 +24,8 @@ interface InitialForm {
 
 export default function InitialEmptyDataForm() {
   const { push } = useRouter();
-  const { initialData, setInitialData, setCustomData } = useStableSwap();
+  const { initialData, setInitialData, setCustomData, setIsGraphLoading } =
+    useStableSwap();
   const {
     register,
     handleSubmit,
@@ -39,14 +40,13 @@ export default function InitialEmptyDataForm() {
   });
 
   const onSubmit = (data: FieldValues) => {
+    setIsGraphLoading(true);
     setInitialData(data as AnalysisData);
     setCustomData(data as AnalysisData);
     push("/stableswapsimulator/analysis");
   };
 
   useEffect(() => {
-    //TODO: BAL 401
-    // TODO: BAL 401
     clearErrors();
     if (initialData == getValues()) return;
     if (initialData?.tokens?.length == 0) {

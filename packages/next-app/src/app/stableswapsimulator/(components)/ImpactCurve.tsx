@@ -6,6 +6,8 @@ import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
 import { useStableSwap } from "#/contexts/StableSwapContext";
 
+import { calculateCurvePoints } from "./StableCurve";
+
 export function ImpactCurve() {
   const { initialData, customData, indexAnalysisToken, indexCurrentTabToken } =
     useStableSwap();
@@ -22,7 +24,6 @@ export function ImpactCurve() {
 
   //TODO: move this function to outside the component once the math PR is merged
   const calculateTokenImpact = ({
-    balance,
     swapFee,
     amp,
     indexIn,
@@ -31,7 +32,6 @@ export function ImpactCurve() {
     rates,
     decimals,
   }: {
-    balance: number | undefined;
     swapFee: number;
     amp: number;
     indexIn: number;
@@ -40,9 +40,14 @@ export function ImpactCurve() {
     rates: number[];
     decimals: number[];
   }) => {
-    const amountsIn = calculateAmounts({ balance });
-
-    const amountsOut = amountsIn.map((amount) => -1 * amount);
+    const amountsAnalysisTokenIn = calculateCurvePoints({
+      balance: balances[indexIn],
+      start: 0.001,
+    });
+    const amountsTabTokenIn = calculateCurvePoints({
+      balance: balances[indexOut],
+      start: 0.001,
+    });
 
     const poolPairDataIn = MetaStableMath.preparePoolPairData({
       indexIn,
@@ -54,7 +59,7 @@ export function ImpactCurve() {
       decimals,
     });
 
-    const impactTabTokenOut = amountsIn.map(
+    const impactAnalysisTokenIn = amountsAnalysisTokenIn.map(
       (amount) =>
         MetaStableMath.priceImpactForExactTokenInSwap(
           MetaStableMath.numberToOldBigNumber(amount),
@@ -72,29 +77,36 @@ export function ImpactCurve() {
       decimals,
     });
 
-    const impactTabTokenIn = amountsIn.map(
+    const amountsAnalysisTokenOut = amountsTabTokenIn.map(
       (amount) =>
-        MetaStableMath.priceImpactForExactTokenOutReversedSwap(
+        MetaStableMath.exactTokenInForTokenOut(
+          MetaStableMath.numberToOldBigNumber(amount),
+          poolPairDataOut
+        ).toNumber() * -1
+    );
+
+    const impactAnalysisTokenOut = amountsTabTokenIn.map(
+      (amount) =>
+        MetaStableMath.priceImpactForExactTokenInReversedSwap(
           MetaStableMath.numberToOldBigNumber(amount),
           poolPairDataOut
         ).toNumber() * 100
     );
 
     return {
-      amountsIn,
-      amountsOut,
-      impactTabTokenOut,
-      impactTabTokenIn,
+      amountsAnalysisTokenIn,
+      amountsAnalysisTokenOut,
+      impactAnalysisTokenIn,
+      impactAnalysisTokenOut,
     };
   };
 
   const {
-    amountsIn: initialAmountsAnalysisTokenIn,
-    impactTabTokenOut: initialImpactTabTokenOut,
-    amountsOut: initialAmountsAnalysisTokenOut,
-    impactTabTokenIn: initialImpactTabTokenIn,
+    amountsAnalysisTokenIn: initialAmountsAnalysisTokenIn,
+    impactAnalysisTokenIn: initialImpactAnalysisTokenIn,
+    amountsAnalysisTokenOut: initialAmountsAnalysisTokenOut,
+    impactAnalysisTokenOut: initialImpactAnalysisTokenOut,
   } = calculateTokenImpact({
-    balance: initialData.tokens[indexAnalysisToken]?.balance,
     swapFee: initialData.swapFee,
     amp: initialData.ampFactor,
     indexIn: indexAnalysisToken,
@@ -105,12 +117,11 @@ export function ImpactCurve() {
   });
 
   const {
-    amountsIn: variantAmountsAnalysisTokenIn,
-    impactTabTokenOut: variantImpactTabTokenOut,
-    amountsOut: variantAmountsAnalysisTokenOut,
-    impactTabTokenIn: variantImpactTabTokenIn,
+    amountsAnalysisTokenIn: variantAmountsAnalysisTokenIn,
+    impactAnalysisTokenIn: variantImpactAnalysisTokenIn,
+    amountsAnalysisTokenOut: variantAmountsAnalysisTokenOut,
+    impactAnalysisTokenOut: variantImpactAnalysisTokenOut,
   } = calculateTokenImpact({
-    balance: customData?.tokens?.[indexAnalysisToken]?.balance,
     swapFee: customData?.swapFee ? customData.swapFee : initialData.swapFee,
     amp: customData?.ampFactor ? customData.ampFactor : initialData.ampFactor,
     indexIn: indexAnalysisToken,
@@ -123,11 +134,11 @@ export function ImpactCurve() {
   return (
     <Plot
       title="Price Impact Curve"
-      toolTip="Indicates how much the swapping of a particular amount of token effects on the Price Impact (rate between the price of both tokens)"
+      toolTip="Indicates how much the swapping of a particular amount of token effects on the Price Impact (rate between the price of both tokens). The sign is based on the pool point of view."
       data={[
         {
           x: initialAmountsAnalysisTokenIn,
-          y: initialImpactTabTokenOut,
+          y: initialImpactAnalysisTokenIn,
           type: "scatter",
           mode: "lines",
           legendgroup: "Initial",
@@ -138,7 +149,7 @@ export function ImpactCurve() {
                 tokensSymbol[indexAnalysisToken]
               } for ${
                 tokensSymbol[indexCurrentTabToken]
-              } causes a Price Impact of ${initialImpactTabTokenOut[
+              } causes a Price Impact of ${initialImpactAnalysisTokenIn[
                 index
               ].toFixed(2)}% ${tokensSymbol[indexCurrentTabToken]}/${
                 tokensSymbol[indexAnalysisToken]
@@ -147,7 +158,7 @@ export function ImpactCurve() {
         },
         {
           x: variantAmountsAnalysisTokenIn,
-          y: variantImpactTabTokenOut,
+          y: variantImpactAnalysisTokenIn,
           type: "scatter",
           mode: "lines",
           legendgroup: "Custom",
@@ -159,7 +170,7 @@ export function ImpactCurve() {
                 tokensSymbol[indexAnalysisToken]
               } for ${
                 tokensSymbol[indexCurrentTabToken]
-              } causes a Price Impact of ${variantImpactTabTokenOut[
+              } causes a Price Impact of ${variantImpactAnalysisTokenIn[
                 index
               ].toFixed(2)}% ${tokensSymbol[indexCurrentTabToken]}/${
                 tokensSymbol[indexAnalysisToken]
@@ -168,7 +179,7 @@ export function ImpactCurve() {
         },
         {
           x: initialAmountsAnalysisTokenOut,
-          y: initialImpactTabTokenIn,
+          y: initialImpactAnalysisTokenOut,
           type: "scatter",
           mode: "lines",
           legendgroup: "Initial",
@@ -180,7 +191,7 @@ export function ImpactCurve() {
                 amount * -1
               ).toFixed(2)} ${
                 tokensSymbol[indexAnalysisToken]
-              } causes a Price Impact of ${initialImpactTabTokenIn[
+              } causes a Price Impact of ${initialImpactAnalysisTokenOut[
                 index
               ].toFixed(2)}% ${tokensSymbol[indexCurrentTabToken]}/${
                 tokensSymbol[indexAnalysisToken]
@@ -189,7 +200,7 @@ export function ImpactCurve() {
         },
         {
           x: variantAmountsAnalysisTokenOut,
-          y: variantImpactTabTokenIn,
+          y: variantImpactAnalysisTokenOut,
           type: "scatter",
           mode: "lines",
           legendgroup: "Custom",
@@ -200,7 +211,7 @@ export function ImpactCurve() {
                 amount * -1
               ).toFixed(2)} ${
                 tokensSymbol[indexAnalysisToken]
-              } causes a Price Impact of ${variantImpactTabTokenIn[
+              } causes a Price Impact of ${variantImpactAnalysisTokenOut[
                 index
               ].toFixed(2)}% ${tokensSymbol[indexCurrentTabToken]}/${
                 tokensSymbol[indexAnalysisToken]
@@ -211,31 +222,20 @@ export function ImpactCurve() {
       layout={{
         xaxis: {
           title: `Amount of ${tokensSymbol[indexAnalysisToken]}`,
+          range: [
+            initialAmountsAnalysisTokenOut[100],
+            initialAmountsAnalysisTokenIn[100],
+          ],
         },
         yaxis: {
           title: `${tokensSymbol[indexCurrentTabToken]}/${tokensSymbol[indexAnalysisToken]} price impact (%)`,
+          range: [
+            initialImpactAnalysisTokenOut[100],
+            initialImpactAnalysisTokenIn[100],
+          ],
         },
       }}
       className="w-full h-1/2"
     />
-  );
-}
-
-function calculateAmounts({
-  balance,
-  start = 0.0001,
-}: {
-  balance?: number;
-  start?: number;
-}) {
-  if (!balance) return [];
-  const numberOfPoints = 20;
-  const resizedBalance = balance * 0.5;
-
-  const step = (resizedBalance - start) / (numberOfPoints - 1);
-
-  return Array.from(
-    { length: (resizedBalance - start) / step + 1 },
-    (value, index) => start + index * step
   );
 }

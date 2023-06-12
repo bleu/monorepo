@@ -22,7 +22,6 @@ export function StableCurve() {
 
   //TODO: move this function to outside the component once the math PR is merged
   const calculateTokenAmounts = ({
-    balance,
     swapFee,
     amp,
     indexIn,
@@ -31,7 +30,6 @@ export function StableCurve() {
     rates,
     decimals,
   }: {
-    balance: number | undefined;
     swapFee: number;
     amp: number;
     indexIn: number;
@@ -40,7 +38,12 @@ export function StableCurve() {
     rates: number[];
     decimals: number[];
   }) => {
-    const amountsIn = calculateCurvePoints({ balance });
+    const amountsAnalysisTokenIn = calculateCurvePoints({
+      balance: balances[indexIn],
+    });
+    const amountsTabTokenIn = calculateCurvePoints({
+      balance: balances[indexOut],
+    });
 
     const poolPairDataIn = MetaStableMath.preparePoolPairData({
       indexIn,
@@ -52,7 +55,7 @@ export function StableCurve() {
       decimals,
     });
 
-    const amountsTabTokenOut = amountsIn.map(
+    const amountsTabTokenOut = amountsAnalysisTokenIn.map(
       (amount) =>
         MetaStableMath.exactTokenInForTokenOut(
           MetaStableMath.numberToOldBigNumber(amount),
@@ -70,7 +73,7 @@ export function StableCurve() {
       decimals,
     });
 
-    const amountsOut = amountsIn.map(
+    const amountsAnalysisTokenOut = amountsTabTokenIn.map(
       (amount) =>
         MetaStableMath.exactTokenInForTokenOut(
           MetaStableMath.numberToOldBigNumber(amount),
@@ -79,20 +82,19 @@ export function StableCurve() {
     );
 
     return {
-      amountsIn,
-      amountsOut,
+      amountsAnalysisTokenIn,
+      amountsAnalysisTokenOut,
       amountsTabTokenOut,
-      amountsTabTokenIn: amountsIn,
+      amountsTabTokenIn,
     };
   };
 
   const {
-    amountsIn: initialAmountsAnalysisTokenIn,
-    amountsOut: initialAmountsAnalysisTokenOut,
+    amountsAnalysisTokenIn: initialAmountsAnalysisTokenIn,
+    amountsAnalysisTokenOut: initialAmountsAnalysisTokenOut,
     amountsTabTokenOut: initialAmountTabTokenOut,
     amountsTabTokenIn: initialAmountTabTokenIn,
   } = calculateTokenAmounts({
-    balance: initialData.tokens[indexAnalysisToken]?.balance,
     swapFee: initialData.swapFee,
     amp: initialData.ampFactor,
     indexIn: indexAnalysisToken,
@@ -103,12 +105,11 @@ export function StableCurve() {
   });
 
   const {
-    amountsIn: variantAmountsAnalysisTokenIn,
-    amountsOut: variantAmountsAnalysisTokenOut,
+    amountsAnalysisTokenIn: variantAmountsAnalysisTokenIn,
+    amountsAnalysisTokenOut: variantAmountsAnalysisTokenOut,
     amountsTabTokenOut: variantAmountTabTokenOut,
     amountsTabTokenIn: variantAmountTabTokenIn,
   } = calculateTokenAmounts({
-    balance: customData?.tokens?.[indexAnalysisToken]?.balance,
     swapFee: customData?.swapFee ? customData.swapFee : initialData.swapFee,
     amp: customData?.ampFactor ? customData.ampFactor : initialData.ampFactor,
     indexIn: indexAnalysisToken,

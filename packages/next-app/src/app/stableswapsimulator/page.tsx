@@ -55,11 +55,11 @@ export default function Page() {
     }
   }, [initialData]);
   return (
-    <div className="w-full rounded-3xl items-center py-16 px-12 md:py-20 flex flex-col">
+    <div className="flex flex-col h-full w-full rounded-3xl justify-center">
       {isGraphLoading ? (
         <Spinner />
       ) : (
-        <>
+        <div className="flex flex-col items-center">
           <div className="text-center text-amber9 text-3xl">
             {content[poolDataStatus].title}
           </div>
@@ -67,7 +67,7 @@ export default function Page() {
             {content[poolDataStatus].subtitle}
           </div>
           <Image src={ConnectWalletImage} height={500} width={500} alt="" />
-        </>
+        </div>
       )}
     </div>
   );

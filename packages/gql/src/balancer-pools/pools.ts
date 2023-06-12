@@ -55,6 +55,7 @@ export const poolWherePoolType = gql`
       name
       poolType
       symbol
+      totalLiquidity
       tokens {
         symbol
       }

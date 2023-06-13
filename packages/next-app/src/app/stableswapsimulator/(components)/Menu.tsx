@@ -4,7 +4,9 @@ import { usePathname } from "next/navigation";
 import { ReactElement } from "react";
 
 import Sidebar from "#/components/Sidebar";
+import { Spinner } from "#/components/Spinner";
 import { Tabs } from "#/components/Tabs";
+import { useStableSwap } from "#/contexts/StableSwapContext";
 
 import CustomDataForm from "./CustomDataForm";
 import InitialDataForm from "./InitialDataForm";
@@ -66,6 +68,19 @@ function SearchPoolFormWithDataForm({ children }: { children: ReactElement }) {
 export default function Menu() {
   const pathname = usePathname();
   if (pathname.includes("/analysis")) {
+    const { customData, initialData } = useStableSwap();
+    if (
+      !initialData ||
+      !initialData.swapFee ||
+      !initialData.ampFactor ||
+      !initialData.tokens ||
+      !customData ||
+      !customData.swapFee ||
+      !customData.ampFactor ||
+      !customData.tokens
+    ) {
+      return <Spinner />;
+    }
     return <AnalysisMenu />;
   }
   return <IndexMenu />;

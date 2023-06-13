@@ -1,7 +1,8 @@
 "use client";
 
 import { PoolQuery } from "@balancer-pool-metadata/gql/src/balancer-pools/__generated__/Ethereum";
-import { usePathname, useRouter } from "next/navigation";
+// import { usePathname, useRouter } from "next/navigation"; //temp
+import { usePathname } from "next/navigation";
 import {
   createContext,
   PropsWithChildren,
@@ -45,7 +46,7 @@ export const StableSwapContext = createContext({} as StableSwapContextType);
 
 export function StableSwapProvider({ children }: PropsWithChildren) {
   const pathname = usePathname();
-  const { push } = useRouter();
+  // const { push } = useRouter(); //temp
   const defaultBaselineData: AnalysisData = {
     ampFactor: undefined,
     swapFee: undefined,
@@ -61,6 +62,21 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
     useState<boolean>(false);
 
   const [isGraphLoading, setIsGraphLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (window.location.hash) {
+      const encodedState = window.location.hash.substring(1);
+      const decodedState = decodeURIComponent(encodedState);
+      try {
+        const state = JSON.parse(decodedState);
+        setInitialData(state.initialData);
+        setCustomData(state.customData);
+        window.history.replaceState(null, "", `${window.location.pathname}`);
+      } catch (error) {
+        throw new Error("Invalid state");
+      }
+    }
+  }, []);
 
   function convertGqlToAnalysisData(poolData: PoolQuery): AnalysisData {
     return {
@@ -89,9 +105,9 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
   }
 
   useEffect(() => {
-    if (!initialData.swapFee) {
-      push("/stableswapsimulator");
-    }
+    // if (!initialData.swapFee) {
+    //   push("/stableswapsimulator"); // TODO: Check with LKV how to handle this case
+    // }
     if (pathname === "/stableswapsimulator") {
       setIsGraphLoading(false);
       setInitialData(defaultBaselineData);

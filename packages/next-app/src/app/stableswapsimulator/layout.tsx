@@ -8,17 +8,18 @@ import Sidebar from "#/components/Sidebar";
 import { StableSwapProvider } from "#/contexts/StableSwapContext";
 
 import Menu from "./(components)/Menu";
+import { ShareButton } from "./(components)/ShareButton";
 
 export default function Layout({ children }: React.PropsWithChildren) {
   return (
     <div className="flex flex-col h-full">
-      <Header
-        linkUrl={"/stableswapsimulator"}
-        title={"Stable Swap Simulator"}
-        imageSrc={balancerSymbol}
-        wallet={false}
-      />
       <StableSwapProvider>
+        <Header
+          linkUrl={"/stableswapsimulator"}
+          title={"Stable Swap Simulator"}
+          imageSrc={balancerSymbol}
+          endButton={<ShareButton />}
+        />
         <div className="flex flex-1 gap-x-8">
           <div className="bg-blue2">
             <Sidebar isFloating>

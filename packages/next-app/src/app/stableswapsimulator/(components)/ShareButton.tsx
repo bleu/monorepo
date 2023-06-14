@@ -1,4 +1,5 @@
 import { Share1Icon } from "@radix-ui/react-icons";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import Button from "#/components/Button";
@@ -6,20 +7,11 @@ import { Toast, ToastProvider } from "#/components/Toast";
 import { Tooltip } from "#/components/Tooltip";
 import { useStableSwap } from "#/contexts/StableSwapContext";
 
-export default function ShareButton() {
-  const { initialData, customData } = useStableSwap();
+export function ShareButton() {
+  const { generateURL } = useStableSwap();
 
-  const onInitialPage = window?.location.pathname === "/stableswapsimulator";
+  const onInitialPage = usePathname() === "/stableswapsimulator";
   const [isNotifierOpen, setIsNotifierOpen] = useState<boolean>(false);
-  const state = {
-    initialData,
-    customData,
-  };
-  function generateLink() {
-    const jsonState = JSON.stringify(state);
-    const encodedState = encodeURIComponent(jsonState);
-    return `${window.location.origin}${window.location.pathname}#${encodedState}`;
-  }
 
   return (
     <ToastProvider>
@@ -35,7 +27,7 @@ export default function ShareButton() {
             <div
               onClick={() => {
                 if (onInitialPage) return;
-                navigator.clipboard.writeText(generateLink());
+                navigator.clipboard.writeText(generateURL());
                 setIsNotifierOpen(true);
               }}
               className="flex flex-row gap-4"

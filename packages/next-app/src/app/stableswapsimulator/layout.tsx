@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import * as React from "react";
 
 import balancerSymbol from "#/assets/balancer-symbol.svg";
@@ -8,7 +9,13 @@ import Sidebar from "#/components/Sidebar";
 import { StableSwapProvider } from "#/contexts/StableSwapContext";
 
 import Menu from "./(components)/Menu";
-import { ShareButton } from "./(components)/ShareButton";
+
+const ShareButton = dynamic(
+  () => {
+    return import("./(components)/ShareButton");
+  },
+  { ssr: false }
+);
 
 export default function Layout({ children }: React.PropsWithChildren) {
   return (

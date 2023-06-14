@@ -69,16 +69,6 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
     return `${window.location.origin}${window.location.pathname}#${encodedState}`;
   }
 
-  // function setInitialData(initialData: AnalysisData) {
-  //   _setInitialData(initialData);
-  //   push(generateURL(initialData, customData));
-  // }
-
-  // function setCustomData(customData: AnalysisData) {
-  //   _setCustomData(customData);
-  //   push(generateURL(initialData, customData));
-  // }
-
   useEffect(() => {
     if (pathname === "/stableswapsimulator/analysis") push(generateURL());
   }, [initialData, customData]);

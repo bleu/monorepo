@@ -40,7 +40,7 @@ export const defaultPlotProps = {
     paper_bgcolor: blueDarkA.blueA1,
     font: {
       color: grayDarkA.grayA12,
-      family: "Inter",
+      family: "var(--font-family-sans)",
     },
     xaxis: defaultAxisLayout,
     yaxis: defaultAxisLayout,

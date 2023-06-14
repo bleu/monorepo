@@ -1,8 +1,7 @@
 "use client";
 
 import { PoolQuery } from "@balancer-pool-metadata/gql/src/balancer-pools/__generated__/Ethereum";
-// import { usePathname, useRouter } from "next/navigation"; //temp
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   createContext,
   PropsWithChildren,
@@ -40,13 +39,14 @@ interface StableSwapContextType {
   newPoolImportedFlag: boolean;
   isGraphLoading: boolean;
   setIsGraphLoading: (value: boolean) => void;
+  generateURL: () => string;
 }
 
 export const StableSwapContext = createContext({} as StableSwapContextType);
 
 export function StableSwapProvider({ children }: PropsWithChildren) {
   const pathname = usePathname();
-  // const { push } = useRouter(); //temp
+  const { push } = useRouter();
   const defaultBaselineData: AnalysisData = {
     ampFactor: undefined,
     swapFee: undefined,
@@ -54,7 +54,7 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
   };
   const [initialData, setInitialData] =
     useState<AnalysisData>(defaultBaselineData);
-  const [customData, setCustomData] =
+  const [customData, setCustomData] = // rename function
     useState<AnalysisData>(defaultBaselineData);
   const [indexAnalysisToken, setIndexAnalysisToken] = useState<number>(0);
   const [indexCurrentTabToken, setIndexCurrentTabToken] = useState<number>(1);
@@ -62,6 +62,26 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
     useState<boolean>(false);
 
   const [isGraphLoading, setIsGraphLoading] = useState<boolean>(false);
+
+  function generateURL() {
+    const jsonState = JSON.stringify({ initialData, customData });
+    const encodedState = encodeURIComponent(jsonState);
+    return `${window.location.origin}${window.location.pathname}#${encodedState}`;
+  }
+
+  // function setInitialData(initialData: AnalysisData) {
+  //   _setInitialData(initialData);
+  //   push(generateURL(initialData, customData));
+  // }
+
+  // function setCustomData(customData: AnalysisData) {
+  //   _setCustomData(customData);
+  //   push(generateURL(initialData, customData));
+  // }
+
+  useEffect(() => {
+    if (pathname === "/stableswapsimulator/analysis") push(generateURL());
+  }, [initialData, customData]);
 
   useEffect(() => {
     if (window.location.hash) {
@@ -71,7 +91,6 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
         const state = JSON.parse(decodedState);
         setInitialData(state.initialData);
         setCustomData(state.customData);
-        window.history.replaceState(null, "", `${window.location.pathname}`);
       } catch (error) {
         throw new Error("Invalid state");
       }
@@ -105,9 +124,6 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
   }
 
   useEffect(() => {
-    // if (!initialData.swapFee) {
-    //   push("/stableswapsimulator"); // TODO: Check with LKV how to handle this case
-    // }
     if (pathname === "/stableswapsimulator") {
       setIsGraphLoading(false);
       setInitialData(defaultBaselineData);
@@ -133,6 +149,7 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
         newPoolImportedFlag,
         isGraphLoading,
         setIsGraphLoading,
+        generateURL,
       }}
     >
       {children}

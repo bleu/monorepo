@@ -43,15 +43,17 @@ export function Actions({
     );
 
   return (
-    <div className="mt-5 w-full flex-col justify-between gap-x-4 sm:flex sm:items-center md:flex-row">
-      <div className="flex gap-x-4">
+    <div className="mt-5 w-full flex-col justify-between gap-1 sm:flex sm:flex-row sm:items-center sm:gap-4">
+      <div className="flex w-full justify-between gap-x-4 sm:w-fit">
         <Tooltip
           content={DISABLED_REASONS.NOT_ALLOWED}
           disableTooltip={canEditMetadata}
         >
-          <span tabIndex={0}>
+          <span tabIndex={0} className="w-full sm:w-fit">
             <Dialog title="Add attribute" content={<PoolMetadataForm />}>
-              <Button shade="light">Add attribute</Button>
+              <Button shade="light" className="w-full">
+                Add attribute
+              </Button>
             </Dialog>
           </span>
         </Tooltip>
@@ -60,12 +62,12 @@ export function Actions({
           content={DISABLED_REASONS.NOT_ALLOWED}
           disableTooltip={canEditMetadata}
         >
-          <span tabIndex={0}>
+          <span tabIndex={0} className="w-full sm:w-fit">
             <Dialog
               title="Add predefined attributes"
               content={<PredefinedMetadataModal />}
             >
-              <Button shade="light" variant="outline">
+              <Button shade="light" variant="outline" className="w-full">
                 Add predefined attributes
               </Button>
             </Dialog>
@@ -81,7 +83,7 @@ export function Actions({
         }
         disableTooltip={canEditMetadata && metadataUpdated && isMetadataValid}
       >
-        <span tabIndex={0}>
+        <span tabIndex={0} className="w-full sm:w-fit">
           <Dialog
             title="Update metadata"
             content={<TransactionModal poolId={poolId} />}
@@ -91,6 +93,7 @@ export function Actions({
               disabled={
                 !metadataUpdated || !canEditMetadata || !isMetadataValid
               }
+              className="mt-4 w-full sm:mt-0"
             >
               Update metadata
             </Button>

@@ -13,7 +13,7 @@ export const metadata = {
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full">
-      <body className="flex h-full flex-col bg-blue2">
+      <body className="flex h-full min-w-[930px] flex-col bg-blue2">
         <RootLayout>{children}</RootLayout>
         <Footer
           githubLink="https://github.com/bleu-studio/balancer-pool-metadata"

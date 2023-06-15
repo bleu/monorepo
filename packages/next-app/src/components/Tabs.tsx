@@ -1,5 +1,5 @@
 import * as TabsPrimitive from "@radix-ui/react-tabs";
-import cn from "classnames";
+import cn from "clsx";
 import { createContext, useContext } from "react";
 
 const TabContext = createContext({});

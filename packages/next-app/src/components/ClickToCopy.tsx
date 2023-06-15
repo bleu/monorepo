@@ -1,5 +1,5 @@
 import { CheckIcon, ClipboardCopyIcon } from "@radix-ui/react-icons";
-import cn from "classnames";
+import cn from "clsx";
 import copy from "copy-to-clipboard";
 import React, { useCallback, useLayoutEffect } from "react";
 

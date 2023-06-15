@@ -1,4 +1,4 @@
-import cn from "classnames";
+import cn from "clsx";
 import { Children, cloneElement, forwardRef, isValidElement } from "react";
 
 const predefinedClasses = {

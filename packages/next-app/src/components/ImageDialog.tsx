@@ -2,7 +2,7 @@
 
 import * as Dialog from "@radix-ui/react-dialog";
 import { EyeOpenIcon } from "@radix-ui/react-icons";
-import cn from "classnames";
+import cn from "clsx";
 import Image from "next/image";
 
 export function ImageDialog({ src }: { src: string }) {

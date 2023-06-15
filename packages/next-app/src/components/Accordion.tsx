@@ -5,7 +5,7 @@ import {
   AccordionTriggerProps,
 } from "@radix-ui/react-accordion";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
-import classNames from "classnames";
+import classNames from "clsx";
 import { forwardRef } from "react";
 
 export const AccordionItem = forwardRef<HTMLDivElement, AccordionItemProps>(

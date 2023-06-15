@@ -1,6 +1,6 @@
 "use client";
 
-import cn from "classnames";
+import cn from "clsx";
 import React, { HTMLProps } from "react";
 
 interface IInput extends HTMLProps<HTMLInputElement> {

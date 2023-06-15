@@ -1,6 +1,6 @@
 import { amberDarkA, blueDarkA, grayDarkA, slateDarkA } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
-import cn from "classnames";
+import cn from "clsx";
 import { merge } from "lodash";
 import dynamic from "next/dynamic";
 import { PlotParams } from "react-plotly.js";

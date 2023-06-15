@@ -265,9 +265,6 @@ importers:
       class-variance-authority:
         specifier: ^0.6.0
         version: 0.6.0(typescript@5.0.4)
-      classnames:
-        specifier: ^2.3.2
-        version: 2.3.2
       clsx:
         specifier: ^1.2.1
         version: 1.2.1
@@ -6796,10 +6793,6 @@ packages:
     dependencies:
       clsx: 1.2.1
       typescript: 5.0.4
-    dev: false
-
-  /classnames@2.3.2:
-    resolution: {integrity: sha512-CSbhY4cFEJRe6/GQzIk5qXZ4Jeg5pcsP7b5peFSDpffpe1cqjASH/n9UTjBwOp6XpMSTwQ8Za2K5V02ueA7Tmw==}
     dev: false
 
   /clean-stack@2.2.0:

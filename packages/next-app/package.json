@@ -40,7 +40,6 @@
     "@sentry/nextjs": "^7.52.1",
     "@wagmi/cli": "0.1.15",
     "@wagmi/core": "^0.10.9",
-    "@xstate/react": "^3.2.2",
     "class-variance-authority": "^0.6.0",
     "classnames": "^2.3.2",
     "clsx": "^1.2.1",
@@ -59,7 +58,6 @@
     "swr": "^2.1.5",
     "tailwind-merge": "^1.13.1",
     "wagmi": "0.12.10",
-    "xstate": "^4.37.2",
     "zod": "^3.21.4"
   },
   "devDependencies": {

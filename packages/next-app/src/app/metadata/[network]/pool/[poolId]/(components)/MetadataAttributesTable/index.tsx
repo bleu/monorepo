@@ -257,22 +257,24 @@ export default function MetadataAttributesTable({
             </div>
 
             <table>
-              <tr>
-                <td>Pool ID:</td>
-                <td>
-                  <ClickToCopy text={poolId}>{truncate(poolId)}</ClickToCopy>
-                </td>
-              </tr>
-              <tr>
-                <td>Metadata CID:</td>
-                <td>
-                  {cid ? (
-                    <ClickToCopy text={cid}>{truncate(cid)}</ClickToCopy>
-                  ) : (
-                    <></>
-                  )}
-                </td>
-              </tr>
+              <tbody>
+                <tr>
+                  <td>Pool ID:</td>
+                  <td>
+                    <ClickToCopy text={poolId}>{truncate(poolId)}</ClickToCopy>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Metadata CID:</td>
+                  <td>
+                    {cid ? (
+                      <ClickToCopy text={cid}>{truncate(cid)}</ClickToCopy>
+                    ) : (
+                      <></>
+                    )}
+                  </td>
+                </tr>
+              </tbody>
             </table>
           </div>
         </div>

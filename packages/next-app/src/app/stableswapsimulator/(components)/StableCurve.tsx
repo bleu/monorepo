@@ -204,7 +204,7 @@ export function StableCurve() {
           range: [initialAmountTabTokenOut[100], initialAmountTabTokenIn[100]],
         },
       }}
-      className="w-full h-1/2"
+      className="h-1/2 w-full"
     />
   );
 }

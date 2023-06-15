@@ -56,11 +56,11 @@ export default function Page({
 
   if (network !== params.network) {
     return (
-      <div className="w-full rounded-3xl items-center py-16 px-12 md:py-20 flex flex-col h-full">
-        <div className="text-center text-amber9 text-3xl">
+      <div className="flex h-full w-full flex-col items-center rounded-3xl px-12 py-16 md:py-20">
+        <div className="text-center text-3xl text-amber9">
           You are on the wrong network
         </div>
-        <div className="text-white text-xl">
+        <div className="text-xl text-white">
           Please change to {params.network}
         </div>
       </div>
@@ -111,30 +111,30 @@ function TransactionCard({
   const stage = STAGE_CN_MAPPING[transactionStatus];
 
   return (
-    <div className="flex items-center justify-center h-full">
-      <form className="flex flex-col text-white bg-blue3 h-fit my-4 w-fit rounded-lg divide-y divide-slate7 border border-slate7">
-        <div className="relative w-full flex justify-center h-full">
+    <div className="flex h-full items-center justify-center">
+      <form className="my-4 flex h-fit w-fit flex-col divide-y divide-slate7 rounded-lg border border-slate7 bg-blue3 text-white">
+        <div className="relative flex h-full w-full justify-center">
           <Link href={"/internalmanager"}>
             <div className="absolute left-8 flex h-full items-center">
               <ArrowLeftIcon
                 height={16}
                 width={16}
-                className="text-slate10 hover:text-amber10 duration-200"
+                className="text-slate10 duration-200 hover:text-amber10"
               />
             </div>
           </Link>
-          <div className="flex flex-col items-center py-3 min-w-[530px]">
+          <div className="flex min-w-[530px] flex-col items-center py-3">
             <div className="text-xl">{title} Internal Balance</div>
-            <span className="text-slate11 text-sm">{description}</span>
+            <span className="text-sm text-slate11">{description}</span>
           </div>
         </div>
-        <div className="p-9 flex flex-col gap-y-6">
+        <div className="flex flex-col gap-y-6 p-9">
           <div>
-            <div className="flex justify-between gap-7 h-fit">
+            <div className="flex h-fit justify-between gap-7">
               <div className="w-1/2">
                 <TokenSelect operationKind={operationKindParam} />
               </div>
-              <div className="flex gap-2 items-end w-1/2">
+              <div className="flex w-1/2 items-end gap-2">
                 <div className="w-full">
                   <Input type="string" label="Amount" placeholder={"0.01"} />
                 </div>

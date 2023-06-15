@@ -11,7 +11,7 @@ import Menu from "./(components)/Menu";
 
 export default function Layout({ children }: React.PropsWithChildren) {
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex h-full flex-col">
       <Header
         linkUrl={"/stableswapsimulator"}
         title={"Stable Swap Simulator"}

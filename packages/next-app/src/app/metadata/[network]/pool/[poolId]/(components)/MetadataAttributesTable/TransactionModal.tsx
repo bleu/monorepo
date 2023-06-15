@@ -21,7 +21,7 @@ function ConfirmationAlert({ handleSubmit }: { handleSubmit: () => void }) {
   return (
     <div className="mt-4 px-1">
       <div className="w-full space-y-6">
-        <h1 className="text-amber9 my-2 text-xl">Are you sure?</h1>
+        <h1 className="my-2 text-xl text-amber9">Are you sure?</h1>
         <span className=" text-slate12">
           This procedure will cost gas fee. You make sure there is no data to
           change before updating.{" "}

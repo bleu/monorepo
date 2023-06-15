@@ -43,8 +43,8 @@ export function Actions({
     );
 
   return (
-    <div className="mt-5 w-full justify-between sm:flex sm:items-center">
-      <div className="flex gap-4">
+    <div className="mt-5 w-full flex-col justify-between gap-x-4 sm:flex sm:items-center md:flex-row">
+      <div className="flex gap-x-4">
         <Tooltip
           content={DISABLED_REASONS.NOT_ALLOWED}
           disableTooltip={canEditMetadata}

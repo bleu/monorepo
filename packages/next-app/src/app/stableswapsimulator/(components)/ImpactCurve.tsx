@@ -223,7 +223,7 @@ export function ImpactCurve() {
           title: `Price impact (%)`,
         },
       }}
-      className="w-full h-1/2"
+      className="h-1/2 w-full"
     />
   );
 }

@@ -23,12 +23,12 @@ export default function WalletNotConnected({
     push(`/metadata/${networkName}/pool/${formData.poolId}`);
   }
   return (
-    <div className="w-full rounded-3xl items-center py-16 px-12 md:py-20 flex flex-col">
-      <div className="text-center text-amber9 text-3xl">
+    <div className="flex w-full flex-col items-center rounded-3xl px-12 py-16 md:py-20">
+      <div className="text-center text-3xl text-amber9">
         Please connect your wallet
       </div>
       {!isInternalManager && (
-        <div className="text-center text-slate11 text-lg">
+        <div className="text-center text-lg text-slate11">
           Alternatively, open a pool directly clicking&nbsp;
           <Dialog
             title="Go to pool"

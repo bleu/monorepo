@@ -87,18 +87,18 @@ export function SwapSimulator() {
   }
 
   return (
-    <div className="flex flex-col w-full gap-y-2 text-slate12 border-r-2 pr-5 border-blue4">
+    <div className="flex w-full flex-col gap-y-2 border-r-2 border-blue4 pr-5 text-slate12">
       <PlotTitle
         title="Swap simulator"
         tooltip="Use the inputs on the left to simulate a swap and see the results based on the initial and custom parameters"
         justifyCenter={false}
       />
-      <div className="flex flex-row w-full gap-x-5">
-        <div className="flex flex-col w-1/3 gap-y-2">
-          <label className="mb-2 block text-md text-slate12">
+      <div className="flex w-full flex-row gap-x-5">
+        <div className="flex w-1/3 flex-col gap-y-2">
+          <label className="text-md mb-2 block text-slate12">
             Swap parameters
           </label>
-          <div className="flex flex-row gap-x-2 justify-between">
+          <div className="flex flex-row justify-between gap-x-2">
             <div className="flex w-1/2 flex-col">
               <label className="mb-2 block text-sm text-slate12">
                 Token In
@@ -161,14 +161,14 @@ export function SwapSimulator() {
             defaultValue={(initialData?.tokens[0]?.balance / 10).toFixed(2)}
           />
         </div>
-        <div className="flex flex-col w-1/3 gap-y-2">
-          <label className="mb-2 block text-md text-slate12 underline decoration-blue9 decoration-4">
+        <div className="flex w-1/3 flex-col gap-y-2">
+          <label className="text-md mb-2 block text-slate12 underline decoration-blue9 decoration-4">
             Initial simulation
           </label>
           <SimulationResult {...initialResult} />
         </div>
-        <div className="flex flex-col w-1/3 gap-y-2">
-          <label className="mb-2 block text-md text-slate12 underline decoration-amber9 decoration-4">
+        <div className="flex w-1/3 flex-col gap-y-2">
+          <label className="text-md mb-2 block text-slate12 underline decoration-amber9 decoration-4">
             Custom simulation
           </label>
           <div className="flex flex-col gap-y-2">

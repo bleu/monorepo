@@ -27,11 +27,11 @@ export default function Page() {
   }
 
   return (
-    <div className="w-full flex justify-center">
-      <div className="flex flex-col mt-20 gap-y-5 w-4/6">
+    <div className="flex w-full justify-center">
+      <div className="mt-20 flex w-4/6 flex-col gap-y-5">
         <div className="flex items-center justify-between gap-x-8">
           <div className="flex flex-col gap-1">
-            <h1 className="text-slate12 text-3xl">My Internal Balances</h1>
+            <h1 className="text-3xl text-slate12">My Internal Balances</h1>
           </div>
           <div className="flex gap-4">
             <Link href={`/internalmanager/${network}/deposit/`}>

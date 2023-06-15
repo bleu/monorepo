@@ -28,10 +28,10 @@ export default function Page() {
   }
 
   return (
-    <div className="flex flex-col w-full overflow-auto gap-y-20 pt-8 pr-8 max-h-[calc(100vh-132px)]">
+    <div className="flex max-h-[calc(100vh-132px)] w-full flex-col gap-y-20 overflow-auto pr-8 pt-8">
       {/* (h-screen - (header's height + footer's height)) = graph's height space */}
       <div className="basis-1/3">
-        <div className="flex flex-row h-full w-full gap-x-5">
+        <div className="flex h-full w-full flex-row gap-x-5">
           <SwapSimulator />
           <TokensDistribution />
         </div>

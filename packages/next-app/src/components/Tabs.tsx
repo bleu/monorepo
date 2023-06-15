@@ -75,7 +75,7 @@ function TabItemContent({
   useTabContext();
   return (
     <TabsPrimitive.Content
-      className={`bg- grow py-5${bgColor} outline-none`}
+      className={`bg-${bgColor} grow py-5 outline-none`}
       value={tabName}
     >
       {children}

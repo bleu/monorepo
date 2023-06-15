@@ -54,7 +54,7 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
   };
   const [initialData, setInitialData] =
     useState<AnalysisData>(defaultBaselineData);
-  const [customData, setCustomData] = // rename function
+  const [customData, setCustomData] =
     useState<AnalysisData>(defaultBaselineData);
   const [indexAnalysisToken, setIndexAnalysisToken] = useState<number>(0);
   const [indexCurrentTabToken, setIndexCurrentTabToken] = useState<number>(1);

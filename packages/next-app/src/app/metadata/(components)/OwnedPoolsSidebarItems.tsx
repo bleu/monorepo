@@ -72,7 +72,7 @@ function OwnedPoolsSidebarItems({
     );
 
   return (
-    <>
+    <div className="flex flex-col gap-y-1 pr-2">
       {data?.pools.map(
         (item: ArrElement<GetDeepProp<PoolsWhereOwnerQuery, "pools">>) => (
           <Link key={item.id} href={`/metadata/${network}/pool/${item.id}`}>
@@ -82,7 +82,7 @@ function OwnedPoolsSidebarItems({
           </Link>
         )
       )}
-    </>
+    </div>
   );
 }
 
@@ -99,9 +99,9 @@ function PoolCard({ isSelected, pool }: { isSelected: boolean; pool: Pool }) {
       : null;
 
   return (
-    <>
+    <div className="py-2">
       <div className="flex items-center space-x-3 self-stretch">
-        <p className="text-lg font-bold text-slate12">{poolName}</p>
+        <p className="break-all text-lg font-bold text-slate12">{poolName}</p>
         {weights && <Badge isSelected={isSelected}>{weights}</Badge>}
       </div>
       <div className="flex w-full items-center space-x-3">
@@ -110,6 +110,6 @@ function PoolCard({ isSelected, pool }: { isSelected: boolean; pool: Pool }) {
           {truncate(id)}
         </p>
       </div>
-    </>
+    </div>
   );
 }

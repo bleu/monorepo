@@ -117,7 +117,7 @@ function Item({
   return (
     <button
       className={cn(
-        "group h-20 w-full self-stretch px-2 border border-blue6 hover:border-blue8 hover:bg-blue4",
+        "group min-h-[80px] w-full self-stretch px-2 border border-blue6 hover:border-blue8 hover:bg-blue4",
         {
           "px-5": !isFloating,
           "rounded-md": isFloating,

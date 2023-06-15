@@ -42,20 +42,24 @@ export function ShareButton() {
         </Button>
       </Tooltip>
       <Toast
-        content={
-          <div className="flex h-14 flex-row items-center justify-between px-4 py-8">
-            <div className="flex flex-col justify-between space-y-1">
-              <h1 className="text-xl font-medium text-slate12">Link copied</h1>
-              <h3 className="mb-2 text-sm leading-3 text-slate11">
-                Use it to access the dashboard state.
-              </h3>
-            </div>
-          </div>
-        }
+        content={<ToastContent />}
         isOpen={isNotifierOpen}
         setIsOpen={setIsNotifierOpen}
         duration={5000}
       />
     </>
+  );
+}
+
+function ToastContent() {
+  return (
+    <div className="flex h-14 flex-row items-center justify-between px-4 py-8">
+      <div className="flex flex-col justify-between space-y-1">
+        <h1 className="text-xl font-medium text-slate12">Link copied</h1>
+        <h3 className="mb-2 text-sm leading-3 text-slate11">
+          Use it to access the dashboard state.
+        </h3>
+      </div>
+    </div>
   );
 }

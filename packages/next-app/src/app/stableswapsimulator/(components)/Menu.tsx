@@ -67,8 +67,8 @@ function SearchPoolFormWithDataForm({ children }: { children: ReactElement }) {
 
 export default function Menu() {
   const pathname = usePathname();
+  const { customData, initialData } = useStableSwap();
   if (pathname.includes("/analysis")) {
-    const { customData, initialData } = useStableSwap();
     if (
       !initialData ||
       !initialData.swapFee ||

@@ -8,6 +8,7 @@ interface IToast {
   content: React.ReactElement;
   isOpen: boolean;
   setIsOpen: Dispatch<boolean>;
+  duration?: number;
   variant?: "notification" | "pending" | "alert" | "success";
 }
 
@@ -15,6 +16,7 @@ export function Toast({
   content,
   isOpen,
   setIsOpen,
+  duration = 30000,
   variant = "notification",
 }: IToast) {
   let bgColor;
@@ -36,7 +38,7 @@ export function Toast({
   return (
     <>
       <ToastPrimitive.Root
-        duration={30000}
+        duration={duration}
         open={isOpen}
         onOpenChange={setIsOpen}
         className={cn(

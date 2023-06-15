@@ -5,6 +5,7 @@ import { MetaStableMath } from "@balancer-pool-metadata/math/src";
 import { PlotType } from "plotly.js";
 
 import Plot, { defaultAxisLayout } from "#/components/Plot";
+import { Spinner } from "#/components/Spinner";
 import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
 
 export function DepthCost() {
@@ -43,6 +44,8 @@ export function DepthCost() {
     ...depthCostAmounts.custom.in,
     ...depthCostAmounts.custom.out
   );
+
+  if (!maxDepthCostAmount) return <Spinner />;
 
   const dataX = pairTokens.map((token) => token.symbol);
 

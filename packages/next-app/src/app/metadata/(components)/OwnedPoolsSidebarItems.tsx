@@ -50,7 +50,7 @@ function OwnedPoolsSidebarItems({
   owner: Address;
   chainId: string;
 }) {
-  const [poolSearch, setPoolSearch] = useState("");
+  const [poolSearchQuery, setPoolSearchQuery] = useState("");
   const { poolId } = useParams();
 
   const { data, mutate } = pools
@@ -66,21 +66,21 @@ function OwnedPoolsSidebarItems({
   const network = networkFor(chainId);
 
   function filterPoolInput({
-    poolSearch,
+    poolSearchQuery,
     pool,
   }: {
-    poolSearch: string;
+    poolSearchQuery: string;
     pool?: Pool;
   }) {
     {
       if (!pool) return false;
-      const regex = new RegExp(poolSearch, "i");
+      const regex = new RegExp(poolSearchQuery, "i");
       return regex.test(Object.values(pool).join(","));
     }
   }
 
   const filteredPools = data?.pools.filter((pool) =>
-    filterPoolInput({ poolSearch, pool })
+    filterPoolInput({ poolSearchQuery, pool })
   );
 
   if (!data?.pools?.length)
@@ -98,9 +98,9 @@ function OwnedPoolsSidebarItems({
         label="Search pool"
         placeholder="Search by name, symbol, id, tokens..."
         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          setPoolSearch(e.target.value)
+          setPoolSearchQuery(e.target.value)
         }
-        value={poolSearch}
+        value={poolSearchQuery}
       />
       {filteredPools &&
         (filteredPools.length === 0 ? (

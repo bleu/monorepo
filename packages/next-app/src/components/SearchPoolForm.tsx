@@ -23,10 +23,6 @@ const inputTypenames = [
   { value: "5", label: "Goerli" },
 ];
 
-interface PoolSearch extends PoolAttribute {
-  poolSearch: string;
-}
-
 export function SearchPoolForm({
   close,
   poolTypeFilter,
@@ -48,7 +44,7 @@ export function SearchPoolForm({
     clearErrors,
     resetField,
     formState: { errors },
-  } = useForm<PoolSearch>();
+  } = useForm<PoolAttribute>();
 
   const poolId = watch("poolId");
   const network = watch("network");
@@ -76,21 +72,21 @@ export function SearchPoolForm({
   }
 
   function filterPoolInput({
-    poolSearch,
+    poolSearchQuery,
     pool,
   }: {
-    poolSearch: string;
+    poolSearchQuery: string;
     pool?: ArrElement<GetDeepProp<PoolsWherePoolTypeQuery, "pools">>;
   }) {
     {
       if (!pool) return false;
-      const regex = new RegExp(poolSearch, "i");
+      const regex = new RegExp(poolSearchQuery, "i");
       return regex.test(Object.values(pool).join(","));
     }
   }
 
   const filteredPoolList = poolsDataList?.pools
-    .filter((pool) => filterPoolInput({ poolSearch: poolId, pool }))
+    .filter((pool) => filterPoolInput({ poolSearchQuery: poolId, pool }))
     .sort((a, b) =>
       Number(a!.totalLiquidity) < Number(b!.totalLiquidity) ? 1 : -1
     );

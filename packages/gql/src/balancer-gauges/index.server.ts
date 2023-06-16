@@ -1,4 +1,4 @@
-import { Network } from "@balancer-pool-metadata/shared";
+import { Network } from "@bleu-balancer-tools/shared";
 
 import { getSdk as arbitrumSdk } from "./__generated__/Arbitrum.server";
 import { getSdk as ethereumSdk } from "./__generated__/Ethereum.server";

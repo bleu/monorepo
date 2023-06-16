@@ -1,7 +1,4 @@
-import {
-  Pool,
-  PoolsWhereOwnerQuery,
-} from "@balancer-pool-metadata/gql/src/balancer-pools/__generated__/Ethereum";
+import { PoolsWhereOwnerQuery } from "@balancer-pool-metadata/gql/src/balancer-pools/__generated__/Ethereum";
 import {
   Address,
   networkFor,
@@ -11,15 +8,19 @@ import cn from "classnames";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useState } from "react";
 
 import EmptyWalletImage from "#/assets/empty-wallet.svg";
 import { Badge } from "#/components/Badge";
+import { Input } from "#/components/Input";
 import Sidebar from "#/components/Sidebar";
 import { impersonateWhetherDAO, pools } from "#/lib/gql";
 import { refetchRequest } from "#/utils/fetcher";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 import { truncateAddress } from "#/utils/truncate";
 import { useAccount, useNetwork } from "#/wagmi";
+
+type Pool = ArrElement<GetDeepProp<PoolsWhereOwnerQuery, "pools">>;
 
 export default function OwnedPoolsWrapper() {
   const { chain } = useNetwork();
@@ -49,6 +50,7 @@ function OwnedPoolsSidebarItems({
   owner: Address;
   chainId: string;
 }) {
+  const [poolSearch, setPoolSearch] = useState("");
   const { poolId } = useParams();
 
   const { data, mutate } = pools
@@ -63,6 +65,24 @@ function OwnedPoolsSidebarItems({
 
   const network = networkFor(chainId);
 
+  function filterPoolInput({
+    poolSearch,
+    pool,
+  }: {
+    poolSearch: string;
+    pool?: Pool;
+  }) {
+    {
+      if (!pool) return false;
+      const regex = new RegExp(poolSearch, "i");
+      return regex.test(Object.values(pool).join(","));
+    }
+  }
+
+  const filteredPools = data?.pools.filter((pool) =>
+    filterPoolInput({ poolSearch, pool })
+  );
+
   if (!data?.pools?.length)
     return (
       <>
@@ -73,16 +93,34 @@ function OwnedPoolsSidebarItems({
     );
 
   return (
-    <div className="flex flex-col gap-y-1 pr-2">
-      {data?.pools.map(
-        (item: ArrElement<GetDeepProp<PoolsWhereOwnerQuery, "pools">>) => (
-          <Link key={item.id} href={`/metadata/${network}/pool/${item.id}`}>
-            <Sidebar.Item isSelected={item.id === poolId}>
-              <PoolCard isSelected={item.id === poolId} pool={item as Pool} />
-            </Sidebar.Item>
-          </Link>
-        )
-      )}
+    <div className="flex flex-col gap-y-2 pr-2">
+      <Input
+        label="Search pool"
+        placeholder="Search by name, symbol, id, tokens..."
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          setPoolSearch(e.target.value)
+        }
+        value={poolSearch}
+      />
+      {filteredPools &&
+        (filteredPools.length === 0 ? (
+          <div className="flex flex-col text-slate12">
+            <span className="text-center">
+              Sorry, no pools were found &#128531;
+            </span>
+            <span className="text-center">
+              Please try other search parameters
+            </span>
+          </div>
+        ) : (
+          filteredPools.map((item: Pool) => (
+            <Link key={item.id} href={`/metadata/${network}/pool/${item.id}`}>
+              <Sidebar.Item isSelected={item.id === poolId}>
+                <PoolCard isSelected={item.id === poolId} pool={item as Pool} />
+              </Sidebar.Item>
+            </Link>
+          ))
+        ))}
     </div>
   );
 }

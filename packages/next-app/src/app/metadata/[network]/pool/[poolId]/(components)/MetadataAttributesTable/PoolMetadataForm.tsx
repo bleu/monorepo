@@ -9,6 +9,7 @@ import { Controller, useForm } from "react-hook-form";
 import Button from "#/components/Button";
 import { Input } from "#/components/Input";
 import { Select, SelectItem } from "#/components/Select";
+import { Form } from "#/components/ui/form";
 import {
   PoolMetadataAttribute,
   usePoolMetadata,
@@ -30,21 +31,15 @@ export default function PoolMetadataForm({
   mode?: "add" | "edit";
   close?: () => void;
 }) {
-  const {
-    register,
-    handleSubmit,
-    watch,
-    resetField,
-    setError,
-    control,
-    formState: { errors },
-  } = useForm<PoolMetadataAttribute>({
+  const form = useForm<PoolMetadataAttribute>({
     resolver: zodResolver(MetadataItemSchema),
     defaultValues: {
       ...data,
       typename: data?.typename || "text",
     },
   });
+
+  const { register, watch, resetField, setError, control } = form;
 
   const { handleAddMetadata, handleUpdateMetadata, isKeyUnique } =
     usePoolMetadata();
@@ -81,7 +76,7 @@ export default function PoolMetadataForm({
   }, [selectedTypename]);
 
   return (
-    <form onSubmit={handleSubmit(handleSubmitForm)} id="attribute-form">
+    <Form {...form} onSubmit={handleSubmitForm} id="attribute-form">
       <label className="mb-2 block text-sm text-slate12">Typename</label>
       <div className="mb-2">
         <Controller
@@ -110,14 +105,12 @@ export default function PoolMetadataForm({
           placeholder={"Define an attribute key"}
           disabled={mode === "edit"}
           {...register("key")}
-          errorMessage={errors.key?.message}
         />
 
         <Input
           label="Description"
           placeholder={"Short attribute description"}
           {...register("description")}
-          errorMessage={errors.description?.message}
         />
 
         <Input
@@ -125,7 +118,6 @@ export default function PoolMetadataForm({
           label="Value"
           placeholder="Attribute value"
           {...register("value")}
-          errorMessage={errors.value?.message}
         />
       </div>
 
@@ -144,6 +136,6 @@ export default function PoolMetadataForm({
           Add
         </Button>
       </div>
-    </form>
+    </Form>
   );
 }

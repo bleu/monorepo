@@ -8,7 +8,6 @@ import { useAccount, useNetwork } from "wagmi";
 
 import { TokenSelect } from "#/app/internalmanager/(components)/TokenSelect";
 import { Button } from "#/components";
-import { Input } from "#/components/Input";
 import { Spinner } from "#/components/Spinner";
 import {
   STAGE_CN_MAPPING,
@@ -136,15 +135,21 @@ function TransactionCard({
               </div>
               <div className="flex gap-2 items-end w-1/2">
                 <div className="w-full">
-                  <Input type="string" label="Amount" placeholder={"0.01"} />
+                  <span className="mb-2 block text-sm text-slate12"></span>
+                  <input
+                    className="w-full selection:color-white box-border inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] bg-blue4 px-[10px] text-[15px] leading-none text-slate12 shadow-[0_0_0_1px] shadow-blue6 outline-none selection:bg-blue9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-blue1"
+                    type="string"
+                    placeholder={"0.01"}
+                  />
                 </div>
               </div>
             </div>
           </div>
           <div>
-            <Input
+            <span className="block text-sm text-slate12">Receiver Address</span>
+            <input
+              className="w-full selection:color-white box-border inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] bg-blue4 px-[10px] text-[15px] leading-none text-slate12 shadow-[0_0_0_1px] shadow-blue6 outline-none selection:bg-blue9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-blue1"
               type="string"
-              label="Receiver Address"
               placeholder={userAddress}
             />
           </div>

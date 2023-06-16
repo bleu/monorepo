@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "#/components";
 import { Badge } from "#/components/Badge";
 import { Input } from "#/components/Input";
+import { Form } from "#/components/ui/form";
 import { useAdminTools } from "#/contexts/AdminToolsContext";
 import useDebounce from "#/hooks/useDebounce";
 import { gauges, pools } from "#/lib/gql";
@@ -14,11 +15,11 @@ import { truncate } from "#/utils/truncate";
 import { useNetwork } from "#/wagmi";
 
 export function ActionAttributeContent() {
-  const { register, handleSubmit, watch, formState } = useForm({
+  const form = useForm({
     mode: "onBlur",
   });
-  // eslint-disable-next-line no-console
-  const onSubmit = (data: unknown) => console.log(data);
+  const { register, watch } = form;
+
   const { push } = useRouter();
   const { selectedAction } = useAdminTools();
 
@@ -81,7 +82,8 @@ export function ActionAttributeContent() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    // eslint-disable-next-line no-console
+    <Form onSubmit={(data: unknown) => console.log(data)} {...form}>
       {selectedAction?.name && (
         <div className="w-full">
           <div>
@@ -121,9 +123,6 @@ export function ActionAttributeContent() {
                         {...register(field.key, {
                           validate: field?.getValidations?.(chain),
                         })}
-                        errorMessage={
-                          formState.errors?.[field.key]?.message as string
-                        }
                       />
                       <Symbol fieldKey={field.key} />
                     </div>
@@ -137,6 +136,6 @@ export function ActionAttributeContent() {
           </div>
         </div>
       )}
-    </form>
+    </Form>
   );
 }

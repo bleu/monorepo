@@ -1,5 +1,8 @@
+"use client";
+
 import * as LabelPrimitive from "@radix-ui/react-label";
 import { Slot } from "@radix-ui/react-slot";
+import clsx from "clsx";
 import * as React from "react";
 import {
   Controller,
@@ -17,11 +20,13 @@ import { cn } from "#/lib/utils";
 type FormProps<T extends FieldValues> = {
   onSubmit: (data: T) => void;
   id?: string;
+  className?: string;
 } & UseFormReturn<T>;
 
 const Form = <T extends FieldValues>({
   children,
   onSubmit: onFormSubmit,
+  className,
   id,
   ...formMethods
 }: React.PropsWithChildren<FormProps<T>>) => {
@@ -29,7 +34,11 @@ const Form = <T extends FieldValues>({
 
   return (
     <FormProvider {...formMethods}>
-      <form onSubmit={onSubmit} {...((id && { id }) || {})}>
+      <form
+        onSubmit={onSubmit}
+        {...((id && { id }) || {})}
+        className={clsx(className)}
+      >
         {children}
       </form>
     </FormProvider>

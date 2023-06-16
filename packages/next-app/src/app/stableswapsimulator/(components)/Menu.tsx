@@ -4,7 +4,9 @@ import { usePathname } from "next/navigation";
 import { ReactElement } from "react";
 
 import Sidebar from "#/components/Sidebar";
+import { Spinner } from "#/components/Spinner";
 import { Tabs } from "#/components/Tabs";
+import { useStableSwap } from "#/contexts/StableSwapContext";
 
 import CustomDataForm from "./CustomDataForm";
 import InitialDataForm from "./InitialDataForm";
@@ -51,12 +53,12 @@ function SearchPoolFormWithDataForm({ children }: { children: ReactElement }) {
   return (
     <div>
       <SearchPoolFormDialog>
-        <span className="text-sm font-normal text-slate12 cursor-pointer flex items-center space-x-2">
+        <span className="flex cursor-pointer items-center space-x-2 text-sm font-normal text-slate12">
           <MagnifyingGlassIcon width="16" height="16" strokeWidth={1} />
           <span>Import pool parameters</span>
         </span>
       </SearchPoolFormDialog>
-      <Separator.Root className="bg-blue6 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px my-5" />
+      <Separator.Root className="my-5 bg-blue6 data-[orientation=horizontal]:h-px data-[orientation=vertical]:h-full data-[orientation=horizontal]:w-full data-[orientation=vertical]:w-px" />
       <Sidebar.Header name="Initial parameters" />
       <Sidebar.Content>{children}</Sidebar.Content>
     </div>
@@ -65,7 +67,20 @@ function SearchPoolFormWithDataForm({ children }: { children: ReactElement }) {
 
 export default function Menu() {
   const pathname = usePathname();
+  const { customData, initialData } = useStableSwap();
   if (pathname.includes("/analysis")) {
+    if (
+      !initialData ||
+      !initialData.swapFee ||
+      !initialData.ampFactor ||
+      !initialData.tokens ||
+      !customData ||
+      !customData.swapFee ||
+      !customData.ampFactor ||
+      !customData.tokens
+    ) {
+      return <Spinner />;
+    }
     return <AnalysisMenu />;
   }
   return <IndexMenu />;

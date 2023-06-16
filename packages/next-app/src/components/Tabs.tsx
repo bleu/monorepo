@@ -24,11 +24,11 @@ export function Tabs({
   return (
     <TabContext.Provider value={{}}>
       <TabsPrimitive.Root
-        className="flex flex-col w-full h-full bg-blue2 text-slate8"
+        className="flex h-full w-full flex-col bg-blue2 text-slate8"
         value={value}
         defaultValue={defaultValue}
       >
-        <TabsPrimitive.List className="shrink-0 flex border-b border-blue1 bg-blue3 flex-col">
+        <TabsPrimitive.List className="flex shrink-0 flex-col border-b border-blue1 bg-blue3">
           {children}
         </TabsPrimitive.List>
       </TabsPrimitive.Root>
@@ -37,7 +37,7 @@ export function Tabs({
 }
 
 function TabItemTriggerWrapper({ children }: React.PropsWithChildren) {
-  return <div className="flex-1 flex">{children}</div>;
+  return <div className="flex flex-1">{children}</div>;
 }
 
 function TabItemTrigger({
@@ -59,7 +59,7 @@ function TabItemTrigger({
       value={tabName}
       onClick={onClick}
     >
-      <div className="flex justify-center items-center gap-x-3">
+      <div className="flex items-center justify-center gap-x-3">
         {color && <div className={cn(`w-3 h-3 rounded-full bg-${color}`)} />}
         {children}
       </div>
@@ -70,12 +70,12 @@ function TabItemTrigger({
 function TabItemContent({
   children,
   tabName,
-  bgColor = "blue2",
-}: React.PropsWithChildren<{ tabName: string; bgColor?: string }>) {
+  bgColor = "bg-blue2",
+}: React.PropsWithChildren<{ tabName: string; bgColor?: `bg-${string}` }>) {
   useTabContext();
   return (
     <TabsPrimitive.Content
-      className={`grow py-5 bg-${bgColor} outline-none`}
+      className={`${bgColor} grow py-5 outline-none`}
       value={tabName}
     >
       {children}

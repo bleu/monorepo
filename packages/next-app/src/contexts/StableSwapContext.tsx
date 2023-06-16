@@ -39,6 +39,7 @@ interface StableSwapContextType {
   newPoolImportedFlag: boolean;
   isGraphLoading: boolean;
   setIsGraphLoading: (value: boolean) => void;
+  generateURL: () => string;
 }
 
 export const StableSwapContext = createContext({} as StableSwapContextType);
@@ -61,6 +62,30 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
     useState<boolean>(false);
 
   const [isGraphLoading, setIsGraphLoading] = useState<boolean>(false);
+
+  function generateURL() {
+    const jsonState = JSON.stringify({ initialData, customData });
+    const encodedState = encodeURIComponent(jsonState);
+    return `${window.location.origin}${window.location.pathname}#${encodedState}`;
+  }
+
+  useEffect(() => {
+    if (pathname === "/stableswapsimulator/analysis") push(generateURL());
+  }, [initialData, customData]);
+
+  useEffect(() => {
+    if (window.location.hash) {
+      const encodedState = window.location.hash.substring(1);
+      const decodedState = decodeURIComponent(encodedState);
+      try {
+        const state = JSON.parse(decodedState);
+        setInitialData(state.initialData);
+        setCustomData(state.customData);
+      } catch (error) {
+        throw new Error("Invalid state");
+      }
+    }
+  }, []);
 
   function convertGqlToAnalysisData(poolData: PoolQuery): AnalysisData {
     return {
@@ -89,9 +114,6 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
   }
 
   useEffect(() => {
-    if (!initialData.swapFee) {
-      push("/stableswapsimulator");
-    }
     if (pathname === "/stableswapsimulator") {
       setIsGraphLoading(false);
       setInitialData(defaultBaselineData);
@@ -117,6 +139,7 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
         newPoolImportedFlag,
         isGraphLoading,
         setIsGraphLoading,
+        generateURL,
       }}
     >
       {children}

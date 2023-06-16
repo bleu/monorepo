@@ -124,11 +124,11 @@ export default function Page({
 
   if (network !== params.network) {
     return (
-      <div className="w-full rounded-3xl items-center py-16 px-12 md:py-20 flex flex-col h-full">
-        <div className="text-center text-amber9 text-3xl">
+      <div className="flex h-full w-full flex-col items-center rounded-3xl px-12 py-16 md:py-20">
+        <div className="text-center text-3xl text-amber9">
           You are on the wrong network
         </div>
-        <div className="text-white text-xl">
+        <div className="text-xl text-white">
           Please change to {params.network}
         </div>
       </div>
@@ -143,11 +143,11 @@ export default function Page({
       walletAmount?.value.eq(0))
   ) {
     return (
-      <div className="w-full rounded-3xl items-center py-16 px-12 md:py-20 flex flex-col h-full">
-        <div className="text-center text-amber9 text-3xl">
+      <div className="flex h-full w-full flex-col items-center rounded-3xl px-12 py-16 md:py-20">
+        <div className="text-center text-3xl text-amber9">
           Looks like you don't have this token
         </div>
-        <div className="text-white text-xl">
+        <div className="text-xl text-white">
           Please click
           <Link href={"/internalmanager"}>
             <span className="text-slate11"> here </span>
@@ -270,37 +270,37 @@ function TransactionCard({
   const stage = STAGE_CN_MAPPING[transactionStatus];
 
   return (
-    <div className="flex items-center justify-center h-full">
+    <div className="flex h-full items-center justify-center">
       <Form
         {...form}
         onSubmit={handleOnSubmit}
-        className="flex flex-col text-white bg-blue3 h-fit my-4 w-fit rounded-lg divide-y divide-slate7 border border-slate7"
+        className="my-4 flex h-fit w-fit flex-col divide-y divide-slate7 rounded-lg border border-slate7 bg-blue3 text-white"
       >
-        <div className="relative w-full flex justify-center h-full">
+        <div className="relative flex h-full w-full justify-center">
           <Link href={`/internalmanager/${network}`}>
             <div className="absolute left-8 flex h-full items-center">
               <ArrowLeftIcon
                 height={16}
                 width={16}
-                className="text-slate10 hover:text-amber10 duration-200"
+                className="text-slate10 duration-200 hover:text-amber10"
               />
             </div>
           </Link>
-          <div className="flex flex-col items-center py-3 min-w-[530px]">
+          <div className="flex min-w-[530px] flex-col items-center py-3">
             <div className="text-xl">{title} Internal Balance</div>
-            <span className="text-slate11 text-sm">{description}</span>
+            <span className="text-sm text-slate11">{description}</span>
           </div>
         </div>
-        <div className="p-9 flex flex-col gap-y-6">
+        <div className="flex flex-col gap-y-6 p-9">
           <div>
-            <div className="flex justify-between gap-7 h-fit">
+            <div className="flex h-fit justify-between gap-7">
               <div className="w-1/2">
                 <TokenSelect
                   token={tokenData}
                   operationKind={operationKindParam}
                 />
               </div>
-              <div className="flex gap-2 items-end w-1/2">
+              <div className="flex w-1/2 items-end gap-2">
                 <div className="w-full">
                   <Input
                     type="string"
@@ -315,7 +315,7 @@ function TransactionCard({
                 </div>
               </div>
             </div>
-            <div className="mt-2 text-xs flex gap-x-1">
+            <div className="mt-2 flex gap-x-1 text-xs">
               <span className="text-slate10">
                 {operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL ? (
                   <span>Wallet Balance: {walletAmount}</span>
@@ -325,7 +325,7 @@ function TransactionCard({
               </span>
               <button
                 type="button"
-                className="outline-none text-blue9 hover:text-amber9"
+                className="text-blue9 outline-none hover:text-amber9"
                 onClick={() => {
                   operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL
                     ? setValue("tokenAmount", walletAmount)
@@ -344,11 +344,11 @@ function TransactionCard({
                 placeholder={userAddress}
                 {...register("receiverAddress")}
               />
-              <div className="mt-2 text-xs flex gap-x-1">
+              <div className="mt-2 flex gap-x-1 text-xs">
                 {operationKindEnum === UserBalanceOpKind.TRANSFER_INTERNAL &&
                 explorerData ? (
                   !addressRegex.test(receiverAddressValue) ? (
-                    <span className="outline-none text-blue8 hover:cursor-not-allowed">
+                    <span className="text-blue8 outline-none hover:cursor-not-allowed">
                       View on {explorerData.name}
                     </span>
                   ) : (
@@ -356,7 +356,7 @@ function TransactionCard({
                       href={explorerData.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="outline-none text-blue9 hover:text-amber9"
+                      className="text-blue9 outline-none hover:text-amber9"
                     >
                       View on {explorerData.name}
                     </a>
@@ -364,7 +364,7 @@ function TransactionCard({
                 ) : (
                   <button
                     type="button"
-                    className="outline-none text-blue9 hover:text-amber9"
+                    className="text-blue9 outline-none hover:text-amber9"
                     onClick={() => {
                       setValue("receiverAddress", userAddress);
                     }}

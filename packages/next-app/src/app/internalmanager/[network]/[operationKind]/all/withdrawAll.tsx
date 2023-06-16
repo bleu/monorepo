@@ -93,27 +93,27 @@ export function WithdrawAll() {
   }
 
   return (
-    <div className="flex items-center justify-center h-full">
+    <div className="flex h-full items-center justify-center">
       <Form
         onSubmit={handleOnSubmit}
-        className="flex flex-col text-white bg-blue3 h-fit my-4 w-fit rounded-lg divide-y divide-slate7 border border-slate7"
+        className="my-4 flex h-fit w-fit flex-col divide-y divide-slate7 rounded-lg border border-slate7 bg-blue3 text-white"
         {...form}
       >
-        <div className="relative w-full flex justify-center h-full">
+        <div className="relative flex h-full w-full justify-center">
           <Link href={`/internalmanager/${network}`}>
             <div className="absolute left-8 flex h-full items-center">
               <ArrowLeftIcon
                 height={16}
                 width={16}
-                className="text-slate10 hover:text-amber10 duration-200"
+                className="text-slate10 duration-200 hover:text-amber10"
               />
             </div>
           </Link>
-          <div className="flex flex-col items-center py-3 min-w-[530px]">
+          <div className="flex min-w-[530px] flex-col items-center py-3">
             <div className="text-xl">Batch Withdraw from Internal Balances</div>
           </div>
         </div>
-        <div className="p-9 flex flex-col gap-y-6">
+        <div className="flex flex-col gap-y-6 p-9">
           <div>
             <span className="block text-sm text-slate12">Summary</span>
             <Table color="blue">
@@ -167,10 +167,10 @@ export function WithdrawAll() {
               placeholder={addressLower}
               {...register("receiverAddress")}
             />
-            <div className="mt-2 text-xs flex gap-x-1">
+            <div className="mt-2 flex gap-x-1 text-xs">
               <button
                 type="button"
-                className="outline-none text-blue9 hover:text-amber9"
+                className="text-blue9 outline-none hover:text-amber9"
                 onClick={() => {
                   setValue("receiverAddress", addressLower);
                 }}

@@ -91,7 +91,7 @@ export default function Plot(props: PlotProps) {
   const defaultPlotPropsDeepCopy = JSON.parse(JSON.stringify(defaultPlotProps));
   const plotProps = merge(defaultPlotPropsDeepCopy, props); // deep copy is needed because merge mutates the first argument
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex w-full flex-col">
       <PlotTitle title={plotProps.title} tooltip={plotProps.toolTip} />
       <PlotRoot {...plotProps} />
     </div>

@@ -106,7 +106,7 @@ export default function InitialEmptyDataForm() {
         <div className="flex flex-col">
           <label className="mb-2 block text-sm text-slate12">Tokens</label>
           {errors?.tokens?.message && (
-            <div className="h-6 mt-1 text-tomato10 text-sm">
+            <div className="mt-1 h-6 text-sm text-tomato10">
               <span>{errors?.tokens?.message}</span>
             </div>
           )}
@@ -117,7 +117,7 @@ export default function InitialEmptyDataForm() {
           form="initial-data-form"
           type="submit"
           shade="light"
-          className="w-32 h-min self-end"
+          className="h-min w-32 self-end"
         >
           Next step
         </Button>

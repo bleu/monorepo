@@ -55,15 +55,15 @@ export default function Page() {
     }
   }, [initialData]);
   return (
-    <div className="flex flex-col h-full w-full rounded-3xl justify-center">
+    <div className="flex h-full w-full flex-col justify-center rounded-3xl">
       {isGraphLoading ? (
         <Spinner />
       ) : (
         <div className="flex flex-col items-center">
-          <div className="text-center text-amber9 text-3xl">
+          <div className="text-center text-3xl text-amber9">
             {content[poolDataStatus].title}
           </div>
-          <div className="text-center text-slate11 text-lg">
+          <div className="text-center text-lg text-slate11">
             {content[poolDataStatus].subtitle}
           </div>
           <Image src={ConnectWalletImage} height={500} width={500} alt="" />

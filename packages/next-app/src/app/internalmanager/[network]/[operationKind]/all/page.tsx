@@ -16,7 +16,7 @@ export default function Page({
   if (operationKindType[params.operationKind] === operationKindType.withdraw)
     return <WithdrawAll />;
   return (
-    <div className="flex flex-col items-center justify-center w-full p-5 h-full text-center">
+    <div className="flex h-full w-full flex-col items-center justify-center p-5 text-center">
       <div className="text-3xl font-bold text-white">
         You can not {params.operationKind} all of your tokens
       </div>

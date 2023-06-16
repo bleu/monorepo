@@ -19,8 +19,8 @@ export default function Page() {
   }
 
   return (
-    <div className="w-full rounded-3xl items-center py-16 px-12 md:py-20 flex flex-col">
-      <div className="text-center text-amber9 text-3xl">
+    <div className="flex w-full flex-col items-center rounded-3xl px-12 py-16 md:py-20">
+      <div className="text-center text-3xl text-amber9">
         Pick a pool on the side
       </div>
       <Image src={SelectPoolImage} height={400} width={400} alt="" />

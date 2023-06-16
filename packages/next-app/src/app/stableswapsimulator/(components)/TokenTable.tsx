@@ -47,7 +47,7 @@ export function TokenTable({
 
   const aboveOrEqualLimit = tableData?.tokens?.length >= MAX_POOL_TOKENS;
   return (
-    <div className="h-full flex-1 flex w-full justify-center text-white">
+    <div className="flex h-full w-full flex-1 justify-center text-white">
       <Table>
         <TokenTableContext.Provider value={{ variant }}>
           <Table.HeaderRow>

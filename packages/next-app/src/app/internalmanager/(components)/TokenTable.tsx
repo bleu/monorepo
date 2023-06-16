@@ -47,12 +47,12 @@ export function TokenTable() {
   const tokensWithBalance = internalBalanceData?.user?.userInternalBalances;
 
   return (
-    <div className="h-full flex-1 flex w-full justify-center text-white">
+    <div className="flex h-full w-full flex-1 justify-center text-white">
       {(internalBalanceData?.user === null ||
         tokensWithBalance?.length === 0) && (
-        <div className="flex flex-col items-center justify-center mt-24">
+        <div className="mt-24 flex flex-col items-center justify-center">
           <div className="text-2xl font-semibold">No tokens found</div>
-          <div className="text-sm text-slate11 flex flex-col items-center">
+          <div className="flex flex-col items-center text-sm text-slate11">
             You don&apos;t have any tokens in your internal balance on{" "}
             <span>{chain?.name}, make a deposit or change the network.</span>
           </div>
@@ -109,8 +109,8 @@ function TableRow({
   return (
     <Table.BodyRow key={token.tokenInfo.address}>
       <Table.BodyCell customWidth="w-12">
-        <div className="flex justify-center items-center">
-          <div className="bg-white rounded-full p-1">
+        <div className="flex items-center justify-center">
+          <div className="rounded-full bg-white p-1">
             <Image
               src={
                 tokenLogoUri[
@@ -160,7 +160,7 @@ const transactionButtons = [
   },
   {
     icon: (
-      <div className="flex h-5 w-5 border-slate9 items-center justify-center rounded-full border-[1px]">
+      <div className="flex h-5 w-5 items-center justify-center rounded-full border-[1px] border-slate9">
         <WidthIcon width={16} height={16} />
       </div>
     ),
@@ -186,7 +186,7 @@ function TransactionButton({
       {!disabled ? (
         <Link
           href={`/internalmanager/${network}/${operation}/token/${tokenAddress}`}
-          className="leading-none h-[22px] w-[22px] flex justify-center items-center"
+          className="flex h-[22px] w-[22px] items-center justify-center leading-none"
         >
           <button
             type="button"

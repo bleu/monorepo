@@ -15,7 +15,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full">
       <Fonts />
-      <body className="h-full flex flex-col bg-blue2">
+      <body className="flex h-full min-w-[930px] flex-col bg-blue2">
         <RootLayout>{children}</RootLayout>
         <Footer
           githubLink="https://github.com/bleu-studio/balancer-pool-metadata"

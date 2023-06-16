@@ -34,7 +34,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
 
   return (
     <NetworksContextProvider>
-      <div className="flex flex-col h-full">
+      <div className="flex h-full flex-col">
         <HeaderNetworkMismatchAlert />
         <Header
           linkUrl={`/metadata/${network}/`}
@@ -49,7 +49,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
                   title="Go to pool"
                   content={<SearchPoolForm onSubmit={handleGoToPool} />}
                 >
-                  <span className="text-sm font-normal text-slate12 cursor-pointer flex items-center space-x-2">
+                  <span className="flex cursor-pointer items-center space-x-2 text-sm font-normal text-slate12">
                     <MagnifyingGlassIcon
                       width="16"
                       height="16"
@@ -58,7 +58,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
                     <span>Open a pool directly</span>
                   </span>
                 </Dialog>
-                <Separator.Root className="bg-blue6 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px my-5" />
+                <Separator.Root className="my-5 bg-blue6 data-[orientation=horizontal]:h-px data-[orientation=vertical]:h-full data-[orientation=horizontal]:w-full data-[orientation=vertical]:w-px" />
 
                 <Sidebar.Header name="Owned pools" />
                 <Sidebar.Content>

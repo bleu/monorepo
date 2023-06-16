@@ -1,5 +1,6 @@
 "use client";
 
+import { Spinner } from "#/components/Spinner";
 import { Tabs } from "#/components/Tabs";
 import { useStableSwap } from "#/contexts/StableSwapContext";
 
@@ -12,6 +13,7 @@ import { TokensDistribution } from "../(components)/TokensDistribution";
 export default function Page() {
   const {
     initialData,
+    customData,
     indexAnalysisToken,
     setIndexCurrentTabToken,
     indexCurrentTabToken,
@@ -21,6 +23,19 @@ export default function Page() {
     (token, index) => index !== indexAnalysisToken
   );
 
+  if (
+    !initialData ||
+    !initialData.swapFee ||
+    !initialData.ampFactor ||
+    !initialData.tokens ||
+    !customData ||
+    !customData.swapFee ||
+    !customData.ampFactor ||
+    !customData.tokens
+  ) {
+    return <Spinner />;
+  }
+
   function handleTabClick(event: React.FormEvent<HTMLButtonElement>) {
     const target = event.target as HTMLButtonElement;
 
@@ -28,10 +43,10 @@ export default function Page() {
   }
 
   return (
-    <div className="flex flex-col w-full overflow-auto gap-y-20 pt-8 pr-8 max-h-[calc(100vh-132px)]">
+    <div className="flex max-h-[calc(100vh-132px)] w-full flex-col gap-y-20 overflow-auto pr-8 pt-8">
       {/* (h-screen - (header's height + footer's height)) = graph's height space */}
       <div className="basis-1/3">
-        <div className="flex flex-row h-full w-full gap-x-5">
+        <div className="flex h-full w-full flex-row gap-x-5">
           <SwapSimulator />
           <TokensDistribution />
         </div>
@@ -57,7 +72,7 @@ export default function Page() {
           </Tabs.ItemTriggerWrapper>
           {tabTokens.map((symbol) => (
             <div key={symbol}>
-              <Tabs.ItemContent tabName={symbol} bgColor="blue1">
+              <Tabs.ItemContent tabName={symbol} bgColor="bg-blue1">
                 <div className="flex flex-col gap-y-10 py-4">
                   <StableCurve />
                   <ImpactCurve />

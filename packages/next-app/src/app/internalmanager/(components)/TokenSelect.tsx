@@ -54,7 +54,7 @@ export function TokenSelect({
         <span className="mb-2 block text-sm text-slate12">Token</span>
         <button
           type="button"
-          className="flex items-center gap-2 py-1 px-2w-full justify-between w-full selection:color-white box-border h-[35px] appearance-none rounded-[4px] bg-blue4 px-[10px] text-[15px] leading-none text-slate12 shadow-[0_0_0_1px] shadow-blue6 outline-none selection:bg-blue9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-blue1"
+          className="px-2w-full selection:color-white box-border flex h-[35px] w-full appearance-none items-center justify-between gap-2 rounded-[4px] bg-blue4 px-[10px] py-1 text-[15px] leading-none text-slate12 shadow-[0_0_0_1px] shadow-blue6 outline-none selection:bg-blue9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-blue1"
         >
           <div className="flex items-center gap-1">
             <Image
@@ -89,7 +89,7 @@ function TokenModal({
   let { address } = useAccount();
   address = impersonateWhetherDAO(chain?.id.toString() || "1", address);
   const [tokens, setTokens] = useState<(TokenItem | undefined)[]>([]);
-  const [tokenSearch, setTokenSearch] = useState("");
+  const [tokenSearchQuery, setTokenSearchQuery] = useState("");
   const [isTokenSearchDisabled, setIsTokenSearchDisabled] =
     useState<boolean>(true);
 
@@ -189,7 +189,7 @@ function TokenModal({
 
   const tokenExplorerUrl = buildBlockExplorerTokenURL({
     chainId: chain?.id,
-    tokenAddress: tokenSearch.toLowerCase() as Address,
+    tokenAddress: tokenSearchQuery.toLowerCase() as Address,
   });
 
   useEffect(() => {
@@ -198,14 +198,16 @@ function TokenModal({
 
   const network = getNetwork(chain?.name);
   useEffect(() => {
-    if (!addressRegex.test(tokenSearch)) {
+    if (!addressRegex.test(tokenSearchQuery)) {
       setIsTokenSearchDisabled(true);
       return;
     }
     setIsTokenSearchDisabled(false);
-    if (!tokens.some((token) => filterTokenInput({ tokenSearch, token }))) {
+    if (
+      !tokens.some((token) => filterTokenInput({ tokenSearchQuery, token }))
+    ) {
       fetchSingleTokenBalance({
-        tokenAddress: tokenSearch.toLowerCase() as Address,
+        tokenAddress: tokenSearchQuery.toLowerCase() as Address,
       }).then((tokenData) => {
         setTokens((prev) => [
           ...prev,
@@ -213,39 +215,39 @@ function TokenModal({
             value: tokenData.value,
             symbol: tokenData.symbol,
             decimals: tokenData.decimals,
-            tokenAddress: tokenSearch.toLowerCase() as Address,
+            tokenAddress: tokenSearchQuery.toLowerCase() as Address,
           },
         ]);
       });
     }
-  }, [tokenSearch]);
+  }, [tokenSearchQuery]);
 
   function filterTokenInput({
-    tokenSearch,
+    tokenSearchQuery,
     token,
   }: {
-    tokenSearch: string;
+    tokenSearchQuery: string;
     token?: TokenItem;
   }) {
     {
       if (!token) return false;
-      const regex = new RegExp(tokenSearch, "i");
+      const regex = new RegExp(tokenSearchQuery, "i");
       return regex.test(Object.values(token).join(","));
     }
   }
   return (
-    <div className="text-white divide-y divide-slate7 max-h-[30rem] overflow-y-scroll scrollbar-thin scrollbar-thumb-slate12 scrollbar-track-blue3">
-      <div className="w-full flex flex-col justify-center items-center h-full py-4 gap-y-4">
+    <div className="max-h-[30rem] divide-y divide-slate7 overflow-y-scroll text-white scrollbar-thin scrollbar-track-blue3 scrollbar-thumb-slate12">
+      <div className="flex h-full w-full flex-col items-center justify-center gap-y-4 py-4">
         <div className="text-xl">Token Search</div>
-        <div className="w-full px-10 flex items-center">
+        <div className="flex w-full items-center px-10">
           <input
             type="text"
             placeholder="Search name or paste address"
-            className="bg-blue4 h-9 w-full appearance-none items-center justify-center rounded-l-[4px] px-[10px] text-sm leading-none text-slate12 outline-none"
+            className="h-9 w-full appearance-none items-center justify-center rounded-l-[4px] bg-blue4 px-[10px] text-sm leading-none text-slate12 outline-none"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setTokenSearch(e.target.value)
+              setTokenSearchQuery(e.target.value)
             }
-            value={tokenSearch}
+            value={tokenSearchQuery}
           />
           {isTokenSearchDisabled ? (
             <button
@@ -264,7 +266,7 @@ function TokenModal({
               href={tokenExplorerUrl}
               target="_blank"
               rel="noreferrer"
-              className="h-9 rounded-r-[4px] bg-white px-2 leading-none outline-none transition hover:bg-slate11 flex justify-center items-center"
+              className="flex h-9 items-center justify-center rounded-r-[4px] bg-white px-2 leading-none outline-none transition hover:bg-slate11"
             >
               <MagnifyingGlassIcon
                 color="rgb(31 41 55)"
@@ -287,7 +289,7 @@ function TokenModal({
         </Table.HeaderRow>
         <Table.Body>
           {tokens
-            .filter((token) => filterTokenInput({ tokenSearch, token }))
+            .filter((token) => filterTokenInput({ tokenSearchQuery, token }))
             .sort((a, b) => (a!.value < b!.value ? 1 : -1))
             .map((token) => {
               if (token) {
@@ -331,8 +333,8 @@ function TokenRow({
               close?.();
             }}
           >
-            <div className="flex justify-center items-center">
-              <div className="bg-white rounded-full p-1">
+            <div className="flex items-center justify-center">
+              <div className="rounded-full bg-white p-1">
                 <Image
                   src={
                     tokenLogoUri[token.symbol as keyof typeof tokenLogoUri] ||

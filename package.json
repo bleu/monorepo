@@ -32,9 +32,9 @@
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/bleu-studio/balancer-tools.git/issues"
+    "url": "https://github.com/bleu-studio/balancer-tools/issues"
   },
-  "homepage": "https://github.com/bleu-studio/balancer-tools.git#readme",
+  "homepage": "https://github.com/bleu-studio/balancer-tools#readme",
   "devDependencies": {
     "@bleu-balancer-tools/eslint-config": "workspace:*",
     "@types/node": "^18.15.11",

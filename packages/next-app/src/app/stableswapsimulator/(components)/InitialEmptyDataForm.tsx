@@ -65,8 +65,8 @@ export default function InitialEmptyDataForm() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-4">
-      <Form {...form} onSubmit={onSubmit} id="initial-data-form">
+    <Form {...form} onSubmit={onSubmit} id="initial-data-form">
+      <div className="flex flex-col gap-4">
         <FormField
           name="swapFee"
           render={({ field }) => (
@@ -121,7 +121,7 @@ export default function InitialEmptyDataForm() {
         >
           Next step
         </Button>
-      </Form>
-    </div>
+      </div>
+    </Form>
   );
 }

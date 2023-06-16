@@ -62,8 +62,8 @@ export default function InitialDataForm() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-4">
-      <Form id="baseline-data-form" onSubmit={onSubmit} {...form}>
+    <Form id="baseline-data-form" onSubmit={onSubmit} {...form}>
+      <div className="flex flex-col gap-4">
         <FormField
           name="swapFee"
           render={({ field }) => (
@@ -104,7 +104,7 @@ export default function InitialDataForm() {
           <label className="mb-2 block text-sm text-slate12">Tokens</label>
           <TokenTable minTokens={2} />
         </div>
-      </Form>
-    </div>
+      </div>
+    </Form>
   );
 }

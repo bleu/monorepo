@@ -62,8 +62,8 @@ export default function CustomDataForm() {
   useEffect(onSubmit, [debouncedSwapFee, debouncedAmpFactor]);
 
   return (
-    <div className="flex flex-col gap-4">
-      <Form id="variant-data-form" {...form} onSubmit={onSubmit}>
+    <Form id="variant-data-form" {...form} onSubmit={onSubmit}>
+      <div className="flex flex-col gap-4">
         <div className="flex flex-col">
           <FormLabel className="mb-2 block text-sm text-slate12">
             Analysis Token
@@ -128,7 +128,7 @@ export default function CustomDataForm() {
           <label className="mb-2 block text-sm text-slate12">Tokens</label>
           <TokenTable minTokens={2} variant={true} />
         </div>
-      </Form>
-    </div>
+      </div>
+    </Form>
   );
 }

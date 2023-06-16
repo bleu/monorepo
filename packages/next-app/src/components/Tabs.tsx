@@ -70,12 +70,12 @@ function TabItemTrigger({
 function TabItemContent({
   children,
   tabName,
-  bgColor = "blue2",
-}: React.PropsWithChildren<{ tabName: string; bgColor?: string }>) {
+  bgColor = "bg-blue2",
+}: React.PropsWithChildren<{ tabName: string; bgColor?: `bg-${string}` }>) {
   useTabContext();
   return (
     <TabsPrimitive.Content
-      className={`bg-${bgColor} grow py-5 outline-none`}
+      className={`${bgColor} grow py-5 outline-none`}
       value={tabName}
     >
       {children}

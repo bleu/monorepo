@@ -1,1 +1,1 @@
-module.exports = require("@balancer-pool-metadata/eslint-config");
+module.exports = require("@bleu-balancer-tools/eslint-config");

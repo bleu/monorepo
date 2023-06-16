@@ -1,5 +1,5 @@
 {
-  "name": "@balancer-pool-metadata/math",
+  "name": "@bleu-balancer-tools/math",
   "version": "0.0.0",
   "main": "index.ts",
   "license": "MIT",
@@ -16,7 +16,7 @@
     "@ethersproject/constants": "^5.7.0"
   },
   "devDependencies": {
-    "@balancer-pool-metadata/tsconfig": "workspace:^",
+    "@bleu-balancer-tools/tsconfig": "workspace:^",
     "@jest/globals": "^29.5.0",
     "ts-jest": "^29.1.0"
   }

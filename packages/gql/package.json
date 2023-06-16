@@ -1,5 +1,5 @@
 {
-  "name": "@balancer-pool-metadata/gql",
+  "name": "@bleu-balancer-tools/gql",
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
@@ -11,8 +11,8 @@
     "graphql:update-types": "graphql-codegen --config codegen.ts"
   },
   "devDependencies": {
-    "@balancer-pool-metadata/shared": "workspace:^",
-    "@balancer-pool-metadata/tsconfig": "workspace:*",
+    "@bleu-balancer-tools/shared": "workspace:^",
+    "@bleu-balancer-tools/tsconfig": "workspace:*",
     "@graphql-codegen/cli": "3.3.1",
     "@graphql-codegen/client-preset": "^3.0.1",
     "@graphql-codegen/typescript": "3.0.4",

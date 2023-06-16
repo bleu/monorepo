@@ -1,5 +1,5 @@
 {
-  "name": "@balancer-pool-metadata/subgraph",
+  "name": "@bleu-balancer-tools/subgraph",
   "version": "1.0.0",
   "scripts": {
     "codegen:goerli": "pnpm generate-manifests && graph codegen subgraph.goerli.yaml --output-dir src/types/",
@@ -13,8 +13,8 @@
     "test": "graph test"
   },
   "devDependencies": {
-    "@balancer-pool-metadata/shared": "workspace:^",
-    "@balancer-pool-metadata/tsconfig": "workspace:*",
+    "@bleu-balancer-tools/shared": "workspace:^",
+    "@bleu-balancer-tools/tsconfig": "workspace:*",
     "@graphprotocol/graph-cli": "0.49.0",
     "@graphprotocol/graph-ts": "0.30.0",
     "@types/fs-extra": "^11.0.1",

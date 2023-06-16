@@ -9,8 +9,7 @@ export async function getTokensData({
     "https://raw.githubusercontent.com/balancer/tokenlists/main/generated/listed-old.tokenlist.json"
   );
   const tokensData = await res.json();
-  return tokensData.tokens
-    .filter(
-      (token: { chainId: number }) => token.chainId === networkConnectedToWallet
-    )
+  return tokensData.tokens.filter(
+    (token: { chainId: number }) => token.chainId === networkConnectedToWallet
+  );
 }

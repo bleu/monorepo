@@ -6,7 +6,7 @@ import {
   Pencil2Icon,
   TrashIcon,
 } from "@radix-ui/react-icons";
-import cn from "classnames";
+import cn from "clsx";
 import {
   TableHTMLAttributes,
   useEffect,

@@ -3,6 +3,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 
 import * as React from "react";
 
+import Fonts from "#/components/Font";
 import { Footer } from "#/components/Footer";
 import { RootLayout } from "#/components/RootLayout";
 
@@ -13,6 +14,7 @@ export const metadata = {
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full">
+      <Fonts />
       <body className="flex h-full min-w-[930px] flex-col bg-blue2">
         <RootLayout>{children}</RootLayout>
         <Footer

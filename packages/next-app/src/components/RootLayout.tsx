@@ -44,7 +44,9 @@ const CustomTheme = merge(darkTheme(), {
     selectedOptionBorder: "rgba(60, 66, 66, 0.1)",
     standby: "#FFD641",
   },
-  fonts: {},
+  fonts: {
+    body: "var(--font-family-sans)",
+  },
   radii: {
     menuButton: "25px",
     modal: "25px",

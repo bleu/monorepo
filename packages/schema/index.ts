@@ -166,22 +166,22 @@ export const getStableSwapSimulatorTokensSchema = ({
           message: "Symbol already exists",
         }
       ),
-    balance: z.number().positive(),
-    rate: z.number().positive(),
-    decimal: z.number().int().positive().max(60),
+    balance: z.coerce.number().positive(),
+    rate: z.coerce.number().positive(),
+    decimal: z.coerce.number().int().positive().max(60),
   });
   return StableSwapSimulatorTokensSchema;
 };
 
 export const StableSwapTokensSchema = z.object({
   symbol: z.string().min(1),
-  balance: z.number().positive(),
-  rate: z.number().positive(),
-  decimal: z.number().int().positive().max(60),
+  balance: z.coerce.number().positive(),
+  rate: z.coerce.number().positive(),
+  decimal: z.coerce.number().int().positive().max(60),
 });
 
 export const StableSwapSimulatorDataSchema = z.object({
-  swapFee: z.number().positive(),
-  ampFactor: z.number().positive(),
+  swapFee: z.coerce.number().positive(),
+  ampFactor: z.coerce.number().positive(),
   tokens: z.array(StableSwapTokensSchema).min(2),
 });

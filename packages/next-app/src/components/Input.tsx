@@ -1,34 +1,66 @@
 "use client";
 
-import cn from "classnames";
+import cn from "clsx";
 import React, { HTMLProps } from "react";
+import { FieldError, RegisterOptions, useFormContext } from "react-hook-form";
 
-interface IInput extends HTMLProps<HTMLInputElement> {
+import { FormControl, FormLabel, FormMessage } from "./ui/form";
+
+interface IInput extends Omit<HTMLProps<HTMLInputElement>, "name"> {
+  name: string;
   extraLabel?: string;
-  errorMessage?: string;
+  validation?: RegisterOptions;
 }
 
+export const BaseInput = React.forwardRef<
+  HTMLInputElement,
+  HTMLProps<HTMLInputElement>
+>((props, ref) => (
+  <input
+    {...props}
+    ref={ref}
+    className={cn(
+      "w-full selection:color-white box-border inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] bg-blue4 px-[10px] text-[15px] leading-none text-slate12 shadow-[0_0_0_1px] shadow-blue6 outline-none selection:bg-blue9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-blue1",
+      props.className
+    )}
+  />
+));
+
 export const Input = React.forwardRef<HTMLInputElement, IInput>(
-  ({ label, errorMessage, extraLabel, ...rest }: IInput, ref) => {
+  ({ name, label, extraLabel, validation, ...props }: IInput) => {
+    const {
+      register,
+      formState: { errors },
+    } = useFormContext();
+
+    if (!name) {
+      throw new Error("Input component requires a name prop");
+    }
+
+    const error = errors[name] as FieldError | undefined;
+    const errorMessage = error?.message;
+
     return (
       <div className="flex flex-col">
         <div className="flex flex-row justify-between">
-          <label className="mb-2 block text-sm text-slate12">{label}</label>
-          <label className="mb-2 block text-sm text-slate12">
+          <FormLabel className="mb-2 block text-sm text-slate12">
+            {label}
+          </FormLabel>
+          <FormLabel className="mb-2 block text-sm text-slate12">
             {extraLabel}
-          </label>
+          </FormLabel>
         </div>
-        <input
-          ref={ref}
-          {...rest}
-          className={cn(
-            "w-full selection:color-white box-border inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] bg-blue4 px-[10px] text-[15px] leading-none text-slate12 shadow-[0_0_0_1px] shadow-blue6 outline-none selection:bg-blue9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-blue1"
-          )}
-        />
+        <FormControl>
+          <BaseInput
+            {...props}
+            {...register(name, validation)}
+            className={cn({ "border border-red-500": errors[name] })}
+          />
+        </FormControl>
         {errorMessage && (
-          <div className="mt-1 h-6 text-sm text-tomato10">
+          <FormMessage className="mt-1 h-6 text-sm text-tomato10">
             <span>{errorMessage}</span>
-          </div>
+          </FormMessage>
         )}
       </div>
     );

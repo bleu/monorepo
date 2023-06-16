@@ -1,6 +1,6 @@
 "use client";
 
-import cn from "classnames";
+import cn from "clsx";
 import { PropsWithChildren } from "react";
 
 import { TransactionStatus } from "#/hooks/useTransaction";

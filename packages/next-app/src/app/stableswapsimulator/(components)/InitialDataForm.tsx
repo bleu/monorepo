@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 import { Input } from "#/components/Input";
+import { Form, FormField } from "#/components/ui/form";
 import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
 import useDebounce from "#/hooks/useDebounce";
 
@@ -13,16 +14,17 @@ import { TokenTable } from "./TokenTable";
 
 export default function InitialDataForm() {
   const { initialData, setInitialData } = useStableSwap();
+  const form = useForm<typeof StableSwapSimulatorDataSchema._type>({
+    resolver: zodResolver(StableSwapSimulatorDataSchema),
+    mode: "onChange",
+  });
   const {
     register,
     getValues,
     setValue,
     watch,
     formState: { errors },
-  } = useForm<typeof StableSwapSimulatorDataSchema._type>({
-    resolver: zodResolver(StableSwapSimulatorDataSchema),
-    mode: "onChange",
-  });
+  } = form;
 
   const swapFee = watch("swapFee");
   const ampFactor = watch("ampFactor");
@@ -60,34 +62,49 @@ export default function InitialDataForm() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-4">
-      <form id="baseline-data-form" />
-      <Input
-        {...register("swapFee", {
-          required: true,
-          value: initialData?.swapFee,
-          valueAsNumber: true,
-        })}
-        label="Swap fee"
-        placeholder="Define the initial swap fee"
-        errorMessage={errors?.swapFee?.message}
-        form="baseline-data-form"
-      />
-      <Input
-        {...register("ampFactor", {
-          required: true,
-          value: initialData?.ampFactor,
-          valueAsNumber: true,
-        })}
-        label="Amp factor"
-        placeholder="Define the initial amp factor"
-        errorMessage={errors?.ampFactor?.message}
-        form="baseline-data-form"
-      />
-      <div className="flex flex-col">
-        <label className="mb-2 block text-sm text-slate12">Tokens</label>
-        <TokenTable minTokens={2} />
+    <Form id="baseline-data-form" onSubmit={onSubmit} {...form}>
+      <div className="flex flex-col gap-4">
+        <FormField
+          name="swapFee"
+          render={({ field }) => (
+            <Input
+              {...field}
+              label="Swap fee"
+              type="number"
+              validation={{
+                required: true,
+                valueAsNumber: true,
+                value: initialData?.swapFee,
+              }}
+              defaultValue={initialData?.swapFee}
+              placeholder="Define the initial swap fee"
+            />
+          )}
+        />
+
+        <FormField
+          name="ampFactor"
+          render={({ field }) => (
+            <Input
+              {...field}
+              label="Amp Factor"
+              type="number"
+              validation={{
+                required: true,
+                valueAsNumber: true,
+                value: initialData?.ampFactor,
+              }}
+              defaultValue={initialData?.ampFactor}
+              placeholder="Define the initial amp factor"
+            />
+          )}
+        />
+
+        <div className="flex flex-col">
+          <label className="mb-2 block text-sm text-slate12">Tokens</label>
+          <TokenTable minTokens={2} />
+        </div>
       </div>
-    </div>
+    </Form>
   );
 }

@@ -8,7 +8,7 @@ import { useAccount, useNetwork } from "wagmi";
 
 import { TokenSelect } from "#/app/internalmanager/(components)/TokenSelect";
 import { Button } from "#/components";
-import { Input } from "#/components/Input";
+import { BaseInput } from "#/components/Input";
 import { Spinner } from "#/components/Spinner";
 import {
   STAGE_CN_MAPPING,
@@ -136,17 +136,17 @@ function TransactionCard({
               </div>
               <div className="flex w-1/2 items-end gap-2">
                 <div className="w-full">
-                  <Input type="string" label="Amount" placeholder={"0.01"} />
+                  <span className="mb-2 block text-sm text-slate12">
+                    Amount
+                  </span>
+                  <BaseInput type="string" placeholder={"0.01"} />
                 </div>
               </div>
             </div>
           </div>
           <div>
-            <Input
-              type="string"
-              label="Receiver Address"
-              placeholder={userAddress}
-            />
+            <span className="block text-sm text-slate12">Receiver Address</span>
+            <BaseInput type="string" placeholder={userAddress} />
           </div>
           {operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL && (
             <TransactionProgressBar stage={stage} />

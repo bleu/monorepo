@@ -1,6 +1,6 @@
 import { amberDarkA, blueDarkA, grayDarkA, slateDarkA } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
-import cn from "classnames";
+import cn from "clsx";
 import { merge } from "lodash";
 import dynamic from "next/dynamic";
 import { PlotParams } from "react-plotly.js";
@@ -40,7 +40,7 @@ export const defaultPlotProps = {
     paper_bgcolor: blueDarkA.blueA1,
     font: {
       color: grayDarkA.grayA12,
-      family: "Inter",
+      family: "var(--font-family-sans)",
     },
     xaxis: defaultAxisLayout,
     yaxis: defaultAxisLayout,

@@ -1,5 +1,5 @@
 import * as Progress from "@radix-ui/react-progress";
-import cn from "classnames";
+import cn from "clsx";
 import { useEffect, useState } from "react";
 
 interface IProgressBar {

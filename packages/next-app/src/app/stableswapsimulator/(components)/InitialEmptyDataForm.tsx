@@ -8,6 +8,7 @@ import { FieldValues, useForm } from "react-hook-form";
 
 import Button from "#/components/Button";
 import { Input } from "#/components/Input";
+import { Form, FormField } from "#/components/ui/form";
 import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
 import { GetDeepProp } from "#/utils/getTypes";
 
@@ -26,18 +27,19 @@ export default function InitialEmptyDataForm() {
   const { push } = useRouter();
   const { initialData, setInitialData, setCustomData, setIsGraphLoading } =
     useStableSwap();
+  const form = useForm<InitialForm>({
+    resolver: zodResolver(StableSwapSimulatorDataSchema),
+    mode: "onSubmit",
+  });
+
   const {
     register,
-    handleSubmit,
     setValue,
     getValues,
     clearErrors,
     reset,
     formState: { errors },
-  } = useForm<InitialForm>({
-    resolver: zodResolver(StableSwapSimulatorDataSchema),
-    mode: "onSubmit",
-  });
+  } = form;
 
   const onSubmit = (data: FieldValues) => {
     setIsGraphLoading(true);
@@ -63,47 +65,63 @@ export default function InitialEmptyDataForm() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-4">
-      <form onSubmit={handleSubmit(onSubmit)} id="initial-data-form" />
-      <Input
-        {...register("swapFee", {
-          required: true,
-          value: initialData?.swapFee,
-          valueAsNumber: true,
-        })}
-        label="Swap fee"
-        placeholder="Define the initial swap fee"
-        errorMessage={errors?.swapFee?.message}
-        form="initial-data-form"
-      />
-      <Input
-        {...register("ampFactor", {
-          required: true,
-          value: initialData?.ampFactor,
-          valueAsNumber: true,
-        })}
-        label="Amp factor"
-        placeholder="Define the initial amp factor"
-        errorMessage={errors?.ampFactor?.message}
-        form="initial-data-form"
-      />
-      <div className="flex flex-col">
-        <label className="mb-2 block text-sm text-slate12">Tokens</label>
-        {errors?.tokens?.message && (
-          <div className="mt-1 h-6 text-sm text-tomato10">
-            <span>{errors?.tokens?.message}</span>
-          </div>
-        )}
-        <TokenTable />
+    <Form {...form} onSubmit={onSubmit} id="initial-data-form">
+      <div className="flex flex-col gap-4">
+        <FormField
+          name="swapFee"
+          render={({ field }) => (
+            <Input
+              {...field}
+              label="Swap fee"
+              type="number"
+              validation={{
+                required: true,
+                valueAsNumber: true,
+                value: initialData?.swapFee,
+              }}
+              defaultValue={initialData?.swapFee}
+              placeholder="Define the initial swap fee"
+            />
+          )}
+        />
+
+        <FormField
+          name="ampFactor"
+          render={({ field }) => (
+            <Input
+              {...field}
+              label="Amp Factor"
+              type="number"
+              validation={{
+                required: true,
+                valueAsNumber: true,
+                value: initialData?.ampFactor,
+              }}
+              defaultValue={initialData?.ampFactor}
+              placeholder="Define the initial amp factor"
+            />
+          )}
+        />
+
+        <div className="flex flex-col">
+          <label className="mb-2 block text-sm text-slate12">Tokens</label>
+          {errors?.tokens?.message && (
+            <div className="mt-1 h-6 text-sm text-tomato10">
+              <span>{errors?.tokens?.message}</span>
+            </div>
+          )}
+          <TokenTable />
+        </div>
+
+        <Button
+          form="initial-data-form"
+          type="submit"
+          shade="light"
+          className="h-min w-32 self-end"
+        >
+          Next step
+        </Button>
       </div>
-      <Button
-        form="initial-data-form"
-        type="submit"
-        shade="light"
-        className="h-min w-32 self-end"
-      >
-        Next step
-      </Button>
-    </div>
+    </Form>
   );
 }

@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 
 import Button from "#/components/Button";
 import { Input } from "#/components/Input";
+import { Form } from "#/components/ui/form";
 import {
   AnalysisData,
   TokensData,
@@ -30,13 +31,11 @@ export default function TokenForm({
       return token.symbol;
     }),
   });
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<typeof stableSwapTokensSchema._type>({
+  const form = useForm<typeof stableSwapTokensSchema._type>({
     resolver: zodResolver(stableSwapTokensSchema),
   });
+
+  const { register } = form;
 
   const tokens = variant ? customData?.tokens : initialData?.tokens;
   const currentToken = tokens?.find(
@@ -172,7 +171,7 @@ export default function TokenForm({
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} id="token-form">
+    <Form onSubmit={onSubmit} id="token-form" {...form}>
       <div className="flex flex-col gap-y-4">
         <Input
           label="Symbol"
@@ -182,7 +181,6 @@ export default function TokenForm({
             required: true,
             validate: validateUniqueSymbol,
           })}
-          errorMessage={errors?.symbol?.message?.toString() || ""}
         />
         <Input
           label="Balance"
@@ -193,7 +191,6 @@ export default function TokenForm({
             min: 0,
             required: true,
           })}
-          errorMessage={errors?.balance?.message?.toString() || ""}
         />
         <Input
           label="Decimals"
@@ -204,7 +201,6 @@ export default function TokenForm({
             min: 0,
             required: true,
           })}
-          errorMessage={errors?.decimal?.message?.toString() || ""}
         />
         <Input
           label="Rate"
@@ -215,7 +211,6 @@ export default function TokenForm({
             min: 0,
             required: true,
           })}
-          errorMessage={errors?.rate?.message?.toString() || ""}
         />
       </div>
       <div className="mt-4 flex items-center justify-end gap-3">
@@ -228,6 +223,6 @@ export default function TokenForm({
           {symbolToEdit ? "Edit" : "Add"}
         </Button>
       </div>
-    </form>
+    </Form>
   );
 }

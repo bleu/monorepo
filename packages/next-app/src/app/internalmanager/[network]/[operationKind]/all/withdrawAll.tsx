@@ -18,6 +18,7 @@ import { Input } from "#/components/Input";
 import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
 import { Toast } from "#/components/Toast";
+import { Form } from "#/components/ui/form";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { useInternalBalancesTransaction } from "#/hooks/useTransaction";
@@ -55,9 +56,11 @@ export function WithdrawAll() {
     userAddress: addressLower as Address,
   });
 
-  const { register, handleSubmit, setValue, formState } = useForm({
+  const form = useForm({
     resolver: zodResolver(AddressSchema),
   });
+
+  const { register, setValue } = form;
 
   const { setSubmitData } = useInternalBalancesTransaction({
     userAddress: addressLower as Address,
@@ -91,9 +94,10 @@ export function WithdrawAll() {
 
   return (
     <div className="flex h-full items-center justify-center">
-      <form
-        onSubmit={handleSubmit(handleOnSubmit)}
+      <Form
+        onSubmit={handleOnSubmit}
         className="my-4 flex h-fit w-fit flex-col divide-y divide-slate7 rounded-lg border border-slate7 bg-blue3 text-white"
+        {...form}
       >
         <div className="relative flex h-full w-full justify-center">
           <Link href={`/internalmanager/${network}`}>
@@ -162,9 +166,6 @@ export function WithdrawAll() {
               label="Receiver Address"
               placeholder={addressLower}
               {...register("receiverAddress")}
-              errorMessage={
-                formState.errors?.receiverAddress?.message as string
-              }
             />
             <div className="mt-2 flex gap-x-1 text-xs">
               <button
@@ -184,7 +185,7 @@ export function WithdrawAll() {
             </Button>
           </div>
         </div>
-      </form>
+      </Form>
       {notification && (
         <Toast
           content={

@@ -28,6 +28,7 @@ import {
   STAGE_CN_MAPPING,
   TransactionProgressBar,
 } from "#/components/TransactionProgressBar";
+import { Form } from "#/components/ui/form";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { getNetwork } from "#/contexts/networks";
@@ -238,9 +239,10 @@ function TransactionCard({
     decimals: tokenData.tokenInfo.decimals,
   });
 
-  const { register, handleSubmit, setValue, formState, watch } = useForm({
+  const form = useForm({
     resolver: zodResolver(InternalBalanceSchema),
   });
+  const { register, setValue, watch } = form;
 
   useEffect(() => {
     register("receiverAddress");
@@ -269,8 +271,9 @@ function TransactionCard({
 
   return (
     <div className="flex h-full items-center justify-center">
-      <form
-        onSubmit={handleSubmit(handleOnSubmit)}
+      <Form
+        {...form}
+        onSubmit={handleOnSubmit}
         className="my-4 flex h-fit w-fit flex-col divide-y divide-slate7 rounded-lg border border-slate7 bg-blue3 text-white"
       >
         <div className="relative flex h-full w-full justify-center">
@@ -308,9 +311,6 @@ function TransactionCard({
                         : tokenData.balance
                     }
                     {...register("tokenAmount")}
-                    errorMessage={
-                      formState.errors?.tokenAmount?.message as string
-                    }
                   />
                 </div>
               </div>
@@ -343,9 +343,6 @@ function TransactionCard({
                 label="Receiver Address"
                 placeholder={userAddress}
                 {...register("receiverAddress")}
-                errorMessage={
-                  formState.errors?.receiverAddress?.message as string
-                }
               />
               <div className="mt-2 flex gap-x-1 text-xs">
                 {operationKindEnum === UserBalanceOpKind.TRANSFER_INTERNAL &&
@@ -389,7 +386,7 @@ function TransactionCard({
             />
           </div>
         </div>
-      </form>
+      </Form>
     </div>
   );
 }

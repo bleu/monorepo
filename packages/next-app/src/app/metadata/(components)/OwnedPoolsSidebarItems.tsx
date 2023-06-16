@@ -4,7 +4,7 @@ import {
   networkFor,
   networkIdFor,
 } from "@balancer-pool-metadata/shared";
-import cn from "classnames";
+import cn from "clsx";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -12,7 +12,7 @@ import { useState } from "react";
 
 import EmptyWalletImage from "#/assets/empty-wallet.svg";
 import { Badge } from "#/components/Badge";
-import { Input } from "#/components/Input";
+import { BaseInput } from "#/components/Input";
 import Sidebar from "#/components/Sidebar";
 import { impersonateWhetherDAO, pools } from "#/lib/gql";
 import { refetchRequest } from "#/utils/fetcher";
@@ -94,8 +94,8 @@ function OwnedPoolsSidebarItems({
 
   return (
     <div className="flex flex-col gap-y-2 pr-2">
-      <Input
-        label="Search pool"
+      <BaseInput
+        type="text"
         placeholder="Search by name, symbol, id, tokens..."
         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
           setPoolSearchQuery(e.target.value)
@@ -146,13 +146,13 @@ function PoolCard({ isSelected, pool }: { isSelected: boolean; pool: Pool }) {
         <p
           className={cn(
             "tracking-tighter text-lg font-bold text-slate12 max-h-7 truncate text-left",
-            weights ? "max-w-[60%] " : "w-full"
+            weights ? "max-w-[55%] " : "w-full"
           )}
         >
           {poolName}
         </p>
         {weights && (
-          <div className="max-w-[40%]">
+          <div className="max-w-[45%]">
             <Badge isSelected={isSelected} isTrackingTighter>
               {weights}
             </Badge>

@@ -2,7 +2,7 @@
 import { Address } from "@balancer-pool-metadata/shared";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
-import cn from "classnames";
+import cn from "clsx";
 import { useState } from "react";
 
 import { Button } from "#/components";

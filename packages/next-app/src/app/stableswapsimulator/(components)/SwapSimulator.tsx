@@ -2,15 +2,17 @@ import { OldBigNumber } from "@balancer-labs/sor";
 import { MetaStableMath } from "@balancer-pool-metadata/math/src";
 import { Controller, useForm } from "react-hook-form";
 
-import { Input } from "#/components/Input";
+import { BaseInput, Input } from "#/components/Input";
 import { PlotTitle } from "#/components/Plot";
 import { Select, SelectItem } from "#/components/Select";
 import { Spinner } from "#/components/Spinner";
+import { Form, FormField } from "#/components/ui/form";
 import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
 import useDebounce from "#/hooks/useDebounce";
 
 export function SwapSimulator() {
-  const { register, watch, control } = useForm();
+  const form = useForm();
+  const { watch, control } = form;
 
   const swapTypes = ["Exact In", "Exact Out"];
   const { initialData, customData } = useStableSwap();
@@ -58,26 +60,32 @@ export function SwapSimulator() {
     return (
       <div className="flex flex-col gap-y-2">
         {swapType == "Exact In" ? (
-          <Input
-            label="Amount Out"
-            value={`${amountOut.toFixed(2)} ${tokenOutSymbol}`}
-            disabled
-          />
+          <>
+            <label className="block text-sm text-slate12">Amount Out</label>
+            <BaseInput
+              label="Amount Out"
+              value={`${amountOut.toFixed(2)} ${tokenOutSymbol}`}
+              disabled
+            />
+          </>
         ) : (
-          <Input
-            label="Amount In"
-            value={`${amountIn.toFixed(2)} ${tokenInSymbol}`}
-            disabled
-          />
+          <>
+            <label className="block text-sm text-slate12">Amount In</label>
+            <BaseInput
+              value={`${amountIn.toFixed(2)} ${tokenInSymbol}`}
+              disabled
+            />
+          </>
         )}
-        <Input
-          label="Effective Price"
+        <label className="block text-sm text-slate12">Effective Price</label>
+        <BaseInput
           value={`${effectivePrice.toFixed(
             2
           )} ${tokenOutSymbol}/${tokenInSymbol}`}
           disabled
         />
-        <Input
+        <label className="block text-sm text-slate12">Price Impact</label>
+        <BaseInput
           label="Price Impact"
           value={`${(priceImpact * 100).toFixed(2)} %`}
           disabled
@@ -93,89 +101,101 @@ export function SwapSimulator() {
         tooltip="Use the inputs on the left to simulate a swap and see the results based on the initial and custom parameters"
         justifyCenter={false}
       />
-      <div className="flex w-full flex-row gap-x-5">
-        <div className="flex w-1/3 flex-col gap-y-2">
-          <label className="text-md mb-2 block text-slate12">
-            Swap parameters
-          </label>
-          <div className="flex flex-row justify-between gap-x-2">
-            <div className="flex w-1/2 flex-col">
+      <Form {...form} onSubmit={() => undefined}>
+        <div className="flex w-full flex-row gap-x-5">
+          <div className="flex w-1/3 flex-col gap-y-2">
+            <label className="text-md mb-2 block text-slate12">
+              Swap parameters
+            </label>
+            <div className="flex flex-row justify-between gap-x-2">
+              <div className="flex w-1/2 flex-col">
+                <label className="mb-2 block text-sm text-slate12">
+                  Token In
+                </label>
+                <Controller
+                  control={control}
+                  name="tokenInIndex"
+                  defaultValue="0"
+                  render={({ field: { onChange, value, ref } }) => (
+                    <Select onValueChange={onChange} value={value} ref={ref}>
+                      {tokensSymbol.map((tokenSymbol, index) => (
+                        <SelectItem key={tokenSymbol} value={index.toString()}>
+                          {tokenSymbol}
+                        </SelectItem>
+                      ))}
+                    </Select>
+                  )}
+                />
+              </div>
+              <div className="flex w-1/2 flex-col">
+                <label className="mb-2 block text-sm text-slate12">
+                  Token Out
+                </label>
+                <Controller
+                  control={control}
+                  name="tokenOutIndex"
+                  defaultValue="1"
+                  render={({ field: { onChange, value, ref } }) => (
+                    <Select onValueChange={onChange} value={value} ref={ref}>
+                      {tokensSymbol.map((tokenSymbol, index) => (
+                        <SelectItem key={tokenSymbol} value={index.toString()}>
+                          {tokenSymbol}
+                        </SelectItem>
+                      ))}
+                    </Select>
+                  )}
+                />
+              </div>
+            </div>
+            <div className="flex flex-col">
               <label className="mb-2 block text-sm text-slate12">
-                Token In
+                Swap Type
               </label>
               <Controller
                 control={control}
-                name="tokenInIndex"
-                defaultValue="0"
+                name="swapType"
+                defaultValue="Exact In"
                 render={({ field: { onChange, value, ref } }) => (
                   <Select onValueChange={onChange} value={value} ref={ref}>
-                    {tokensSymbol.map((tokenSymbol, index) => (
-                      <SelectItem key={tokenSymbol} value={index.toString()}>
-                        {tokenSymbol}
+                    {swapTypes.map((swapType) => (
+                      <SelectItem key={swapType} value={swapType}>
+                        {swapType}
                       </SelectItem>
                     ))}
                   </Select>
                 )}
               />
             </div>
-            <div className="flex w-1/2 flex-col">
-              <label className="mb-2 block text-sm text-slate12">
-                Token Out
-              </label>
-              <Controller
-                control={control}
-                name="tokenOutIndex"
-                defaultValue="1"
-                render={({ field: { onChange, value, ref } }) => (
-                  <Select onValueChange={onChange} value={value} ref={ref}>
-                    {tokensSymbol.map((tokenSymbol, index) => (
-                      <SelectItem key={tokenSymbol} value={index.toString()}>
-                        {tokenSymbol}
-                      </SelectItem>
-                    ))}
-                  </Select>
-                )}
-              />
-            </div>
-          </div>
-          <div className="flex flex-col">
-            <label className="mb-2 block text-sm text-slate12">Swap Type</label>
-            <Controller
-              control={control}
-              name="swapType"
-              defaultValue="Exact In"
-              render={({ field: { onChange, value, ref } }) => (
-                <Select onValueChange={onChange} value={value} ref={ref}>
-                  {swapTypes.map((swapType) => (
-                    <SelectItem key={swapType} value={swapType}>
-                      {swapType}
-                    </SelectItem>
-                  ))}
-                </Select>
+            <FormField
+              name="amount"
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  label="Amount"
+                  type="number"
+                  defaultValue={(initialData?.tokens[0]?.balance / 10).toFixed(
+                    2
+                  )}
+                />
               )}
             />
           </div>
-          <Input
-            {...register("amount")}
-            label="Amount"
-            defaultValue={(initialData?.tokens[0]?.balance / 10).toFixed(2)}
-          />
-        </div>
-        <div className="flex w-1/3 flex-col gap-y-2">
-          <label className="text-md mb-2 block text-slate12 underline decoration-blue9 decoration-4">
-            Initial simulation
-          </label>
-          <SimulationResult {...initialResult} />
-        </div>
-        <div className="flex w-1/3 flex-col gap-y-2">
-          <label className="text-md mb-2 block text-slate12 underline decoration-amber9 decoration-4">
-            Custom simulation
-          </label>
-          <div className="flex flex-col gap-y-2">
-            <SimulationResult {...customResult} />
+          <div className="flex w-1/3 flex-col gap-y-2">
+            <label className="text-md mb-2 block text-slate12 underline decoration-blue9 decoration-4">
+              Initial simulation
+            </label>
+            <SimulationResult {...initialResult} />
+          </div>
+          <div className="flex w-1/3 flex-col gap-y-2">
+            <label className="text-md mb-2 block text-slate12 underline decoration-amber9 decoration-4">
+              Custom simulation
+            </label>
+            <div className="flex flex-col gap-y-2">
+              <SimulationResult {...customResult} />
+            </div>
           </div>
         </div>
-      </div>
+      </Form>
     </div>
   );
 }

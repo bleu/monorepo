@@ -5,16 +5,12 @@ import {
   AccordionTriggerProps,
 } from "@radix-ui/react-accordion";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
-import classNames from "classnames";
+import cn from "clsx";
 import { forwardRef } from "react";
 
 export const AccordionItem = forwardRef<HTMLDivElement, AccordionItemProps>(
   ({ children, className, ...props }, forwardedRef) => (
-    <Accordion.Item
-      className={classNames(className)}
-      {...props}
-      ref={forwardedRef}
-    >
+    <Accordion.Item className={cn(className)} {...props} ref={forwardedRef}>
       {children}
     </Accordion.Item>
   )
@@ -26,7 +22,7 @@ export const AccordionTrigger = forwardRef<
 >(({ children, className, ...props }, forwardedRef) => (
   <Accordion.Header className="flex">
     <Accordion.Trigger
-      className={classNames(
+      className={cn(
         "text-white group flex h-8 flex-1 cursor-default items-center justify-between px-1 text-[15px] leading-none shadow-[0_0px_0]",
         className
       )}
@@ -47,7 +43,7 @@ export const AccordionContent = forwardRef<
   AccordionContentProps
 >(({ children, className, ...props }, forwardedRef) => (
   <Accordion.Content
-    className={classNames(
+    className={cn(
       "data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp overflow-hidden text-[15px]",
       className
     )}

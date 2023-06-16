@@ -1,4 +1,4 @@
-import { getStableSwapSimulatorTokensSchema } from "@balancer-pool-metadata/schema";
+import { getStableSwapSimulatorTokensSchema } from "@bleu-balancer-tools/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useForm } from "react-hook-form";

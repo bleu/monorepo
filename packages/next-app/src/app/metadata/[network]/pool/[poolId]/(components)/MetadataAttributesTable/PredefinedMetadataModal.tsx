@@ -1,4 +1,4 @@
-import { TypenameEnum } from "@balancer-pool-metadata/schema";
+import { TypenameEnum } from "@bleu-balancer-tools/schema";
 import * as Accordion from "@radix-ui/react-accordion";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useState } from "react";

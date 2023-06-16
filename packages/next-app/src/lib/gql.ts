@@ -1,16 +1,16 @@
-import poolsSdks from "@balancer-pool-metadata/gql/src/balancer-pools";
+import { Subgraph, SUBGRAPHS } from "@bleu-balancer-tools/gql/codegen";
+import gaugesSdks from "@bleu-balancer-tools/gql/src/balancer-gauges";
+import internalManagerSdks from "@bleu-balancer-tools/gql/src/balancer-internal-manager";
+import poolsSdks from "@bleu-balancer-tools/gql/src/balancer-pools";
+import poolMetadataSdks from "@bleu-balancer-tools/gql/src/balancer-pools-metadata";
 import {
   Address,
   DELEGATE_OWNER,
   Network,
   networkFor,
   networkMultisigs,
-} from "@balancer-pool-metadata/shared";
+} from "@bleu-balancer-tools/shared";
 import { GraphQLClient } from "graphql-request";
-import gaugesSdks from "@balancer-pool-metadata/gql/src/balancer-gauges";
-import { SUBGRAPHS, Subgraph } from "@balancer-pool-metadata/gql/codegen";
-import poolMetadataSdks from "@balancer-pool-metadata/gql/src/balancer-pools-metadata";
-import internalManagerSdks from "@balancer-pool-metadata/gql/src/balancer-internal-manager";
 
 export function impersonateWhetherDAO(
   chainId: string,

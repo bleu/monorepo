@@ -1,7 +1,7 @@
 "use client";
-import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Ethereum";
-import { AddressSchema } from "@balancer-pool-metadata/schema";
-import { Address, networkFor } from "@balancer-pool-metadata/shared";
+import { InternalBalanceQuery } from "@bleu-balancer-tools/gql/src/balancer-internal-manager/__generated__/Ethereum";
+import { AddressSchema } from "@bleu-balancer-tools/schema";
+import { Address, networkFor } from "@bleu-balancer-tools/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import Image from "next/image";

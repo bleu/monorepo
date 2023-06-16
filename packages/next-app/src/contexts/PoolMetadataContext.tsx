@@ -1,6 +1,6 @@
 "use client";
 
-import { TypenameEnum } from "@balancer-pool-metadata/schema";
+import { TypenameEnum } from "@bleu-balancer-tools/schema";
 import isEqual from "lodash/isEqual";
 import {
   createContext,

@@ -1,6 +1,6 @@
 "use client";
 
-import { Address, Network } from "@balancer-pool-metadata/shared";
+import { Address, Network } from "@bleu-balancer-tools/shared";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { useEffect } from "react";

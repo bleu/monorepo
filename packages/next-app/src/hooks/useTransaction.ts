@@ -2,7 +2,7 @@ import {
   Address,
   buildBlockExplorerTxUrl,
   networkFor,
-} from "@balancer-pool-metadata/shared";
+} from "@bleu-balancer-tools/shared";
 import { parseFixed } from "@ethersproject/bignumber";
 import { prepareWriteContract, writeContract } from "@wagmi/core";
 import { useRouter } from "next/navigation";

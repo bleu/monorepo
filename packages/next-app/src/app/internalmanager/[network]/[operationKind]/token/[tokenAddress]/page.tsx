@@ -1,7 +1,7 @@
 "use client";
 
-import { SingleInternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Ethereum";
-import { getInternalBalanceSchema } from "@balancer-pool-metadata/schema";
+import { SingleInternalBalanceQuery } from "@bleu-balancer-tools/gql/src/balancer-internal-manager/__generated__/Ethereum";
+import { getInternalBalanceSchema } from "@bleu-balancer-tools/schema";
 import {
   Address,
   addressRegex,
@@ -9,7 +9,7 @@ import {
   Network,
   NetworkChainId,
   networkFor,
-} from "@balancer-pool-metadata/shared";
+} from "@bleu-balancer-tools/shared";
 import { BigNumber } from "@ethersproject/bignumber";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";

@@ -1,6 +1,6 @@
 "use client";
 
-import { Network, networkFor } from "@balancer-pool-metadata/shared";
+import { Network, networkFor } from "@bleu-balancer-tools/shared";
 import { Route } from "next";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";

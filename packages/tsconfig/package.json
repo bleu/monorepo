@@ -1,5 +1,5 @@
 {
-  "name": "@balancer-pool-metadata/tsconfig",
+  "name": "@bleu-balancer-tools/tsconfig",
   "version": "0.0.0",
   "private": true,
   "files": [
@@ -8,7 +8,7 @@
     "react-library.json"
   ],
   "devDependencies": {
-    "@balancer-pool-metadata/shared": "workspace:^",
+    "@bleu-balancer-tools/shared": "workspace:^",
     "typescript": "^5.0.4"
   }
 }

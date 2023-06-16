@@ -1,5 +1,5 @@
 {
-  "name": "@balancer-pool-metadata/contracts",
+  "name": "@bleu-balancer-tools/contracts",
   "version": "1.0.0",
   "directories": {
     "lib": "lib",
@@ -20,8 +20,8 @@
     "postinstall": "make patch"
   },
   "devDependencies": {
-    "@balancer-pool-metadata/shared": "workspace:^",
-    "@balancer-pool-metadata/tsconfig": "workspace:*",
+    "@bleu-balancer-tools/shared": "workspace:^",
+    "@bleu-balancer-tools/tsconfig": "workspace:*",
     "@typechain/ethers-v5": "^10.2.1",
     "typechain": "^8.1.1",
     "typescript": "^5.0.4"

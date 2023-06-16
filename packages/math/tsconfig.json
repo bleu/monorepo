@@ -7,7 +7,7 @@
     "resolveJsonModule": true
   },
   "exclude": ["node_modules"],
-  "extends": "@balancer-pool-metadata/tsconfig/base.json",
+  "extends": "@bleu-balancer-tools/tsconfig/base.json",
   "include": ["**/*.ts", "**/*.tsx"],
   "references": []
 }

@@ -1,4 +1,4 @@
-import { Network } from "@balancer-pool-metadata/shared";
+import { Network } from "@bleu-balancer-tools/shared";
 
 export function CheckSupportedChains({
   children,

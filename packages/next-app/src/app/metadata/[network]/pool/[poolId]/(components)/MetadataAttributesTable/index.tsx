@@ -1,6 +1,6 @@
 "use client";
 
-import { Address, Network } from "@balancer-pool-metadata/shared";
+import { Address, Network } from "@bleu-balancer-tools/shared";
 import {
   ArrowTopRightIcon,
   Pencil2Icon,

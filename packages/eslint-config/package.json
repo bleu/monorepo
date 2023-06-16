@@ -1,12 +1,12 @@
 {
-  "name": "@balancer-pool-metadata/eslint-config",
+  "name": "@bleu-balancer-tools/eslint-config",
   "version": "0.0.0",
   "license": "MIT",
   "files": [
     "eslint-preset.js"
   ],
   "devDependencies": {
-    "@balancer-pool-metadata/shared": "workspace:^",
+    "@bleu-balancer-tools/shared": "workspace:^",
     "@next/eslint-plugin-next": "^13.4.3",
     "@typescript-eslint/eslint-plugin": "latest",
     "eslint": "^8.41.0",

@@ -8,5 +8,5 @@
     "strictNullChecks": true
   },
   "exclude": ["src/types", "node_modules"],
-  "extends": "@balancer-pool-metadata/tsconfig/base.json"
+  "extends": "@bleu-balancer-tools/tsconfig/base.json"
 }

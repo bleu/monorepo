@@ -1,4 +1,4 @@
-import { Address } from "@balancer-pool-metadata/shared";
+import { Address } from "@bleu-balancer-tools/shared";
 import { useEffect } from "react";
 
 export async function fetcher<JSON = unknown>(

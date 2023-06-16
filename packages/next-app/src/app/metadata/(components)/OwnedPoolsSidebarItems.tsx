@@ -106,7 +106,7 @@ function OwnedPoolsSidebarItems({
         (filteredPools.length === 0 ? (
           <div className="flex flex-col text-slate12">
             <span className="text-center">
-              Sorry, no pools were found &#128531;
+              Sorry, no pools were found &#128531; {/* &#128531; = 😓 */}
             </span>
             <span className="text-center">
               Please try other search parameters

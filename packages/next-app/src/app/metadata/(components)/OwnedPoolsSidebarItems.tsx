@@ -7,6 +7,7 @@ import {
   networkFor,
   networkIdFor,
 } from "@balancer-pool-metadata/shared";
+import cn from "classnames";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -17,7 +18,7 @@ import Sidebar from "#/components/Sidebar";
 import { impersonateWhetherDAO, pools } from "#/lib/gql";
 import { refetchRequest } from "#/utils/fetcher";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
-import { truncate } from "#/utils/truncate";
+import { truncateAddress } from "#/utils/truncate";
 import { useAccount, useNetwork } from "#/wagmi";
 
 export default function OwnedPoolsWrapper() {
@@ -91,23 +92,39 @@ function PoolCard({ isSelected, pool }: { isSelected: boolean; pool: Pool }) {
 
   const poolName =
     poolType === "Weighted" && tokens
-      ? tokens.map((obj) => obj.symbol).join("/")
+      ? tokens.map((obj) => obj.symbol).join(" / ")
       : name;
   const weights =
     poolType === "Weighted" && tokens
-      ? tokens.map((obj) => (Number(obj.weight) * 100).toFixed()).join("/")
+      ? tokens
+          .sort((a, b) => (a.weight < b.weight ? 1 : -1))
+          .map((obj) => (Number(obj.weight) * 100).toFixed())
+          .join(" / ")
       : null;
 
   return (
     <div className="py-2">
-      <div className="flex items-center space-x-3 self-stretch">
-        <p className="break-all text-lg font-bold text-slate12">{poolName}</p>
-        {weights && <Badge isSelected={isSelected}>{weights}</Badge>}
+      <div className="flex items-center justify-between space-x-3 self-stretch">
+        <p
+          className={cn(
+            "tracking-tighter text-lg font-bold text-slate12 max-h-7 truncate text-left",
+            weights ? "max-w-[60%] " : "w-full"
+          )}
+        >
+          {poolName}
+        </p>
+        {weights && (
+          <div className="max-w-[40%]">
+            <Badge isSelected={isSelected} isTrackingTighter>
+              {weights}
+            </Badge>
+          </div>
+        )}
       </div>
       <div className="flex w-full items-center space-x-3">
         <Badge variant="outline">{poolType}</Badge>
         <p className="text-sm leading-tight text-slate12 group-hover:text-slate12">
-          {truncate(id)}
+          {truncateAddress(id)}
         </p>
       </div>
     </div>

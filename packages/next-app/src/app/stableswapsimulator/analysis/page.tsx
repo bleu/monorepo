@@ -1,5 +1,6 @@
 "use client";
 
+import { Spinner } from "#/components/Spinner";
 import { Tabs } from "#/components/Tabs";
 import { useStableSwap } from "#/contexts/StableSwapContext";
 
@@ -12,6 +13,7 @@ import { TokensDistribution } from "../(components)/TokensDistribution";
 export default function Page() {
   const {
     initialData,
+    customData,
     indexAnalysisToken,
     setIndexCurrentTabToken,
     indexCurrentTabToken,
@@ -20,6 +22,19 @@ export default function Page() {
   const tabTokens = tokensSymbol.filter(
     (token, index) => index !== indexAnalysisToken
   );
+
+  if (
+    !initialData ||
+    !initialData.swapFee ||
+    !initialData.ampFactor ||
+    !initialData.tokens ||
+    !customData ||
+    !customData.swapFee ||
+    !customData.ampFactor ||
+    !customData.tokens
+  ) {
+    return <Spinner />;
+  }
 
   function handleTabClick(event: React.FormEvent<HTMLButtonElement>) {
     const target = event.target as HTMLButtonElement;

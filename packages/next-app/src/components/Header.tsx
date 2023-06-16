@@ -17,7 +17,7 @@ interface IHeader {
   imageSrc?: string;
   title: string;
   children?: ReactNode;
-  wallet?: boolean;
+  endButton?: ReactNode;
 }
 
 export function Header({
@@ -25,7 +25,7 @@ export function Header({
   imageSrc,
   title,
   children,
-  wallet = true,
+  endButton = <CustomConnectButton />,
 }: IHeader) {
   return (
     <div className="flex h-20 w-full items-center border-b border-b-blue3 bg-blue2 p-4 text-white">
@@ -41,11 +41,7 @@ export function Header({
         </Link>
       </div>
       <div className="flex flex-1 justify-center">{children}</div>
-      {wallet && (
-        <div className="ml-auto flex flex-1 justify-end">
-          <CustomConnectButton />
-        </div>
-      )}
+      <div className="ml-auto flex flex-1 justify-end">{endButton}</div>
     </div>
   );
 }

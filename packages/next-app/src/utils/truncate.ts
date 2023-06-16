@@ -1,4 +1,4 @@
-export function truncate(address?: string | null) {
+export function truncateAddress(address?: string | null) {
   if (!address) return address;
 
   const match = address.match(/^([a-zA-Z0-9]{6})[a-zA-Z0-9]+([a-zA-Z0-9]{4})$/);

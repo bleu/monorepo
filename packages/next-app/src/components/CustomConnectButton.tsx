@@ -2,7 +2,7 @@ import { CaretDownIcon } from "@radix-ui/react-icons";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
 
-import { truncate } from "#/utils/truncate";
+import { truncateAddress } from "#/utils/truncate";
 
 import Button from "./Button";
 
@@ -51,7 +51,7 @@ export function CustomConnectButton() {
               return (
                 <div className="flex gap-4">
                   <Button onClick={openAccountModal} shade="dark">
-                    {truncate(account.address)}
+                    {truncateAddress(account.address)}
                   </Button>
                   <Button onClick={openChainModal} shade="dark">
                     <div className="flex items-center justify-between">

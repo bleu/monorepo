@@ -9,7 +9,7 @@ import { Input } from "#/components/Input";
 import { Select, SelectItem } from "#/components/Select";
 import { pools } from "#/lib/gql";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
-import { truncate } from "#/utils/truncate";
+import { truncateAddress } from "#/utils/truncate";
 
 export interface PoolAttribute {
   poolId: string;
@@ -173,7 +173,7 @@ export function SearchPoolForm({
                   <div className="flex w-full flex-col items-start">
                     <span>{pool.symbol}</span>
                     <div className="flex w-full items-center gap-x-1 text-xs text-slate9">
-                      <span>{truncate(pool.address)}</span>
+                      <span>{truncateAddress(pool.address)}</span>
                     </div>
                   </div>
                 </Button>

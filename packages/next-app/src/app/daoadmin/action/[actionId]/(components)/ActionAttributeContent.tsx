@@ -10,7 +10,7 @@ import { Input } from "#/components/Input";
 import { useAdminTools } from "#/contexts/AdminToolsContext";
 import useDebounce from "#/hooks/useDebounce";
 import { gauges, pools } from "#/lib/gql";
-import { truncate } from "#/utils/truncate";
+import { truncateAddress } from "#/utils/truncate";
 import { useNetwork } from "#/wagmi";
 
 export function ActionAttributeContent() {
@@ -107,7 +107,7 @@ export function ActionAttributeContent() {
                     rel="noopener noreferrer"
                     className="text-slate12 hover:underline"
                   >
-                    {truncate(selectedAction?.contractAddress)}
+                    {truncateAddress(selectedAction?.contractAddress)}
                   </a>
                 </div>
               </div>

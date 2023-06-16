@@ -58,7 +58,7 @@ foundryup
 This repository uses git submodules; use `--recurse-submodules` option when cloning:
 
 ```bash
-git clone --recurse-submodules https://github.com/bleu-llc/balancer-pool-metadata.git
+git clone --recurse-submodules git@github.com:bleu-studio/balancer-tools.git
 ```
 
 ## Installation

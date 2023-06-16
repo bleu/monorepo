@@ -12,6 +12,7 @@ import { useState } from "react";
 
 import EmptyWalletImage from "#/assets/empty-wallet.svg";
 import { Badge } from "#/components/Badge";
+import { BaseInput } from "#/components/Input";
 import Sidebar from "#/components/Sidebar";
 import { impersonateWhetherDAO, pools } from "#/lib/gql";
 import { refetchRequest } from "#/utils/fetcher";
@@ -93,10 +94,9 @@ function OwnedPoolsSidebarItems({
 
   return (
     <div className="flex flex-col gap-y-2 pr-2">
-      <input
+      <BaseInput
         type="text"
         placeholder="Search by name, symbol, id, tokens..."
-        className="h-9 w-full appearance-none items-center justify-center rounded-l-[4px] bg-blue4 px-[10px] text-sm leading-none text-slate12 outline-none"
         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
           setPoolSearchQuery(e.target.value)
         }

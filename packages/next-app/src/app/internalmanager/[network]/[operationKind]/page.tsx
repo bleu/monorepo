@@ -8,6 +8,7 @@ import { useAccount, useNetwork } from "wagmi";
 
 import { TokenSelect } from "#/app/internalmanager/(components)/TokenSelect";
 import { Button } from "#/components";
+import { BaseInput } from "#/components/Input";
 import { Spinner } from "#/components/Spinner";
 import {
   STAGE_CN_MAPPING,
@@ -135,23 +136,17 @@ function TransactionCard({
               </div>
               <div className="flex w-1/2 items-end gap-2">
                 <div className="w-full">
-                  <span className="mb-2 block text-sm text-slate12"></span>
-                  <input
-                    className="selection:color-white box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] bg-blue4 px-[10px] text-[15px] leading-none text-slate12 shadow-[0_0_0_1px] shadow-blue6 outline-none selection:bg-blue9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-blue1"
-                    type="string"
-                    placeholder={"0.01"}
-                  />
+                  <span className="mb-2 block text-sm text-slate12">
+                    Amount
+                  </span>
+                  <BaseInput type="string" placeholder={"0.01"} />
                 </div>
               </div>
             </div>
           </div>
           <div>
             <span className="block text-sm text-slate12">Receiver Address</span>
-            <input
-              className="selection:color-white box-border inline-flex h-[35px] w-full appearance-none items-center justify-center rounded-[4px] bg-blue4 px-[10px] text-[15px] leading-none text-slate12 shadow-[0_0_0_1px] shadow-blue6 outline-none selection:bg-blue9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-blue1"
-              type="string"
-              placeholder={userAddress}
-            />
+            <BaseInput type="string" placeholder={userAddress} />
           </div>
           {operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL && (
             <TransactionProgressBar stage={stage} />

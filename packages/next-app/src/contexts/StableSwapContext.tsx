@@ -1,6 +1,6 @@
 "use client";
 
-import { PoolQuery } from "@balancer-pool-metadata/gql/src/balancer-pools/__generated__/Ethereum";
+import { PoolQuery } from "@bleu-balancer-tools/gql/src/balancer-pools/__generated__/Ethereum";
 import { usePathname, useRouter } from "next/navigation";
 import {
   createContext,

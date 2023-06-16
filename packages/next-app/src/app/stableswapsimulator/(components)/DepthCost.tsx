@@ -1,7 +1,7 @@
 "use client";
 
 import { bnum } from "@balancer-labs/sor";
-import { MetaStableMath } from "@balancer-pool-metadata/math/src";
+import { MetaStableMath } from "@bleu-balancer-tools/math/src";
 import { PlotType } from "plotly.js";
 
 import Plot, { defaultAxisLayout } from "#/components/Plot";

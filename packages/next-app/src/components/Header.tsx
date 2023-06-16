@@ -1,6 +1,6 @@
 "use client";
 
-import { networkFor } from "@balancer-pool-metadata/shared";
+import { networkFor } from "@bleu-balancer-tools/shared";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import Link from "next/link";

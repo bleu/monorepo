@@ -1,11 +1,11 @@
 "use client";
 
-import { SingleInternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Ethereum";
+import { SingleInternalBalanceQuery } from "@bleu-balancer-tools/gql/src/balancer-internal-manager/__generated__/Ethereum";
 import {
   Address,
   addressRegex,
   buildBlockExplorerTokenURL,
-} from "@balancer-pool-metadata/shared";
+} from "@bleu-balancer-tools/shared";
 import { BigNumber, formatFixed } from "@ethersproject/bignumber";
 import { ChevronDownIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { erc20ABI, fetchBalance, multicall } from "@wagmi/core";

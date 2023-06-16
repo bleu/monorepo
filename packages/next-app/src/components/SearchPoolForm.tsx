@@ -1,6 +1,6 @@
 "use client";
 
-import { PoolsWherePoolTypeQuery } from "@balancer-pool-metadata/gql/src/balancer-pools/__generated__/Ethereum";
+import { PoolsWherePoolTypeQuery } from "@bleu-balancer-tools/gql/src/balancer-pools/__generated__/Ethereum";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 

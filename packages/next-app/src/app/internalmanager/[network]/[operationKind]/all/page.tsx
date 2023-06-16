@@ -1,4 +1,4 @@
-import { Network } from "@balancer-pool-metadata/shared";
+import { Network } from "@bleu-balancer-tools/shared";
 import Link from "next/link";
 
 import { operationKindType } from "#/lib/internal-balance-helper";

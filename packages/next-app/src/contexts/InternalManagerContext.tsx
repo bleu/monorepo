@@ -1,7 +1,7 @@
 "use client";
 
-import { InternalBalanceQuery } from "@balancer-pool-metadata/gql/src/balancer-internal-manager/__generated__/Ethereum";
-import { Address } from "@balancer-pool-metadata/shared";
+import { InternalBalanceQuery } from "@bleu-balancer-tools/gql/src/balancer-internal-manager/__generated__/Ethereum";
+import { Address } from "@bleu-balancer-tools/shared";
 import {
   createContext,
   PropsWithChildren,

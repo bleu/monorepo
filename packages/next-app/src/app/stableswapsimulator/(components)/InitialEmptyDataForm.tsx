@@ -1,6 +1,6 @@
 "use client";
 
-import { StableSwapSimulatorDataSchema } from "@balancer-pool-metadata/schema";
+import { StableSwapSimulatorDataSchema } from "@bleu-balancer-tools/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";

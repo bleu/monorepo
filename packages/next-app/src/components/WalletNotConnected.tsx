@@ -1,4 +1,4 @@
-import { networkIdEnumMap } from "@balancer-pool-metadata/shared";
+import { networkIdEnumMap } from "@bleu-balancer-tools/shared";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useNetwork } from "wagmi";

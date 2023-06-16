@@ -1,6 +1,6 @@
 "use client";
 
-import { MetaStableMath } from "@balancer-pool-metadata/math/src";
+import { MetaStableMath } from "@bleu-balancer-tools/math/src";
 
 import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";

@@ -1,6 +1,6 @@
 "use client";
 
-import { StableSwapSimulatorDataSchema } from "@balancer-pool-metadata/schema";
+import { StableSwapSimulatorDataSchema } from "@bleu-balancer-tools/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";

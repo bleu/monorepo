@@ -1,6 +1,6 @@
 "use client";
 
-import { MetadataItemSchema } from "@balancer-pool-metadata/schema";
+import { MetadataItemSchema } from "@bleu-balancer-tools/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as React from "react";

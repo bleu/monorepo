@@ -9,7 +9,7 @@ import { Input } from "#/components/Input";
 import { Select, SelectItem } from "#/components/Select";
 import { pools } from "#/lib/gql";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
-import { truncate } from "#/utils/truncate";
+import { truncateAddress } from "#/utils/truncate";
 
 export interface PoolAttribute {
   poolId: string;
@@ -22,10 +22,6 @@ const inputTypenames = [
   { value: "42161", label: "Arbitrum" },
   { value: "5", label: "Goerli" },
 ];
-
-interface PoolSearch extends PoolAttribute {
-  poolSearch: string;
-}
 
 export function SearchPoolForm({
   close,
@@ -48,7 +44,7 @@ export function SearchPoolForm({
     clearErrors,
     resetField,
     formState: { errors },
-  } = useForm<PoolSearch>();
+  } = useForm<PoolAttribute>();
 
   const poolId = watch("poolId");
   const network = watch("network");
@@ -76,21 +72,21 @@ export function SearchPoolForm({
   }
 
   function filterPoolInput({
-    poolSearch,
+    poolSearchQuery,
     pool,
   }: {
-    poolSearch: string;
+    poolSearchQuery: string;
     pool?: ArrElement<GetDeepProp<PoolsWherePoolTypeQuery, "pools">>;
   }) {
     {
       if (!pool) return false;
-      const regex = new RegExp(poolSearch, "i");
+      const regex = new RegExp(poolSearchQuery, "i");
       return regex.test(Object.values(pool).join(","));
     }
   }
 
   const filteredPoolList = poolsDataList?.pools
-    .filter((pool) => filterPoolInput({ poolSearch: poolId, pool }))
+    .filter((pool) => filterPoolInput({ poolSearchQuery: poolId, pool }))
     .sort((a, b) =>
       Number(a!.totalLiquidity) < Number(b!.totalLiquidity) ? 1 : -1
     );
@@ -155,13 +151,13 @@ export function SearchPoolForm({
         />
         <p className="text-sm text-tomato10">{errors.poolId?.message}</p>
         {comboBoxIsOpen && filteredPoolList && filteredPoolList?.length > 0 && (
-          <div className="absolute max-h-52 overflow-y-scroll flex flex-col gap-y-2 my-2 scrollbar-thin scrollbar-thumb-slate12 scrollbar-track-blue2 bg-blue3 rounded z-50 border-[1px] border-blue6">
+          <div className="absolute z-50 my-2 flex max-h-52 flex-col gap-y-2 overflow-y-scroll rounded border-[1px] border-blue6 bg-blue3 scrollbar-thin scrollbar-track-blue2 scrollbar-thumb-slate12">
             <div className="p-2">
               {filteredPoolList?.map((pool) => (
                 <Button
                   key={pool.id}
                   type="button"
-                  className="bg-transparent border-transparent w-full"
+                  className="w-full border-transparent bg-transparent"
                   onClick={() => {
                     resetField("poolId");
                     handleSubmitForm({
@@ -170,10 +166,10 @@ export function SearchPoolForm({
                     });
                   }}
                 >
-                  <div className="w-full flex flex-col items-start">
+                  <div className="flex w-full flex-col items-start">
                     <span>{pool.symbol}</span>
-                    <div className="w-full flex gap-x-1 text-slate9 items-center text-xs">
-                      <span>{truncate(pool.address)}</span>
+                    <div className="flex w-full items-center gap-x-1 text-xs text-slate9">
+                      <span>{truncateAddress(pool.address)}</span>
                     </div>
                   </div>
                 </Button>

@@ -89,7 +89,7 @@ function TokenModal({
   let { address } = useAccount();
   address = impersonateWhetherDAO(chain?.id.toString() || "1", address);
   const [tokens, setTokens] = useState<(TokenItem | undefined)[]>([]);
-  const [tokenSearch, setTokenSearch] = useState("");
+  const [tokenSearchQuery, setTokenSearchQuery] = useState("");
   const [isTokenSearchDisabled, setIsTokenSearchDisabled] =
     useState<boolean>(true);
 
@@ -189,7 +189,7 @@ function TokenModal({
 
   const tokenExplorerUrl = buildBlockExplorerTokenURL({
     chainId: chain?.id,
-    tokenAddress: tokenSearch.toLowerCase() as Address,
+    tokenAddress: tokenSearchQuery.toLowerCase() as Address,
   });
 
   useEffect(() => {
@@ -198,14 +198,16 @@ function TokenModal({
 
   const network = getNetwork(chain?.name);
   useEffect(() => {
-    if (!addressRegex.test(tokenSearch)) {
+    if (!addressRegex.test(tokenSearchQuery)) {
       setIsTokenSearchDisabled(true);
       return;
     }
     setIsTokenSearchDisabled(false);
-    if (!tokens.some((token) => filterTokenInput({ tokenSearch, token }))) {
+    if (
+      !tokens.some((token) => filterTokenInput({ tokenSearchQuery, token }))
+    ) {
       fetchSingleTokenBalance({
-        tokenAddress: tokenSearch.toLowerCase() as Address,
+        tokenAddress: tokenSearchQuery.toLowerCase() as Address,
       }).then((tokenData) => {
         setTokens((prev) => [
           ...prev,
@@ -213,23 +215,23 @@ function TokenModal({
             value: tokenData.value,
             symbol: tokenData.symbol,
             decimals: tokenData.decimals,
-            tokenAddress: tokenSearch.toLowerCase() as Address,
+            tokenAddress: tokenSearchQuery.toLowerCase() as Address,
           },
         ]);
       });
     }
-  }, [tokenSearch]);
+  }, [tokenSearchQuery]);
 
   function filterTokenInput({
-    tokenSearch,
+    tokenSearchQuery,
     token,
   }: {
-    tokenSearch: string;
+    tokenSearchQuery: string;
     token?: TokenItem;
   }) {
     {
       if (!token) return false;
-      const regex = new RegExp(tokenSearch, "i");
+      const regex = new RegExp(tokenSearchQuery, "i");
       return regex.test(Object.values(token).join(","));
     }
   }
@@ -243,9 +245,9 @@ function TokenModal({
             placeholder="Search name or paste address"
             className="h-9 w-full appearance-none items-center justify-center rounded-l-[4px] bg-blue4 px-[10px] text-sm leading-none text-slate12 outline-none"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setTokenSearch(e.target.value)
+              setTokenSearchQuery(e.target.value)
             }
-            value={tokenSearch}
+            value={tokenSearchQuery}
           />
           {isTokenSearchDisabled ? (
             <button
@@ -287,7 +289,7 @@ function TokenModal({
         </Table.HeaderRow>
         <Table.Body>
           {tokens
-            .filter((token) => filterTokenInput({ tokenSearch, token }))
+            .filter((token) => filterTokenInput({ tokenSearchQuery, token }))
             .sort((a, b) => (a!.value < b!.value ? 1 : -1))
             .map((token) => {
               if (token) {

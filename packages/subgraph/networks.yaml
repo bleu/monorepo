@@ -1,10 +1,40 @@
 goerli:
   network: goerli
   PoolMetadataRegistry:
-    address: "0x3D2C019C906C36fB05e6Ca28395E9E7d603d6CA0"
-    startBlock: 8583917
+    address: "0x566b0f1dde5ad7ab3c2cd3ebbaa07622283e818b"
+    startBlock: 9165547
+sepolia:
+  network: sepolia
+  PoolMetadataRegistry:
+    address: "0x566b0f1dde5ad7ab3c2cd3ebbaa07622283e818b"
+    startBlock: 3677486
 matic:
   network: matic
   PoolMetadataRegistry:
-    address: "0x68fd16B6D2D1D4AA042009872b08f3756Cc76261"
-    startBlock: 40976256
+    address: "0x566b0f1dde5ad7ab3c2cd3ebbaa07622283e818b"
+    startBlock: 43823159
+optimism:
+  network: optimism
+  PoolMetadataRegistry:
+    address: "0x566b0f1dde5ad7ab3c2cd3ebbaa07622283e818b"
+    startBlock: 105493999
+gnosis:
+  network: gnosis
+  PoolMetadataRegistry:
+    address: "0x566b0f1dde5ad7ab3c2cd3ebbaa07622283e818b"
+    startBlock: 28419436
+arbitrum:
+  network: arbitrum
+  PoolMetadataRegistry:
+    address: "0xB1631f708a7A9cD30Ae55ea8F085af7CC275D2a2"
+    startBlock: 103116738
+# polygon-zkevm:
+#   network: polygon-zkevm
+#   PoolMetadataRegistry:
+#     address: "0xB1631f708a7A9cD30Ae55ea8F085af7CC275D2a2"
+#     startBlock: 103116738
+# mainnet:
+#   network: mainnet
+#   PoolMetadataRegistry:
+#     address: "0x566b0f1dde5ad7ab3c2cd3ebbaa07622283e818b"
+#     startBlock: 40976256

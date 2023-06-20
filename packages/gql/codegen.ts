@@ -25,12 +25,12 @@ export const SUBGRAPHS = {
 
       return {
         [Network.Ethereum]: `${baseEndpoint}/balancer-pools-metadata`,
-        [Network.Polygon]: `${baseEndpoint}/balancer-metadata-polygon`,
-        [Network.Arbitrum]: `${baseEndpoint}/balancer-metadata-goerli`,
-        [Network.Gnosis]: `${baseEndpoint}/balancer-metadata-goerli`,
-        [Network.Optimism]: `${baseEndpoint}/balancer-metadata-goerli`,
+        [Network.Polygon]: `${baseEndpoint}/balancer-pools-metadata-matic`,
+        [Network.Arbitrum]: `${baseEndpoint}/bal-pools-metadata-arb`,
+        [Network.Gnosis]: `${baseEndpoint}/bal-pools-metadata-gnosis`,
+        [Network.Optimism]: `${baseEndpoint}/bal-pools-metadata-op`,
         [Network.Goerli]: `${baseEndpoint}/balancer-metadata-goerli`,
-        [Network.Sepolia]: `${baseEndpoint}/balancer-metadata-goerli`,
+        [Network.Sepolia]: `${baseEndpoint}/bal-pools-metadata-sepolia`,
       };
     },
     endpointFor(network: Network) {

@@ -12,7 +12,13 @@ export default defineConfig({
       name: "vault",
       abi: vaultAbi,
       address: {
+        [chains.mainnet.id]: "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
+        [chains.sepolia.id]: "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
         [chains.goerli.id]: "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
+        [chains.polygon.id]: "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
+        [chains.optimism.id]: "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
+        [chains.arbitrum.id]: "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
+        [chains.gnosis.id]: "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
       },
     },
   ],
@@ -20,10 +26,14 @@ export default defineConfig({
     foundry({
       artifacts: "out/PoolMetadataRegistry.sol",
       deployments: {
-        // TODO: here you'd update the addresses to the ones you deployed to
         PoolMetadataRegistry: {
-          [chains.goerli.id]: "0x3D2C019C906C36fB05e6Ca28395E9E7d603d6CA0",
-          [chains.polygon.id]: "0x68fd16B6D2D1D4AA042009872b08f3756Cc76261",
+          [chains.mainnet.id]: "0x566b0f1dDE5ad7AB3C2cD3EbBAA07622283E818b",
+          [chains.sepolia.id]: "0x566b0f1dDE5ad7AB3C2cD3EbBAA07622283E818b",
+          [chains.goerli.id]: "0x566b0f1dDE5ad7AB3C2cD3EbBAA07622283E818b",
+          [chains.polygon.id]: "0x566b0f1dDE5ad7AB3C2cD3EbBAA07622283E818b",
+          [chains.optimism.id]: "0x566b0f1dDE5ad7AB3C2cD3EbBAA07622283E818b",
+          [chains.arbitrum.id]: "0xb1631f708a7a9cd30ae55ea8f085af7cc275d2a2",
+          [chains.gnosis.id]: "0x566b0f1dDE5ad7AB3C2cD3EbBAA07622283E818b",
         },
       },
       exclude: ["../contracts/lib/**"],

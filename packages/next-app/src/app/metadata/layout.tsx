@@ -69,7 +69,16 @@ export default function Layout({ children }: React.PropsWithChildren) {
               </Sidebar>
             </div>
             <CheckSupportedChains
-              supportedChains={[Network.Goerli, Network.Polygon]}
+              supportedChains={[
+                // Network.Ethereum,
+                Network.Polygon,
+                Network.Arbitrum,
+                Network.Gnosis,
+                Network.Optimism,
+                Network.Goerli,
+                // TODO: add support for Sepolia
+                // Network.Sepolia,
+              ]}
               chainName={network}
             >
               {children}

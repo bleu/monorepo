@@ -21,16 +21,17 @@ export const SUBGRAPHS = {
   [Subgraph.BalancerPoolsMetadata]: {
     name: Subgraph.BalancerPoolsMetadata,
     endpoints() {
-      const baseEndpoint = "https://api.thegraph.com/subgraphs/name/bleu-llc";
+      const baseEndpoint =
+        "https://api.thegraph.com/subgraphs/name/bleu-studio";
 
       return {
-        [Network.Ethereum]: `${baseEndpoint}/balancer-pools-metadata`,
+        [Network.Ethereum]: `${baseEndpoint}/bal-pools-metadata-goerli`,
         [Network.Polygon]: `${baseEndpoint}/balancer-pools-metadata-matic`,
         [Network.Arbitrum]: `${baseEndpoint}/bal-pools-metadata-arb`,
-        [Network.Gnosis]: `${baseEndpoint}/bal-pools-metadata-gnosis`,
-        [Network.Optimism]: `${baseEndpoint}/bal-pools-metadata-op`,
-        [Network.Goerli]: `${baseEndpoint}/balancer-metadata-goerli`,
-        [Network.Sepolia]: `${baseEndpoint}/bal-pools-metadata-sepolia`,
+        [Network.Gnosis]: `${baseEndpoint}/balancer-pools-metadata-gnosis`,
+        [Network.Optimism]: `${baseEndpoint}/balancer-pools-metadata-op`,
+        [Network.Goerli]: `${baseEndpoint}/bal-pools-metadata-goerli`,
+        [Network.Sepolia]: `https://api.studio.thegraph.com/query/48427/bal-pool-metadata-sepolia/v0`,
       };
     },
     endpointFor(network: Network) {
@@ -47,9 +48,10 @@ export const SUBGRAPHS = {
         [Network.Ethereum]: `${baseEndpoint}`,
         [Network.Polygon]: `${baseEndpoint}-polygon`,
         [Network.Arbitrum]: `${baseEndpoint}-arbitrum`,
-        [Network.Gnosis]: `${baseEndpoint}-goerli`,
-        [Network.Optimism]: `${baseEndpoint}-goerli`,
+        [Network.Gnosis]: `${baseEndpoint}-gnosis-chain`,
+        [Network.Optimism]: `${baseEndpoint}-optimism`,
         [Network.Goerli]: `${baseEndpoint}-goerli`,
+        // TODO: substitute Sepolia, not functional yet
         [Network.Sepolia]: `${baseEndpoint}-goerli`,
       };
     },
@@ -65,12 +67,14 @@ export const SUBGRAPHS = {
 
       return {
         [Network.Ethereum]: `${baseEndpoint}/balancer-v2`,
+        // TODO: substitute Sepolia, not functional yet
+        [Network.Sepolia]: `${baseEndpoint}/balancer-goerli-v2`,
+        // [Network.Sepolia]: `https://api.studio.thegraph.com/proxy/24660/balancer-sepolia-v2/v0.0.1`,
+        [Network.Goerli]: `${baseEndpoint}/balancer-goerli-v2`,
         [Network.Polygon]: `${baseEndpoint}/balancer-polygon-v2`,
         [Network.Arbitrum]: `${baseEndpoint}/balancer-arbitrum-v2`,
-        [Network.Gnosis]: `${baseEndpoint}/balancer-goerli-v2`,
-        [Network.Optimism]: `${baseEndpoint}/balancer-goerli-v2`,
-        [Network.Goerli]: `${baseEndpoint}/balancer-goerli-v2`,
-        [Network.Sepolia]: `${baseEndpoint}/balancer-goerli-v2`,
+        [Network.Gnosis]: `${baseEndpoint}/balancer-gnosis-chain-v2-beta`,
+        [Network.Optimism]: `${baseEndpoint}/balancer-optimism-v2`,
       };
     },
     endpointFor(network: Network) {

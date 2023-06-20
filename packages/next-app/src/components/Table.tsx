@@ -37,16 +37,19 @@ export default function Table({
   color = "gray",
   variant = "solid",
   shade = "dark",
+  customClass,
 }: React.PropsWithChildren<{
   color?: TableColor;
   variant?: TableVariant;
   shade?: TableShade;
+  customClass?: string;
 }>) {
   return (
     <TableContext.Provider value={{}}>
       <div
         className={cn(
           "min-w-full",
+          customClass ?? customClass,
           predefinedClasses[color][variant][shade].border
         )}
       >

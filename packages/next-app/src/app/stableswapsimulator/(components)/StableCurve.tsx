@@ -1,10 +1,12 @@
 "use client";
 
 import { MetaStableMath } from "@bleu-balancer-tools/math/src";
+import { PlotType } from "plotly.js";
 
 import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
 import { useStableSwap } from "#/contexts/StableSwapContext";
+import formatNumber from "#/utils/formatNumber";
 
 export function StableCurve() {
   const { initialData, customData, indexAnalysisToken, indexCurrentTabToken } =
@@ -119,78 +121,104 @@ export function StableCurve() {
     decimals: customData.tokens.map((token) => token.decimal),
   });
 
+  const formatSwap = (
+    amountIn: number,
+    tokenIn: string,
+    amountOut: number,
+    tokenOut: string
+  ) => {
+    const formattedAmountIn = formatNumber(amountIn, 2);
+    const formattedAmountOut = formatNumber(amountOut, 2);
+    return `Swap ${formattedAmountIn} ${tokenIn} for ${formattedAmountOut} ${tokenOut} <extra></extra>`;
+  };
+
+  const createDataObject = (
+    x: number[],
+    y: number[],
+    legendGroup: string,
+    name: string,
+    showlegend = true,
+    hovertemplate: string[]
+  ) => {
+    return {
+      x,
+      y,
+      type: "scatter" as PlotType,
+      legendgroup: legendGroup,
+      name,
+      showlegend,
+      hovertemplate,
+    };
+  };
+
+  const data = [
+    createDataObject(
+      initialAmountsAnalysisTokenIn,
+      initialAmountTabTokenOut,
+      "Initial",
+      "Initial",
+      true,
+      initialAmountsAnalysisTokenIn.map((amount, index) =>
+        formatSwap(
+          amount,
+          tokensSymbol[indexAnalysisToken],
+          -initialAmountTabTokenOut[index],
+          tokensSymbol[indexCurrentTabToken]
+        )
+      )
+    ),
+    createDataObject(
+      variantAmountsAnalysisTokenIn,
+      variantAmountTabTokenOut,
+      "Custom",
+      "Custom",
+      true,
+      variantAmountsAnalysisTokenIn.map((amount, index) =>
+        formatSwap(
+          amount,
+          tokensSymbol[indexAnalysisToken],
+          -variantAmountTabTokenOut[index],
+          tokensSymbol[indexCurrentTabToken]
+        )
+      )
+    ),
+    createDataObject(
+      initialAmountsAnalysisTokenOut,
+      initialAmountTabTokenIn,
+      "Initial",
+      "Initial",
+      false,
+      initialAmountsAnalysisTokenOut.map((amount, index) =>
+        formatSwap(
+          initialAmountTabTokenIn[index],
+          tokensSymbol[indexCurrentTabToken],
+          -amount,
+          tokensSymbol[indexAnalysisToken]
+        )
+      )
+    ),
+    createDataObject(
+      variantAmountsAnalysisTokenOut,
+      variantAmountTabTokenIn,
+      "Custom",
+      "Custom",
+      false,
+      variantAmountsAnalysisTokenOut.map((amount, index) =>
+        formatSwap(
+          variantAmountTabTokenIn[index],
+          tokensSymbol[indexCurrentTabToken],
+          -amount,
+          tokensSymbol[indexAnalysisToken]
+        )
+      )
+    ),
+  ];
+
   return (
     <Plot
       title="Swap Curve"
       toolTip="It indicates the quantity of token that will be received when swapping a specific amount of another token. The amount sign is based on the pool point of view."
-      data={[
-        {
-          x: initialAmountsAnalysisTokenIn,
-          y: initialAmountTabTokenOut,
-          type: "scatter",
-          mode: "lines",
-          legendgroup: "Initial",
-          name: "Initial",
-          hovertemplate: initialAmountsAnalysisTokenIn.map(
-            (amount, index) =>
-              `Swap ${amount.toFixed(2)} ${
-                tokensSymbol[indexAnalysisToken]
-              } for ${(initialAmountTabTokenOut[index] * -1).toFixed(2)} ${
-                tokensSymbol[indexCurrentTabToken]
-              } <extra></extra>`
-          ),
-        },
-        {
-          x: variantAmountsAnalysisTokenIn,
-          y: variantAmountTabTokenOut,
-          type: "scatter",
-          mode: "lines",
-          legendgroup: "Custom",
-          name: "Custom",
-          hovertemplate: variantAmountsAnalysisTokenIn.map(
-            (amount, index) =>
-              `Swap ${amount.toFixed(2)} ${
-                tokensSymbol[indexAnalysisToken]
-              } for ${(variantAmountTabTokenOut[index] * -1).toFixed(2)} ${
-                tokensSymbol[indexCurrentTabToken]
-              } <extra></extra>`
-          ),
-        },
-        {
-          x: initialAmountsAnalysisTokenOut,
-          y: initialAmountTabTokenIn,
-          type: "scatter",
-          mode: "lines",
-          legendgroup: "Initial",
-          name: "Initial",
-          showlegend: false,
-          hovertemplate: initialAmountsAnalysisTokenOut.map(
-            (amount, index) =>
-              `Swap ${initialAmountTabTokenIn[index].toFixed(2)} ${
-                tokensSymbol[indexCurrentTabToken]
-              } for ${(amount * -1).toFixed(2)} ${
-                tokensSymbol[indexAnalysisToken]
-              } <extra></extra>`
-          ),
-        },
-        {
-          x: variantAmountsAnalysisTokenOut,
-          y: variantAmountTabTokenIn,
-          type: "scatter",
-          mode: "lines",
-          legendgroup: "Custom",
-          name: "Custom",
-          showlegend: false,
-          hovertemplate: variantAmountsAnalysisTokenOut.map(
-            (amount, index) =>
-              `Swap ${variantAmountTabTokenIn[index].toFixed(2)} ${
-                tokensSymbol[indexCurrentTabToken]
-              } for ${(amount * -1).toFixed(2)} ${
-                tokensSymbol[indexAnalysisToken]
-              } <extra></extra>`
-          ),
-        },
-      ]}
+      data={data}
       layout={{
         xaxis: {
           title: `Amount of ${tokensSymbol[indexAnalysisToken]}`,

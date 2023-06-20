@@ -6,6 +6,7 @@ import { MetaStableMath } from "@bleu-balancer-tools/math/src";
 import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
 import { useStableSwap } from "#/contexts/StableSwapContext";
+import formatNumber from "#/utils/formatNumber";
 
 import { calculateCurvePoints } from "./StableCurve";
 
@@ -123,98 +124,135 @@ export function ImpactCurve() {
     decimals: customData.tokens.map((token) => token.decimal),
   });
 
+  // Helper function to format the swap action string
+  const formatAction = (
+    direction: "in" | "out",
+    amount: number,
+    tokenFrom: string,
+    tokenTo: string
+  ) => {
+    const formattedAmount = formatNumber(amount, 2);
+    return direction === "in"
+      ? `${formattedAmount} ${tokenFrom} for ${tokenTo}`
+      : `${tokenTo} for ${formattedAmount} ${tokenFrom}`;
+  };
+
+  const createHoverTemplate = (
+    amounts: number[],
+    tokensSymbol: string[],
+    indexAnalysisToken: number,
+    indexCurrentTabToken: number,
+    direction: "in" | "out",
+    impactData: number[]
+  ): string[] => {
+    return amounts.map((amount, i) => {
+      const swapFromIndex =
+        direction === "in" ? indexAnalysisToken : indexCurrentTabToken;
+      const swapToIndex =
+        direction === "in" ? indexCurrentTabToken : indexAnalysisToken;
+
+      const swapAction = formatAction(
+        direction,
+        amount,
+        tokensSymbol[swapFromIndex],
+        tokensSymbol[swapToIndex]
+      );
+
+      const impact = formatNumber(impactData[i] / 100, 2, "percent");
+
+      return `Swap ${swapAction} causes a Price Impact of ${impact} ${tokensSymbol[indexCurrentTabToken]}/${tokensSymbol[indexAnalysisToken]} <extra></extra>`;
+    });
+  };
+
+  const createDataObject = (
+    hovertemplateData: number[],
+    impactData: number[],
+    legendgroup: string,
+    name: string,
+    isLegendShown: boolean,
+    direction: "in" | "out",
+    tokensSymbol: string[],
+    indexAnalysisToken: number,
+    indexCurrentTabToken: number,
+    lineStyle: "solid" | "dashdot" = "solid"
+  ) => {
+    const line = lineStyle === "dashdot" ? { dash: "dashdot" } : {};
+
+    return {
+      x: hovertemplateData,
+      y: impactData,
+      type: "scatter" as const,
+      mode: "lines",
+      legendgroup,
+      legendgrouptitle: { text: legendgroup },
+      name,
+      showlegend: isLegendShown,
+      hovertemplate: createHoverTemplate(
+        hovertemplateData,
+        tokensSymbol,
+        indexAnalysisToken,
+        indexCurrentTabToken,
+        direction,
+        impactData
+      ),
+      line,
+    };
+  };
+
+  const data = [
+    createDataObject(
+      initialAmountsAnalysisTokenIn,
+      initialImpactAnalysisTokenIn,
+      "Initial",
+      tokensSymbol[indexAnalysisToken],
+      true,
+      "in",
+      tokensSymbol,
+      indexAnalysisToken,
+      indexCurrentTabToken
+    ),
+    createDataObject(
+      variantAmountsAnalysisTokenIn,
+      variantImpactAnalysisTokenIn,
+      "Custom",
+      tokensSymbol[indexAnalysisToken],
+      true,
+      "in",
+      tokensSymbol,
+      indexAnalysisToken,
+      indexCurrentTabToken
+    ),
+    createDataObject(
+      initialAmountsTabTokenIn,
+      initialImpactTabTokenIn,
+      "Initial",
+      tokensSymbol[indexCurrentTabToken],
+      true,
+      "out",
+      tokensSymbol,
+      indexAnalysisToken,
+      indexCurrentTabToken,
+      "dashdot"
+    ),
+    createDataObject(
+      variantAmountsTabTokenIn,
+      variantImpactTabTokenIn,
+      "Custom",
+      tokensSymbol[indexCurrentTabToken],
+      true,
+      "out",
+      tokensSymbol,
+      indexAnalysisToken,
+      indexCurrentTabToken,
+      "dashdot"
+    ),
+  ];
+
   return (
     <Plot
       title="Price Impact Curve"
       toolTip="Indicates how much the swapping of a particular amount of token effects on the Price Impact (rate between the price of both tokens). The sign is based on the pool point of view."
-      data={[
-        {
-          x: initialAmountsAnalysisTokenIn,
-          y: initialImpactAnalysisTokenIn,
-          type: "scatter",
-          mode: "lines",
-          legendgroup: "Initial",
-          legendgrouptitle: { text: "Initial" },
-          name: tokensSymbol[indexAnalysisToken],
-          hovertemplate: initialAmountsAnalysisTokenIn.map(
-            (amount, index) =>
-              `Swap ${amount.toFixed(2)} ${
-                tokensSymbol[indexAnalysisToken]
-              } for ${
-                tokensSymbol[indexCurrentTabToken]
-              } causes a Price Impact of ${initialImpactAnalysisTokenIn[
-                index
-              ].toFixed(2)}% ${tokensSymbol[indexCurrentTabToken]}/${
-                tokensSymbol[indexAnalysisToken]
-              } <extra></extra>`
-          ),
-        },
-        {
-          x: variantAmountsAnalysisTokenIn,
-          y: variantImpactAnalysisTokenIn,
-          type: "scatter",
-          mode: "lines",
-          legendgroup: "Custom",
-          legendgrouptitle: { text: "Custom" },
-          name: tokensSymbol[indexAnalysisToken],
-          hovertemplate: variantAmountsAnalysisTokenIn.map(
-            (amount, index) =>
-              `Swap ${amount.toFixed(2)} ${
-                tokensSymbol[indexAnalysisToken]
-              } for ${
-                tokensSymbol[indexCurrentTabToken]
-              } causes a Price Impact of ${variantImpactAnalysisTokenIn[
-                index
-              ].toFixed(2)}% ${tokensSymbol[indexCurrentTabToken]}/${
-                tokensSymbol[indexAnalysisToken]
-              } <extra></extra>`
-          ),
-        },
-        {
-          x: initialAmountsTabTokenIn,
-          y: initialImpactTabTokenIn,
-          type: "scatter",
-          mode: "lines",
-          line: { dash: "dashdot" },
-          legendgroup: "Initial",
-          legendgrouptitle: { text: "Initial" },
-          name: tokensSymbol[indexCurrentTabToken],
-          hovertemplate: initialAmountsTabTokenIn.map(
-            (amount, index) =>
-              `Swap ${amount.toFixed(2)} ${
-                tokensSymbol[indexCurrentTabToken]
-              } for ${
-                tokensSymbol[indexAnalysisToken]
-              } causes a Price Impact of ${initialImpactTabTokenIn[
-                index
-              ].toFixed(2)}% ${tokensSymbol[indexAnalysisToken]}/${
-                tokensSymbol[indexCurrentTabToken]
-              } <extra></extra>`
-          ),
-        },
-        {
-          x: variantAmountsTabTokenIn,
-          y: variantImpactTabTokenIn,
-          type: "scatter",
-          mode: "lines",
-          line: { dash: "dashdot" },
-          legendgroup: "Custom",
-          legendgrouptitle: { text: "Custom" },
-          name: tokensSymbol[indexCurrentTabToken],
-          hovertemplate: variantAmountsTabTokenIn.map(
-            (amount, index) =>
-              `Swap ${amount.toFixed(2)}${
-                tokensSymbol[indexCurrentTabToken]
-              } for ${
-                tokensSymbol[indexAnalysisToken]
-              } causes a Price Impact of ${variantImpactTabTokenIn[
-                index
-              ].toFixed(2)}% ${tokensSymbol[indexAnalysisToken]}/${
-                tokensSymbol[indexCurrentTabToken]
-              } <extra></extra>`
-          ),
-        },
-      ]}
+      data={data}
       layout={{
         xaxis: {
           title: `Amount in`,

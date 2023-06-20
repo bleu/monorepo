@@ -11,6 +11,7 @@ import { Dialog } from "#/components/Dialog";
 import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
 import { TokensData, useStableSwap } from "#/contexts/StableSwapContext";
+import formatNumber from "#/utils/formatNumber";
 
 import TokenForm from "./TokenForm";
 
@@ -40,6 +41,7 @@ export function TokenTable({
 }) {
   const { initialData } = useStableSwap();
   let tableData = initialData;
+
   if (variant) {
     const { customData } = useStableSwap();
     tableData = customData;
@@ -157,7 +159,7 @@ function TableRow({
       </Table.BodyCell>
       <Table.BodyCell padding={customPadding}>{token.symbol}</Table.BodyCell>
       <Table.BodyCell padding={customPadding}>
-        {token.balance?.toFixed()}
+        {formatNumber(token.balance, 3)}
       </Table.BodyCell>
       <Table.BodyCell padding={customPadding}>
         {token.rate?.toPrecision(2)}

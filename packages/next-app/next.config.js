@@ -48,6 +48,12 @@ const moduleExports = {
         port: "",
         pathname: "/trustwallet/assets/master/blockchains/ethereum/assets/**",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.sanity.io",
+        port: "",
+        pathname: "/images/r2mka0oi/production/bf37b9c7fb36c7d3c96d3d05b45c76d89072b777-1800x1800.png",
+      },
     ],
   },
 };

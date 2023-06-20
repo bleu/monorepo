@@ -1,7 +1,8 @@
 # Foundry
 cache/
 out/
-broadcast/
+broadcast/**/*
+!broadcast/PoolMetadataRegistry.s.sol/11155111/run-latest.json
 
 # JS
 node_modules/

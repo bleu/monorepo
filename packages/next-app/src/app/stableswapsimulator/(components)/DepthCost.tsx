@@ -7,6 +7,59 @@ import { PlotType } from "plotly.js";
 import Plot, { defaultAxisLayout } from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
 import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
+import formatNumber from "#/utils/formatNumber";
+
+const createHoverTemplate = (
+  direction: "in" | "out",
+  amounts: number[],
+  analysisSymbol: string | undefined,
+  tokenSymbols: string[],
+  templateDirection: string
+): string[] => {
+  return amounts.map((amount, i) => {
+    const displayAmount = `${formatNumber(amount, 2)} ${analysisSymbol}`;
+    const action =
+      direction === "in"
+        ? `${displayAmount} for ${tokenSymbols[i]}`
+        : `${tokenSymbols[i]} for ${displayAmount}`;
+
+    return `Swap ${action} to move the price ${tokenSymbols[i]}/${analysisSymbol} on ${templateDirection} <extra></extra>`;
+  });
+};
+
+const createDataObject = (
+  x: string[],
+  y: number[],
+  legendgroup: string,
+  name: string,
+  isLegendShown: boolean,
+  direction: "in" | "out",
+  analysisSymbol: string | undefined,
+  hovertemplateData: number[],
+  yAxis = "",
+  xAxis = ""
+) => {
+  const templateDirection = direction === "in" ? "-2%" : "+2%";
+
+  return {
+    x,
+    y,
+    type: "bar" as PlotType,
+    legendgroup,
+    legendgrouptitle: { text: legendgroup },
+    name,
+    showlegend: isLegendShown,
+    yaxis: yAxis,
+    xaxis: xAxis,
+    hovertemplate: createHoverTemplate(
+      direction,
+      hovertemplateData,
+      analysisSymbol,
+      x,
+      templateDirection
+    ),
+  };
+};
 
 export function DepthCost() {
   const { indexAnalysisToken, initialData, customData } = useStableSwap();
@@ -50,72 +103,50 @@ export function DepthCost() {
   const dataX = pairTokens.map((token) => token.symbol);
 
   const data = [
-    {
-      x: dataX,
-      y: depthCostAmounts.initial.in,
-      type: "bar" as PlotType,
-      legendgroup: "Initial",
-      name: "Initial",
-      hovertemplate: depthCostAmounts.initial.in.map(
-        (amount, i) =>
-          `Swap ${amount.toFixed()} ${analysisToken?.symbol} for ${
-            dataX[i]
-          } to move the price ${dataX[i]}/${
-            analysisToken?.symbol
-          } on -2% <extra></extra>`
-      ),
-    },
-    {
-      x: dataX,
-      y: depthCostAmounts.custom.in,
-      type: "bar" as PlotType,
-      legendgroup: "Custom",
-      name: "Custom",
-      hovertemplate: depthCostAmounts.custom.in.map(
-        (amount, i) =>
-          `Swap ${amount.toFixed()} ${analysisToken?.symbol} for ${
-            dataX[i]
-          } to move the price ${dataX[i]}/${
-            analysisToken?.symbol
-          } on -2% <extra></extra>`
-      ),
-    },
-    {
-      x: dataX,
-      y: depthCostAmounts.initial.out,
-      type: "bar" as PlotType,
-      legendgroup: "Initial",
-      name: "Initial",
-      showlegend: false,
-      yaxis: "y2",
-      xaxis: "x2",
-      hovertemplate: depthCostAmounts.initial.out.map(
-        (amount, i) =>
-          `Swap ${dataX[i]} for ${amount.toFixed()} ${
-            analysisToken?.symbol
-          } to move the price ${dataX[i]}/${
-            analysisToken?.symbol
-          } on +2% <extra></extra>`
-      ),
-    },
-    {
-      x: dataX,
-      y: depthCostAmounts.custom.out,
-      type: "bar" as PlotType,
-      legendgroup: "Custom",
-      name: "Custom",
-      showlegend: false,
-      yaxis: "y2",
-      xaxis: "x2",
-      hovertemplate: depthCostAmounts.custom.out.map(
-        (amount, i) =>
-          `Swap ${dataX[i]} for ${amount.toFixed()} ${
-            analysisToken?.symbol
-          } to move the price ${dataX[i]}/${
-            analysisToken?.symbol
-          } on +2% <extra></extra>`
-      ),
-    },
+    createDataObject(
+      dataX,
+      depthCostAmounts.initial.in,
+      "Initial",
+      "Initial",
+      true,
+      "in",
+      analysisToken?.symbol,
+      depthCostAmounts.initial.in
+    ),
+    createDataObject(
+      dataX,
+      depthCostAmounts.custom.in,
+      "Custom",
+      "Custom",
+      true,
+      "in",
+      analysisToken?.symbol,
+      depthCostAmounts.custom.in
+    ),
+    createDataObject(
+      dataX,
+      depthCostAmounts.initial.out,
+      "Initial",
+      "Initial",
+      false,
+      "out",
+      analysisToken?.symbol,
+      depthCostAmounts.initial.out,
+      "y2",
+      "x2"
+    ),
+    createDataObject(
+      dataX,
+      depthCostAmounts.custom.out,
+      "Custom",
+      "Custom",
+      false,
+      "out",
+      analysisToken?.symbol,
+      depthCostAmounts.custom.out,
+      "y2",
+      "x2"
+    ),
   ];
 
   const props = {

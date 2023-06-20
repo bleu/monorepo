@@ -39,3 +39,18 @@ remappings = [
     'balancer-v2-monorepo/=lib/balancer-v2-monorepo/',
     'ds-test/=lib/forge-std/lib/ds-test/src/',
 ]
+
+[rpc_endpoints]
+mainnet = "https://eth.llamarpc.com"
+optimism = "https://optimism.meowrpc.com"
+arbitrum = "https://arb1.arbitrum.io/rpc"
+goerli = "https://ethereum-goerli.publicnode.com"
+gnosis = "https://rpc.ankr.com/gnosis"
+polygon = "https://polygon.llamarpc.com"
+sepolia = "https://endpoints.omniatech.io/v1/eth/sepolia/public"
+
+[profile.etherscan_configs]
+mainnet = { key = "${ETHERSCAN_API_KEY}" }
+goerli = { key = "${ETHERSCAN_API_KEY}" }
+polygon = { key = "${POLYGONSCAN_API_KEY}" }
+arbitrum = { key = "${ARBISCAN_API_KEY}" }

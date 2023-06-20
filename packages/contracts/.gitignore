@@ -1,7 +1,39 @@
 # Foundry
 cache/
 out/
-broadcast/**/*
+
+!broadcast/
+broadcast/*
+
+!broadcast/PoolMetadataRegistry.s.sol/
+broadcast/PoolMetadataRegistry.s.sol/*
+
+!broadcast/PoolMetadataRegistry.s.sol/1/
+broadcast/PoolMetadataRegistry.s.sol/1/*
+!broadcast/PoolMetadataRegistry.s.sol/1/run-latest.json
+
+!broadcast/PoolMetadataRegistry.s.sol/5/
+broadcast/PoolMetadataRegistry.s.sol/5/*
+!broadcast/PoolMetadataRegistry.s.sol/5/run-latest.json
+
+!broadcast/PoolMetadataRegistry.s.sol/10/
+broadcast/PoolMetadataRegistry.s.sol/10/*
+!broadcast/PoolMetadataRegistry.s.sol/10/run-latest.json
+
+!broadcast/PoolMetadataRegistry.s.sol/100/
+broadcast/PoolMetadataRegistry.s.sol/100/*
+!broadcast/PoolMetadataRegistry.s.sol/100/run-latest.json
+
+!broadcast/PoolMetadataRegistry.s.sol/137/
+broadcast/PoolMetadataRegistry.s.sol/137/*
+!broadcast/PoolMetadataRegistry.s.sol/137/run-latest.json
+
+!broadcast/PoolMetadataRegistry.s.sol/42161/
+broadcast/PoolMetadataRegistry.s.sol/42161/*
+!broadcast/PoolMetadataRegistry.s.sol/42161/run-latest.json
+
+!broadcast/PoolMetadataRegistry.s.sol/11155111/
+broadcast/PoolMetadataRegistry.s.sol/11155111/*
 !broadcast/PoolMetadataRegistry.s.sol/11155111/run-latest.json
 
 # JS

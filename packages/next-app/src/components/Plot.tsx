@@ -30,6 +30,7 @@ export const defaultAxisLayout = {
 export const defaultPlotProps = {
   className: "w-full h-full",
   useResizeHandler: true,
+  responsive: true,
   layout: {
     margin: {
       b: 10,

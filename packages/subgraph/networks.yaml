@@ -24,7 +24,7 @@ gnosis:
     address: "0x566b0f1dde5ad7ab3c2cd3ebbaa07622283e818b"
     startBlock: 28419436
 arbitrum:
-  network: arbitrum
+  network: arbitrum-one
   PoolMetadataRegistry:
     address: "0xB1631f708a7A9cD30Ae55ea8F085af7CC275D2a2"
     startBlock: 103116738

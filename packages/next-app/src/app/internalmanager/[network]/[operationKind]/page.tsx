@@ -145,7 +145,7 @@ function TransactionCard({
             </div>
           </div>
           <div>
-            <span className="block text-sm text-slate12">Receiver Address</span>
+            <span className="block text-sm text-slate12">Recipient</span>
             <BaseInput type="string" placeholder={userAddress} />
           </div>
           {operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL && (

@@ -20,6 +20,7 @@ import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { getNetwork } from "#/contexts/networks";
 import { impersonateWhetherDAO, internalBalances } from "#/lib/gql";
 import { refetchRequest } from "#/utils/fetcher";
+import formatNumber from "#/utils/formatNumber";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
 export function TokenTable() {
@@ -129,7 +130,9 @@ function TableRow({
       <Table.BodyCell>
         {token.tokenInfo.name} ({token.tokenInfo.symbol})
       </Table.BodyCell>
-      <Table.BodyCell>{token.balance}</Table.BodyCell>
+      <Table.BodyCell>
+        {formatNumber(token.balance, 4, "decimal", "standard")}
+      </Table.BodyCell>
       <Table.BodyCell>
         <div className="flex items-center gap-2">
           {transactionButtons.map((button) => (

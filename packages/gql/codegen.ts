@@ -67,9 +67,7 @@ export const SUBGRAPHS = {
 
       return {
         [Network.Ethereum]: `${baseEndpoint}/balancer-v2`,
-        // TODO: substitute Sepolia, not functional yet
-        [Network.Sepolia]: `${baseEndpoint}/balancer-goerli-v2`,
-        // [Network.Sepolia]: `https://api.studio.thegraph.com/proxy/24660/balancer-sepolia-v2/v0.0.1`,
+        [Network.Sepolia]: `https://api.studio.thegraph.com/query/24660/balancer-sepolia-v2/version/latest`,
         [Network.Goerli]: `${baseEndpoint}/balancer-goerli-v2`,
         [Network.Polygon]: `${baseEndpoint}/balancer-polygon-v2`,
         [Network.Arbitrum]: `${baseEndpoint}/balancer-arbitrum-v2`,

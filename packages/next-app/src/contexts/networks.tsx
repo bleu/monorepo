@@ -12,6 +12,8 @@ export function getNetwork(chainName?: string) {
   const network =
     chainName?.toLowerCase() === "arbitrum one"
       ? "arbitrum"
+      : chainName?.toLowerCase() === "polygon zkevm"
+      ? "polygon-zkevm"
       : chainName?.toLowerCase();
   return network as Network;
 }

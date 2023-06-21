@@ -6,6 +6,7 @@ import { getSdkWithHooks as gnosisSdk } from "./__generated__/Gnosis";
 import { getSdkWithHooks as goerliSdk } from "./__generated__/Goerli";
 import { getSdkWithHooks as optimismSdk } from "./__generated__/Optimism";
 import { getSdkWithHooks as polygonSdk } from "./__generated__/Polygon";
+import { getSdkWithHooks as polygonZkEVMSdk } from "./__generated__/Polygonzkevm";
 import { getSdkWithHooks as sepoliaSdk } from "./__generated__/Sepolia";
 
 export default {
@@ -16,4 +17,5 @@ export default {
   [Network.Optimism]: optimismSdk,
   [Network.Goerli]: goerliSdk,
   [Network.Sepolia]: sepoliaSdk,
+  [Network.PolygonZKEVM]: polygonZkEVMSdk,
 };

@@ -7,7 +7,6 @@ export function CheckSupportedChains({
 }: React.PropsWithChildren<{
   supportedChains?: Network[];
   chainName?: Network;
-  isMetadata?: boolean;
 }>) {
   if (supportedChains && chainName && !supportedChains.includes(chainName)) {
     return (

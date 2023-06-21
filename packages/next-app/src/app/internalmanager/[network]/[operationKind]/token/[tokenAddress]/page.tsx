@@ -340,7 +340,7 @@ function TransactionCard({
             <div>
               <Input
                 type="string"
-                label="Receiver Address"
+                label="Recipient"
                 placeholder={userAddress}
                 {...register("receiverAddress")}
               />

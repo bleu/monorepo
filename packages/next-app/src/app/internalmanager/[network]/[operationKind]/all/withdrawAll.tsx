@@ -163,7 +163,7 @@ export function WithdrawAll() {
           <div>
             <Input
               type="string"
-              label="Receiver Address"
+              label="Recipient"
               placeholder={addressLower}
               {...register("receiverAddress")}
             />

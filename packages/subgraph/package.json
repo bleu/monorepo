@@ -2,11 +2,12 @@
   "name": "@bleu-balancer-tools/subgraph",
   "version": "1.0.0",
   "scripts": {
+    "codegen:all": "pnpm generate-manifests && for file in $(ls | grep 'subgraph\\..*\\.yaml'); do graph codegen $file --output-dir src/types/; done",
     "codegen:goerli": "pnpm generate-manifests && graph codegen subgraph.goerli.yaml --output-dir src/types/",
     "codegen:matic": "pnpm generate-manifests && graph codegen subgraph.matic.yaml --output-dir src/types/",
     "build": "graph build",
     "generate-manifests": "ts-node ./scripts/generate-manifests",
-    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ PoolMetadataRegistrySubgraph",
+    "deploy": "for file in $(ls | grep 'subgraph\\..*\\.yaml'); do graph deploy --node https://api.studio.thegraph.com/deploy/ PoolMetadataRegistrySubgraph $file; done",
     "create-local": "graph create --node http://localhost:8020/ PoolMetadataRegistrySubgraph",
     "remove-local": "graph remove --node http://localhost:8020/ PoolMetadataRegistrySubgraph",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 PoolMetadataRegistrySubgraph",

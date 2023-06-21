@@ -37,7 +37,7 @@ export default function Page() {
             <Link href={`/internalmanager/${network}/deposit/`}>
               <Button className="flex items-center gap-1" title="New deposit">
                 <PlusIcon />
-                Deposit
+                Deposit Token
               </Button>
             </Link>
             <Link href={`/internalmanager/${network}/withdraw/all`}>
@@ -48,7 +48,7 @@ export default function Page() {
                 title="Withdraw all"
               >
                 <MinusIcon />
-                Withdraw
+                Batch Withdraw
               </Button>
             </Link>
           </div>

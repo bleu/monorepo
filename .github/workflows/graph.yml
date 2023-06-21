@@ -1,11 +1,12 @@
 name: Deploy Graph
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "packages/subgraph/**"
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - "packages/subgraph/**"
 
 env:
   CI: true
@@ -13,7 +14,6 @@ env:
 jobs:
   deploy-goerli:
     runs-on: ubuntu-latest
-    environment: graph
     steps:
       - uses: actions/checkout@v3
 

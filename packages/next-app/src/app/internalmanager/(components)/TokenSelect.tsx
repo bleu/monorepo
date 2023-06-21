@@ -20,7 +20,7 @@ import { Dialog } from "#/components/Dialog";
 import Table from "#/components/Table";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { getNetwork } from "#/contexts/networks";
-import { impersonateWhetherDAO, internalBalances } from "#/lib/gql";
+import { internalBalances } from "#/lib/gql";
 import { refetchRequest } from "#/utils/fetcher";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
@@ -86,8 +86,7 @@ function TokenModal({
   operationKind: string;
 }) {
   const { chain } = useNetwork();
-  let { address } = useAccount();
-  address = impersonateWhetherDAO(chain?.id.toString() || "1", address);
+  const { address } = useAccount();
   const [tokens, setTokens] = useState<(TokenItem | undefined)[]>([]);
   const [tokenSearchQuery, setTokenSearchQuery] = useState("");
   const [isTokenSearchDisabled, setIsTokenSearchDisabled] =

@@ -22,7 +22,7 @@ import { Form } from "#/components/ui/form";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { useInternalBalancesTransaction } from "#/hooks/useTransaction";
-import { impersonateWhetherDAO, internalBalances } from "#/lib/gql";
+import { internalBalances } from "#/lib/gql";
 import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
 import { refetchRequest } from "#/utils/fetcher";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
@@ -37,8 +37,7 @@ export function WithdrawAll() {
   } = useInternalBalance();
   const { chain } = useNetwork();
   const { isConnected, isReconnecting, isConnecting } = useAccount();
-  let { address } = useAccount();
-  address = impersonateWhetherDAO(chain?.id.toString() || "1", address);
+  const { address } = useAccount();
 
   const addressLower = address ? address?.toLowerCase() : "";
 

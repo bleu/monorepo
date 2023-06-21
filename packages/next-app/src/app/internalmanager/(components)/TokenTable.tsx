@@ -18,15 +18,14 @@ import Table from "#/components/Table";
 import { Toast } from "#/components/Toast";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { getNetwork } from "#/contexts/networks";
-import { impersonateWhetherDAO, internalBalances } from "#/lib/gql";
+import { internalBalances } from "#/lib/gql";
 import { refetchRequest } from "#/utils/fetcher";
 import formatNumber from "#/utils/formatNumber";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
 export function TokenTable() {
   const { chain } = useNetwork();
-  let { address } = useAccount();
-  address = impersonateWhetherDAO(chain?.id.toString() || "1", address);
+  const { address } = useAccount();
 
   const addressLower = address ? address?.toLowerCase() : "";
 

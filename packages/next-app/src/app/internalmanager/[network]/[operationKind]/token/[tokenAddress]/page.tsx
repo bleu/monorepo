@@ -36,7 +36,7 @@ import {
   TransactionStatus,
   useInternalBalancesTransaction,
 } from "#/hooks/useTransaction";
-import { impersonateWhetherDAO, internalBalances } from "#/lib/gql";
+import { internalBalances } from "#/lib/gql";
 import {
   operationKindType,
   UserBalanceOpKind,
@@ -61,8 +61,7 @@ export default function Page({
   const { chain } = useNetwork();
   const [tokenData, setTokenData] = useState<TokenData | undefined>(undefined);
   const { isConnected, isReconnecting, isConnecting } = useAccount();
-  let { address } = useAccount();
-  address = impersonateWhetherDAO(chain?.id.toString() || "1", address);
+  const { address } = useAccount();
 
   const addressLower = address ? address?.toLowerCase() : "";
 

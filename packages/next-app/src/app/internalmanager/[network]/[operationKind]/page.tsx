@@ -17,7 +17,6 @@ import {
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { getNetwork } from "#/contexts/networks";
-import { impersonateWhetherDAO } from "#/lib/gql";
 import {
   operationKindType,
   UserBalanceOpKind,
@@ -33,8 +32,7 @@ export default function Page({
 }) {
   const { chain } = useNetwork();
   const { isConnected, isReconnecting, isConnecting } = useAccount();
-  let { address } = useAccount();
-  address = impersonateWhetherDAO(chain?.id.toString() || "1", address);
+  const { address } = useAccount();
 
   const addressLower = address ? address?.toLowerCase() : "";
 

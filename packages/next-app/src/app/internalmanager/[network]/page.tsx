@@ -7,12 +7,13 @@ import { Button } from "#/components";
 import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { getNetwork } from "#/contexts/networks";
+import { internalBalances } from "#/lib/gql";
 import { useAccount, useNetwork } from "#/wagmi";
 
 import { TokenTable } from "../(components)/TokenTable";
 
 export default function Page() {
-  const { isConnected, isReconnecting, isConnecting } = useAccount();
+  const { address, isConnected, isReconnecting, isConnecting } = useAccount();
 
   const { chain } = useNetwork();
 
@@ -25,6 +26,16 @@ export default function Page() {
   if (isConnecting || isReconnecting) {
     return <Spinner />;
   }
+
+  const { data: internalBalanceData } = internalBalances
+    .gql(chain?.id.toString() || "1")
+    .useInternalBalance({
+      userAddress: address.toLowerCase(),
+    });
+
+  const hasTokenWithBalance =
+    !!internalBalanceData?.user?.userInternalBalances?.length &&
+    internalBalanceData?.user?.userInternalBalances?.length > 0;
 
   return (
     <div className="flex w-full justify-center">
@@ -46,6 +57,7 @@ export default function Page() {
                 shade="light"
                 variant="outline"
                 title="Withdraw all"
+                disabled={!hasTokenWithBalance}
               >
                 <MinusIcon />
                 Batch Withdraw

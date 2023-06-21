@@ -28,6 +28,10 @@ broadcast/PoolMetadataRegistry.s.sol/100/*
 broadcast/PoolMetadataRegistry.s.sol/137/*
 !broadcast/PoolMetadataRegistry.s.sol/137/run-latest.json
 
+!broadcast/PoolMetadataRegistry.s.sol/1101/
+broadcast/PoolMetadataRegistry.s.sol/1101/*
+!broadcast/PoolMetadataRegistry.s.sol/1101/run-latest.json
+
 !broadcast/PoolMetadataRegistry.s.sol/42161/
 broadcast/PoolMetadataRegistry.s.sol/42161/*
 !broadcast/PoolMetadataRegistry.s.sol/42161/run-latest.json

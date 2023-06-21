@@ -47,6 +47,7 @@ arbitrum = "https://arb1.arbitrum.io/rpc"
 goerli = "https://ethereum-goerli.publicnode.com"
 gnosis = "https://rpc.ankr.com/gnosis"
 polygon = "https://polygon.llamarpc.com"
+polygon-zkevm = "https://1rpc.io/zkevm"
 sepolia = "https://endpoints.omniatech.io/v1/eth/sepolia/public"
 
 [profile.etherscan_configs]

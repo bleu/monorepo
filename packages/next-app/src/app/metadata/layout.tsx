@@ -71,13 +71,13 @@ export default function Layout({ children }: React.PropsWithChildren) {
             <CheckSupportedChains
               supportedChains={[
                 // Network.Ethereum,
+                Network.Sepolia,
+                Network.Goerli,
                 Network.Polygon,
+                Network.PolygonZKEVM,
                 Network.Arbitrum,
                 Network.Gnosis,
                 Network.Optimism,
-                Network.Goerli,
-                // TODO: add support for Sepolia
-                // Network.Sepolia,
               ]}
               chainName={network}
             >

@@ -28,11 +28,11 @@ arbitrum:
   PoolMetadataRegistry:
     address: "0xB1631f708a7A9cD30Ae55ea8F085af7CC275D2a2"
     startBlock: 103116738
-# polygon-zkevm:
-#   network: polygon-zkevm
-#   PoolMetadataRegistry:
-#     address: "0xB1631f708a7A9cD30Ae55ea8F085af7CC275D2a2"
-#     startBlock: 103116738
+polygon-zkevm:
+  network: polygon-zkevm
+  PoolMetadataRegistry:
+    address: "0x566b0f1dde5ad7ab3c2cd3ebbaa07622283e818b"
+    startBlock: 1352324
 # mainnet:
 #   network: mainnet
 #   PoolMetadataRegistry:

@@ -19,6 +19,7 @@ export default defineConfig({
         [chains.optimism.id]: "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
         [chains.arbitrum.id]: "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
         [chains.gnosis.id]: "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
+        [chains.polygonZkEvm.id]: "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
       },
     },
   ],
@@ -34,6 +35,8 @@ export default defineConfig({
           [chains.optimism.id]: "0x566b0f1dDE5ad7AB3C2cD3EbBAA07622283E818b",
           [chains.arbitrum.id]: "0xb1631f708a7a9cd30ae55ea8f085af7cc275d2a2",
           [chains.gnosis.id]: "0x566b0f1dDE5ad7AB3C2cD3EbBAA07622283E818b",
+          [chains.polygonZkEvm.id]:
+            "0x566b0f1dDE5ad7AB3C2cD3EbBAA07622283E818b",
         },
       },
       exclude: ["../contracts/lib/**"],

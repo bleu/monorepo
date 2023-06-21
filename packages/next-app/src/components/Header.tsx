@@ -8,6 +8,7 @@ import * as React from "react";
 import { ReactNode } from "react";
 
 import { useNetworks } from "#/contexts/networks";
+import toTitleCase from "#/utils/toTitleCase";
 import { useSwitchNetwork } from "#/wagmi";
 
 import { CustomConnectButton } from "./CustomConnectButton";
@@ -56,7 +57,9 @@ export function HeaderNetworkMismatchAlert() {
   return (
     <div className="flex min-h-[50px] flex-row items-center justify-center bg-tomato3 text-white">
       <ExclamationTriangleIcon className="mr-3 h-4 w-4" />
-      <p className="pr-4">Please switch to {networkFor(urlPathNetwork)}</p>
+      <p className="pr-4">
+        Please switch to {toTitleCase(networkFor(urlPathNetwork))}
+      </p>
       <button
         className="inline-block h-6 cursor-pointer rounded-lg border-none bg-tomato4 px-2 text-xs text-white shadow hover:bg-tomato6 hover:text-white hover:shadow-none"
         onClick={() => switchNetwork?.()}

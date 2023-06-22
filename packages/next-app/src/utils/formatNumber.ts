@@ -1,10 +1,18 @@
+type Notation = "compact" | "engineering" | "scientific" | "standard";
+
 const formatNumber = (
   number: number | string | bigint,
   decimals = 1,
-  style = "decimal"
-): string => {
+  style = "decimal",
+  notation: Notation = "compact",
+  lessThanThresholdToReplace = 0.001
+) => {
+  if (Number(number) < lessThanThresholdToReplace) {
+    return `< ${lessThanThresholdToReplace.toLocaleString("en-US")}`;
+  }
+
   return Number(number).toLocaleString("en-US", {
-    notation: "compact",
+    notation,
     maximumFractionDigits: decimals,
     style,
   });

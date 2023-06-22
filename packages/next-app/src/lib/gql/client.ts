@@ -25,6 +25,7 @@ export function impersonateWhetherDAO(
     network !== Network.Gnosis &&
     network !== Network.Optimism &&
     network !== Network.Arbitrum &&
+    network !== Network.PolygonZKEVM &&
     networkMultisigs[network] === address
   ) {
     return DELEGATE_OWNER;

@@ -17,7 +17,6 @@ import {
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { getNetwork } from "#/contexts/networks";
-import { impersonateWhetherDAO } from "#/lib/gql";
 import {
   operationKindType,
   UserBalanceOpKind,
@@ -33,8 +32,7 @@ export default function Page({
 }) {
   const { chain } = useNetwork();
   const { isConnected, isReconnecting, isConnecting } = useAccount();
-  let { address } = useAccount();
-  address = impersonateWhetherDAO(chain?.id.toString() || "1", address);
+  const { address } = useAccount();
 
   const addressLower = address ? address?.toLowerCase() : "";
 
@@ -145,7 +143,7 @@ function TransactionCard({
             </div>
           </div>
           <div>
-            <span className="block text-sm text-slate12">Receiver Address</span>
+            <span className="block text-sm text-slate12">Recipient</span>
             <BaseInput type="string" placeholder={userAddress} />
           </div>
           {operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL && (

@@ -7,12 +7,13 @@ import { Button } from "#/components";
 import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { getNetwork } from "#/contexts/networks";
+import { internalBalances } from "#/lib/gql";
 import { useAccount, useNetwork } from "#/wagmi";
 
 import { TokenTable } from "../(components)/TokenTable";
 
 export default function Page() {
-  const { isConnected, isReconnecting, isConnecting } = useAccount();
+  const { address, isConnected, isReconnecting, isConnecting } = useAccount();
 
   const { chain } = useNetwork();
 
@@ -26,6 +27,16 @@ export default function Page() {
     return <Spinner />;
   }
 
+  const { data: internalBalanceData } = internalBalances
+    .gql(chain?.id.toString() || "1")
+    .useInternalBalance({
+      userAddress: address.toLowerCase(),
+    });
+
+  const hasTokenWithBalance =
+    !!internalBalanceData?.user?.userInternalBalances?.length &&
+    internalBalanceData?.user?.userInternalBalances?.length > 0;
+
   return (
     <div className="flex w-full justify-center">
       <div className="mt-20 flex w-4/6 flex-col gap-y-5">
@@ -37,7 +48,7 @@ export default function Page() {
             <Link href={`/internalmanager/${network}/deposit/`}>
               <Button className="flex items-center gap-1" title="New deposit">
                 <PlusIcon />
-                Deposit
+                Deposit Token
               </Button>
             </Link>
             <Link href={`/internalmanager/${network}/withdraw/all`}>
@@ -46,9 +57,10 @@ export default function Page() {
                 shade="light"
                 variant="outline"
                 title="Withdraw all"
+                disabled={!hasTokenWithBalance}
               >
                 <MinusIcon />
-                Withdraw
+                Batch Withdraw
               </Button>
             </Link>
           </div>

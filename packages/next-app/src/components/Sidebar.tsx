@@ -38,7 +38,7 @@ export default function Sidebar({
           "bg-blue2": !isFloating,
         })}
       >
-        <div className="h-full w-72 xl:w-80 max-w-sm items-start justify-start space-y-2">
+        <div className="h-full w-72 lg:w-80 max-w-sm items-start justify-start space-y-2">
           {children}
         </div>
       </div>

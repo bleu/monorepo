@@ -95,7 +95,7 @@ export function SwapSimulator() {
   }
 
   return (
-    <div className="flex w-full flex-col gap-y-2 border-r-2 border-blue4 pr-5 text-slate12">
+    <div className="flex w-full flex-col gap-y-2 lg:border-r-2 lg:border-blue4 lg:pr-5 text-slate12">
       <PlotTitle
         title="Swap simulator"
         tooltip="Use the inputs on the left to simulate a swap and see the results based on the initial and custom parameters"

@@ -43,44 +43,48 @@ export default function Page() {
   }
 
   return (
-    <div className="flex max-h-[calc(100vh-132px)] w-full flex-col gap-y-20 overflow-auto pr-8 pt-8">
+    <div className="flex lg:max-h-[calc(100vh-132px)] w-full flex-col gap-y-20 lg:overflow-auto pr-8 pt-8">
       {/* (h-screen - (header's height + footer's height)) = graph's height space */}
-      <div className="basis-1/3">
-        <div className="flex h-full w-full flex-row gap-x-5">
+      <div>
+        <div className="flex h-full w-full flex-col lg:flex-row gap-5">
           <SwapSimulator />
           <TokensDistribution />
         </div>
       </div>
-      <div className="basis-1/3">
-        <DepthCost />
+      <div className="w-full flex justify-center">
+        <div className="w-[95%] xl:w-[95%] max-w-[calc(100vw-320px)]">
+          <DepthCost />
+        </div>
       </div>
-      <div className="basis-2/3">
-        <Tabs
-          defaultValue={tokensSymbol[indexCurrentTabToken]}
-          value={tokensSymbol[indexCurrentTabToken]}
-        >
-          <Tabs.ItemTriggerWrapper>
+      <div className="w-full flex justify-center">
+        <div className="w-[95%] xl:w-[95%] max-w-[calc(100vw-320px)]">
+          <Tabs
+            defaultValue={tokensSymbol[indexCurrentTabToken]}
+            value={tokensSymbol[indexCurrentTabToken]}
+          >
+            <Tabs.ItemTriggerWrapper>
+              {tabTokens.map((symbol) => (
+                <Tabs.ItemTrigger
+                  tabName={symbol}
+                  key={symbol}
+                  onClick={handleTabClick}
+                >
+                  <span>{symbol}</span>
+                </Tabs.ItemTrigger>
+              ))}
+            </Tabs.ItemTriggerWrapper>
             {tabTokens.map((symbol) => (
-              <Tabs.ItemTrigger
-                tabName={symbol}
-                key={symbol}
-                onClick={handleTabClick}
-              >
-                <span>{symbol}</span>
-              </Tabs.ItemTrigger>
+              <div key={symbol}>
+                <Tabs.ItemContent tabName={symbol} bgColor="bg-blue1">
+                  <div className="flex flex-col gap-y-10 py-4">
+                    <StableCurve />
+                    <ImpactCurve />
+                  </div>
+                </Tabs.ItemContent>
+              </div>
             ))}
-          </Tabs.ItemTriggerWrapper>
-          {tabTokens.map((symbol) => (
-            <div key={symbol}>
-              <Tabs.ItemContent tabName={symbol} bgColor="bg-blue1">
-                <div className="flex flex-col gap-y-10 py-4">
-                  <StableCurve />
-                  <ImpactCurve />
-                </div>
-              </Tabs.ItemContent>
-            </div>
-          ))}
-        </Tabs>
+          </Tabs>
+        </div>
       </div>
     </div>
   );

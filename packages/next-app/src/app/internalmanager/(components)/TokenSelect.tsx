@@ -321,7 +321,7 @@ function TokenRow({
   chainName: string;
 }) {
   return (
-    <Table.BodyRow key={token.tokenAddress}>
+    <Table.BodyRow key={token.tokenAddress} classNames="hover:bg-blue4">
       <Table.BodyCell customWidth="w-12">
         <Link
           href={`/internalmanager/${chainName}/${operationKind}/token/${token.tokenAddress}`}

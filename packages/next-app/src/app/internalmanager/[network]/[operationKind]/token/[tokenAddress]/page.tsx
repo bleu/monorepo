@@ -401,13 +401,26 @@ function OperationButton({
 }) {
   const { transactionStatus } = useInternalBalance();
 
-  if (
-    operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL &&
-    transactionStatus === TransactionStatus.AUTHORIZING
-  ) {
+  if (operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL) {
+    if (transactionStatus === TransactionStatus.AUTHORIZING) {
+      return (
+        <Button type="submit" className="w-full">
+          <span>Approve use of {tokenSymbol}</span>
+        </Button>
+      );
+    } else if (transactionStatus === TransactionStatus.WAITING_APPROVAL) {
+      return (
+        <Button type="submit" className="w-full" disabled>
+          <span>Waiting ...</span>
+        </Button>
+      );
+    }
+  }
+
+  if (transactionStatus === TransactionStatus.SUBMITTING) {
     return (
-      <Button type="submit" className="w-full">
-        <span>Approve use of {tokenSymbol}</span>
+      <Button type="submit" className="w-full" disabled>
+        <span>Waiting ...</span>
       </Button>
     );
   }

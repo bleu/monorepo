@@ -89,11 +89,6 @@ const NOTIFICATION_MAP = {
     description: "the metadata update has failed",
     variant: NotificationVariant.ALERT,
   },
-  [TransactionStatus.WRITE_ERROR]: {
-    title: "Error!",
-    description: "the metadata update has failed",
-    variant: NotificationVariant.ALERT,
-  },
 };
 
 export const NOTIFICATION_MAP_INTERNAL_BALANCES = {
@@ -284,9 +279,9 @@ export function useInternalBalancesTransaction({
   //function to prepare depoist transaction
   async function approveToken() {
     if (!submitData) return;
-    setTransactionStatus(TransactionStatus.AUTHORIZING);
+    setTransactionStatus(TransactionStatus.WAITING_APPROVAL);
     setNotification(
-      NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.AUTHORIZING]
+      NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WAITING_APPROVAL]
     );
     const config = await prepareWriteContract({
       address: submitData[0].tokenAddress as Address,
@@ -335,7 +330,7 @@ export function useInternalBalancesTransaction({
     if (submitData.length === 0) return;
     setTransactionUrl(undefined);
     setNotification(
-      NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WAITING_APPROVAL]
+      NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.AUTHORIZING]
     );
     if (
       operationKind === UserBalanceOpKind.DEPOSIT_INTERNAL &&
@@ -344,6 +339,7 @@ export function useInternalBalancesTransaction({
       approveToken();
     } else {
       write?.();
+      setTransactionStatus(TransactionStatus.SUBMITTING);
     }
   }, [submitData]);
 

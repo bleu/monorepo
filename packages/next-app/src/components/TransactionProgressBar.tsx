@@ -37,20 +37,15 @@ export const STAGE_CN_MAPPING: Record<TransactionStatus, Stage> = {
     transitionLine: "bg-slate10",
     writingOnChainStep: "border-slate10 text-slate12",
   },
-  [TransactionStatus.WRITE_ERROR]: {
-    pinningStep: "border-green10 text-green10",
-    transitionLine: "bg-green10",
-    writingOnChainStep: "border-tomato10 text-tomato10",
-  },
   [TransactionStatus.AUTHORIZING]: {
     pinningStep: "border-amber10 text-amber10",
     transitionLine: "bg-slate10",
     writingOnChainStep: "border-slate10 text-slate12",
   },
   [TransactionStatus.WAITING_APPROVAL]: {
-    pinningStep: "border-green10 text-green10",
-    transitionLine: "bg-green10",
-    writingOnChainStep: "border-amber10 text-amber10",
+    pinningStep: "border-amber10 text-amber10",
+    transitionLine: "bg-slate10",
+    writingOnChainStep: "border-slate10 text-slate12",
   },
 };
 

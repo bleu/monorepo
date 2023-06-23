@@ -1,6 +1,11 @@
 "use client";
 
-import { Address, Network } from "@bleu-balancer-tools/shared";
+import {
+  Address,
+  Network,
+  NetworkChainId,
+  networkFor,
+} from "@bleu-balancer-tools/shared";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { useEffect } from "react";
@@ -69,6 +74,7 @@ export default function Page({
     <>
       <TransactionCard
         operationKindParam={params.operationKind as unknown as string}
+        chainId={chain?.id}
         userAddress={addressLower as Address}
       />
     </>
@@ -78,9 +84,11 @@ export default function Page({
 function TransactionCard({
   operationKindParam,
   userAddress,
+  chainId,
 }: {
   operationKindParam: string;
   userAddress: Address;
+  chainId?: NetworkChainId;
 }) {
   const operationKindData = {
     [UserBalanceOpKind.DEPOSIT_INTERNAL]: {
@@ -108,11 +116,13 @@ function TransactionCard({
 
   const stage = STAGE_CN_MAPPING[transactionStatus];
 
+  const network = networkFor(chainId);
+
   return (
     <div className="flex h-full items-center justify-center">
       <form className="my-4 flex h-fit w-fit flex-col divide-y divide-slate7 rounded-lg border border-slate7 bg-blue3 text-white">
         <div className="relative flex h-full w-full justify-center">
-          <Link href={"/internalmanager"}>
+          <Link href={`/internalmanager/${network}`}>
             <div className="absolute left-8 flex h-full items-center">
               <ArrowLeftIcon
                 height={16}

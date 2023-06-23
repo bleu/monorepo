@@ -95,9 +95,12 @@ function Body({ children }: React.PropsWithChildren) {
   return <tbody>{children}</tbody>;
 }
 
-function BodyRow({ children }: React.PropsWithChildren) {
+function BodyRow({
+  children,
+  classNames,
+}: React.PropsWithChildren<{ classNames?: string }>) {
   useTableContext();
-  return <tr>{children}</tr>;
+  return <tr className={cn(classNames ?? classNames)}>{children}</tr>;
 }
 
 function BodyCell({

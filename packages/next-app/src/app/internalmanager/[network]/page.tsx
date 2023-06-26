@@ -1,7 +1,6 @@
 "use client";
 
-import { Address } from "@bleu-balancer-tools/shared";
-import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
+import { PlusIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 
 import { Button } from "#/components";

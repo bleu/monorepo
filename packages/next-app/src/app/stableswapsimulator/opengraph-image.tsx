@@ -5,7 +5,7 @@ import { OgImage } from "../../components/ogImage";
 export default function og() {
   return new ImageResponse(
     OgImage({
-      appName: "Stable Swap Simulator",
+      appName: "StableSwapSimulator",
     }),
     {
       width: 1200,

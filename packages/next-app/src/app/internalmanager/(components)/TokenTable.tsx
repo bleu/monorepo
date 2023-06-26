@@ -10,7 +10,7 @@ import { upperFirst } from "lodash";
 import Image from "next/image";
 import Link from "next/link";
 import { tokenLogoUri } from "public/tokens/logoUri";
-import { useNetwork } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 
 import { ToastContent } from "#/app/metadata/[network]/pool/[poolId]/(components)/MetadataAttributesTable/TransactionModal";
 import genericTokenLogo from "#/assets/generic-token-logo.png";
@@ -18,18 +18,31 @@ import Table from "#/components/Table";
 import { Toast } from "#/components/Toast";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { getNetwork } from "#/contexts/networks";
+import { internalBalances } from "#/lib/gql";
+import { refetchRequest } from "#/utils/fetcher";
 import formatNumber from "#/utils/formatNumber";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
-export function TokenTable({
-  internalBalanceData,
-}: {
-  internalBalanceData: InternalBalanceQuery | undefined;
-}) {
+export function TokenTable() {
   const { chain } = useNetwork();
+  const { address } = useAccount();
+
+  const addressLower = address ? address?.toLowerCase() : "";
 
   const { notification, setIsNotifierOpen, isNotifierOpen, transactionUrl } =
     useInternalBalance();
+
+  const { data: internalBalanceData, mutate } = internalBalances
+    .gql(chain?.id.toString() || "1")
+    .useInternalBalance({
+      userAddress: addressLower as Address,
+    });
+
+  refetchRequest({
+    mutate,
+    chainId: chain?.id.toString() || "1",
+    userAddress: addressLower as Address,
+  });
 
   const tokensWithBalance = internalBalanceData?.user?.userInternalBalances;
 

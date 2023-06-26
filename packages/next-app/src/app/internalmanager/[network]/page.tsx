@@ -8,16 +8,13 @@ import { Button } from "#/components";
 import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { getNetwork } from "#/contexts/networks";
-import { internalBalances } from "#/lib/gql";
-import { refetchRequest } from "#/utils/fetcher";
 import { useAccount, useNetwork } from "#/wagmi";
 
+import { WithdrawBatchButton } from "../(components)/BatchWithdraeButton";
 import { TokenTable } from "../(components)/TokenTable";
 
-export default function Page() {
-  const { address, isConnected, isReconnecting, isConnecting } = useAccount();
-
-  const addressLower = address ? address?.toLowerCase() : "";
+export default function page() {
+  const { isConnected, isReconnecting, isConnecting } = useAccount();
 
   const { chain } = useNetwork();
 
@@ -30,24 +27,6 @@ export default function Page() {
   if (isConnecting || isReconnecting) {
     return <Spinner />;
   }
-
-  const {
-    data: internalBalanceData,
-    mutate,
-    isLoading,
-  } = internalBalances.gql(chain?.id.toString() || "1").useInternalBalance({
-    userAddress: addressLower as Address,
-  });
-
-  refetchRequest({
-    mutate,
-    chainId: chain?.id.toString() || "1",
-    userAddress: addressLower as Address,
-  });
-
-  const hasTokenWithBalance =
-    !!internalBalanceData?.user?.userInternalBalances?.length &&
-    internalBalanceData?.user?.userInternalBalances?.length > 0;
 
   return (
     <div className="flex w-full justify-center">
@@ -63,45 +42,11 @@ export default function Page() {
                 Deposit Token
               </Button>
             </Link>
-            {isLoading ? (
-              <WithdrawBatchButton disabled={true} network={"1"} />
-            ) : (
-              <WithdrawBatchButton
-                disabled={!hasTokenWithBalance}
-                network={network}
-              />
-            )}
+            <WithdrawBatchButton />
           </div>
         </div>
-        {isLoading ? (
-          <Spinner />
-        ) : (
-          <TokenTable internalBalanceData={internalBalanceData} />
-        )}
+        <TokenTable />
       </div>
     </div>
-  );
-}
-
-function WithdrawBatchButton({
-  disabled,
-  network,
-}: {
-  disabled: boolean;
-  network: string;
-}) {
-  return (
-    <Link href={`/internalmanager/${network}/withdraw/all`}>
-      <Button
-        className="flex items-center gap-1"
-        shade="light"
-        variant="outline"
-        title="Withdraw all"
-        disabled={disabled}
-      >
-        <MinusIcon />
-        Batch Withdraw
-      </Button>
-    </Link>
   );
 }

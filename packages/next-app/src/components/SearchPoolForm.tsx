@@ -176,7 +176,7 @@ export function SearchPoolForm({
                       <div className="flex w-full flex-col items-start">
                         <span>{pool.symbol}</span>
                         <div className="flex w-full items-center gap-x-1 text-xs text-slate9">
-                          <span>{truncateAddress(pool.address)}</span>
+                          <span>{truncateAddress(pool.id)}</span>
                         </div>
                       </div>
                     </Button>

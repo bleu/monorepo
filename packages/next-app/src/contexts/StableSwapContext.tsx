@@ -1,6 +1,7 @@
 "use client";
 
 import { PoolQuery } from "@bleu-balancer-tools/gql/src/balancer-pools/__generated__/Ethereum";
+import { NetworkChainId } from "@bleu-balancer-tools/shared";
 import { usePathname, useRouter } from "next/navigation";
 import {
   createContext,
@@ -41,6 +42,12 @@ interface StableSwapContextType {
   setIsGraphLoading: (value: boolean) => void;
   generateURL: () => string;
 }
+
+const defaultPool = {
+  //wstETH - WETH on Mainnet/Ethereum
+  id: "0x32296969ef14eb0c6d29669c550d4a0449130230000200000000000000000080",
+  network: NetworkChainId.ETHEREUM.toString(),
+};
 
 export const StableSwapContext = createContext({} as StableSwapContextType);
 
@@ -116,8 +123,10 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     if (pathname === "/stableswapsimulator") {
       setIsGraphLoading(false);
-      setInitialData(defaultBaselineData);
-      setCustomData(defaultBaselineData);
+      handleImportPoolParametersById({
+        poolId: defaultPool.id,
+        network: defaultPool.network,
+      });
     }
     if (pathname === "/stableswapsimulator/analysis") {
       setIsGraphLoading(false);

@@ -10,6 +10,7 @@ import { Select, SelectItem } from "#/components/Select";
 import { Form, FormField, FormLabel } from "#/components/ui/form";
 import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
 import useDebounce from "#/hooks/useDebounce";
+import { numberToPercent, percentToNumber } from "#/utils/formatNumber";
 
 import { TokenTable } from "./TokenTable";
 
@@ -46,12 +47,18 @@ export default function CustomDataForm() {
     if (Object.keys(errors).length) return;
 
     const data = getValues();
-    setCustomData(data as AnalysisData);
+    const dataToCalculate = {
+      ...data,
+      swapFee: percentToNumber(data.swapFee),
+    };
+    setCustomData(dataToCalculate as AnalysisData);
   };
 
   useEffect(() => {
     register("tokens", { required: true, value: customData?.tokens });
   }, []);
+
+  const swapFeeInPercentage = numberToPercent(customData?.swapFee);
 
   useEffect(() => {
     // TODO: BAL 401
@@ -88,24 +95,28 @@ export default function CustomDataForm() {
             ))}
           </Select>
         </div>
-
-        <FormField
-          name="swapFee"
-          render={({ field }) => (
-            <Input
-              {...field}
-              label="Swap fee"
-              type="number"
-              validation={{
-                required: true,
-                valueAsNumber: true,
-                value: customData?.swapFee,
-              }}
-              defaultValue={customData?.swapFee}
-              placeholder="Define the initial swap fee"
-            />
-          )}
-        />
+        <div className="relative">
+          <FormField
+            name="swapFee"
+            render={({ field }) => (
+              <Input
+                {...field}
+                label="Swap fee"
+                type="number"
+                validation={{
+                  required: true,
+                  valueAsNumber: true,
+                  value: swapFeeInPercentage,
+                }}
+                defaultValue={swapFeeInPercentage}
+                placeholder="Define the initial swap fee"
+              />
+            )}
+          />
+          <span className="absolute top-8 right-2 flex items-center text-slate10">
+            %
+          </span>
+        </div>
 
         <FormField
           name="ampFactor"

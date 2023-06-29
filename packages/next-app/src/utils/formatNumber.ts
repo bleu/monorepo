@@ -17,5 +17,13 @@ const formatNumber = (
     style,
   });
 };
-
 export default formatNumber;
+
+export function numberToPercent(value?: number) {
+  if (!value) return undefined;
+  return value * 100;
+}
+
+export function percentToNumber(value: number) {
+  return value / 100;
+}

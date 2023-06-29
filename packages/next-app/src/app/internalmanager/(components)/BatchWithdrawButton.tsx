@@ -8,7 +8,7 @@ import { getNetwork } from "#/contexts/networks";
 import { internalBalances } from "#/lib/gql";
 import { refetchRequest } from "#/utils/fetcher";
 
-export function WithdrawBatchButton() {
+export function BatchWithdrawButton() {
   const { address } = useAccount();
   const { chain } = useNetwork();
   const network = getNetwork(chain?.name);

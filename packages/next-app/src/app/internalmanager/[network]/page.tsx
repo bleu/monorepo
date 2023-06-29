@@ -9,7 +9,7 @@ import WalletNotConnected from "#/components/WalletNotConnected";
 import { getNetwork } from "#/contexts/networks";
 import { useAccount, useNetwork } from "#/wagmi";
 
-import { WithdrawBatchButton } from "../(components)/BatchWithdraeButton";
+import { BatchWithdrawButton } from "../(components)/BatchWithdrawButton";
 import { TokenTable } from "../(components)/TokenTable";
 
 export default function page() {
@@ -41,7 +41,7 @@ export default function page() {
                 Deposit Token
               </Button>
             </Link>
-            <WithdrawBatchButton />
+            <BatchWithdrawButton />
           </div>
         </div>
         <TokenTable />

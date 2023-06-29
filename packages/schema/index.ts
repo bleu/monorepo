@@ -181,7 +181,7 @@ export const StableSwapTokensSchema = z.object({
 });
 
 export const StableSwapSimulatorDataSchema = z.object({
-  swapFee: z.coerce.number().positive(),
-  ampFactor: z.coerce.number().positive(),
+  swapFee: z.coerce.number().positive().min(0.0001).max(10), //source: https://github.com/balancer/balancer-v2-monorepo/blob/c4cc3d466eaa3c1e5fa62d303208c6c4a10db48a/pkg/pool-utils/contracts/BasePool.sol#L74
+  ampFactor: z.coerce.number().positive().min(1).max(5000), //source: https://github.com/balancer/balancer-v2-monorepo/blob/c4cc3d466eaa3c1e5fa62d303208c6c4a10db48a/pkg/pool-stable/contracts/StableMath.sol#L28
   tokens: z.array(StableSwapTokensSchema).min(2),
 });

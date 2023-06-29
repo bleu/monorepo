@@ -9,6 +9,7 @@ import { Input } from "#/components/Input";
 import { Form, FormField } from "#/components/ui/form";
 import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
 import useDebounce from "#/hooks/useDebounce";
+import { numberToPercent, percentToNumber } from "#/utils/formatNumber";
 
 import { TokenTable } from "./TokenTable";
 
@@ -44,13 +45,19 @@ export default function InitialDataForm() {
     if (baselineAndFieldsAreEqual()) return;
     if (Object.keys(errors).length) return;
     const data = getValues();
-    setInitialData(data as AnalysisData);
+    const dataToCalculate = {
+      ...data,
+      swapFee: percentToNumber(data.swapFee),
+    };
+    setInitialData(dataToCalculate as AnalysisData);
   };
+
+  const swapFeeInPercentage = numberToPercent(initialData?.swapFee);
 
   useEffect(() => {
     // TODO: BAL 401
     if (baselineAndFieldsAreEqual()) return;
-    if (initialData?.swapFee) setValue("swapFee", initialData?.swapFee);
+    if (swapFeeInPercentage) setValue("swapFee", swapFeeInPercentage);
     if (initialData?.ampFactor) setValue("ampFactor", initialData?.ampFactor);
     if (initialData?.tokens) setValue("tokens", initialData?.tokens);
   }, [initialData]);
@@ -64,23 +71,28 @@ export default function InitialDataForm() {
   return (
     <Form id="baseline-data-form" onSubmit={onSubmit} {...form}>
       <div className="flex flex-col gap-4">
-        <FormField
-          name="swapFee"
-          render={({ field }) => (
-            <Input
-              {...field}
-              label="Swap fee"
-              type="number"
-              validation={{
-                required: true,
-                valueAsNumber: true,
-                value: initialData?.swapFee,
-              }}
-              defaultValue={initialData?.swapFee}
-              placeholder="Define the initial swap fee"
-            />
-          )}
-        />
+        <div className="relative">
+          <FormField
+            name="swapFee"
+            render={({ field }) => (
+              <Input
+                {...field}
+                label="Swap fee"
+                type="number"
+                validation={{
+                  required: true,
+                  valueAsNumber: true,
+                  value: swapFeeInPercentage,
+                }}
+                defaultValue={swapFeeInPercentage}
+                placeholder="Define the initial swap fee"
+              />
+            )}
+          />
+          <span className="absolute top-8 right-2 flex items-center text-slate10">
+            %
+          </span>
+        </div>
 
         <FormField
           name="ampFactor"

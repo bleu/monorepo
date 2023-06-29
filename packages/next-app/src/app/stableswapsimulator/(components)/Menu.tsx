@@ -53,10 +53,12 @@ function SearchPoolFormWithDataForm({ children }: { children: ReactElement }) {
   return (
     <div>
       <SearchPoolFormDialog>
-        <span className="flex cursor-pointer items-center space-x-2 text-sm font-normal text-slate12">
-          <MagnifyingGlassIcon width="16" height="16" strokeWidth={1} />
-          <span>Import pool parameters</span>
-        </span>
+        <div className="bg-blue9 p-2 rounded-[4px]">
+          <span className="flex cursor-pointer items-center space-x-2 text-sm font-normal text-slate12">
+            <MagnifyingGlassIcon width="20" height="20" strokeWidth={1} />
+            <span>Import pool parameters</span>
+          </span>
+        </div>
       </SearchPoolFormDialog>
       <Separator.Root className="my-5 bg-blue6 data-[orientation=horizontal]:h-px data-[orientation=vertical]:h-full data-[orientation=horizontal]:w-full data-[orientation=vertical]:w-px" />
       <Sidebar.Header name="Initial parameters" />

@@ -6,7 +6,7 @@ import { PlotType } from "plotly.js";
 import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
 import { useStableSwap } from "#/contexts/StableSwapContext";
-import formatNumber from "#/utils/formatNumber";
+import { formatNumber } from "#/utils/formatNumber";
 
 export function StableCurve() {
   const { initialData, customData, indexAnalysisToken, indexCurrentTabToken } =

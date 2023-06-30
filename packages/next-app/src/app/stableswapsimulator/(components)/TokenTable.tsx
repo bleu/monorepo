@@ -11,7 +11,7 @@ import { Dialog } from "#/components/Dialog";
 import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
 import { TokensData, useStableSwap } from "#/contexts/StableSwapContext";
-import formatNumber from "#/utils/formatNumber";
+import { formatNumber } from "#/utils/formatNumber";
 
 import TokenForm from "./TokenForm";
 

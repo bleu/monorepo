@@ -56,7 +56,7 @@ function SearchPoolFormWithDataForm({ children }: { children: ReactElement }) {
         <div className="bg-blue9 p-2 rounded-[4px]">
           <span className="flex cursor-pointer items-center space-x-2 text-sm font-normal text-slate12">
             <MagnifyingGlassIcon width="20" height="20" strokeWidth={1} />
-            <span>Import pool parameters</span>
+            <span className="font-medium">Import pool parameters</span>
           </span>
         </div>
       </SearchPoolFormDialog>

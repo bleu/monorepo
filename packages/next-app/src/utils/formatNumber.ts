@@ -1,6 +1,6 @@
 type Notation = "compact" | "engineering" | "scientific" | "standard";
 
-const formatNumber = (
+export const formatNumber = (
   number: number | string | bigint,
   decimals = 1,
   style = "decimal",
@@ -17,7 +17,6 @@ const formatNumber = (
     style,
   });
 };
-export default formatNumber;
 
 export function numberToPercent(value?: number) {
   if (!value) return undefined;

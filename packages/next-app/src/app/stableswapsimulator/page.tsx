@@ -56,7 +56,7 @@ export default function Page() {
   }, [initialData]);
   return (
     <div className="flex h-full w-full flex-col justify-center rounded-3xl">
-      {isGraphLoading ? (
+      {isGraphLoading || poolDataStatus === dataStatus.NONE ? (
         <Spinner />
       ) : (
         <div className="flex flex-col items-center">

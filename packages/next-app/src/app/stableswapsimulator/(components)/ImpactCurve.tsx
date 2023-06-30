@@ -6,7 +6,7 @@ import { MetaStableMath } from "@bleu-balancer-tools/math/src";
 import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
 import { useStableSwap } from "#/contexts/StableSwapContext";
-import formatNumber from "#/utils/formatNumber";
+import { formatNumber } from "#/utils/formatNumber";
 
 import { calculateCurvePoints } from "./StableCurve";
 

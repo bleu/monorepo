@@ -7,7 +7,7 @@ import { PlotType } from "plotly.js";
 import Plot, { defaultAxisLayout } from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
 import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
-import formatNumber from "#/utils/formatNumber";
+import { formatNumber } from "#/utils/formatNumber";
 
 const createHoverTemplate = (
   direction: "in" | "out",

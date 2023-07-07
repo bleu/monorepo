@@ -5,7 +5,6 @@ import { Address, networkFor } from "@bleu-balancer-tools/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
-import Link from "next/link";
 import { tokenLogoUri } from "public/tokens/logoUri";
 import { useEffect } from "react";
 import { FieldValues, useForm } from "react-hook-form";
@@ -15,6 +14,7 @@ import { ToastContent } from "#/app/metadata/[network]/pool/[poolId]/(components
 import genericTokenLogo from "#/assets/generic-token-logo.png";
 import { Button } from "#/components";
 import { Input } from "#/components/Input";
+import { LinkComponent } from "#/components/Link";
 import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
 import { Toast } from "#/components/Toast";
@@ -99,15 +99,19 @@ export function WithdrawAll() {
         {...form}
       >
         <div className="relative flex h-full w-full justify-center">
-          <Link href={`/internalmanager/${network}`}>
-            <div className="absolute left-8 flex h-full items-center">
-              <ArrowLeftIcon
-                height={16}
-                width={16}
-                className="text-slate10 duration-200 hover:text-amber10"
-              />
-            </div>
-          </Link>
+          <LinkComponent
+            href={`/internalmanager/${network}`}
+            content={
+              <div className="absolute left-8 flex h-full items-center">
+                <ArrowLeftIcon
+                  height={16}
+                  width={16}
+                  className="text-slate10 duration-200 hover:text-amber10"
+                />
+              </div>
+            }
+            loaderColor="amber"
+          />
           <div className="flex min-w-[530px] flex-col items-center py-3">
             <div className="text-xl">Batch Withdraw from Internal Balances</div>
           </div>

@@ -50,6 +50,8 @@ type InternalManagerContextType = {
   transactionStatus: TransactionStatus;
   setTransactionStatus: (status: TransactionStatus) => void;
   tokenList: tokenListItem[];
+  hasAllowance: boolean | undefined;
+  setHasAllowance: (hasAllowance: boolean | undefined) => void;
 };
 
 export const InternalManagerContext = createContext(
@@ -64,6 +66,9 @@ export function InternalManagerProvider({ children }: PropsWithChildren) {
     TransactionStatus.AUTHORIZING
   );
   const [tokenList, setTokenList] = useState<tokenListItem[]>([]);
+  const [hasAllowance, setHasAllowance] = useState<boolean | undefined>(
+    undefined
+  );
 
   const { networkConnectedToWallet } = useNetworks();
 
@@ -94,6 +99,8 @@ export function InternalManagerProvider({ children }: PropsWithChildren) {
         transactionStatus,
         setTransactionStatus,
         tokenList,
+        hasAllowance,
+        setHasAllowance,
       }}
     >
       {children}

@@ -4,7 +4,7 @@ import {
   networkFor,
 } from "@bleu-balancer-tools/shared";
 import { parseFixed } from "@ethersproject/bignumber";
-import { prepareWriteContract, writeContract } from "@wagmi/core";
+import { prepareWriteContract, readContract, writeContract } from "@wagmi/core";
 import { useRouter } from "next/navigation";
 import { Dispatch, useEffect, useState } from "react";
 import { FieldValues } from "react-hook-form";
@@ -248,6 +248,7 @@ export function useInternalBalancesTransaction({
     notification,
     transactionStatus,
     setTransactionStatus,
+    setHasAllowance,
   } = useInternalBalance();
   const { push } = useRouter();
   const { chain } = useNetwork();
@@ -276,10 +277,41 @@ export function useInternalBalancesTransaction({
 
   const { data, write, error } = useVaultManageUserBalance(config);
 
+  //check allowance
+  async function checkAllowance({
+    tokenAmount,
+    tokenAddress,
+    tokenDecimals,
+  }: {
+    tokenAmount: string;
+    tokenAddress: Address;
+    tokenDecimals: number;
+  }) {
+    if (tokenAmount === "" || Number(tokenAmount) <= 0) {
+      setHasAllowance(undefined); // User doesn't have enough allowance
+      return;
+    }
+    const allowance = await readContract({
+      address: tokenAddress,
+      abi: erc20ABI,
+      functionName: "allowance",
+      args: [userAddress, vaultAddress[5]],
+    });
+    const amountToApprove = parseFixed(tokenAmount, tokenDecimals);
+    if (allowance.gte(amountToApprove)) {
+      setHasAllowance(true); // User has enough allowance
+      setTransactionStatus(TransactionStatus.CONFIRMING);
+    } else {
+      setHasAllowance(false); // User doesn't have enough allowance
+      setTransactionStatus(TransactionStatus.AUTHORIZING);
+    }
+  }
+
   //function to prepare depoist transaction
   async function approveToken() {
     try {
       if (!submitData) return;
+
       setTransactionStatus(TransactionStatus.WAITING_APPROVAL);
       setNotification(
         NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WAITING_APPROVAL]
@@ -424,5 +456,6 @@ export function useInternalBalancesTransaction({
   return {
     handleTransaction,
     setSubmitData,
+    checkAllowance,
   };
 }

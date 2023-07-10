@@ -104,11 +104,11 @@ function BodyRow({
   return (
     <>
       {onClick ? (
-        <tr className={cn(classNames ?? classNames)} onClick={onClick}>
+        <tr className={cn(classNames)} onClick={onClick}>
           {children}
         </tr>
       ) : (
-        <tr className={cn(classNames ?? classNames)}>{children}</tr>
+        <tr className={cn(classNames)}>{children}</tr>
       )}
     </>
   );

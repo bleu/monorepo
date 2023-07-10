@@ -254,13 +254,12 @@ function TransactionCard({
     userAddress: userAddress,
     operationKind: operationKindEnum,
   });
+  const receiverAddressValue = watch("receiverAddress");
 
   const explorerData = buildBlockExplorerAddressURL({
     chainId,
-    address: userAddress,
+    address: receiverAddressValue,
   });
-
-  const receiverAddressValue = watch("receiverAddress");
 
   function handleOnSubmit(data: FieldValues) {
     handleTransaction({ data, decimals: tokenData.tokenInfo.decimals });

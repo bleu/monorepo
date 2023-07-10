@@ -274,36 +274,44 @@ export function useInternalBalancesTransaction({
     args: [userBalancesOp],
   });
 
-  const { data, write } = useVaultManageUserBalance(config);
+  const { data, write, error } = useVaultManageUserBalance(config);
 
   //function to prepare depoist transaction
   async function approveToken() {
-    if (!submitData) return;
-    setTransactionStatus(TransactionStatus.WAITING_APPROVAL);
-    setNotification(
-      NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WAITING_APPROVAL]
-    );
-    const config = await prepareWriteContract({
-      address: submitData[0].tokenAddress as Address,
-      abi: erc20ABI,
-      functionName: "approve",
-      args: [
-        vaultAddress[5],
-        parseFixed(
-          submitData[0]?.tokenAmount ? submitData[0].tokenAmount : "0",
-          submitData[0]?.tokenDecimals ? submitData[0].tokenDecimals : "0"
-        ),
-      ],
-    });
-    const data = await writeContract(config);
-    const { hash, wait } = data;
-    handleTransactionStatus({ hash });
-    const receipt = await wait();
-    if (receipt.status) {
-      setTransactionStatus(TransactionStatus.CONFIRMING);
+    try {
+      if (!submitData) return;
+      setTransactionStatus(TransactionStatus.WAITING_APPROVAL);
       setNotification(
-        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.CONFIRMING]
+        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WAITING_APPROVAL]
       );
+      const config = await prepareWriteContract({
+        address: submitData[0].tokenAddress as Address,
+        abi: erc20ABI,
+        functionName: "approve",
+        args: [
+          vaultAddress[5],
+          parseFixed(
+            submitData[0]?.tokenAmount ? submitData[0].tokenAmount : "0",
+            submitData[0]?.tokenDecimals ? submitData[0].tokenDecimals : "0"
+          ),
+        ],
+      });
+
+      const data = await writeContract(config);
+      const { hash, wait } = data;
+      handleTransactionStatus({ hash });
+      const receipt = await wait();
+      if (receipt.status) {
+        setTransactionStatus(TransactionStatus.CONFIRMING);
+        setNotification(
+          NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.CONFIRMING]
+        );
+      }
+    } catch (error) {
+      setNotification(
+        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WRITE_ERROR]
+      );
+      setTransactionStatus(TransactionStatus.AUTHORIZING);
     }
   }
 
@@ -342,6 +350,24 @@ export function useInternalBalancesTransaction({
       setTransactionStatus(TransactionStatus.SUBMITTING);
     }
   }, [submitData]);
+
+  useEffect(() => {
+    if (!error) return;
+    if (
+      operationKind === UserBalanceOpKind.DEPOSIT_INTERNAL &&
+      transactionStatus === TransactionStatus.SUBMITTING
+    ) {
+      setNotification(
+        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WRITE_ERROR]
+      );
+      setTransactionStatus(TransactionStatus.CONFIRMING);
+    } else {
+      setNotification(
+        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WRITE_ERROR]
+      );
+      setTransactionStatus(TransactionStatus.AUTHORIZING);
+    }
+  }, [error]);
 
   function handleTransactionStatus({ hash }: { hash: Address }) {
     if (!hash || !chain) return;

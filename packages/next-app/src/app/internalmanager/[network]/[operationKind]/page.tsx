@@ -7,13 +7,13 @@ import {
   networkFor,
 } from "@bleu-balancer-tools/shared";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
-import Link from "next/link";
 import { useEffect } from "react";
 import { useAccount, useNetwork } from "wagmi";
 
 import { TokenSelect } from "#/app/internalmanager/(components)/TokenSelect";
 import { Button } from "#/components";
 import { BaseInput } from "#/components/Input";
+import { LinkComponent } from "#/components/Link";
 import { Spinner } from "#/components/Spinner";
 import {
   STAGE_CN_MAPPING,
@@ -122,15 +122,18 @@ function TransactionCard({
     <div className="flex h-full items-center justify-center">
       <form className="my-4 flex h-fit w-fit flex-col divide-y divide-slate7 rounded-lg border border-slate7 bg-blue3 text-white">
         <div className="relative flex h-full w-full justify-center">
-          <Link href={`/internalmanager/${network}`}>
-            <div className="absolute left-8 flex h-full items-center">
-              <ArrowLeftIcon
-                height={16}
-                width={16}
-                className="text-slate10 duration-200 hover:text-amber10"
-              />
-            </div>
-          </Link>
+          <LinkComponent
+            href={`/internalmanager/${network}`}
+            content={
+              <div className="absolute left-8 flex h-full items-center">
+                <ArrowLeftIcon
+                  height={16}
+                  width={16}
+                  className="text-slate10 duration-200 hover:text-amber10"
+                />
+              </div>
+            }
+          />
           <div className="flex min-w-[530px] flex-col items-center py-3">
             <div className="text-xl">{title} Internal Balance</div>
             <span className="text-sm text-slate11">{description}</span>

@@ -1,6 +1,6 @@
 import { Network } from "@bleu-balancer-tools/shared";
-import Link from "next/link";
 
+import { LinkComponent } from "#/components/Link";
 import { operationKindType } from "#/lib/internal-balance-helper";
 
 import { WithdrawAll } from "./withdrawAll";
@@ -20,15 +20,13 @@ export default function Page({
       <div className="text-3xl font-bold text-white">
         You can not {params.operationKind} all of your tokens
       </div>
-      <div className="text-xl font-medium text-white">
+      <div className="text-xl font-medium text-white flex gap-x-1">
         Please return to
-        <Link
+        <LinkComponent
           href={`/internalmanager/${params.network}`}
-          className="text-amber9"
-        >
-          {" "}
-          the home page
-        </Link>
+          content={<span className="text-amber9">the home page</span>}
+          loaderColor="amber"
+        />
       </div>
     </div>
   );

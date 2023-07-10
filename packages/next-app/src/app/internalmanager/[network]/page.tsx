@@ -1,9 +1,9 @@
 "use client";
 
 import { PlusIcon } from "@radix-ui/react-icons";
-import Link from "next/link";
 
 import { Button } from "#/components";
+import { LinkComponent } from "#/components/Link";
 import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { getNetwork } from "#/contexts/networks";
@@ -35,12 +35,16 @@ export default function page() {
             <h1 className="text-3xl text-slate12">My Internal Balances</h1>
           </div>
           <div className="flex gap-4">
-            <Link href={`/internalmanager/${network}/deposit/`}>
-              <Button className="flex items-center gap-1" title="New deposit">
-                <PlusIcon />
-                Deposit Token
-              </Button>
-            </Link>
+            <LinkComponent
+              loaderColor="amber"
+              href={`/internalmanager/${network}/deposit/`}
+              content={
+                <Button className="flex items-center gap-1" title="New deposit">
+                  <PlusIcon />
+                  Deposit Token
+                </Button>
+              }
+            />
             <BatchWithdrawButton />
           </div>
         </div>

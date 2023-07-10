@@ -10,7 +10,7 @@ import { BigNumber, formatFixed } from "@ethersproject/bignumber";
 import { ChevronDownIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { erc20ABI, fetchBalance, multicall } from "@wagmi/core";
 import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { tokenLogoUri } from "public/tokens/logoUri";
 import React, { useEffect, useState } from "react";
 import { useAccount, useNetwork } from "wagmi";
@@ -79,7 +79,6 @@ export function TokenSelect({
 }
 
 function TokenModal({
-  close,
   operationKind,
 }: {
   close?: () => void;
@@ -297,7 +296,6 @@ function TokenModal({
                     key={token.tokenAddress}
                     token={token}
                     operationKind={operationKind}
-                    close={close}
                     chainName={network}
                   />
                 );
@@ -312,85 +310,44 @@ function TokenModal({
 function TokenRow({
   token,
   operationKind,
-  close,
   chainName,
 }: {
   token: TokenItem;
   operationKind: string;
-  close?: () => void;
   chainName: string;
 }) {
+  const router = useRouter();
   return (
-    <Table.BodyRow key={token.tokenAddress} classNames="hover:bg-blue4">
+    <Table.BodyRow
+      key={token.tokenAddress}
+      classNames="hover:bg-blue4 hover:cursor-pointer"
+      onClick={() => {
+        router.push(
+          `/internalmanager/${chainName}/${operationKind}/token/${token.tokenAddress}`
+        );
+      }}
+    >
       <Table.BodyCell customWidth="w-12">
-        <Link
-          href={`/internalmanager/${chainName}/${operationKind}/token/${token.tokenAddress}`}
-        >
-          <button
-            type="button"
-            onClick={() => {
-              close?.();
-            }}
-          >
-            <div className="flex items-center justify-center">
-              <div className="rounded-full bg-white p-1">
-                <Image
-                  src={
-                    tokenLogoUri[token.symbol as keyof typeof tokenLogoUri] ||
-                    genericTokenLogo
-                  }
-                  className="rounded-full"
-                  alt="Token Logo"
-                  height={28}
-                  width={28}
-                  quality={100}
-                />
-              </div>
-            </div>
-          </button>
-        </Link>
+        <div className="flex items-center justify-center">
+          <div className="rounded-full bg-white p-1">
+            <Image
+              src={
+                tokenLogoUri[token.symbol as keyof typeof tokenLogoUri] ||
+                genericTokenLogo
+              }
+              className="rounded-full"
+              alt="Token Logo"
+              height={28}
+              width={28}
+              quality={100}
+            />
+          </div>
+        </div>
       </Table.BodyCell>
+      <Table.BodyCell>{token.symbol}</Table.BodyCell>
+      <Table.BodyCell>{token.internalBalance}</Table.BodyCell>
       <Table.BodyCell>
-        <Link
-          href={`/internalmanager/${chainName}/${operationKind}/token/${token.tokenAddress}`}
-        >
-          <button
-            type="button"
-            onClick={() => {
-              close?.();
-            }}
-          >
-            {token.symbol}
-          </button>
-        </Link>
-      </Table.BodyCell>
-      <Table.BodyCell>
-        <Link
-          href={`/internalmanager/${chainName}/${operationKind}/token/${token.tokenAddress}`}
-        >
-          <button
-            type="button"
-            onClick={() => {
-              close?.();
-            }}
-          >
-            {token.internalBalance}
-          </button>
-        </Link>
-      </Table.BodyCell>
-      <Table.BodyCell>
-        <Link
-          href={`/internalmanager/${chainName}/${operationKind}/token/${token.tokenAddress}`}
-        >
-          <button
-            type="button"
-            onClick={() => {
-              close?.();
-            }}
-          >
-            {token.value ? formatFixed(token.value, token.decimals) : ""}
-          </button>
-        </Link>
+        {token.value ? formatFixed(token.value, token.decimals) : ""}
       </Table.BodyCell>
     </Table.BodyRow>
   );

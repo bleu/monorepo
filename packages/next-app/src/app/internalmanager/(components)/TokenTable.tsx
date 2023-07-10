@@ -8,12 +8,12 @@ import {
 } from "@radix-ui/react-icons";
 import { upperFirst } from "lodash";
 import Image from "next/image";
-import Link from "next/link";
 import { tokenLogoUri } from "public/tokens/logoUri";
 import { useAccount, useNetwork } from "wagmi";
 
 import { ToastContent } from "#/app/metadata/[network]/pool/[poolId]/(components)/MetadataAttributesTable/TransactionModal";
 import genericTokenLogo from "#/assets/generic-token-logo.png";
+import { LinkComponent } from "#/components/Link";
 import Table from "#/components/Table";
 import { Toast } from "#/components/Toast";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
@@ -186,18 +186,18 @@ function TransactionButton({
   return (
     <>
       {!disabled ? (
-        <Link
+        <LinkComponent
           href={`/internalmanager/${network}/${operation}/token/${tokenAddress}`}
-          className="flex h-[22px] w-[22px] items-center justify-center leading-none"
-        >
-          <button
-            type="button"
-            title={upperFirst(operation)}
-            className="leading-none"
-          >
-            {icon}
-          </button>
-        </Link>
+          content={
+            <button
+              type="button"
+              title={upperFirst(operation)}
+              className="flex h-[22px] w-[22px] items-center justify-center leading-none"
+            >
+              {icon}
+            </button>
+          }
+        />
       ) : (
         <button
           type="button"

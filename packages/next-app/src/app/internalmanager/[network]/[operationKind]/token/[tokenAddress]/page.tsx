@@ -13,7 +13,6 @@ import {
 import { BigNumber } from "@ethersproject/bignumber";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { useAccount, useBalance, useNetwork } from "wagmi";
@@ -22,6 +21,7 @@ import { TokenSelect } from "#/app/internalmanager/(components)/TokenSelect";
 import { ToastContent } from "#/app/metadata/[network]/pool/[poolId]/(components)/MetadataAttributesTable/TransactionModal";
 import { Button } from "#/components";
 import { Input } from "#/components/Input";
+import { LinkComponent } from "#/components/Link";
 import { Spinner } from "#/components/Spinner";
 import { Toast } from "#/components/Toast";
 import {
@@ -148,9 +148,11 @@ export default function Page({
         </div>
         <div className="text-xl text-white">
           Please click
-          <Link href={"/internalmanager"}>
-            <span className="text-slate11"> here </span>
-          </Link>
+          <LinkComponent
+            href={`/internalmanager/${network}`}
+            content={<span className="text-slate11"> here </span>}
+            loaderColor="amber"
+          />
           to check which tokens you have
         </div>
       </div>
@@ -252,13 +254,12 @@ function TransactionCard({
     userAddress: userAddress,
     operationKind: operationKindEnum,
   });
+  const receiverAddressValue = watch("receiverAddress");
 
   const explorerData = buildBlockExplorerAddressURL({
     chainId,
-    address: userAddress,
+    address: receiverAddressValue,
   });
-
-  const receiverAddressValue = watch("receiverAddress");
 
   function handleOnSubmit(data: FieldValues) {
     handleTransaction({ data, decimals: tokenData.tokenInfo.decimals });
@@ -276,15 +277,19 @@ function TransactionCard({
         className="my-4 flex h-fit w-fit flex-col divide-y divide-slate7 rounded-lg border border-slate7 bg-blue3 text-white"
       >
         <div className="relative flex h-full w-full justify-center">
-          <Link href={`/internalmanager/${network}`}>
-            <div className="absolute left-8 flex h-full items-center">
-              <ArrowLeftIcon
-                height={16}
-                width={16}
-                className="text-slate10 duration-200 hover:text-amber10"
-              />
-            </div>
-          </Link>
+          <LinkComponent
+            loaderColor="amber"
+            href={`/internalmanager/${network}`}
+            content={
+              <div className="absolute left-8 flex h-full items-center">
+                <ArrowLeftIcon
+                  height={16}
+                  width={16}
+                  className="text-slate10 duration-200 hover:text-amber10"
+                />
+              </div>
+            }
+          />
           <div className="flex min-w-[530px] flex-col items-center py-3">
             <div className="text-xl">{title} Internal Balance</div>
             <span className="text-sm text-slate11">{description}</span>

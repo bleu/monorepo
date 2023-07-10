@@ -98,9 +98,20 @@ function Body({ children }: React.PropsWithChildren) {
 function BodyRow({
   children,
   classNames,
-}: React.PropsWithChildren<{ classNames?: string }>) {
+  onClick,
+}: React.PropsWithChildren<{ classNames?: string; onClick?: () => void }>) {
   useTableContext();
-  return <tr className={cn(classNames ?? classNames)}>{children}</tr>;
+  return (
+    <>
+      {onClick ? (
+        <tr className={cn(classNames ?? classNames)} onClick={onClick}>
+          {children}
+        </tr>
+      ) : (
+        <tr className={cn(classNames ?? classNames)}>{children}</tr>
+      )}
+    </>
+  );
 }
 
 function BodyCell({

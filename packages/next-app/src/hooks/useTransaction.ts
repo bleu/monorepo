@@ -269,7 +269,7 @@ export function useInternalBalancesTransaction({
     };
   });
 
-  const { config } = usePrepareVaultManageUserBalance({
+  const { config, refetch } = usePrepareVaultManageUserBalance({
     args: [userBalancesOp],
   });
 
@@ -358,22 +358,34 @@ export function useInternalBalancesTransaction({
         receiverAddress: data.receiverAddress,
       },
     ]);
+    refetch();
   }
 
   useEffect(() => {
     if (submitData.length === 0) return;
     setTransactionUrl(undefined);
-    setNotification(
-      NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.AUTHORIZING]
-    );
     if (
       operationKind === UserBalanceOpKind.DEPOSIT_INTERNAL &&
       transactionStatus === TransactionStatus.AUTHORIZING
     ) {
       approveToken();
+      setNotification(
+        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.AUTHORIZING]
+      );
     } else {
-      write?.();
-      setTransactionStatus(TransactionStatus.SUBMITTING);
+      if (!write) return;
+      try {
+        setNotification(
+          NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.AUTHORIZING]
+        );
+        write();
+        setTransactionStatus(TransactionStatus.SUBMITTING);
+      } catch (error) {
+        setNotification(
+          NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WRITE_ERROR]
+        );
+        setTransactionStatus(TransactionStatus.AUTHORIZING);
+      }
     }
   }, [submitData]);
 

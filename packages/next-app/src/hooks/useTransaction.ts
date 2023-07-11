@@ -373,7 +373,6 @@ export function useInternalBalancesTransaction({
     ) {
       approveToken();
     } else {
-<<<<<<< HEAD
       if (!write) return;
       try {
         setNotification(
@@ -387,10 +386,6 @@ export function useInternalBalancesTransaction({
         );
         setTransactionStatus(TransactionStatus.AUTHORIZING);
       }
-=======
-      write?.();
-      setTransactionStatus(TransactionStatus.SUBMITTING);
->>>>>>> main
     }
   }, [submitData]);
 

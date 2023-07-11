@@ -256,7 +256,6 @@ export function useInternalBalancesTransaction({
 
   const network = networkFor(chain?.id);
 
-  //Prepare data for transaction
   const userBalancesOp = submitData.map((data) => {
     return {
       kind: operationKind as number,
@@ -277,7 +276,6 @@ export function useInternalBalancesTransaction({
 
   const { data, write, error } = useVaultManageUserBalance(config);
 
-  //check allowance
   async function checkAllowance({
     tokenAmount,
     tokenAddress,
@@ -307,7 +305,6 @@ export function useInternalBalancesTransaction({
     }
   }
 
-  //function to prepare depoist transaction
   async function approveToken() {
     try {
       if (!submitData) return;
@@ -365,7 +362,6 @@ export function useInternalBalancesTransaction({
     ]);
   }
 
-  // //trigger the actual transaction
   useEffect(() => {
     if (submitData.length === 0) return;
     setTransactionUrl(undefined);
@@ -413,7 +409,6 @@ export function useInternalBalancesTransaction({
     setTransactionUrl(txUrl);
   }
 
-  //handle transaction status
   useEffect(() => {
     if (!data) return;
     const { hash } = data;

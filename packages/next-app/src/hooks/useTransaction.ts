@@ -260,7 +260,6 @@ export function useInternalBalancesTransaction({
     return {
       kind: operationKind as number,
       asset: data.tokenAddress as Address,
-      //TODO get this if tokenAmount is not defined a better solution than 0 to initialize the value
       amount: parseFixed(
         data.tokenAmount ? data.tokenAmount : "0",
         data.tokenDecimals
@@ -286,7 +285,7 @@ export function useInternalBalancesTransaction({
     tokenDecimals: number;
   }) {
     if (tokenAmount === "" || Number(tokenAmount) <= 0) {
-      setHasEnoughAllowance(undefined); // User doesn't have enough allowance
+      setHasEnoughAllowance(undefined);
       return;
     }
     const allowance = await readContract({
@@ -344,7 +343,6 @@ export function useInternalBalancesTransaction({
     }
   }
 
-  //trigger transaction
   function handleTransaction({
     data,
     decimals,
@@ -415,7 +413,6 @@ export function useInternalBalancesTransaction({
     handleTransactionStatus({ hash });
   }, [data]);
 
-  //check if transaction is confirmed
   useWaitForTransaction({
     hash: data?.hash,
     onSuccess() {

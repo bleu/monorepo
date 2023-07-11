@@ -249,7 +249,7 @@ function TransactionCard({
     operationKind: operationKindEnum,
   });
   const receiverAddressValue = watch("receiverAddress");
-  const tokenAmonut = watch("tokenAmount");
+  const tokenAmount = watch("tokenAmount");
 
   useEffect(() => {
     register("receiverAddress");
@@ -263,11 +263,11 @@ function TransactionCard({
     ) {
       checkAllowance({
         tokenAddress: tokenData.tokenInfo.address as Address,
-        tokenAmount: tokenAmonut,
+        tokenAmount,
         tokenDecimals: tokenData.tokenInfo.decimals,
       });
     }
-  }, [tokenAmonut]);
+  }, [tokenAmount]);
 
   const explorerData = buildBlockExplorerAddressURL({
     chainId,

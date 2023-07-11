@@ -262,12 +262,10 @@ export function useInternalBalancesTransaction({
 
   const network = networkFor(chain?.id);
 
-  //Prepare data for transaction
   const userBalancesOp = submitData.map((data) => {
     return {
       kind: operationKind as number,
       asset: data.tokenAddress as Address,
-      //TODO get this if tokenAmount is not defined a better solution than 0 to initialize the value
       amount: parseFixed(
         data.tokenAmount ? data.tokenAmount : "0",
         data.tokenDecimals
@@ -283,7 +281,6 @@ export function useInternalBalancesTransaction({
 
   const { data, write, error } = useVaultManageUserBalance(config);
 
-  //check allowance
   async function checkAllowance({
     tokenAmount,
     tokenAddress,
@@ -294,7 +291,7 @@ export function useInternalBalancesTransaction({
     tokenDecimals: number;
   }) {
     if (tokenAmount === "" || Number(tokenAmount) <= 0) {
-      setHasEnoughAllowance(undefined); // User doesn't have enough allowance
+      setHasEnoughAllowance(undefined);
       return;
     }
     const allowance = await readContract({
@@ -313,7 +310,6 @@ export function useInternalBalancesTransaction({
     }
   }
 
-  //function to prepare depoist transaction
   async function approveToken() {
     try {
       if (!submitData) return;
@@ -353,7 +349,6 @@ export function useInternalBalancesTransaction({
     }
   }
 
-  //trigger transaction
   function handleTransaction({
     data,
     decimals,
@@ -371,7 +366,6 @@ export function useInternalBalancesTransaction({
     ]);
   }
 
-  // //trigger the actual transaction
   useEffect(() => {
     if (submitData.length === 0) return;
     setTransactionUrl(undefined);
@@ -422,14 +416,12 @@ export function useInternalBalancesTransaction({
     setTransactionUrl(txUrl);
   }
 
-  //handle transaction status
   useEffect(() => {
     if (!data) return;
     const { hash } = data;
     handleTransactionStatus({ hash });
   }, [data]);
 
-  //check if transaction is confirmed
   useWaitForTransaction({
     hash: data?.hash,
     onSuccess() {

@@ -417,7 +417,7 @@ function OperationButton({
   tokenSymbol: string;
   title: string;
 }) {
-  const { transactionStatus, hasAllowance } = useInternalBalance();
+  const { transactionStatus, hasEnoughAllowance } = useInternalBalance();
 
   if (operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL) {
     if (transactionStatus === TransactionStatus.AUTHORIZING) {
@@ -425,7 +425,7 @@ function OperationButton({
         <Button
           type="submit"
           className="w-full"
-          disabled={hasAllowance === undefined}
+          disabled={hasEnoughAllowance === undefined}
         >
           <span>Approve use of {tokenSymbol}</span>
         </Button>

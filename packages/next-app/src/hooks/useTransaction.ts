@@ -248,7 +248,7 @@ export function useInternalBalancesTransaction({
     notification,
     transactionStatus,
     setTransactionStatus,
-    setHasAllowance,
+    setHasEnoughAllowance,
   } = useInternalBalance();
   const { push } = useRouter();
   const { chain } = useNetwork();
@@ -288,7 +288,7 @@ export function useInternalBalancesTransaction({
     tokenDecimals: number;
   }) {
     if (tokenAmount === "" || Number(tokenAmount) <= 0) {
-      setHasAllowance(undefined); // User doesn't have enough allowance
+      setHasEnoughAllowance(undefined); // User doesn't have enough allowance
       return;
     }
     const allowance = await readContract({
@@ -299,10 +299,10 @@ export function useInternalBalancesTransaction({
     });
     const amountToApprove = parseFixed(tokenAmount, tokenDecimals);
     if (allowance.gte(amountToApprove)) {
-      setHasAllowance(true); // User has enough allowance
+      setHasEnoughAllowance(true);
       setTransactionStatus(TransactionStatus.CONFIRMING);
     } else {
-      setHasAllowance(false); // User doesn't have enough allowance
+      setHasEnoughAllowance(false);
       setTransactionStatus(TransactionStatus.AUTHORIZING);
     }
   }

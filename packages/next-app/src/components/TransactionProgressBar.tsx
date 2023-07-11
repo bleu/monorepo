@@ -17,6 +17,11 @@ export const STAGE_CN_MAPPING: Record<TransactionStatus, Stage> = {
     transitionLine: "bg-slate10",
     writingOnChainStep: "border-slate10 text-slate12",
   },
+  [TransactionStatus.APPROVED]: {
+    pinningStep: "border-green10 text-green10",
+    transitionLine: "bg-green10",
+    writingOnChainStep: "border-amber10 text-amber10",
+  },
   [TransactionStatus.CONFIRMING]: {
     pinningStep: "border-green10 text-green10",
     transitionLine: "bg-green10",

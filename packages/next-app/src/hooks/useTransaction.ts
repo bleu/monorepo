@@ -364,15 +364,16 @@ export function useInternalBalancesTransaction({
   useEffect(() => {
     if (submitData.length === 0) return;
     setTransactionUrl(undefined);
+    setNotification(
+      NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.AUTHORIZING]
+    );
     if (
       operationKind === UserBalanceOpKind.DEPOSIT_INTERNAL &&
       transactionStatus === TransactionStatus.AUTHORIZING
     ) {
       approveToken();
-      setNotification(
-        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.AUTHORIZING]
-      );
     } else {
+<<<<<<< HEAD
       if (!write) return;
       try {
         setNotification(
@@ -386,6 +387,10 @@ export function useInternalBalancesTransaction({
         );
         setTransactionStatus(TransactionStatus.AUTHORIZING);
       }
+=======
+      write?.();
+      setTransactionStatus(TransactionStatus.SUBMITTING);
+>>>>>>> main
     }
   }, [submitData]);
 

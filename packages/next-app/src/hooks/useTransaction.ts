@@ -24,12 +24,11 @@ import {
 
 export enum TransactionStatus {
   AUTHORIZING = "Approve this transaction",
-  WAITING_APPROVAL = "Waiting for your wallet approvement...",
-  APPROVED = "Transaction approved",
   PINNING = "Pinning metadata...",
   CONFIRMING = "Set metadata on-chain",
-  CONFIRMED = "Transaction was a success",
+  WAITING_APPROVAL = "Waiting for your wallet approvement...",
   SUBMITTING = "Writing on-chain",
+  CONFIRMED = "Transaction was a success",
   PINNING_ERROR = "The transaction has failed",
   WRITE_ERROR = "The transaction has failed",
 }
@@ -70,7 +69,7 @@ const NOTIFICATION_MAP = {
     description: "Pinning file to IPFS",
     variant: NotificationVariant.NOTIFICATION,
   },
-  [TransactionStatus.APPROVED]: {
+  [TransactionStatus.CONFIRMING]: {
     title: "Confirm pending... ",
     description: "Set metadata on-chain",
     variant: NotificationVariant.PENDING,
@@ -103,20 +102,15 @@ export const NOTIFICATION_MAP_INTERNAL_BALANCES = {
     description: "Waiting for your approval",
     variant: NotificationVariant.PENDING,
   },
-  [TransactionStatus.APPROVED]: {
-    title: "Great!",
-    description: "The approval was successful!",
-    variant: NotificationVariant.SUCCESS,
-  },
   [TransactionStatus.SUBMITTING]: {
     title: "Wait just a little longer",
     description: "Your transaction is being made",
     variant: NotificationVariant.NOTIFICATION,
   },
   [TransactionStatus.CONFIRMING]: {
-    title: "Confirm your transaction",
-    description: "Confirm the wallet transaction",
-    variant: NotificationVariant.PENDING,
+    title: "Great!",
+    description: "The approval was successful!",
+    variant: NotificationVariant.SUCCESS,
   },
   [TransactionStatus.CONFIRMED]: {
     title: "Great!",
@@ -187,20 +181,20 @@ export function useMetadataTransaction({
       setNotification(NOTIFICATION_MAP[TransactionStatus.PINNING]);
 
       // Call function to approve transaction and pin metadata to IPFS here
-      // Once the transaction is approved and the metadata is pinned, update the transaction status to APPROVED
+      // Once the transaction is approved and the metadata is pinned, update the transaction status to CONFIRMING
       try {
         const value = await pinJSON(poolId, metadata);
         setIpfsCID(value);
-        setTransactionStatus(TransactionStatus.APPROVED);
-        setNotification(NOTIFICATION_MAP[TransactionStatus.APPROVED]);
+        setTransactionStatus(TransactionStatus.CONFIRMING);
+        setNotification(NOTIFICATION_MAP[TransactionStatus.CONFIRMING]);
         setIsTransactionDisabled(false);
       } catch (error) {
         setTransactionStatus(TransactionStatus.PINNING_ERROR);
         setNotification(NOTIFICATION_MAP[TransactionStatus.PINNING_ERROR]);
         setIsTransactionDisabled(false);
       }
-    } else if (transactionStatus === TransactionStatus.APPROVED) {
-      //Call function to set metadata on-chain here
+    } else if (transactionStatus === TransactionStatus.CONFIRMING) {
+      // Call function to set metadata on-chain here
       try {
         setTransactionStatus(TransactionStatus.WAITING_APPROVAL);
         write?.();
@@ -303,7 +297,7 @@ export function useInternalBalancesTransaction({
     const amountToApprove = parseFixed(tokenAmount, tokenDecimals);
     if (allowance.gte(amountToApprove)) {
       setHasEnoughAllowance(true);
-      setTransactionStatus(TransactionStatus.APPROVED);
+      setTransactionStatus(TransactionStatus.CONFIRMING);
     } else {
       setHasEnoughAllowance(false);
       setTransactionStatus(TransactionStatus.AUTHORIZING);
@@ -336,9 +330,9 @@ export function useInternalBalancesTransaction({
       handleTransactionStatus({ hash });
       const receipt = await wait();
       if (receipt.status) {
-        setTransactionStatus(TransactionStatus.APPROVED);
+        setTransactionStatus(TransactionStatus.CONFIRMING);
         setNotification(
-          NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.APPROVED]
+          NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.CONFIRMING]
         );
       }
     } catch (error) {
@@ -369,18 +363,15 @@ export function useInternalBalancesTransaction({
   useEffect(() => {
     if (submitData.length === 0) return;
     setTransactionUrl(undefined);
+    setNotification(
+      NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.AUTHORIZING]
+    );
     if (
       operationKind === UserBalanceOpKind.DEPOSIT_INTERNAL &&
       transactionStatus === TransactionStatus.AUTHORIZING
     ) {
       approveToken();
-      setNotification(
-        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.AUTHORIZING]
-      );
     } else {
-      setNotification(
-        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.CONFIRMING]
-      );
       write?.();
       setTransactionStatus(TransactionStatus.SUBMITTING);
     }
@@ -395,7 +386,7 @@ export function useInternalBalancesTransaction({
       setNotification(
         NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WRITE_ERROR]
       );
-      setTransactionStatus(TransactionStatus.APPROVED);
+      setTransactionStatus(TransactionStatus.CONFIRMING);
     } else {
       setNotification(
         NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WRITE_ERROR]

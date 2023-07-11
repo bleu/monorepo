@@ -263,7 +263,7 @@ function TransactionCard({
     ) {
       checkAllowance({
         tokenAddress: tokenData.tokenInfo.address as Address,
-        tokenAmount: tokenAmount,
+        tokenAmount,
         tokenDecimals: tokenData.tokenInfo.decimals,
       });
     }

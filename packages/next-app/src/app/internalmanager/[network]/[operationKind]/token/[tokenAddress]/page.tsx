@@ -244,17 +244,30 @@ function TransactionCard({
     resolver: zodResolver(InternalBalanceSchema),
   });
   const { register, setValue, watch } = form;
+  const { handleTransaction, checkAllowance } = useInternalBalancesTransaction({
+    userAddress: userAddress,
+    operationKind: operationKindEnum,
+  });
+  const receiverAddressValue = watch("receiverAddress");
+  const tokenAmount = watch("tokenAmount");
 
   useEffect(() => {
     register("receiverAddress");
     setValue("tokenAddress", tokenData.tokenInfo.address);
   }, []);
 
-  const { handleTransaction } = useInternalBalancesTransaction({
-    userAddress: userAddress,
-    operationKind: operationKindEnum,
-  });
-  const receiverAddressValue = watch("receiverAddress");
+  useEffect(() => {
+    if (
+      operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL &&
+      tokenData.tokenInfo.address
+    ) {
+      checkAllowance({
+        tokenAddress: tokenData.tokenInfo.address as Address,
+        tokenAmount: tokenAmount,
+        tokenDecimals: tokenData.tokenInfo.decimals,
+      });
+    }
+  }, [tokenAmount]);
 
   const explorerData = buildBlockExplorerAddressURL({
     chainId,
@@ -404,12 +417,16 @@ function OperationButton({
   tokenSymbol: string;
   title: string;
 }) {
-  const { transactionStatus } = useInternalBalance();
+  const { transactionStatus, hasEnoughAllowance } = useInternalBalance();
 
   if (operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL) {
     if (transactionStatus === TransactionStatus.AUTHORIZING) {
       return (
-        <Button type="submit" className="w-full">
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={hasEnoughAllowance === undefined}
+        >
           <span>Approve use of {tokenSymbol}</span>
         </Button>
       );

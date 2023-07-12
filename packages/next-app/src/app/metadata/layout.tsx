@@ -70,7 +70,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
             </div>
             <CheckSupportedChains
               supportedChains={[
-                // Network.Ethereum,
+                Network.Ethereum,
                 Network.Sepolia,
                 Network.Goerli,
                 Network.Polygon,

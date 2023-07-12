@@ -1,3 +1,8 @@
+mainnet:
+  network: mainnet
+  PoolMetadataRegistry:
+    address: "0xfffa983f4037faa2e93613d44749280b7f54f62d"
+    startBlock: 17677583
 goerli:
   network: goerli
   PoolMetadataRegistry:
@@ -26,15 +31,10 @@ gnosis:
 arbitrum:
   network: arbitrum-one
   PoolMetadataRegistry:
-    address: "0xB1631f708a7A9cD30Ae55ea8F085af7CC275D2a2"
+    address: "0xb1631f708a7a9cd30ae55ea8f085af7cc275d2a2"
     startBlock: 103116738
 polygon-zkevm:
   network: polygon-zkevm
   PoolMetadataRegistry:
     address: "0x566b0f1dde5ad7ab3c2cd3ebbaa07622283e818b"
     startBlock: 1352324
-# mainnet:
-#   network: mainnet
-#   PoolMetadataRegistry:
-#     address: "0x566b0f1dde5ad7ab3c2cd3ebbaa07622283e818b"
-#     startBlock: 40976256

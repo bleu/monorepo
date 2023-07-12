@@ -28,7 +28,7 @@ export default defineConfig({
       artifacts: "out/PoolMetadataRegistry.sol",
       deployments: {
         PoolMetadataRegistry: {
-          [chains.mainnet.id]: "0x566b0f1dDE5ad7AB3C2cD3EbBAA07622283E818b",
+          [chains.mainnet.id]: "0xfffa983f4037Faa2e93613d44749280B7F54f62D",
           [chains.sepolia.id]: "0x566b0f1dDE5ad7AB3C2cD3EbBAA07622283E818b",
           [chains.goerli.id]: "0x566b0f1dDE5ad7AB3C2cD3EbBAA07622283E818b",
           [chains.polygon.id]: "0x566b0f1dDE5ad7AB3C2cD3EbBAA07622283E818b",

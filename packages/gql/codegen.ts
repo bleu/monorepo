@@ -25,11 +25,11 @@ export const SUBGRAPHS = {
         "https://api.thegraph.com/subgraphs/name/bleu-studio";
 
       return {
-        [Network.Ethereum]: `${baseEndpoint}/bal-pools-metadata-goerli`,
+        [Network.Ethereum]: `${baseEndpoint}/balancer-pool-metadata`,
         [Network.Sepolia]: `https://api.studio.thegraph.com/query/48427/bal-pool-metadata-sepolia/v0`,
         [Network.Goerli]: `${baseEndpoint}/bal-pools-metadata-goerli`,
         [Network.Polygon]: `${baseEndpoint}/balancer-pools-metadata-matic`,
-        [Network.PolygonZKEVM]: `https://api.studio.thegraph.com/query/48427/bal-pool-metadata-sepolia/v0`,
+        [Network.PolygonZKEVM]: `https://api.studio.thegraph.com/query/49707/balacer-pool-metadata-zkevm/version/latest`,
         [Network.Arbitrum]: `${baseEndpoint}/bal-pools-metadata-arb`,
         [Network.Gnosis]: `${baseEndpoint}/balancer-pools-metadata-gnosis`,
         [Network.Optimism]: `${baseEndpoint}/balancer-pools-metadata-op`,

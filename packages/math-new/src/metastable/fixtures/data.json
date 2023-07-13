@@ -1,0 +1,45 @@
+{
+  "pools": [
+    {
+      "id": "0xebfed10e11dc08fcda1af1fda146945e8710f22e00000000000000000000007f",
+      "address": "0xebfed10e11dc08fcda1af1fda146945e8710f22e",
+      "swapFee": "0.01",
+      "swapEnabled": true,
+      "amp": "10",
+      "tokens": [
+        {
+          "address": "DAI",
+          "balance": "2000000000000000",
+          "decimals": 18,
+          "priceRate": "1"
+        },
+        {
+          "address": "USDC",
+          "balance": "1500000000000000",
+          "decimals": 6,
+          "priceRate": "1"
+        },
+        {
+          "address": "USDT",
+          "balance": "1500000000000000",
+          "decimals": 6,
+          "priceRate": "1"
+        },
+        {
+          "address": "BPT",
+          "balance": "4000000000000000",
+          "decimals": 18,
+          "priceRate": "1"
+        }
+      ],
+      "tokensList": [
+        "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+        "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "0xebfed10e11dc08fcda1af1fda146945e8710f22e"
+      ],
+      "totalShares": "4000000000000000",
+      "poolType": "Stable"
+    }
+  ]
+}

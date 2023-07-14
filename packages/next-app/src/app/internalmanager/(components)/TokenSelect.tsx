@@ -6,13 +6,13 @@ import {
   addressRegex,
   buildBlockExplorerTokenURL,
 } from "@bleu-balancer-tools/shared";
-import { BigNumber, formatFixed } from "@ethersproject/bignumber";
 import { ChevronDownIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { erc20ABI, fetchBalance, multicall } from "@wagmi/core";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { tokenLogoUri } from "public/tokens/logoUri";
 import React, { useEffect, useState } from "react";
+import { formatUnits } from "viem";
 import { useAccount, useNetwork } from "wagmi";
 
 import genericTokenLogo from "#/assets/generic-token-logo.png";
@@ -26,7 +26,7 @@ import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
 interface TokenWalletBalance {
   tokenAddress: string;
-  value: BigNumber;
+  value: bigint;
   symbol: string | null | undefined;
   decimals: number | undefined;
 }
@@ -145,9 +145,10 @@ function TokenModal({
       const token = tokenList.find(
         (obj) => obj.address.toLowerCase() === tokenAddress.toLowerCase()
       );
+      const { result } = data[index];
       return {
         tokenAddress,
-        value: data[index] as BigNumber,
+        value: result as bigint,
         symbol: token?.symbol,
         decimals: token?.decimals,
       };
@@ -347,7 +348,9 @@ function TokenRow({
       <Table.BodyCell>{token.symbol}</Table.BodyCell>
       <Table.BodyCell>{token.internalBalance}</Table.BodyCell>
       <Table.BodyCell>
-        {token.value ? formatFixed(token.value, token.decimals) : ""}
+        {token.value
+          ? formatUnits(token.value, token.decimals ? token.decimals : 0)
+          : ""}
       </Table.BodyCell>
     </Table.BodyRow>
   );

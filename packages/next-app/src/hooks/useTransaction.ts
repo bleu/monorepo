@@ -30,7 +30,7 @@ export enum TransactionStatus {
   SUBMITTING = "Writing on-chain",
   CONFIRMED = "Transaction was a success",
   PINNING_ERROR = "The transaction has failed",
-  WRITE_ERROR = "The transaction has failed",
+  WRITE_ERROR = "The transaction has failed.",
 }
 
 enum NotificationVariant {
@@ -85,6 +85,11 @@ const NOTIFICATION_MAP = {
     variant: NotificationVariant.SUCCESS,
   },
   [TransactionStatus.PINNING_ERROR]: {
+    title: "Error!",
+    description: "the metadata update has failed",
+    variant: NotificationVariant.ALERT,
+  },
+  [TransactionStatus.WRITE_ERROR]: {
     title: "Error!",
     description: "the metadata update has failed",
     variant: NotificationVariant.ALERT,
@@ -150,24 +155,24 @@ export function useMetadataTransaction({
     const txUrl = buildBlockExplorerTxUrl({ chainId: chain?.id, txHash: hash });
     setTransactionUrl(txUrl);
   };
+  const { isLoading: isTransactionLoading, isSuccess: isTransactionSuccess } =
+    useWaitForTransaction({
+      hash: data?.hash,
+    });
 
   useEffect(() => {
     if (!data) return;
-    const { wait, hash } = data;
-    async function waitTransaction() {
+    const { hash } = data;
+    if (isTransactionLoading) {
       handleSetTransactionLink(hash);
-      // Once the metadata is set on-chain, update the transaction status to SUBMITTING
       setTransactionStatus(TransactionStatus.SUBMITTING);
       setNotification(NOTIFICATION_MAP[TransactionStatus.SUBMITTING]);
-      const receipt = await wait();
-
-      if (receipt.status) {
-        setTransactionStatus(TransactionStatus.CONFIRMED);
-        setNotification(NOTIFICATION_MAP[TransactionStatus.CONFIRMED]);
-      }
     }
-    waitTransaction();
-  }, [data]);
+    if (isTransactionSuccess) {
+      setTransactionStatus(TransactionStatus.CONFIRMED);
+      setNotification(NOTIFICATION_MAP[TransactionStatus.CONFIRMED]);
+    }
+  }, [data, isTransactionLoading]);
 
   const handleTransaction = async () => {
     if (isTransactionDisabled) {

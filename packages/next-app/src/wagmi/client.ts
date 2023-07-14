@@ -1,4 +1,6 @@
 import { getDefaultWallets } from "@rainbow-me/rainbowkit";
+import { publicProvider } from "@wagmi/core/providers/public";
+import { configureChains, createConfig } from "wagmi";
 import {
   arbitrum,
   gnosis as gnosisChain,
@@ -9,9 +11,8 @@ import {
   polygonZkEvm as polygonZkEvmChain,
   sepolia,
 } from "wagmi/chains";
-import { publicProvider } from "wagmi/providers/public";
 
-import { configureChains, createClient } from "#/wagmi";
+const projectId = "4f98524b2b9b5a80d14a519a8dcbecc2";
 
 const gnosis = {
   ...gnosisChain,
@@ -24,19 +25,20 @@ const polygonZkEvm = {
   iconUrl: "https://app.balancer.fi/assets/polygon-db738948.svg",
 };
 
-export const { chains, provider, webSocketProvider } = configureChains(
-  [mainnet, polygon, polygonZkEvm, arbitrum, gnosis, optimism, goerli, sepolia],
+export const { chains, publicClient, webSocketPublicClient } = configureChains(
+  [mainnet, polygon, gnosis, arbitrum, optimism, polygonZkEvm, goerli, sepolia],
   [publicProvider()]
 );
 
 const { connectors } = getDefaultWallets({
-  appName: "Balancer Pool Metadata",
+  appName: "Balancer Tools",
+  projectId,
   chains,
 });
 
-export const client = createClient({
+export const config = createConfig({
   autoConnect: true,
   connectors,
-  provider,
-  webSocketProvider,
+  publicClient,
+  webSocketPublicClient,
 });

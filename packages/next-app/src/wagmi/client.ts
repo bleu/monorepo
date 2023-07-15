@@ -12,6 +12,12 @@ import {
   sepolia,
 } from "wagmi/chains";
 
+/**
+ * Project ID is required by Rainbowkit Migration Guide to Viem
+ * 2. Supply a WalletConnect Cloud projectId
+ * https://www.rainbowkit.com/docs/migration-guide#2-supply-a-walletconnect-cloud-projectid
+ */
+
 const projectId = "4f98524b2b9b5a80d14a519a8dcbecc2";
 
 const gnosis = {
@@ -22,7 +28,8 @@ const gnosis = {
 
 const polygonZkEvm = {
   ...polygonZkEvmChain,
-  iconUrl: "https://app.balancer.fi/assets/polygon-db738948.svg",
+  iconUrl:
+    "https://raw.githubusercontent.com/balancer/frontend-v2/a53e98f1bd44b17cf002616100d23f8c1065f7b1/src/assets/images/icons/networks/zkevm.svg",
 };
 
 export const { chains, publicClient, webSocketPublicClient } = configureChains(

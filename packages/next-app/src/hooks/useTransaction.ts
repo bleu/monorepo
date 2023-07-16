@@ -1,28 +1,12 @@
-import {
-  Address,
-  buildBlockExplorerTxUrl,
-  networkFor,
-} from "@bleu-balancer-tools/shared";
-import {
-  prepareWriteContract,
-  readContract,
-  waitForTransaction,
-  writeContract,
-} from "@wagmi/core";
-import { useRouter } from "next/navigation";
+import { Address, buildBlockExplorerTxUrl } from "@bleu-balancer-tools/shared";
 import { Dispatch, useEffect, useState } from "react";
-import { parseUnits } from "viem";
 
-import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { PoolMetadataAttribute } from "#/contexts/PoolMetadataContext";
-import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
 import { pinJSON } from "#/lib/ipfs";
-import { erc20ABI, useNetwork, useWaitForTransaction } from "#/wagmi";
+import { useNetwork, useWaitForTransaction } from "#/wagmi";
 import {
   usePoolMetadataRegistrySetPoolMetadata,
   usePreparePoolMetadataRegistrySetPoolMetadata,
-  vaultABI,
-  vaultAddress,
 } from "#/wagmi/generated";
 
 export enum TransactionStatus {
@@ -37,7 +21,7 @@ export enum TransactionStatus {
   WRITE_ERROR = "The transaction has failed.",
 }
 
-enum NotificationVariant {
+export enum NotificationVariant {
   NOTIFICATION = "notification",
   PENDING = "pending",
   ALERT = "alert",
@@ -60,7 +44,7 @@ type TransactionHookResult = {
   transactionUrl: string | undefined;
 };
 
-type SubmitData = {
+export type SubmitData = {
   receiverAddress: Address;
   tokenAddress: Address;
   tokenAmount: string;
@@ -99,49 +83,6 @@ const NOTIFICATION_MAP = {
     variant: NotificationVariant.ALERT,
   },
 };
-
-export const NOTIFICATION_MAP_INTERNAL_BALANCES = {
-  [TransactionStatus.AUTHORIZING]: {
-    title: "Approve this transaction",
-    description: "Waiting for your approval",
-    variant: NotificationVariant.PENDING,
-  },
-  [TransactionStatus.WAITING_APPROVAL]: {
-    title: "Confirm pending... ",
-    description: "Waiting for your approval",
-    variant: NotificationVariant.PENDING,
-  },
-  [TransactionStatus.APPROVED]: {
-    title: "Great!",
-    description: "The approval was successful!",
-    variant: NotificationVariant.SUCCESS,
-  },
-  [TransactionStatus.SUBMITTING]: {
-    title: "Wait just a little longer",
-    description: "Your transaction is being made",
-    variant: NotificationVariant.NOTIFICATION,
-  },
-  [TransactionStatus.CONFIRMING]: {
-    title: "Confirm your transaction",
-    description: "Confirm the wallet transaction",
-    variant: NotificationVariant.PENDING,
-  },
-  [TransactionStatus.CONFIRMED]: {
-    title: "Great!",
-    description: "The transaction was a success!",
-    variant: NotificationVariant.SUCCESS,
-  },
-  [TransactionStatus.PINNING_ERROR]: {
-    title: "Error!",
-    description: "the transaction has failed",
-    variant: NotificationVariant.ALERT,
-  },
-  [TransactionStatus.WRITE_ERROR]: {
-    title: "Cancelled!",
-    description: "The transaction was cancelled",
-    variant: NotificationVariant.ALERT,
-  },
-} as const;
 
 export function useMetadataTransaction({
   poolId,
@@ -249,201 +190,5 @@ export function useMetadataTransaction({
     isNotifierOpen,
     setIsNotifierOpen,
     transactionUrl,
-  };
-}
-
-export function useInternalBalancesTransaction({
-  userAddress,
-  operationKind,
-}: {
-  userAddress: Address;
-  operationKind: UserBalanceOpKind | null;
-}) {
-  const {
-    setNotification,
-    setTransactionUrl,
-    isNotifierOpen,
-    setIsNotifierOpen,
-    notification,
-    transactionStatus,
-    setTransactionStatus,
-    setHasEnoughAllowance,
-  } = useInternalBalance();
-  const { push } = useRouter();
-  const { chain } = useNetwork();
-
-  const network = networkFor(chain?.id);
-
-  async function checkAllowance({
-    tokenAmount,
-    tokenAddress,
-    tokenDecimals,
-  }: {
-    tokenAmount: string;
-    tokenAddress: Address;
-    tokenDecimals: number;
-  }) {
-    if (tokenAmount === "" || Number(tokenAmount) <= 0) {
-      setHasEnoughAllowance(undefined);
-      return;
-    }
-    const allowance = await readContract({
-      address: tokenAddress,
-      abi: erc20ABI,
-      functionName: "allowance",
-      args: [userAddress, vaultAddress[5]],
-    });
-    const amountToApprove = parseUnits(tokenAmount, tokenDecimals);
-    if (allowance >= amountToApprove) {
-      setHasEnoughAllowance(true);
-      setTransactionStatus(TransactionStatus.APPROVED);
-    } else {
-      setHasEnoughAllowance(false);
-      setTransactionStatus(TransactionStatus.AUTHORIZING);
-    }
-  }
-
-  async function approveToken({ data }: { data: SubmitData[] }) {
-    const tokenData = data[0];
-    try {
-      setTransactionStatus(TransactionStatus.WAITING_APPROVAL);
-      setNotification(
-        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WAITING_APPROVAL]
-      );
-
-      const config = await prepareWriteContract({
-        address: tokenData.tokenAddress as Address,
-        abi: erc20ABI,
-        functionName: "approve",
-        args: [
-          vaultAddress[5],
-          parseUnits(tokenData.tokenAmount, tokenData.tokenDecimals),
-        ],
-      });
-
-      const transactionData = await writeContract(config);
-      const { hash } = transactionData;
-      handleTransactionStatus({ hash });
-      const waitForTransactionData = await waitForTransaction({
-        hash,
-      });
-      if (waitForTransactionData.status === "success") {
-        setTransactionStatus(TransactionStatus.APPROVED);
-        setNotification(
-          NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.APPROVED]
-        );
-      }
-    } catch (error) {
-      setNotification(
-        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.PINNING_ERROR]
-      );
-      setTransactionStatus(TransactionStatus.AUTHORIZING);
-    }
-  }
-
-  async function handleTransaction({ data }: { data: SubmitData[] }) {
-    setTransactionUrl(undefined);
-    if (
-      operationKind === UserBalanceOpKind.DEPOSIT_INTERNAL &&
-      transactionStatus === TransactionStatus.AUTHORIZING
-    ) {
-      setNotification(
-        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.AUTHORIZING]
-      );
-      approveToken({ data });
-    } else {
-      setNotification(
-        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.CONFIRMING]
-      );
-      try {
-        setTransactionStatus(TransactionStatus.SUBMITTING);
-        const userBalancesOp = data.map((transactionItem: SubmitData) => {
-          return {
-            kind: operationKind as number,
-            sender: userAddress,
-            recipient: transactionItem.receiverAddress as Address,
-            asset: transactionItem.tokenAddress,
-            amount: parseUnits(
-              transactionItem.tokenAmount,
-              transactionItem.tokenDecimals
-            ),
-          };
-        });
-        const config = await prepareWriteContract({
-          address: vaultAddress[5],
-          abi: vaultABI,
-          functionName: "manageUserBalance",
-          value: parseUnits("0", data[0].tokenDecimals),
-          args: [userBalancesOp],
-        });
-        const transactionData = await writeContract(config);
-        const { hash } = transactionData;
-        handleTransactionStatus({ hash });
-        const waitForTransactionData = await waitForTransaction({
-          hash,
-        });
-        if (waitForTransactionData.status === "success") {
-          push(`/internalmanager/${network}`);
-          setTransactionStatus(TransactionStatus.CONFIRMED);
-          setNotification(
-            NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.CONFIRMED]
-          );
-        }
-        if (waitForTransactionData.status === "reverted") {
-          push(`/internalmanager/${network}`);
-          setNotification(
-            NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.PINNING_ERROR]
-          );
-        }
-      } catch (error) {
-        if (
-          operationKind === UserBalanceOpKind.DEPOSIT_INTERNAL &&
-          transactionStatus === TransactionStatus.SUBMITTING
-        ) {
-          setNotification(
-            NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WRITE_ERROR]
-          );
-          setTransactionStatus(TransactionStatus.APPROVED);
-        } else {
-          setNotification(
-            NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WRITE_ERROR]
-          );
-          setTransactionStatus(TransactionStatus.AUTHORIZING);
-        }
-      }
-    }
-  }
-
-  function handleTransactionStatus({ hash }: { hash: Address }) {
-    if (!hash || !chain) return;
-    const txUrl = buildBlockExplorerTxUrl({
-      chainId: chain?.id,
-      txHash: hash,
-    });
-    setNotification(
-      NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.SUBMITTING]
-    );
-    setTransactionUrl(txUrl);
-  }
-
-  const handleNotifier = () => {
-    if (isNotifierOpen) {
-      setIsNotifierOpen(false);
-      setTimeout(() => {
-        setIsNotifierOpen(true);
-      }, 100);
-    } else {
-      setIsNotifierOpen(true);
-    }
-  };
-
-  useEffect(() => {
-    if (!notification) return;
-    handleNotifier();
-  }, [notification]);
-
-  return {
-    handleTransaction,
-    checkAllowance,
   };
 }

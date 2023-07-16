@@ -21,7 +21,7 @@ import { Toast } from "#/components/Toast";
 import { Form } from "#/components/ui/form";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
-import { useManageUserBalance } from "#/hooks/useManageUserBalance";
+import { useManageUserBalance } from "#/hooks/internalmanager/useManageUserBalance";
 import { TransactionStatus } from "#/hooks/useTransaction";
 import { internalBalances } from "#/lib/gql";
 import { UserBalanceOpKind } from "#/lib/internal-balance-helper";

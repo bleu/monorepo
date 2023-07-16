@@ -4,7 +4,7 @@ import { parseUnits } from "viem";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { readTokenAllowance } from "#/wagmi/readTokenAllowance";
 
-import { TransactionStatus } from "./useTransaction";
+import { TransactionStatus } from "../useTransaction";
 
 export function useCheckAllowance() {
   const { setTransactionStatus, setHasEnoughAllowance } = useInternalBalance();

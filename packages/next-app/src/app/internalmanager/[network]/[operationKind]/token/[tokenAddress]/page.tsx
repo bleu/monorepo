@@ -31,8 +31,8 @@ import { Form } from "#/components/ui/form";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { getNetwork } from "#/contexts/networks";
-import { useCheckAllowance } from "#/hooks/useCheckAllowance";
-import { useManageUserBalance } from "#/hooks/useManageUserBalance";
+import { useCheckAllowance } from "#/hooks/internalmanager/useCheckAllowance";
+import { useManageUserBalance } from "#/hooks/internalmanager/useManageUserBalance";
 import { TransactionStatus } from "#/hooks/useTransaction";
 import { internalBalances } from "#/lib/gql";
 import {

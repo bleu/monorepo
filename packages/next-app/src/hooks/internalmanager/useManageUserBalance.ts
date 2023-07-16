@@ -8,12 +8,12 @@ import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
 import { writeManageUserBalance } from "#/wagmi/writeManageUserBalance";
 
-import { useTokenApproval } from "./useTokenApproval";
 import {
   NotificationVariant,
   SubmitData,
   TransactionStatus,
-} from "./useTransaction";
+} from "../useTransaction";
+import { useTokenApproval } from "./useTokenApproval";
 import { useTransactionStatus } from "./useTransactionStatus";
 
 export function useManageUserBalance() {

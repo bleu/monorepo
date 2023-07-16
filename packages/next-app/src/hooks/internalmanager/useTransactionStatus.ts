@@ -3,8 +3,8 @@ import { Chain } from "wagmi";
 
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
 
+import { TransactionStatus } from "../useTransaction";
 import { NOTIFICATION_MAP_INTERNAL_BALANCES } from "./useManageUserBalance";
-import { TransactionStatus } from "./useTransaction";
 
 export function useTransactionStatus() {
   const { setNotification, setTransactionUrl } = useInternalBalance();

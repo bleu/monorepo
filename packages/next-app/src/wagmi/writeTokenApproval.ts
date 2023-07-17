@@ -1,23 +1,20 @@
 import { Address } from "@bleu-balancer-tools/shared";
 import { erc20ABI, prepareWriteContract, writeContract } from "@wagmi/core";
-import { parseUnits } from "viem";
 
 import { vaultAddress } from "./generated";
 
 export async function writeTokenApproval({
   tokenAddress,
   tokenAmount,
-  tokenDecimals,
 }: {
   tokenAddress: Address;
-  tokenAmount: string;
-  tokenDecimals: number;
+  tokenAmount: bigint;
 }) {
   const config = await prepareWriteContract({
     address: tokenAddress as Address,
     abi: erc20ABI,
     functionName: "approve",
-    args: [vaultAddress[5], parseUnits(tokenAmount, tokenDecimals)],
+    args: [vaultAddress[5], tokenAmount],
   });
 
   return await writeContract(config);

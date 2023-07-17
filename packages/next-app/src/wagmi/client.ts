@@ -16,6 +16,7 @@ import {
  * Project ID is required by Rainbowkit Migration Guide to Viem
  * 2. Supply a WalletConnect Cloud projectId
  * https://www.rainbowkit.com/docs/migration-guide#2-supply-a-walletconnect-cloud-projectid
+ * Credentials for WalletConnect are available at 1Password
  */
 
 const projectId = "4f98524b2b9b5a80d14a519a8dcbecc2";

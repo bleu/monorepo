@@ -201,6 +201,9 @@ importers:
       '@bleu-balancer-tools/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
+      '@ethersproject/constants':
+        specifier: ^5.7.0
+        version: 5.7.0
       '@hookform/resolvers':
         specifier: ^3.1.0
         version: 3.1.0(react-hook-form@7.43.9)

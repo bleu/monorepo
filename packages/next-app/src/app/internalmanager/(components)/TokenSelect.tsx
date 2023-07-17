@@ -65,8 +65,8 @@ export function TokenSelect({
               }
               className="rounded-full"
               alt="Token Logo"
-              height={28}
-              width={28}
+              height={22}
+              width={22}
               quality={100}
             />
             <div>{token?.tokenInfo.symbol}</div>

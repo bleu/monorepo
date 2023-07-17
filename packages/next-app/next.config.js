@@ -12,6 +12,15 @@ const moduleExports = {
   },
   reactStrictMode: true,
   swcMinify: true,
+  /**
+   * This configuration is following Rainbowkit Migration Guide to Viem
+   * 3. Ensure bundler and polyfill compatibility
+   * https://www.rainbowkit.com/docs/migration-guide
+   */
+  webpack: config => {
+    config.resolve.fallback = { fs: false, net: false, tls: false };
+    return config;
+  },
   async redirects() {
     return [
       {
@@ -46,7 +55,7 @@ const moduleExports = {
         protocol: "https",
         hostname: "raw.githubusercontent.com",
         port: "",
-        pathname: "/trustwallet/assets/master/blockchains/ethereum/assets/**",
+        pathname: "/balancer/frontend-v2/**",
       },
       {
         protocol: "https",

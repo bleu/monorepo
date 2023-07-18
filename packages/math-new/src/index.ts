@@ -57,7 +57,7 @@ export class AMM {
   ): number {
     const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
     return this.math
-      ._tokenInForExactTokenOut(bnum(amountIn), poolPairData)
+      ._tokenInForExactTokenOut(poolPairData, bnum(amountIn))
       .toNumber();
   }
 
@@ -68,7 +68,7 @@ export class AMM {
   ): number {
     const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
     return this.math
-      ._tokenInForExactTokenOut(bnum(amountOut), poolPairData)
+      ._tokenInForExactTokenOut(poolPairData, bnum(amountOut))
       .toNumber();
   }
 
@@ -77,15 +77,21 @@ export class AMM {
     return this.math._spotPrice(poolPairData).toNumber();
   }
 
-  _tokenInForExactSpotPriceAfterSwap(
-    spotPrice: OldBigNumber,
-    poolPairData: PoolPairData,
+  _tokenInForExactSpotPriceAfterSwap({
+    spotPrice,
+    poolPairData,
     inGuess = poolPairData.allBalances[poolPairData.tokenIndexIn].times(
       bnum(0.01)
     ),
     spotPricePrecision = bnum(0.0000001),
-    iteration_number = 0
-  ): OldBigNumber {
+    iteration_number = 0,
+  }: {
+    spotPrice: OldBigNumber;
+    poolPairData: PoolPairData;
+    inGuess?: OldBigNumber;
+    spotPricePrecision?: OldBigNumber;
+    iteration_number?: number;
+  }): OldBigNumber {
     // Calculate the amount of tokenIn needed to reach the desired spotPrice
     // The Newton-Raphson method is used to find the SpotPrice of the function
     // Results could be inaccurate for very small amounts of tokenIn
@@ -111,13 +117,13 @@ export class AMM {
     const newInGuess = diffFromSpotPrice
       .div(spotPriceDerivative.times(10))
       .plus(inGuess);
-    return this._tokenInForExactSpotPriceAfterSwap(
+    return this._tokenInForExactSpotPriceAfterSwap({
       spotPrice,
       poolPairData,
-      newInGuess,
+      inGuess: newInGuess,
       spotPricePrecision,
-      iteration_number
-    );
+      iteration_number,
+    });
   }
 
   tokenInForExactSpotPriceAfterSwap(
@@ -126,10 +132,10 @@ export class AMM {
     tokenOut: string
   ): number {
     const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
-    return this._tokenInForExactSpotPriceAfterSwap(
-      bnum(spotPrice),
-      poolPairData
-    ).toNumber();
+    return this._tokenInForExactSpotPriceAfterSwap({
+      spotPrice: bnum(spotPrice),
+      poolPairData,
+    }).toNumber();
   }
 
   tokenOutForExactSpotPriceAfterSwap(
@@ -138,10 +144,10 @@ export class AMM {
     tokenOut: string
   ): number {
     const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
-    const amountTokenIn = this._tokenInForExactSpotPriceAfterSwap(
-      spotPriceAfterSwap,
-      poolPairData
-    );
+    const amountTokenIn = this._tokenInForExactSpotPriceAfterSwap({
+      spotPrice: bnum(spotPriceAfterSwap),
+      poolPairData,
+    }).toNumber();
 
     return this.exactTokenInForTokenOut(amountTokenIn, tokenIn, tokenOut);
   }
@@ -153,8 +159,8 @@ export class AMM {
   ): number {
     const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
     const amountOut = this.math._exactTokenInForTokenOut(
-      bnum(amountIn),
-      poolPairData
+      poolPairData,
+      bnum(amountIn)
     );
     return amountOut.div(amountIn).toNumber();
   }
@@ -166,8 +172,8 @@ export class AMM {
   ): number {
     const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
     const amountIn = this.math._tokenInForExactTokenOut(
-      bnum(amountOut),
-      poolPairData
+      poolPairData,
+      bnum(amountOut)
     );
     return bnum(amountOut).div(amountIn).toNumber();
   }
@@ -179,8 +185,8 @@ export class AMM {
   ): number {
     const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
     const amountOut = this.math._exactTokenInForTokenOut(
-      bnum(amountIn),
-      poolPairData
+      poolPairData,
+      bnum(amountIn)
     );
     const effectivePrice = amountOut.div(amountIn);
     const spotPrice = this.math._spotPrice(poolPairData);
@@ -194,8 +200,8 @@ export class AMM {
   ): number {
     const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
     const amountOut = this.math._exactTokenInForTokenOut(
-      bnum(amountIn),
-      poolPairData
+      poolPairData,
+      bnum(amountIn)
     );
     const effectivePrice = amountOut.div(amountIn);
     const spotPrice = this.math._spotPrice(poolPairData);
@@ -209,8 +215,8 @@ export class AMM {
   ): number {
     const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
     const amountIn = this.math._tokenInForExactTokenOut(
-      bnum(amountOut),
-      poolPairData
+      poolPairData,
+      bnum(amountOut)
     );
     const effectivePrice = bnum(amountOut).div(amountIn);
     const spotPrice = this.math._spotPrice(poolPairData);
@@ -224,8 +230,8 @@ export class AMM {
   ): number {
     const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
     const amountIn = this.math._tokenInForExactTokenOut(
-      bnum(amountOut),
-      poolPairData
+      poolPairData,
+      bnum(amountOut)
     );
     const effectivePrice = bnum(amountOut).div(amountIn).toNumber();
     const spotPrice = this.math._spotPrice(poolPairData);

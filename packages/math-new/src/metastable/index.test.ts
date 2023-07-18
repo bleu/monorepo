@@ -36,13 +36,16 @@ describe("Tests new stable math function based on package other functions", () =
   poolPairData.allBalances[poolPairData.tokenIndexOut] =
     poolPairData.allBalances[poolPairData.tokenIndexOut].minus(bnum(amountOut));
   const tokenInCalculated = amm.tokenInForExactSpotPriceAfterSwap(
-    spotPriceExpected,
+    spotPriceExpected.toNumber(),
     tokenIn,
     tokenOut
   );
 
   test("_spotPrice", () => {
-    checkResult(pool._spotPrice(poolPairData), spotPriceExpected.toNumber());
+    checkResult(
+      pool._spotPrice(poolPairData).toNumber(),
+      spotPriceExpected.toNumber()
+    );
   });
   test("__tokenInForExactSpotPriceAfterSwap", () => {
     checkResult(tokenInCalculated, amount);

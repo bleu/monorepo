@@ -12,8 +12,7 @@
     "**/*.tsx",
     "**/*.js",
     "./tasks",
-    "./test",
-    "./typechain-types"
+    "./test"
   ],
   "exclude": ["node_modules"],
   "extends": "@bleu-balancer-tools/tsconfig/base.json"

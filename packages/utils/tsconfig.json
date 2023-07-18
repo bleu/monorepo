@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "baseUrl": "src",
+    "paths": {
+      "*": ["*"]
+    }
+  },
+  "exclude": ["node_modules"],
+  "extends": "@bleu-balancer-tools/tsconfig/base.json",
+  "include": ["**/*.ts"],
+  "references": []
+}

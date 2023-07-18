@@ -5,12 +5,12 @@
   "devDependencies": {
     "@bleu-balancer-tools/shared": "workspace:^",
     "@bleu-balancer-tools/tsconfig": "workspace:*",
-    "ethers": "^5.7.2",
+    "@bleu-balancer-tools/utils": "workspace:*",
     "ts-node": "^10.9.1",
-    "zod": "^3.21.4"
+    "zod": "^3.21.4",
+    "viem": "^1.3.0"
   },
-  "dependencies": {
-    "@ethersproject/bignumber": "^5.7.0",
-    "typescript": "^5.0.4"
+  "peerDependencies": {
+    "typescript": "^5.1.6"
   }
 }

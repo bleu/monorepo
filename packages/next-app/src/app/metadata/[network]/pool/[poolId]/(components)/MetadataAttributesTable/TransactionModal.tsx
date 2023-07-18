@@ -119,7 +119,7 @@ function ProcessTransaction({ poolId }: { poolId: Address }) {
               "flex justify-center items-center",
               isTransactionDisabled
                 ? "w-full text-amber10 border border-amber4"
-                : "w-full text-slate12 bg-amber4 hover:bg-amber3 focus-visible:bg-amber3 disabled:bg-amber2"
+                : "w-full text-slate12 bg-amber4 hover:bg-amber3 focus-visible:bg-amber3 disabled:bg-amber2",
             )}
           >
             {isTransactionDisabled &&

@@ -37,7 +37,7 @@ export function Spinner({
           {
             "border-amber10": SpinnerColorString === SpinnerColor.amber,
             "border-blue10": SpinnerColorString === SpinnerColor.blue,
-          }
+          },
         )}
       />
     </div>

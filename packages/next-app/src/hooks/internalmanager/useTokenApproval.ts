@@ -26,7 +26,7 @@ export function useTokenApproval() {
     try {
       setTransactionStatus(TransactionStatus.WAITING_APPROVAL);
       setNotification(
-        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WAITING_APPROVAL]
+        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WAITING_APPROVAL],
       );
       const transactionData = await writeTokenApproval({
         tokenAddress: tokenData.tokenAddress,
@@ -45,12 +45,12 @@ export function useTokenApproval() {
       if (waitForTransactionData.status === "success") {
         setTransactionStatus(TransactionStatus.APPROVED);
         setNotification(
-          NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.APPROVED]
+          NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.APPROVED],
         );
       }
     } catch (error) {
       setNotification(
-        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WRITE_ERROR]
+        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WRITE_ERROR],
       );
       setTransactionStatus(TransactionStatus.AUTHORIZING);
     }

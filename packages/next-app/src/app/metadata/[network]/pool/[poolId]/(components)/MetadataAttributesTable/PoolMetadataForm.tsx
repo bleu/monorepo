@@ -54,7 +54,7 @@ export default function PoolMetadataForm({
           type: "uniqueness",
           message: "This key already exists.",
         },
-        { shouldFocus: true }
+        { shouldFocus: true },
       );
       return;
     }

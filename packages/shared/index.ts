@@ -130,7 +130,7 @@ export function networkIdFor(name?: string) {
 
   return (
     Object.keys(networkIdEnumMap).find(
-      (key) => networkIdEnumMap[key as keyof typeof networkIdEnumMap] === name
+      (key) => networkIdEnumMap[key as keyof typeof networkIdEnumMap] === name,
     ) || "1"
   );
 }

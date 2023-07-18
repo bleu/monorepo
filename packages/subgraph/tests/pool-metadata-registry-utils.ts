@@ -5,22 +5,22 @@ import { PoolMetadataUpdated } from "../src/types/PoolMetadataRegistry/PoolMetad
 
 export function createPoolMetadataUpdatedEvent(
   poolId: Bytes,
-  metadataCID: string
+  metadataCID: string,
 ): PoolMetadataUpdated {
   const poolMetadataUpdatedEvent = changetype<PoolMetadataUpdated>(
-    newMockEvent()
+    newMockEvent(),
   );
 
   poolMetadataUpdatedEvent.parameters = [];
 
   poolMetadataUpdatedEvent.parameters.push(
-    new ethereum.EventParam("poolId", ethereum.Value.fromFixedBytes(poolId))
+    new ethereum.EventParam("poolId", ethereum.Value.fromFixedBytes(poolId)),
   );
   poolMetadataUpdatedEvent.parameters.push(
     new ethereum.EventParam(
       "metadataCID",
-      ethereum.Value.fromString(metadataCID)
-    )
+      ethereum.Value.fromString(metadataCID),
+    ),
   );
 
   return poolMetadataUpdatedEvent;

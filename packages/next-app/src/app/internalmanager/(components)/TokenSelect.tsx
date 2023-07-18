@@ -110,7 +110,7 @@ function TokenModal({
   const internalBalancesTokenAdresses = internalBalanceData?.user
     ?.userInternalBalances
     ? internalBalanceData.user.userInternalBalances.map((token) =>
-        token.tokenInfo.address.toLowerCase()
+        token.tokenInfo.address.toLowerCase(),
       )
     : [];
 
@@ -143,7 +143,7 @@ function TokenModal({
     const data = await multicall({ contracts: tokensContracts });
     const walletBalanceData = tokenAdresses.map((tokenAddress, index) => {
       const token = tokenList.find(
-        (obj) => obj.address.toLowerCase() === tokenAddress.toLowerCase()
+        (obj) => obj.address.toLowerCase() === tokenAddress.toLowerCase(),
       );
       const { result } = data[index];
       return {
@@ -160,7 +160,7 @@ function TokenModal({
         const internalBalance =
           internalBalanceData?.user?.userInternalBalances?.find(
             (internalBalanceInfo) =>
-              internalBalanceInfo.tokenInfo.address === token.tokenAddress
+              internalBalanceInfo.tokenInfo.address === token.tokenAddress,
           );
 
         if (internalBalance) {
@@ -324,7 +324,7 @@ function TokenRow({
       classNames="hover:bg-blue4 hover:cursor-pointer"
       onClick={() => {
         router.push(
-          `/internalmanager/${chainName}/${operationKind}/token/${token.tokenAddress}`
+          `/internalmanager/${chainName}/${operationKind}/token/${token.tokenAddress}`,
         );
       }}
     >

@@ -80,7 +80,7 @@ export function SwapSimulator() {
         <label className="block text-sm text-slate12">Effective Price</label>
         <BaseInput
           value={`${effectivePrice.toFixed(
-            2
+            2,
           )} ${tokenOutSymbol}/${tokenInSymbol}`}
           disabled
         />
@@ -174,7 +174,7 @@ export function SwapSimulator() {
                   label="Amount"
                   type="number"
                   defaultValue={(initialData?.tokens[0]?.balance / 10).toFixed(
-                    2
+                    2,
                   )}
                 />
               )}
@@ -236,36 +236,36 @@ function calculateSimulation({
   });
 
   const OldBigNumberAmount = MetaStableMath.numberToOldBigNumber(
-    amount
+    amount,
   ) as OldBigNumber;
 
   let amountIn = OldBigNumberAmount;
   let amountOut = MetaStableMath.exactTokenInForTokenOut(
     OldBigNumberAmount,
-    poolPairData
+    poolPairData,
   );
   let effectivePrice = MetaStableMath.effectivePriceForExactTokenInSwap(
     OldBigNumberAmount,
-    poolPairData
+    poolPairData,
   );
   let priceImpact = MetaStableMath.priceImpactForExactTokenInSwap(
     OldBigNumberAmount,
-    poolPairData
+    poolPairData,
   );
 
   if (swapType == "Exact Out") {
     amountIn = MetaStableMath.tokenInForExactTokenOut(
       OldBigNumberAmount,
-      poolPairData
+      poolPairData,
     );
     amountOut = OldBigNumberAmount;
     effectivePrice = MetaStableMath.effectivePriceForExactTokenOutSwap(
       OldBigNumberAmount,
-      poolPairData
+      poolPairData,
     );
     priceImpact = MetaStableMath.priceImpactForExactTokenOutSwap(
       OldBigNumberAmount,
-      poolPairData
+      poolPairData,
     );
   }
 

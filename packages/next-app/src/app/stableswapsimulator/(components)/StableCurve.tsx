@@ -61,8 +61,8 @@ export function StableCurve() {
       (amount) =>
         MetaStableMath.exactTokenInForTokenOut(
           MetaStableMath.numberToOldBigNumber(amount),
-          poolPairDataIn
-        ).toNumber() * -1
+          poolPairDataIn,
+        ).toNumber() * -1,
     );
 
     const poolPairDataOut = MetaStableMath.preparePoolPairData({
@@ -79,8 +79,8 @@ export function StableCurve() {
       (amount) =>
         MetaStableMath.exactTokenInForTokenOut(
           MetaStableMath.numberToOldBigNumber(amount),
-          poolPairDataOut
-        ).toNumber() * -1
+          poolPairDataOut,
+        ).toNumber() * -1,
     );
 
     return {
@@ -125,7 +125,7 @@ export function StableCurve() {
     amountIn: number,
     tokenIn: string,
     amountOut: number,
-    tokenOut: string
+    tokenOut: string,
   ) => {
     const formattedAmountIn = formatNumber(amountIn, 2);
     const formattedAmountOut = formatNumber(amountOut, 2);
@@ -138,7 +138,7 @@ export function StableCurve() {
     legendGroup: string,
     name: string,
     showlegend = true,
-    hovertemplate: string[]
+    hovertemplate: string[],
   ) => {
     return {
       x,
@@ -163,9 +163,9 @@ export function StableCurve() {
           amount,
           tokensSymbol[indexAnalysisToken],
           -initialAmountTabTokenOut[index],
-          tokensSymbol[indexCurrentTabToken]
-        )
-      )
+          tokensSymbol[indexCurrentTabToken],
+        ),
+      ),
     ),
     createDataObject(
       variantAmountsAnalysisTokenIn,
@@ -178,9 +178,9 @@ export function StableCurve() {
           amount,
           tokensSymbol[indexAnalysisToken],
           -variantAmountTabTokenOut[index],
-          tokensSymbol[indexCurrentTabToken]
-        )
-      )
+          tokensSymbol[indexCurrentTabToken],
+        ),
+      ),
     ),
     createDataObject(
       initialAmountsAnalysisTokenOut,
@@ -193,9 +193,9 @@ export function StableCurve() {
           initialAmountTabTokenIn[index],
           tokensSymbol[indexCurrentTabToken],
           -amount,
-          tokensSymbol[indexAnalysisToken]
-        )
-      )
+          tokensSymbol[indexAnalysisToken],
+        ),
+      ),
     ),
     createDataObject(
       variantAmountsAnalysisTokenOut,
@@ -208,9 +208,9 @@ export function StableCurve() {
           variantAmountTabTokenIn[index],
           tokensSymbol[indexCurrentTabToken],
           -amount,
-          tokensSymbol[indexAnalysisToken]
-        )
-      )
+          tokensSymbol[indexAnalysisToken],
+        ),
+      ),
     ),
   ];
 
@@ -253,7 +253,7 @@ export function calculateCurvePoints({
     start,
     ...Array.from(
       { length: numberOfPoints + 20 },
-      (_, index) => initialValue * stepRatio ** index
+      (_, index) => initialValue * stepRatio ** index,
     ),
   ];
 }

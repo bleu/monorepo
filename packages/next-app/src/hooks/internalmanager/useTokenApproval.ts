@@ -1,4 +1,3 @@
-import { MaxUint256 } from "@ethersproject/constants";
 import { Chain, waitForTransaction } from "@wagmi/core";
 import { parseUnits } from "viem";
 
@@ -32,7 +31,7 @@ export function useTokenApproval() {
       const transactionData = await writeTokenApproval({
         tokenAddress: tokenData.tokenAddress,
         tokenAmount: forceMax
-          ? MaxUint256.toBigInt()
+          ? BigInt(2 ** 256 - 1)
           : parseUnits(tokenData.tokenAmount, tokenData.tokenDecimals),
       });
       const { hash } = transactionData;

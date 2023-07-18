@@ -17,7 +17,7 @@ const moduleExports = {
    * 3. Ensure bundler and polyfill compatibility
    * https://www.rainbowkit.com/docs/migration-guide
    */
-  webpack: config => {
+  webpack: (config) => {
     config.resolve.fallback = { fs: false, net: false, tls: false };
     return config;
   },

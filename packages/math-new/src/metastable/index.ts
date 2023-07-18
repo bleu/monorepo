@@ -52,6 +52,7 @@ export class ExtendedMetaStableMath extends MetaStablePool {
   }
 
   parsePoolPairData(tokenIn: string, tokenOut: string): MetaStablePoolPairData {
+    // This function was developed based on @balancer/sor package, but for work as a symbol instead of address
     const tokenIndexIn = this.tokens.findIndex((t) => t.address === tokenIn);
     if (tokenIndexIn < 0) throw "Pool does not contain tokenIn";
     const tI = this.tokens[tokenIndexIn];
@@ -153,8 +154,8 @@ export class ExtendedMetaStableMath extends MetaStablePool {
     return ans;
   }
 
-  // COMENT from SOR
   _spotPrice(poolPairData: MetaStablePoolPairData): OldBigNumber {
+    // This function was developed based on @balancer/sor package
     const ONE = bnum(1);
 
     const { amp, allBalances, tokenIndexIn, tokenIndexOut, swapFee } =

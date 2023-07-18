@@ -57,7 +57,7 @@ export class AMM {
   ): number {
     const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
     return this.math
-      ._tokenInForExactTokenOut(poolPairData, bnum(amountIn))
+      ._exactTokenInForTokenOut(poolPairData, bnum(amountIn))
       .toNumber();
   }
 
@@ -143,12 +143,11 @@ export class AMM {
     tokenIn: string,
     tokenOut: string
   ): number {
-    const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
+    const reversedPoolPairData = this.math.parsePoolPairData(tokenOut, tokenIn);
     const amountTokenIn = this._tokenInForExactSpotPriceAfterSwap({
       spotPrice: bnum(spotPriceAfterSwap),
-      poolPairData,
+      poolPairData: reversedPoolPairData,
     }).toNumber();
-
     return this.exactTokenInForTokenOut(amountTokenIn, tokenIn, tokenOut);
   }
 

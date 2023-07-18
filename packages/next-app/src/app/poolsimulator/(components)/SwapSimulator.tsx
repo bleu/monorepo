@@ -1,5 +1,4 @@
-import { OldBigNumber } from "@balancer-labs/sor";
-import { MetaStableMath } from "@bleu-balancer-tools/math/src";
+import { AMM } from "@bleu-balancer-tools/math-new/src";
 import { Controller, useForm } from "react-hook-form";
 
 import { BaseInput, Input } from "#/components/Input";
@@ -7,7 +6,7 @@ import { PlotTitle } from "#/components/Plot";
 import { Select, SelectItem } from "#/components/Select";
 import { Spinner } from "#/components/Spinner";
 import { Form, FormField } from "#/components/ui/form";
-import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
+import { useStableSwap } from "#/contexts/PoolSimulatorContext";
 import useDebounce from "#/hooks/useDebounce";
 
 export function SwapSimulator() {
@@ -15,8 +14,10 @@ export function SwapSimulator() {
   const { watch, control } = form;
 
   const swapTypes = ["Exact In", "Exact Out"];
-  const { initialData, customData } = useStableSwap();
+  const { initialData, initialAMM, customAMM } = useStableSwap();
   const tokensSymbol = initialData?.tokens.map((token) => token.symbol);
+
+  if (!initialAMM || !customAMM) return <Spinner />;
 
   const amount = watch("amount");
   const swapType = watch("swapType");
@@ -30,17 +31,17 @@ export function SwapSimulator() {
   const initialResult = calculateSimulation({
     amount: Number(debouncedAmount),
     swapType,
-    tokenInIndex,
-    tokenOutIndex,
-    data: initialData,
+    tokenInSymbol,
+    tokenOutSymbol,
+    amm: initialAMM,
   });
 
   const customResult = calculateSimulation({
     amount: Number(debouncedAmount),
     swapType,
-    tokenInIndex,
-    tokenOutIndex,
-    data: customData,
+    tokenInSymbol,
+    tokenOutSymbol,
+    amm: customAMM,
   });
 
   function SimulationResult({
@@ -49,10 +50,10 @@ export function SwapSimulator() {
     effectivePrice,
     priceImpact,
   }: {
-    amountIn?: OldBigNumber;
-    amountOut?: OldBigNumber;
-    effectivePrice?: OldBigNumber;
-    priceImpact?: OldBigNumber;
+    amountIn?: number;
+    amountOut?: number;
+    effectivePrice?: number;
+    priceImpact?: number;
   }) {
     if (!amountIn || !amountOut || !effectivePrice || !priceImpact)
       return <Spinner />;
@@ -87,7 +88,7 @@ export function SwapSimulator() {
         <label className="block text-sm text-slate12">Price Impact</label>
         <BaseInput
           label="Price Impact"
-          value={`${(priceImpact.toNumber() * 100).toFixed(2)} %`}
+          value={`${(priceImpact * 100).toFixed(2)} %`}
           disabled
         />
       </div>
@@ -137,9 +138,9 @@ export function SwapSimulator() {
                   defaultValue="1"
                   render={({ field: { onChange, value, ref } }) => (
                     <Select onValueChange={onChange} value={value} ref={ref}>
-                      {tokensSymbol.map((tokenSymbol, index) => (
-                        <SelectItem key={tokenSymbol} value={index.toString()}>
-                          {tokenSymbol}
+                      {initialData.tokens.map(({ symbol }, index) => (
+                        <SelectItem key={symbol} value={index.toString()}>
+                          {symbol}
                         </SelectItem>
                       ))}
                     </Select>
@@ -201,71 +202,59 @@ export function SwapSimulator() {
 }
 
 function calculateSimulation({
-  data,
+  amm,
   swapType,
   amount,
-  tokenInIndex,
-  tokenOutIndex,
+  tokenInSymbol,
+  tokenOutSymbol,
 }: {
-  data: AnalysisData;
+  amm: AMM;
   swapType: string;
   amount: number;
-  tokenInIndex: number;
-  tokenOutIndex: number;
+  tokenInSymbol: string;
+  tokenOutSymbol: string;
 }) {
-  if (
-    !data?.swapFee ||
-    !data?.ampFactor ||
-    !data?.tokens ||
-    !amount ||
-    typeof tokenInIndex == "undefined" ||
-    typeof tokenOutIndex == "undefined" ||
-    tokenInIndex == tokenOutIndex
-  ) {
-    return;
+  if (tokenInSymbol == tokenOutSymbol || !tokenInSymbol || !tokenOutSymbol) {
+    return {
+      amountIn: amount,
+      amountOut: amount,
+      effectivePrice: 1,
+      priceImpact: 0,
+    };
   }
-
-  const poolPairData = MetaStableMath.preparePoolPairData({
-    indexIn: tokenInIndex,
-    indexOut: tokenOutIndex,
-    swapFee: data?.swapFee,
-    balances: data?.tokens.map((token) => token.balance),
-    amp: data?.ampFactor,
-    rates: data?.tokens.map((token) => token.rate),
-    decimals: data?.tokens.map((token) => token.decimal),
-  });
-
-  const OldBigNumberAmount = MetaStableMath.numberToOldBigNumber(
-    amount
-  ) as OldBigNumber;
-
-  let amountIn = OldBigNumberAmount;
-  let amountOut = MetaStableMath.exactTokenInForTokenOut(
-    OldBigNumberAmount,
-    poolPairData
+  let amountIn = amount;
+  let amountOut = amm.exactTokenInForTokenOut(
+    amount,
+    tokenInSymbol,
+    tokenOutSymbol
   );
-  let effectivePrice = MetaStableMath.effectivePriceForExactTokenInSwap(
-    OldBigNumberAmount,
-    poolPairData
+  let effectivePrice = amm.effectivePriceForExactTokenInSwap(
+    amount,
+    tokenInSymbol,
+    tokenOutSymbol
   );
-  let priceImpact = MetaStableMath.priceImpactForExactTokenInSwap(
-    OldBigNumberAmount,
-    poolPairData
+  let priceImpact = amm.priceImpactForExactTokenInSwap(
+    amount,
+    tokenInSymbol,
+    tokenOutSymbol
   );
 
   if (swapType == "Exact Out") {
-    amountIn = MetaStableMath.tokenInForExactTokenOut(
-      OldBigNumberAmount,
-      poolPairData
+    amountIn = amm.tokenInForExactTokenOut(
+      amount,
+      tokenInSymbol,
+      tokenOutSymbol
     );
-    amountOut = OldBigNumberAmount;
-    effectivePrice = MetaStableMath.effectivePriceForExactTokenOutSwap(
-      OldBigNumberAmount,
-      poolPairData
+    amountOut = amount;
+    effectivePrice = amm.effectivePriceForExactTokenOutSwap(
+      amount,
+      tokenInSymbol,
+      tokenOutSymbol
     );
-    priceImpact = MetaStableMath.priceImpactForExactTokenOutSwap(
-      OldBigNumberAmount,
-      poolPairData
+    priceImpact = amm.priceImpactForExactTokenOutSwap(
+      amount,
+      tokenInSymbol,
+      tokenOutSymbol
     );
   }
 

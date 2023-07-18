@@ -8,6 +8,9 @@ import { SubmitData, TransactionStatus } from "../useTransaction";
 import { NOTIFICATION_MAP_INTERNAL_BALANCES } from "./useManageUserBalance";
 import { useTransactionStatus } from "./useTransactionStatus";
 
+const MAX_UINT256 =
+  0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffn;
+
 export function useTokenApproval() {
   const { setTransactionStatus, setNotification } = useInternalBalance();
   const { handleTransactionStatus } = useTransactionStatus();
@@ -26,12 +29,12 @@ export function useTokenApproval() {
     try {
       setTransactionStatus(TransactionStatus.WAITING_APPROVAL);
       setNotification(
-        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WAITING_APPROVAL],
+        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WAITING_APPROVAL]
       );
       const transactionData = await writeTokenApproval({
         tokenAddress: tokenData.tokenAddress,
         tokenAmount: forceMax
-          ? BigInt(2 ** 256 - 1)
+          ? MAX_UINT256
           : parseUnits(tokenData.tokenAmount, tokenData.tokenDecimals),
       });
       const { hash } = transactionData;
@@ -45,12 +48,12 @@ export function useTokenApproval() {
       if (waitForTransactionData.status === "success") {
         setTransactionStatus(TransactionStatus.APPROVED);
         setNotification(
-          NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.APPROVED],
+          NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.APPROVED]
         );
       }
     } catch (error) {
       setNotification(
-        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WRITE_ERROR],
+        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WRITE_ERROR]
       );
       setTransactionStatus(TransactionStatus.AUTHORIZING);
     }

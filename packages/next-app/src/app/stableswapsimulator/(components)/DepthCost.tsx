@@ -63,6 +63,13 @@ const createDataObject = (
 
 export function DepthCost() {
   const { indexAnalysisToken, initialData, customData } = useStableSwap();
+  if (
+    !initialData.swapFee ||
+    !initialData.ampFactor ||
+    !customData.ampFactor ||
+    !customData.swapFee
+  )
+    return <Spinner />;
 
   const analysisToken = initialData?.tokens[indexAnalysisToken];
   const pairTokens = initialData?.tokens.filter(
@@ -190,7 +197,7 @@ function calculateDepthCostAmount(
   data: AnalysisData,
   poolSide: "in" | "out",
 ) {
-  if (!data.swapFee || !data.ampFactor) return;
+  if (!data.swapFee || !data.ampFactor) return 0;
 
   const { indexAnalysisToken } = useStableSwap();
 

@@ -19,6 +19,7 @@
     "@balancer-labs/sor": "4.1.1-beta.13",
     "@bleu-balancer-tools/gql": "workspace:*",
     "@bleu-balancer-tools/math": "workspace:*",
+    "@bleu-balancer-tools/math-new": "workspace:*",
     "@bleu-balancer-tools/schema": "workspace:*",
     "@bleu-balancer-tools/tsconfig": "workspace:*",
     "@hookform/resolvers": "^3.1.1",

@@ -19,7 +19,7 @@ function _poolDerivatives(
   tokenIndexIn: number,
   tokenIndexOut: number,
   is_first_derivative: boolean,
-  wrt_out: boolean
+  wrt_out: boolean,
 ): OldBigNumber {
   // This function was copied from @balancer/sor package, since was not exported
   const totalCoins = balances.length;
@@ -63,22 +63,22 @@ function _poolDerivatives(
 
 function _effectivePriceForExactTokenInSwap(
   amountIn: OldBigNumber,
-  poolPairData: StablePoolPairData
+  poolPairData: StablePoolPairData,
 ): OldBigNumber {
   const amountOut = StableMaths._exactTokenInForTokenOut(
     amountIn,
-    poolPairData
+    poolPairData,
   );
   return amountOut.div(amountIn);
 }
 
 function _effectivePriceForExactTokenOutSwap(
   amountOut: OldBigNumber,
-  poolPairData: StablePoolPairData
+  poolPairData: StablePoolPairData,
 ): OldBigNumber {
   const amountIn = StableMaths._tokenInForExactTokenOut(
     amountOut,
-    poolPairData
+    poolPairData,
   );
   return amountOut.div(amountIn);
 }
@@ -94,18 +94,18 @@ function _spotPrice(poolPairData: StablePoolPairData): OldBigNumber {
     tokenIndexIn,
     tokenIndexOut,
     true,
-    false
+    false,
   );
   return ONE.div(ans.times(EONE.sub(swapFee).toString()).div(EONE.toString()));
 }
 
 function _priceImpactForExactTokenInSwap(
   amountIn: OldBigNumber,
-  poolPairData: StablePoolPairData
+  poolPairData: StablePoolPairData,
 ): OldBigNumber {
   const effectivePrice = _effectivePriceForExactTokenInSwap(
     amountIn,
-    poolPairData
+    poolPairData,
   );
   const spotPrice = _spotPrice(poolPairData);
   return ONE.minus(effectivePrice.div(spotPrice));
@@ -113,11 +113,11 @@ function _priceImpactForExactTokenInSwap(
 
 function _priceImpactForExactTokenOutReversedSwap(
   amountOut: OldBigNumber,
-  poolPairData: StablePoolPairData
+  poolPairData: StablePoolPairData,
 ) {
   const effectivePrice = _effectivePriceForExactTokenOutSwap(
     amountOut,
-    poolPairData
+    poolPairData,
   );
   const spotPrice = _spotPrice(poolPairData);
   return ONE.minus(spotPrice.div(effectivePrice));
@@ -125,11 +125,11 @@ function _priceImpactForExactTokenOutReversedSwap(
 
 function _priceImpactForExactTokenOutSwap(
   amountOut: OldBigNumber,
-  poolPairData: StablePoolPairData
+  poolPairData: StablePoolPairData,
 ): OldBigNumber {
   const effectivePrice = _effectivePriceForExactTokenOutSwap(
     amountOut,
-    poolPairData
+    poolPairData,
   );
   const spotPrice = _spotPrice(poolPairData);
   return ONE.minus(effectivePrice.div(spotPrice));
@@ -139,10 +139,10 @@ function _tokenInForExactSpotPriceAfterSwap(
   spotPrice: OldBigNumber,
   poolPairData: StablePoolPairData,
   inGuess = poolPairData.allBalances[poolPairData.tokenIndexIn].times(
-    bnum(0.01)
+    bnum(0.01),
   ),
   spotPricePrecision = bnum(0.0000001),
-  iteration_number = 0
+  iteration_number = 0,
 ): OldBigNumber {
   // Calculate the amount of tokenIn needed to reach the desired spotPrice
   // The Newton-Raphson method is used to find the SpotPrice of the function
@@ -170,7 +170,7 @@ function _tokenInForExactSpotPriceAfterSwap(
     poolPairData,
     newInGuess,
     spotPricePrecision,
-    iteration_number
+    iteration_number,
   );
 }
 
@@ -178,9 +178,9 @@ function _tokenOutForExactSpotPriceAfterSwap(
   spotPrice: OldBigNumber,
   poolPairData: StablePoolPairData,
   firstGuess = poolPairData.allBalances[poolPairData.tokenIndexOut].times(
-    bnum(0.01)
+    bnum(0.01),
   ),
-  spotPricePrecision = bnum(0.0000001)
+  spotPricePrecision = bnum(0.0000001),
 ): OldBigNumber {
   // Calculate the amount of tokenOut needed to reach the desired spotPrice
   // The Newton-Raphson method is used to find the SpotPrice of the function
@@ -189,7 +189,7 @@ function _tokenOutForExactSpotPriceAfterSwap(
     spotPrice,
     poolPairData,
     firstGuess,
-    spotPricePrecision
+    spotPricePrecision,
   );
 
   return StableMaths._exactTokenInForTokenOut(amountTokenIn, poolPairData);

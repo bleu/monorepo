@@ -70,7 +70,7 @@ const Button = forwardRef(function (
     disabled = false,
     ...rest
   }: ButtonProps,
-  ref: React.Ref<HTMLButtonElement>
+  ref: React.Ref<HTMLButtonElement>,
 ) {
   let hasIconLeft = false;
 
@@ -97,7 +97,7 @@ const Button = forwardRef(function (
       className={cn(
         className,
         buttonClasses,
-        "rounded-md py-3 px-5 text-center text-sm font-semibold border focus-visible:outline-blue7 focus-visible:outline-offset-2 disabled:opacity-40"
+        "rounded-md py-3 px-5 text-center text-sm font-semibold border focus-visible:outline-blue7 focus-visible:outline-offset-2 disabled:opacity-40",
       )}
     >
       {modifiedChildren}

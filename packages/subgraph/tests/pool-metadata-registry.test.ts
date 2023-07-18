@@ -17,7 +17,7 @@ describe("Describe entity assertions", () => {
     const metadataCID = "Example string value";
     const newPoolMetadataUpdatedEvent = createPoolMetadataUpdatedEvent(
       poolId,
-      metadataCID
+      metadataCID,
     );
     handlePoolMetadataUpdated(newPoolMetadataUpdatedEvent);
   });
@@ -34,13 +34,13 @@ describe("Describe entity assertions", () => {
       "PoolMetadataUpdated",
       "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
       "poolId",
-      "1234567890"
+      "1234567890",
     );
     assert.fieldEquals(
       "PoolMetadataUpdated",
       "0xa16081f360e3847006db660bae1c6d1b2e17ec2a-1",
       "metadataCID",
-      "Example string value"
+      "Example string value",
     );
   });
 });

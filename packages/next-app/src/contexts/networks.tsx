@@ -27,7 +27,7 @@ interface NetworksContextI {
 }
 
 export const NetworksContext = React.createContext<NetworksContextI>(
-  {} as NetworksContextI
+  {} as NetworksContextI,
 );
 
 export const NetworksContextProvider = ({
@@ -52,7 +52,7 @@ export const NetworksContextProvider = ({
       networkConnectedToWallet !== network.chain?.id
     ) {
       push(
-        `/${appName}/${networkFor(network.chain.id).toLowerCase()}` as Route
+        `/${appName}/${networkFor(network.chain.id).toLowerCase()}` as Route,
       );
     }
   }, [network]);

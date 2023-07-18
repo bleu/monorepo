@@ -80,8 +80,8 @@ export default function CustomDataForm() {
               if (indexCurrentTabToken === Number(i)) {
                 setIndexCurrentTabToken(
                   initialData?.tokens.findIndex(
-                    (value, index) => index !== Number(i)
-                  )
+                    (value, index) => index !== Number(i),
+                  ),
                 );
               }
               setIndexAnalysisToken(Number(i));

@@ -62,7 +62,7 @@ export function TokensDistribution() {
 function TokenDistributionChart({ tokens }: { tokens: TokensData[] }) {
   const balancesSum = tokens.reduce((sum, tokens) => sum + tokens.balance, 0);
   const balancesPercent = tokens.map(
-    (token) => (token.balance * 100) / balancesSum
+    (token) => (token.balance * 100) / balancesSum,
   );
   const lastBalanceWidth =
     100 -

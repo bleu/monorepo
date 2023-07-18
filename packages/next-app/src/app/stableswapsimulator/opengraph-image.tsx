@@ -10,6 +10,6 @@ export default function og() {
     {
       width: 1200,
       height: 630,
-    }
+    },
   );
 }

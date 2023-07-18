@@ -78,7 +78,7 @@ export function PlotTitle({
     <div
       className={cn(
         "flex items-center gap-x-2",
-        justifyCenter ? "justify-center" : ""
+        justifyCenter ? "justify-center" : "",
       )}
     >
       <h2 className="text-lg font-semibold text-white">{title}</h2>

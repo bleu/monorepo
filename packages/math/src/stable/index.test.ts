@@ -32,7 +32,7 @@ describe("Tests new stable math function based on package other functions", () =
   test("__tokenInForExactSpotPriceAfterSwap", () => {
     const tokenInCalculated = StableMath._tokenInForExactSpotPriceAfterSwap(
       spotPriceExpected,
-      poolPairData
+      poolPairData,
     );
     checkResult(tokenInCalculated, amount);
   });
@@ -41,12 +41,12 @@ describe("Tests new stable math function based on package other functions", () =
 function createPoolPairData(
   pool: object,
   tokenIndexIn: string,
-  tokenIndexOut: string
+  tokenIndexOut: string,
 ) {
   const stableBptSwapPool = StablePool.fromPool(pool as SubgraphPoolBase);
   return stableBptSwapPool.parsePoolPairData(
     tokenIndexIn.toLowerCase(),
-    tokenIndexOut.toLowerCase()
+    tokenIndexOut.toLowerCase(),
   );
 }
 

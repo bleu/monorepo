@@ -45,7 +45,7 @@ const content = {
 export default function Page() {
   const { isGraphLoading, initialData } = useStableSwap();
   const [poolDataStatus, setPoolDataStatus] = useState<dataStatus>(
-    dataStatus.NONE
+    dataStatus.NONE,
   );
   useEffect(() => {
     if (initialData.ampFactor) {

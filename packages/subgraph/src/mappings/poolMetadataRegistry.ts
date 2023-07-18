@@ -3,7 +3,7 @@ import { PoolMetadataUpdated as PoolMetadataUpdatedEvent } from "../types/PoolMe
 import { Pool, PoolMetadataUpdate } from "../types/schema";
 
 export function handlePoolMetadataUpdated(
-  event: PoolMetadataUpdatedEvent
+  event: PoolMetadataUpdatedEvent,
 ): void {
   const poolId = event.params.poolId.toHexString();
 

@@ -1,6 +1,8 @@
 {
   "extends": "@bleu-balancer-tools/tsconfig/nextjs.json",
   "compilerOptions": {
+    "target": "ESNext", 
+    "module": "ESNext",
     "baseUrl": ".",
     "paths": {
       "#/*": ["./src/*"]

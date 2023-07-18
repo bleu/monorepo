@@ -8,6 +8,9 @@ import { SubmitData, TransactionStatus } from "../useTransaction";
 import { NOTIFICATION_MAP_INTERNAL_BALANCES } from "./useManageUserBalance";
 import { useTransactionStatus } from "./useTransactionStatus";
 
+const MAX_UINT256 =
+  0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffn;
+
 export function useTokenApproval() {
   const { setTransactionStatus, setNotification } = useInternalBalance();
   const { handleTransactionStatus } = useTransactionStatus();
@@ -31,7 +34,7 @@ export function useTokenApproval() {
       const transactionData = await writeTokenApproval({
         tokenAddress: tokenData.tokenAddress,
         tokenAmount: forceMax
-          ? BigInt(2 ** 256 - 1)
+          ? MAX_UINT256
           : parseUnits(tokenData.tokenAmount, tokenData.tokenDecimals),
       });
       const { hash } = transactionData;

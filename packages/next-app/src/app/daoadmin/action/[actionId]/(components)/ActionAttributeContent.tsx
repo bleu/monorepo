@@ -45,7 +45,7 @@ export function ActionAttributeContent() {
       revalidateOnReconnect: false,
       revalidateOnMount: true,
       dedupingInterval: 3_600_000,
-    }
+    },
   );
 
   const { data: gaugeResult } = gauges.gql(chain!.id.toString()).useGauge(
@@ -56,7 +56,7 @@ export function ActionAttributeContent() {
       revalidateOnReconnect: false,
       revalidateOnMount: true,
       dedupingInterval: 3_600_000,
-    }
+    },
   );
 
   function Symbol({ fieldKey }: { fieldKey: string }) {

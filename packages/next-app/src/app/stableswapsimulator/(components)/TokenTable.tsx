@@ -24,7 +24,7 @@ const MAX_POOL_TOKENS = 5;
 const TokenTableContext = createContext(
   {} as {
     variant: boolean;
-  }
+  },
 );
 
 export function useTokenTableContext() {

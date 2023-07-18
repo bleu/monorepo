@@ -35,7 +35,7 @@ const polygonZkEvm = {
 
 export const { chains, publicClient, webSocketPublicClient } = configureChains(
   [mainnet, polygon, gnosis, arbitrum, optimism, polygonZkEvm, goerli, sepolia],
-  [publicProvider()]
+  [publicProvider()],
 );
 
 const { connectors } = getDefaultWallets({

@@ -24,7 +24,7 @@ export async function writeManageUserBalance({
       asset: transactionItem.tokenAddress,
       amount: parseUnits(
         transactionItem.tokenAmount,
-        transactionItem.tokenDecimals
+        transactionItem.tokenDecimals,
       ),
     };
   });

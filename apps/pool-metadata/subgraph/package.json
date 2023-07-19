@@ -1,5 +1,5 @@
 {
-  "name": "@bleu-balancer-tools/subgraph",
+  "name": "@bleu/balancer-pools-metadata-subgraph",
   "version": "1.0.0",
   "scripts": {
     "codegen:all": "pnpm generate-manifests && for file in $(ls | grep 'subgraph\\..*\\.yaml'); do graph codegen $file --output-dir src/types/; done",

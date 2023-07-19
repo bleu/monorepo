@@ -4,12 +4,12 @@ pragma experimental ABIEncoderV2;
 
 import "../src/PoolMetadataRegistry.sol";
 import "balancer-v2-monorepo/pkg/vault/contracts/Vault.sol";
+import "balancer-v2-monorepo/pkg/solidity-utils/contracts/test/MockBasicAuthorizer.sol";
 import "balancer-v2-monorepo/pkg/pool-utils/contracts/test/MockBasePool.sol";
-import "balancer-v2-monorepo/pkg/vault/contracts/test/MockBasicAuthorizer.sol";
 import "balancer-v2-monorepo/pkg/vault/contracts/test/MockAuthenticatedContract.sol";
 import "forge-std/console.sol";
 
-import {Test} from "forge-std/Test.sol";
+import "forge-std/Test.sol";
 
 contract MockPoolMetadataRegistry is PoolMetadataRegistry {
     constructor(IVault vault) PoolMetadataRegistry(vault) {}

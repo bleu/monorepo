@@ -8,7 +8,7 @@ import {
   Network,
   networkFor,
   networkMultisigs,
-} from "@bleu-balancer-tools/shared";
+} from "@bleu-balancer-tools/utils";
 import { GraphQLClient } from "graphql-request";
 
 export function impersonateWhetherDAO(

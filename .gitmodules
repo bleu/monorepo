@@ -1,5 +1,5 @@
 [submodule "apps/pool-metadata/contracts/lib/forge-std"]
-	path = packages/contracts/lib/forge-std
+	path = apps/pool-metadata/contracts/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
 [submodule "apps/pool-metadata/contracts/lib/balancer-v2-monorepo"]
 	path = apps/pool-metadata/contracts/lib/balancer-v2-monorepo

@@ -1,5 +1,5 @@
 {
-  "name": "@bleu-balancer-tools/contracts",
+  "name": "@bleu/balancer-pools-metadata-contracts",
   "version": "1.0.0",
   "directories": {
     "lib": "lib",

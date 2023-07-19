@@ -174,8 +174,8 @@ function Row({
         <div className="flex justify-between">
           <ClampedText text={data.key} />
           {(!data.value || !data.description) && (
-            <span className="inline-flex items-center rounded-md bg-tomato12 p-0.5 text-xs font-semibold text-tomato9">
-              NEEDS EDIT
+            <span className="inline-flex items-center rounded-md bg-tomato12 px-1 py-0.5 text-xs font-semibold text-tomato9">
+              needs edit
             </span>
           )}
         </div>

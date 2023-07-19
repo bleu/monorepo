@@ -33,7 +33,7 @@ importers:
         specifier: ^5.1.6
         version: 5.1.6
 
-  apps/balancer.tools:
+  apps/balancer-tools:
     dependencies:
       '@balancer-labs/sor':
         specifier: 4.1.1-beta.13

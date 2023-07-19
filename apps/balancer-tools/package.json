@@ -1,5 +1,5 @@
 {
-  "name": "@bleu-balancer-tools/balancer.tools",
+  "name": "@bleu/balancer-tools",
   "version": "0.0.1",
   "private": true,
   "scripts": {

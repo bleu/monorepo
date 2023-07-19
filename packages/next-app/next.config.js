@@ -9,6 +9,7 @@ const moduleExports = {
   ],
   experimental: {
     appDir: true,
+    serverActions: true,
   },
   reactStrictMode: true,
   swcMinify: true,

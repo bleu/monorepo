@@ -1,5 +1,5 @@
-import { parseFixed } from "@ethersproject/bignumber";
-import { BigNumber, ethers } from "ethers";
+import parseFixed from "@bleu-balancer-tools/utils/src/parseFixed";
+import { isAddress } from "viem";
 import { z } from "zod";
 
 export const TypenameEnum = z.enum(["text", "url", "date", "datetime-local"]);
@@ -59,7 +59,7 @@ export const getInternalBalanceSchema = ({
   operationKind,
   decimals,
 }: {
-  totalBalance: string | BigNumber;
+  totalBalance: string | bigint;
   userAddress: string;
   operationKind: string;
   decimals: number;
@@ -68,7 +68,7 @@ export const getInternalBalanceSchema = ({
     tokenAddress: z
       .string()
       .min(1)
-      .refine((value) => ethers.utils.isAddress(value), {
+      .refine((value) => isAddress(value), {
         message: "Provided address is invalid",
       }),
     tokenAmount: z.string().transform((val, ctx) => {
@@ -85,14 +85,14 @@ export const getInternalBalanceSchema = ({
         });
       }
       if (typeof totalBalance === "string") {
-        if (parseFixed(val, decimals).gt(parseFixed(totalBalance, decimals))) {
+        if (parseFixed(val, decimals) > parseFixed(totalBalance, decimals)) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: "Amount exceeds total balance",
           });
         }
       } else {
-        if (parseFixed(val, decimals).gt(totalBalance)) {
+        if (parseFixed(val, decimals) > totalBalance) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: "Amount exceeds total balance",
@@ -104,7 +104,7 @@ export const getInternalBalanceSchema = ({
     receiverAddress: z
       .string()
       .min(1)
-      .refine((value) => ethers.utils.isAddress(value), {
+      .refine((value) => isAddress(value), {
         message: "Provided address is invalid",
       })
       .transform((val, ctx) => {
@@ -127,7 +127,7 @@ export const AddressSchema = z.object({
   receiverAddress: z
     .string()
     .min(1)
-    .refine((value) => ethers.utils.isAddress(value), {
+    .refine((value) => isAddress(value), {
       message: "Provided address is invalid",
     }),
 });

@@ -22,8 +22,6 @@
   "devDependencies": {
     "@bleu-balancer-tools/shared": "workspace:^",
     "@bleu-balancer-tools/tsconfig": "workspace:*",
-    "@typechain/ethers-v5": "^10.2.1",
-    "typechain": "^8.1.1",
-    "typescript": "^5.0.4"
+    "typescript": "^5.1.6"
   }
 }

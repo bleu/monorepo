@@ -1,5 +1,5 @@
 {
-  "name": "@bleu-balancer-tools/math",
+  "name": "@bleu-balancer-tools/utils",
   "version": "0.0.0",
   "main": "index.ts",
   "license": "MIT",
@@ -10,11 +10,7 @@
     "lint:fix": "eslint '**/*.{ts,tsx}' --fix",
     "test": "jest --watchAll --verbose"
   },
-  "dependencies": {
-    "@balancer-labs/sor": "4.1.1-beta.9",
-    "@ethersproject/bignumber": "^5.7.0",
-    "@ethersproject/constants": "^5.7.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@bleu-balancer-tools/tsconfig": "workspace:^",
     "@jest/globals": "^29.6.1",

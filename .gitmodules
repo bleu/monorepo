@@ -3,4 +3,4 @@
 	url = https://github.com/foundry-rs/forge-std
 [submodule "apps/pool-metadata/contracts/lib/balancer-v2-monorepo"]
 	path = apps/pool-metadata/contracts/lib/balancer-v2-monorepo
-	url = https://github.com/balancer-labs/balancer-v2-monorepo
+	url = https://github.com/balancer/balancer-v2-monorepo

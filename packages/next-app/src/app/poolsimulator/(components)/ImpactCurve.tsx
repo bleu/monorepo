@@ -85,7 +85,7 @@ export function ImpactCurve() {
 
       const impact = formatNumber(impactData[i] / 100, 2, "percent");
 
-      return `Swap ${swapAction} causes a Price Impact of ${impact} ${currentTabToken.symbol}/${analysisToken.symbol} <extra></extra>`;
+      return `Swap ${swapAction} causes a Price Impact of ${impact} ${swapFromSymbol}/${swapToSymbol} <extra></extra>`;
     });
   };
 

@@ -170,8 +170,29 @@ export class ExtendedMetaStableMath extends MetaStablePool {
       true,
       false
     );
-    return ONE.div(
+    const spotPriceWithoutRates = ONE.div(
       ans.times(EONE.sub(swapFee).toString()).div(EONE.toString())
     );
+
+    const priceRateIn = bnum(formatFixed(poolPairData.tokenInPriceRate, 18));
+    const priceRateOut = bnum(formatFixed(poolPairData.tokenOutPriceRate, 18));
+    return spotPriceWithoutRates.times(priceRateOut).div(priceRateIn);
+  }
+
+  _derivativeSpotPriceAfterSwapExactTokenInForTokenOut(
+    // This function was developed based on @balancer/sor package.
+    // changing th price rates math on the end
+    poolPairData: MetaStablePoolPairData,
+    amount: OldBigNumber
+  ): OldBigNumber {
+    const priceRateOut = bnum(formatFixed(poolPairData.tokenOutPriceRate, 18));
+    const priceRateIn = bnum(formatFixed(poolPairData.tokenInPriceRate, 18));
+    return StableMaths._derivativeSpotPriceAfterSwapExactTokenInForTokenOut(
+      amount,
+      poolPairData
+    )
+      .div(priceRateIn)
+      .times(priceRateOut)
+      .times(priceRateOut);
   }
 }

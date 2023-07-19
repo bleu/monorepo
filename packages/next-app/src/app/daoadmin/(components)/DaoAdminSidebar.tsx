@@ -27,12 +27,12 @@ export function DaoAdminSidebar() {
   const filteredActionsByTag =
     selectedFilter !== ""
       ? data.actions.filter(
-          (item) => item.operationResponsible === selectedFilter
+          (item) => item.operationResponsible === selectedFilter,
         )
       : data.actions;
 
   const filteredActionsByName = filteredActionsByTag.filter((item) =>
-    item.name.toLowerCase().includes(querySearch.toLowerCase())
+    item.name.toLowerCase().includes(querySearch.toLowerCase()),
   );
 
   const filters: IFilter[] = [

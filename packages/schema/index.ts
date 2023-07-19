@@ -30,7 +30,7 @@ const metadataDateSchema = z
   .object({
     typename: z.literal(TypenameEnum.enum.date),
     value: datelike.pipe(
-      z.coerce.string().min(1, { message: "Please pick a date" })
+      z.coerce.string().min(1, { message: "Please pick a date" }),
     ),
   })
   .merge(baseMetadataItemSchema);
@@ -164,7 +164,7 @@ export const getStableSwapSimulatorTokensSchema = ({
         },
         {
           message: "Symbol already exists",
-        }
+        },
       ),
     balance: z.coerce.number().positive(),
     rate: z.coerce.number().positive(),

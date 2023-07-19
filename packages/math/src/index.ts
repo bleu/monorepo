@@ -53,10 +53,10 @@ function preparePoolPairData({
   decimals: number[];
 }) {
   const allBalancesOldBn = balances.map((balance) =>
-    numberToOldBigNumber(balance)
+    numberToOldBigNumber(balance),
   );
   const allBalancesBn = balances.map((balance) =>
-    numberToBigNumber({ number: balance, decimals: 18 })
+    numberToBigNumber({ number: balance, decimals: 18 }),
   );
 
   return {
@@ -92,37 +92,37 @@ function preparePoolPairData({
 
 function exactTokenInForTokenOut(
   amountIn: OldBigNumber,
-  poolPairData: MetaStablePoolPairData
+  poolPairData: MetaStablePoolPairData,
 ) {
   const amountInToStableMath = MetaStableConversions.amountToStableMath(
     amountIn,
-    poolPairData.rateIn
+    poolPairData.rateIn,
   );
   const amountOutToStableMath = ExtendedStableMath._exactTokenInForTokenOut(
     amountInToStableMath,
-    poolPairData
+    poolPairData,
   );
   return MetaStableConversions.amountFromStableMath(
     amountOutToStableMath,
-    poolPairData.rateOut
+    poolPairData.rateOut,
   );
 }
 
 function tokenInForExactTokenOut(
   amountOut: OldBigNumber,
-  poolPairData: MetaStablePoolPairData
+  poolPairData: MetaStablePoolPairData,
 ) {
   const amountOutToStableMath = MetaStableConversions.amountToStableMath(
     amountOut,
-    poolPairData.rateOut
+    poolPairData.rateOut,
   );
   const amountInToStableMath = ExtendedStableMath._tokenInForExactTokenOut(
     amountOutToStableMath,
-    poolPairData
+    poolPairData,
   );
   return MetaStableConversions.amountFromStableMath(
     amountInToStableMath,
-    poolPairData.rateIn
+    poolPairData.rateIn,
   );
 }
 
@@ -131,99 +131,99 @@ function spotPrice(poolPairData: MetaStablePoolPairData) {
   return MetaStableConversions.priceFromStableMath(
     spotPriceToStableMath,
     poolPairData.rateIn,
-    poolPairData.rateOut
+    poolPairData.rateOut,
   );
 }
 
 function tokenInForExactSpotPriceAfterSwap(
   spotPriceAfterSwap: OldBigNumber,
-  poolPairData: MetaStablePoolPairData
+  poolPairData: MetaStablePoolPairData,
 ) {
   const spotPriceAfterSwapToStableMath =
     MetaStableConversions.priceToStableMath(
       spotPriceAfterSwap,
       poolPairData.rateIn,
-      poolPairData.rateOut
+      poolPairData.rateOut,
     );
   const amountInToStableMath =
     ExtendedStableMath._tokenInForExactSpotPriceAfterSwap(
       spotPriceAfterSwapToStableMath,
-      poolPairData
+      poolPairData,
     );
   return MetaStableConversions.amountFromStableMath(
     amountInToStableMath,
-    poolPairData.rateIn
+    poolPairData.rateIn,
   );
 }
 
 function tokenOutForExactSpotPriceAfterSwap(
   spotPriceAfterSwap: OldBigNumber,
-  poolPairData: MetaStablePoolPairData
+  poolPairData: MetaStablePoolPairData,
 ) {
   const spotPriceAfterSwapToStableMath =
     MetaStableConversions.priceToStableMath(
       spotPriceAfterSwap,
       poolPairData.rateIn,
-      poolPairData.rateOut
+      poolPairData.rateOut,
     );
   const amountOutToStableMath =
     ExtendedStableMath._tokenOutForExactSpotPriceAfterSwap(
       spotPriceAfterSwapToStableMath,
-      poolPairData
+      poolPairData,
     );
   return MetaStableConversions.amountFromStableMath(
     amountOutToStableMath,
-    poolPairData.rateOut
+    poolPairData.rateOut,
   );
 }
 
 function effectivePriceForExactTokenInSwap(
   amountIn: OldBigNumber,
-  poolPairData: MetaStablePoolPairData
+  poolPairData: MetaStablePoolPairData,
 ): OldBigNumber {
   const amountInToStableMath = MetaStableConversions.amountToStableMath(
     amountIn,
-    poolPairData.rateIn
+    poolPairData.rateIn,
   );
   const effectivePriceToStableMath =
     ExtendedStableMath._effectivePriceForExactTokenInSwap(
       amountInToStableMath,
-      poolPairData
+      poolPairData,
     );
   return MetaStableConversions.priceFromStableMath(
     effectivePriceToStableMath,
     poolPairData.rateIn,
-    poolPairData.rateOut
+    poolPairData.rateOut,
   );
 }
 
 function effectivePriceForExactTokenOutSwap(
   amountOut: OldBigNumber,
-  poolPairData: MetaStablePoolPairData
+  poolPairData: MetaStablePoolPairData,
 ): OldBigNumber {
   const amountOutToStableMath = MetaStableConversions.amountToStableMath(
     amountOut,
-    poolPairData.rateOut
+    poolPairData.rateOut,
   );
   const effectivePriceToStableMath =
     ExtendedStableMath._effectivePriceForExactTokenOutSwap(
       amountOutToStableMath,
-      poolPairData
+      poolPairData,
     );
   return MetaStableConversions.priceFromStableMath(
     effectivePriceToStableMath,
     poolPairData.rateIn,
-    poolPairData.rateOut
+    poolPairData.rateOut,
   );
 }
 
 function priceImpactForExactTokenInSwap(
   amountIn: OldBigNumber,
-  poolPairData: MetaStablePoolPairData
+  poolPairData: MetaStablePoolPairData,
 ): OldBigNumber {
   const effectivePriceMetastable = effectivePriceForExactTokenInSwap(
     amountIn,
-    poolPairData
+    poolPairData,
   );
   const spotPriceMetastable = spotPrice(poolPairData);
   return bnum(1).minus(effectivePriceMetastable.div(spotPriceMetastable));
@@ -231,11 +231,11 @@ function priceImpactForExactTokenInSwap(
 
 function priceImpactForExactTokenInReversedSwap(
   amountIn: OldBigNumber,
-  poolPairData: MetaStablePoolPairData
+  poolPairData: MetaStablePoolPairData,
 ): OldBigNumber {
   const effectivePriceMetastable = effectivePriceForExactTokenInSwap(
     amountIn,
-    poolPairData
+    poolPairData,
   );
   const spotPriceMetastable = spotPrice(poolPairData);
   return bnum(1).minus(spotPriceMetastable.div(effectivePriceMetastable));
@@ -243,11 +243,11 @@ function priceImpactForExactTokenInReversedSwap(
 
 function priceImpactForExactTokenOutSwap(
   amountOut: OldBigNumber,
-  poolPairData: MetaStablePoolPairData
+  poolPairData: MetaStablePoolPairData,
 ): OldBigNumber {
   const effectivePriceMetastable = effectivePriceForExactTokenOutSwap(
     amountOut,
-    poolPairData
+    poolPairData,
   );
   const spotPriceMetastable = spotPrice(poolPairData);
   return bnum(1).minus(effectivePriceMetastable.div(spotPriceMetastable));
@@ -255,11 +255,11 @@ function priceImpactForExactTokenOutSwap(
 
 function priceImpactForExactTokenOutReversedSwap(
   amountOut: OldBigNumber,
-  poolPairData: MetaStablePoolPairData
+  poolPairData: MetaStablePoolPairData,
 ): OldBigNumber {
   const effectivePriceMetastable = effectivePriceForExactTokenOutSwap(
     amountOut,
-    poolPairData
+    poolPairData,
   );
   const spotPriceMetastable = spotPrice(poolPairData);
   return bnum(1).minus(spotPriceMetastable.div(effectivePriceMetastable));

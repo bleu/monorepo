@@ -6,13 +6,13 @@ import {
   addressRegex,
   buildBlockExplorerTokenURL,
 } from "@bleu-balancer-tools/shared";
-import { BigNumber, formatFixed } from "@ethersproject/bignumber";
 import { ChevronDownIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { erc20ABI, fetchBalance, multicall } from "@wagmi/core";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { tokenLogoUri } from "public/tokens/logoUri";
 import React, { useEffect, useState } from "react";
+import { formatUnits } from "viem";
 import { useAccount, useNetwork } from "wagmi";
 
 import genericTokenLogo from "#/assets/generic-token-logo.png";
@@ -26,7 +26,7 @@ import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
 interface TokenWalletBalance {
   tokenAddress: string;
-  value: BigNumber;
+  value: bigint;
   symbol: string | null | undefined;
   decimals: number | undefined;
 }
@@ -65,8 +65,8 @@ export function TokenSelect({
               }
               className="rounded-full"
               alt="Token Logo"
-              height={28}
-              width={28}
+              height={22}
+              width={22}
               quality={100}
             />
             <div>{token?.tokenInfo.symbol}</div>
@@ -110,7 +110,7 @@ function TokenModal({
   const internalBalancesTokenAdresses = internalBalanceData?.user
     ?.userInternalBalances
     ? internalBalanceData.user.userInternalBalances.map((token) =>
-        token.tokenInfo.address.toLowerCase()
+        token.tokenInfo.address.toLowerCase(),
       )
     : [];
 
@@ -143,11 +143,12 @@ function TokenModal({
     const data = await multicall({ contracts: tokensContracts });
     const walletBalanceData = tokenAdresses.map((tokenAddress, index) => {
       const token = tokenList.find(
-        (obj) => obj.address.toLowerCase() === tokenAddress.toLowerCase()
+        (obj) => obj.address.toLowerCase() === tokenAddress.toLowerCase(),
       );
+      const { result } = data[index];
       return {
         tokenAddress,
-        value: data[index] as BigNumber,
+        value: result as bigint,
         symbol: token?.symbol,
         decimals: token?.decimals,
       };
@@ -159,7 +160,7 @@ function TokenModal({
         const internalBalance =
           internalBalanceData?.user?.userInternalBalances?.find(
             (internalBalanceInfo) =>
-              internalBalanceInfo.tokenInfo.address === token.tokenAddress
+              internalBalanceInfo.tokenInfo.address === token.tokenAddress,
           );
 
         if (internalBalance) {
@@ -323,7 +324,7 @@ function TokenRow({
       classNames="hover:bg-blue4 hover:cursor-pointer"
       onClick={() => {
         router.push(
-          `/internalmanager/${chainName}/${operationKind}/token/${token.tokenAddress}`
+          `/internalmanager/${chainName}/${operationKind}/token/${token.tokenAddress}`,
         );
       }}
     >
@@ -347,7 +348,9 @@ function TokenRow({
       <Table.BodyCell>{token.symbol}</Table.BodyCell>
       <Table.BodyCell>{token.internalBalance}</Table.BodyCell>
       <Table.BodyCell>
-        {token.value ? formatFixed(token.value, token.decimals) : ""}
+        {token.value
+          ? formatUnits(token.value, token.decimals ? token.decimals : 0)
+          : ""}
       </Table.BodyCell>
     </Table.BodyRow>
   );

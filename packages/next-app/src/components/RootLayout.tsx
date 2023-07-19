@@ -3,15 +3,15 @@
 import { darkTheme, RainbowKitProvider, Theme } from "@rainbow-me/rainbowkit";
 import merge from "lodash.merge";
 import React from "react";
+import { WagmiConfig } from "wagmi";
 
-import { WagmiConfig } from "#/wagmi";
-import { chains, client } from "#/wagmi/client";
+import { chains, config } from "#/wagmi/client";
 
 import { ToastProvider } from "./Toast";
 
 export function RootLayout({ children }: React.PropsWithChildren) {
   return (
-    <WagmiConfig client={client}>
+    <WagmiConfig config={config}>
       <RainbowKitProvider
         chains={chains}
         modalSize="compact"

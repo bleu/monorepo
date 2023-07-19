@@ -10,7 +10,6 @@ import {
   NetworkChainId,
   networkFor,
 } from "@bleu-balancer-tools/shared";
-import { BigNumber } from "@ethersproject/bignumber";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
@@ -32,10 +31,9 @@ import { Form } from "#/components/ui/form";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { getNetwork } from "#/contexts/networks";
-import {
-  TransactionStatus,
-  useInternalBalancesTransaction,
-} from "#/hooks/useTransaction";
+import { useCheckAllowance } from "#/hooks/internalmanager/useCheckAllowance";
+import { useManageUserBalance } from "#/hooks/internalmanager/useManageUserBalance";
+import { TransactionStatus } from "#/hooks/useTransaction";
 import { internalBalances } from "#/lib/gql";
 import {
   operationKindType,
@@ -139,7 +137,7 @@ export default function Page({
       (tokenData?.balance === "0" ||
         internalBalanceTokenData?.user === null)) ||
     (operationKindType[params.operationKind] === operationKindType.deposit &&
-      walletAmount?.value.eq(0))
+      walletAmount?.value.toString() === "0")
   ) {
     return (
       <div className="flex h-full w-full flex-col items-center rounded-3xl px-12 py-16 md:py-20">
@@ -204,7 +202,7 @@ function TransactionCard({
   >;
   chainId?: NetworkChainId;
   walletAmount?: string;
-  walletAmountBigNumber?: BigNumber;
+  walletAmountBigNumber?: bigint;
 }) {
   const network = networkFor(chainId);
 
@@ -230,6 +228,9 @@ function TransactionCard({
       operationKindType[operationKindParam as keyof typeof operationKindType]
     ];
 
+  const { handleTransaction } = useManageUserBalance();
+  const { checkAllowance } = useCheckAllowance();
+
   const InternalBalanceSchema = getInternalBalanceSchema({
     totalBalance:
       operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL
@@ -244,10 +245,6 @@ function TransactionCard({
     resolver: zodResolver(InternalBalanceSchema),
   });
   const { register, setValue, watch } = form;
-  const { handleTransaction, checkAllowance } = useInternalBalancesTransaction({
-    userAddress: userAddress,
-    operationKind: operationKindEnum,
-  });
   const receiverAddressValue = watch("receiverAddress");
   const tokenAmount = watch("tokenAmount");
 
@@ -265,6 +262,7 @@ function TransactionCard({
         tokenAddress: tokenData.tokenInfo.address as Address,
         tokenAmount,
         tokenDecimals: tokenData.tokenInfo.decimals,
+        userAddress,
       });
     }
   }, [tokenAmount]);
@@ -275,7 +273,18 @@ function TransactionCard({
   });
 
   function handleOnSubmit(data: FieldValues) {
-    handleTransaction({ data, decimals: tokenData.tokenInfo.decimals });
+    const transactionData = {
+      receiverAddress: data.receiverAddress,
+      tokenAddress: tokenData.tokenInfo.address as Address,
+      tokenAmount: data.tokenAmount,
+      tokenDecimals: tokenData.tokenInfo.decimals,
+    };
+
+    handleTransaction({
+      data: [transactionData],
+      operationKind: operationKindEnum,
+      userAddress,
+    });
   }
 
   const { transactionStatus } = useInternalBalance();
@@ -447,7 +456,11 @@ function OperationButton({
     );
   }
   return (
-    <Button type="submit" className="w-full">
+    <Button
+      type="submit"
+      className="w-full"
+      disabled={transactionStatus === TransactionStatus.CONFIRMED}
+    >
       <span>{title} Internal Balance</span>
     </Button>
   );

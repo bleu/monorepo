@@ -51,7 +51,7 @@ export function ProgressBar({ variant = "notification" }: IProgressBar) {
       <Progress.Indicator
         className={cn(
           "h-full w-full transition-transform duration-[60ms]",
-          bgColor
+          bgColor,
         )}
         style={{ transform: `translateX(-${100 - progress}%)` }}
       />

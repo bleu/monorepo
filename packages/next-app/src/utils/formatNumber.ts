@@ -5,7 +5,7 @@ export const formatNumber = (
   decimals = 1,
   style = "decimal",
   notation: Notation = "compact",
-  lessThanThresholdToReplace = 0.001
+  lessThanThresholdToReplace = 0.001,
 ) => {
   if (Number(number) < lessThanThresholdToReplace) {
     return `< ${lessThanThresholdToReplace.toLocaleString("en-US")}`;

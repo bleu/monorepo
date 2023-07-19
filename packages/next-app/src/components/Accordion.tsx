@@ -13,7 +13,7 @@ export const AccordionItem = forwardRef<HTMLDivElement, AccordionItemProps>(
     <Accordion.Item className={cn(className)} {...props} ref={forwardedRef}>
       {children}
     </Accordion.Item>
-  )
+  ),
 );
 
 export const AccordionTrigger = forwardRef<
@@ -24,7 +24,7 @@ export const AccordionTrigger = forwardRef<
     <Accordion.Trigger
       className={cn(
         "text-white group flex h-8 flex-1 cursor-default items-center justify-between px-1 text-[15px] leading-none shadow-[0_0px_0]",
-        className
+        className,
       )}
       {...props}
       ref={forwardedRef}
@@ -45,7 +45,7 @@ export const AccordionContent = forwardRef<
   <Accordion.Content
     className={cn(
       "data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp overflow-hidden text-[15px]",
-      className
+      className,
     )}
     {...props}
     ref={forwardedRef}

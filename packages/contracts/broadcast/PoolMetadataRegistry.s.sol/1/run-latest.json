@@ -6,9 +6,7 @@
       "contractName": "PoolMetadataRegistry",
       "contractAddress": "0xfffa983f4037Faa2e93613d44749280B7F54f62D",
       "function": null,
-      "arguments": [
-        "0xBA12222222228d8Ba445958a75a0704d566BF2C8"
-      ],
+      "arguments": ["0xBA12222222228d8Ba445958a75a0704d566BF2C8"],
       "transaction": {
         "type": "0x02",
         "from": "0x5786119b38812e9daa5d478a4a5379fdf7100a8e",

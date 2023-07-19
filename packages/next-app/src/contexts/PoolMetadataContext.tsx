@@ -61,7 +61,7 @@ export const PoolMetadataContext = createContext({} as PoolMetadataContextType);
 export function PoolMetadataProvider({ children }: PropsWithChildren) {
   const [metadata, setMetadata] = useState<PoolMetadataAttribute[]>([]);
   const [updateStatus, setStatus] = useState<UpdateStatus>(
-    UpdateStatus.PINNING
+    UpdateStatus.PINNING,
   );
   const [originalMetadata, setOriginalMetadata] = useState<
     PoolMetadataAttribute[]
@@ -80,7 +80,7 @@ export function PoolMetadataProvider({ children }: PropsWithChildren) {
     setMetadata((state) =>
       state.map((item) => {
         return toSlug(item.key) === toSlug(data.key) ? data : item;
-      })
+      }),
     );
   }
 

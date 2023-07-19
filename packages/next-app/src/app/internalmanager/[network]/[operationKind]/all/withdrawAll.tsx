@@ -21,7 +21,8 @@ import { Toast } from "#/components/Toast";
 import { Form } from "#/components/ui/form";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
-import { useInternalBalancesTransaction } from "#/hooks/useTransaction";
+import { useManageUserBalance } from "#/hooks/internalmanager/useManageUserBalance";
+import { TransactionStatus } from "#/hooks/useTransaction";
 import { internalBalances } from "#/lib/gql";
 import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
 import { refetchRequest } from "#/utils/fetcher";
@@ -34,6 +35,7 @@ export function WithdrawAll() {
     isNotifierOpen,
     transactionUrl,
     clearNotification,
+    transactionStatus,
   } = useInternalBalance();
   const { chain } = useNetwork();
   const { isConnected, isReconnecting, isConnecting } = useAccount();
@@ -61,10 +63,7 @@ export function WithdrawAll() {
 
   const { register, setValue } = form;
 
-  const { setSubmitData } = useInternalBalancesTransaction({
-    userAddress: addressLower as Address,
-    operationKind: UserBalanceOpKind.WITHDRAW_INTERNAL,
-  });
+  const { handleTransaction } = useManageUserBalance();
 
   function handleOnSubmit(data: FieldValues) {
     if (!tokenData?.user?.userInternalBalances) return;
@@ -76,7 +75,11 @@ export function WithdrawAll() {
         receiverAddress: data.receiverAddress,
       };
     });
-    setSubmitData(tokenInfo);
+    handleTransaction({
+      data: tokenInfo,
+      operationKind: UserBalanceOpKind.WITHDRAW_INTERNAL,
+      userAddress: addressLower as Address,
+    });
   }
 
   useEffect(() => {
@@ -125,7 +128,7 @@ export function WithdrawAll() {
                   (
                     token: ArrElement<
                       GetDeepProp<InternalBalanceQuery, "userInternalBalances">
-                    >
+                    >,
                   ) => (
                     <Table.BodyRow key={token.tokenInfo.address}>
                       <Table.BodyCell customWidth="w-12">
@@ -158,7 +161,7 @@ export function WithdrawAll() {
                         </div>
                       </Table.BodyCell>
                     </Table.BodyRow>
-                  )
+                  ),
                 )}
               </Table.Body>
             </Table>
@@ -184,7 +187,11 @@ export function WithdrawAll() {
           </div>
           <div className="flex justify-center">
             <Button type="submit" className="w-full">
-              <span>Withdraw All Internal Balance</span>
+              <span>
+                {transactionStatus === TransactionStatus.SUBMITTING
+                  ? "Waiting ..."
+                  : "Withdraw All Internal Balance"}
+              </span>
             </Button>
           </div>
         </div>

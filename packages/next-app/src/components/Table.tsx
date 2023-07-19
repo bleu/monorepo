@@ -25,7 +25,7 @@ function useTableContext() {
 
   if (!context) {
     throw new Error(
-      "Child components of Table cannot be rendered outside the Table component!"
+      "Child components of Table cannot be rendered outside the Table component!",
     );
   }
 
@@ -50,13 +50,13 @@ export default function Table({
         className={cn(
           "min-w-full",
           classNames ?? classNames,
-          predefinedClasses[color][variant][shade].border
+          predefinedClasses[color][variant][shade].border,
         )}
       >
         <table
           className={cn(
             "divide-y divide-slate7 min-w-full rounded",
-            predefinedClasses[color][variant][shade].style
+            predefinedClasses[color][variant][shade].style,
           )}
         >
           {children}
@@ -124,7 +124,7 @@ function BodyCell({
     <td
       className={cn(
         "whitespace-nowrap text-sm text-slate10",
-        customWidth ? cn(customWidth, "pl-4") : padding
+        customWidth ? cn(customWidth, "pl-4") : padding,
       )}
     >
       {children}

@@ -62,8 +62,8 @@ export function ImpactCurve() {
       (amount) =>
         MetaStableMath.priceImpactForExactTokenInSwap(
           MetaStableMath.numberToOldBigNumber(amount),
-          poolPairDataIn
-        ).toNumber() * 100
+          poolPairDataIn,
+        ).toNumber() * 100,
     );
 
     return {
@@ -129,7 +129,7 @@ export function ImpactCurve() {
     direction: "in" | "out",
     amount: number,
     tokenFrom: string,
-    tokenTo: string
+    tokenTo: string,
   ) => {
     const formattedAmount = formatNumber(amount, 2);
     return direction === "in"
@@ -143,7 +143,7 @@ export function ImpactCurve() {
     indexAnalysisToken: number,
     indexCurrentTabToken: number,
     direction: "in" | "out",
-    impactData: number[]
+    impactData: number[],
   ): string[] => {
     return amounts.map((amount, i) => {
       const swapFromIndex =
@@ -155,7 +155,7 @@ export function ImpactCurve() {
         direction,
         amount,
         tokensSymbol[swapFromIndex],
-        tokensSymbol[swapToIndex]
+        tokensSymbol[swapToIndex],
       );
 
       const impact = formatNumber(impactData[i] / 100, 2, "percent");
@@ -174,7 +174,7 @@ export function ImpactCurve() {
     tokensSymbol: string[],
     indexAnalysisToken: number,
     indexCurrentTabToken: number,
-    lineStyle: "solid" | "dashdot" = "solid"
+    lineStyle: "solid" | "dashdot" = "solid",
   ) => {
     const line = lineStyle === "dashdot" ? { dash: "dashdot" } : {};
 
@@ -193,7 +193,7 @@ export function ImpactCurve() {
         indexAnalysisToken,
         indexCurrentTabToken,
         direction,
-        impactData
+        impactData,
       ),
       line,
     };
@@ -209,7 +209,7 @@ export function ImpactCurve() {
       "in",
       tokensSymbol,
       indexAnalysisToken,
-      indexCurrentTabToken
+      indexCurrentTabToken,
     ),
     createDataObject(
       variantAmountsAnalysisTokenIn,
@@ -220,7 +220,7 @@ export function ImpactCurve() {
       "in",
       tokensSymbol,
       indexAnalysisToken,
-      indexCurrentTabToken
+      indexCurrentTabToken,
     ),
     createDataObject(
       initialAmountsTabTokenIn,
@@ -232,7 +232,7 @@ export function ImpactCurve() {
       tokensSymbol,
       indexAnalysisToken,
       indexCurrentTabToken,
-      "dashdot"
+      "dashdot",
     ),
     createDataObject(
       variantAmountsTabTokenIn,
@@ -244,7 +244,7 @@ export function ImpactCurve() {
       tokensSymbol,
       indexAnalysisToken,
       indexCurrentTabToken,
-      "dashdot"
+      "dashdot",
     ),
   ];
 

@@ -71,10 +71,10 @@ export function PredefinedMetadataModal({ close }: { close?: () => void }) {
           ...opt,
           [option.key]: false,
         }),
-        { selectAll: false }
+        { selectAll: false },
       );
       return { ...state, [attribute.name]: options };
-    }, {} as ICheckboxState)
+    }, {} as ICheckboxState),
   );
 
   const { handleAddMetadata, isKeyUnique } = usePoolMetadata();

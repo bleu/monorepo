@@ -1,4 +1,6 @@
 import { getDefaultWallets } from "@rainbow-me/rainbowkit";
+import { publicProvider } from "@wagmi/core/providers/public";
+import { configureChains, createConfig } from "wagmi";
 import {
   arbitrum,
   gnosis as gnosisChain,
@@ -9,9 +11,15 @@ import {
   polygonZkEvm as polygonZkEvmChain,
   sepolia,
 } from "wagmi/chains";
-import { publicProvider } from "wagmi/providers/public";
 
-import { configureChains, createClient } from "#/wagmi";
+/**
+ * Project ID is required by Rainbowkit Migration Guide to Viem
+ * 2. Supply a WalletConnect Cloud projectId
+ * https://www.rainbowkit.com/docs/migration-guide#2-supply-a-walletconnect-cloud-projectid
+ * Credentials for WalletConnect are available at 1Password
+ */
+
+const projectId = "4f98524b2b9b5a80d14a519a8dcbecc2";
 
 const gnosis = {
   ...gnosisChain,
@@ -21,22 +29,24 @@ const gnosis = {
 
 const polygonZkEvm = {
   ...polygonZkEvmChain,
-  iconUrl: "https://app.balancer.fi/assets/polygon-db738948.svg",
+  iconUrl:
+    "https://raw.githubusercontent.com/balancer/frontend-v2/a53e98f1bd44b17cf002616100d23f8c1065f7b1/src/assets/images/icons/networks/zkevm.svg",
 };
 
-export const { chains, provider, webSocketProvider } = configureChains(
-  [mainnet, polygon, polygonZkEvm, arbitrum, gnosis, optimism, goerli, sepolia],
-  [publicProvider()]
+export const { chains, publicClient, webSocketPublicClient } = configureChains(
+  [mainnet, polygon, gnosis, arbitrum, optimism, polygonZkEvm, goerli, sepolia],
+  [publicProvider()],
 );
 
 const { connectors } = getDefaultWallets({
-  appName: "Balancer Pool Metadata",
+  appName: "Balancer Tools",
+  projectId,
   chains,
 });
 
-export const client = createClient({
+export const config = createConfig({
   autoConnect: true,
   connectors,
-  provider,
-  webSocketProvider,
+  publicClient,
+  webSocketPublicClient,
 });

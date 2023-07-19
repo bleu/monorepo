@@ -38,11 +38,11 @@
   "devDependencies": {
     "@bleu-balancer-tools/eslint-config": "workspace:*",
     "@types/node": "^18.15.11",
-    "concurrently": "^8.0.1",
+    "concurrently": "^8.2.0",
     "ghooks": "^2.0.4",
-    "lint-staged": "^13.2.2",
-    "prettier": "^2.8.8",
-    "typescript": "^5.0.4"
+    "lint-staged": "^13.2.3",
+    "prettier": "^3.0.0",
+    "typescript": "^5.1.6"
   },
   "pnpm": {
     "overrides": {

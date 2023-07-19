@@ -5,7 +5,6 @@ const { withSentryConfig } = require("@sentry/nextjs");
 const moduleExports = {
   transpilePackages: [
     "@bleu-balancer-tools/gql",
-    "@bleu-balancer-tools/schema",
   ],
   experimental: {
     appDir: true,

@@ -1,7 +1,6 @@
 "use client";
 
 import { SingleInternalBalanceQuery } from "@bleu-balancer-tools/gql/src/balancer-internal-manager/__generated__/Ethereum";
-import { getInternalBalanceSchema } from "@bleu-balancer-tools/schema";
 import {
   Address,
   addressRegex,
@@ -9,7 +8,7 @@ import {
   Network,
   NetworkChainId,
   networkFor,
-} from "@bleu-balancer-tools/shared";
+} from "@bleu-balancer-tools/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
@@ -39,6 +38,7 @@ import {
   operationKindType,
   UserBalanceOpKind,
 } from "#/lib/internal-balance-helper";
+import { getInternalBalanceSchema } from "#/lib/schema";
 import { refetchRequest } from "#/utils/fetcher";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 

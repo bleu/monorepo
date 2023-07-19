@@ -1,4 +1,3 @@
-import { getStableSwapSimulatorTokensSchema } from "@bleu-balancer-tools/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useForm } from "react-hook-form";
@@ -11,6 +10,7 @@ import {
   TokensData,
   useStableSwap,
 } from "#/contexts/StableSwapContext";
+import { getStableSwapSimulatorTokensSchema } from "#/lib/schema";
 
 import { useTokenTableContext } from "./TokenTable";
 

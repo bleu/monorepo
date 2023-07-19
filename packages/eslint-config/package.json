@@ -6,7 +6,7 @@
     "eslint-preset.js"
   ],
   "devDependencies": {
-    "@bleu-balancer-tools/shared": "workspace:^",
+    "@bleu-balancer-tools/utils": "workspace:^",
     "@next/eslint-plugin-next": "^13.4.10",
     "@typescript-eslint/eslint-plugin": "latest",
     "eslint": "^8.45.0",

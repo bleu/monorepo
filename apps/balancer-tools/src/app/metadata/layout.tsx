@@ -1,6 +1,6 @@
 "use client";
 
-import { Network, networkIdEnumMap } from "@bleu-balancer-tools/shared";
+import { Network, networkIdEnumMap } from "@bleu-balancer-tools/utils";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import * as Separator from "@radix-ui/react-separator";
 import { useRouter } from "next/navigation";

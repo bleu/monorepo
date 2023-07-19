@@ -1,7 +1,6 @@
 "use client";
 import { InternalBalanceQuery } from "@bleu-balancer-tools/gql/src/balancer-internal-manager/__generated__/Ethereum";
-import { AddressSchema } from "@bleu-balancer-tools/schema";
-import { Address, networkFor } from "@bleu-balancer-tools/shared";
+import { Address, networkFor } from "@bleu-balancer-tools/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
@@ -25,6 +24,7 @@ import { useManageUserBalance } from "#/hooks/internalmanager/useManageUserBalan
 import { TransactionStatus } from "#/hooks/useTransaction";
 import { internalBalances } from "#/lib/gql";
 import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
+import { AddressSchema } from "#/lib/schema";
 import { refetchRequest } from "#/utils/fetcher";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 

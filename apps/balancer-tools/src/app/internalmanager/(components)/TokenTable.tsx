@@ -1,6 +1,6 @@
 "use client";
 import { InternalBalanceQuery } from "@bleu-balancer-tools/gql/src/balancer-internal-manager/__generated__/Ethereum";
-import { Address } from "@bleu-balancer-tools/shared";
+import { Address } from "@bleu-balancer-tools/utils";
 import {
   MinusCircledIcon,
   PlusCircledIcon,

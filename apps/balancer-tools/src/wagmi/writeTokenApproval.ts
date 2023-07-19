@@ -1,4 +1,4 @@
-import { Address } from "@bleu-balancer-tools/shared";
+import { Address } from "@bleu-balancer-tools/utils";
 import { erc20ABI, prepareWriteContract, writeContract } from "@wagmi/core";
 
 import { vaultAddress } from "./generated";

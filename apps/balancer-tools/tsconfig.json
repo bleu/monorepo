@@ -13,7 +13,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "../shared/networkMultisigs.ts"
+    "../utils/networkMultisigs.ts"
   ],
   "exclude": ["node_modules"],
   "types": ["jest", "node"]

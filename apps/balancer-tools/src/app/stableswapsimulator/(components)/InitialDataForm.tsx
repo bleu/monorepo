@@ -1,6 +1,5 @@
 "use client";
 
-import { StableSwapSimulatorDataSchema } from "@bleu-balancer-tools/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -9,6 +8,7 @@ import { Input } from "#/components/Input";
 import { Form, FormField } from "#/components/ui/form";
 import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
 import useDebounce from "#/hooks/useDebounce";
+import { StableSwapSimulatorDataSchema } from "#/lib/schema";
 import { numberToPercent, percentToNumber } from "#/utils/formatNumber";
 
 import { TokenTable } from "./TokenTable";

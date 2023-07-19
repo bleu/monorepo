@@ -1,6 +1,5 @@
 "use client";
 
-import { TypenameEnum } from "@bleu-balancer-tools/schema";
 import isEqual from "lodash/isEqual";
 import {
   createContext,
@@ -12,6 +11,7 @@ import {
   useState,
 } from "react";
 
+import { TypenameEnum } from "#/lib/schema";
 import { toSlug } from "#/utils/formatStringCase";
 
 // TODO: generate TS types from zod: https://github.com/sachinraja/zod-to-ts

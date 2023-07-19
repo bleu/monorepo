@@ -1,6 +1,6 @@
 "use client";
 
-import { Address } from "@bleu-balancer-tools/shared";
+import { Address } from "@bleu-balancer-tools/utils";
 import {
   createContext,
   Dispatch,

@@ -1,3 +1,5 @@
+export { default as parseFixed } from "./parseFixed";
+
 export type Address = `0x${string}`;
 
 export enum Network {

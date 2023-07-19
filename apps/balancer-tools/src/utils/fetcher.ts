@@ -1,4 +1,4 @@
-import { Address } from "@bleu-balancer-tools/shared";
+import { Address } from "@bleu-balancer-tools/utils";
 import { useEffect } from "react";
 
 export async function fetcher<JSON = unknown>(

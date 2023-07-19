@@ -1,6 +1,6 @@
 "use client";
 
-import { Network } from "@bleu-balancer-tools/shared";
+import { Network } from "@bleu-balancer-tools/utils";
 import * as React from "react";
 import { useNetwork } from "wagmi";
 

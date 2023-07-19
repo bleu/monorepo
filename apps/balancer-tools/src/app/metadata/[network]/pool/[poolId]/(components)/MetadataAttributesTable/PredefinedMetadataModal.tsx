@@ -1,4 +1,3 @@
-import { TypenameEnum } from "@bleu-balancer-tools/schema";
 import * as Accordion from "@radix-ui/react-accordion";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useState } from "react";
@@ -11,6 +10,7 @@ import {
 } from "#/components/Accordion";
 import { Checkbox } from "#/components/Checkbox";
 import { usePoolMetadata } from "#/contexts/PoolMetadataContext";
+import { TypenameEnum } from "#/lib/schema";
 import { toSlug } from "#/utils/formatStringCase";
 
 interface ITemplate {

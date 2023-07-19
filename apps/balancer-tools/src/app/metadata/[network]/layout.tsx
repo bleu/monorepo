@@ -1,6 +1,6 @@
 "use client";
 
-import { Address, Network, networkIdFor } from "@bleu-balancer-tools/shared";
+import { Address, Network, networkIdFor } from "@bleu-balancer-tools/utils";
 import { useContext, useEffect } from "react";
 
 import { NetworksContext } from "#/contexts/networks";

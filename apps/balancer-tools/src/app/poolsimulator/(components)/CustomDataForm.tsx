@@ -1,6 +1,5 @@
 "use client";
 
-import { StableSwapSimulatorDataSchema } from "@bleu-balancer-tools/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -10,6 +9,7 @@ import { Select, SelectItem } from "#/components/Select";
 import { Form, FormField, FormLabel } from "#/components/ui/form";
 import { AnalysisData, useStableSwap } from "#/contexts/PoolSimulatorContext";
 import useDebounce from "#/hooks/useDebounce";
+import { StableSwapSimulatorDataSchema } from "#/lib/schema";
 import { numberToPercent, percentToNumber } from "#/utils/formatNumber";
 
 import { TokenTable } from "./TokenTable";
@@ -80,8 +80,8 @@ export default function CustomDataForm() {
               if (currentTabToken.symbol === selectedSymbol) {
                 setCurrentTabTokenByIndex(
                   initialData?.tokens.findIndex(
-                    ({ symbol }) => symbol !== selectedSymbol
-                  )
+                    ({ symbol }) => symbol !== selectedSymbol,
+                  ),
                 );
               }
               setAnalysisTokenBySymbol(selectedSymbol);

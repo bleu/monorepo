@@ -1,7 +1,7 @@
 [profile.default]
 src = 'src'
 out = 'out'
-libs = ['lib', '../../lib', 'node_modules']
+libs = ['lib', '../../../lib', 'node_modules']
 test = 'test'
 solc = '0.7.6'
 allow_paths = [

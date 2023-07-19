@@ -38,7 +38,7 @@ The project uses a monorepo structure and git submodules to organize its codebas
 - [`gql`](./packages/gql): for GraphQL-related functionality, facilitating communication between the UI and the Subgraph's GraphQL server.
 - [`math`](./packages/math): implements the mathematical functions for the functionality of pools, including stable pools.
 - [`schema`](./packages/schema): serves as a central repository for managing Zod schemas, ensuring consistency and organization in the project.
-- [`shared`](./packages/shared): contains shared code, utilities, and components for improved code reusability and maintainability.
+- [`shared`](./packages/utils): contains shared code, utilities, and components for improved code reusability and maintainability.
 - [`tsconfig`](./packages/tsconfig): typeScript configuration package, enforcing type safety and coding standards.
 
 ## Pre-requisites

@@ -1,4 +1,4 @@
-import { Address } from "@bleu-balancer-tools/shared";
+import { Address } from "@bleu-balancer-tools/utils";
 import { parseUnits } from "viem";
 
 import { useInternalBalance } from "#/contexts/InternalManagerContext";

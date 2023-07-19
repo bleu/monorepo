@@ -1,4 +1,4 @@
-import { Address } from "@bleu-balancer-tools/shared";
+import { Address } from "@bleu-balancer-tools/utils";
 import { MinusIcon } from "@radix-ui/react-icons";
 import { useAccount, useNetwork } from "wagmi";
 

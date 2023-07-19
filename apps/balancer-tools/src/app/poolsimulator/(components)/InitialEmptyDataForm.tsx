@@ -1,6 +1,5 @@
 "use client";
 
-import { StableSwapSimulatorDataSchema } from "@bleu-balancer-tools/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -10,6 +9,7 @@ import Button from "#/components/Button";
 import { Input } from "#/components/Input";
 import { Form, FormField } from "#/components/ui/form";
 import { AnalysisData, useStableSwap } from "#/contexts/PoolSimulatorContext";
+import { StableSwapSimulatorDataSchema } from "#/lib/schema";
 import { numberToPercent, percentToNumber } from "#/utils/formatNumber";
 import { GetDeepProp } from "#/utils/getTypes";
 

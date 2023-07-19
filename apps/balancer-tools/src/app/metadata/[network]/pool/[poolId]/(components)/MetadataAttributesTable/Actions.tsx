@@ -1,6 +1,6 @@
 "use client";
 
-import { Address } from "@bleu-balancer-tools/shared";
+import { Address } from "@bleu-balancer-tools/utils";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { useContext } from "react";
 import { useAccount } from "wagmi";

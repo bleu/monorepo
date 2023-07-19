@@ -5,7 +5,7 @@ import {
   Network,
   NetworkChainId,
   networkFor,
-} from "@bleu-balancer-tools/shared";
+} from "@bleu-balancer-tools/utils";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { useEffect } from "react";
 import { useAccount, useNetwork } from "wagmi";

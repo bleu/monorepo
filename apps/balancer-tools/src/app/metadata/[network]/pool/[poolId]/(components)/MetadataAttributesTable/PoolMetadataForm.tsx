@@ -1,6 +1,5 @@
 "use client";
 
-import { MetadataItemSchema } from "@bleu-balancer-tools/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as React from "react";
@@ -14,6 +13,7 @@ import {
   PoolMetadataAttribute,
   usePoolMetadata,
 } from "#/contexts/PoolMetadataContext";
+import { MetadataItemSchema } from "#/lib/schema";
 
 const inputTypenames = [
   { value: "text", label: "Text" },

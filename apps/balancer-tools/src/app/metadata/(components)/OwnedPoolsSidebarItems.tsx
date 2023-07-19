@@ -1,5 +1,5 @@
 import { PoolsWhereOwnerQuery } from "@bleu-balancer-tools/gql/src/balancer-pools/__generated__/Ethereum";
-import { Address, networkFor, networkIdFor } from "@bleu-balancer-tools/shared";
+import { Address, networkFor, networkIdFor } from "@bleu-balancer-tools/utils";
 import cn from "clsx";
 import Image from "next/image";
 import Link from "next/link";

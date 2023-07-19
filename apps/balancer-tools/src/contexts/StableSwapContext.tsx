@@ -1,7 +1,7 @@
 "use client";
 
 import { PoolQuery } from "@bleu-balancer-tools/gql/src/balancer-pools/__generated__/Ethereum";
-import { NetworkChainId } from "@bleu-balancer-tools/shared";
+import { NetworkChainId } from "@bleu-balancer-tools/utils";
 import { usePathname, useRouter } from "next/navigation";
 import {
   createContext,

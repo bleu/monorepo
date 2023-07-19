@@ -1,4 +1,4 @@
-import { Address, buildBlockExplorerTxUrl } from "@bleu-balancer-tools/shared";
+import { Address, buildBlockExplorerTxUrl } from "@bleu-balancer-tools/utils";
 import { Dispatch, useEffect, useState } from "react";
 
 import { PoolMetadataAttribute } from "#/contexts/PoolMetadataContext";

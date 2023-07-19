@@ -1,5 +1,5 @@
 "use client";
-import { Address } from "@bleu-balancer-tools/shared";
+import { Address } from "@bleu-balancer-tools/utils";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import cn from "clsx";

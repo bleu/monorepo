@@ -1,6 +1,6 @@
 "use client";
 
-import { StableSwapSimulatorDataSchema } from "@bleu-balancer-tools/schema";
+import { StableSwapSimulatorDataSchema } from "#/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -80,8 +80,8 @@ export default function CustomDataForm() {
               if (currentTabToken.symbol === selectedSymbol) {
                 setCurrentTabTokenByIndex(
                   initialData?.tokens.findIndex(
-                    ({ symbol }) => symbol !== selectedSymbol
-                  )
+                    ({ symbol }) => symbol !== selectedSymbol,
+                  ),
                 );
               }
               setAnalysisTokenBySymbol(selectedSymbol);

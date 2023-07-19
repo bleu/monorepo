@@ -1,4 +1,4 @@
-import { getStableSwapSimulatorTokensSchema } from "@bleu-balancer-tools/schema";
+import { getStableSwapSimulatorTokensSchema } from "#/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useForm } from "react-hook-form";
@@ -39,15 +39,15 @@ export default function TokenForm({
 
   const tokens = variant ? customData?.tokens : initialData?.tokens;
   const currentToken = tokens?.find(
-    (token: TokensData) => token.symbol == symbolToEdit
+    (token: TokensData) => token.symbol == symbolToEdit,
   );
 
   const validateUniqueSymbol = (symbol: string) => {
     const tokensToCheck = initialData?.tokens?.filter(
-      (token: TokensData) => token.symbol != symbolToEdit
+      (token: TokensData) => token.symbol != symbolToEdit,
     );
     const symbolsToCheck = tokensToCheck?.map(
-      (token: TokensData) => token.symbol
+      (token: TokensData) => token.symbol,
     );
     if (symbolsToCheck?.includes(symbol)) {
       return "This symbol already exists. Please define another name.";

@@ -14,24 +14,24 @@ export function DepthCost() {
   if (!initialAMM || !customAMM) return <Spinner />;
 
   const pairTokens = initialData?.tokens.filter(
-    (token) => token.symbol !== analysisToken.symbol
+    (token) => token.symbol !== analysisToken.symbol,
   );
 
   const depthCostAmounts = {
     initial: {
       in: pairTokens.map((pairToken) =>
-        calculateDepthCostAmount(pairToken, "in", initialAMM)
+        calculateDepthCostAmount(pairToken, "in", initialAMM),
       ),
       out: pairTokens.map((pairToken) =>
-        calculateDepthCostAmount(pairToken, "out", initialAMM)
+        calculateDepthCostAmount(pairToken, "out", initialAMM),
       ),
     },
     custom: {
       in: pairTokens.map((pairToken) =>
-        calculateDepthCostAmount(pairToken, "in", customAMM)
+        calculateDepthCostAmount(pairToken, "in", customAMM),
       ),
       out: pairTokens.map((pairToken) =>
-        calculateDepthCostAmount(pairToken, "out", customAMM)
+        calculateDepthCostAmount(pairToken, "out", customAMM),
       ),
     },
   };
@@ -40,7 +40,7 @@ export function DepthCost() {
     ...depthCostAmounts.initial.in,
     ...depthCostAmounts.initial.out,
     ...depthCostAmounts.custom.in,
-    ...depthCostAmounts.custom.out
+    ...depthCostAmounts.custom.out,
   );
 
   if (!maxDepthCostAmount) return <Spinner />;
@@ -56,7 +56,7 @@ export function DepthCost() {
       true,
       "in",
       analysisToken?.symbol,
-      depthCostAmounts.initial.in
+      depthCostAmounts.initial.in,
     ),
     createDataObject(
       dataX,
@@ -66,7 +66,7 @@ export function DepthCost() {
       true,
       "in",
       analysisToken?.symbol,
-      depthCostAmounts.custom.in
+      depthCostAmounts.custom.in,
     ),
     createDataObject(
       dataX,
@@ -78,7 +78,7 @@ export function DepthCost() {
       analysisToken?.symbol,
       depthCostAmounts.initial.out,
       "y2",
-      "x2"
+      "x2",
     ),
     createDataObject(
       dataX,
@@ -90,7 +90,7 @@ export function DepthCost() {
       analysisToken?.symbol,
       depthCostAmounts.custom.out,
       "y2",
-      "x2"
+      "x2",
     ),
   ];
 
@@ -135,7 +135,7 @@ const createHoverTemplate = (
   amounts: number[],
   analysisSymbol: string | undefined,
   tokenSymbols: string[],
-  templateDirection: string
+  templateDirection: string,
 ): string[] => {
   return amounts.map((amount, i) => {
     const displayAmount = `${formatNumber(amount, 2)} ${analysisSymbol}`;
@@ -158,7 +158,7 @@ const createDataObject = (
   analysisSymbol: string | undefined,
   hovertemplateData: number[],
   yAxis = "",
-  xAxis = ""
+  xAxis = "",
 ) => {
   const templateDirection = direction === "in" ? "-2%" : "+2%";
 
@@ -177,7 +177,7 @@ const createDataObject = (
       hovertemplateData,
       analysisSymbol,
       x,
-      templateDirection
+      templateDirection,
     ),
   };
 };
@@ -185,7 +185,7 @@ const createDataObject = (
 function calculateDepthCostAmount(
   pairToken: TokensData,
   poolSide: "in" | "out",
-  amm: AMM
+  amm: AMM,
 ) {
   const { analysisToken } = useStableSwap();
 
@@ -200,12 +200,12 @@ function calculateDepthCostAmount(
     return amm.tokenInForExactSpotPriceAfterSwap(
       newSpotPriceToStableMath,
       tokenIn.symbol,
-      tokenOut.symbol
+      tokenOut.symbol,
     );
   }
   return amm.tokenOutForExactSpotPriceAfterSwap(
     newSpotPriceToStableMath,
     tokenIn.symbol,
-    tokenOut.symbol
+    tokenOut.symbol,
   );
 }

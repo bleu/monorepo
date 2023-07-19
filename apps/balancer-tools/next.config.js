@@ -3,9 +3,7 @@ const { withSentryConfig } = require("@sentry/nextjs");
 
 /** @type {import('next').NextConfig} */
 const moduleExports = {
-  transpilePackages: [
-    "@bleu-balancer-tools/gql",
-  ],
+  transpilePackages: ["@bleu-balancer-tools/gql"],
   experimental: {
     appDir: true,
     serverActions: true,

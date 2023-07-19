@@ -11,7 +11,7 @@ env:
 
 jobs:
   deploy:
-    name: Deploy balancer.tools
+    name: Deploy balancer-tools
     runs-on: ubuntu-latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}

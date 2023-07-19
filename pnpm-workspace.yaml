@@ -1,5 +1,6 @@
 packages:
   - "packages/*"
+  - "apps/*"
   - "!**/test/**"
   - "!**/lib/balancer-v2-monorepo/**"
   - "!**/lib/forge-std/**"

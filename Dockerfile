@@ -32,8 +32,8 @@ RUN pnpm install --frozen-lockfile --prod=false
 
 RUN cd packages/contracts && make patch && forge build
 RUN pnpm run -C=packages/gql graphql:update-types
-RUN pnpm run --filter "{packages/next-app}..." build:prepare:wagmi
-RUN pnpm run --filter "{packages/next-app}..." build
+RUN pnpm run --filter "{packages/balancer.tools}..." build:prepare:wagmi
+RUN pnpm run --filter "{packages/balancer.tools}..." build
 
 FROM node:${NODE_VERSION}-${IMAGE_VARIANT} AS runner
 
@@ -43,13 +43,13 @@ ENV NODE_ENV production
 
 RUN groupadd --system --gid 1001 nodejs && useradd --system --uid 1001 nextjs
 
-COPY --from=builder /app/packages/next-app/next.config.js \
-                    /app/packages/next-app/package.json \
-                    ./packages/next-app/
-COPY --from=builder /app/packages/next-app/public ./packages/next-app/public
-COPY --from=builder --chown=nextjs:nodejs /app/packages/next-app/.next ./packages/next-app/.next
+COPY --from=builder /app/packages/balancer.tools/next.config.js \
+                    /app/packages/balancer.tools/package.json \
+                    ./packages/balancer.tools/
+COPY --from=builder /app/packages/balancer.tools/public ./packages/balancer.tools/public
+COPY --from=builder --chown=nextjs:nodejs /app/packages/balancer.tools/.next ./packages/balancer.tools/.next
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/packages/next-app/node_modules ./packages/next-app/node_modules
+COPY --from=builder /app/packages/balancer.tools/node_modules ./packages/balancer.tools/node_modules
 COPY --from=builder /app/package.json ./package.json
 
 USER nextjs
@@ -59,6 +59,6 @@ EXPOSE 3000
 ENV PORT 3000
 ENV NEXT_TELEMETRY_DISABLED 1
 
-WORKDIR /app/packages/next-app
+WORKDIR /app/packages/balancer.tools
 
 CMD ["node_modules/.bin/next", "start"]

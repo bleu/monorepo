@@ -1,6 +1,6 @@
 "use client";
 
-import { Url } from "next/dist/utils/lib/router/router";
+import { Url } from "next/dist/shared/lib/router/router";
 import Link from "next/link";
 import React from "react";
 

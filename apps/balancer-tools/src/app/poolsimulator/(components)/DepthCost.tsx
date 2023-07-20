@@ -134,7 +134,7 @@ const createHoverTemplate = (
   direction: "in" | "out",
   amounts: number[],
   analysisSymbol: string | undefined,
-  tokenSymbols: string[]
+  tokenSymbols: string[],
 ): string[] => {
   return amounts.map((amount, i) => {
     const displayAmount = `${formatNumber(amount, 2)} ${analysisSymbol}`;
@@ -178,7 +178,7 @@ const createDataObject = (
       direction,
       hovertemplateData,
       analysisSymbol,
-      x
+      x,
     ),
   };
 };

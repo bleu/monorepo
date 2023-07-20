@@ -15,7 +15,6 @@ import React, { useEffect, useState } from "react";
 import { formatUnits } from "viem";
 import { useAccount, useNetwork } from "wagmi";
 
-import genericTokenLogo from "#/assets/generic-token-logo.png";
 import { Dialog } from "#/components/Dialog";
 import Table from "#/components/Table";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
@@ -61,7 +60,7 @@ export function TokenSelect({
               src={
                 tokenLogoUri[
                   token?.tokenInfo?.symbol as keyof typeof tokenLogoUri
-                ] || genericTokenLogo
+                ] || "/assets/generic-token-logo.png"
               }
               className="rounded-full"
               alt="Token Logo"
@@ -334,7 +333,7 @@ function TokenRow({
             <Image
               src={
                 tokenLogoUri[token.symbol as keyof typeof tokenLogoUri] ||
-                genericTokenLogo
+                "/assets/generic-token-logo.png"
               }
               className="rounded-full"
               alt="Token Logo"

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import * as React from "react";
 
-import balancerSymbol from "#/assets/balancer-symbol.svg";
 import { Header } from "#/components/Header";
 
 import { DaoAdminProvider } from "./(components)/DaoAdminProvider";
@@ -17,7 +16,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <Header
         linkUrl={"/daoadmin"}
         title={"DAO Actions"}
-        imageSrc={balancerSymbol}
+        imageSrc={"/assets/balancer-symbol.svg"}
       />
       <DaoAdminProvider>{children}</DaoAdminProvider>
     </div>

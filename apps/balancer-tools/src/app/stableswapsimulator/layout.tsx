@@ -2,7 +2,6 @@
 
 import * as React from "react";
 
-import balancerSymbol from "#/assets/balancer-symbol.svg";
 import { Header } from "#/components/Header";
 import Sidebar from "#/components/Sidebar";
 import { StableSwapProvider } from "#/contexts/StableSwapContext";
@@ -17,7 +16,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
         <Header
           linkUrl={"/stableswapsimulator"}
           title={"Stable Swap Simulator"}
-          imageSrc={balancerSymbol}
+          imageSrc={"/assets/balancer-symbol.svg"}
           endButton={<ShareButton />}
         />
         <div className="flex flex-1 gap-x-8">

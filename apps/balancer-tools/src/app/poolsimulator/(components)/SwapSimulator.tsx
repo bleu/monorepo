@@ -81,7 +81,7 @@ export function SwapSimulator() {
         <label className="block text-sm text-slate12">Effective Price</label>
         <BaseInput
           value={`${effectivePrice.toFixed(
-            2
+            2,
           )} ${tokenInSymbol}/${tokenOutSymbol}`}
           disabled
         />

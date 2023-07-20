@@ -1,7 +1,9 @@
 # Overview
+
 The Balancer SOR Economics Extension is a package designed to extend the functionality of the Balancer SOR package. This extension introduces essential economics concepts, such as price impact and effective price calculations, into the package.
 
 # Package Structure
+
 The package is structured around a main Automated Market Maker (AMM) class that serves as the central point of interaction for users. The main components of the package are:
 
 - AMM Class: The AMM class incorporates all the economic functions related to the Balancer SOR pools. It provides methods to calculate price impact, effective price, and other economic indicators for trades.

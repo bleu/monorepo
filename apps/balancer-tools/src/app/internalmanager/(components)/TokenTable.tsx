@@ -12,7 +12,6 @@ import { tokenLogoUri } from "public/tokens/logoUri";
 import { useAccount, useNetwork } from "wagmi";
 
 import { ToastContent } from "#/app/metadata/[network]/pool/[poolId]/(components)/MetadataAttributesTable/TransactionModal";
-import genericTokenLogo from "#/assets/generic-token-logo.png";
 import { LinkComponent } from "#/components/Link";
 import Table from "#/components/Table";
 import { Toast } from "#/components/Toast";
@@ -115,7 +114,7 @@ function TableRow({
               src={
                 tokenLogoUri[
                   token?.tokenInfo?.symbol as keyof typeof tokenLogoUri
-                ] || genericTokenLogo
+                ] || "/assets/generic-token-logo.png"
               }
               className="rounded-full"
               alt="Token Logo"

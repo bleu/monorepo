@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 
-import SelectPoolImage from "#/assets/choose-pool.svg";
 import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { useAccount } from "#/wagmi";
@@ -23,7 +22,7 @@ export default function Page() {
       <div className="text-center text-3xl text-amber9">
         Pick a pool on the side
       </div>
-      <Image src={SelectPoolImage} height={400} width={400} alt="" />
+      <Image src={"/assets/choose-pool.svg"} height={400} width={400} alt="" />
     </div>
   );
 }

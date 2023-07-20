@@ -3,8 +3,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useNetwork } from "wagmi";
 
-import ConnectWalletImage from "#/assets/connect-wallet.svg";
-
 import { Dialog } from "./Dialog";
 import { PoolAttribute, SearchPoolForm } from "./SearchPoolForm";
 
@@ -38,7 +36,12 @@ export default function WalletNotConnected({
           </Dialog>
         </div>
       )}
-      <Image src={ConnectWalletImage} height={500} width={500} alt="" />
+      <Image
+        src={"/assets/connect-wallet.svg"}
+        height={500}
+        width={500}
+        alt=""
+      />
     </div>
   );
 }

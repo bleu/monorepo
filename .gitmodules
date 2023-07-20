@@ -4,3 +4,6 @@
 [submodule "apps/pool-metadata/contracts/lib/balancer-v2-monorepo"]
 	path = apps/pool-metadata/contracts/lib/balancer-v2-monorepo
 	url = https://github.com/balancer/balancer-v2-monorepo
+[submodule "apps/pool-metadata/contracts/lib/bleu-balancer-sor"]
+	path = apps/pool-metadata/contracts/lib/bleu-balancer-sor
+	url = git@github.com:bleu-studio/bleu-balancer-sor.git

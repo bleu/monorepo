@@ -1,16 +1,12 @@
 import { bnum, OldBigNumber } from "@balancer-labs/sor";
 import { parseFixed } from "@ethersproject/bignumber";
 
+import { ExtendedGyroEV2, GyroEPoolPairData, IGyroEMaths } from "./gyroE";
 import {
   ExtendedMetaStableMath,
   IMetaStableMath,
   MetaStablePoolPairData,
 } from "./metastable";
-import {
-  ExtendedMetaStableMath_2,
-  IMetaStableMath_2,
-  MockMetaStablePoolPairData,
-} from "./metastable_2";
 
 export function numberToBigNumber({
   number,
@@ -28,61 +24,100 @@ export function numberToBigNumber({
   }
   return parseFixed(numberAsString, decimals);
 }
+
+type PoolPairData = MetaStablePoolPairData | GyroEPoolPairData;
 export interface IAMM {
-  poolType: "MetaStable" | "MetaStable_2";
-  poolParams: IMetaStableMath | IMetaStableMath_2;
+  poolType: "MetaStable" | "GyroE";
+  poolParams: IMetaStableMath | IGyroEMaths;
 }
 
-type PoolPairData = MetaStablePoolPairData | MockMetaStablePoolPairData;
 export class AMM {
-  math!: ExtendedMetaStableMath | ExtendedMetaStableMath_2;
+  math!: ExtendedMetaStableMath | ExtendedGyroEV2;
 
   constructor(amm: IAMM) {
     switch (amm.poolType) {
       case "MetaStable":
         this.math = new ExtendedMetaStableMath(
-          amm.poolParams as IMetaStableMath,
+          amm.poolParams as IMetaStableMath
         );
-      case "MetaStable_2":
-        this.math = new ExtendedMetaStableMath_2(
-          amm.poolParams as IMetaStableMath_2,
-        );
+
+        break;
+      case "GyroE":
+        this.math = new ExtendedGyroEV2(amm.poolParams as IGyroEMaths);
+        break;
     }
   }
 
   exactTokenInForTokenOut(
     amountIn: number,
     tokenIn: string,
-    tokenOut: string,
+    tokenOut: string
   ): number {
-    const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
-    return this.math
-      ._exactTokenInForTokenOut(poolPairData, bnum(amountIn))
-      .toNumber();
+    if (this.math instanceof ExtendedMetaStableMath) {
+      const poolPairData = this.math.parsePoolPairData(
+        tokenIn,
+        tokenOut
+      ) as MetaStablePoolPairData;
+      return this.math
+        ._exactTokenInForTokenOut(poolPairData, bnum(amountIn))
+        .toNumber();
+    } else if (this.math instanceof ExtendedGyroEV2) {
+      const poolPairData = this.math.parsePoolPairData(
+        tokenIn,
+        tokenOut
+      ) as GyroEPoolPairData;
+      return this.math
+        ._exactTokenInForTokenOut(poolPairData, bnum(amountIn))
+        .toNumber();
+    } else throw new Error("Invalid math instance");
   }
 
   tokenInForExactTokenOut(
     amountOut: number,
     tokenIn: string,
-    tokenOut: string,
+    tokenOut: string
   ): number {
-    const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
-    return this.math
-      ._tokenInForExactTokenOut(poolPairData, bnum(amountOut))
-      .toNumber();
+    if (this.math instanceof ExtendedMetaStableMath) {
+      const poolPairData = this.math.parsePoolPairData(
+        tokenIn,
+        tokenOut
+      ) as MetaStablePoolPairData;
+
+      return this.math
+        ._tokenInForExactTokenOut(poolPairData, bnum(amountOut))
+        .toNumber();
+    } else if (this.math instanceof ExtendedGyroEV2) {
+      const poolPairData = this.math.parsePoolPairData(
+        tokenIn,
+        tokenOut
+      ) as GyroEPoolPairData;
+
+      return this.math
+        ._tokenInForExactTokenOut(poolPairData, bnum(amountOut))
+        .toNumber();
+    } else throw new Error("Invalid math instance");
   }
 
   spotPrice(tokenIn: string, tokenOut: string): number {
-    const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
-    return this.math._spotPrice(poolPairData).toNumber();
+    if (this.math instanceof ExtendedMetaStableMath) {
+      const poolPairData = this.math.parsePoolPairData(
+        tokenIn,
+        tokenOut
+      ) as MetaStablePoolPairData;
+      return this.math._spotPrice(poolPairData).toNumber();
+    } else if (this.math instanceof ExtendedGyroEV2) {
+      const poolPairData = this.math.parsePoolPairData(
+        tokenIn,
+        tokenOut
+      ) as GyroEPoolPairData;
+      return this.math._spotPrice(poolPairData).toNumber();
+    } else throw new Error("Invalid math instance");
   }
 
   _tokenInForExactSpotPriceAfterSwap({
     spotPrice,
     poolPairData,
-    inGuess = poolPairData.allBalances[poolPairData.tokenIndexIn].times(
-      bnum(0.01),
-    ),
+    inGuess,
     spotPricePrecision = bnum(0.0000001),
     iteration_number = 0,
   }: {
@@ -95,39 +130,84 @@ export class AMM {
     // Calculate the amount of tokenIn needed to reach the desired spotPrice
     // The Newton-Raphson method is used to find the SpotPrice of the function
     // Results could be inaccurate for very small amounts of tokenIn
-    const guessedSpotPrice =
-      this.math._spotPriceAfterSwapExactTokenInForTokenOut(
-        poolPairData,
-        inGuess,
-      );
-    const diffFromSpotPrice = spotPrice.minus(guessedSpotPrice);
-    if (diffFromSpotPrice.abs().lte(spotPricePrecision)) {
-      return inGuess;
-    }
+    if (this.math instanceof ExtendedMetaStableMath) {
+      const poolPairDataExtended = poolPairData as MetaStablePoolPairData;
+      const inGuessValue = inGuess
+        ? inGuess
+        : poolPairDataExtended.allBalances[
+            poolPairDataExtended.tokenIndexIn
+          ].times(bnum(0.01));
+      const guessedSpotPrice =
+        this.math._spotPriceAfterSwapExactTokenInForTokenOut(
+          poolPairDataExtended,
+          inGuessValue
+        );
+      const diffFromSpotPrice = spotPrice.minus(guessedSpotPrice);
+      if (diffFromSpotPrice.abs().lte(spotPricePrecision)) {
+        return inGuessValue;
+      }
 
-    iteration_number += 1;
-    if (iteration_number > 255) {
-      throw new Error("Max iterations reached");
-    }
-    const spotPriceDerivative =
-      this.math._derivativeSpotPriceAfterSwapExactTokenInForTokenOut(
+      iteration_number += 1;
+      if (iteration_number > 255) {
+        throw new Error("Max iterations reached");
+      }
+      const spotPriceDerivative =
+        this.math._derivativeSpotPriceAfterSwapExactTokenInForTokenOut(
+          poolPairDataExtended,
+          inGuessValue
+        );
+      const newInGuess = diffFromSpotPrice
+        .div(spotPriceDerivative)
+        .plus(inGuessValue);
+      return this._tokenInForExactSpotPriceAfterSwap({
+        spotPrice,
         poolPairData,
-        inGuess,
-      );
-    const newInGuess = diffFromSpotPrice.div(spotPriceDerivative).plus(inGuess);
-    return this._tokenInForExactSpotPriceAfterSwap({
-      spotPrice,
-      poolPairData,
-      inGuess: newInGuess,
-      spotPricePrecision,
-      iteration_number,
-    });
+        inGuess: newInGuess,
+        spotPricePrecision,
+        iteration_number,
+      });
+    }
+    if (this.math instanceof ExtendedGyroEV2) {
+      const poolPairDataExtended = poolPairData as GyroEPoolPairData;
+      const inGuessValue = bnum(
+        poolPairDataExtended.balanceIn.toString()
+      ).times(bnum(0.01));
+      const guessedSpotPrice =
+        this.math._spotPriceAfterSwapExactTokenInForTokenOut(
+          poolPairDataExtended,
+          inGuessValue
+        );
+      const diffFromSpotPrice = spotPrice.minus(guessedSpotPrice);
+      if (diffFromSpotPrice.abs().lte(spotPricePrecision)) {
+        return inGuessValue;
+      }
+
+      iteration_number += 1;
+      if (iteration_number > 255) {
+        throw new Error("Max iterations reached");
+      }
+      const spotPriceDerivative =
+        this.math._derivativeSpotPriceAfterSwapExactTokenInForTokenOut(
+          poolPairDataExtended,
+          inGuessValue
+        );
+      const newInGuess = diffFromSpotPrice
+        .div(spotPriceDerivative)
+        .plus(inGuessValue);
+      return this._tokenInForExactSpotPriceAfterSwap({
+        spotPrice,
+        poolPairData,
+        inGuess: newInGuess,
+        spotPricePrecision,
+        iteration_number,
+      });
+    } else throw new Error("Invalid math instance");
   }
 
   tokenInForExactSpotPriceAfterSwap(
     spotPriceAfterSwap: number,
     tokenIn: string,
-    tokenOut: string,
+    tokenOut: string
   ): number {
     const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
     return this._tokenInForExactSpotPriceAfterSwap({
@@ -139,107 +219,237 @@ export class AMM {
   tokenOutForExactSpotPriceAfterSwap(
     spotPriceAfterSwap: number,
     tokenIn: string,
-    tokenOut: string,
+    tokenOut: string
   ): number {
-    const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
-    const amountTokenIn = this._tokenInForExactSpotPriceAfterSwap({
-      spotPrice: bnum(spotPriceAfterSwap),
-      poolPairData,
-    });
-    return this.math
-      ._exactTokenInForTokenOut(poolPairData, amountTokenIn)
-      .toNumber();
+    if (this.math instanceof ExtendedMetaStableMath) {
+      const poolPairData = this.math.parsePoolPairData(
+        tokenIn,
+        tokenOut
+      ) as MetaStablePoolPairData;
+      const amountTokenIn = this._tokenInForExactSpotPriceAfterSwap({
+        spotPrice: bnum(spotPriceAfterSwap),
+        poolPairData,
+      });
+      return this.math
+        ._exactTokenInForTokenOut(poolPairData, amountTokenIn)
+        .toNumber();
+    } else if (this.math instanceof ExtendedGyroEV2) {
+      const poolPairData = this.math.parsePoolPairData(
+        tokenIn,
+        tokenOut
+      ) as GyroEPoolPairData;
+      const amountTokenIn = this._tokenInForExactSpotPriceAfterSwap({
+        spotPrice: bnum(spotPriceAfterSwap),
+        poolPairData,
+      });
+      return this.math
+        ._exactTokenInForTokenOut(poolPairData, amountTokenIn)
+        .toNumber();
+    } else throw new Error("Invalid math instance");
   }
 
   effectivePriceForExactTokenInSwap(
     amountIn: number,
     tokenIn: string,
-    tokenOut: string,
+    tokenOut: string
   ): number {
-    const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
     const amountInBn = bnum(amountIn);
-    const amountOut = this.math._exactTokenInForTokenOut(
-      poolPairData,
-      amountInBn,
-    );
-    return amountInBn.div(amountOut).toNumber();
+    if (this.math instanceof ExtendedMetaStableMath) {
+      const poolPairData = this.math.parsePoolPairData(
+        tokenIn,
+        tokenOut
+      ) as MetaStablePoolPairData;
+      const amountOut = this.math._exactTokenInForTokenOut(
+        poolPairData,
+        amountInBn
+      );
+      return amountInBn.div(amountOut).toNumber();
+    }
+    if (this.math instanceof ExtendedGyroEV2) {
+      const poolPairData = this.math.parsePoolPairData(
+        tokenIn,
+        tokenOut
+      ) as GyroEPoolPairData;
+      const amountOut = this.math._exactTokenInForTokenOut(
+        poolPairData,
+        amountInBn
+      );
+      return amountInBn.div(amountOut).toNumber();
+    } else throw new Error("Invalid math instance");
   }
 
   effectivePriceForExactTokenOutSwap(
     amountOut: number,
     tokenIn: string,
-    tokenOut: string,
+    tokenOut: string
   ): number {
-    const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
     const amountOutBn = bnum(amountOut);
-    const amountIn = this.math._tokenInForExactTokenOut(
-      poolPairData,
-      amountOutBn,
-    );
-    return amountIn.div(amountOutBn).toNumber();
+    if (this.math instanceof ExtendedMetaStableMath) {
+      const poolPairData = this.math.parsePoolPairData(
+        tokenIn,
+        tokenOut
+      ) as MetaStablePoolPairData;
+      const amountIn = this.math._tokenInForExactTokenOut(
+        poolPairData,
+        amountOutBn
+      );
+      return amountIn.div(amountOutBn).toNumber();
+    } else if (this.math instanceof ExtendedGyroEV2) {
+      const poolPairData = this.math.parsePoolPairData(
+        tokenIn,
+        tokenOut
+      ) as GyroEPoolPairData;
+      const amountIn = this.math._tokenInForExactTokenOut(
+        poolPairData,
+        amountOutBn
+      );
+      return amountIn.div(amountOutBn).toNumber();
+    } else {
+      throw new Error("Invalid math instance");
+    }
   }
 
   priceImpactForExactTokenInSwap(
     amountIn: number,
     tokenIn: string,
-    tokenOut: string,
+    tokenOut: string
   ): number {
-    const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
     const amountInBn = bnum(amountIn);
-    const amountOut = this.math._exactTokenInForTokenOut(
-      poolPairData,
-      amountInBn,
-    );
-    const effectivePrice = amountInBn.div(amountOut);
-    const spotPrice = this.math._spotPrice(poolPairData);
-    return bnum(1).minus(spotPrice.div(effectivePrice)).toNumber();
+    if (this.math instanceof ExtendedMetaStableMath) {
+      const poolPairData = this.math.parsePoolPairData(
+        tokenIn,
+        tokenOut
+      ) as MetaStablePoolPairData;
+      const amountOut = this.math._exactTokenInForTokenOut(
+        poolPairData,
+        amountInBn
+      );
+      const effectivePrice = amountInBn.div(amountOut);
+      const spotPrice = this.math._spotPrice(poolPairData);
+      return bnum(1).minus(spotPrice.div(effectivePrice)).toNumber();
+    }
+    if (this.math instanceof ExtendedGyroEV2) {
+      const poolPairData = this.math.parsePoolPairData(
+        tokenIn,
+        tokenOut
+      ) as GyroEPoolPairData;
+      const amountOut = this.math._exactTokenInForTokenOut(
+        poolPairData,
+        amountInBn
+      );
+      const effectivePrice = amountInBn.div(amountOut);
+      const spotPrice = this.math._spotPrice(poolPairData);
+      return bnum(1).minus(spotPrice.div(effectivePrice)).toNumber();
+    } else {
+      throw new Error("Invalid math instance");
+    }
   }
 
   priceImpactForExactTokenInReversedSwap(
     amountIn: number,
     tokenIn: string,
-    tokenOut: string,
+    tokenOut: string
   ): number {
-    const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
     const amountInBn = bnum(amountIn);
-    const amountOut = this.math._exactTokenInForTokenOut(
-      poolPairData,
-      amountInBn,
-    );
-    const effectivePrice = amountInBn.div(amountOut);
-    const spotPrice = this.math._spotPrice(poolPairData);
-    return bnum(1).minus(effectivePrice.div(spotPrice)).toNumber();
+    if (this.math instanceof ExtendedMetaStableMath) {
+      const poolPairData = this.math.parsePoolPairData(
+        tokenIn,
+        tokenOut
+      ) as MetaStablePoolPairData;
+      const amountOut = this.math._exactTokenInForTokenOut(
+        poolPairData,
+        amountInBn
+      );
+      const effectivePrice = amountInBn.div(amountOut);
+      const spotPrice = this.math._spotPrice(poolPairData);
+      return bnum(1).minus(effectivePrice.div(spotPrice)).toNumber();
+    }
+    if (this.math instanceof ExtendedGyroEV2) {
+      const poolPairData = this.math.parsePoolPairData(
+        tokenIn,
+        tokenOut
+      ) as GyroEPoolPairData;
+      const amountOut = this.math._exactTokenInForTokenOut(
+        poolPairData,
+        amountInBn
+      );
+      const effectivePrice = amountInBn.div(amountOut);
+      const spotPrice = this.math._spotPrice(poolPairData);
+      return bnum(1).minus(effectivePrice.div(spotPrice)).toNumber();
+    } else {
+      throw new Error("Invalid math instance");
+    }
   }
 
   priceImpactForExactTokenOutSwap(
     amountOut: number,
     tokenIn: string,
-    tokenOut: string,
+    tokenOut: string
   ): number {
-    const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
     const amountOutBn = bnum(amountOut);
-    const amountIn = this.math._tokenInForExactTokenOut(
-      poolPairData,
-      amountOutBn,
-    );
-    const effectivePrice = amountIn.div(amountOutBn);
-    const spotPrice = this.math._spotPrice(poolPairData);
-    return bnum(1).minus(spotPrice.div(effectivePrice)).toNumber();
+    if (this.math instanceof ExtendedMetaStableMath) {
+      const poolPairData = this.math.parsePoolPairData(
+        tokenIn,
+        tokenOut
+      ) as MetaStablePoolPairData;
+      const amountIn = this.math._tokenInForExactTokenOut(
+        poolPairData,
+        amountOutBn
+      );
+      const effectivePrice = amountIn.div(amountOutBn);
+      const spotPrice = this.math._spotPrice(poolPairData);
+      return bnum(1).minus(spotPrice.div(effectivePrice)).toNumber();
+    }
+    if (this.math instanceof ExtendedGyroEV2) {
+      const poolPairData = this.math.parsePoolPairData(
+        tokenIn,
+        tokenOut
+      ) as GyroEPoolPairData;
+      const amountIn = this.math._tokenInForExactTokenOut(
+        poolPairData,
+        amountOutBn
+      );
+      const effectivePrice = amountIn.div(amountOutBn);
+      const spotPrice = this.math._spotPrice(poolPairData);
+      return bnum(1).minus(spotPrice.div(effectivePrice)).toNumber();
+    } else {
+      throw new Error("Invalid math instance");
+    }
   }
 
   priceImpactForExactTokenOutReversedSwap(
     amountOut: number,
     tokenIn: string,
-    tokenOut: string,
+    tokenOut: string
   ): number {
-    const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
     const amountOutBn = bnum(amountOut);
-    const amountIn = this.math._tokenInForExactTokenOut(
-      poolPairData,
-      amountOutBn,
-    );
-    const effectivePrice = amountIn.div(amountOutBn);
-    const spotPrice = this.math._spotPrice(poolPairData);
-    return bnum(1).minus(effectivePrice.div(spotPrice)).toNumber();
+    if (this.math instanceof ExtendedMetaStableMath) {
+      const poolPairData = this.math.parsePoolPairData(
+        tokenIn,
+        tokenOut
+      ) as MetaStablePoolPairData;
+      const amountIn = this.math._tokenInForExactTokenOut(
+        poolPairData,
+        amountOutBn
+      );
+      const effectivePrice = amountIn.div(amountOutBn);
+      const spotPrice = this.math._spotPrice(poolPairData);
+      return bnum(1).minus(effectivePrice.div(spotPrice)).toNumber();
+    }
+    if (this.math instanceof ExtendedGyroEV2) {
+      const poolPairData = this.math.parsePoolPairData(
+        tokenIn,
+        tokenOut
+      ) as GyroEPoolPairData;
+      const amountIn = this.math._tokenInForExactTokenOut(
+        poolPairData,
+        amountOutBn
+      );
+      const effectivePrice = amountIn.div(amountOutBn);
+      const spotPrice = this.math._spotPrice(poolPairData);
+      return bnum(1).minus(effectivePrice.div(spotPrice)).toNumber();
+    } else {
+      throw new Error("Invalid math instance");
+    }
   }
 }

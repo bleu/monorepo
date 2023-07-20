@@ -40,5 +40,4 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           name: bleu-balancer-tools-pr-${{ github.event.number }}-preview
-        # with:
-        #   org: bleu
+          org: bleu

@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es2018",
+    "module": "commonjs",
+    "outDir": "dist",
+    "declaration": true,
+    "resolveJsonModule": true
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "./tasks",
+    "./test"
+  ],
+  "exclude": ["node_modules"],
+  "extends": "@bleu-balancer-tools/tsconfig/base.json"
+}

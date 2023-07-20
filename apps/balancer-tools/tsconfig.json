@@ -1,0 +1,20 @@
+{
+  "extends": "@bleu-balancer-tools/tsconfig/nextjs.json",
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "baseUrl": ".",
+    "paths": {
+      "#/*": ["./src/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "../utils/networkMultisigs.ts"
+  ],
+  "exclude": ["node_modules"],
+  "types": ["jest", "node"]
+}

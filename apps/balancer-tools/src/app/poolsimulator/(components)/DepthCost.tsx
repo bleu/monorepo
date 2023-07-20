@@ -1,6 +1,6 @@
 "use client";
 
-import { AMM } from "@bleu-balancer-tools/math-new/src";
+import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
 import { PlotType } from "plotly.js";
 
 import Plot, { defaultAxisLayout } from "#/components/Plot";
@@ -96,9 +96,9 @@ export function DepthCost() {
 
   const props = {
     data: data,
-    title: "Depth cost (-/+ 2% of price change)",
+    title: "Depth cost (2% of price change)",
     toolTip:
-      "Indicates the amount of tokens needed on a swap to alter the spot price (rate between the price of both tokens) to -2% and +2%",
+      "Indicates the amount of tokens needed on a swap to alter the spot price (rate between the price of both tokens) in 2%",
     layout: {
       margin: { l: 3, r: 3 },
       xaxis: {
@@ -135,7 +135,6 @@ const createHoverTemplate = (
   amounts: number[],
   analysisSymbol: string | undefined,
   tokenSymbols: string[],
-  templateDirection: string,
 ): string[] => {
   return amounts.map((amount, i) => {
     const displayAmount = `${formatNumber(amount, 2)} ${analysisSymbol}`;
@@ -144,7 +143,12 @@ const createHoverTemplate = (
         ? `${displayAmount} for ${tokenSymbols[i]}`
         : `${tokenSymbols[i]} for ${displayAmount}`;
 
-    return `Swap ${action} to move the price ${tokenSymbols[i]}/${analysisSymbol} on ${templateDirection} <extra></extra>`;
+    const price =
+      direction === "in"
+        ? `${analysisSymbol}/${tokenSymbols[i]}`
+        : `${tokenSymbols[i]}/${analysisSymbol}`;
+
+    return `Swap ${action} to move the price ${price} on 2% <extra></extra>`;
   });
 };
 
@@ -160,8 +164,6 @@ const createDataObject = (
   yAxis = "",
   xAxis = "",
 ) => {
-  const templateDirection = direction === "in" ? "-2%" : "+2%";
-
   return {
     x,
     y,
@@ -177,7 +179,6 @@ const createDataObject = (
       hovertemplateData,
       analysisSymbol,
       x,
-      templateDirection,
     ),
   };
 };
@@ -194,17 +195,17 @@ function calculateDepthCostAmount(
 
   const currentSpotPrice = amm.spotPrice(tokenIn.symbol, tokenOut.symbol);
 
-  const newSpotPriceToStableMath = currentSpotPrice * 1.02;
+  const newSpotPrice = currentSpotPrice * 1.02;
 
   if (poolSide === "in") {
     return amm.tokenInForExactSpotPriceAfterSwap(
-      newSpotPriceToStableMath,
+      newSpotPrice,
       tokenIn.symbol,
       tokenOut.symbol,
     );
   }
   return amm.tokenOutForExactSpotPriceAfterSwap(
-    newSpotPriceToStableMath,
+    newSpotPrice,
     tokenIn.symbol,
     tokenOut.symbol,
   );

@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 
-import EmptyWalletImage from "#/assets/empty-wallet.svg";
 import { Badge } from "#/components/Badge";
 import { BaseInput } from "#/components/Input";
 import Sidebar from "#/components/Sidebar";
@@ -84,7 +83,12 @@ function OwnedPoolsSidebarItems({
       <>
         <div className="text-slate12">No pools here!</div>
         <div className="mb-4 text-amber10">Please select another network.</div>
-        <Image src={EmptyWalletImage} height={500} width={500} alt="" />
+        <Image
+          src={"/assets/empty-wallet.svg"}
+          height={500}
+          width={500}
+          alt=""
+        />
       </>
     );
 

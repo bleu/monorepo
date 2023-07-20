@@ -1,7 +1,7 @@
 // @ts-nocheck - TODO: remove this comment once plotly.js types are fixed (legendgrouptitle on PlotParams)
 "use client";
 
-import { AMM } from "@bleu-balancer-tools/math-new/src";
+import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
 
 import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
@@ -85,7 +85,7 @@ export function ImpactCurve() {
 
       const impact = formatNumber(impactData[i] / 100, 2, "percent");
 
-      return `Swap ${swapAction} causes a Price Impact of ${impact} ${currentTabToken.symbol}/${analysisToken.symbol} <extra></extra>`;
+      return `Swap ${swapAction} causes a Price Impact of ${impact} ${swapFromSymbol}/${swapToSymbol} <extra></extra>`;
     });
   };
 

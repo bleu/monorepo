@@ -1,7 +1,7 @@
 // @ts-nocheck - TODO: remove this comment once plotly.js types are fixed (legendgrouptitle on PlotParams)
 "use client";
 
-import { MetaStableMath } from "@bleu-balancer-tools/math/src";
+import { MetaStableMath } from "@bleu-balancer-tools/math-stableswapsimulator/src";
 
 import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";

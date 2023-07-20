@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-import ConnectWalletImage from "#/assets/connect-wallet.svg";
 import { Spinner } from "#/components/Spinner";
 import { useStableSwap } from "#/contexts/PoolSimulatorContext";
 
@@ -66,7 +65,12 @@ export default function Page() {
           <div className="text-center text-lg text-slate11">
             {content[poolDataStatus].subtitle}
           </div>
-          <Image src={ConnectWalletImage} height={500} width={500} alt="" />
+          <Image
+            src={"/assets/connect-wallet.svg"}
+            height={500}
+            width={500}
+            alt=""
+          />
         </div>
       )}
     </div>

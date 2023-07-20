@@ -4,7 +4,6 @@ import { Network } from "@bleu-balancer-tools/utils";
 import * as React from "react";
 import { useNetwork } from "wagmi";
 
-import balancerSymbol from "#/assets/balancer-symbol.svg";
 import { Header, HeaderNetworkMismatchAlert } from "#/components/Header";
 import { CheckSupportedChains } from "#/components/SupportedChain";
 import { InternalManagerProvider } from "#/contexts/InternalManagerContext";
@@ -22,7 +21,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <Header
           linkUrl={`/internalmanager/${network}`}
           title={"Internal Manager"}
-          imageSrc={balancerSymbol}
+          imageSrc={"/assets/balancer-symbol.svg"}
         />
         <InternalManagerProvider>
           <CheckSupportedChains

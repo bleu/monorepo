@@ -1,6 +1,6 @@
 "use client";
 
-import { MetaStableMath } from "@bleu-balancer-tools/math/src";
+import { MetaStableMath } from "@bleu-balancer-tools/math-stableswapsimulator/src";
 import { PlotType } from "plotly.js";
 
 import Plot from "#/components/Plot";

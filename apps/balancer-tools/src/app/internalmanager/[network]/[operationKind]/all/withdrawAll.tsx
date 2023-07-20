@@ -10,7 +10,6 @@ import { FieldValues, useForm } from "react-hook-form";
 import { useAccount, useNetwork } from "wagmi";
 
 import { ToastContent } from "#/app/metadata/[network]/pool/[poolId]/(components)/MetadataAttributesTable/TransactionModal";
-import genericTokenLogo from "#/assets/generic-token-logo.png";
 import { Button } from "#/components";
 import { Input } from "#/components/Input";
 import { LinkComponent } from "#/components/Link";
@@ -137,7 +136,7 @@ export function WithdrawAll() {
                             tokenLogoUri[
                               token?.tokenInfo
                                 ?.symbol as keyof typeof tokenLogoUri
-                            ] || genericTokenLogo
+                            ] || "/assets/generic-token-logo.png"
                           }
                           className="rounded-full"
                           alt="Token Logo"

@@ -170,8 +170,12 @@ export class ExtendedMetaStableMath extends MetaStablePool {
       true,
       false,
     );
-    return ONE.div(
+    const spotPriceWithoutRates = ONE.div(
       ans.times(EONE.sub(swapFee).toString()).div(EONE.toString()),
     );
+
+    const priceRateIn = bnum(formatFixed(poolPairData.tokenInPriceRate, 18));
+    const priceRateOut = bnum(formatFixed(poolPairData.tokenOutPriceRate, 18));
+    return spotPriceWithoutRates.times(priceRateOut).div(priceRateIn);
   }
 }

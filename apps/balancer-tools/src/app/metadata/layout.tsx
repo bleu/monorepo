@@ -8,7 +8,6 @@ import * as React from "react";
 import { Suspense } from "react";
 import { useNetwork } from "wagmi";
 
-import balancerSymbol from "#/assets/balancer-symbol.svg";
 import { Dialog } from "#/components/Dialog";
 import { Header, HeaderNetworkMismatchAlert } from "#/components/Header";
 import { PoolAttribute, SearchPoolForm } from "#/components/SearchPoolForm";
@@ -39,7 +38,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
         <Header
           linkUrl={`/metadata/${network}/`}
           title={"Pool Metadata"}
-          imageSrc={balancerSymbol}
+          imageSrc={"/assets/balancer-symbol.svg"}
         />
         <div className="flex flex-1 gap-x-8">
           <PoolMetadataProvider>

@@ -1,10 +1,6 @@
 {
   "compilerOptions": {
-<<<<<<< HEAD
     "baseUrl": ".",
-=======
-    "baseUrl": "src",
->>>>>>> main
     "paths": {
       "*": ["*"]
     }

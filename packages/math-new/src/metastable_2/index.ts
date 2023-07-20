@@ -1,3 +1,4 @@
+// Place holder about how to add a new pool type
 import { MetaStablePool, SubgraphToken } from "@balancer-labs/sor";
 
 import { ExtendedMetaStableMath } from "../metastable";

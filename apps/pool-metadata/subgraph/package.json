@@ -1,0 +1,28 @@
+{
+  "name": "@bleu/balancer-pools-metadata-subgraph",
+  "version": "1.0.0",
+  "scripts": {
+    "codegen:all": "pnpm generate-manifests && for file in $(ls | grep 'subgraph\\..*\\.yaml'); do graph codegen $file --output-dir src/types/; done",
+    "codegen:goerli": "pnpm generate-manifests && graph codegen subgraph.goerli.yaml --output-dir src/types/",
+    "codegen:matic": "pnpm generate-manifests && graph codegen subgraph.matic.yaml --output-dir src/types/",
+    "build": "graph build",
+    "generate-manifests": "ts-node ./scripts/generate-manifests",
+    "deploy": "for file in $(ls | grep 'subgraph\\..*\\.yaml'); do graph deploy --node https://api.studio.thegraph.com/deploy/ PoolMetadataRegistrySubgraph $file; done",
+    "create-local": "graph create --node http://localhost:8020/ PoolMetadataRegistrySubgraph",
+    "remove-local": "graph remove --node http://localhost:8020/ PoolMetadataRegistrySubgraph",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 PoolMetadataRegistrySubgraph",
+    "test": "graph test"
+  },
+  "devDependencies": {
+    "@bleu-balancer-tools/utils": "workspace:^",
+    "@bleu-balancer-tools/tsconfig": "workspace:*",
+    "@graphprotocol/graph-cli": "0.52.0",
+    "@graphprotocol/graph-ts": "0.31.0",
+    "@types/fs-extra": "^11.0.1",
+    "@types/js-yaml": "^4.0.5",
+    "handlebars": "^4.7.7",
+    "js-yaml": "^4.1.0",
+    "matchstick-as": "0.5.2",
+    "ts-node": "^10.9.1"
+  }
+}

@@ -8,7 +8,6 @@
     "react-library.json"
   ],
   "devDependencies": {
-    "@bleu-balancer-tools/shared": "workspace:^",
-    "typescript": "^5.0.4"
+    "typescript": "^5.1.6"
   }
 }

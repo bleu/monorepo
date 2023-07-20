@@ -5,10 +5,10 @@ on:
     branches:
       - main
     paths:
-      - "packages/contracts/**"
+      - "apps/pool-metadata/contracts/**"
   pull_request:
     paths:
-      - "packages/contracts/**"
+      - "apps/pool-metadata/contracts/**"
 
 env:
   FOUNDRY_PROFILE: ci
@@ -16,7 +16,7 @@ env:
 defaults:
   run:
     shell: bash
-    working-directory: ./packages/contracts
+    working-directory: ./apps/pool-metadata/contracts
 
 jobs:
   foundry:

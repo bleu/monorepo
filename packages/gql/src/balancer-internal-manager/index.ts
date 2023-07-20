@@ -1,4 +1,4 @@
-import { Network } from "@bleu-balancer-tools/shared";
+import { Network } from "@bleu-balancer-tools/utils";
 
 import { getSdkWithHooks as arbitrumSdk } from "./__generated__/Arbitrum";
 import { getSdkWithHooks as ethereumSdk } from "./__generated__/Ethereum";

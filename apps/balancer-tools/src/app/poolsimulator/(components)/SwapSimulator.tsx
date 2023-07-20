@@ -1,4 +1,4 @@
-import { AMM } from "@bleu-balancer-tools/math-new/src";
+import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
 import { Controller, useForm } from "react-hook-form";
 
 import { BaseInput, Input } from "#/components/Input";

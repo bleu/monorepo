@@ -1,7 +1,7 @@
 // @ts-nocheck - TODO: remove this comment once plotly.js types are fixed (legendgrouptitle on PlotParams)
 "use client";
 
-import { AMM } from "@bleu-balancer-tools/math-new/src";
+import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
 
 import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";

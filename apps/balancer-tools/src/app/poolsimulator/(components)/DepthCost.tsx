@@ -1,6 +1,6 @@
 "use client";
 
-import { AMM } from "@bleu-balancer-tools/math-new/src";
+import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
 import { PlotType } from "plotly.js";
 
 import Plot, { defaultAxisLayout } from "#/components/Plot";

@@ -1,5 +1,5 @@
 import { OldBigNumber } from "@balancer-labs/sor";
-import { MetaStableMath } from "@bleu-balancer-tools/math/src";
+import { MetaStableMath } from "@bleu-balancer-tools/math-stableswapsimulator/src";
 import { Controller, useForm } from "react-hook-form";
 
 import { BaseInput, Input } from "#/components/Input";

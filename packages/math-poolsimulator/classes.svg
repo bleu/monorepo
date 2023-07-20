@@ -1,0 +1,216 @@
+<svg version="1.1" baseProfile="full" width="1547.5" height="609.0" viewbox="0 0 1547.5 609" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events">
+<desc >#.interface: fill=lightblue
+#.enumeration: fill=lightgreen
+#.type: fill=lightgray
+[AMM|+math: ExtendedMetaStableMath \| ExtendedMetaStableMath_2|+exactTokenInForTokenOut(): number;+tokenInForExactTokenOut(): number;+spotPrice(): number;+_tokenInForExactSpotPriceAfterSwap(): OldBigNumber;+tokenInForExactSpotPriceAfterSwap(): number;+tokenOutForExactSpotPriceAfterSwap(): number;+effectivePriceForExactTokenInSwap(): number;+effectivePriceForExactTokenOutSwap(): number;+priceImpactForExactTokenInSwap(): number;+priceImpactForExactTokenInReversedSwap(): number;+priceImpactForExactTokenOutSwap(): number;+priceImpactForExactTokenOutReversedSwap(): number]
+[&lt;interface&gt;IAMM|+poolType: &quot;MetaStable&quot; \| &quot;MockMetaStable&quot;;+poolParams: IMetaStableMath \| IMetaStableMath_2|]
+[AMM]  -  [ExtendedMetaStableMath]
+[AMM]  -  [ExtendedMetaStableMath_2]
+[IAMM]  -  [IMetaStableMath]
+[IAMM]  -  [IMetaStableMath_2]
+[ExtendedMetaStableMath||+static fromPool(): ExtendedMetaStableMath;+parsePoolPairData(): MetaStablePoolPairData;+_poolDerivatives(): OldBigNumber;+_spotPrice(): OldBigNumber]
+[&lt;interface&gt;IMetaStableMath|+amp: string;+swapFee: string;+totalShares: string;+tokens: MetaStablePoolToken\[\];+tokensList: string\[\]|]
+[MetaStablePool]&lt;:-[ExtendedMetaStableMath]
+[ExtendedMetaStableMath_2|+newParam: string|]
+[&lt;interface&gt;IMetaStableMath_2|+amp: string;+swapFee: string;+totalShares: string;+tokens: MetaStablePoolToken\[\];+tokensList: string\[\];+newParam: string|]
+[ExtendedMetaStableMath]&lt;:-[ExtendedMetaStableMath_2]</desc>
+<g stroke-width="1.0" text-align="left" font="12pt Helvetica, Arial, sans-serif" font-size="12pt" font-family="Helvetica" font-weight="bold" font-style="normal">
+<g font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" stroke-width="3.0" stroke-linejoin="round" stroke-linecap="round" stroke="#33322E">
+<g stroke="transparent" fill="transparent">
+<rect x="0.0" y="0.0" height="609.0" width="1547.5" stroke="none"></rect>
+</g>
+<g transform="translate(8, 8)" fill="#33322E">
+<g transform="translate(20, 20)" fill="#eee8d5" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal">
+<path d="M516.0 173.0 L1132.5 278 L1194.9324324324325 313 L1194.9 313.0 " fill="none"></path>
+<path d="M258.0 258.0 L258 278 L258 370.5 L258 370.5 L258 463 L258 463 L580.25 503.121675155631 L580.3 503.1 " fill="none"></path>
+<path d="M723.4 171.5 L602.75 278 L602.75 305.5 L602.8 305.5 " fill="none"></path>
+<path d="M816.0 171.5 L927.5 278 L927.5 298 L927.5 298.0 " fill="none"></path>
+<path d="M1317.5 157.8 L1317.5 278 L1309.9324324324325 313 L1309.9 313.0 " fill="none"></path>
+<path d="M1322.8 157.8 L1317.5 157.8 L1312.2 157.8 L1317.5 144.5 Z"></path>
+<path d="M1297.5 441.3 L1297.5 463 L819.25 507.0046005855291 L819.3 507.0 " fill="none"></path>
+<path d="M1302.8 441.3 L1297.5 441.3 L1292.2 441.3 L1297.5 428.0 Z"></path>
+<g data-name="AMM">
+<g fill="#eee8d5" stroke="#33322E" data-name="AMM">
+<rect x="0.0" y="0.0" height="258.0" width="516.0" data-name="AMM"></rect>
+<path d="M0.0 31.0 L516.0 31.0" fill="none" data-name="AMM"></path>
+<path d="M0.0 62.0 L516.0 62.0" fill="none" data-name="AMM"></path>
+</g>
+<g transform="translate(0, 0)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="AMM">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="AMM">
+<a id="src/index.ts.AMM" xlink:href="src/index.ts"><text x="250.0" y="13.5" stroke="none" text-anchor="middle" data-name="AMM">AMM</text></a>
+
+</g>
+</g>
+<g transform="translate(0, 31)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AMM">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="AMM">
+<text x="0.0" y="13.5" stroke="none" data-name="AMM">+math: ExtendedMetaStableMath | ExtendedMetaStableMath_2</text>
+
+</g>
+</g>
+<g transform="translate(0, 62)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AMM">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="AMM">
+<text x="0.0" y="13.5" stroke="none" data-name="AMM">+exactTokenInForTokenOut(): number</text>
+<text x="0.0" y="28.5" stroke="none" data-name="AMM">+tokenInForExactTokenOut(): number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="AMM">+spotPrice(): number</text>
+<text x="0.0" y="58.5" stroke="none" data-name="AMM">+_tokenInForExactSpotPriceAfterSwap(): OldBigNumber</text>
+<text x="0.0" y="73.5" stroke="none" data-name="AMM">+tokenInForExactSpotPriceAfterSwap(): number</text>
+<text x="0.0" y="88.5" stroke="none" data-name="AMM">+tokenOutForExactSpotPriceAfterSwap(): number</text>
+<text x="0.0" y="103.5" stroke="none" data-name="AMM">+effectivePriceForExactTokenInSwap(): number</text>
+<text x="0.0" y="118.5" stroke="none" data-name="AMM">+effectivePriceForExactTokenOutSwap(): number</text>
+<text x="0.0" y="133.5" stroke="none" data-name="AMM">+priceImpactForExactTokenInSwap(): number</text>
+<text x="0.0" y="148.5" stroke="none" data-name="AMM">+priceImpactForExactTokenInReversedSwap(): number</text>
+<text x="0.0" y="163.5" stroke="none" data-name="AMM">+priceImpactForExactTokenOutSwap(): number</text>
+<text x="0.0" y="178.5" stroke="none" data-name="AMM">+priceImpactForExactTokenOutReversedSwap(): number</text>
+
+</g>
+</g>
+</g>
+<g data-name="IAMM">
+<g fill="lightblue" stroke="#33322E" data-name="IAMM">
+<rect x="556.0" y="86.5" height="85.0" width="431.0" data-name="IAMM"></rect>
+<path d="M556.0 117.5 L987.0 117.5" fill="none" data-name="IAMM"></path>
+<path d="M556.0 163.5 L987.0 163.5" fill="none" data-name="IAMM"></path>
+</g>
+<g transform="translate(556, 86.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="IAMM">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="IAMM">
+<a id="src/index.ts.IAMM" xlink:href="src/index.ts"><text x="207.5" y="13.5" stroke="none" text-anchor="middle" data-name="IAMM">IAMM</text></a>
+
+</g>
+</g>
+<g transform="translate(556, 117.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="IAMM">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="IAMM">
+<text x="0.0" y="13.5" stroke="none" data-name="IAMM">+poolType: &quot;MetaStable&quot; | &quot;MockMetaStable&quot;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="IAMM">+poolParams: IMetaStableMath | IMetaStableMath_2</text>
+
+</g>
+</g>
+<g transform="translate(556, 163.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="IAMM">
+<g transform="translate(8, 8)" fill="#33322E" data-name="IAMM">
+
+</g>
+</g>
+</g>
+<g data-name="ExtendedMetaStableMath">
+<g fill="#eee8d5" stroke="#33322E" data-name="ExtendedMetaStableMath">
+<rect x="1103.5" y="313.0" height="115.0" width="388.0" data-name="ExtendedMetaStableMath"></rect>
+<path d="M1103.5 344.0 L1491.5 344.0" fill="none" data-name="ExtendedMetaStableMath"></path>
+<path d="M1103.5 352.0 L1491.5 352.0" fill="none" data-name="ExtendedMetaStableMath"></path>
+</g>
+<g transform="translate(1103.5, 313)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="ExtendedMetaStableMath">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ExtendedMetaStableMath">
+<a id="src/metastable/index.ts.ExtendedMetaStableMath" xlink:href="src/metastable/index.ts"><text x="186.0" y="13.5" stroke="none" text-anchor="middle" data-name="ExtendedMetaStableMath">ExtendedMetaStableMath</text></a>
+
+</g>
+</g>
+<g transform="translate(1103.5, 344)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ExtendedMetaStableMath">
+<g transform="translate(8, 8)" fill="#33322E" data-name="ExtendedMetaStableMath">
+
+</g>
+</g>
+<g transform="translate(1103.5, 352)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ExtendedMetaStableMath">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ExtendedMetaStableMath">
+<text x="0.0" y="13.5" stroke="none" data-name="ExtendedMetaStableMath">+static fromPool(): ExtendedMetaStableMath</text>
+<text x="0.0" y="28.5" stroke="none" data-name="ExtendedMetaStableMath">+parsePoolPairData(): MetaStablePoolPairData</text>
+<text x="0.0" y="43.5" stroke="none" data-name="ExtendedMetaStableMath">+_poolDerivatives(): OldBigNumber</text>
+<text x="0.0" y="58.5" stroke="none" data-name="ExtendedMetaStableMath">+_spotPrice(): OldBigNumber</text>
+
+</g>
+</g>
+</g>
+<g data-name="ExtendedMetaStableMath_2">
+<g fill="#eee8d5" stroke="#33322E" data-name="ExtendedMetaStableMath_2">
+<rect x="580.3" y="483.0" height="70.0" width="239.0" data-name="ExtendedMetaStableMath_2"></rect>
+<path d="M580.3 514.0 L819.3 514.0" fill="none" data-name="ExtendedMetaStableMath_2"></path>
+<path d="M580.3 545.0 L819.3 545.0" fill="none" data-name="ExtendedMetaStableMath_2"></path>
+</g>
+<g transform="translate(580.25, 483)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="ExtendedMetaStableMath_2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ExtendedMetaStableMath_2">
+<a id="src/metastable_2/index.ts.ExtendedMetaStableMath_2" xlink:href="src/metastable_2/index.ts"><text x="111.5" y="13.5" stroke="none" text-anchor="middle" data-name="ExtendedMetaStableMath_2">ExtendedMetaStableMath_2</text></a>
+
+</g>
+</g>
+<g transform="translate(580.25, 514)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ExtendedMetaStableMath_2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ExtendedMetaStableMath_2">
+<text x="0.0" y="13.5" stroke="none" data-name="ExtendedMetaStableMath_2">+newParam: string</text>
+
+</g>
+</g>
+<g transform="translate(580.25, 545)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ExtendedMetaStableMath_2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="ExtendedMetaStableMath_2">
+
+</g>
+</g>
+</g>
+<g data-name="IMetaStableMath">
+<g fill="lightblue" stroke="#33322E" data-name="IMetaStableMath">
+<rect x="466.8" y="305.5" height="130.0" width="272.0" data-name="IMetaStableMath"></rect>
+<path d="M466.8 336.5 L738.8 336.5" fill="none" data-name="IMetaStableMath"></path>
+<path d="M466.8 427.5 L738.8 427.5" fill="none" data-name="IMetaStableMath"></path>
+</g>
+<g transform="translate(466.75, 305.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="IMetaStableMath">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="IMetaStableMath">
+<a id="src/metastable/index.ts.IMetaStableMath" xlink:href="src/metastable/index.ts"><text x="128.0" y="13.5" stroke="none" text-anchor="middle" data-name="IMetaStableMath">IMetaStableMath</text></a>
+
+</g>
+</g>
+<g transform="translate(466.75, 336.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="IMetaStableMath">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="IMetaStableMath">
+<text x="0.0" y="13.5" stroke="none" data-name="IMetaStableMath">+amp: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="IMetaStableMath">+swapFee: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="IMetaStableMath">+totalShares: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="IMetaStableMath">+tokens: MetaStablePoolToken[]</text>
+<text x="0.0" y="73.5" stroke="none" data-name="IMetaStableMath">+tokensList: string[]</text>
+
+</g>
+</g>
+<g transform="translate(466.75, 427.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="IMetaStableMath">
+<g transform="translate(8, 8)" fill="#33322E" data-name="IMetaStableMath">
+
+</g>
+</g>
+</g>
+<g data-name="IMetaStableMath_2">
+<g fill="lightblue" stroke="#33322E" data-name="IMetaStableMath_2">
+<rect x="791.5" y="298.0" height="145.0" width="272.0" data-name="IMetaStableMath_2"></rect>
+<path d="M791.5 329.0 L1063.5 329.0" fill="none" data-name="IMetaStableMath_2"></path>
+<path d="M791.5 435.0 L1063.5 435.0" fill="none" data-name="IMetaStableMath_2"></path>
+</g>
+<g transform="translate(791.5, 298)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="IMetaStableMath_2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="IMetaStableMath_2">
+<a id="src/metastable_2/index.ts.IMetaStableMath_2" xlink:href="src/metastable_2/index.ts"><text x="128.0" y="13.5" stroke="none" text-anchor="middle" data-name="IMetaStableMath_2">IMetaStableMath_2</text></a>
+
+</g>
+</g>
+<g transform="translate(791.5, 329)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="IMetaStableMath_2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="IMetaStableMath_2">
+<text x="0.0" y="13.5" stroke="none" data-name="IMetaStableMath_2">+amp: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="IMetaStableMath_2">+swapFee: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="IMetaStableMath_2">+totalShares: string</text>
+<text x="0.0" y="58.5" stroke="none" data-name="IMetaStableMath_2">+tokens: MetaStablePoolToken[]</text>
+<text x="0.0" y="73.5" stroke="none" data-name="IMetaStableMath_2">+tokensList: string[]</text>
+<text x="0.0" y="88.5" stroke="none" data-name="IMetaStableMath_2">+newParam: string</text>
+
+</g>
+</g>
+<g transform="translate(791.5, 435)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="IMetaStableMath_2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="IMetaStableMath_2">
+
+</g>
+</g>
+</g>
+<g data-name="MetaStablePool">
+<g fill="#eee8d5" stroke="#33322E" data-name="MetaStablePool">
+<rect x="1247.5" y="113.5" height="31.0" width="140.0" data-name="MetaStablePool"></rect>
+</g>
+<g transform="translate(1247.5, 113.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="MetaStablePool">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="MetaStablePool">
+<text x="62.0" y="13.5" stroke="none" text-anchor="middle" data-name="MetaStablePool">MetaStablePool</text>
+
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</svg>

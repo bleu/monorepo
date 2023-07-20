@@ -1,5 +1,0 @@
-{
-  "include": ["**/*.ts"],
-  "exclude": ["node_modules"],
-  "extends": "@bleu-balancer-tools/tsconfig/base.json"
-}

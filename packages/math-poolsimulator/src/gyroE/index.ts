@@ -1,30 +1,20 @@
 import {
   balancesFromTokenInOut,
   bnum,
+  DerivedGyroEParams,
+  GyroEMathFunctions,
+  GyroEMaths,
+  GyroEParams,
+  GyroEV2Pool,
+  GyroHelpers,
+  GyroHelpersSignedFixedPoint,
   OldBigNumber,
+  safeParseFixed,
   SubgraphToken,
-  ZERO,
-} from "@balancer-labs/sor";
+  Vector2} from "@balancer-labs/sor";
 import { BigNumber, formatFixed } from "@ethersproject/bignumber";
 import { WeiPerEther as EONE } from "@ethersproject/constants";
 
-import {
-  DerivedGyroEParams,
-  GyroEParams,
-  GyroEV2Pool,
-  Vector2,
-} from "../../../../lib/bleu-balancer-sor/src/";
-import { calculateInvariantWithError } from "../../../../lib/bleu-balancer-sor/src/pools/gyroEPool/gyroEMath/gyroEMath";
-import {
-  calcSpotPriceXGivenY,
-  calcSpotPriceYGivenX,
-} from "../../../../lib/bleu-balancer-sor/src/pools/gyroEPool/gyroEMath/gyroEMathFunctions";
-import { normalizeBalances } from "../../../../lib/bleu-balancer-sor/src/pools/gyroEV2Pool/gyroEV2Math/gyroEV2MathHelpers";
-import {
-  divDown,
-  mulDown,
-} from "../../../../lib/bleu-balancer-sor/src/pools/gyroHelpers/gyroSignedFixedPoint";
-import { safeParseFixed } from "../../../../lib/bleu-balancer-sor/src/utils";
 
 type GyroEPoolToken = Pick<SubgraphToken, "address" | "balance" | "decimals">;
 export type GyroEPoolPairData = ReturnType<
@@ -115,8 +105,8 @@ export class ExtendedGyroEV2 extends GyroEV2Pool {
     swapFee: BigNumber
   ): BigNumber {
     const calcSpotPriceGiven = tokenInIsToken0
-      ? calcSpotPriceYGivenX
-      : calcSpotPriceXGivenY;
+      ? GyroEMathFunctions.calcSpotPriceYGivenX
+      : GyroEMathFunctions.calcSpotPriceXGivenY;
 
     const newSpotPriceFactor = calcSpotPriceGiven(
       balances[Number(!tokenInIsToken0)],
@@ -124,51 +114,35 @@ export class ExtendedGyroEV2 extends GyroEV2Pool {
       derived,
       invariant
     );
-    return divDown(EONE, mulDown(newSpotPriceFactor, EONE.sub(swapFee)));
+    return GyroHelpersSignedFixedPoint.divDown(EONE, GyroHelpersSignedFixedPoint.mulDown(newSpotPriceFactor, EONE.sub(swapFee)));
   }
   _spotPrice(poolPairData: GyroEPoolPairData): OldBigNumber {
-    // Alias for code readability. Observe that `balancesFromTokenInOut()` is its own inverse.
-    const valuesInOutFrom01 = balancesFromTokenInOut;
-    try {
-      const tokenRateInOut = valuesInOutFrom01(
-        this.tokenRates[0],
-        this.tokenRates[1],
-        poolPairData.tokenInIsToken0
-      );
-      const normalizedBalances = normalizeBalances(
-        [poolPairData.balanceIn, poolPairData.balanceOut],
-        [poolPairData.decimalsIn, poolPairData.decimalsOut],
-        tokenRateInOut
-      );
-      const orderedNormalizedBalances = balancesFromTokenInOut(
-        normalizedBalances[0],
-        normalizedBalances[1],
-        poolPairData.tokenInIsToken0
-      );
-      const [currentInvariant, invErr] = calculateInvariantWithError(
-        orderedNormalizedBalances,
-        this.gyroEParams,
-        this.derivedGyroEParams
-      );
-      const invariant: Vector2 = {
-        x: currentInvariant.add(invErr.mul(2)),
-        y: currentInvariant,
-      };
-      const newSpotPriceScaled = this.calcSpotPriceWithoutSwap(
-        orderedNormalizedBalances,
-        poolPairData.tokenInIsToken0,
-        this.gyroEParams,
-        this.derivedGyroEParams,
-        invariant,
-        poolPairData.swapFee
-      );
-      const newSpotPrice = divDown(
-        mulDown(newSpotPriceScaled, tokenRateInOut[1]),
-        tokenRateInOut[0]
-      );
-      return bnum(formatFixed(newSpotPrice, 18));
-    } catch (err) {
-      return ZERO;
-    }
+    const normalizedBalances = GyroHelpers._normalizeBalances(
+      [poolPairData.balanceIn, poolPairData.balanceOut],
+      [poolPairData.decimalsIn, poolPairData.decimalsOut]
+    );
+    const orderedNormalizedBalances = balancesFromTokenInOut(
+      normalizedBalances[0],
+      normalizedBalances[1],
+      poolPairData.tokenInIsToken0
+    );
+    const [currentInvariant, invErr] = GyroEMaths.calculateInvariantWithError(
+      orderedNormalizedBalances,
+      this.gyroEParams,
+      this.derivedGyroEParams
+    );
+    const invariant: Vector2 = {
+      x: currentInvariant.add(invErr.mul(2)),
+      y: currentInvariant,
+    };
+    const newSpotPrice = this.calcSpotPriceWithoutSwap(
+      orderedNormalizedBalances,
+      poolPairData.tokenInIsToken0,
+      this.gyroEParams,
+      this.derivedGyroEParams,
+      invariant,
+      poolPairData.swapFee
+    );
+    return bnum(formatFixed(newSpotPrice, 18));
   }
 }

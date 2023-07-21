@@ -18,14 +18,32 @@ import { pools } from "#/lib/gql";
 export interface TokensData {
   symbol: string;
   balance: number;
-  rate: number;
   decimal: number;
+  rate?: number;
+  weight?: number;
 }
 
-export interface AnalysisData {
-  tokens: TokensData[];
+export interface MetaStableParams {
   ampFactor?: number;
   swapFee?: number;
+}
+
+export interface ECLPParams {
+  alpha?: number;
+  beta?: number;
+  lambda?: number;
+  c?: number;
+  s?: number;
+  swapFee?: number;
+}
+
+export type PoolParams = MetaStableParams & ECLPParams;
+export type PoolType = "MetaStable" | "ECLP";
+export const POOL_TYPES: PoolType[] = ["MetaStable", "ECLP"];
+export interface AnalysisData {
+  tokens: TokensData[];
+  poolType?: PoolType;
+  poolParams?: PoolParams;
 }
 
 interface StableSwapContextType {
@@ -55,13 +73,14 @@ const defaultPool = {
 };
 
 function convertAnalysisDataToAMM(data: AnalysisData) {
+  const poolParams = data.poolParams as MetaStableParams;
   return new AMM({
     poolType: "MetaStable",
     poolParams: {
-      amp: String(data.ampFactor),
-      swapFee: String(data.swapFee),
+      amp: String(poolParams.ampFactor),
+      swapFee: String(poolParams.swapFee),
       totalShares: String(
-        data.tokens.reduce((acc, token) => acc + token.balance, 0),
+        data.tokens.reduce((acc, token) => acc + token.balance, 0)
       ),
       tokens: data.tokens.map((token) => ({
         address: String(token.symbol), // math use address as key, but we will use symbol because custom token will not have address
@@ -80,8 +99,7 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
   const pathname = usePathname();
   const { push } = useRouter();
   const defaultAnalysisData: AnalysisData = {
-    ampFactor: undefined,
-    swapFee: undefined,
+    poolParams: undefined,
     tokens: [],
   };
 
@@ -140,8 +158,8 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     if (
       initialData.tokens.length < 2 &&
-      !initialData.ampFactor &&
-      !initialData.swapFee
+      !initialData.poolType &&
+      !initialData.poolParams?.swapFee // all pool type have swapFee
     )
       return;
     setInitialAMM(convertAnalysisDataToAMM(initialData));
@@ -150,8 +168,8 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     if (
       customData.tokens.length < 2 &&
-      !customData.ampFactor &&
-      !customData.swapFee
+      !customData.poolType &&
+      !customData.poolParams?.swapFee // all pool type have swapFee
     )
       return;
     setCustomAMM(convertAnalysisDataToAMM(customData));
@@ -173,8 +191,11 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
 
   function convertGqlToAnalysisData(poolData: PoolQuery): AnalysisData {
     return {
-      swapFee: Number(poolData?.pool?.swapFee),
-      ampFactor: Number(poolData?.pool?.amp),
+      poolType: "MetaStable",
+      poolParams: {
+        swapFee: Number(poolData?.pool?.swapFee),
+        ampFactor: Number(poolData?.pool?.amp),
+      },
       tokens:
         poolData?.pool?.tokens
           ?.filter((token) => token.address !== poolData?.pool?.address) // filter out BPT

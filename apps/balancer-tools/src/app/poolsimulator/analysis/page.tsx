@@ -20,17 +20,13 @@ export default function Page() {
   } = useStableSwap();
   const tokensSymbol = initialData.tokens.map((token) => token.symbol);
   const tabTokens = tokensSymbol.filter(
-    (tokenSymbol) => tokenSymbol !== analysisToken.symbol,
+    (tokenSymbol) => tokenSymbol !== analysisToken.symbol
   );
 
   if (
-    !initialData ||
-    !initialData.swapFee ||
-    !initialData.ampFactor ||
+    !initialData.poolParams ||
     !initialData.tokens ||
-    !customData ||
-    !customData.swapFee ||
-    !customData.ampFactor ||
+    !customData.poolParams ||
     !customData.tokens ||
     !analysisToken ||
     !currentTabToken

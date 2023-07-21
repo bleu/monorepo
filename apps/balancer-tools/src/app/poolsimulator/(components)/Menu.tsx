@@ -1,17 +1,28 @@
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import * as Separator from "@radix-ui/react-separator";
 import { usePathname } from "next/navigation";
-import { ReactElement } from "react";
+import { ReactElement, useState } from "react";
 
+import { Select, SelectItem } from "#/components/Select";
 import Sidebar from "#/components/Sidebar";
 import { Spinner } from "#/components/Spinner";
 import { Tabs } from "#/components/Tabs";
-import { useStableSwap } from "#/contexts/PoolSimulatorContext";
+import { Label } from "#/components/ui/label";
+import {
+  POOL_TYPES,
+  PoolType,
+  useStableSwap,
+} from "#/contexts/PoolSimulatorContext";
 
-import CustomDataForm from "./CustomDataForm";
-import InitialDataForm from "./InitialDataForm";
-import InitialEmptyDataForm from "./InitialEmptyDataForm";
+// import CustomDataForm from "./CustomDataForm"; BAL-499
+// import InitialDataForm from "./InitialDataForm"; BAL-499
+import { PoolParamsForm } from "./PoolParamsForm";
 import { SearchPoolFormDialog } from "./SearchPoolFormDialog";
+
+const POOL_TYPES_MAPPER = {
+  MetaStable: "Meta Stable",
+  ECLP: "Gyro E-CLP",
+};
 
 function AnalysisMenu() {
   return (
@@ -26,15 +37,17 @@ function AnalysisMenu() {
           </Tabs.ItemTrigger>
         </Tabs.ItemTriggerWrapper>
         <Tabs.ItemContent tabName="initialData">
-          <SearchPoolFormWithDataForm>
+          {/* <SearchPoolFormWithDataForm>
             <InitialDataForm />
-          </SearchPoolFormWithDataForm>
+          </SearchPoolFormWithDataForm> */}
+          {/* BAL-499 */}
         </Tabs.ItemContent>
         <Tabs.ItemContent tabName="customData">
           <Sidebar.Header name="Custom parameters" />
-          <Sidebar.Content>
+          {/* <Sidebar.Content>
             <CustomDataForm />
-          </Sidebar.Content>
+          </Sidebar.Content> */}
+          {/* BAL-499 */}
         </Tabs.ItemContent>
       </Tabs>
     </div>
@@ -42,9 +55,26 @@ function AnalysisMenu() {
 }
 
 function IndexMenu() {
+  const [poolType, setPoolType] = useState<PoolType>("MetaStable");
+  const onChange = (value: PoolType) => {
+    setPoolType(value);
+  };
+
   return (
     <SearchPoolFormWithDataForm>
-      <InitialEmptyDataForm />
+      <div className="flex flex-col gap-4 mt-4">
+        <div className="flex flex-col">
+          <Label className="mb-2 block text-sm text-slate12">Pool type</Label>
+          <Select onValueChange={onChange} defaultValue="MetaStable">
+            {POOL_TYPES.map((type) => (
+              <SelectItem key={type} value={type}>
+                {POOL_TYPES_MAPPER[type]}
+              </SelectItem>
+            ))}
+          </Select>
+        </div>
+        <PoolParamsForm poolType={poolType} />
+      </div>
     </SearchPoolFormWithDataForm>
   );
 }
@@ -73,12 +103,10 @@ export default function Menu() {
   if (pathname.includes("/analysis")) {
     if (
       !initialData ||
-      !initialData.swapFee ||
-      !initialData.ampFactor ||
+      !initialData.poolParams ||
       !initialData.tokens ||
       !customData ||
-      !customData.swapFee ||
-      !customData.ampFactor ||
+      !customData.poolParams ||
       !customData.tokens
     ) {
       return <Spinner />;

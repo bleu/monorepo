@@ -1,5 +1,5 @@
 "use client";
-import { InternalBalanceQuery } from "@bleu-balancer-tools/gql/src/balancer-internal-manager/__generated__/Ethereum";
+import { InternalBalanceQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
 import { Address, networkFor } from "@bleu-balancer-tools/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
@@ -68,8 +68,8 @@ export function WithdrawAll() {
     if (!tokenData?.user?.userInternalBalances) return;
     const tokenInfo = tokenData.user.userInternalBalances.map((token) => {
       return {
-        tokenAddress: token.tokenInfo.address as Address,
-        tokenDecimals: token.tokenInfo.decimals,
+        tokenAddress: token.tokenInfo?.address as Address,
+        tokenDecimals: token.tokenInfo?.decimals as number,
         tokenAmount: token.balance,
         receiverAddress: data.receiverAddress,
       };
@@ -127,9 +127,9 @@ export function WithdrawAll() {
                   (
                     token: ArrElement<
                       GetDeepProp<InternalBalanceQuery, "userInternalBalances">
-                    >,
+                    >
                   ) => (
-                    <Table.BodyRow key={token.tokenInfo.address}>
+                    <Table.BodyRow key={token.tokenInfo?.address}>
                       <Table.BodyCell customWidth="w-12">
                         <Image
                           src={
@@ -148,7 +148,7 @@ export function WithdrawAll() {
                       <Table.BodyCell>
                         <div className="flex flex-col">
                           <div className="text-sm font-medium">
-                            {token.tokenInfo.name} ({token.tokenInfo.symbol})
+                            {token.tokenInfo?.name} ({token.tokenInfo?.symbol})
                           </div>
                         </div>
                       </Table.BodyCell>
@@ -160,7 +160,7 @@ export function WithdrawAll() {
                         </div>
                       </Table.BodyCell>
                     </Table.BodyRow>
-                  ),
+                  )
                 )}
               </Table.Body>
             </Table>

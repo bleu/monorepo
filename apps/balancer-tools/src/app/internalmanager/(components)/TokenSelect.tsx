@@ -1,6 +1,6 @@
 "use client";
 
-import { SingleInternalBalanceQuery } from "@bleu-balancer-tools/gql/src/balancer-internal-manager/__generated__/Ethereum";
+import { SingleInternalBalanceQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
 import {
   Address,
   addressRegex,
@@ -68,7 +68,7 @@ export function TokenSelect({
               width={22}
               quality={100}
             />
-            <div>{token?.tokenInfo.symbol}</div>
+            <div>{token?.tokenInfo?.symbol}</div>
           </div>
           <ChevronDownIcon />
         </button>
@@ -108,8 +108,8 @@ function TokenModal({
 
   const internalBalancesTokenAdresses = internalBalanceData?.user
     ?.userInternalBalances
-    ? internalBalanceData.user.userInternalBalances.map((token) =>
-        token.tokenInfo.address.toLowerCase(),
+    ? internalBalanceData.user.userInternalBalances.map(
+        (token) => token.tokenInfo?.address.toLowerCase()
       )
     : [];
 
@@ -142,7 +142,7 @@ function TokenModal({
     const data = await multicall({ contracts: tokensContracts });
     const walletBalanceData = tokenAdresses.map((tokenAddress, index) => {
       const token = tokenList.find(
-        (obj) => obj.address.toLowerCase() === tokenAddress.toLowerCase(),
+        (obj) => obj.address.toLowerCase() === tokenAddress.toLowerCase()
       );
       const { result } = data[index];
       return {
@@ -159,16 +159,16 @@ function TokenModal({
         const internalBalance =
           internalBalanceData?.user?.userInternalBalances?.find(
             (internalBalanceInfo) =>
-              internalBalanceInfo.tokenInfo.address === token.tokenAddress,
+              internalBalanceInfo.tokenInfo?.address === token.tokenAddress
           );
 
-        if (internalBalance) {
+        if (internalBalance && internalBalance.tokenInfo) {
           setTokens((prev) => [
             ...prev,
             {
-              symbol: internalBalance.tokenInfo.symbol,
-              decimals: internalBalance.tokenInfo.decimals,
-              tokenAddress: internalBalance.tokenInfo.address,
+              symbol: internalBalance.tokenInfo?.symbol as string,
+              decimals: internalBalance.tokenInfo?.decimals as number,
+              tokenAddress: internalBalance.tokenInfo?.address as Address,
               internalBalance: internalBalance.balance,
               value: token.value,
             },
@@ -323,7 +323,7 @@ function TokenRow({
       classNames="hover:bg-blue4 hover:cursor-pointer"
       onClick={() => {
         router.push(
-          `/internalmanager/${chainName}/${operationKind}/token/${token.tokenAddress}`,
+          `/internalmanager/${chainName}/${operationKind}/token/${token.tokenAddress}`
         );
       }}
     >

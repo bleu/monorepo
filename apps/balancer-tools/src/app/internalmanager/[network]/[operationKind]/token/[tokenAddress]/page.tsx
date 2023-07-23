@@ -1,6 +1,6 @@
 "use client";
 
-import { SingleInternalBalanceQuery } from "@bleu-balancer-tools/gql/src/balancer-internal-manager/__generated__/Ethereum";
+import { SingleInternalBalanceQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
 import {
   Address,
   addressRegex,
@@ -238,7 +238,7 @@ function TransactionCard({
         : tokenData.balance,
     userAddress: userAddress,
     operationKind: operationKindParam,
-    decimals: tokenData.tokenInfo.decimals,
+    decimals: tokenData.tokenInfo?.decimals as number,
   });
 
   const form = useForm({
@@ -250,13 +250,13 @@ function TransactionCard({
 
   useEffect(() => {
     register("receiverAddress");
-    setValue("tokenAddress", tokenData.tokenInfo.address);
+    setValue("tokenAddress", tokenData.tokenInfo?.address);
   }, []);
 
   useEffect(() => {
     if (
       operationKindEnum === UserBalanceOpKind.DEPOSIT_INTERNAL &&
-      tokenData.tokenInfo.address
+      tokenData.tokenInfo?.address
     ) {
       checkAllowance({
         tokenAddress: tokenData.tokenInfo.address as Address,
@@ -275,9 +275,9 @@ function TransactionCard({
   function handleOnSubmit(data: FieldValues) {
     const transactionData = {
       receiverAddress: data.receiverAddress,
-      tokenAddress: tokenData.tokenInfo.address as Address,
+      tokenAddress: tokenData.tokenInfo?.address as Address,
       tokenAmount: data.tokenAmount,
-      tokenDecimals: tokenData.tokenInfo.decimals,
+      tokenDecimals: tokenData.tokenInfo?.decimals as number,
     };
 
     handleTransaction({
@@ -407,7 +407,7 @@ function TransactionCard({
           <div className="flex justify-center">
             <OperationButton
               operationKindEnum={operationKindEnum}
-              tokenSymbol={tokenData.tokenInfo.symbol as string}
+              tokenSymbol={tokenData.tokenInfo?.symbol as string}
               title={title}
             />
           </div>

@@ -29,9 +29,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               Network.Ethereum,
               Network.Gnosis,
               Network.Arbitrum,
+              Network.Polygon,
+              Network.PolygonZKEVM,
               Network.Optimism,
               Network.Goerli,
-              Network.Sepolia,
             ]}
             chainName={network}
           >

@@ -5,7 +5,6 @@ export enum Subgraph {
   BalancerPoolsMetadata = "balancer-pools-metadata",
   BalancerGauges = "balancer-gauges",
   BalancerPools = "balancer-pools",
-  BalancerInternalManager = "balancer-internal-manager",
 }
 
 // IMPORTANT NOTE:
@@ -74,30 +73,9 @@ export const SUBGRAPHS = {
         [Network.Goerli]: `${baseEndpoint}/balancer-goerli-v2`,
         [Network.Polygon]: `${baseEndpoint}/balancer-polygon-v2`,
         [Network.PolygonZKEVM]: `https://api.studio.thegraph.com/query/24660/balancer-polygon-zk-v2/version/latest`,
-        [Network.Arbitrum]: `${baseEndpoint}/balancer-arbitrum-v2`,
+        //TODO: substitute Arbitrum to balancer-labs subgraph once it shows tokenInfo
+        [Network.Arbitrum]: `https://api.thegraph.com/subgraphs/name/bleu-studio/balancer-arbitrum-v2`,
         [Network.Gnosis]: `${baseEndpoint}/balancer-gnosis-chain-v2-beta`,
-        [Network.Optimism]: `${baseEndpoint}/balancer-optimism-v2`,
-      };
-    },
-    endpointFor(network: Network) {
-      return this.endpoints()[network];
-    },
-  },
-  [Subgraph.BalancerInternalManager]: {
-    name: Subgraph.BalancerInternalManager,
-    endpoints() {
-      //This is a fork of the pools subgraph that's to be merged to Balancer's own subgraph
-      const baseEndpoint =
-        "https://api.thegraph.com/subgraphs/name/bleu-studio";
-      return {
-        // TODO: deploy subgraph on mainnet, polygon and arbitrum
-        [Network.Ethereum]: `${baseEndpoint}/balancer-mainnet-v2`,
-        [Network.Sepolia]: `https://api.studio.thegraph.com/query/46539/balancer-sepolia-v2/v0.0.1`,
-        [Network.Goerli]: `${baseEndpoint}/balancer-v2-goerli`,
-        [Network.Polygon]: `${baseEndpoint}/balancer-polygon-v2`,
-        [Network.PolygonZKEVM]: `${baseEndpoint}/balancer-polygon-v2`,
-        [Network.Arbitrum]: `${baseEndpoint}/balancer-arbitrum-v2`,
-        [Network.Gnosis]: `${baseEndpoint}/balancer-gnosis-v2`,
         [Network.Optimism]: `${baseEndpoint}/balancer-optimism-v2`,
       };
     },
@@ -139,9 +117,9 @@ const generates = Object.assign(
             },
           ],
         ])
-        .flat(1),
-    ),
-  ),
+        .flat(1)
+    )
+  )
 );
 
 const config: CodegenConfig = {

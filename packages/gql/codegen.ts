@@ -4,7 +4,7 @@ import { CodegenConfig } from "@graphql-codegen/cli";
 export enum Subgraph {
   BalancerPoolsMetadata = "balancer-pools-metadata",
   BalancerGauges = "balancer-gauges",
-  BalancerPools = "balancer-pools",
+  Balancer = "balancer",
 }
 
 // IMPORTANT NOTE:
@@ -61,8 +61,8 @@ export const SUBGRAPHS = {
       return this.endpoints()[network];
     },
   },
-  [Subgraph.BalancerPools]: {
-    name: Subgraph.BalancerPools,
+  [Subgraph.Balancer]: {
+    name: Subgraph.Balancer,
     endpoints() {
       const baseEndpoint =
         "https://api.thegraph.com/subgraphs/name/balancer-labs";

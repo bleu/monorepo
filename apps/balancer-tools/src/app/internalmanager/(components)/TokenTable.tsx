@@ -1,5 +1,5 @@
 "use client";
-import { InternalBalanceQuery } from "@bleu-balancer-tools/gql/src/balancer-internal-manager/__generated__/Ethereum";
+import { InternalBalanceQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
 import { Address } from "@bleu-balancer-tools/utils";
 import {
   MinusCircledIcon,
@@ -70,7 +70,7 @@ export function TokenTable() {
           <Table.Body>
             {tokensWithBalance.map((token) => (
               <TableRow
-                key={token.tokenInfo.address}
+                key={token.tokenInfo?.address}
                 token={token}
                 chainName={chain!.name}
               />
@@ -106,7 +106,7 @@ function TableRow({
   const network = getNetwork(chainName);
 
   return (
-    <Table.BodyRow key={token.tokenInfo.address}>
+    <Table.BodyRow key={token.tokenInfo?.address}>
       <Table.BodyCell customWidth="w-12">
         <div className="flex items-center justify-center">
           <div className="rounded-full bg-white p-1">
@@ -126,7 +126,7 @@ function TableRow({
         </div>
       </Table.BodyCell>
       <Table.BodyCell>
-        {token.tokenInfo.name} ({token.tokenInfo.symbol})
+        {token.tokenInfo?.name} ({token.tokenInfo?.symbol})
       </Table.BodyCell>
       <Table.BodyCell>
         {formatNumber(token.balance, 4, "decimal", "standard")}
@@ -136,7 +136,7 @@ function TableRow({
           {transactionButtons.map((button) => (
             <TransactionButton
               key={button.operation}
-              tokenAddress={token.tokenInfo.address as Address}
+              tokenAddress={token.tokenInfo?.address as Address}
               icon={button.icon}
               operation={button.operation}
               network={network}

@@ -1,6 +1,6 @@
 import { Subgraph, SUBGRAPHS } from "@bleu-balancer-tools/gql/codegen";
+import balancerSdks from "@bleu-balancer-tools/gql/src/balancer/index.server";
 import gaugesSdks from "@bleu-balancer-tools/gql/src/balancer-gauges/index.server";
-import poolsSdks from "@bleu-balancer-tools/gql/src/balancer-pools/index.server";
 import poolMetadataSdks from "@bleu-balancer-tools/gql/src/balancer-pools-metadata/index.server";
 import {
   Address,
@@ -13,7 +13,7 @@ import { GraphQLClient } from "graphql-request";
 
 export function impersonateWhetherDAO(
   chainId: string,
-  address: Address | undefined,
+  address: Address | undefined
 ) {
   const network = networkFor(chainId);
 
@@ -38,9 +38,9 @@ const clientFor = (client: Subgraph) => (chainId: string) => {
 };
 
 export const pools = {
-  client: clientFor(Subgraph.BalancerPools),
+  client: clientFor(Subgraph.Balancer),
   gql: (chainId: string) =>
-    poolsSdks[networkFor(chainId)](pools.client(chainId)),
+    balancerSdks[networkFor(chainId)](pools.client(chainId)),
 };
 
 export const poolsMetadata = {
@@ -53,4 +53,10 @@ export const gauges = {
   client: clientFor(Subgraph.BalancerGauges),
   gql: (chainId: string) =>
     gaugesSdks[networkFor(chainId)](gauges.client(chainId)),
+};
+
+export const internalBalances = {
+  client: clientFor(Subgraph.Balancer),
+  gql: (chainId: string) =>
+    balancerSdks[networkFor(chainId)](internalBalances.client(chainId)),
 };

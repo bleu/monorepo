@@ -1,6 +1,6 @@
 "use client";
 
-import { PoolQuery } from "@bleu-balancer-tools/gql/src/balancer-pools/__generated__/Ethereum";
+import { PoolQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
 import { NetworkChainId } from "@bleu-balancer-tools/utils";
 import { usePathname, useRouter } from "next/navigation";
@@ -61,7 +61,7 @@ function convertAnalysisDataToAMM(data: AnalysisData) {
       amp: String(data.ampFactor),
       swapFee: String(data.swapFee),
       totalShares: String(
-        data.tokens.reduce((acc, token) => acc + token.balance, 0),
+        data.tokens.reduce((acc, token) => acc + token.balance, 0)
       ),
       tokens: data.tokens.map((token) => ({
         address: String(token.symbol), // math use address as key, but we will use symbol because custom token will not have address

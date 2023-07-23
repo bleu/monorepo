@@ -1,6 +1,6 @@
 "use client";
 
-import { PoolsWherePoolTypeQuery } from "@bleu-balancer-tools/gql/src/balancer-pools/__generated__/Ethereum";
+import { PoolsWherePoolTypeQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -62,7 +62,7 @@ export function SearchPoolForm({
     .gql(network || "1")
     .usePoolsWherePoolType(
       poolTypeFilter?.length ? { poolTypes: poolTypeFilter } : {},
-      { revalidateIfStale: true },
+      { revalidateIfStale: true }
     );
 
   const isPool = !!poolsData?.pools?.length;
@@ -89,7 +89,7 @@ export function SearchPoolForm({
   const filteredPoolList = poolsDataList?.pools
     .filter((pool) => filterPoolInput({ poolSearchQuery: poolId, pool }))
     .sort((a, b) =>
-      Number(a!.totalLiquidity) < Number(b!.totalLiquidity) ? 1 : -1,
+      Number(a!.totalLiquidity) < Number(b!.totalLiquidity) ? 1 : -1
     );
 
   useEffect(() => {
@@ -100,7 +100,7 @@ export function SearchPoolForm({
           type: "notfound",
           message: "Pool not found. Check the Pool ID and network.",
         },
-        { shouldFocus: true },
+        { shouldFocus: true }
       );
       return;
     } else {

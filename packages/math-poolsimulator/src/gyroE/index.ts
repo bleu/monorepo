@@ -10,11 +10,12 @@ import {
   GyroHelpersSignedFixedPoint,
   OldBigNumber,
   safeParseFixed,
+  SubgraphPoolBase,
   SubgraphToken,
-  Vector2} from "@balancer-labs/sor";
+  Vector2,
+} from "@balancer-labs/sor";
 import { BigNumber, formatFixed } from "@ethersproject/bignumber";
 import { WeiPerEther as EONE } from "@ethersproject/constants";
-
 
 type GyroEPoolToken = Pick<SubgraphToken, "address" | "balance" | "decimals">;
 export type GyroEPoolPairData = ReturnType<
@@ -39,8 +40,6 @@ type DerivedGyroEParamsFromSubgraph = {
   dSq: string;
 };
 export interface IGyroEMaths {
-  id: string;
-  address: string;
   swapFee: string;
   totalShares: string;
   tokens: GyroEPoolToken[];
@@ -52,8 +51,8 @@ export interface IGyroEMaths {
 export class ExtendedGyroEV2 extends GyroEV2Pool {
   constructor(poolParams: IGyroEMaths) {
     super(
-      poolParams.id,
-      poolParams.address,
+      "0x",
+      "0x",
       poolParams.swapFee,
       poolParams.totalShares,
       poolParams.tokens,
@@ -62,6 +61,64 @@ export class ExtendedGyroEV2 extends GyroEV2Pool {
       poolParams.derivedGyroEParams,
       poolParams.tokenRates
     );
+  }
+
+  static fromPool(pool: SubgraphPoolBase): ExtendedGyroEV2 {
+    const {
+      alpha,
+      beta,
+      c,
+      s,
+      lambda,
+      tauAlphaX,
+      tauAlphaY,
+      tauBetaX,
+      tauBetaY,
+      u,
+      v,
+      w,
+      z,
+      dSq,
+      tokenRates,
+    } = pool;
+
+    const gyroEParams = {
+      alpha,
+      beta,
+      c,
+      s,
+      lambda,
+    };
+
+    const derivedGyroEParams = {
+      tauAlphaX,
+      tauAlphaY,
+      tauBetaX,
+      tauBetaY,
+      u,
+      v,
+      w,
+      z,
+      dSq,
+    };
+
+    if (
+      !Object.values(gyroEParams).every((el) => el) ||
+      !Object.values(derivedGyroEParams).every((el) => el)
+    )
+      throw new Error("Pool missing GyroE params and/or GyroE derived params");
+
+    if (!tokenRates) throw new Error("GyroEV2 Pool missing tokenRates");
+
+    return new ExtendedGyroEV2({
+      swapFee: pool.swapFee,
+      totalShares: pool.totalShares,
+      tokens: pool.tokens as GyroEPoolToken[],
+      tokensList: pool.tokensList,
+      gyroEParams: gyroEParams as GyroEParamsFromSubgraph,
+      derivedGyroEParams: derivedGyroEParams as DerivedGyroEParamsFromSubgraph,
+      tokenRates: pool.tokenRates as string[],
+    });
   }
 
   parsePoolPairData(tokenIn: string, tokenOut: string): GyroEPoolPairData {
@@ -114,7 +171,10 @@ export class ExtendedGyroEV2 extends GyroEV2Pool {
       derived,
       invariant
     );
-    return GyroHelpersSignedFixedPoint.divDown(EONE, GyroHelpersSignedFixedPoint.mulDown(newSpotPriceFactor, EONE.sub(swapFee)));
+    return GyroHelpersSignedFixedPoint.divDown(
+      EONE,
+      GyroHelpersSignedFixedPoint.mulDown(newSpotPriceFactor, EONE.sub(swapFee))
+    );
   }
   _spotPrice(poolPairData: GyroEPoolPairData): OldBigNumber {
     const normalizedBalances = GyroHelpers._normalizeBalances(

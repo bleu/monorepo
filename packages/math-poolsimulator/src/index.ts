@@ -1,5 +1,5 @@
 import { bnum, OldBigNumber } from "@balancer-labs/sor";
-import { parseFixed } from "@ethersproject/bignumber";
+import { BigNumber, parseFixed } from "@ethersproject/bignumber";
 
 import { ExtendedGyroEV2, GyroEPoolPairData, IGyroEMaths } from "./gyroE";
 import {
@@ -29,6 +29,13 @@ type PoolPairData = MetaStablePoolPairData | GyroEPoolPairData;
 export interface IAMM {
   poolType: "MetaStable" | "GyroE";
   poolParams: IMetaStableMath | IGyroEMaths;
+}
+
+export function bigNumberToOldBigNumber(
+  bn: BigNumber,
+  decimals: number
+): OldBigNumber {
+  return bnum(bn.toString()).div(bnum(10).pow(decimals));
 }
 
 export class AMM {
@@ -169,9 +176,12 @@ export class AMM {
     }
     if (this.math instanceof ExtendedGyroEV2) {
       const poolPairDataExtended = poolPairData as GyroEPoolPairData;
-      const inGuessValue = bnum(
-        poolPairDataExtended.balanceIn.toString()
-      ).times(bnum(0.01));
+      const inGuessValue = inGuess
+        ? inGuess
+        : bigNumberToOldBigNumber(
+            poolPairData.balanceIn,
+            poolPairData.decimalsIn
+          ).times(bnum(0.01));
       const guessedSpotPrice =
         this.math._spotPriceAfterSwapExactTokenInForTokenOut(
           poolPairDataExtended,

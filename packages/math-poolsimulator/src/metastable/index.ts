@@ -9,6 +9,7 @@ import {
 } from "@balancer-labs/sor";
 import { BigNumber, formatFixed, parseFixed } from "@ethersproject/bignumber";
 import { WeiPerEther as EONE } from "@ethersproject/constants";
+import { IAMMFunctionality } from "types";
 
 type MetaStablePoolToken = Pick<
   SubgraphToken,
@@ -27,7 +28,7 @@ export interface IMetaStableMath {
   tokensList: string[];
 }
 
-export class ExtendedMetaStableMath extends MetaStablePool {
+export class ExtendedMetaStableMath extends MetaStablePool implements IAMMFunctionality<MetaStablePoolPairData>{
   constructor(poolParams: IMetaStableMath) {
     super(
       "0x",

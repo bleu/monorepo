@@ -3,7 +3,7 @@ import { describe, expect, test } from "@jest/globals";
 
 import { AMM, numberToBigNumber } from "../index";
 import poolsFromFile from "./fixtures/data.json";
-import { ExtendedGyroEV2, IGyroEMaths } from "./index";
+import { ExtendedGyroEV2 } from "./index";
 
 describe("Tests new Gyro ECLP math function based on package other functions", () => {
   const poolData = poolsFromFile["pool"];
@@ -11,9 +11,7 @@ describe("Tests new Gyro ECLP math function based on package other functions", (
   const tokenIn = "wstETH";
   const tokenOut = "swETH";
 
-  const amm = new AMM({
-    poolType: "GyroE",
-    poolParams: {
+  const amm = new AMM(new ExtendedGyroEV2({
       swapFee: poolData.swapFee,
       totalShares: poolData.totalShares,
       tokens: poolData.tokens,
@@ -36,9 +34,7 @@ describe("Tests new Gyro ECLP math function based on package other functions", (
         w: poolData.w,
         z: poolData.z,
         dSq: poolData.dSq,
-      },
-    } as IGyroEMaths,
-  });
+  }}));
   const pool = ExtendedGyroEV2.fromPool(poolData as SubgraphPoolBase);
   const poolPairData = pool.parsePoolPairData(tokenIn, tokenOut);
   const amount = 0.01;

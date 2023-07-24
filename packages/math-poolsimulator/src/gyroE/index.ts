@@ -16,6 +16,7 @@ import {
 } from "@balancer-labs/sor";
 import { BigNumber, formatFixed } from "@ethersproject/bignumber";
 import { WeiPerEther as EONE } from "@ethersproject/constants";
+import { IAMMFunctionality } from "types";
 
 type GyroEPoolToken = Pick<SubgraphToken, "address" | "balance" | "decimals">;
 export type GyroEPoolPairData = ReturnType<
@@ -48,7 +49,7 @@ export interface IGyroEMaths {
   derivedGyroEParams: DerivedGyroEParamsFromSubgraph;
   tokenRates: string[];
 }
-export class ExtendedGyroEV2 extends GyroEV2Pool {
+export class ExtendedGyroEV2 extends GyroEV2Pool implements IAMMFunctionality<GyroEPoolPairData>{
   constructor(poolParams: IGyroEMaths) {
     super(
       "0x",

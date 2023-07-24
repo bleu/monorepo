@@ -64,7 +64,6 @@ export function SearchPoolForm({
       poolTypeFilter?.length ? { poolTypes: poolTypeFilter } : {},
       { revalidateIfStale: true }
     );
-
   const isPool = !!poolsData?.pools?.length;
 
   function handleSubmitForm(formData: PoolAttribute) {

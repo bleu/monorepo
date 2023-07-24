@@ -8,7 +8,7 @@
 // import { Input } from "#/components/Input";
 // import { Select, SelectItem } from "#/components/Select";
 // import { Form, FormField, FormLabel } from "#/components/ui/form";
-// import { AnalysisData, useStableSwap } from "#/contexts/PoolSimulatorContext";
+// import { AnalysisData, usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 // import useDebounce from "#/hooks/useDebounce";
 // import { StableSwapSimulatorDataSchema } from "#/lib/schema";
 // import { numberToPercent, percentToNumber } from "#/utils/formatNumber";
@@ -24,7 +24,7 @@
 //     setAnalysisTokenBySymbol,
 //     currentTabToken,
 //     setCurrentTabTokenByIndex,
-//   } = useStableSwap();
+//   } = usePoolSimulator();
 
 //   const form = useForm<typeof StableSwapSimulatorDataSchema._type>({
 //     resolver: zodResolver(StableSwapSimulatorDataSchema),

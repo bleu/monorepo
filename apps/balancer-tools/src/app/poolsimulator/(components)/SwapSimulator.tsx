@@ -6,7 +6,7 @@ import { PlotTitle } from "#/components/Plot";
 import { Select, SelectItem } from "#/components/Select";
 import { Spinner } from "#/components/Spinner";
 import { Form, FormField } from "#/components/ui/form";
-import { useStableSwap } from "#/contexts/PoolSimulatorContext";
+import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 import useDebounce from "#/hooks/useDebounce";
 
 export function SwapSimulator() {
@@ -14,7 +14,7 @@ export function SwapSimulator() {
   const { watch, control } = form;
 
   const swapTypes = ["Exact In", "Exact Out"];
-  const { initialData, initialAMM, customAMM } = useStableSwap();
+  const { initialData, initialAMM, customAMM } = usePoolSimulator();
   const tokensSymbol = initialData?.tokens.map((token) => token.symbol);
 
   if (!initialAMM || !customAMM) return <Spinner />;
@@ -81,7 +81,7 @@ export function SwapSimulator() {
         <label className="block text-sm text-slate12">Effective Price</label>
         <BaseInput
           value={`${effectivePrice.toFixed(
-            2,
+            2
           )} ${tokenInSymbol}/${tokenOutSymbol}`}
           disabled
         />
@@ -175,7 +175,7 @@ export function SwapSimulator() {
                   label="Amount"
                   type="number"
                   defaultValue={(initialData?.tokens[0]?.balance / 10).toFixed(
-                    2,
+                    2
                   )}
                 />
               )}
@@ -226,35 +226,35 @@ function calculateSimulation({
   let amountOut = amm.exactTokenInForTokenOut(
     amount,
     tokenInSymbol,
-    tokenOutSymbol,
+    tokenOutSymbol
   );
   let effectivePrice = amm.effectivePriceForExactTokenInSwap(
     amount,
     tokenInSymbol,
-    tokenOutSymbol,
+    tokenOutSymbol
   );
   let priceImpact = amm.priceImpactForExactTokenInSwap(
     amount,
     tokenInSymbol,
-    tokenOutSymbol,
+    tokenOutSymbol
   );
 
   if (swapType == "Exact Out") {
     amountIn = amm.tokenInForExactTokenOut(
       amount,
       tokenInSymbol,
-      tokenOutSymbol,
+      tokenOutSymbol
     );
     amountOut = amount;
     effectivePrice = amm.effectivePriceForExactTokenOutSwap(
       amount,
       tokenInSymbol,
-      tokenOutSymbol,
+      tokenOutSymbol
     );
     priceImpact = amm.priceImpactForExactTokenOutSwap(
       amount,
       tokenInSymbol,
-      tokenOutSymbol,
+      tokenOutSymbol
     );
   }
 

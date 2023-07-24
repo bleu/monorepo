@@ -10,7 +10,7 @@ import { createContext, useContext } from "react";
 import { Dialog } from "#/components/Dialog";
 import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
-import { TokensData, useStableSwap } from "#/contexts/PoolSimulatorContext";
+import { TokensData, usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
 import TokenForm from "./TokenForm";
@@ -24,7 +24,7 @@ const MAX_POOL_TOKENS = 5;
 const TokenTableContext = createContext(
   {} as {
     variant: boolean;
-  },
+  }
 );
 
 export function useTokenTableContext() {
@@ -39,11 +39,11 @@ export function TokenTable({
   variant?: boolean;
   minTokens?: number;
 }) {
-  const { initialData } = useStableSwap();
+  const { initialData } = usePoolSimulator();
   let tableData = initialData;
 
   if (variant) {
-    const { customData } = useStableSwap();
+    const { customData } = usePoolSimulator();
     tableData = customData;
   }
 
@@ -128,7 +128,7 @@ function TableRow({
   minTokens: number;
 }) {
   const { setInitialData, initialData, setCustomData, customData } =
-    useStableSwap();
+    usePoolSimulator();
 
   const deleteToken = (symbol?: string) => {
     setInitialData({

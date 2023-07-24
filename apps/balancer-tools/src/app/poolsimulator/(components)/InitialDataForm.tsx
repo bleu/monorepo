@@ -7,7 +7,7 @@
 
 // import { Input } from "#/components/Input";
 // import { Form, FormField } from "#/components/ui/form";
-// import { AnalysisData, useStableSwap } from "#/contexts/PoolSimulatorContext";
+// import { AnalysisData, usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 // import useDebounce from "#/hooks/useDebounce";
 // import { StableSwapSimulatorDataSchema } from "#/lib/schema";
 // import { numberToPercent, percentToNumber } from "#/utils/formatNumber";
@@ -15,7 +15,7 @@
 // import { TokenTable } from "./TokenTable";
 
 // export default function InitialDataForm() {
-//   const { initialData, setInitialData } = useStableSwap();
+//   const { initialData, setInitialData } = usePoolSimulator();
 //   const form = useForm<typeof StableSwapSimulatorDataSchema._type>({
 //     resolver: zodResolver(StableSwapSimulatorDataSchema),
 //     mode: "onChange",

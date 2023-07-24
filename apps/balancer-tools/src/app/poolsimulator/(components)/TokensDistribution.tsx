@@ -11,7 +11,7 @@ import {
 
 import { PlotTitle } from "#/components/Plot";
 import { Tooltip } from "#/components/Tooltip";
-import { TokensData, useStableSwap } from "#/contexts/PoolSimulatorContext";
+import { TokensData, usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 
 const colors = [
   blueDark.blue9,
@@ -25,7 +25,7 @@ const colors = [
 ];
 
 export function TokensDistribution() {
-  const { initialData, customData } = useStableSwap();
+  const { initialData, customData } = usePoolSimulator();
   return (
     <div className="flex w-full lg:w-1/4 flex-col gap-y-4 text-slate12">
       <PlotTitle
@@ -62,7 +62,7 @@ export function TokensDistribution() {
 function TokenDistributionChart({ tokens }: { tokens: TokensData[] }) {
   const balancesSum = tokens.reduce((sum, tokens) => sum + tokens.balance, 0);
   const balancesPercent = tokens.map(
-    (token) => (token.balance * 100) / balancesSum,
+    (token) => (token.balance * 100) / balancesSum
   );
   const lastBalanceWidth =
     100 -

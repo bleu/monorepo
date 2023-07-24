@@ -394,8 +394,8 @@ importers:
   packages/math-poolsimulator:
     dependencies:
       '@balancer-labs/sor':
-        specifier: link:../../../bleu-balancer-sor
-        version: link:../../../bleu-balancer-sor
+        specifier: github:bleu-studio/balancer-sor
+        version: github.com/bleu-studio/balancer-sor/42b9940b8dfe3d221d739f8261d640599034487f(@ethersproject/abi@5.7.0)(@ethersproject/address@5.7.0)(@ethersproject/bignumber@5.7.0)(@ethersproject/constants@5.7.0)(@ethersproject/contracts@5.7.0)(@ethersproject/providers@5.7.2)
       '@bleu-balancer-tools/utils':
         specifier: workspace:^
         version: link:../utils
@@ -16195,6 +16195,28 @@ packages:
     dependencies:
       react: 18.2.0
       use-sync-external-store: 1.2.0(react@18.2.0)
+    dev: false
+
+  github.com/bleu-studio/balancer-sor/42b9940b8dfe3d221d739f8261d640599034487f(@ethersproject/abi@5.7.0)(@ethersproject/address@5.7.0)(@ethersproject/bignumber@5.7.0)(@ethersproject/constants@5.7.0)(@ethersproject/contracts@5.7.0)(@ethersproject/providers@5.7.2):
+    resolution: {tarball: https://codeload.github.com/bleu-studio/balancer-sor/tar.gz/42b9940b8dfe3d221d739f8261d640599034487f}
+    id: github.com/bleu-studio/balancer-sor/42b9940b8dfe3d221d739f8261d640599034487f
+    name: '@balancer-labs/sor'
+    version: 4.1.1-beta.13
+    peerDependencies:
+      '@ethersproject/abi': ^5.4.1
+      '@ethersproject/address': ^5.4.0
+      '@ethersproject/bignumber': ^5.4.2
+      '@ethersproject/constants': ^5.4.0
+      '@ethersproject/contracts': ^5.4.1
+      '@ethersproject/providers': ^5.4.4
+    dependencies:
+      '@ethersproject/abi': 5.7.0
+      '@ethersproject/address': 5.7.0
+      '@ethersproject/bignumber': 5.7.0
+      '@ethersproject/constants': 5.7.0
+      '@ethersproject/contracts': 5.7.0
+      '@ethersproject/providers': 5.7.2
+      isomorphic-fetch: 2.2.1
     dev: false
 
 settings:

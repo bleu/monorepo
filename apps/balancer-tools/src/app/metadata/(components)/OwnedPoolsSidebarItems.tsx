@@ -1,4 +1,4 @@
-import { PoolsWhereOwnerQuery } from "@bleu-balancer-tools/gql/src/balancer-pools/__generated__/Ethereum";
+import { PoolsWhereOwnerQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
 import { Address, networkFor, networkIdFor } from "@bleu-balancer-tools/utils";
 import cn from "clsx";
 import Image from "next/image";
@@ -75,7 +75,7 @@ function OwnedPoolsSidebarItems({
   }
 
   const filteredPools = data?.pools.filter((pool) =>
-    filterPoolInput({ poolSearchQuery, pool }),
+    filterPoolInput({ poolSearchQuery, pool })
   );
 
   if (!data?.pools?.length)
@@ -146,7 +146,7 @@ function PoolCard({ isSelected, pool }: { isSelected: boolean; pool: Pool }) {
         <p
           className={cn(
             "tracking-tighter text-lg font-bold text-slate12 max-h-7 truncate text-left",
-            weights ? "max-w-[55%] " : "w-full",
+            weights ? "max-w-[55%] " : "w-full"
           )}
         >
           {poolName}

@@ -8,8 +8,8 @@ import { Input } from "#/components/Input";
 import { Form, FormField } from "#/components/ui/form";
 import {
   AnalysisData,
-  PoolType,
-  useStableSwap,
+  PoolTypeEnum,
+  usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
 import {
   ECLPSimulatorDataSchema,
@@ -18,7 +18,7 @@ import {
 
 const schemaMapper = {
   MetaStable: StableSwapSimulatorDataSchema,
-  ECLP: ECLPSimulatorDataSchema,
+  GyroE: ECLPSimulatorDataSchema,
 };
 
 interface IInput {
@@ -33,7 +33,7 @@ type InputMapperType = {
 };
 
 const inputMapper: InputMapperType = {
-  MetaStable: [
+  [PoolTypeEnum.MetaStable]: [
     {
       name: "ampFactor",
       label: "Amplification Factor",
@@ -47,7 +47,7 @@ const inputMapper: InputMapperType = {
       unit: "%",
     },
   ],
-  ECLP: [
+  [PoolTypeEnum.GyroE]: [
     {
       name: "alpha",
       label: "Alpha",
@@ -81,7 +81,7 @@ const inputMapper: InputMapperType = {
   ],
 };
 
-export function PoolParamsForm({ poolType }: { poolType: PoolType }) {
+export function PoolParamsForm() {
   const { push } = useRouter();
   const {
     setIsGraphLoading,
@@ -90,7 +90,8 @@ export function PoolParamsForm({ poolType }: { poolType: PoolType }) {
     setInitialData,
     setCustomData,
     initialData,
-  } = useStableSwap();
+    poolType,
+  } = usePoolSimulator();
 
   const form = useForm({
     resolver: zodResolver(schemaMapper[poolType]),
@@ -98,9 +99,18 @@ export function PoolParamsForm({ poolType }: { poolType: PoolType }) {
   });
   const { register, setValue, getValues, clearErrors } = form;
 
+  const onSubmit = (data: FieldValues) => {
+    setIsGraphLoading(true);
+    setCustomData(data as AnalysisData);
+    setInitialData(data as AnalysisData);
+    setAnalysisTokenByIndex(0);
+    setCurrentTabTokenByIndex(1);
+    push("/poolsimulator/analysis");
+  };
+
   useEffect(() => {
     clearErrors();
-    if (initialData == getValues()) return;
+    if (initialData == getValues() || !poolType) return;
     inputMapper[poolType].forEach((input) => {
       const dataValue = initialData.poolParams?.[input.name];
       if (dataValue) {
@@ -112,16 +122,6 @@ export function PoolParamsForm({ poolType }: { poolType: PoolType }) {
   useEffect(() => {
     register("tokens", { required: true, value: initialData?.tokens });
   }, []);
-
-  const onSubmit = (data: FieldValues) => {
-    setIsGraphLoading(true);
-    setCustomData(data as AnalysisData);
-    setInitialData(data as AnalysisData);
-    setAnalysisTokenByIndex(0);
-    setCurrentTabTokenByIndex(1);
-    push("/poolsimulator/analysis");
-  };
-
   return (
     <Form {...form} onSubmit={onSubmit} id="initial-data-form">
       <div className="flex flex-col gap-4">
@@ -140,7 +140,7 @@ export function PoolParamsForm({ poolType }: { poolType: PoolType }) {
                     value: initialData.poolParams?.[input.name],
                   }}
                   defaultValue={initialData.poolParams?.[input.name]}
-                  placeholder="Define the initial swap fee"
+                  placeholder="Define the initial value "
                 />
               )}
             />

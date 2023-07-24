@@ -4,17 +4,29 @@ import { PropsWithChildren } from "react";
 
 import { Dialog } from "#/components/Dialog";
 import { SearchPoolForm } from "#/components/SearchPoolForm";
-import { useStableSwap } from "#/contexts/PoolSimulatorContext";
+import {
+  PoolType,
+  PoolTypeEnum,
+  usePoolSimulator,
+} from "#/contexts/PoolSimulatorContext";
 
-export function SearchPoolFormDialog({ children }: PropsWithChildren) {
-  const { handleImportPoolParametersById } = useStableSwap();
+const poolTypes = {
+  [PoolTypeEnum.MetaStable]: ["Stable", "MetaStable", "ComposableStable"],
+  [PoolTypeEnum.GyroE]: ["GyroE"],
+};
+
+export function SearchPoolFormDialog({
+  children,
+  poolTypeFilter,
+}: PropsWithChildren<{ poolTypeFilter: PoolType }>) {
+  const { handleImportPoolParametersById } = usePoolSimulator();
 
   return (
     <Dialog
       title="Import pool parameters"
       content={
         <SearchPoolForm
-          poolTypeFilter={["Stable", "MetaStable", "ComposableStable"]}
+          poolTypeFilter={poolTypes[poolTypeFilter]}
           onSubmit={handleImportPoolParametersById}
           showPools
         />

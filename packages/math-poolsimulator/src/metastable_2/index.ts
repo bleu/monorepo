@@ -18,11 +18,19 @@ export interface IMetaStableMath_2 {
   totalShares: string;
   tokens: MetaStablePoolToken[];
   tokensList: string[];
-  newParam: string;
+  alpha: string;
+  beta: string;
+  lambda: string;
+  c: string;
+  s: string;
 }
 
 export class ExtendedMetaStableMath_2 extends ExtendedMetaStableMath {
-  newParam: string;
+  alpha: string;
+  beta: string;
+  lambda: string;
+  c: string;
+  s: string;
 
   constructor(poolParams: IMetaStableMath_2) {
     super({
@@ -32,6 +40,10 @@ export class ExtendedMetaStableMath_2 extends ExtendedMetaStableMath {
       tokens: poolParams.tokens,
       tokensList: poolParams.tokensList,
     });
-    this.newParam = poolParams.newParam;
+    this.alpha = poolParams.alpha;
+    this.beta = poolParams.beta;
+    this.lambda = poolParams.lambda;
+    this.c = poolParams.c;
+    this.s = poolParams.s;
   }
 }

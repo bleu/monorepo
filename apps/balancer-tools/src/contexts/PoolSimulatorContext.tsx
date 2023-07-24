@@ -28,7 +28,7 @@ export interface MetaStableParams {
   swapFee?: number;
 }
 
-export interface ECLPParams {
+export interface GyroEParams {
   alpha?: number;
   beta?: number;
   lambda?: number;
@@ -37,16 +37,24 @@ export interface ECLPParams {
   swapFee?: number;
 }
 
-export type PoolParams = MetaStableParams & ECLPParams;
-export type PoolType = "MetaStable" | "ECLP";
-export const POOL_TYPES: PoolType[] = ["MetaStable", "ECLP"];
+export enum PoolTypeEnum {
+  MetaStable = "MetaStable",
+  GyroE = "GyroE",
+}
+
+export type PoolParams = MetaStableParams & GyroEParams;
+export type PoolType = PoolTypeEnum;
+export const POOL_TYPES: PoolType[] = [
+  PoolTypeEnum.MetaStable,
+  PoolTypeEnum.GyroE,
+];
 export interface AnalysisData {
   tokens: TokensData[];
   poolType?: PoolType;
   poolParams?: PoolParams;
 }
 
-interface StableSwapContextType {
+interface PoolSimulatorContextType {
   initialData: AnalysisData;
   customData: AnalysisData;
   analysisToken: TokensData;
@@ -64,6 +72,8 @@ interface StableSwapContextType {
   generateURL: () => string;
   initialAMM?: AMM;
   customAMM?: AMM;
+  poolType: PoolType;
+  setPoolType: (value: PoolType) => void;
 }
 
 const defaultPool = {
@@ -73,29 +83,71 @@ const defaultPool = {
 };
 
 function convertAnalysisDataToAMM(data: AnalysisData) {
-  const poolParams = data.poolParams as MetaStableParams;
-  return new AMM({
-    poolType: "MetaStable",
-    poolParams: {
-      amp: String(poolParams.ampFactor),
-      swapFee: String(poolParams.swapFee),
-      totalShares: String(
-        data.tokens.reduce((acc, token) => acc + token.balance, 0)
-      ),
-      tokens: data.tokens.map((token) => ({
-        address: String(token.symbol), // math use address as key, but we will use symbol because custom token will not have address
-        balance: String(token.balance),
-        decimals: token.decimal,
-        priceRate: String(token.rate),
-      })),
-      tokensList: data.tokens.map((token) => String(token.symbol)),
-    },
-  });
+  switch (data.poolType) {
+    case PoolTypeEnum.MetaStable: {
+      const poolParams = data.poolParams as MetaStableParams;
+      return new AMM({
+        poolType: "MetaStable",
+        poolParams: {
+          amp: String(poolParams.ampFactor),
+          swapFee: String(poolParams.swapFee),
+          totalShares: String(
+            data.tokens.reduce((acc, token) => acc + token.balance, 0)
+          ),
+          tokens: data.tokens.map((token) => ({
+            address: String(token.symbol), // math use address as key, but we will use symbol because custom token will not have address
+            balance: String(token.balance),
+            decimals: token.decimal,
+            priceRate: String(token.rate),
+          })),
+          tokensList: data.tokens.map((token) => String(token.symbol)),
+        },
+      });
+    }
+    case PoolTypeEnum.GyroE: {
+      const poolParams = data.poolParams as GyroEParams;
+      return new AMM({
+        poolType: "GyroE",
+        poolParams: {
+          amp: "0",
+          alpha: String(poolParams.alpha),
+          beta: String(poolParams.beta),
+          lambda: String(poolParams.lambda),
+          c: String(poolParams.c),
+          s: String(poolParams.s),
+          swapFee: String(poolParams.swapFee),
+          totalShares: String(
+            data.tokens.reduce((acc, token) => acc + token.balance, 0)
+          ),
+          tokens: data.tokens.map((token) => ({
+            address: String(token.symbol), // math use address as key, but we will use symbol because custom token will not have address
+            balance: String(token.balance),
+            decimals: token.decimal,
+            priceRate: String(token.rate),
+          })),
+          tokensList: data.tokens.map((token) => String(token.symbol)),
+        },
+      });
+    }
+    default:
+      return new AMM({
+        poolType: "MetaStable",
+        poolParams: {
+          amp: "0",
+          swapFee: "0",
+          totalShares: "0",
+          tokens: [],
+          tokensList: [],
+        },
+      });
+  }
 }
 
-export const StableSwapContext = createContext({} as StableSwapContextType);
+export const PoolSimulatorContext = createContext(
+  {} as PoolSimulatorContextType
+);
 
-export function StableSwapProvider({ children }: PropsWithChildren) {
+export function PoolSimulatorProvider({ children }: PropsWithChildren) {
   const pathname = usePathname();
   const { push } = useRouter();
   const defaultAnalysisData: AnalysisData = {
@@ -122,6 +174,7 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
     useState<TokensData>(defaultTokensData);
   const [newPoolImportedFlag, setNewPoolImportedFlag] =
     useState<boolean>(false);
+  const [poolType, setPoolType] = useState<PoolType>(PoolTypeEnum.MetaStable);
 
   const [isGraphLoading, setIsGraphLoading] = useState<boolean>(false);
 
@@ -190,22 +243,63 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
   }, []);
 
   function convertGqlToAnalysisData(poolData: PoolQuery): AnalysisData {
-    return {
-      poolType: "MetaStable",
-      poolParams: {
-        swapFee: Number(poolData?.pool?.swapFee),
-        ampFactor: Number(poolData?.pool?.amp),
-      },
-      tokens:
-        poolData?.pool?.tokens
-          ?.filter((token) => token.address !== poolData?.pool?.address) // filter out BPT
-          .map((token) => ({
-            symbol: token?.symbol,
-            balance: Number(token?.balance),
-            rate: Number(token?.priceRate),
-            decimal: Number(token?.decimals),
-          })) || [],
-    };
+    switch (poolData.pool?.poolType) {
+      case PoolTypeEnum.GyroE:
+        return {
+          poolType: PoolTypeEnum.GyroE,
+          poolParams: {
+            alpha: Number(poolData?.pool?.alpha),
+            beta: Number(poolData?.pool?.beta),
+            lambda: Number(poolData?.pool?.lambda),
+            c: Number(poolData?.pool?.c),
+            s: Number(poolData?.pool?.s),
+            swapFee: Number(poolData?.pool?.swapFee),
+          },
+          tokens:
+            poolData?.pool?.tokens
+              ?.filter((token) => token.address !== poolData?.pool?.address) // filter out BPT
+              .map((token) => ({
+                symbol: token?.symbol,
+                balance: Number(token?.balance),
+                rate: Number(token?.priceRate),
+                decimal: Number(token?.decimals),
+              })) || [],
+        };
+      case PoolTypeEnum.MetaStable:
+        return {
+          poolType: PoolTypeEnum.MetaStable,
+          poolParams: {
+            swapFee: Number(poolData?.pool?.swapFee),
+            ampFactor: Number(poolData?.pool?.amp),
+          },
+          tokens:
+            poolData?.pool?.tokens
+              ?.filter((token) => token.address !== poolData?.pool?.address) // filter out BPT
+              .map((token) => ({
+                symbol: token?.symbol,
+                balance: Number(token?.balance),
+                rate: Number(token?.priceRate),
+                decimal: Number(token?.decimals),
+              })) || [],
+        };
+      default:
+        return {
+          poolType: PoolTypeEnum.MetaStable,
+          poolParams: {
+            swapFee: Number(poolData?.pool?.swapFee),
+            ampFactor: Number(poolData?.pool?.amp),
+          },
+          tokens:
+            poolData?.pool?.tokens
+              ?.filter((token) => token.address !== poolData?.pool?.address) // filter out BPT
+              .map((token) => ({
+                symbol: token?.symbol,
+                balance: Number(token?.balance),
+                rate: Number(token?.priceRate),
+                decimal: Number(token?.decimals),
+              })) || [],
+        };
+    }
   }
 
   async function handleImportPoolParametersById(formData: PoolAttribute) {
@@ -232,7 +326,7 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
   }, [pathname]);
 
   return (
-    <StableSwapContext.Provider
+    <PoolSimulatorContext.Provider
       value={{
         initialData,
         setInitialData,
@@ -251,14 +345,16 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
         generateURL,
         initialAMM,
         customAMM,
+        poolType,
+        setPoolType,
       }}
     >
       {children}
-    </StableSwapContext.Provider>
+    </PoolSimulatorContext.Provider>
   );
 }
 
-export function useStableSwap() {
-  const context = useContext(StableSwapContext);
+export function usePoolSimulator() {
+  const context = useContext(PoolSimulatorContext);
   return context;
 }

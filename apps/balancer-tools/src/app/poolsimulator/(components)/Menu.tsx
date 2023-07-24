@@ -1,7 +1,7 @@
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import * as Separator from "@radix-ui/react-separator";
 import { usePathname } from "next/navigation";
-import { ReactElement, useState } from "react";
+import { ReactElement } from "react";
 
 import { Select, SelectItem } from "#/components/Select";
 import Sidebar from "#/components/Sidebar";
@@ -11,7 +11,7 @@ import { Label } from "#/components/ui/label";
 import {
   POOL_TYPES,
   PoolType,
-  useStableSwap,
+  usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
 
 // import CustomDataForm from "./CustomDataForm"; BAL-499
@@ -21,7 +21,7 @@ import { SearchPoolFormDialog } from "./SearchPoolFormDialog";
 
 const POOL_TYPES_MAPPER = {
   MetaStable: "Meta Stable",
-  ECLP: "Gyro E-CLP",
+  GyroE: "Gyro E-CLP",
 };
 
 function AnalysisMenu() {
@@ -55,7 +55,7 @@ function AnalysisMenu() {
 }
 
 function IndexMenu() {
-  const [poolType, setPoolType] = useState<PoolType>("MetaStable");
+  const { setPoolType } = usePoolSimulator();
   const onChange = (value: PoolType) => {
     setPoolType(value);
   };
@@ -73,16 +73,17 @@ function IndexMenu() {
             ))}
           </Select>
         </div>
-        <PoolParamsForm poolType={poolType} />
+        <PoolParamsForm />
       </div>
     </SearchPoolFormWithDataForm>
   );
 }
 
 function SearchPoolFormWithDataForm({ children }: { children: ReactElement }) {
+  const { poolType } = usePoolSimulator();
   return (
     <div>
-      <SearchPoolFormDialog>
+      <SearchPoolFormDialog poolTypeFilter={poolType}>
         <div className="bg-blue9 p-2 rounded-[4px]">
           <span className="flex cursor-pointer items-center space-x-2 text-sm font-normal text-slate12">
             <MagnifyingGlassIcon width="20" height="20" strokeWidth={1} />
@@ -99,7 +100,7 @@ function SearchPoolFormWithDataForm({ children }: { children: ReactElement }) {
 
 export default function Menu() {
   const pathname = usePathname();
-  const { customData, initialData } = useStableSwap();
+  const { customData, initialData } = usePoolSimulator();
   if (pathname.includes("/analysis")) {
     if (
       !initialData ||

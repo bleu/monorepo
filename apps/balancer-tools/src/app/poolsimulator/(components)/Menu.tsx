@@ -1,5 +1,5 @@
 import { Close, DialogClose } from "@radix-ui/react-dialog";
-import { ChevronDownIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import * as Separator from "@radix-ui/react-separator";
 import { usePathname } from "next/navigation";
 import { ReactElement, useState } from "react";
@@ -57,24 +57,47 @@ function AnalysisMenu() {
 }
 
 function IndexMenu() {
+  const [open, setOpen] = useState(false);
   const { poolType } = usePoolSimulator();
+  const [selectedType, setSelectedType] = useState<PoolType>(poolType);
+
+  function onChange(valeu: PoolType) {
+    setSelectedType(valeu);
+    setOpen(true);
+  }
+
+  function onClose() {
+    if (selectedType !== poolType) {
+      setSelectedType(poolType);
+    }
+  }
 
   return (
     <SearchPoolFormWithDataForm>
       <div className="flex flex-col mt-4">
         <div className="flex flex-col">
-          <Dialog content={<SelectPoolType />}>
+          <Dialog
+            content={
+              <SelectPoolType
+                selectedType={selectedType}
+                setSelectedType={setSelectedType}
+              />
+            }
+            isOpen={open}
+            setIsOpen={setOpen}
+            onClose={onClose}
+          >
             <div className="flex flex-col mb-4">
               <Label className="mb-2 block text-sm text-slate12">
                 Pool type
               </Label>
-              <button
-                type="button"
-                className="px-2w-full selection:color-white box-border flex h-[35px] w-full appearance-none items-center justify-between gap-2 rounded-[4px] bg-blue4 px-[10px] py-1 text-[15px] leading-none text-slate12 shadow-[0_0_0_1px] shadow-blue6 outline-none selection:bg-blue9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-blue1"
-              >
-                <div>{poolType}</div>
-                <ChevronDownIcon />
-              </button>
+              <Select onValueChange={onChange} value={selectedType}>
+                {POOL_TYPES.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {POOL_TYPES_MAPPER[type]}
+                  </SelectItem>
+                ))}
+              </Select>
             </div>
           </Dialog>
           <PoolParamsForm />
@@ -84,13 +107,13 @@ function IndexMenu() {
   );
 }
 
-function SelectPoolType({}: { close?: () => void }) {
-  const { poolType, setPoolType } = usePoolSimulator();
-  const [selectedType, setSelectedType] = useState<PoolType>(poolType);
-
-  function onChange(value: PoolType) {
-    setSelectedType(value);
-  }
+function SelectPoolType({
+  selectedType,
+}: {
+  selectedType: PoolType;
+  setSelectedType: (value: PoolType) => void;
+}) {
+  const { setPoolType } = usePoolSimulator();
 
   function onSubmit() {
     setPoolType(selectedType);
@@ -99,16 +122,9 @@ function SelectPoolType({}: { close?: () => void }) {
   return (
     <div className="text-slate12 flex flex-col items-center gap-y-4">
       <div className="text-center flex flex-col items-center">
-        <span>You are about to change the pool type.</span>
+        <span>You are about to change the pool type to {selectedType}</span>
         <span>This action will reset all the parameters.</span>
       </div>
-      <Select defaultValue={poolType} onValueChange={onChange}>
-        {POOL_TYPES.map((type) => (
-          <SelectItem key={type} value={type}>
-            {POOL_TYPES_MAPPER[type]}
-          </SelectItem>
-        ))}
-      </Select>
       <div className="flex gap-x-4 py-3">
         <DialogClose>
           <span className="bg-transparent text-slate9 border-slate9 hover:bg-slate2 hover:border-slate2 rounded-md py-3 px-5 text-center text-sm font-semibold border focus-visible:outline-blue7 focus-visible:outline-offset-2 disabled:opacity-40">

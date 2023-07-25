@@ -18,6 +18,8 @@ import { BigNumber, formatFixed } from "@ethersproject/bignumber";
 import { WeiPerEther as EONE } from "@ethersproject/constants";
 import { IAMMFunctionality } from "types";
 
+import { bigNumberToOldBigNumber } from "../conversions";
+
 type GyroEPoolToken = Pick<SubgraphToken, "address" | "balance" | "decimals">;
 export type GyroEPoolPairData = ReturnType<
   typeof GyroEV2Pool.prototype.parsePoolPairData
@@ -49,7 +51,10 @@ export interface IGyroEMaths {
   derivedGyroEParams: DerivedGyroEParamsFromSubgraph;
   tokenRates: string[];
 }
-export class ExtendedGyroEV2 extends GyroEV2Pool implements IAMMFunctionality<GyroEPoolPairData>{
+export class ExtendedGyroEV2
+  extends GyroEV2Pool
+  implements IAMMFunctionality<GyroEPoolPairData>
+{
   constructor(poolParams: IGyroEMaths) {
     super(
       "0x",
@@ -205,5 +210,14 @@ export class ExtendedGyroEV2 extends GyroEV2Pool implements IAMMFunctionality<Gy
       poolPairData.swapFee
     );
     return bnum(formatFixed(newSpotPrice, 18));
+  }
+
+  _firstGuessOfTokenInForExactSpotPriceAfterSwap(
+    poolPairData: GyroEPoolPairData
+  ): OldBigNumber {
+    return bigNumberToOldBigNumber(
+      poolPairData.balanceIn,
+      poolPairData.decimalsIn
+    ).times(bnum(0.01));
   }
 }

@@ -1,7 +1,8 @@
 import { bnum, SubgraphPoolBase } from "@balancer-labs/sor";
 import { describe, expect, test } from "@jest/globals";
 
-import { AMM, numberToBigNumber } from "../index";
+import { numberToBigNumber } from "../conversions";
+import { AMM } from "../index";
 import poolsFromFile from "./fixtures/data.json";
 import { ExtendedGyroEV2 } from "./index";
 
@@ -11,7 +12,8 @@ describe("Tests new Gyro ECLP math function based on package other functions", (
   const tokenIn = "wstETH";
   const tokenOut = "swETH";
 
-  const amm = new AMM(new ExtendedGyroEV2({
+  const amm = new AMM(
+    new ExtendedGyroEV2({
       swapFee: poolData.swapFee,
       totalShares: poolData.totalShares,
       tokens: poolData.tokens,
@@ -34,7 +36,9 @@ describe("Tests new Gyro ECLP math function based on package other functions", (
         w: poolData.w,
         z: poolData.z,
         dSq: poolData.dSq,
-  }}));
+      },
+    })
+  );
   const pool = ExtendedGyroEV2.fromPool(poolData as SubgraphPoolBase);
   const poolPairData = pool.parsePoolPairData(tokenIn, tokenOut);
   const amount = 0.01;

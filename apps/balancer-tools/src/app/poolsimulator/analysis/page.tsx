@@ -2,7 +2,7 @@
 
 import { Spinner } from "#/components/Spinner";
 import { Tabs } from "#/components/Tabs";
-import { useStableSwap } from "#/contexts/PoolSimulatorContext";
+import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 
 import { DepthCost } from "../(components)/DepthCost";
 import { ImpactCurve } from "../(components)/ImpactCurve";
@@ -17,7 +17,7 @@ export default function Page() {
     analysisToken,
     setCurrentTabTokenByIndex,
     currentTabToken,
-  } = useStableSwap();
+  } = usePoolSimulator();
   const tokensSymbol = initialData.tokens.map((token) => token.symbol);
   const tabTokens = tokensSymbol.filter(
     (tokenSymbol) => tokenSymbol !== analysisToken.symbol

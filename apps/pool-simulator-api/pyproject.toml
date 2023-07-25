@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "pool-simulator-api"
+version = "0.1.0"
+description = ""
+authors = ["José Ribeiro <jose@bleu.studio>"]
+readme = "README.md"
+packages = [{include = "pool_simulator_api"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.100.0"
+uvicorn = {extras = ["standard"], version = "^0.23.1"}
+
+[tool.poetry.scripts]
+dev = 'run:run'
+
+[tool.poetry.group.dev.dependencies]
+ipython = "^8.11.0"
+black = "^23.1.0"
+isort = { version = "^4.3.21", extras = ["pyproject"] }
+pre-commit = "^3.2.2"
+autoflake = "^2.0.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

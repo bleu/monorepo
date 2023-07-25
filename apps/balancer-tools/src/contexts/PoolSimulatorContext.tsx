@@ -2,7 +2,10 @@
 
 import { PoolQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
-import { ExtendedMetaStableMath } from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
+import {
+  ExtendedMetaStableMath,
+  MetaStablePoolPairData,
+} from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
 import { NetworkChainId } from "@bleu-balancer-tools/utils";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -45,8 +48,8 @@ interface StableSwapContextType {
   isGraphLoading: boolean;
   setIsGraphLoading: (value: boolean) => void;
   generateURL: () => string;
-  initialAMM?: AMM<ExtendedMetaStableMath>;
-  customAMM?: AMM<ExtendedMetaStableMath>;
+  initialAMM?: AMM<MetaStablePoolPairData>;
+  customAMM?: AMM<MetaStablePoolPairData>;
 }
 
 const defaultPool = {
@@ -56,7 +59,8 @@ const defaultPool = {
 };
 
 function convertAnalysisDataToAMM(data: AnalysisData) {
-  return new AMM(new ExtendedMetaStableMath({
+  return new AMM(
+    new ExtendedMetaStableMath({
       amp: String(data.ampFactor),
       swapFee: String(data.swapFee),
       totalShares: String(
@@ -69,7 +73,8 @@ function convertAnalysisDataToAMM(data: AnalysisData) {
         priceRate: String(token.rate),
       })),
       tokensList: data.tokens.map((token) => String(token.symbol)),
-  }));
+    })
+  );
 }
 
 export const StableSwapContext = createContext({} as StableSwapContextType);
@@ -94,8 +99,8 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
     useState<AnalysisData>(defaultAnalysisData);
   const [customData, setCustomData] =
     useState<AnalysisData>(defaultAnalysisData);
-  const [initialAMM, setInitialAMM] = useState<AMM<ExtendedMetaStableMath>>();
-  const [customAMM, setCustomAMM] = useState<AMM<ExtendedMetaStableMath>>();
+  const [initialAMM, setInitialAMM] = useState<AMM<MetaStablePoolPairData>>();
+  const [customAMM, setCustomAMM] = useState<AMM<MetaStablePoolPairData>>();
   const [analysisToken, setAnalysisToken] =
     useState<TokensData>(defaultTokensData);
   const [currentTabToken, setCurrentTabToken] =

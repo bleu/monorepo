@@ -1,4 +1,5 @@
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
+import { MetaStablePoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
 import { Controller, useForm } from "react-hook-form";
 
 import { BaseInput, Input } from "#/components/Input";
@@ -81,7 +82,7 @@ export function SwapSimulator() {
         <label className="block text-sm text-slate12">Effective Price</label>
         <BaseInput
           value={`${effectivePrice.toFixed(
-            2,
+            2
           )} ${tokenInSymbol}/${tokenOutSymbol}`}
           disabled
         />
@@ -175,7 +176,7 @@ export function SwapSimulator() {
                   label="Amount"
                   type="number"
                   defaultValue={(initialData?.tokens[0]?.balance / 10).toFixed(
-                    2,
+                    2
                   )}
                 />
               )}
@@ -208,7 +209,7 @@ function calculateSimulation({
   tokenInSymbol,
   tokenOutSymbol,
 }: {
-  amm: AMM;
+  amm: AMM<MetaStablePoolPairData>;
   swapType: string;
   amount: number;
   tokenInSymbol: string;
@@ -226,35 +227,35 @@ function calculateSimulation({
   let amountOut = amm.exactTokenInForTokenOut(
     amount,
     tokenInSymbol,
-    tokenOutSymbol,
+    tokenOutSymbol
   );
   let effectivePrice = amm.effectivePriceForExactTokenInSwap(
     amount,
     tokenInSymbol,
-    tokenOutSymbol,
+    tokenOutSymbol
   );
   let priceImpact = amm.priceImpactForExactTokenInSwap(
     amount,
     tokenInSymbol,
-    tokenOutSymbol,
+    tokenOutSymbol
   );
 
   if (swapType == "Exact Out") {
     amountIn = amm.tokenInForExactTokenOut(
       amount,
       tokenInSymbol,
-      tokenOutSymbol,
+      tokenOutSymbol
     );
     amountOut = amount;
     effectivePrice = amm.effectivePriceForExactTokenOutSwap(
       amount,
       tokenInSymbol,
-      tokenOutSymbol,
+      tokenOutSymbol
     );
     priceImpact = amm.priceImpactForExactTokenOutSwap(
       amount,
       tokenInSymbol,
-      tokenOutSymbol,
+      tokenOutSymbol
     );
   }
 

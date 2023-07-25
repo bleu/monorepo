@@ -2,6 +2,7 @@
 "use client";
 
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
+import { MetaStablePoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
 
 import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
@@ -57,7 +58,7 @@ export function ImpactCurve() {
     direction: "in" | "out",
     amount: number,
     tokenFrom: string,
-    tokenTo: string,
+    tokenTo: string
   ) => {
     const formattedAmount = formatNumber(amount, 2);
     return direction === "in"
@@ -68,7 +69,7 @@ export function ImpactCurve() {
   const createHoverTemplate = (
     amounts: number[],
     direction: "in" | "out",
-    impactData: number[],
+    impactData: number[]
   ): string[] => {
     return amounts.map((amount, i) => {
       const swapFromSymbol =
@@ -80,7 +81,7 @@ export function ImpactCurve() {
         direction,
         amount,
         swapFromSymbol,
-        swapToSymbol,
+        swapToSymbol
       );
 
       const impact = formatNumber(impactData[i] / 100, 2, "percent");
@@ -96,7 +97,7 @@ export function ImpactCurve() {
     name: string,
     isLegendShown: boolean,
     direction: "in" | "out",
-    lineStyle: "solid" | "dashdot" = "solid",
+    lineStyle: "solid" | "dashdot" = "solid"
   ) => {
     const line = lineStyle === "dashdot" ? { dash: "dashdot" } : {};
 
@@ -112,7 +113,7 @@ export function ImpactCurve() {
       hovertemplate: createHoverTemplate(
         hovertemplateData,
         direction,
-        impactData,
+        impactData
       ),
       line,
     };
@@ -125,7 +126,7 @@ export function ImpactCurve() {
       "Initial",
       analysisToken.symbol,
       true,
-      "in",
+      "in"
     ),
     createDataObject(
       variantAmountsAnalysisTokenIn,
@@ -133,7 +134,7 @@ export function ImpactCurve() {
       "Custom",
       analysisToken.symbol,
       true,
-      "in",
+      "in"
     ),
     createDataObject(
       initialAmountsTabTokenIn,
@@ -142,7 +143,7 @@ export function ImpactCurve() {
       currentTabToken.symbol,
       true,
       "out",
-      "dashdot",
+      "dashdot"
     ),
     createDataObject(
       variantAmountsTabTokenIn,
@@ -151,7 +152,7 @@ export function ImpactCurve() {
       currentTabToken.symbol,
       true,
       "out",
-      "dashdot",
+      "dashdot"
     ),
   ];
 
@@ -180,7 +181,7 @@ const calculateTokenImpact = ({
 }: {
   tokenIn: TokensData;
   tokenOut: TokensData;
-  amm: AMM;
+  amm: AMM<MetaStablePoolPairData>;
 }) => {
   const maxBalance = Math.max(tokenIn.balance, tokenOut.balance);
   const amountsIn = calculateCurvePoints({
@@ -193,8 +194,8 @@ const calculateTokenImpact = ({
       amm.priceImpactForExactTokenInSwap(
         amount,
         tokenIn.symbol,
-        tokenOut.symbol,
-      ) * 100,
+        tokenOut.symbol
+      ) * 100
   );
 
   return {

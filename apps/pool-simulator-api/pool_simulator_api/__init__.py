@@ -1,19 +1,26 @@
-from typing import Union
-
 import uvicorn
 from fastapi import FastAPI
+
+from pool_simulator_api.src.models import ParamsModel, DerivedParamsModel
+from pool_simulator_api.src.eclp_prec_implementation import calc_derived_values
 
 app = FastAPI()
 
 
-@app.get("/")
-async def read_root():
-    return {"Hello": "World"}
-
-
-@app.get("/items/{item_id}")
-async def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+@app.post("/calculate_derivative_parameters/")
+async def calculate_derivative_parameters(params: ParamsModel):
+    derivativeParams = calc_derived_values(params)
+    return DerivedParamsModel(
+        tauAlphaX=str(derivativeParams.tauAlpha[0]),
+        tauAlphaY=str(derivativeParams.tauAlpha[1]),
+        tauBetaX=str(derivativeParams.tauBeta[0]),
+        tauBetaY=str(derivativeParams.tauBeta[1]),
+        u=str(derivativeParams.u),
+        v=str(derivativeParams.v),
+        w=str(derivativeParams.w),
+        z=str(derivativeParams.z),
+        dSq=str(derivativeParams.dSq),
+    )
 
 
 if __name__ == "__main__":

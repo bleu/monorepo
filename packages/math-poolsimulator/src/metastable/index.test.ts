@@ -10,41 +10,38 @@ describe("Tests new stable math function based on package other functions", () =
   const tokenIn = "DAI";
   const tokenOut = "USDC";
   const pool = ExtendedMetaStableMath.fromPool(poolData as SubgraphPoolBase);
-  const amm = new AMM({
-    poolType: "MetaStable",
-    poolParams: {
+  const amm = new AMM(new ExtendedMetaStableMath({
       swapFee: poolData.swapFee,
       amp: poolData.amp,
       totalShares: poolData.totalShares,
       tokens: poolData.tokens,
       tokensList: poolData.tokensList,
-    },
-  });
+  }));
   const poolPairData = pool.parsePoolPairData(tokenIn, tokenOut);
   const amount = 5000000000000;
   const amountOldBigNumber = bnum(amount);
   const spotPriceExpected = pool._spotPriceAfterSwapExactTokenInForTokenOut(
     poolPairData,
-    amountOldBigNumber,
+    amountOldBigNumber
   );
 
   const amountOut = amm.exactTokenInForTokenOut(amount, tokenIn, tokenOut);
   poolPairData.allBalances[poolPairData.tokenIndexIn] =
     poolPairData.allBalances[poolPairData.tokenIndexIn].plus(
-      amountOldBigNumber,
+      amountOldBigNumber
     );
   poolPairData.allBalances[poolPairData.tokenIndexOut] =
     poolPairData.allBalances[poolPairData.tokenIndexOut].minus(bnum(amountOut));
   const tokenInCalculated = amm.tokenInForExactSpotPriceAfterSwap(
     spotPriceExpected.toNumber(),
     tokenIn,
-    tokenOut,
+    tokenOut
   );
 
   test("_spotPrice", () => {
     checkResult(
       pool._spotPrice(poolPairData).toNumber(),
-      spotPriceExpected.toNumber(),
+      spotPriceExpected.toNumber()
     );
   });
   test("__tokenInForExactSpotPriceAfterSwap", () => {

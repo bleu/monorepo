@@ -11,7 +11,8 @@
     "test": "jest --watchAll --verbose"
   },
   "dependencies": {
-    "@balancer-labs/sor": "4.1.1-beta.9",
+    "@balancer-labs/sor": "link:../../../balancer-sor",
+    "@bleu-balancer-tools/utils": "workspace:^",
     "@ethersproject/bignumber": "^5.7.0",
     "@ethersproject/constants": "^5.7.0",
     "bignumber.js": "^9.1.1"

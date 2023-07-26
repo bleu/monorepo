@@ -1,6 +1,7 @@
 "use client";
 
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
+import { MetaStablePoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
 import { PlotType } from "plotly.js";
 
 import Plot from "#/components/Plot";
@@ -168,7 +169,7 @@ export function calculateCurvePoints({
 const calculateTokenAmounts = (
   tokenIn: TokensData,
   tokenOut: TokensData,
-  amm: AMM
+  amm: AMM<MetaStablePoolPairData>
 ) => {
   const amountsAnalysisTokenIn = calculateCurvePoints({
     balance: tokenIn.balance,

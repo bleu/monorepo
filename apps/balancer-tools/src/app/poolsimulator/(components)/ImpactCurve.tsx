@@ -2,6 +2,7 @@
 "use client";
 
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
+import { MetaStablePoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
 
 import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
@@ -180,7 +181,7 @@ const calculateTokenImpact = ({
 }: {
   tokenIn: TokensData;
   tokenOut: TokensData;
-  amm: AMM;
+  amm: AMM<MetaStablePoolPairData>;
 }) => {
   const maxBalance = Math.max(tokenIn.balance, tokenOut.balance);
   const amountsIn = calculateCurvePoints({

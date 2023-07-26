@@ -16,6 +16,12 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
     steps:
+      - name: Checkout bleu's version of Balancer SOR
+        uses: actions/checkout@v3
+        with:
+          repository: bleu-studio/balancer-sor
+          path: balancer-sor
+
       - uses: actions/checkout@v3
 
       - uses: ./.github/workflows/setup-pnpm

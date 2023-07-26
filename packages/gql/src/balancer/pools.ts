@@ -79,6 +79,15 @@ export const poolById = gql`
       alpha
       beta
       lambda
+      tauAlphaX
+      tauAlphaY
+      tauBetaX
+      tauBetaY
+      u
+      v
+      w
+      z
+      dSq
       tokens {
         address
         symbol

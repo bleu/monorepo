@@ -1,4 +1,5 @@
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
+import { MetaStablePoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
 import { Controller, useForm } from "react-hook-form";
 
 import { BaseInput, Input } from "#/components/Input";
@@ -208,7 +209,7 @@ function calculateSimulation({
   tokenInSymbol,
   tokenOutSymbol,
 }: {
-  amm: AMM;
+  amm: AMM<MetaStablePoolPairData>;
   swapType: string;
   amount: number;
   tokenInSymbol: string;

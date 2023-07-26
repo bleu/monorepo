@@ -1,6 +1,7 @@
 "use client";
 
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
+import { MetaStablePoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
 import { PlotType } from "plotly.js";
 
 import Plot, { defaultAxisLayout } from "#/components/Plot";
@@ -187,7 +188,7 @@ const createDataObject = (
 function calculateDepthCostAmount(
   pairToken: TokensData,
   poolSide: "in" | "out",
-  amm: AMM
+  amm: AMM<MetaStablePoolPairData>
 ) {
   const { analysisToken } = usePoolSimulator();
 

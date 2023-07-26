@@ -35,19 +35,25 @@ type InputMapperType = {
 const inputMapper: InputMapperType = {
   [PoolTypeEnum.MetaStable]: [
     {
+      name: "swapFee",
+      label: "Swap Fee",
+      placeholder: "Enter swap fee",
+      unit: "%",
+    },
+    {
       name: "ampFactor",
       label: "Amplification Factor",
       placeholder: "Enter amplification factor",
       unit: "",
     },
+  ],
+  [PoolTypeEnum.GyroE]: [
     {
       name: "swapFee",
       label: "Swap Fee",
       placeholder: "Enter swap fee",
       unit: "%",
     },
-  ],
-  [PoolTypeEnum.GyroE]: [
     {
       name: "alpha",
       label: "Alpha",
@@ -118,6 +124,20 @@ export function PoolParamsForm() {
       }
     });
   }, [initialData]);
+
+  useEffect(() => {
+    clearErrors();
+    Object.entries(inputMapper).forEach(([, value]) => {
+      value.forEach((input) => {
+        setValue(input.name, undefined);
+      });
+    });
+    setInitialData({
+      poolParams: undefined,
+      tokens: [],
+      poolType: poolType,
+    });
+  }, [poolType]);
 
   useEffect(() => {
     register("tokens", { required: true, value: initialData?.tokens });

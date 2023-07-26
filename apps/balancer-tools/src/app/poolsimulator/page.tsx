@@ -49,7 +49,7 @@ export default function Page() {
     },
   };
   useEffect(() => {
-    if (initialData.poolParams?.swapFee) {
+    if (initialData.poolType) {
       setPoolDataStatus(dataStatus.IMPORTED);
     } else {
       setPoolDataStatus(dataStatus.NONE);

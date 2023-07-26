@@ -2,10 +2,7 @@
 
 import { PoolQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
-import {
-  ExtendedGyroEV2,
-  GyroEPoolPairData,
-} from "@bleu-balancer-tools/math-poolsimulator/src/gyroE";
+import { ExtendedGyroEV2 } from "@bleu-balancer-tools/math-poolsimulator/src/gyroE";
 import {
   ExtendedMetaStableMath,
   MetaStablePoolPairData,
@@ -43,15 +40,15 @@ export interface GyroEParams {
   c?: number;
   s?: number;
   swapFee?: number;
-  tauAlphaX: number;
-  tauAlphaY: number;
-  tauBetaX: number;
-  tauBetaY: number;
-  u: number;
-  v: number;
-  w: number;
-  z: number;
-  dSq: number;
+  tauAlphaX?: number;
+  tauAlphaY?: number;
+  tauBetaX?: number;
+  tauBetaY?: number;
+  u?: number;
+  v?: number;
+  w?: number;
+  z?: number;
+  dSq?: number;
 }
 
 export enum PoolTypeEnum {
@@ -61,30 +58,27 @@ export enum PoolTypeEnum {
 
 export type PoolParams = MetaStableParams & GyroEParams;
 export type PoolType = PoolTypeEnum;
-export type PoolPairData = MetaStablePoolPairData | GyroEPoolPairData;
 export const POOL_TYPES: PoolType[] = [
   PoolTypeEnum.MetaStable,
   PoolTypeEnum.GyroE,
 ];
-export interface AnalysisData<T extends PoolType> {
+export interface AnalysisData {
   tokens: TokensData[];
-  poolType?: T;
-  poolParams?: T extends PoolTypeEnum.MetaStable
-    ? MetaStableParams
-    : GyroEParams;
+  poolType?: PoolType;
+  poolParams?: PoolParams;
 }
 
 interface PoolSimulatorContextType {
-  initialData: AnalysisData<PoolType>;
-  customData: AnalysisData<PoolType>;
+  initialData: AnalysisData;
+  customData: AnalysisData;
   analysisToken: TokensData;
   currentTabToken: TokensData;
   setAnalysisTokenBySymbol: (symbol: string) => void;
   setCurrentTabTokenBySymbol: (symbol: string) => void;
   setAnalysisTokenByIndex: (index: number) => void;
   setCurrentTabTokenByIndex: (index: number) => void;
-  setInitialData: (data: AnalysisData<PoolType>) => void;
-  setCustomData: (data: AnalysisData<PoolType>) => void;
+  setInitialData: (data: AnalysisData) => void;
+  setCustomData: (data: AnalysisData) => void;
   handleImportPoolParametersById: (data: PoolAttribute) => void;
   newPoolImportedFlag: boolean;
   isGraphLoading: boolean;
@@ -92,8 +86,8 @@ interface PoolSimulatorContextType {
   generateURL: () => string;
   poolType: PoolType;
   setPoolType: (value: PoolType) => void;
-  initialAMM?: AMM<PoolPairData>;
-  customAMM?: AMM<PoolPairData>;
+  initialAMM?: AMM<MetaStablePoolPairData>;
+  customAMM?: AMM<MetaStablePoolPairData>;
 }
 
 const defaultPool = {
@@ -102,16 +96,15 @@ const defaultPool = {
   network: NetworkChainId.ETHEREUM.toString(),
 };
 
-function convertAnalysisDataToAMM(data: AnalysisData<PoolType>) {
+function convertAnalysisDataToAMM(data: AnalysisData) {
   if (!data.poolType) return;
 
   switch (data.poolType) {
     case PoolTypeEnum.MetaStable: {
-      const { ampFactor, swapFee } = data.poolParams as MetaStableParams;
       return new AMM(
         new ExtendedMetaStableMath({
-          amp: String(ampFactor),
-          swapFee: String(swapFee),
+          amp: String(data.poolParams?.ampFactor),
+          swapFee: String(data.poolParams?.swapFee),
           totalShares: String(
             data.tokens.reduce((acc, token) => acc + token.balance, 0)
           ),
@@ -126,10 +119,9 @@ function convertAnalysisDataToAMM(data: AnalysisData<PoolType>) {
       );
     }
     case PoolTypeEnum.GyroE: {
-      const gyroEParams = data.poolParams as GyroEParams;
       return new AMM(
         new ExtendedGyroEV2({
-          swapFee: String(gyroEParams.swapFee),
+          swapFee: String(data.poolParams?.swapFee),
           totalShares: String(
             data.tokens.reduce((acc, token) => acc + token.balance, 0)
           ),
@@ -140,23 +132,24 @@ function convertAnalysisDataToAMM(data: AnalysisData<PoolType>) {
             priceRate: String(token.rate),
           })),
           tokensList: data.tokens.map((token) => String(token.symbol)),
+
           gyroEParams: {
-            alpha: String(gyroEParams.alpha),
-            beta: String(gyroEParams.beta),
-            lambda: String(gyroEParams.lambda),
-            c: String(gyroEParams.c),
-            s: String(gyroEParams.s),
+            alpha: String(data.poolParams?.alpha),
+            beta: String(data.poolParams?.beta),
+            lambda: String(data.poolParams?.lambda),
+            c: String(data.poolParams?.c),
+            s: String(data.poolParams?.s),
           },
           derivedGyroEParams: {
-            tauAlphaX: String(gyroEParams.tauAlphaX),
-            tauAlphaY: String(gyroEParams.tauAlphaY),
-            tauBetaX: String(gyroEParams.tauBetaX),
-            tauBetaY: String(gyroEParams.tauBetaY),
-            u: String(gyroEParams.u),
-            v: String(gyroEParams.v),
-            w: String(gyroEParams.w),
-            z: String(gyroEParams.z),
-            dSq: String(gyroEParams.dSq),
+            tauAlphaX: String(data.poolParams?.tauAlphaX),
+            tauAlphaY: String(data.poolParams?.tauAlphaY),
+            tauBetaX: String(data.poolParams?.tauBetaX),
+            tauBetaY: String(data.poolParams?.tauBetaY),
+            u: String(data.poolParams?.u),
+            v: String(data.poolParams?.v),
+            w: String(data.poolParams?.w),
+            z: String(data.poolParams?.z),
+            dSq: String(data.poolParams?.dSq),
           },
           tokenRates: data.tokens.map((token) => String(token.rate)),
         })
@@ -172,7 +165,7 @@ export const PoolSimulatorContext = createContext(
 export function PoolSimulatorProvider({ children }: PropsWithChildren) {
   const pathname = usePathname();
   const { push } = useRouter();
-  const defaultAnalysisData: AnalysisData<PoolType> = {
+  const defaultAnalysisData: AnalysisData = {
     poolParams: undefined,
     tokens: [],
   };
@@ -185,11 +178,11 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
   };
 
   const [initialData, setInitialData] =
-    useState<AnalysisData<PoolType>>(defaultAnalysisData);
+    useState<AnalysisData>(defaultAnalysisData);
   const [customData, setCustomData] =
-    useState<AnalysisData<PoolType>>(defaultAnalysisData);
-  const [initialAMM, setInitialAMM] = useState<AMM<PoolPairData>>();
-  const [customAMM, setCustomAMM] = useState<AMM<PoolPairData>>();
+    useState<AnalysisData>(defaultAnalysisData);
+  const [initialAMM, setInitialAMM] = useState<AMM<MetaStablePoolPairData>>();
+  const [customAMM, setCustomAMM] = useState<AMM<MetaStablePoolPairData>>();
   const [analysisToken, setAnalysisToken] =
     useState<TokensData>(defaultTokensData);
   const [currentTabToken, setCurrentTabToken] =
@@ -231,6 +224,7 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
   }, [initialData, customData]);
 
   useEffect(() => {
+    if (initialData.poolParams === undefined) return;
     if (
       initialData.tokens.length < 2 &&
       !initialData.poolType &&
@@ -264,9 +258,7 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     }
   }, []);
 
-  function convertGqlToAnalysisData(
-    poolData: PoolQuery
-  ): AnalysisData<PoolType> {
+  function convertGqlToAnalysisData(poolData: PoolQuery): AnalysisData {
     switch (poolData.pool?.poolType) {
       case PoolTypeEnum.GyroE:
         return {
@@ -290,7 +282,7 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
           },
           tokens:
             poolData?.pool?.tokens
-              ?.filter((token) => token.address !== poolData?.pool?.address)
+              ?.filter((token) => token.address !== poolData?.pool?.address) // filter out BPT
               .map((token) => ({
                 symbol: token?.symbol,
                 balance: Number(token?.balance),
@@ -307,7 +299,7 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
           },
           tokens:
             poolData?.pool?.tokens
-              ?.filter((token) => token.address !== poolData?.pool?.address)
+              ?.filter((token) => token.address !== poolData?.pool?.address) // filter out BPT
               .map((token) => ({
                 symbol: token?.symbol,
                 balance: Number(token?.balance),
@@ -316,7 +308,6 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
               })) || [],
         };
       default:
-        // Handle any other pool type here if needed
         return {
           poolType: PoolTypeEnum.MetaStable,
           poolParams: {
@@ -325,7 +316,7 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
           },
           tokens:
             poolData?.pool?.tokens
-              ?.filter((token) => token.address !== poolData?.pool?.address)
+              ?.filter((token) => token.address !== poolData?.pool?.address) // filter out BPT
               .map((token) => ({
                 symbol: token?.symbol,
                 balance: Number(token?.balance),

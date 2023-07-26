@@ -1,5 +1,5 @@
 from fastapi.testclient import TestClient
-from pool_simulator_api import app
+from gyro_eclp_api import app
 from pytest import approx
 
 client = TestClient(app)

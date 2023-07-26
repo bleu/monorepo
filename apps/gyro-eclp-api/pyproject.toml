@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "pool-simulator-api"
+name = "gyro-eclp-api"
 version = "0.1.0"
 description = ""
 authors = ["José Ribeiro <jose@bleu.studio>"]
 readme = "README.md"
-packages = [{include = "pool_simulator_api"}]
+packages = [{include = "gyro_eclp_api"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"

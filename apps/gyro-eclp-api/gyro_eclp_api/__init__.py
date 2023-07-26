@@ -1,8 +1,8 @@
 import uvicorn
 from fastapi import FastAPI
 
-from pool_simulator_api.src.models import ParamsModel, DerivedParamsModel
-from pool_simulator_api.src.eclp_prec_implementation import calc_derived_values
+from gyro_eclp_api.src.models import ParamsModel, DerivedParamsModel
+from gyro_eclp_api.src.eclp_prec_implementation import calc_derived_values
 
 app = FastAPI()
 
@@ -25,7 +25,7 @@ async def calculate_derivative_parameters(params: ParamsModel):
 
 if __name__ == "__main__":
     config = uvicorn.Config(
-        "pool_simulator_api:app",
+        "gyro_eclp_api:app",
         host="0.0.0.0",
         port=8000,
         log_level="info",

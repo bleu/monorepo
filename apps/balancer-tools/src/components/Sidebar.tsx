@@ -15,7 +15,7 @@ function useSidebarContext() {
 
   if (!context) {
     throw new Error(
-      "Child components of Sidebar cannot be rendered outside the Sidebar component!",
+      "Child components of Sidebar cannot be rendered outside the Sidebar component!"
     );
   }
 
@@ -70,7 +70,7 @@ function Content({ children }: { children: React.ReactNode }) {
 
   return (
     <div
-      className={cn("relative max-h-[38rem] self-stretch overflow-auto", {
+      className={cn("relative max-h-[31rem] self-stretch overflow-auto", {
         "rounded-md": isFloating,
       })}
     >
@@ -122,7 +122,7 @@ function Item({
           "px-5": !isFloating,
           "rounded-md": isFloating,
           "bg-blue5": isSelected,
-        },
+        }
       )}
     >
       <div className="flex w-full flex-col space-y-1">{children}</div>

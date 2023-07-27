@@ -173,10 +173,9 @@ export const getStableSwapSimulatorTokensSchema = ({
   return StableSwapSimulatorTokensSchema;
 };
 
-export const TokensSchema = z.object({
+export const BaseTokenSchema = z.object({
   symbol: z.string().min(1),
   balance: z.coerce.number().positive(),
-  rate: z.coerce.number().positive(),
   decimal: z.coerce.number().int().positive().max(60),
 });
 
@@ -193,6 +192,13 @@ export const ECLPSimulatorDataSchema = z
     lambda: z.number().min(1).max(1e8), //source: https://2063019688-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-MU527HCtxlYaQoNazhF%2Fuploads%2Fh7LxmzxixMlcZfja8q2K%2FE-CLP%20high-precision%20calculations.pdf?alt=media&token=f4fd00a2-3cb7-4318-a8f3-ed06ecdf52dd
     c: z.coerce.number(),
     s: z.coerce.number(),
+    tokens: z
+      .array(
+        BaseTokenSchema.extend({
+          rate: z.coerce.number().positive(),
+        })
+      )
+      .length(2),
   })
   .refine(
     (data) => {
@@ -208,10 +214,12 @@ export const ECLPSimulatorDataSchema = z
 export const StableSwapSimulatorDataSchema = z.object({
   swapFee: z.coerce.number().positive().min(0.0001).max(10), //source: https://github.com/balancer/balancer-v2-monorepo/blob/c4cc3d466eaa3c1e5fa62d303208c6c4a10db48a/pkg/pool-utils/contracts/BasePool.sol#L74
   ampFactor: z.coerce.number().positive().min(1).max(5000), //source: https://github.com/balancer/balancer-v2-monorepo/blob/c4cc3d466eaa3c1e5fa62d303208c6c4a10db48a/pkg/pool-stable/contracts/StableMath.sol#L28
-  tokens: z.array(TokensSchema).min(2),
-});
-
-export const PoolSimulatorDataSchema = z.object({
-  swapFee: z.coerce.number().positive().min(0.0001).max(10), //source: https://github.com/balancer/balancer-v2-monorepo/blob/c4cc3d466eaa3c1e5fa62d303208c6c4a10db48a/pkg/pool-utils/contracts/BasePool.sol#L74
-  ampFactor: z.coerce.number().positive().min(1).max(5000), //source: https://github.com/balancer/balancer-v2-monorepo/blob/c4cc3d466eaa3c1e5fa62d303208c6c4a10db48a/pkg/pool-stable/contracts/StableMath.sol#L28
+  tokens: z
+    .array(
+      BaseTokenSchema.extend({
+        rate: z.coerce.number().positive(),
+      })
+    )
+    .min(2)
+    .max(5),
 });

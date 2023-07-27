@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
-from gyro_eclp_api import app
 from pytest import approx
+
+from gyro_eclp_api import app
 
 client = TestClient(app)
 

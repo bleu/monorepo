@@ -1,15 +1,34 @@
 import uvicorn
+from concentrated_lps import geclp
 from fastapi import FastAPI
-
-from gyro_eclp_api.src.models import ParamsModel, DerivedParamsModel
-from gyro_eclp_api.src.eclp_prec_implementation import calc_derived_values
+from pydantic import BaseModel
 
 app = FastAPI()
 
 
-@app.post("/calculate_derivative_parameters/")
+class ParamsModel(BaseModel):
+    alpha: str
+    beta: str
+    l: str
+    c: str
+    s: str
+
+
+class DerivedParamsModel(BaseModel):
+    tauAlphaX: str
+    tauAlphaY: str
+    tauBetaX: str
+    tauBetaY: str
+    u: str
+    v: str
+    w: str
+    z: str
+    dSq: str
+
+
+@app.post("/calculate_derivative_parameters")
 async def calculate_derivative_parameters(params: ParamsModel):
-    derivativeParams = calc_derived_values(params)
+    derivativeParams = geclp.calc_derived_values(params)  # type: ignore
     return DerivedParamsModel(
         tauAlphaX=str(derivativeParams.tauAlpha[0]),
         tauAlphaY=str(derivativeParams.tauAlpha[1]),

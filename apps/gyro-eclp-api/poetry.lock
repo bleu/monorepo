@@ -187,6 +187,22 @@ files = [
 ]
 
 [[package]]
+name = "concentrated-lps"
+version = "0.1.0"
+description = ""
+category = "main"
+optional = false
+python-versions = ">=3.9,<3.13"
+files = []
+develop = false
+
+[package.source]
+type = "git"
+url = "https://github.com/bleu-studio/concentrated-lps.git"
+reference = "HEAD"
+resolved_reference = "2754ca75fbadb73f155d01ca19ff54f01573589c"
+
+[[package]]
 name = "decorator"
 version = "5.1.1"
 description = "Decorators for Humans"
@@ -690,14 +706,14 @@ tests = ["pytest"]
 
 [[package]]
 name = "pydantic"
-version = "2.1.0"
+version = "2.1.1"
 description = "Data validation using Python type hints"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "pydantic-2.1.0-py3-none-any.whl", hash = "sha256:868e036da92a263da265e34f2d1ff5ad1c24d23c93e7a1e7da50cb96fa8b05e8"},
-    {file = "pydantic-2.1.0.tar.gz", hash = "sha256:80a67e716158c813c9a6c0ce936ee24577e9fbd7453d159fc79850747a9aaa76"},
+    {file = "pydantic-2.1.1-py3-none-any.whl", hash = "sha256:43bdbf359d6304c57afda15c2b95797295b702948082d4c23851ce752f21da70"},
+    {file = "pydantic-2.1.1.tar.gz", hash = "sha256:22d63db5ce4831afd16e7c58b3192d3faf8f79154980d9397d9867254310ba4b"},
 ]
 
 [package.dependencies]
@@ -1275,5 +1291,5 @@ files = [
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.11"
-content-hash = "6b362a61157ac0e62a16b4646ea32996840ba9739f1e13d2741d8fe30922b97b"
+python-versions = ">=3.11,<3.13"
+content-hash = "5225a5f3d2da0109aa0e0a8569f7d91c1d582a405d210735333d6f056a2d699b"

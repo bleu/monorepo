@@ -99,7 +99,13 @@ export function PoolParamsForm() {
     resolver: zodResolver(schemaMapper[poolType]),
     mode: "onSubmit",
   });
-  const { register, setValue, getValues, clearErrors } = form;
+  const {
+    register,
+    setValue,
+    getValues,
+    clearErrors,
+    formState: { errors },
+  } = form;
 
   const onSubmit = (data: FieldValues) => {
     setIsGraphLoading(true);
@@ -188,6 +194,7 @@ export function PoolParamsForm() {
             </span>
           </div>
         ))}
+        <span className="text-tomato10">{errors[""]?.message as string}</span>
         <Button type="submit" shade="light" className="h-min w-32 self-end">
           Next step
         </Button>

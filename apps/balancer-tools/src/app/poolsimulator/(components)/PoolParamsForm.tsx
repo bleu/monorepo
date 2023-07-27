@@ -11,13 +11,10 @@ import {
   PoolTypeEnum,
   usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
-import {
-  ECLPSimulatorDataSchema,
-  StableSwapSimulatorDataSchema,
-} from "#/lib/schema";
+import { ECLPSimulatorDataSchema, PoolSimulatorDataSchema } from "#/lib/schema";
 
 const schemaMapper = {
-  MetaStable: StableSwapSimulatorDataSchema,
+  MetaStable: PoolSimulatorDataSchema,
   GyroE: ECLPSimulatorDataSchema,
 };
 
@@ -91,8 +88,6 @@ export function PoolParamsForm() {
   const { push } = useRouter();
   const {
     setIsGraphLoading,
-    setCurrentTabTokenByIndex,
-    setAnalysisTokenByIndex,
     setInitialData,
     setCustomData,
     initialData,
@@ -107,10 +102,33 @@ export function PoolParamsForm() {
 
   const onSubmit = (data: FieldValues) => {
     setIsGraphLoading(true);
-    setCustomData(data as AnalysisData);
-    setInitialData(data as AnalysisData);
-    setAnalysisTokenByIndex(0);
-    setCurrentTabTokenByIndex(1);
+
+    const additionalParams =
+      poolType === PoolTypeEnum.GyroE
+        ? {
+            dSq: initialData.poolParams?.dSq,
+            tauAlphaX: initialData.poolParams?.tauAlphaX,
+            tauAlphaY: initialData.poolParams?.tauAlphaY,
+            tauBetaX: initialData.poolParams?.tauBetaX,
+            tauBetaY: initialData.poolParams?.tauBetaY,
+            u: initialData.poolParams?.u,
+            v: initialData.poolParams?.v,
+            w: initialData.poolParams?.w,
+            z: initialData.poolParams?.z,
+          }
+        : {};
+
+    const dataWithPoolType = {
+      poolParams: {
+        ...data,
+        ...additionalParams,
+      },
+      tokens: initialData.tokens,
+      poolType,
+    };
+
+    setInitialData(dataWithPoolType as AnalysisData);
+    setCustomData(dataWithPoolType as AnalysisData);
     push("/poolsimulator/analysis");
   };
 

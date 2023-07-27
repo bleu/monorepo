@@ -186,17 +186,21 @@ export const MetaStableParamsSchema = z.object({
 });
 
 export const ECLPSimulatorDataSchema = z.object({
-  swapFee: z.coerce.number().positive().min(0.0001).max(10), //source:
+  swapFee: z.coerce.number().positive().min(0.0001).max(10), //source: https://github.com/balancer/balancer-v2-monorepo/blob/c4cc3d466eaa3c1e5fa62d303208c6c4a10db48a/pkg/pool-utils/contracts/BasePool.sol#L74
   alpha: z.coerce.number(),
   beta: z.coerce.number(),
   lambda: z.coerce.number(),
   c: z.coerce.number(),
   s: z.coerce.number(),
-  tokens: z.array(TokensSchema).min(2),
 });
 
 export const StableSwapSimulatorDataSchema = z.object({
   swapFee: z.coerce.number().positive().min(0.0001).max(10), //source: https://github.com/balancer/balancer-v2-monorepo/blob/c4cc3d466eaa3c1e5fa62d303208c6c4a10db48a/pkg/pool-utils/contracts/BasePool.sol#L74
   ampFactor: z.coerce.number().positive().min(1).max(5000), //source: https://github.com/balancer/balancer-v2-monorepo/blob/c4cc3d466eaa3c1e5fa62d303208c6c4a10db48a/pkg/pool-stable/contracts/StableMath.sol#L28
   tokens: z.array(TokensSchema).min(2),
+});
+
+export const PoolSimulatorDataSchema = z.object({
+  swapFee: z.coerce.number().positive().min(0.0001).max(10), //source: https://github.com/balancer/balancer-v2-monorepo/blob/c4cc3d466eaa3c1e5fa62d303208c6c4a10db48a/pkg/pool-utils/contracts/BasePool.sol#L74
+  ampFactor: z.coerce.number().positive().min(1).max(5000), //source: https://github.com/balancer/balancer-v2-monorepo/blob/c4cc3d466eaa3c1e5fa62d303208c6c4a10db48a/pkg/pool-stable/contracts/StableMath.sol#L28
 });

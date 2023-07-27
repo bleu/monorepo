@@ -5,11 +5,8 @@ import { useState } from "react";
 import Button from "#/components/Button";
 import { Toast } from "#/components/Toast";
 import { Tooltip } from "#/components/Tooltip";
-import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 
 export function ShareButton() {
-  const { generateURL } = usePoolSimulator();
-
   const onInitialPage = usePathname() === "/poolsimulator";
   const [isNotifierOpen, setIsNotifierOpen] = useState<boolean>(false);
 
@@ -22,11 +19,10 @@ export function ShareButton() {
             : "Copy a link with the current simulation parameters"
         }
       >
-        <Button shade="dark" disabled={onInitialPage}>
+        <Button shade="dark" disabled={true}>
           <div
             onClick={() => {
               if (onInitialPage) return;
-              navigator.clipboard.writeText(generateURL());
               setIsNotifierOpen(true);
             }}
             className="flex flex-row gap-4"

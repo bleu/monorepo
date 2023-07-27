@@ -3,7 +3,9 @@ import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
 import { ExtendedGyroEV2 } from "@bleu-balancer-tools/math-poolsimulator/src/gyroE";
 import { ExtendedMetaStableMath } from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
 
-import { AnalysisData, PoolTypeEnum } from "#/contexts/PoolSimulatorContext";
+import { AnalysisData } from "#/contexts/PoolSimulatorContext";
+
+import { PoolTypeEnum } from "../(types)";
 
 export function convertAnalysisDataToAMM(data: AnalysisData) {
   if (!data.poolType) return;

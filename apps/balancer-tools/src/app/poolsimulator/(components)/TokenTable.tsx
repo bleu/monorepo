@@ -10,9 +10,10 @@ import { createContext, useContext } from "react";
 import { Dialog } from "#/components/Dialog";
 import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
-import { TokensData, usePoolSimulator } from "#/contexts/PoolSimulatorContext";
+import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
+import { TokensData } from "../(types)";
 import TokenForm from "./TokenForm";
 
 const customPadding = "py-4 px-1";

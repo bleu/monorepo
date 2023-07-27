@@ -7,11 +7,11 @@ import { Input } from "#/components/Input";
 import { Form } from "#/components/ui/form";
 import {
   AnalysisData,
-  TokensData,
   usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
 import { getStableSwapSimulatorTokensSchema } from "#/lib/schema";
 
+import { TokensData } from "../(types)";
 import { useTokenTableContext } from "./TokenTable";
 
 export default function TokenForm({

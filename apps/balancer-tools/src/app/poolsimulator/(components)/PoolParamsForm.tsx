@@ -8,18 +8,19 @@ import { Input } from "#/components/Input";
 import { Form, FormField } from "#/components/ui/form";
 import {
   AnalysisData,
-  PoolTypeEnum,
   usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
 import { ECLPSimulatorDataSchema, PoolSimulatorDataSchema } from "#/lib/schema";
 
+import { CombinedParams, PoolTypeEnum } from "../(types)";
+
 const schemaMapper = {
-  MetaStable: PoolSimulatorDataSchema,
-  GyroE: ECLPSimulatorDataSchema,
+  [PoolTypeEnum.MetaStable]: PoolSimulatorDataSchema,
+  [PoolTypeEnum.GyroE]: ECLPSimulatorDataSchema,
 };
 
 interface IInput {
-  name: "swapFee" | "ampFactor" | "alpha" | "beta" | "lambda" | "c" | "s";
+  name: keyof CombinedParams;
   label: string;
   placeholder: string;
   unit: string;

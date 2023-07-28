@@ -3,7 +3,7 @@
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
 import { MetaStablePoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
 import { NetworkChainId } from "@bleu-balancer-tools/utils";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   createContext,
   PropsWithChildren,
@@ -49,6 +49,7 @@ interface PoolSimulatorContextType {
   newPoolImportedFlag: boolean;
   isGraphLoading: boolean;
   setIsGraphLoading: (value: boolean) => void;
+  generateURL: () => string;
   poolType: PoolType;
   setPoolType: (value: PoolType) => void;
   initialAMM?: AMM<MetaStablePoolPairData>;
@@ -67,6 +68,7 @@ export const PoolSimulatorContext = createContext(
 
 export function PoolSimulatorProvider({ children }: PropsWithChildren) {
   const pathname = usePathname();
+  const { push } = useRouter();
   const defaultAnalysisData: AnalysisData = {
     poolParams: undefined,
     tokens: [],
@@ -118,6 +120,12 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     const token = initialData.tokens[index];
     if (token) setCurrentTabToken(token);
   }
+  function generateURL() {
+    const jsonState = JSON.stringify({ initialData, customData });
+
+    const encodedState = encodeURIComponent(jsonState);
+    return `${window.location.origin}${window.location.pathname}#${encodedState}`;
+  }
 
   async function handleImportPoolParametersById(formData: PoolAttribute) {
     const poolData = await pools.gql(formData.network || "1").Pool({
@@ -128,6 +136,24 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     setInitialData(convertGqlToAnalysisData(poolData));
     setCustomData(convertGqlToAnalysisData(poolData));
   }
+
+  useEffect(() => {
+    if (pathname === "/poolsimulator/analysis") push(generateURL());
+  }, [pathname]);
+
+  useEffect(() => {
+    if (window.location.hash) {
+      const encodedState = window.location.hash.substring(1);
+      const decodedState = decodeURIComponent(encodedState);
+      try {
+        const state = JSON.parse(decodedState);
+        setInitialData(state.initialData);
+        setCustomData(state.customData);
+      } catch (error) {
+        throw new Error("Invalid state");
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (pathname === "/poolsimulator") {
@@ -159,6 +185,7 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
         newPoolImportedFlag,
         isGraphLoading,
         setIsGraphLoading,
+        generateURL,
         initialAMM,
         customAMM,
         poolType,

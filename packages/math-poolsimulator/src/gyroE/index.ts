@@ -16,9 +16,9 @@ import {
 } from "@balancer-labs/sor";
 import { BigNumber, formatFixed } from "@ethersproject/bignumber";
 import { WeiPerEther as EONE } from "@ethersproject/constants";
-import { IAMMFunctionality } from "types";
 
 import { bigNumberToOldBigNumber } from "../conversions";
+import { IAMMFunctionality } from "../types";
 
 type GyroEPoolToken = Pick<SubgraphToken, "address" | "balance" | "decimals">;
 export type GyroEPoolPairData = ReturnType<

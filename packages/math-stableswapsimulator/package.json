@@ -11,7 +11,7 @@
     "test": "jest --watchAll --verbose"
   },
   "dependencies": {
-    "@balancer-labs/sor": "4.1.1-beta.9",
+    "@balancer-labs/sor": "4.1.1-beta.14",
     "@ethersproject/bignumber": "^5.7.0",
     "@ethersproject/constants": "^5.7.0"
   },

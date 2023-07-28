@@ -9,7 +9,8 @@ import {
 } from "@balancer-labs/sor";
 import { BigNumber, formatFixed, parseFixed } from "@ethersproject/bignumber";
 import { WeiPerEther as EONE } from "@ethersproject/constants";
-import { IAMMFunctionality } from "types";
+
+import { IAMMFunctionality } from "../types";
 
 type MetaStablePoolToken = Pick<
   SubgraphToken,

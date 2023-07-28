@@ -160,7 +160,7 @@ export function PoolParamsForm() {
                     value: initialData.poolParams?.[input.name],
                   }}
                   defaultValue={initialData.poolParams?.[input.name]}
-                  placeholder="Define the initial value "
+                  placeholder={input.placeholder}
                 />
               )}
             />

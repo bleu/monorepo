@@ -187,11 +187,11 @@ export const MetaStableParamsSchema = z.object({
 export const ECLPSimulatorDataSchema = z
   .object({
     swapFee: z.coerce.number().positive().min(0.0001).max(10), //source: https://github.com/balancer/balancer-v2-monorepo/blob/c4cc3d466eaa3c1e5fa62d303208c6c4a10db48a/pkg/pool-utils/contracts/BasePool.sol#L74
-    alpha: z.coerce.number(),
-    beta: z.coerce.number(),
+    alpha: z.coerce.number().min(0), //source: https://github.com/gyrostable/concentrated-lps/blob/7e9bd3b20dd52663afca04ca743808b1d6a9521f/contracts/eclp/GyroECLPMath.sol#L47C10-L47C60
+    beta: z.coerce.number().min(0), //source: https://github.com/gyrostable/concentrated-lps/blob/7e9bd3b20dd52663afca04ca743808b1d6a9521f/contracts/eclp/GyroECLPMath.sol#L47C10-L47C60
     lambda: z.number().min(1).max(1e8), //source: https://2063019688-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-MU527HCtxlYaQoNazhF%2Fuploads%2Fh7LxmzxixMlcZfja8q2K%2FE-CLP%20high-precision%20calculations.pdf?alt=media&token=f4fd00a2-3cb7-4318-a8f3-ed06ecdf52dd
-    c: z.coerce.number(),
-    s: z.coerce.number(),
+    c: z.coerce.number().max(1), //source : on page 8 https://2063019688-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-MU527HCtxlYaQoNazhF%2Fuploads%2Fh7LxmzxixMlcZfja8q2K%2FE-CLP%20high-precision%20calculations.pdf?alt=media&token=f4fd00a2-3cb7-4318-a8f3-ed06ecdf52dd
+    s: z.coerce.number().max(1), //source : on page 8 https://2063019688-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-MU527HCtxlYaQoNazhF%2Fuploads%2Fh7LxmzxixMlcZfja8q2K%2FE-CLP%20high-precision%20calculations.pdf?alt=media&token=f4fd00a2-3cb7-4318-a8f3-ed06ecdf52dd
     tokens: z
       .array(
         BaseTokenSchema.extend({
@@ -205,9 +205,19 @@ export const ECLPSimulatorDataSchema = z
       const k2 = Math.pow(data.s, 2) + Math.pow(data.c, 2); //calculates the squared L2 norm (Euclidean norm) of the vector formed by s and c
       return Math.abs(k2 - 1) <= 1e-15; // checks whether the squared L2 norm of the vector equals 1 within a tolerance of 1e-15.
       //It does this by subtracting 1 from k2 to get the difference, taking the absolute value of the difference to ignore the sign, and checking whether this absolute difference is less than or equal to 1e-15
+      //source: https://github.com/gyrostable/concentrated-lps/blob/7e9bd3b20dd52663afca04ca743808b1d6a9521f/contracts/eclp/GyroECLPMath.sol#L51C2-L54C76
+      //source 2: on page 8 https://2063019688-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-MU527HCtxlYaQoNazhF%2Fuploads%2Fh7LxmzxixMlcZfja8q2K%2FE-CLP%20high-precision%20calculations.pdf?alt=media&token=f4fd00a2-3cb7-4318-a8f3-ed06ecdf52dd
     },
     {
       message: "The squared norm of vector [s, c] must be 1 ± 1e−15",
+    }
+  )
+  .refine(
+    (data) => {
+      return data.beta > data.alpha; //source: https://github.com/gyrostable/concentrated-lps/blob/7e9bd3b20dd52663afca04ca743808b1d6a9521f/contracts/eclp/GyroECLPMath.sol#L47C6-L47C6
+    },
+    {
+      message: "Beta must be greater than alpha",
     }
   );
 

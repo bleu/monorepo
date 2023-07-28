@@ -7,7 +7,7 @@ import { PlotTitle } from "#/components/Plot";
 import { Select, SelectItem } from "#/components/Select";
 import { Spinner } from "#/components/Spinner";
 import { Form, FormField } from "#/components/ui/form";
-import { useStableSwap } from "#/contexts/PoolSimulatorContext";
+import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 import useDebounce from "#/hooks/useDebounce";
 
 export function SwapSimulator() {
@@ -15,7 +15,7 @@ export function SwapSimulator() {
   const { watch, control } = form;
 
   const swapTypes = ["Exact In", "Exact Out"];
-  const { initialData, initialAMM, customAMM } = useStableSwap();
+  const { initialData, initialAMM, customAMM } = usePoolSimulator();
   const tokensSymbol = initialData?.tokens.map((token) => token.symbol);
 
   if (!initialAMM || !customAMM) return <Spinner />;

@@ -1,11 +1,7 @@
 "use client";
 
-import { PoolQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
-import {
-  ExtendedMetaStableMath,
-  MetaStablePoolPairData,
-} from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
+import { MetaStablePoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
 import { NetworkChainId } from "@bleu-balancer-tools/utils";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -16,23 +12,62 @@ import {
   useState,
 } from "react";
 
+import {
+  convertAnalysisDataToAMM,
+  convertGqlToAnalysisData,
+} from "#/app/poolsimulator/(utils)";
 import { PoolAttribute } from "#/components/SearchPoolForm";
 import { pools } from "#/lib/gql";
 
 export interface TokensData {
   symbol: string;
   balance: number;
-  rate: number;
   decimal: number;
+  rate?: number;
+  weight?: number;
 }
 
-export interface AnalysisData {
-  tokens: TokensData[];
+export interface MetaStableParams {
   ampFactor?: number;
   swapFee?: number;
 }
 
-interface StableSwapContextType {
+export interface GyroEParams {
+  alpha?: number;
+  beta?: number;
+  lambda?: number;
+  c?: number;
+  s?: number;
+  swapFee?: number;
+  tauAlphaX?: number;
+  tauAlphaY?: number;
+  tauBetaX?: number;
+  tauBetaY?: number;
+  u?: number;
+  v?: number;
+  w?: number;
+  z?: number;
+  dSq?: number;
+}
+
+export enum PoolTypeEnum {
+  MetaStable = "MetaStable",
+  GyroE = "GyroE",
+}
+
+export type PoolParams = MetaStableParams & GyroEParams;
+export type PoolType = PoolTypeEnum;
+export const POOL_TYPES: PoolType[] = [
+  PoolTypeEnum.MetaStable,
+  PoolTypeEnum.GyroE,
+];
+export interface AnalysisData {
+  tokens: TokensData[];
+  poolType?: PoolType;
+  poolParams?: PoolParams;
+}
+
+interface PoolSimulatorContextType {
   initialData: AnalysisData;
   customData: AnalysisData;
   analysisToken: TokensData;
@@ -48,6 +83,8 @@ interface StableSwapContextType {
   isGraphLoading: boolean;
   setIsGraphLoading: (value: boolean) => void;
   generateURL: () => string;
+  poolType: PoolType;
+  setPoolType: (value: PoolType) => void;
   initialAMM?: AMM<MetaStablePoolPairData>;
   customAMM?: AMM<MetaStablePoolPairData>;
 }
@@ -58,33 +95,15 @@ const defaultPool = {
   network: NetworkChainId.ETHEREUM.toString(),
 };
 
-function convertAnalysisDataToAMM(data: AnalysisData) {
-  return new AMM(
-    new ExtendedMetaStableMath({
-      amp: String(data.ampFactor),
-      swapFee: String(data.swapFee),
-      totalShares: String(
-        data.tokens.reduce((acc, token) => acc + token.balance, 0)
-      ),
-      tokens: data.tokens.map((token) => ({
-        address: String(token.symbol), // math use address as key, but we will use symbol because custom token will not have address
-        balance: String(token.balance),
-        decimals: token.decimal,
-        priceRate: String(token.rate),
-      })),
-      tokensList: data.tokens.map((token) => String(token.symbol)),
-    })
-  );
-}
+export const PoolSimulatorContext = createContext(
+  {} as PoolSimulatorContextType
+);
 
-export const StableSwapContext = createContext({} as StableSwapContextType);
-
-export function StableSwapProvider({ children }: PropsWithChildren) {
+export function PoolSimulatorProvider({ children }: PropsWithChildren) {
   const pathname = usePathname();
   const { push } = useRouter();
   const defaultAnalysisData: AnalysisData = {
-    ampFactor: undefined,
-    swapFee: undefined,
+    poolParams: undefined,
     tokens: [],
   };
 
@@ -107,6 +126,7 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
     useState<TokensData>(defaultTokensData);
   const [newPoolImportedFlag, setNewPoolImportedFlag] =
     useState<boolean>(false);
+  const [poolType, setPoolType] = useState<PoolType>(PoolTypeEnum.MetaStable);
 
   const [isGraphLoading, setIsGraphLoading] = useState<boolean>(false);
 
@@ -141,10 +161,10 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
   }, [initialData, customData]);
 
   useEffect(() => {
+    if (initialData.poolParams === undefined) return;
     if (
-      initialData.tokens.length < 2 &&
-      !initialData.ampFactor &&
-      !initialData.swapFee
+      !initialData.poolType &&
+      !initialData.poolParams?.swapFee // all pool type have swapFee
     )
       return;
     setInitialAMM(convertAnalysisDataToAMM(initialData));
@@ -152,9 +172,8 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     if (
-      customData.tokens.length < 2 &&
-      !customData.ampFactor &&
-      !customData.swapFee
+      !customData.poolType &&
+      !customData.poolParams?.swapFee // all pool type have swapFee
     )
       return;
     setCustomAMM(convertAnalysisDataToAMM(customData));
@@ -173,22 +192,6 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
       }
     }
   }, []);
-
-  function convertGqlToAnalysisData(poolData: PoolQuery): AnalysisData {
-    return {
-      swapFee: Number(poolData?.pool?.swapFee),
-      ampFactor: Number(poolData?.pool?.amp),
-      tokens:
-        poolData?.pool?.tokens
-          ?.filter((token) => token.address !== poolData?.pool?.address) // filter out BPT
-          .map((token) => ({
-            symbol: token?.symbol,
-            balance: Number(token?.balance),
-            rate: Number(token?.priceRate),
-            decimal: Number(token?.decimals),
-          })) || [],
-    };
-  }
 
   async function handleImportPoolParametersById(formData: PoolAttribute) {
     const poolData = await pools.gql(formData.network || "1").Pool({
@@ -214,7 +217,7 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
   }, [pathname]);
 
   return (
-    <StableSwapContext.Provider
+    <PoolSimulatorContext.Provider
       value={{
         initialData,
         setInitialData,
@@ -233,14 +236,16 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
         generateURL,
         initialAMM,
         customAMM,
+        poolType,
+        setPoolType,
       }}
     >
       {children}
-    </StableSwapContext.Provider>
+    </PoolSimulatorContext.Provider>
   );
 }
 
-export function useStableSwap() {
-  const context = useContext(StableSwapContext);
+export function usePoolSimulator() {
+  const context = useContext(PoolSimulatorContext);
   return context;
 }

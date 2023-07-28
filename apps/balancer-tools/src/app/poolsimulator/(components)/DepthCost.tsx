@@ -6,11 +6,12 @@ import { PlotType } from "plotly.js";
 
 import Plot, { defaultAxisLayout } from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
-import { TokensData, useStableSwap } from "#/contexts/PoolSimulatorContext";
+import { TokensData, usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
 export function DepthCost() {
-  const { analysisToken, initialData, initialAMM, customAMM } = useStableSwap();
+  const { analysisToken, initialData, initialAMM, customAMM } =
+    usePoolSimulator();
 
   if (!initialAMM || !customAMM) return <Spinner />;
 
@@ -189,7 +190,7 @@ function calculateDepthCostAmount(
   poolSide: "in" | "out",
   amm: AMM<MetaStablePoolPairData>
 ) {
-  const { analysisToken } = useStableSwap();
+  const { analysisToken } = usePoolSimulator();
 
   const tokenIn = poolSide === "in" ? analysisToken : pairToken;
   const tokenOut = poolSide === "in" ? pairToken : analysisToken;

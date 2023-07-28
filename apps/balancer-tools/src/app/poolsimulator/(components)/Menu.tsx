@@ -1,17 +1,30 @@
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import * as Separator from "@radix-ui/react-separator";
 import { usePathname } from "next/navigation";
-import { ReactElement } from "react";
+import { ReactElement, useState } from "react";
 
+import { Dialog } from "#/components/Dialog";
+import { Select, SelectItem } from "#/components/Select";
 import Sidebar from "#/components/Sidebar";
 import { Spinner } from "#/components/Spinner";
 import { Tabs } from "#/components/Tabs";
-import { useStableSwap } from "#/contexts/PoolSimulatorContext";
+import { Label } from "#/components/ui/label";
+import {
+  POOL_TYPES,
+  PoolType,
+  usePoolSimulator,
+} from "#/contexts/PoolSimulatorContext";
 
-import CustomDataForm from "./CustomDataForm";
-import InitialDataForm from "./InitialDataForm";
-import InitialEmptyDataForm from "./InitialEmptyDataForm";
+// import CustomDataForm from "./CustomDataForm"; BAL-499
+// import InitialDataForm from "./InitialDataForm"; BAL-499
+import { PoolParamsForm } from "./PoolParamsForm";
 import { SearchPoolFormDialog } from "./SearchPoolFormDialog";
+import { SelectPoolType } from "./SelectPoolType";
+
+const POOL_TYPES_MAPPER = {
+  MetaStable: "Meta Stable",
+  GyroE: "Gyro E-CLP",
+};
 
 function AnalysisMenu() {
   return (
@@ -26,15 +39,17 @@ function AnalysisMenu() {
           </Tabs.ItemTrigger>
         </Tabs.ItemTriggerWrapper>
         <Tabs.ItemContent tabName="initialData">
-          <SearchPoolFormWithDataForm>
+          {/* <SearchPoolFormWithDataForm>
             <InitialDataForm />
-          </SearchPoolFormWithDataForm>
+          </SearchPoolFormWithDataForm> */}
+          {/* BAL-499 */}
         </Tabs.ItemContent>
         <Tabs.ItemContent tabName="customData">
           <Sidebar.Header name="Custom parameters" />
-          <Sidebar.Content>
+          {/* <Sidebar.Content>
             <CustomDataForm />
-          </Sidebar.Content>
+          </Sidebar.Content> */}
+          {/* BAL-499 */}
         </Tabs.ItemContent>
       </Tabs>
     </div>
@@ -42,17 +57,61 @@ function AnalysisMenu() {
 }
 
 function IndexMenu() {
+  const [open, setOpen] = useState(false);
+  const { poolType } = usePoolSimulator();
+  const [selectedType, setSelectedType] = useState<PoolType>(poolType);
+
+  function onChange(valeu: PoolType) {
+    setSelectedType(valeu);
+    setOpen(true);
+  }
+
+  function onClose() {
+    if (selectedType !== poolType) {
+      setSelectedType(poolType);
+    }
+  }
+
   return (
     <SearchPoolFormWithDataForm>
-      <InitialEmptyDataForm />
+      <div className="flex flex-col mt-4">
+        <div className="flex flex-col">
+          <Dialog
+            content={
+              <SelectPoolType
+                selectedType={selectedType}
+                setSelectedType={setSelectedType}
+              />
+            }
+            isOpen={open}
+            setIsOpen={setOpen}
+            onClose={onClose}
+          >
+            <div className="flex flex-col mb-4">
+              <Label className="mb-2 block text-sm text-slate12">
+                Pool type
+              </Label>
+              <Select onValueChange={onChange} value={selectedType}>
+                {POOL_TYPES.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {POOL_TYPES_MAPPER[type]}
+                  </SelectItem>
+                ))}
+              </Select>
+            </div>
+          </Dialog>
+          <PoolParamsForm />
+        </div>
+      </div>
     </SearchPoolFormWithDataForm>
   );
 }
 
 function SearchPoolFormWithDataForm({ children }: { children: ReactElement }) {
+  const { poolType } = usePoolSimulator();
   return (
     <div>
-      <SearchPoolFormDialog>
+      <SearchPoolFormDialog poolTypeFilter={poolType}>
         <div className="bg-blue9 p-2 rounded-[4px]">
           <span className="flex cursor-pointer items-center space-x-2 text-sm font-normal text-slate12">
             <MagnifyingGlassIcon width="20" height="20" strokeWidth={1} />
@@ -69,16 +128,14 @@ function SearchPoolFormWithDataForm({ children }: { children: ReactElement }) {
 
 export default function Menu() {
   const pathname = usePathname();
-  const { customData, initialData } = useStableSwap();
+  const { customData, initialData } = usePoolSimulator();
   if (pathname.includes("/analysis")) {
     if (
       !initialData ||
-      !initialData.swapFee ||
-      !initialData.ampFactor ||
+      !initialData.poolParams ||
       !initialData.tokens ||
       !customData ||
-      !customData.swapFee ||
-      !customData.ampFactor ||
+      !customData.poolParams ||
       !customData.tokens
     ) {
       return <Spinner />;

@@ -5,10 +5,10 @@ import { useState } from "react";
 import Button from "#/components/Button";
 import { Toast } from "#/components/Toast";
 import { Tooltip } from "#/components/Tooltip";
-import { useStableSwap } from "#/contexts/PoolSimulatorContext";
+import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 
 export function ShareButton() {
-  const { generateURL } = useStableSwap();
+  const { generateURL } = usePoolSimulator();
 
   const onInitialPage = usePathname() === "/poolsimulator";
   const [isNotifierOpen, setIsNotifierOpen] = useState<boolean>(false);

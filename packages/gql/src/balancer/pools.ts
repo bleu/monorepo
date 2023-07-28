@@ -26,6 +26,7 @@ export const poolWherePoolTypeInAndId = gql`
       "Element"
       "LiquidityBootstrapping"
       "Linear"
+      "GyroE"
     ]
   ) {
     pools(where: { poolType_in: $poolTypes, id: $poolId }) {
@@ -47,6 +48,7 @@ export const poolWherePoolType = gql`
       "Element"
       "LiquidityBootstrapping"
       "Linear"
+      "GyroE"
     ]
   ) {
     pools(where: { poolType_in: $poolTypes }) {
@@ -72,6 +74,20 @@ export const poolById = gql`
       symbol
       swapFee
       amp
+      c
+      s
+      alpha
+      beta
+      lambda
+      tauAlphaX
+      tauAlphaY
+      tauBetaX
+      tauBetaY
+      u
+      v
+      w
+      z
+      dSq
       tokens {
         address
         symbol

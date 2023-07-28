@@ -4,7 +4,7 @@ import * as React from "react";
 
 import { Header } from "#/components/Header";
 import Sidebar from "#/components/Sidebar";
-import { StableSwapProvider } from "#/contexts/PoolSimulatorContext";
+import { PoolSimulatorProvider } from "#/contexts/PoolSimulatorContext";
 
 import Menu from "./(components)/Menu";
 import { ShareButton } from "./(components)/ShareButton";
@@ -12,7 +12,7 @@ import { ShareButton } from "./(components)/ShareButton";
 export default function Layout({ children }: React.PropsWithChildren) {
   return (
     <div className="flex h-full flex-col">
-      <StableSwapProvider>
+      <PoolSimulatorProvider>
         <Header
           linkUrl={"/poolsimulator"}
           title={"Pool Simulator"}
@@ -27,7 +27,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
           </div>
           <div className="w-full">{children}</div>
         </div>
-      </StableSwapProvider>
+      </PoolSimulatorProvider>
     </div>
   );
 }

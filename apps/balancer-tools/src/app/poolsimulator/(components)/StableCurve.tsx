@@ -6,12 +6,12 @@ import { PlotType } from "plotly.js";
 
 import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
-import { TokensData, useStableSwap } from "#/contexts/PoolSimulatorContext";
+import { TokensData, usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
 export function StableCurve() {
   const { analysisToken, currentTabToken, initialAMM, customAMM } =
-    useStableSwap();
+    usePoolSimulator();
 
   if (!initialAMM || !customAMM) return <Spinner />;
 

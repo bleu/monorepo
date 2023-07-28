@@ -6,14 +6,14 @@ import { MetaStablePoolPairData } from "@bleu-balancer-tools/math-poolsimulator/
 
 import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
-import { TokensData, useStableSwap } from "#/contexts/PoolSimulatorContext";
+import { TokensData, usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
 import { calculateCurvePoints } from "./StableCurve";
 
 export function ImpactCurve() {
   const { analysisToken, currentTabToken, initialAMM, customAMM } =
-    useStableSwap();
+    usePoolSimulator();
 
   if (!initialAMM || !customAMM) return <Spinner />;
 

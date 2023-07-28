@@ -12,7 +12,6 @@ const poolTypes = {
   [PoolTypeEnum.MetaStable]: ["Stable", "MetaStable", "ComposableStable"],
   [PoolTypeEnum.GyroE]: ["GyroE"],
 };
-
 export function SearchPoolFormDialog({
   children,
   poolTypeFilter,

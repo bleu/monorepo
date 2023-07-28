@@ -157,7 +157,7 @@ export function PoolParamsForm() {
   }, []);
   return (
     <Form {...form} onSubmit={onSubmit} id="initial-data-form">
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3">
         {inputMapper[poolType].map((input) => (
           <div className="relative">
             <FormField
@@ -191,7 +191,9 @@ export function PoolParamsForm() {
           )}
           <TokenTable />
         </div>
-        <span className="text-tomato10">{errors[""]?.message as string}</span>
+        {errors[""] && (
+          <span className="text-tomato10">{errors[""]?.message as string}</span>
+        )}
         <Button type="submit" shade="light" className="h-min w-32 self-end">
           Next step
         </Button>

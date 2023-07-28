@@ -3,7 +3,8 @@
 import { PropsWithChildren } from "react";
 
 import { Dialog } from "#/components/Dialog";
-import { SearchPoolForm } from "#/components/SearchPoolForm";
+import { PoolAttribute, SearchPoolForm } from "#/components/SearchPoolForm";
+import { usePoolFormContext } from "#/contexts/FormContext";
 import { PoolType, usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 
 import { PoolTypeEnum } from "../(types)";
@@ -17,6 +18,14 @@ export function SearchPoolFormDialog({
   poolTypeFilter,
 }: PropsWithChildren<{ poolTypeFilter: PoolType }>) {
   const { handleImportPoolParametersById } = usePoolSimulator();
+  const { setData, data, isCustomData } = usePoolFormContext();
+  const onSubmit = (formData: PoolAttribute) => {
+    if (isCustomData) {
+      handleImportPoolParametersById(formData, setData, false, data);
+      return;
+    }
+    handleImportPoolParametersById(formData, setData);
+  };
 
   return (
     <Dialog
@@ -24,7 +33,7 @@ export function SearchPoolFormDialog({
       content={
         <SearchPoolForm
           poolTypeFilter={poolTypes[poolTypeFilter]}
-          onSubmit={handleImportPoolParametersById}
+          onSubmit={onSubmit}
           showPools
         />
       }

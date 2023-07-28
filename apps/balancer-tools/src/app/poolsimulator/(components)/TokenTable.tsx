@@ -37,7 +37,7 @@ export function useTokenTableContext() {
 
 export function TokenTable({
   custom = false,
-  minTokens = 0,
+  minTokens = 2,
 }: {
   custom?: boolean;
   minTokens?: number;

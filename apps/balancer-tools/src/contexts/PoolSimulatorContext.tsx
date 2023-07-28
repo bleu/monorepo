@@ -45,12 +45,14 @@ interface PoolSimulatorContextType {
   setCurrentTabTokenByIndex: (index: number) => void;
   setInitialData: (data: AnalysisData) => void;
   setCustomData: (data: AnalysisData) => void;
-  handleImportPoolParametersById: (data: PoolAttribute) => void;
-  newPoolImportedFlag: boolean;
+  handleImportPoolParametersById: (
+    formData: PoolAttribute,
+    setData: (data: AnalysisData) => void,
+    changeTokens?: boolean,
+    data?: AnalysisData
+  ) => void;
   isGraphLoading: boolean;
   setIsGraphLoading: (value: boolean) => void;
-  poolType: PoolType;
-  setPoolType: (value: PoolType) => void;
   initialAMM?: AMM<MetaStablePoolPairData>;
   customAMM?: AMM<MetaStablePoolPairData>;
 }
@@ -93,9 +95,6 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     useState<TokensData>(defaultTokensData);
   const [currentTabToken, setCurrentTabToken] =
     useState<TokensData>(defaultTokensData);
-  const [newPoolImportedFlag, setNewPoolImportedFlag] =
-    useState<boolean>(false);
-  const [poolType, setPoolType] = useState<PoolType>(PoolTypeEnum.MetaStable);
 
   const [isGraphLoading, setIsGraphLoading] = useState<boolean>(false);
 
@@ -119,23 +118,42 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     if (token) setCurrentTabToken(token);
   }
 
-  async function handleImportPoolParametersById(formData: PoolAttribute) {
+  async function handleImportPoolParametersById(
+    formData: PoolAttribute,
+    setData: (data: AnalysisData) => void,
+    changeTokens = true,
+    data = defaultAnalysisData
+  ) {
     const poolData = await pools.gql(formData.network || "1").Pool({
       poolId: formData.poolId,
     });
     if (!poolData) return;
-    setNewPoolImportedFlag(!newPoolImportedFlag);
-    setInitialData(convertGqlToAnalysisData(poolData));
-    setCustomData(convertGqlToAnalysisData(poolData));
+    const importedData = convertGqlToAnalysisData(poolData);
+    if (changeTokens) {
+      setData(importedData);
+      return;
+    }
+    setData({
+      ...importedData,
+      tokens: data.tokens,
+    });
+  }
+
+  function setBothData(data: AnalysisData) {
+    setInitialData(data);
+    setCustomData(data);
   }
 
   useEffect(() => {
     if (pathname === "/poolsimulator") {
       setIsGraphLoading(false);
-      handleImportPoolParametersById({
-        poolId: defaultPool.id,
-        network: defaultPool.network,
-      });
+      handleImportPoolParametersById(
+        {
+          poolId: defaultPool.id,
+          network: defaultPool.network,
+        },
+        setBothData
+      );
     }
     if (pathname === "/poolsimulator/analysis") {
       setIsGraphLoading(false);
@@ -156,13 +174,10 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
         setCurrentTabTokenBySymbol,
         setCurrentTabTokenByIndex,
         handleImportPoolParametersById,
-        newPoolImportedFlag,
         isGraphLoading,
         setIsGraphLoading,
         initialAMM,
         customAMM,
-        poolType,
-        setPoolType,
       }}
     >
       {children}

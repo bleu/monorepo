@@ -1,15 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 
 import Button from "#/components/Button";
 import { Input } from "#/components/Input";
 import { Form, FormField } from "#/components/ui/form";
-import {
-  AnalysisData,
-  usePoolSimulator,
-} from "#/contexts/PoolSimulatorContext";
+import { usePoolFormContext } from "#/contexts/FormContext";
+import { AnalysisData } from "#/contexts/PoolSimulatorContext";
 import {
   ECLPSimulatorDataSchema,
   StableSwapSimulatorDataSchema,
@@ -89,18 +86,15 @@ const inputMapper: InputMapperType = {
   ],
 };
 
-export function PoolParamsForm() {
-  const { push } = useRouter();
-  const {
-    setIsGraphLoading,
-    setInitialData,
-    setCustomData,
-    initialData,
-    poolType,
-  } = usePoolSimulator();
+export function PoolParamsForm({
+  extraOnSubmit,
+}: {
+  extraOnSubmit?: (data: AnalysisData) => void;
+}) {
+  const { data, setData } = usePoolFormContext();
 
   const form = useForm({
-    resolver: zodResolver(schemaMapper[poolType]),
+    resolver: zodResolver(schemaMapper[data.poolType]),
     mode: "onSubmit",
   });
   const {
@@ -111,54 +105,56 @@ export function PoolParamsForm() {
     formState: { errors },
   } = form;
 
-  const onSubmit = (data: FieldValues) => {
-    setIsGraphLoading(true);
+  const onSubmit = (fieldData: FieldValues) => {
     const dataWithPoolType = {
       poolParams: Object.fromEntries(
-        inputMapper[poolType].map((input) => [input.name, data[input.name]])
+        inputMapper[data.poolType].map((input) => [
+          input.name,
+          fieldData[input.name],
+        ])
       ),
-      tokens: initialData.tokens,
-      poolType,
+      tokens: data.tokens,
+      poolType: data.poolType,
     };
 
-    setInitialData(dataWithPoolType as AnalysisData);
-    setCustomData(dataWithPoolType as AnalysisData);
-    push("/poolsimulator/analysis");
+    setData(dataWithPoolType as AnalysisData);
+    extraOnSubmit?.(dataWithPoolType as AnalysisData);
   };
 
   useEffect(() => {
     clearErrors();
-    if (initialData == getValues() || !poolType) return;
-    inputMapper[poolType].forEach((input) => {
-      const dataValue = initialData.poolParams?.[input.name];
+    if (data == getValues() || !data.poolType) return;
+    inputMapper[data.poolType].forEach((input) => {
+      const dataValue = data.poolParams?.[input.name];
       if (dataValue) {
         setValue(input.name, dataValue);
       }
     });
-    if (initialData?.tokens) setValue("tokens", initialData?.tokens);
-  }, [initialData]);
+    if (data?.tokens) setValue("tokens", data?.tokens);
+  }, [data.poolParams, data.tokens]);
 
   useEffect(() => {
-    clearErrors();
-    Object.entries(inputMapper).forEach(([, value]) => {
-      value.forEach((input) => {
-        setValue(input.name, undefined);
+    function resetForm() {
+      clearErrors();
+      Object.entries(inputMapper).forEach(([, value]) => {
+        value.forEach((input) => {
+          setValue(input.name, undefined);
+        });
       });
-    });
-    setInitialData({
-      poolParams: undefined,
-      tokens: [],
-      poolType: poolType,
-    });
-  }, [poolType]);
+    }
+    document.addEventListener("onChangePoolType", resetForm);
+    return () => {
+      document.removeEventListener("onChangePoolType", resetForm);
+    };
+  }, []);
 
   useEffect(() => {
-    register("tokens", { required: true, value: initialData?.tokens });
+    register("tokens", { required: true, value: data?.tokens });
   }, []);
   return (
     <Form {...form} onSubmit={onSubmit} id="initial-data-form">
       <div className="flex flex-col gap-4">
-        {inputMapper[poolType].map((input) => (
+        {inputMapper[data.poolType].map((input) => (
           <div className="relative">
             <FormField
               name={input.name}
@@ -170,9 +166,9 @@ export function PoolParamsForm() {
                   validation={{
                     required: true,
                     valueAsNumber: true,
-                    value: initialData.poolParams?.[input.name],
+                    value: data.poolParams?.[input.name],
                   }}
-                  defaultValue={initialData.poolParams?.[input.name]}
+                  defaultValue={data.poolParams?.[input.name]}
                   placeholder={input.placeholder}
                 />
               )}

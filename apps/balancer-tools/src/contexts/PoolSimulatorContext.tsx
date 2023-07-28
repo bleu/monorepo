@@ -119,26 +119,6 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     if (token) setCurrentTabToken(token);
   }
 
-  // TODO: BAL-539
-  // useEffect(() => {
-  //   if (initialData.poolParams === undefined) return;
-  //   if (
-  //     !initialData.poolType &&
-  //     !initialData.poolParams?.swapFee // all pool type have swapFee
-  //   )
-  //     return;
-  //   setInitialAMM(convertAnalysisDataToAMM(initialData));
-  // }, [initialData]);
-
-  // useEffect(() => {
-  //   if (
-  //     !customData.poolType &&
-  //     !customData.poolParams?.swapFee // all pool type have swapFee
-  //   )
-  //     return;
-  //   setCustomAMM(convertAnalysisDataToAMM(customData));
-  // }, [customData]);
-
   async function handleImportPoolParametersById(formData: PoolAttribute) {
     const poolData = await pools.gql(formData.network || "1").Pool({
       poolId: formData.poolId,

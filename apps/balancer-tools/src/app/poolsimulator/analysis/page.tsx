@@ -33,8 +33,6 @@ export default function Page() {
               <span className="text-slate12">{token.balance}</span>
               <span className="text-slate12">Rate</span>
               <span className="text-slate12">{token.rate}</span>
-              <span className="text-slate12">Weight</span>
-              <span className="text-slate12">{token.weight}</span>
             </div>
           );
         })}

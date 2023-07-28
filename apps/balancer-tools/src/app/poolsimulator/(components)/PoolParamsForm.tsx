@@ -10,12 +10,16 @@ import {
   AnalysisData,
   usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
-import { ECLPSimulatorDataSchema, PoolSimulatorDataSchema } from "#/lib/schema";
+import {
+  ECLPSimulatorDataSchema,
+  StableSwapSimulatorDataSchema,
+} from "#/lib/schema";
 
 import { CombinedParams, PoolTypeEnum } from "../(types)";
+import { TokenTable } from "./TokenTable";
 
 const schemaMapper = {
-  [PoolTypeEnum.MetaStable]: PoolSimulatorDataSchema,
+  [PoolTypeEnum.MetaStable]: StableSwapSimulatorDataSchema,
   [PoolTypeEnum.GyroE]: ECLPSimulatorDataSchema,
 };
 
@@ -109,27 +113,10 @@ export function PoolParamsForm() {
 
   const onSubmit = (data: FieldValues) => {
     setIsGraphLoading(true);
-
-    const additionalParams =
-      poolType === PoolTypeEnum.GyroE
-        ? {
-            dSq: initialData.poolParams?.dSq,
-            tauAlphaX: initialData.poolParams?.tauAlphaX,
-            tauAlphaY: initialData.poolParams?.tauAlphaY,
-            tauBetaX: initialData.poolParams?.tauBetaX,
-            tauBetaY: initialData.poolParams?.tauBetaY,
-            u: initialData.poolParams?.u,
-            v: initialData.poolParams?.v,
-            w: initialData.poolParams?.w,
-            z: initialData.poolParams?.z,
-          }
-        : {};
-
     const dataWithPoolType = {
-      poolParams: {
-        ...data,
-        ...additionalParams,
-      },
+      poolParams: Object.fromEntries(
+        inputMapper[poolType].map((input) => [input.name, data[input.name]])
+      ),
       tokens: initialData.tokens,
       poolType,
     };
@@ -148,6 +135,7 @@ export function PoolParamsForm() {
         setValue(input.name, dataValue);
       }
     });
+    if (initialData?.tokens) setValue("tokens", initialData?.tokens);
   }, [initialData]);
 
   useEffect(() => {
@@ -194,6 +182,15 @@ export function PoolParamsForm() {
             </span>
           </div>
         ))}
+        <div className="flex flex-col">
+          <label className="mb-2 block text-sm text-slate12">Tokens</label>
+          {errors?.tokens?.message && (
+            <div className="mt-1 h-6 text-sm text-tomato10">
+              <span>{errors?.tokens?.message as string}</span>
+            </div>
+          )}
+          <TokenTable />
+        </div>
         <span className="text-tomato10">{errors[""]?.message as string}</span>
         <Button type="submit" shade="light" className="h-min w-32 self-end">
           Next step

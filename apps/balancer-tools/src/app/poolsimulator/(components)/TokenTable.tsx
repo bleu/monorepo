@@ -67,7 +67,7 @@ export function TokenTable({
             <Table.HeaderCell padding={customPadding}>
               {aboveOrEqualLimit && (
                 <Tooltip
-                  content={`This pools type can't have more than ${MAX_POOL_TOKENS} tokens.`}
+                  content={`This pool type can't have more than ${MAX_POOL_TOKENS} tokens.`}
                 >
                   <button type="button" className="flex items-center" disabled>
                     <PlusCircledIcon

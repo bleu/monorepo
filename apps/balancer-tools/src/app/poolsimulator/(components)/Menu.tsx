@@ -7,7 +7,6 @@ import { Dialog } from "#/components/Dialog";
 import { Select, SelectItem } from "#/components/Select";
 import Sidebar from "#/components/Sidebar";
 import { Spinner } from "#/components/Spinner";
-import { Tabs } from "#/components/Tabs";
 import { Label } from "#/components/ui/label";
 import {
   POOL_TYPES,
@@ -25,36 +24,6 @@ const POOL_TYPES_MAPPER = {
   MetaStable: "Meta Stable",
   GyroE: "Gyro E-CLP",
 };
-
-function AnalysisMenu() {
-  return (
-    <div>
-      <Tabs defaultValue="customData">
-        <Tabs.ItemTriggerWrapper>
-          <Tabs.ItemTrigger tabName="initialData" color="blue7">
-            <span>Initial</span>
-          </Tabs.ItemTrigger>
-          <Tabs.ItemTrigger tabName="customData" color="amber9">
-            <span>Custom</span>
-          </Tabs.ItemTrigger>
-        </Tabs.ItemTriggerWrapper>
-        <Tabs.ItemContent tabName="initialData">
-          {/* <SearchPoolFormWithDataForm>
-            <InitialDataForm />
-          </SearchPoolFormWithDataForm> */}
-          {/* BAL-499 */}
-        </Tabs.ItemContent>
-        <Tabs.ItemContent tabName="customData">
-          <Sidebar.Header name="Custom parameters" />
-          {/* <Sidebar.Content>
-            <CustomDataForm />
-          </Sidebar.Content> */}
-          {/* BAL-499 */}
-        </Tabs.ItemContent>
-      </Tabs>
-    </div>
-  );
-}
 
 function IndexMenu() {
   const [open, setOpen] = useState(false);
@@ -133,14 +102,12 @@ export default function Menu() {
     if (
       !initialData ||
       !initialData.poolParams ||
-      !initialData.tokens ||
       !customData ||
-      !customData.poolParams ||
-      !customData.tokens
+      !customData.poolParams
     ) {
       return <Spinner />;
     }
-    return <AnalysisMenu />;
+    return <div className="text-slate12">Analysis Menu</div>;
   }
   return <IndexMenu />;
 }

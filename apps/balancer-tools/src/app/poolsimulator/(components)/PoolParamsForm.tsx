@@ -8,7 +8,6 @@ import { Input } from "#/components/Input";
 import { Form, FormField } from "#/components/ui/form";
 import {
   AnalysisData,
-  PoolTypeEnum,
   usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
 import {
@@ -16,13 +15,16 @@ import {
   StableSwapSimulatorDataSchema,
 } from "#/lib/schema";
 
+import { CombinedParams, PoolTypeEnum } from "../(types)";
+import { TokenTable } from "./TokenTable";
+
 const schemaMapper = {
-  MetaStable: StableSwapSimulatorDataSchema,
-  GyroE: ECLPSimulatorDataSchema,
+  [PoolTypeEnum.MetaStable]: StableSwapSimulatorDataSchema,
+  [PoolTypeEnum.GyroE]: ECLPSimulatorDataSchema,
 };
 
 interface IInput {
-  name: "swapFee" | "ampFactor" | "alpha" | "beta" | "lambda" | "c" | "s";
+  name: keyof CombinedParams;
   label: string;
   placeholder: string;
   unit: string;
@@ -91,8 +93,6 @@ export function PoolParamsForm() {
   const { push } = useRouter();
   const {
     setIsGraphLoading,
-    setCurrentTabTokenByIndex,
-    setAnalysisTokenByIndex,
     setInitialData,
     setCustomData,
     initialData,
@@ -103,14 +103,26 @@ export function PoolParamsForm() {
     resolver: zodResolver(schemaMapper[poolType]),
     mode: "onSubmit",
   });
-  const { register, setValue, getValues, clearErrors } = form;
+  const {
+    register,
+    setValue,
+    getValues,
+    clearErrors,
+    formState: { errors },
+  } = form;
 
   const onSubmit = (data: FieldValues) => {
     setIsGraphLoading(true);
-    setCustomData(data as AnalysisData);
-    setInitialData(data as AnalysisData);
-    setAnalysisTokenByIndex(0);
-    setCurrentTabTokenByIndex(1);
+    const dataWithPoolType = {
+      poolParams: Object.fromEntries(
+        inputMapper[poolType].map((input) => [input.name, data[input.name]])
+      ),
+      tokens: initialData.tokens,
+      poolType,
+    };
+
+    setInitialData(dataWithPoolType as AnalysisData);
+    setCustomData(dataWithPoolType as AnalysisData);
     push("/poolsimulator/analysis");
   };
 
@@ -123,6 +135,7 @@ export function PoolParamsForm() {
         setValue(input.name, dataValue);
       }
     });
+    if (initialData?.tokens) setValue("tokens", initialData?.tokens);
   }, [initialData]);
 
   useEffect(() => {
@@ -144,7 +157,7 @@ export function PoolParamsForm() {
   }, []);
   return (
     <Form {...form} onSubmit={onSubmit} id="initial-data-form">
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3">
         {inputMapper[poolType].map((input) => (
           <div className="relative">
             <FormField
@@ -169,6 +182,18 @@ export function PoolParamsForm() {
             </span>
           </div>
         ))}
+        <div className="flex flex-col">
+          <label className="mb-2 block text-sm text-slate12">Tokens</label>
+          {errors?.tokens?.message && (
+            <div className="mt-1 h-6 text-sm text-tomato10">
+              <span>{errors?.tokens?.message as string}</span>
+            </div>
+          )}
+          <TokenTable />
+        </div>
+        {errors[""] && (
+          <span className="text-tomato10">{errors[""]?.message as string}</span>
+        )}
         <Button type="submit" shade="light" className="h-min w-32 self-end">
           Next step
         </Button>

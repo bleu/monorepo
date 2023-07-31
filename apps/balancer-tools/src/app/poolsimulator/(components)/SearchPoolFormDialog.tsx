@@ -4,17 +4,14 @@ import { PropsWithChildren } from "react";
 
 import { Dialog } from "#/components/Dialog";
 import { SearchPoolForm } from "#/components/SearchPoolForm";
-import {
-  PoolType,
-  PoolTypeEnum,
-  usePoolSimulator,
-} from "#/contexts/PoolSimulatorContext";
+import { PoolType, usePoolSimulator } from "#/contexts/PoolSimulatorContext";
+
+import { PoolTypeEnum } from "../(types)";
 
 const poolTypes = {
   [PoolTypeEnum.MetaStable]: ["Stable", "MetaStable", "ComposableStable"],
   [PoolTypeEnum.GyroE]: ["GyroE"],
 };
-
 export function SearchPoolFormDialog({
   children,
   poolTypeFilter,

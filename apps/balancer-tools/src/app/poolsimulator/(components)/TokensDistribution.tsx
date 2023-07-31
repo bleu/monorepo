@@ -11,7 +11,9 @@ import {
 
 import { PlotTitle } from "#/components/Plot";
 import { Tooltip } from "#/components/Tooltip";
-import { TokensData, usePoolSimulator } from "#/contexts/PoolSimulatorContext";
+import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
+
+import { TokensData } from "../(types)";
 
 const colors = [
   blueDark.blue9,

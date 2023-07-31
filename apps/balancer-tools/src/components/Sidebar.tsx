@@ -70,9 +70,12 @@ function Content({ children }: { children: React.ReactNode }) {
 
   return (
     <div
-      className={cn("relative max-h-[31rem] self-stretch overflow-auto", {
-        "rounded-md": isFloating,
-      })}
+      className={cn(
+        "relative max-h-[31rem] xl:max-h-[40rem] self-stretch overflow-auto",
+        {
+          "rounded-md": isFloating,
+        }
+      )}
     >
       {children}
     </div>

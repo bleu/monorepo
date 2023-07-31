@@ -13,47 +13,14 @@ import {
 } from "react";
 
 import {
-  convertAnalysisDataToAMM,
-  convertGqlToAnalysisData,
-} from "#/app/poolsimulator/(utils)";
+  GyroEParams,
+  MetaStableParams,
+  PoolTypeEnum,
+  TokensData,
+} from "#/app/poolsimulator/(types)";
+import { convertGqlToAnalysisData } from "#/app/poolsimulator/(utils)";
 import { PoolAttribute } from "#/components/SearchPoolForm";
 import { pools } from "#/lib/gql";
-
-export interface TokensData {
-  symbol: string;
-  balance: number;
-  decimal: number;
-  rate?: number;
-  weight?: number;
-}
-
-export interface MetaStableParams {
-  ampFactor?: number;
-  swapFee?: number;
-}
-
-export interface GyroEParams {
-  alpha?: number;
-  beta?: number;
-  lambda?: number;
-  c?: number;
-  s?: number;
-  swapFee?: number;
-  tauAlphaX?: number;
-  tauAlphaY?: number;
-  tauBetaX?: number;
-  tauBetaY?: number;
-  u?: number;
-  v?: number;
-  w?: number;
-  z?: number;
-  dSq?: number;
-}
-
-export enum PoolTypeEnum {
-  MetaStable = "MetaStable",
-  GyroE = "GyroE",
-}
 
 export type PoolParams = MetaStableParams & GyroEParams;
 export type PoolType = PoolTypeEnum;
@@ -63,7 +30,7 @@ export const POOL_TYPES: PoolType[] = [
 ];
 export interface AnalysisData {
   tokens: TokensData[];
-  poolType?: PoolType;
+  poolType: PoolType;
   poolParams?: PoolParams;
 }
 
@@ -105,6 +72,7 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
   const defaultAnalysisData: AnalysisData = {
     poolParams: undefined,
     tokens: [],
+    poolType: PoolTypeEnum.MetaStable,
   };
 
   const defaultTokensData: TokensData = {
@@ -118,8 +86,11 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     useState<AnalysisData>(defaultAnalysisData);
   const [customData, setCustomData] =
     useState<AnalysisData>(defaultAnalysisData);
-  const [initialAMM, setInitialAMM] = useState<AMM<MetaStablePoolPairData>>();
-  const [customAMM, setCustomAMM] = useState<AMM<MetaStablePoolPairData>>();
+  // TODO: BAL-539
+  // const [initialAMM, setInitialAMM] = useState<AMM<MetaStablePoolPairData>>();
+  // const [customAMM, setCustomAMM] = useState<AMM<MetaStablePoolPairData>>();
+  const initialAMM = undefined;
+  const customAMM = undefined;
   const [analysisToken, setAnalysisToken] =
     useState<TokensData>(defaultTokensData);
   const [currentTabToken, setCurrentTabToken] =
@@ -149,35 +120,26 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     const token = initialData.tokens[index];
     if (token) setCurrentTabToken(token);
   }
-
   function generateURL() {
     const jsonState = JSON.stringify({ initialData, customData });
+
     const encodedState = encodeURIComponent(jsonState);
     return `${window.location.origin}${window.location.pathname}#${encodedState}`;
   }
 
+  async function handleImportPoolParametersById(formData: PoolAttribute) {
+    const poolData = await pools.gql(formData.network || "1").Pool({
+      poolId: formData.poolId,
+    });
+    if (!poolData) return;
+    setNewPoolImportedFlag(!newPoolImportedFlag);
+    setInitialData(convertGqlToAnalysisData(poolData));
+    setCustomData(convertGqlToAnalysisData(poolData));
+  }
+
   useEffect(() => {
     if (pathname === "/poolsimulator/analysis") push(generateURL());
-  }, [initialData, customData]);
-
-  useEffect(() => {
-    if (initialData.poolParams === undefined) return;
-    if (
-      !initialData.poolType &&
-      !initialData.poolParams?.swapFee // all pool type have swapFee
-    )
-      return;
-    setInitialAMM(convertAnalysisDataToAMM(initialData));
-  }, [initialData]);
-
-  useEffect(() => {
-    if (
-      !customData.poolType &&
-      !customData.poolParams?.swapFee // all pool type have swapFee
-    )
-      return;
-    setCustomAMM(convertAnalysisDataToAMM(customData));
-  }, [customData]);
+  }, [pathname]);
 
   useEffect(() => {
     if (window.location.hash) {
@@ -192,16 +154,6 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
       }
     }
   }, []);
-
-  async function handleImportPoolParametersById(formData: PoolAttribute) {
-    const poolData = await pools.gql(formData.network || "1").Pool({
-      poolId: formData.poolId,
-    });
-    if (!poolData) return;
-    setNewPoolImportedFlag(!newPoolImportedFlag);
-    setInitialData(convertGqlToAnalysisData(poolData));
-    setCustomData(convertGqlToAnalysisData(poolData));
-  }
 
   useEffect(() => {
     if (pathname === "/poolsimulator") {

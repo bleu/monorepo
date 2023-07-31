@@ -16,12 +16,12 @@
     "lint:fix": "eslint '**/*.{ts,tsx}' --fix"
   },
   "dependencies": {
-    "@balancer-labs/sor": "4.1.1-beta.13",
+    "@balancer-labs/sor": "4.1.1-beta.14",
     "@bleu-balancer-tools/gql": "workspace:*",
     "@bleu-balancer-tools/math-poolsimulator": "workspace:*",
     "@bleu-balancer-tools/math-stableswapsimulator": "workspace:*",
     "@bleu-balancer-tools/tsconfig": "workspace:*",
-    "@hookform/resolvers": "^3.1.1",
+    "@hookform/resolvers": "3.1.0",
     "@radix-ui/colors": "^1.0.0",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-alert-dialog": "^1.0.4",
@@ -51,7 +51,7 @@
     "plotly.js": "^2.24.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-hook-form": "^7.45.2",
+    "react-hook-form": "7.43.9",
     "react-plotly.js": "^2.6.0",
     "swr": "^2.2.0",
     "tailwind-merge": "^1.14.0",

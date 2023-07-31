@@ -1,5 +1,6 @@
 import { bnum, OldBigNumber } from "@balancer-labs/sor";
-import { IAMMFunctionality, PoolPairData } from "types";
+
+import { IAMMFunctionality, PoolPairData } from "./types";
 
 export class AMM<TPoolPairData extends PoolPairData> {
   private math: IAMMFunctionality<TPoolPairData>;

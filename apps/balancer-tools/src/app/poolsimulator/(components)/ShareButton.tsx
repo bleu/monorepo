@@ -9,7 +9,6 @@ import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 
 export function ShareButton() {
   const { generateURL } = usePoolSimulator();
-
   const onInitialPage = usePathname() === "/poolsimulator";
   const [isNotifierOpen, setIsNotifierOpen] = useState<boolean>(false);
 

@@ -1,17 +1,19 @@
 import { Close, DialogClose } from "@radix-ui/react-dialog";
 
-import { PoolType, usePoolSimulator } from "#/contexts/PoolSimulatorContext";
+import { usePoolFormContext } from "#/contexts/FormContext";
+import { PoolType } from "#/contexts/PoolSimulatorContext";
 
-export function SelectPoolType({
-  selectedType,
-}: {
-  selectedType: PoolType;
-  setSelectedType: (value: PoolType) => void;
-}) {
-  const { setPoolType } = usePoolSimulator();
+export function SelectPoolType({ selectedType }: { selectedType: PoolType }) {
+  const { setData, data, isCustomData } = usePoolFormContext();
+  const event = new CustomEvent("onChangePoolType", { detail: isCustomData });
 
   function onSubmit() {
-    setPoolType(selectedType);
+    setData({
+      tokens: data.tokens,
+      poolType: selectedType,
+      poolParams: undefined,
+    });
+    document.dispatchEvent(event);
     Close;
   }
   return (

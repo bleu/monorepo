@@ -45,15 +45,17 @@ interface PoolSimulatorContextType {
   setCurrentTabTokenByIndex: (index: number) => void;
   setInitialData: (data: AnalysisData) => void;
   setCustomData: (data: AnalysisData) => void;
-  handleImportPoolParametersById: (data: PoolAttribute) => void;
-  newPoolImportedFlag: boolean;
+  handleImportPoolParametersById: (
+    formData: PoolAttribute,
+    setData: (data: AnalysisData) => void,
+    changeTokens?: boolean,
+    data?: AnalysisData
+  ) => void;
   isGraphLoading: boolean;
   setIsGraphLoading: (value: boolean) => void;
-  generateURL: () => string;
-  poolType: PoolType;
-  setPoolType: (value: PoolType) => void;
   initialAMM?: AMM<MetaStablePoolPairData>;
   customAMM?: AMM<MetaStablePoolPairData>;
+  generateURL: () => string;
 }
 
 const defaultPool = {
@@ -67,8 +69,8 @@ export const PoolSimulatorContext = createContext(
 );
 
 export function PoolSimulatorProvider({ children }: PropsWithChildren) {
-  const pathname = usePathname();
   const { push } = useRouter();
+  const pathname = usePathname();
   const defaultAnalysisData: AnalysisData = {
     poolParams: undefined,
     tokens: [],
@@ -95,9 +97,6 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     useState<TokensData>(defaultTokensData);
   const [currentTabToken, setCurrentTabToken] =
     useState<TokensData>(defaultTokensData);
-  const [newPoolImportedFlag, setNewPoolImportedFlag] =
-    useState<boolean>(false);
-  const [poolType, setPoolType] = useState<PoolType>(PoolTypeEnum.MetaStable);
 
   const [isGraphLoading, setIsGraphLoading] = useState<boolean>(false);
 
@@ -120,6 +119,7 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     const token = initialData.tokens[index];
     if (token) setCurrentTabToken(token);
   }
+
   function generateURL() {
     const jsonState = JSON.stringify({ initialData, customData });
 
@@ -127,15 +127,47 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     return `${window.location.origin}${window.location.pathname}#${encodedState}`;
   }
 
-  async function handleImportPoolParametersById(formData: PoolAttribute) {
+  async function handleImportPoolParametersById(
+    formData: PoolAttribute,
+    setData: (data: AnalysisData) => void,
+    changeTokens = true,
+    data = defaultAnalysisData
+  ) {
     const poolData = await pools.gql(formData.network || "1").Pool({
       poolId: formData.poolId,
     });
     if (!poolData) return;
-    setNewPoolImportedFlag(!newPoolImportedFlag);
-    setInitialData(convertGqlToAnalysisData(poolData));
-    setCustomData(convertGqlToAnalysisData(poolData));
+    const importedData = convertGqlToAnalysisData(poolData);
+    if (changeTokens) {
+      setData(importedData);
+      return;
+    }
+    setData({
+      ...importedData,
+      tokens: data.tokens,
+    });
   }
+
+  function setBothData(data: AnalysisData) {
+    setInitialData(data);
+    setCustomData(data);
+  }
+
+  useEffect(() => {
+    if (pathname === "/poolsimulator") {
+      setIsGraphLoading(false);
+      handleImportPoolParametersById(
+        {
+          poolId: defaultPool.id,
+          network: defaultPool.network,
+        },
+        setBothData
+      );
+    }
+    if (pathname === "/poolsimulator/analysis") {
+      setIsGraphLoading(false);
+    }
+  }, [pathname]);
 
   useEffect(() => {
     if (pathname === "/poolsimulator/analysis") push(generateURL());
@@ -155,19 +187,6 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     }
   }, []);
 
-  useEffect(() => {
-    if (pathname === "/poolsimulator") {
-      setIsGraphLoading(false);
-      handleImportPoolParametersById({
-        poolId: defaultPool.id,
-        network: defaultPool.network,
-      });
-    }
-    if (pathname === "/poolsimulator/analysis") {
-      setIsGraphLoading(false);
-    }
-  }, [pathname]);
-
   return (
     <PoolSimulatorContext.Provider
       value={{
@@ -182,14 +201,11 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
         setCurrentTabTokenBySymbol,
         setCurrentTabTokenByIndex,
         handleImportPoolParametersById,
-        newPoolImportedFlag,
         isGraphLoading,
         setIsGraphLoading,
-        generateURL,
         initialAMM,
         customAMM,
-        poolType,
-        setPoolType,
+        generateURL,
       }}
     >
       {children}

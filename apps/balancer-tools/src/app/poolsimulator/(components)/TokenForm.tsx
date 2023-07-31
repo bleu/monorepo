@@ -13,10 +13,6 @@ import {
 import { getStableSwapSimulatorTokensSchema } from "#/lib/schema";
 
 import { TokensData } from "../(types)";
-<<<<<<< HEAD
-=======
-import { useTokenTableContext } from "./TokenTable";
->>>>>>> main
 
 export default function TokenForm({
   symbolToEdit,
@@ -27,11 +23,7 @@ export default function TokenForm({
 }) {
   const { initialData, setInitialData, customData, setCustomData } =
     usePoolSimulator();
-<<<<<<< HEAD
   const { isCustomData } = usePoolFormContext();
-=======
-  const { custom } = useTokenTableContext();
->>>>>>> main
 
   const stableSwapTokensSchema = getStableSwapSimulatorTokensSchema({
     symbolToEdit,
@@ -45,11 +37,7 @@ export default function TokenForm({
 
   const { register } = form;
 
-<<<<<<< HEAD
   const tokens = isCustomData ? customData?.tokens : initialData?.tokens;
-=======
-  const tokens = custom ? customData?.tokens : initialData?.tokens;
->>>>>>> main
   const currentToken = tokens?.find(
     (token: TokensData) => token.symbol == symbolToEdit
   );
@@ -135,11 +123,7 @@ export default function TokenForm({
   function handleEdit(tokensData: TokensData) {
     // Edit the balance and rate on the table
     // and the symbol on the baseline and custom
-<<<<<<< HEAD
     if (isCustomData) {
-=======
-    if (custom) {
->>>>>>> main
       editAll({
         analysisData: customData,
         setAnalysisData: setCustomData,

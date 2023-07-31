@@ -3,12 +3,8 @@
 import { PropsWithChildren } from "react";
 
 import { Dialog } from "#/components/Dialog";
-<<<<<<< HEAD
 import { PoolAttribute, SearchPoolForm } from "#/components/SearchPoolForm";
 import { usePoolFormContext } from "#/contexts/FormContext";
-=======
-import { SearchPoolForm } from "#/components/SearchPoolForm";
->>>>>>> main
 import { PoolType, usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 
 import { PoolTypeEnum } from "../(types)";

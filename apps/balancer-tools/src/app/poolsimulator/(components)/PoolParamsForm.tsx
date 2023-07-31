@@ -25,6 +25,8 @@ interface IInput {
   label: string;
   placeholder: string;
   unit: string;
+  transformFromDataToForm: (n: number | undefined) => number | undefined;
+  transformFromFormToData: (n: number | undefined) => number | undefined;
 }
 
 type InputMapperType = {
@@ -38,12 +40,16 @@ const inputMapper: InputMapperType = {
       label: "Swap Fee",
       placeholder: "Enter swap fee",
       unit: "%",
+      transformFromDataToForm: (n) => (n ? n * 100 : undefined),
+      transformFromFormToData: (n) => (n ? n / 100 : undefined),
     },
     {
       name: "ampFactor",
       label: "Amplification Factor",
       placeholder: "Enter amplification factor",
       unit: "",
+      transformFromDataToForm: (n) => n,
+      transformFromFormToData: (n) => n,
     },
   ],
   [PoolTypeEnum.GyroE]: [
@@ -52,36 +58,48 @@ const inputMapper: InputMapperType = {
       label: "Swap Fee",
       placeholder: "Enter swap fee",
       unit: "%",
+      transformFromDataToForm: (n) => (n ? n * 100 : undefined),
+      transformFromFormToData: (n) => (n ? n / 100 : undefined),
     },
     {
       name: "alpha",
       label: "Alpha",
       placeholder: "Enter alpha",
       unit: "",
+      transformFromDataToForm: (n) => n,
+      transformFromFormToData: (n) => n,
     },
     {
       name: "beta",
       label: "Beta",
       placeholder: "Enter beta",
       unit: "",
+      transformFromDataToForm: (n) => n,
+      transformFromFormToData: (n) => n,
     },
     {
       name: "lambda",
       label: "Lambda",
       placeholder: "Enter lambda",
       unit: "",
+      transformFromDataToForm: (n) => n,
+      transformFromFormToData: (n) => n,
     },
     {
       name: "c",
       label: "C",
       placeholder: "Enter c",
       unit: "",
+      transformFromDataToForm: (n) => n,
+      transformFromFormToData: (n) => n,
     },
     {
       name: "s",
       label: "S",
       placeholder: "Enter s",
       unit: "",
+      transformFromDataToForm: (n) => n,
+      transformFromFormToData: (n) => n,
     },
   ],
 };
@@ -89,45 +107,64 @@ const inputMapper: InputMapperType = {
 export function PoolParamsForm({
   extraOnSubmit,
 }: {
-  extraOnSubmit?: (data: AnalysisData) => void;
+  extraOnSubmit?: (data: AnalysisData, tabClicked: boolean) => void;
 }) {
-  const { data, setData } = usePoolFormContext();
+  const { data, setData, isCustomData } = usePoolFormContext();
 
   const form = useForm({
     resolver: zodResolver(schemaMapper[data.poolType]),
-    mode: "onSubmit",
+    mode: "onChange",
   });
   const {
     register,
     setValue,
-    getValues,
     clearErrors,
+    watch,
     formState: { errors },
   } = form;
 
-  const onSubmit = (fieldData: FieldValues) => {
+  const getOnSubmit = (tabClicked: boolean) => (fieldData: FieldValues) => {
+    const hasNullData = inputMapper[data.poolType].reduce(
+      (sum, input) => sum || !fieldData[input.name],
+      false
+    );
+    if (Object.keys(errors).length || hasNullData) return;
     const dataWithPoolType = {
       poolParams: Object.fromEntries(
         inputMapper[data.poolType].map((input) => [
           input.name,
-          fieldData[input.name],
+          input.transformFromFormToData(fieldData[input.name]),
         ])
       ),
-      tokens: data.tokens,
+      tokens: fieldData.tokens,
       poolType: data.poolType,
     };
-
     setData(dataWithPoolType as AnalysisData);
-    extraOnSubmit?.(dataWithPoolType as AnalysisData);
+    extraOnSubmit?.(dataWithPoolType as AnalysisData, tabClicked);
   };
+
+  function checkDataIsEqualForm() {
+    const fieldData = watch();
+    const dataTransformed = {
+      poolParams: Object.fromEntries(
+        inputMapper[data.poolType].map((input) => [
+          input.name,
+          input.transformFromDataToForm(fieldData[input.name]),
+        ])
+      ),
+      tokens: fieldData.tokens,
+      poolType: data.poolType,
+    };
+    return JSON.stringify(dataTransformed) == JSON.stringify(data);
+  }
 
   useEffect(() => {
     clearErrors();
-    if (data == getValues() || !data.poolType) return;
+    if (checkDataIsEqualForm() || !data.poolType) return;
     inputMapper[data.poolType].forEach((input) => {
       const dataValue = data.poolParams?.[input.name];
       if (dataValue) {
-        setValue(input.name, dataValue);
+        setValue(input.name, input.transformFromDataToForm(dataValue));
       }
     });
     if (data?.tokens) setValue("tokens", data?.tokens);
@@ -142,17 +179,32 @@ export function PoolParamsForm({
         });
       });
     }
-    document.addEventListener("onChangePoolType", resetForm);
+    document.addEventListener("changePoolType", resetForm);
     return () => {
-      document.removeEventListener("onChangePoolType", resetForm);
+      document.removeEventListener("changePoolType", resetForm);
     };
   }, []);
 
   useEffect(() => {
     register("tokens", { required: true, value: data?.tokens });
   }, []);
+
+  useEffect(() => {
+    const saveData = () => {
+      const fieldData = watch();
+      getOnSubmit(true)(fieldData);
+    };
+    const eventName = isCustomData
+      ? "clickInitialDataTab"
+      : "clickCustomDataTab";
+    document.addEventListener(eventName, saveData);
+    return () => {
+      document.removeEventListener(eventName, saveData);
+    };
+  }, [data, errors]);
+
   return (
-    <Form {...form} onSubmit={onSubmit} id="initial-data-form">
+    <Form {...form} onSubmit={getOnSubmit(false)} id="initial-data-form">
       <div className="flex flex-col gap-4">
         {inputMapper[data.poolType].map((input) => (
           <div className="relative">
@@ -168,7 +220,9 @@ export function PoolParamsForm({
                     valueAsNumber: true,
                     value: data.poolParams?.[input.name],
                   }}
-                  defaultValue={data.poolParams?.[input.name]}
+                  defaultValue={input.transformFromDataToForm(
+                    data.poolParams?.[input.name]
+                  )}
                   placeholder={input.placeholder}
                 />
               )}

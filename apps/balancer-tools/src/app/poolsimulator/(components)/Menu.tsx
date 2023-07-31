@@ -1,6 +1,6 @@
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import * as Separator from "@radix-ui/react-separator";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ReactElement, useState } from "react";
 
 import { Dialog } from "#/components/Dialog";
@@ -31,12 +31,25 @@ const POOL_TYPES_MAPPER = {
 };
 
 function IndexMenu() {
-  const { setCustomData } = usePoolSimulator();
+  const { push } = useRouter();
+  const { setCustomData, customData, setIsGraphLoading } = usePoolSimulator();
   const [tabValue, setTabValue] = useState("initialData");
+  const clickInitialDataTab = new CustomEvent("clickInitialDataTab");
+  const clickCustomDataTab = new CustomEvent("clickCustomDataTab");
 
-  const initialFormOnSubmitNextStep = (data: AnalysisData) => {
-    setCustomData(data);
+  const initialFormExtraOnSubmit = (data: AnalysisData, _: boolean) => {
+    if (!customData.poolParams) {
+      setCustomData(data);
+    }
     setTabValue("customData");
+  };
+
+  const customFormExtraOnSubmit = (_: AnalysisData, tabClicked: boolean) => {
+    if (!tabClicked) {
+      setIsGraphLoading(true);
+      push("/poolsimulator/analysis");
+    }
+    setTabValue("initialData");
   };
 
   return (
@@ -46,14 +59,18 @@ function IndexMenu() {
           <Tabs.ItemTrigger
             tabName="initialData"
             color="blue7"
-            onClick={() => setTabValue("initialData")}
+            onClick={() => {
+              document.dispatchEvent(clickInitialDataTab);
+            }}
           >
             <span>Initial</span>
           </Tabs.ItemTrigger>
           <Tabs.ItemTrigger
             tabName="customData"
             color="amber9"
-            onClick={() => setTabValue("customData")}
+            onClick={() => {
+              document.dispatchEvent(clickCustomDataTab);
+            }}
           >
             <span>Custom</span>
           </Tabs.ItemTrigger>
@@ -62,7 +79,7 @@ function IndexMenu() {
           <InitialFormContextProvider>
             <SearchPoolFormWithDataForm>
               <div className="flex flex-col mt-4">
-                <FormWithPoolType extraOnSubmit={initialFormOnSubmitNextStep} />
+                <FormWithPoolType extraOnSubmit={initialFormExtraOnSubmit} />
               </div>
             </SearchPoolFormWithDataForm>
           </InitialFormContextProvider>
@@ -71,7 +88,7 @@ function IndexMenu() {
           <CustomFormContextProvider>
             <SearchPoolFormWithDataForm>
               <div className="flex flex-col mt-4">
-                <FormWithPoolType />
+                <FormWithPoolType extraOnSubmit={customFormExtraOnSubmit} />
               </div>
             </SearchPoolFormWithDataForm>
           </CustomFormContextProvider>
@@ -84,7 +101,7 @@ function IndexMenu() {
 function FormWithPoolType({
   extraOnSubmit,
 }: {
-  extraOnSubmit?: (data: AnalysisData) => void;
+  extraOnSubmit?: (data: AnalysisData, tabClicked: boolean) => void;
 }) {
   const [open, setOpen] = useState(false);
   const {

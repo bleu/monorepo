@@ -139,11 +139,6 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     });
   }
 
-  function setBothData(data: AnalysisData) {
-    setInitialData(data);
-    setCustomData(data);
-  }
-
   useEffect(() => {
     if (pathname === "/poolsimulator") {
       setIsGraphLoading(false);
@@ -152,7 +147,7 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
           poolId: defaultPool.id,
           network: defaultPool.network,
         },
-        setBothData
+        setInitialData
       );
     }
     if (pathname === "/poolsimulator/analysis") {

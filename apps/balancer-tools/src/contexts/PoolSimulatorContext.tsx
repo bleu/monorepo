@@ -18,11 +18,16 @@ import {
   PoolTypeEnum,
   TokensData,
 } from "#/app/poolsimulator/(types)";
-import { convertGqlToAnalysisData } from "#/app/poolsimulator/(utils)";
+import {
+  convertAnalysisDataToAMM,
+  convertGqlToAnalysisData,
+} from "#/app/poolsimulator/(utils)";
 import { PoolAttribute } from "#/components/SearchPoolForm";
 import { pools } from "#/lib/gql";
+import { GyroEPoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/gyroE";
 
 export type PoolParams = MetaStableParams & GyroEParams;
+export type PoolPairData = MetaStablePoolPairData | GyroEPoolPairData;
 export type PoolType = PoolTypeEnum;
 export const POOL_TYPES: PoolType[] = [
   PoolTypeEnum.MetaStable,
@@ -32,6 +37,11 @@ export interface AnalysisData {
   tokens: TokensData[];
   poolType: PoolType;
   poolParams?: PoolParams;
+}
+
+export enum DataType {
+  initialData = "initialData",
+  customData = "customData",
 }
 
 interface PoolSimulatorContextType {
@@ -53,9 +63,11 @@ interface PoolSimulatorContextType {
   ) => void;
   isGraphLoading: boolean;
   setIsGraphLoading: (value: boolean) => void;
-  initialAMM?: AMM<MetaStablePoolPairData>;
-  customAMM?: AMM<MetaStablePoolPairData>;
+  initialAMM?: AMM<PoolPairData>;
+  customAMM?: AMM<PoolPairData>;
   generateURL: () => string;
+  tabValue: DataType;
+  setTabValue: (value: DataType) => void;
 }
 
 const defaultPool = {
@@ -88,15 +100,13 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     useState<AnalysisData>(defaultAnalysisData);
   const [customData, setCustomData] =
     useState<AnalysisData>(defaultAnalysisData);
-  // TODO: BAL-539
-  // const [initialAMM, setInitialAMM] = useState<AMM<MetaStablePoolPairData>>();
-  // const [customAMM, setCustomAMM] = useState<AMM<MetaStablePoolPairData>>();
-  const initialAMM = undefined;
-  const customAMM = undefined;
+  const [initialAMM, setInitialAMM] = useState<AMM<PoolPairData>>();
+  const [customAMM, setCustomAMM] = useState<AMM<PoolPairData>>();
   const [analysisToken, setAnalysisToken] =
     useState<TokensData>(defaultTokensData);
   const [currentTabToken, setCurrentTabToken] =
     useState<TokensData>(defaultTokensData);
+  const [tabValue, setTabValue] = useState(DataType.initialData);
 
   const [isGraphLoading, setIsGraphLoading] = useState<boolean>(false);
 
@@ -187,6 +197,18 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     }
   }, []);
 
+  useEffect(() => {
+    if (initialData.poolParams === undefined) return;
+    if (!initialData.poolType && !initialData.poolParams?.swapFee) return;
+    setInitialAMM(convertAnalysisDataToAMM(initialData));
+  }, [initialData]);
+
+  useEffect(() => {
+    if (customData.poolParams === undefined) return;
+    if (!customData.poolType && !customData.poolParams?.swapFee) return;
+    setCustomAMM(convertAnalysisDataToAMM(customData));
+  }, [customData]);
+
   return (
     <PoolSimulatorContext.Provider
       value={{
@@ -206,6 +228,8 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
         initialAMM,
         customAMM,
         generateURL,
+        tabValue,
+        setTabValue,
       }}
     >
       {children}

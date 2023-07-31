@@ -6,7 +6,11 @@ import Button from "#/components/Button";
 import { Input } from "#/components/Input";
 import { Form, FormField } from "#/components/ui/form";
 import { usePoolFormContext } from "#/contexts/FormContext";
-import { AnalysisData } from "#/contexts/PoolSimulatorContext";
+import {
+  AnalysisData,
+  DataType,
+  usePoolSimulator,
+} from "#/contexts/PoolSimulatorContext";
 import {
   ECLPSimulatorDataSchema,
   StableSwapSimulatorDataSchema,
@@ -14,6 +18,7 @@ import {
 
 import { CombinedParams, PoolTypeEnum } from "../(types)";
 import { TokenTable } from "./TokenTable";
+import { useRouter } from "next/navigation";
 
 const schemaMapper = {
   [PoolTypeEnum.MetaStable]: StableSwapSimulatorDataSchema,
@@ -86,12 +91,11 @@ const inputMapper: InputMapperType = {
   ],
 };
 
-export function PoolParamsForm({
-  extraOnSubmit,
-}: {
-  extraOnSubmit?: (data: AnalysisData) => void;
-}) {
+export function PoolParamsForm() {
+  const { push } = useRouter();
   const { data, setData } = usePoolFormContext();
+  const { tabValue, setCustomData, setTabValue, setIsGraphLoading } =
+    usePoolSimulator();
 
   const form = useForm({
     resolver: zodResolver(schemaMapper[data.poolType]),
@@ -118,7 +122,13 @@ export function PoolParamsForm({
     };
 
     setData(dataWithPoolType as AnalysisData);
-    extraOnSubmit?.(dataWithPoolType as AnalysisData);
+    if (tabValue === DataType.initialData) {
+      setCustomData(dataWithPoolType as AnalysisData);
+      setTabValue(DataType.customData);
+    } else {
+      setIsGraphLoading(true);
+      push("/poolsimulator/analysis");
+    }
   };
 
   useEffect(() => {

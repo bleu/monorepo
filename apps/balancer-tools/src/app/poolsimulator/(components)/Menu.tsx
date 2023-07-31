@@ -14,7 +14,7 @@ import {
   usePoolFormContext,
 } from "#/contexts/FormContext";
 import {
-  AnalysisData,
+  DataType,
   POOL_TYPES,
   PoolType,
   usePoolSimulator,
@@ -24,6 +24,7 @@ import { PoolParamsForm } from "./PoolParamsForm";
 import { SearchPoolFormDialog } from "./SearchPoolFormDialog";
 import { SelectPoolType } from "./SelectPoolType";
 import { Tabs } from "#/components/Tabs";
+import AnalysisPoolParamsForm from "./AnalysisPoolParamsForm";
 
 const POOL_TYPES_MAPPER = {
   MetaStable: "Meta Stable",
@@ -31,43 +32,37 @@ const POOL_TYPES_MAPPER = {
 };
 
 function IndexMenu() {
-  const { setCustomData } = usePoolSimulator();
-  const [tabValue, setTabValue] = useState("initialData");
-
-  const initialFormOnSubmitNextStep = (data: AnalysisData) => {
-    setCustomData(data);
-    setTabValue("customData");
-  };
+  const { tabValue, setTabValue } = usePoolSimulator();
 
   return (
     <div>
-      <Tabs value={tabValue} defaultValue="initialData">
+      <Tabs value={tabValue} defaultValue={DataType.initialData}>
         <Tabs.ItemTriggerWrapper>
           <Tabs.ItemTrigger
-            tabName="initialData"
+            tabName={DataType.initialData}
             color="blue7"
-            onClick={() => setTabValue("initialData")}
+            onClick={() => setTabValue(DataType.initialData)}
           >
             <span>Initial</span>
           </Tabs.ItemTrigger>
           <Tabs.ItemTrigger
-            tabName="customData"
+            tabName={DataType.customData}
             color="amber9"
-            onClick={() => setTabValue("customData")}
+            onClick={() => setTabValue(DataType.customData)}
           >
             <span>Custom</span>
           </Tabs.ItemTrigger>
         </Tabs.ItemTriggerWrapper>
-        <Tabs.ItemContent tabName="initialData">
+        <Tabs.ItemContent tabName={DataType.initialData}>
           <InitialFormContextProvider>
             <SearchPoolFormWithDataForm>
               <div className="flex flex-col mt-4">
-                <FormWithPoolType extraOnSubmit={initialFormOnSubmitNextStep} />
+                <FormWithPoolType />
               </div>
             </SearchPoolFormWithDataForm>
           </InitialFormContextProvider>
         </Tabs.ItemContent>
-        <Tabs.ItemContent tabName="customData">
+        <Tabs.ItemContent tabName={DataType.customData}>
           <CustomFormContextProvider>
             <SearchPoolFormWithDataForm>
               <div className="flex flex-col mt-4">
@@ -81,11 +76,7 @@ function IndexMenu() {
   );
 }
 
-function FormWithPoolType({
-  extraOnSubmit,
-}: {
-  extraOnSubmit?: (data: AnalysisData) => void;
-}) {
+function FormWithPoolType() {
   const [open, setOpen] = useState(false);
   const {
     data: { poolType },
@@ -122,7 +113,7 @@ function FormWithPoolType({
           </Select>
         </div>
       </Dialog>
-      <PoolParamsForm extraOnSubmit={extraOnSubmit} />
+      <PoolParamsForm />
     </div>
   );
 }
@@ -163,7 +154,7 @@ export default function Menu() {
     ) {
       return <Spinner />;
     }
-    return <div className="text-slate12">Analysis Menu</div>;
+    return <AnalysisPoolParamsForm />;
   }
   return <IndexMenu />;
 }

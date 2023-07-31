@@ -6,7 +6,10 @@ import { PlotType } from "plotly.js";
 
 import Plot, { defaultAxisLayout } from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
-import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
+import {
+  PoolPairData,
+  usePoolSimulator,
+} from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
 import { TokensData } from "../(types)";
@@ -190,7 +193,7 @@ const createDataObject = (
 function calculateDepthCostAmount(
   pairToken: TokensData,
   poolSide: "in" | "out",
-  amm: AMM<MetaStablePoolPairData>
+  amm: AMM<PoolPairData>
 ) {
   const { analysisToken } = usePoolSimulator();
 

@@ -7,7 +7,10 @@ import { PlotTitle } from "#/components/Plot";
 import { Select, SelectItem } from "#/components/Select";
 import { Spinner } from "#/components/Spinner";
 import { Form, FormField } from "#/components/ui/form";
-import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
+import {
+  PoolPairData,
+  usePoolSimulator,
+} from "#/contexts/PoolSimulatorContext";
 import useDebounce from "#/hooks/useDebounce";
 
 export function SwapSimulator() {
@@ -209,7 +212,7 @@ function calculateSimulation({
   tokenInSymbol,
   tokenOutSymbol,
 }: {
-  amm: AMM<MetaStablePoolPairData>;
+  amm: AMM<PoolPairData>;
   swapType: string;
   amount: number;
   tokenInSymbol: string;

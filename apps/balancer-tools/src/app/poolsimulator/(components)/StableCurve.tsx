@@ -1,12 +1,14 @@
 "use client";
 
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
-import { MetaStablePoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
 import { PlotType } from "plotly.js";
 
 import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
-import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
+import {
+  PoolPairData,
+  usePoolSimulator,
+} from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
 import { TokensData } from "../(types)";
@@ -145,6 +147,7 @@ export function StableCurve() {
       className="h-1/2 w-full"
     />
   );
+  return <div className="text-slate12">stable curve</div>;
 }
 
 export function calculateCurvePoints({
@@ -171,7 +174,7 @@ export function calculateCurvePoints({
 const calculateTokenAmounts = (
   tokenIn: TokensData,
   tokenOut: TokensData,
-  amm: AMM<MetaStablePoolPairData>
+  amm: AMM<PoolPairData>
 ) => {
   const amountsAnalysisTokenIn = calculateCurvePoints({
     balance: tokenIn.balance,

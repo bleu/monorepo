@@ -7,6 +7,7 @@ import { Dialog } from "#/components/Dialog";
 import { Select, SelectItem } from "#/components/Select";
 import Sidebar from "#/components/Sidebar";
 import { Spinner } from "#/components/Spinner";
+import { Tabs } from "#/components/Tabs";
 import { Label } from "#/components/ui/label";
 import {
   CustomFormContextProvider,
@@ -20,11 +21,10 @@ import {
   usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
 
+import AnalysisPoolParamsForm from "./AnalysisPoolParamsForm";
 import { PoolParamsForm } from "./PoolParamsForm";
 import { SearchPoolFormDialog } from "./SearchPoolFormDialog";
 import { SelectPoolType } from "./SelectPoolType";
-import { Tabs } from "#/components/Tabs";
-import AnalysisPoolParamsForm from "./AnalysisPoolParamsForm";
 
 const POOL_TYPES_MAPPER = {
   MetaStable: "Meta Stable",
@@ -32,7 +32,9 @@ const POOL_TYPES_MAPPER = {
 };
 
 function IndexMenu() {
-  const { tabValue, setTabValue } = usePoolSimulator();
+  const { tabValue } = usePoolSimulator();
+  const clickInitialDataTab = new CustomEvent("clickInitialDataTab");
+  const clickCustomDataTab = new CustomEvent("clickCustomDataTab");
 
   return (
     <div>
@@ -41,14 +43,18 @@ function IndexMenu() {
           <Tabs.ItemTrigger
             tabName={DataType.initialData}
             color="blue7"
-            onClick={() => setTabValue(DataType.initialData)}
+            onClick={() => {
+              document.dispatchEvent(clickInitialDataTab);
+            }}
           >
             <span>Initial</span>
           </Tabs.ItemTrigger>
           <Tabs.ItemTrigger
             tabName={DataType.customData}
             color="amber9"
-            onClick={() => setTabValue(DataType.customData)}
+            onClick={() => {
+              document.dispatchEvent(clickCustomDataTab);
+            }}
           >
             <span>Custom</span>
           </Tabs.ItemTrigger>

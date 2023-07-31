@@ -1,6 +1,7 @@
 "use client";
 
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
+import { GyroEPoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/gyroE";
 import { MetaStablePoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
 import { NetworkChainId } from "@bleu-balancer-tools/utils";
 import { usePathname, useRouter } from "next/navigation";
@@ -24,7 +25,6 @@ import {
 } from "#/app/poolsimulator/(utils)";
 import { PoolAttribute } from "#/components/SearchPoolForm";
 import { pools } from "#/lib/gql";
-import { GyroEPoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/gyroE";
 
 export type PoolParams = MetaStableParams & GyroEParams;
 export type PoolPairData = MetaStablePoolPairData | GyroEPoolPairData;
@@ -158,27 +158,6 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     });
   }
 
-  function setBothData(data: AnalysisData) {
-    setInitialData(data);
-    setCustomData(data);
-  }
-
-  useEffect(() => {
-    if (pathname === "/poolsimulator") {
-      setIsGraphLoading(false);
-      handleImportPoolParametersById(
-        {
-          poolId: defaultPool.id,
-          network: defaultPool.network,
-        },
-        setBothData
-      );
-    }
-    if (pathname === "/poolsimulator/analysis") {
-      setIsGraphLoading(false);
-    }
-  }, [pathname]);
-
   useEffect(() => {
     if (pathname === "/poolsimulator/analysis") push(generateURL());
   }, [pathname]);
@@ -208,6 +187,22 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     if (!customData.poolType && !customData.poolParams?.swapFee) return;
     setCustomAMM(convertAnalysisDataToAMM(customData));
   }, [customData]);
+
+  useEffect(() => {
+    if (pathname === "/poolsimulator") {
+      setIsGraphLoading(false);
+      handleImportPoolParametersById(
+        {
+          poolId: defaultPool.id,
+          network: defaultPool.network,
+        },
+        setInitialData
+      );
+    }
+    if (pathname === "/poolsimulator/analysis") {
+      setIsGraphLoading(false);
+    }
+  }, [pathname]);
 
   return (
     <PoolSimulatorContext.Provider

@@ -3,6 +3,7 @@
 import { Spinner } from "#/components/Spinner";
 import { Tabs } from "#/components/Tabs";
 import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
+
 import { DepthCost } from "../(components)/DepthCost";
 import { ImpactCurve } from "../(components)/ImpactCurve";
 import { StableCurve } from "../(components)/StableCurve";
@@ -21,7 +22,7 @@ export default function Page() {
   );
   const tokensSymbol = initialData.tokens.map((token) => token.symbol);
   const tabTokens = tokensSymbol.filter(
-    (token, index) => token !== analysisToken.symbol
+    (token) => token !== analysisToken.symbol
   );
 
   function handleTabClick(event: React.FormEvent<HTMLButtonElement>) {
@@ -32,7 +33,6 @@ export default function Page() {
 
   return (
     <div className="flex lg:max-h-[calc(100vh-132px)] w-full flex-col gap-y-20 lg:overflow-auto pr-8 pt-8">
-      <span className="text-slate12"> Analysis page</span>
       {/* (h-screen - (header's height + footer's height)) = graph's height space */}
       <div>
         <div className="flex h-full w-full flex-col lg:flex-row gap-5">

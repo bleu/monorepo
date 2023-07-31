@@ -4,8 +4,8 @@ import { usePoolFormContext } from "#/contexts/FormContext";
 import { PoolType } from "#/contexts/PoolSimulatorContext";
 
 export function SelectPoolType({ selectedType }: { selectedType: PoolType }) {
-  const { setData, data, isCustomData } = usePoolFormContext();
-  const event = new CustomEvent("onChangePoolType", { detail: isCustomData });
+  const { setData, data } = usePoolFormContext();
+  const event = new CustomEvent("changePoolType");
 
   function onSubmit() {
     setData({

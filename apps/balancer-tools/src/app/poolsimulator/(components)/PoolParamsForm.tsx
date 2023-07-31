@@ -241,7 +241,9 @@ export function PoolParamsForm({
           )}
           <TokenTable />
         </div>
-        <span className="text-tomato10">{errors[""]?.message as string}</span>
+        {errors[""] && (
+          <span className="text-tomato10">{errors[""]?.message as string}</span>
+        )}
         <Button type="submit" shade="light" className="h-min w-32 self-end">
           Next step
         </Button>

@@ -1,3 +1,12 @@
+import {
+  DerivedGyroEParamsFromSubgraph,
+  GyroEParamsFromSubgraph,
+} from "@bleu-balancer-tools/math-poolsimulator/src/gyroE";
+
+type NumberGyroEParams<T> = {
+  [K in keyof T]?: number;
+};
+
 export interface TokensData {
   symbol: string;
   balance: number;
@@ -11,23 +20,9 @@ export interface MetaStableParams {
   swapFee?: number;
 }
 
-export interface GyroEParams {
-  alpha?: number;
-  beta?: number;
-  lambda?: number;
-  c?: number;
-  s?: number;
-  swapFee?: number;
-  tauAlphaX?: number;
-  tauAlphaY?: number;
-  tauBetaX?: number;
-  tauBetaY?: number;
-  u?: number;
-  v?: number;
-  w?: number;
-  z?: number;
-  dSq?: number;
-}
+export type GyroEParams = NumberGyroEParams<
+  GyroEParamsFromSubgraph & DerivedGyroEParamsFromSubgraph
+>;
 
 export type CombinedParams = MetaStableParams & GyroEParams;
 

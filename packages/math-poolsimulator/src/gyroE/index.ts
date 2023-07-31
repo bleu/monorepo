@@ -24,14 +24,14 @@ type GyroEPoolToken = Pick<SubgraphToken, "address" | "balance" | "decimals">;
 export type GyroEPoolPairData = ReturnType<
   typeof GyroEV2Pool.prototype.parsePoolPairData
 >;
-type GyroEParamsFromSubgraph = {
+export type GyroEParamsFromSubgraph = {
   alpha: string;
   beta: string;
   c: string;
   s: string;
   lambda: string;
 };
-type DerivedGyroEParamsFromSubgraph = {
+export type DerivedGyroEParamsFromSubgraph = {
   tauAlphaX: string;
   tauAlphaY: string;
   tauBetaX: string;

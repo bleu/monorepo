@@ -3,7 +3,7 @@
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
 import { MetaStablePoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
 import { NetworkChainId } from "@bleu-balancer-tools/utils";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   createContext,
   PropsWithChildren,
@@ -55,6 +55,7 @@ interface PoolSimulatorContextType {
   setIsGraphLoading: (value: boolean) => void;
   initialAMM?: AMM<MetaStablePoolPairData>;
   customAMM?: AMM<MetaStablePoolPairData>;
+  generateURL: () => string;
 }
 
 const defaultPool = {
@@ -69,6 +70,7 @@ export const PoolSimulatorContext = createContext(
 
 export function PoolSimulatorProvider({ children }: PropsWithChildren) {
   const pathname = usePathname();
+  const { push } = useRouter();
   const defaultAnalysisData: AnalysisData = {
     poolParams: undefined,
     tokens: [],
@@ -117,6 +119,12 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     const token = initialData.tokens[index];
     if (token) setCurrentTabToken(token);
   }
+  function generateURL() {
+    const jsonState = JSON.stringify({ initialData, customData });
+
+    const encodedState = encodeURIComponent(jsonState);
+    return `${window.location.origin}${window.location.pathname}#${encodedState}`;
+  }
 
   async function handleImportPoolParametersById(
     formData: PoolAttribute,
@@ -138,6 +146,24 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
       tokens: data.tokens,
     });
   }
+
+  useEffect(() => {
+    if (pathname === "/poolsimulator/analysis") push(generateURL());
+  }, [pathname]);
+
+  useEffect(() => {
+    if (window.location.hash) {
+      const encodedState = window.location.hash.substring(1);
+      const decodedState = decodeURIComponent(encodedState);
+      try {
+        const state = JSON.parse(decodedState);
+        setInitialData(state.initialData);
+        setCustomData(state.customData);
+      } catch (error) {
+        throw new Error("Invalid state");
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (pathname === "/poolsimulator") {
@@ -173,6 +199,7 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
         setIsGraphLoading,
         initialAMM,
         customAMM,
+        generateURL,
       }}
     >
       {children}

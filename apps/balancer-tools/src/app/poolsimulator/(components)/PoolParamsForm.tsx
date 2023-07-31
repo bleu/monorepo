@@ -112,8 +112,13 @@ const inputMapper: InputMapperType = {
 export function PoolParamsForm() {
   const { push } = useRouter();
   const { data, setData, isCustomData } = usePoolFormContext();
-  const { tabValue, setCustomData, setTabValue, setIsGraphLoading } =
-    usePoolSimulator();
+  const {
+    tabValue,
+    setCustomData,
+    setTabValue,
+    setIsGraphLoading,
+    initialData,
+  } = usePoolSimulator();
 
   const form = useForm({
     resolver: zodResolver(schemaMapper[data.poolType]),
@@ -133,13 +138,31 @@ export function PoolParamsForm() {
       false
     );
     if (Object.keys(errors).length || hasNullData) return;
+    const additionalParams =
+      data.poolType === PoolTypeEnum.GyroE
+        ? {
+            dSq: initialData.poolParams?.dSq,
+            tauAlphaX: initialData.poolParams?.tauAlphaX,
+            tauAlphaY: initialData.poolParams?.tauAlphaY,
+            tauBetaX: initialData.poolParams?.tauBetaX,
+            tauBetaY: initialData.poolParams?.tauBetaY,
+            u: initialData.poolParams?.u,
+            v: initialData.poolParams?.v,
+            w: initialData.poolParams?.w,
+            z: initialData.poolParams?.z,
+          }
+        : {};
+
     const dataWithPoolType = {
-      poolParams: Object.fromEntries(
-        inputMapper[data.poolType].map((input) => [
-          input.name,
-          input.transformFromFormToData(fieldData[input.name]),
-        ])
-      ),
+      poolParams: {
+        ...Object.fromEntries(
+          inputMapper[data.poolType].map((input) => [
+            input.name,
+            input.transformFromFormToData(fieldData[input.name]),
+          ])
+        ),
+        ...additionalParams,
+      },
       tokens: fieldData.tokens,
       poolType: data.poolType,
     };

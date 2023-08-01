@@ -20,7 +20,7 @@ export function numberToBigNumber({
 
 export function bigNumberToOldBigNumber(
   bn: BigNumber,
-  decimals: number
+  decimals: number,
 ): OldBigNumber {
   return bnum(bn.toString()).div(bnum(10).pow(decimals));
 }

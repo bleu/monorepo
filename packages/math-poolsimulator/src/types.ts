@@ -12,13 +12,13 @@ export interface IAMMFunctionality<TPoolPairData extends PoolPairData> {
   _spotPrice(poolPairData: TPoolPairData): any;
   _spotPriceAfterSwapExactTokenInForTokenOut(
     poolPairData: TPoolPairData,
-    amountIn: any
+    amountIn: any,
   ): any;
   _derivativeSpotPriceAfterSwapExactTokenInForTokenOut(
     poolPairData: TPoolPairData,
-    amountIn: any
+    amountIn: any,
   ): any;
   _firstGuessOfTokenInForExactSpotPriceAfterSwap(
-    poolPairData: TPoolPairData
+    poolPairData: TPoolPairData,
   ): any;
 }

@@ -11,7 +11,7 @@ interface PoolSimulatorContextType {
 }
 
 export const PoolSimulatorFormContext = createContext(
-  {} as PoolSimulatorContextType
+  {} as PoolSimulatorContextType,
 );
 
 export function InitialFormContextProvider({ children }: PropsWithChildren) {

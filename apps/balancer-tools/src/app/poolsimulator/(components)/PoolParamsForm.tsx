@@ -125,7 +125,7 @@ export function PoolParamsForm({
 
   const getOnSubmit = (tabClicked: boolean) => (fieldData: FieldValues) => {
     const hasNullData = inputMapper[data.poolType].some(
-      (input) => !fieldData[input.name]
+      (input) => !fieldData[input.name],
     );
     if (Object.keys(errors).length || hasNullData) return;
     const dataWithPoolType = {
@@ -133,7 +133,7 @@ export function PoolParamsForm({
         inputMapper[data.poolType].map((input) => [
           input.name,
           input.transformFromFormToData(fieldData[input.name]),
-        ])
+        ]),
       ),
       tokens: fieldData.tokens,
       poolType: data.poolType,
@@ -205,7 +205,7 @@ export function PoolParamsForm({
                     value: data.poolParams?.[input.name],
                   }}
                   defaultValue={input.transformFromDataToForm(
-                    data.poolParams?.[input.name]
+                    data.poolParams?.[input.name],
                   )}
                   placeholder={input.placeholder}
                 />

@@ -31,7 +31,7 @@ export function SearchPoolFormDialog({
               formData,
               setData,
               !isCustomData,
-              data
+              data,
             );
           }}
           showPools

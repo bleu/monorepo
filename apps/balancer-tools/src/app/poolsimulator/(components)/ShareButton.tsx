@@ -21,7 +21,7 @@ export function ShareButton() {
             : "Copy a link with the current simulation parameters"
         }
       >
-        <Button shade="dark" disabled={true}>
+        <Button shade="dark" disabled={onInitialPage}>
           <div
             onClick={() => {
               if (onInitialPage) return;

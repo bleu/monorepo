@@ -27,15 +27,15 @@ export default function Page() {
             <div>
               {data.tokens.map((token, index) => {
                 return (
-                  <div className="flex items-center gap-x-4">
-                    <span className="text-slate12">index</span>
-                    <span className="text-slate12">{index}</span>
-                    <span className="text-slate12">Symbol</span>
-                    <span className="text-slate12">{token.symbol}</span>
-                    <span className="text-slate12">Balance</span>
-                    <span className="text-slate12">{token.balance}</span>
-                    <span className="text-slate12">Rate</span>
-                    <span className="text-slate12">{token.rate}</span>
+                  <div className="flex items-center gap-x-4 text-slate12">
+                    <span>index</span>
+                    <span>{index}</span>
+                    <span>Symbol</span>
+                    <span>{token.symbol}</span>
+                    <span>Balance</span>
+                    <span>{token.balance}</span>
+                    <span>Rate</span>
+                    <span>{token.rate}</span>
                   </div>
                 );
               })}

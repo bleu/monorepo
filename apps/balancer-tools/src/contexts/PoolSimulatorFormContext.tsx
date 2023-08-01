@@ -10,13 +10,15 @@ interface PoolSimulatorContextType {
   isCustomData: boolean;
 }
 
-export const FormContext = createContext({} as PoolSimulatorContextType);
+export const PoolSimulatorFormContext = createContext(
+  {} as PoolSimulatorContextType
+);
 
 export function InitialFormContextProvider({ children }: PropsWithChildren) {
   const { initialData, setInitialData } = usePoolSimulator();
 
   return (
-    <FormContext.Provider
+    <PoolSimulatorFormContext.Provider
       value={{
         data: initialData,
         setData: setInitialData,
@@ -24,7 +26,7 @@ export function InitialFormContextProvider({ children }: PropsWithChildren) {
       }}
     >
       {children}
-    </FormContext.Provider>
+    </PoolSimulatorFormContext.Provider>
   );
 }
 
@@ -32,7 +34,7 @@ export function CustomFormContextProvider({ children }: PropsWithChildren) {
   const { customData, setCustomData } = usePoolSimulator();
 
   return (
-    <FormContext.Provider
+    <PoolSimulatorFormContext.Provider
       value={{
         data: customData,
         setData: setCustomData,
@@ -40,11 +42,11 @@ export function CustomFormContextProvider({ children }: PropsWithChildren) {
       }}
     >
       {children}
-    </FormContext.Provider>
+    </PoolSimulatorFormContext.Provider>
   );
 }
 
 export function usePoolFormContext() {
-  const context = useContext(FormContext);
+  const context = useContext(PoolSimulatorFormContext);
   return context;
 }

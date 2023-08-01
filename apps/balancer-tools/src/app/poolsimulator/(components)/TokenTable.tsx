@@ -9,8 +9,8 @@ import {
 import { Dialog } from "#/components/Dialog";
 import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
-import { usePoolFormContext } from "#/contexts/FormContext";
 import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
+import { usePoolFormContext } from "#/contexts/PoolSimulatorFormContext";
 import { formatNumber } from "#/utils/formatNumber";
 
 import { PoolTypeEnum, TokensData } from "../(types)";
@@ -42,7 +42,7 @@ export function TokenTable({ minTokens = 2 }: { minTokens?: number }) {
           <Table.HeaderCell padding={customPadding}>
             {aboveOrEqualLimit && (
               <Tooltip
-                content={`This pools type can't have more than ${MAX_POOL_TOKENS} tokens.`}
+                content={`This pool type can't have more than ${MAX_POOL_TOKENS} tokens.`}
               >
                 <button type="button" className="flex items-center" disabled>
                   <PlusCircledIcon

@@ -5,11 +5,11 @@ import { useForm } from "react-hook-form";
 import Button from "#/components/Button";
 import { Input } from "#/components/Input";
 import { Form } from "#/components/ui/form";
-import { usePoolFormContext } from "#/contexts/FormContext";
 import {
   AnalysisData,
   usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
+import { usePoolFormContext } from "#/contexts/PoolSimulatorFormContext";
 import { getStableSwapSimulatorTokensSchema } from "#/lib/schema";
 
 import { TokensData } from "../(types)";

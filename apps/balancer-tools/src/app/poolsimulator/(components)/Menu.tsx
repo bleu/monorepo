@@ -10,20 +10,20 @@ import { Spinner } from "#/components/Spinner";
 import { Tabs } from "#/components/Tabs";
 import { Label } from "#/components/ui/label";
 import {
-  CustomFormContextProvider,
-  InitialFormContextProvider,
-  usePoolFormContext,
-} from "#/contexts/FormContext";
-import {
   AnalysisData,
   POOL_TYPES,
   PoolType,
   usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
+import {
+  CustomFormContextProvider,
+  InitialFormContextProvider,
+  usePoolFormContext,
+} from "#/contexts/PoolSimulatorFormContext";
 
 import { PoolParamsForm } from "./PoolParamsForm";
+import { PoolTypeChangeConfirmation } from "./PoolTypeChangeConfirmation";
 import { SearchPoolFormDialog } from "./SearchPoolFormDialog";
-import { SelectPoolType } from "./SelectPoolType";
 
 const POOL_TYPES_MAPPER = {
   MetaStable: "Meta Stable",
@@ -53,48 +53,46 @@ function IndexMenu() {
   };
 
   return (
-    <div>
-      <Tabs value={tabValue} defaultValue="initialData">
-        <Tabs.ItemTriggerWrapper>
-          <Tabs.ItemTrigger
-            tabName="initialData"
-            color="blue7"
-            onClick={() => {
-              document.dispatchEvent(clickInitialDataTab);
-            }}
-          >
-            <span>Initial</span>
-          </Tabs.ItemTrigger>
-          <Tabs.ItemTrigger
-            tabName="customData"
-            color="amber9"
-            onClick={() => {
-              document.dispatchEvent(clickCustomDataTab);
-            }}
-          >
-            <span>Custom</span>
-          </Tabs.ItemTrigger>
-        </Tabs.ItemTriggerWrapper>
-        <Tabs.ItemContent tabName="initialData">
-          <InitialFormContextProvider>
-            <SearchPoolFormWithDataForm>
-              <div className="flex flex-col mt-4">
-                <FormWithPoolType extraOnSubmit={initialFormExtraOnSubmit} />
-              </div>
-            </SearchPoolFormWithDataForm>
-          </InitialFormContextProvider>
-        </Tabs.ItemContent>
-        <Tabs.ItemContent tabName="customData">
-          <CustomFormContextProvider>
-            <SearchPoolFormWithDataForm>
-              <div className="flex flex-col mt-4">
-                <FormWithPoolType extraOnSubmit={customFormExtraOnSubmit} />
-              </div>
-            </SearchPoolFormWithDataForm>
-          </CustomFormContextProvider>
-        </Tabs.ItemContent>
-      </Tabs>
-    </div>
+    <Tabs value={tabValue} defaultValue="initialData">
+      <Tabs.ItemTriggerWrapper>
+        <Tabs.ItemTrigger
+          tabName="initialData"
+          color="blue7"
+          onClick={() => {
+            document.dispatchEvent(clickInitialDataTab);
+          }}
+        >
+          <span>Initial</span>
+        </Tabs.ItemTrigger>
+        <Tabs.ItemTrigger
+          tabName="customData"
+          color="amber9"
+          onClick={() => {
+            document.dispatchEvent(clickCustomDataTab);
+          }}
+        >
+          <span>Custom</span>
+        </Tabs.ItemTrigger>
+      </Tabs.ItemTriggerWrapper>
+      <Tabs.ItemContent tabName="initialData">
+        <InitialFormContextProvider>
+          <SearchPoolFormWithDataForm>
+            <div className="flex flex-col mt-4">
+              <FormWithPoolType extraOnSubmit={initialFormExtraOnSubmit} />
+            </div>
+          </SearchPoolFormWithDataForm>
+        </InitialFormContextProvider>
+      </Tabs.ItemContent>
+      <Tabs.ItemContent tabName="customData">
+        <CustomFormContextProvider>
+          <SearchPoolFormWithDataForm>
+            <div className="flex flex-col mt-4">
+              <FormWithPoolType extraOnSubmit={customFormExtraOnSubmit} />
+            </div>
+          </SearchPoolFormWithDataForm>
+        </CustomFormContextProvider>
+      </Tabs.ItemContent>
+    </Tabs>
   );
 }
 
@@ -123,7 +121,7 @@ function FormWithPoolType({
   return (
     <div className="flex flex-col">
       <Dialog
-        content={<SelectPoolType selectedType={selectedType} />}
+        content={<PoolTypeChangeConfirmation selectedType={selectedType} />}
         isOpen={open}
         setIsOpen={setOpen}
         onClose={onClose}

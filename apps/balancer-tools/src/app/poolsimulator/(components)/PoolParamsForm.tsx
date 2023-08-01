@@ -5,8 +5,8 @@ import { FieldValues, useForm } from "react-hook-form";
 import Button from "#/components/Button";
 import { Input } from "#/components/Input";
 import { Form, FormField } from "#/components/ui/form";
-import { usePoolFormContext } from "#/contexts/FormContext";
 import { AnalysisData } from "#/contexts/PoolSimulatorContext";
+import { usePoolFormContext } from "#/contexts/PoolSimulatorFormContext";
 import {
   ECLPSimulatorDataSchema,
   StableSwapSimulatorDataSchema,
@@ -25,8 +25,8 @@ interface IInput {
   label: string;
   placeholder: string;
   unit: string;
-  transformFromDataToForm: (n: number | undefined) => number | undefined;
-  transformFromFormToData: (n: number | undefined) => number | undefined;
+  transformFromDataToForm: (n?: number) => number | undefined;
+  transformFromFormToData: (n?: number) => number | undefined;
 }
 
 type InputMapperType = {
@@ -124,9 +124,8 @@ export function PoolParamsForm({
   } = form;
 
   const getOnSubmit = (tabClicked: boolean) => (fieldData: FieldValues) => {
-    const hasNullData = inputMapper[data.poolType].reduce(
-      (sum, input) => sum || !fieldData[input.name],
-      false
+    const hasNullData = inputMapper[data.poolType].some(
+      (input) => !fieldData[input.name]
     );
     if (Object.keys(errors).length || hasNullData) return;
     const dataWithPoolType = {
@@ -143,24 +142,9 @@ export function PoolParamsForm({
     extraOnSubmit?.(dataWithPoolType as AnalysisData, tabClicked);
   };
 
-  function checkDataIsEqualForm() {
-    const fieldData = watch();
-    const dataTransformed = {
-      poolParams: Object.fromEntries(
-        inputMapper[data.poolType].map((input) => [
-          input.name,
-          input.transformFromDataToForm(fieldData[input.name]),
-        ])
-      ),
-      tokens: fieldData.tokens,
-      poolType: data.poolType,
-    };
-    return JSON.stringify(dataTransformed) == JSON.stringify(data);
-  }
-
   useEffect(() => {
     clearErrors();
-    if (checkDataIsEqualForm() || !data.poolType) return;
+    if (!data.poolType) return;
     inputMapper[data.poolType].forEach((input) => {
       const dataValue = data.poolParams?.[input.name];
       if (dataValue) {

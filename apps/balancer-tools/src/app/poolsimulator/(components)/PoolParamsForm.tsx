@@ -4,6 +4,7 @@ import { FieldValues, useForm } from "react-hook-form";
 
 import Button from "#/components/Button";
 import { Input } from "#/components/Input";
+import { useTabContext } from "#/components/Tabs";
 import { Form, FormField } from "#/components/ui/form";
 import { AnalysisData } from "#/contexts/PoolSimulatorContext";
 import { usePoolFormContext } from "#/contexts/PoolSimulatorFormContext";
@@ -173,19 +174,32 @@ export function PoolParamsForm({
     register("tokens", { required: true, value: data?.tokens });
   }, []);
 
+  // useEffect(() => {
+  //   const saveData = () => {
+  //     const fieldData = watch();
+  //     getOnSubmit(true)(fieldData);
+  //   };
+  //   const eventName = isCustomData
+  //     ? "clickInitialDataTab"
+  //     : "clickCustomDataTab";
+
+  //   document.addEventListener(eventName, saveData);
+  //   return () => {
+  //     document.removeEventListener(eventName, saveData);
+  //   };
+  // }, [data, errors]);
+
+  const { value: currentTab, setValue: setTab } = useTabContext();
+
   useEffect(() => {
-    const saveData = () => {
-      const fieldData = watch();
-      getOnSubmit(true)(fieldData);
-    };
-    const eventName = isCustomData
-      ? "clickInitialDataTab"
-      : "clickCustomDataTab";
-    document.addEventListener(eventName, saveData);
-    return () => {
-      document.removeEventListener(eventName, saveData);
-    };
-  }, [data, errors]);
+    // const fieldData = watch();
+    // const hasNullData = inputMapper[data.poolType].some(
+    //   (input) => !fieldData[input.name]
+    // );
+    // if (!Object.keys(errors).length && !hasNullData) {
+    //   getOnSubmit(true)(fieldData);
+    // }
+  }, [currentTab]);
 
   return (
     <Form {...form} onSubmit={getOnSubmit(false)} id="initial-data-form">

@@ -30,18 +30,23 @@ const POOL_TYPES_MAPPER = {
   GyroE: "Gyro E-CLP",
 };
 
+export enum PoolSimulatorFormTabs {
+  InitialData = "initialData",
+  CustomData = "customData",
+}
+
 function IndexMenu() {
   const { push } = useRouter();
   const { setCustomData, customData, setIsGraphLoading } = usePoolSimulator();
-  const [tabValue, setTabValue] = useState("initialData");
-  const clickInitialDataTab = new CustomEvent("clickInitialDataTab");
-  const clickCustomDataTab = new CustomEvent("clickCustomDataTab");
+  const [tabValue, setTabValue] = useState<PoolSimulatorFormTabs>(
+    PoolSimulatorFormTabs.InitialData,
+  );
 
   const initialFormExtraOnSubmit = (data: AnalysisData, _: boolean) => {
     if (!customData.poolParams) {
       setCustomData(data);
     }
-    setTabValue("customData");
+    setTabValue(PoolSimulatorFormTabs.CustomData);
   };
 
   const customFormExtraOnSubmit = (_: AnalysisData, tabClicked: boolean) => {
@@ -49,32 +54,30 @@ function IndexMenu() {
       setIsGraphLoading(true);
       push("/poolsimulator/analysis");
     }
-    setTabValue("initialData");
+    setTabValue(PoolSimulatorFormTabs.InitialData);
   };
 
   return (
-    <Tabs value={tabValue} defaultValue="initialData">
+    <Tabs
+      value={tabValue}
+      onChange={setTabValue}
+      defaultValue={PoolSimulatorFormTabs.InitialData}
+    >
       <Tabs.ItemTriggerWrapper>
         <Tabs.ItemTrigger
-          tabName="initialData"
+          tabName={PoolSimulatorFormTabs.InitialData}
           color="blue7"
-          onClick={() => {
-            document.dispatchEvent(clickInitialDataTab);
-          }}
         >
           <span>Initial</span>
         </Tabs.ItemTrigger>
         <Tabs.ItemTrigger
-          tabName="customData"
+          tabName={PoolSimulatorFormTabs.CustomData}
           color="amber9"
-          onClick={() => {
-            document.dispatchEvent(clickCustomDataTab);
-          }}
         >
           <span>Custom</span>
         </Tabs.ItemTrigger>
       </Tabs.ItemTriggerWrapper>
-      <Tabs.ItemContent tabName="initialData">
+      <Tabs.ItemContent tabName={PoolSimulatorFormTabs.InitialData}>
         <InitialFormContextProvider>
           <SearchPoolFormWithDataForm>
             <div className="flex flex-col mt-4">
@@ -83,7 +86,7 @@ function IndexMenu() {
           </SearchPoolFormWithDataForm>
         </InitialFormContextProvider>
       </Tabs.ItemContent>
-      <Tabs.ItemContent tabName="customData">
+      <Tabs.ItemContent tabName={PoolSimulatorFormTabs.CustomData}>
         <CustomFormContextProvider>
           <SearchPoolFormWithDataForm>
             <div className="flex flex-col mt-4">

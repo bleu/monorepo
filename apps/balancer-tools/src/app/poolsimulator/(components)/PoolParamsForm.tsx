@@ -141,11 +141,23 @@ export function PoolParamsForm({
     };
     setData(dataWithPoolType as AnalysisData);
     extraOnSubmit?.(dataWithPoolType as AnalysisData, tabClicked);
+    // Here is where you can change the current tab
+    // if (tabClicked) {
+    //   setTab();  // Replace with your actual tab value
+    // }
   };
 
   useEffect(() => {
     clearErrors();
     if (!data.poolType) return;
+
+    // Reset the form whenever poolType changes
+    Object.entries(inputMapper).forEach(([, value]) => {
+      value.forEach((input) => {
+        setValue(input.name, undefined);
+      });
+    });
+
     inputMapper[data.poolType].forEach((input) => {
       const dataValue = data.poolParams?.[input.name];
       if (dataValue) {
@@ -153,7 +165,7 @@ export function PoolParamsForm({
       }
     });
     if (data?.tokens) setValue("tokens", data?.tokens);
-  }, [data.poolParams, data.tokens]);
+  }, [data.poolParams, data.tokens, data.poolType]); // Add data.poolType to dependency array
 
   useEffect(() => {
     function resetForm() {

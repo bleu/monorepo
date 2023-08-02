@@ -8,8 +8,7 @@ import { AnalysisData } from "#/contexts/PoolSimulatorContext";
 import { PoolTypeEnum } from "../(types)";
 
 export function convertAnalysisDataToAMM(data: AnalysisData) {
-  if (!data.poolType) return;
-  if (!data.poolParams?.swapFee) return;
+  if (!data.poolType || !data.poolParams?.swapFee) return;
   switch (data.poolType) {
     case PoolTypeEnum.MetaStable: {
       return new AMM(

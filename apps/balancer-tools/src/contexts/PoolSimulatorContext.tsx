@@ -129,22 +129,14 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
   async function handleImportPoolParametersById(
     formData: PoolAttribute,
     setData: (data: AnalysisData) => void,
-    changeTokens = true,
-    data = defaultAnalysisData,
   ) {
     const poolData = await pools.gql(formData.network || "1").Pool({
       poolId: formData.poolId,
     });
     if (!poolData) return;
     const importedData = convertGqlToAnalysisData(poolData);
-    if (changeTokens) {
-      setData(importedData);
-      return;
-    }
-    setData({
-      ...importedData,
-      tokens: data.tokens,
-    });
+
+    setData(importedData);
   }
 
   useEffect(() => {

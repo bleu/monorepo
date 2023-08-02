@@ -4,10 +4,11 @@ import { usePathname, useRouter } from "next/navigation";
 import { ReactElement, useState } from "react";
 
 import { Dialog } from "#/components/Dialog";
+import { PoolAttribute } from "#/components/SearchPoolForm";
 import { Select, SelectItem } from "#/components/Select";
 import Sidebar from "#/components/Sidebar";
 import { Spinner } from "#/components/Spinner";
-import { Tabs } from "#/components/Tabs";
+import { Tabs, useTabContext } from "#/components/Tabs";
 import { Label } from "#/components/ui/label";
 import {
   AnalysisData,
@@ -15,12 +16,8 @@ import {
   PoolType,
   usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
-import {
-  CustomFormContextProvider,
-  InitialFormContextProvider,
-  usePoolFormContext,
-} from "#/contexts/PoolSimulatorFormContext";
 
+import { PoolTypeEnum } from "../(types)";
 import { PoolParamsForm } from "./PoolParamsForm";
 import { PoolTypeChangeConfirmation } from "./PoolTypeChangeConfirmation";
 import { SearchPoolFormDialog } from "./SearchPoolFormDialog";
@@ -30,85 +27,125 @@ const POOL_TYPES_MAPPER = {
   GyroE: "Gyro E-CLP",
 };
 
+export enum PoolSimulatorFormTabs {
+  InitialData = "initialData",
+  CustomData = "customData",
+}
+
 function IndexMenu() {
   const { push } = useRouter();
-  const { setCustomData, customData, setIsGraphLoading } = usePoolSimulator();
-  const [tabValue, setTabValue] = useState("initialData");
-  const clickInitialDataTab = new CustomEvent("clickInitialDataTab");
-  const clickCustomDataTab = new CustomEvent("clickCustomDataTab");
-
-  const initialFormExtraOnSubmit = (data: AnalysisData, _: boolean) => {
-    if (!customData.poolParams) {
-      setCustomData(data);
-    }
-    setTabValue("customData");
-  };
-
-  const customFormExtraOnSubmit = (_: AnalysisData, tabClicked: boolean) => {
-    if (!tabClicked) {
-      setIsGraphLoading(true);
-      push("/poolsimulator/analysis");
-    }
-    setTabValue("initialData");
-  };
+  const {
+    initialData,
+    setInitialData,
+    setCustomData,
+    customData,
+    setIsGraphLoading,
+    handleImportPoolParametersById,
+  } = usePoolSimulator();
+  const [tabValue, setTabValue] = useState<PoolSimulatorFormTabs>(
+    PoolSimulatorFormTabs.InitialData,
+  );
 
   return (
-    <Tabs value={tabValue} defaultValue="initialData">
+    <Tabs
+      value={tabValue}
+      onChange={setTabValue}
+      defaultValue={PoolSimulatorFormTabs.InitialData}
+    >
       <Tabs.ItemTriggerWrapper>
         <Tabs.ItemTrigger
-          tabName="initialData"
+          tabName={PoolSimulatorFormTabs.InitialData}
           color="blue7"
-          onClick={() => {
-            document.dispatchEvent(clickInitialDataTab);
-          }}
         >
           <span>Initial</span>
         </Tabs.ItemTrigger>
         <Tabs.ItemTrigger
-          tabName="customData"
+          tabName={PoolSimulatorFormTabs.CustomData}
           color="amber9"
-          onClick={() => {
-            document.dispatchEvent(clickCustomDataTab);
-          }}
         >
           <span>Custom</span>
         </Tabs.ItemTrigger>
       </Tabs.ItemTriggerWrapper>
-      <Tabs.ItemContent tabName="initialData">
-        <InitialFormContextProvider>
-          <SearchPoolFormWithDataForm>
-            <div className="flex flex-col mt-4">
-              <FormWithPoolType extraOnSubmit={initialFormExtraOnSubmit} />
-            </div>
-          </SearchPoolFormWithDataForm>
-        </InitialFormContextProvider>
+      <Tabs.ItemContent tabName={PoolSimulatorFormTabs.InitialData}>
+        <SearchPoolFormWithDataForm
+          poolType={initialData.poolType}
+          onSubmit={(data) => {
+            const setData = (data: AnalysisData) => {
+              setInitialData(data);
+              setCustomData({ ...customData, tokens: data.tokens });
+            };
+            handleImportPoolParametersById(data, setData);
+          }}
+        >
+          <div className="flex flex-col mt-4">
+            <FormWithPoolType
+              onPoolTypeChanged={(poolType) =>
+                setInitialData({ ...initialData, poolType })
+              }
+              defaultValue={initialData}
+              onTabChanged={(data) => {
+                if (!customData.poolParams?.swapFee) {
+                  setCustomData(data);
+                }
+                setInitialData(data);
+              }}
+              onSubmit={(data) => {
+                if (!customData.poolParams?.swapFee) {
+                  setCustomData(data);
+                }
+                setInitialData(data);
+                setTabValue(PoolSimulatorFormTabs.CustomData);
+              }}
+            />
+          </div>
+        </SearchPoolFormWithDataForm>
       </Tabs.ItemContent>
-      <Tabs.ItemContent tabName="customData">
-        <CustomFormContextProvider>
-          <SearchPoolFormWithDataForm>
-            <div className="flex flex-col mt-4">
-              <FormWithPoolType extraOnSubmit={customFormExtraOnSubmit} />
-            </div>
-          </SearchPoolFormWithDataForm>
-        </CustomFormContextProvider>
+      <Tabs.ItemContent tabName={PoolSimulatorFormTabs.CustomData}>
+        <SearchPoolFormWithDataForm
+          poolType={customData.poolType}
+          onSubmit={(data) => {
+            handleImportPoolParametersById(
+              data,
+              ({ poolParams }: AnalysisData) =>
+                setCustomData({ ...customData, poolParams }),
+            );
+            setIsGraphLoading(true);
+            push("/poolsimulator/analysis");
+          }}
+        >
+          <div className="flex flex-col mt-4">
+            <FormWithPoolType
+              onPoolTypeChanged={(poolType) =>
+                setCustomData({ ...initialData, poolType })
+              }
+              defaultValue={customData}
+              onTabChanged={setCustomData}
+              onSubmit={setCustomData}
+            />
+          </div>
+        </SearchPoolFormWithDataForm>
       </Tabs.ItemContent>
     </Tabs>
   );
 }
 
 function FormWithPoolType({
-  extraOnSubmit,
+  defaultValue,
+  onSubmit,
+  onTabChanged,
+  onPoolTypeChanged,
 }: {
-  extraOnSubmit?: (data: AnalysisData, tabClicked: boolean) => void;
+  defaultValue: AnalysisData;
+  onSubmit: (data: AnalysisData) => void;
+  onTabChanged: (data: AnalysisData) => void;
+  onPoolTypeChanged: (poolType: PoolType) => void;
 }) {
   const [open, setOpen] = useState(false);
-  const {
-    data: { poolType },
-  } = usePoolFormContext();
+  const poolType = defaultValue.poolType;
   const [selectedType, setSelectedType] = useState<PoolType>(poolType);
 
-  function onChange(valeu: PoolType) {
-    setSelectedType(valeu);
+  function onChange(value: PoolType) {
+    setSelectedType(value);
     setOpen(true);
   }
 
@@ -121,7 +158,12 @@ function FormWithPoolType({
   return (
     <div className="flex flex-col">
       <Dialog
-        content={<PoolTypeChangeConfirmation selectedType={selectedType} />}
+        content={
+          <PoolTypeChangeConfirmation
+            onConfirm={() => onPoolTypeChanged(selectedType)}
+            selectedType={selectedType}
+          />
+        }
         isOpen={open}
         setIsOpen={setOpen}
         onClose={onClose}
@@ -137,19 +179,30 @@ function FormWithPoolType({
           </Select>
         </div>
       </Dialog>
-      <PoolParamsForm extraOnSubmit={extraOnSubmit} />
+      <PoolParamsForm
+        onTabChanged={onTabChanged}
+        defaultValue={defaultValue}
+        onSubmit={onSubmit}
+      />
     </div>
   );
 }
 
-function SearchPoolFormWithDataForm({ children }: { children: ReactElement }) {
-  const {
-    data: { poolType },
-    isCustomData,
-  } = usePoolFormContext();
+function SearchPoolFormWithDataForm({
+  children,
+  poolType,
+  onSubmit,
+}: {
+  children: ReactElement;
+  poolType: PoolTypeEnum;
+  onSubmit: (data: PoolAttribute) => void;
+}) {
+  const { value: selectedTab } = useTabContext();
+  const isCustomData = selectedTab === PoolSimulatorFormTabs.CustomData;
+
   return (
     <div>
-      <SearchPoolFormDialog poolTypeFilter={poolType}>
+      <SearchPoolFormDialog onSubmit={onSubmit} poolTypeFilter={poolType}>
         <div className="bg-blue9 p-2 rounded-[4px]">
           <span className="flex cursor-pointer items-center space-x-2 text-sm font-normal text-slate12">
             <MagnifyingGlassIcon width="20" height="20" strokeWidth={1} />

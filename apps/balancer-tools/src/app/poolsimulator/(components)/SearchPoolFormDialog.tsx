@@ -1,11 +1,8 @@
-"use client";
-
 import { PropsWithChildren } from "react";
 
 import { Dialog } from "#/components/Dialog";
 import { PoolAttribute, SearchPoolForm } from "#/components/SearchPoolForm";
-import { PoolType, usePoolSimulator } from "#/contexts/PoolSimulatorContext";
-import { usePoolFormContext } from "#/contexts/PoolSimulatorFormContext";
+import { PoolType } from "#/contexts/PoolSimulatorContext";
 
 import { PoolTypeEnum } from "../(types)";
 
@@ -16,24 +13,18 @@ const poolTypes = {
 export function SearchPoolFormDialog({
   children,
   poolTypeFilter,
-}: PropsWithChildren<{ poolTypeFilter: PoolType }>) {
-  const { handleImportPoolParametersById } = usePoolSimulator();
-  const { setData, data, isCustomData } = usePoolFormContext();
-
+  onSubmit,
+}: PropsWithChildren<{
+  poolTypeFilter: PoolType;
+  onSubmit: (data: PoolAttribute) => void;
+}>) {
   return (
     <Dialog
       title="Import pool parameters"
       content={
         <SearchPoolForm
           poolTypeFilter={poolTypes[poolTypeFilter]}
-          onSubmit={(formData: PoolAttribute) => {
-            handleImportPoolParametersById(
-              formData,
-              setData,
-              !isCustomData,
-              data,
-            );
-          }}
+          onSubmit={onSubmit}
           showPools
         />
       }

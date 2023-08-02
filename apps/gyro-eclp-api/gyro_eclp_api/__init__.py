@@ -6,8 +6,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-# List of allowed origins (clients that can access the API)
-# Use '*' to allow any origin, but it's recommended to set specific origins in production.
 origins = ["*"]
 
 # Add CORS middleware

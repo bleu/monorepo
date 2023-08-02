@@ -10,11 +10,11 @@ import { AnalysisData } from "#/contexts/PoolSimulatorContext";
 
 import { PoolTypeEnum } from "../(types)";
 
+// const PROD = "https://gyro-eclp-api.fly.dev/"
 const fetchECLPDerivativeParams = async (data: AnalysisData) => {
-  return await fetch("http://localhost:8000/calculate_derivative_parameters/", {
+  return await fetch("https://gyro-eclp-api.fly.dev/calculate_derivative_parameters", {
     method: "POST",
     headers: {
-      contentType: "application/json",
       "Content-Type": "application/json",
     },
     body: JSON.stringify({

@@ -6,8 +6,6 @@ import { useEffect, useState } from "react";
 import { Spinner } from "#/components/Spinner";
 import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 
-import { SearchPoolFormDialog } from "./(components)/SearchPoolFormDialog";
-
 enum dataStatus {
   NONE = "none",
   IMPORTED = "imported",
@@ -19,17 +17,13 @@ export default function Page() {
     dataStatus.NONE,
   );
 
-  const { poolType } = usePoolSimulator();
-
   const content = {
     [dataStatus.NONE]: {
       title: "Please set the initial parameters!",
       subtitle: (
         <>
-          Alternatively, import parameters from a pool clicking&nbsp;
-          <SearchPoolFormDialog poolTypeFilter={poolType}>
-            <span className="cursor-pointer text-slate12">here</span>
-          </SearchPoolFormDialog>
+          Alternatively, import parameters from a pool clicking on the search
+          button
         </>
       ),
     },
@@ -39,10 +33,8 @@ export default function Page() {
         <div className="flex flex-col">
           Feel free to change them or directly go to the next step.
           <span>
-            Alternatively, import parameters from another pool clicking&nbsp;
-            <SearchPoolFormDialog poolTypeFilter={poolType}>
-              <span className="cursor-pointer text-slate12">here</span>
-            </SearchPoolFormDialog>
+            Alternatively, import parameters from another pool clicking on the
+            search button
           </span>
         </div>
       ),

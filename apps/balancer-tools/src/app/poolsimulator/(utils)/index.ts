@@ -158,7 +158,7 @@ export function convertGqlToAnalysisData(poolData: PoolQuery): AnalysisData {
       };
     case PoolTypeEnum.Gyro3:
       return {
-        poolType: PoolTypeEnum.Gyro2,
+        poolType: PoolTypeEnum.Gyro3,
         poolParams: {
           swapFee: Number(poolData?.pool?.swapFee),
           root3Alpha: Number(poolData?.pool?.root3Alpha),

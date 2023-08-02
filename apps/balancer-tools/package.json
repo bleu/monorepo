@@ -13,7 +13,8 @@
     "start": "next start",
     "wagmi": "wagmi generate",
     "lint": "eslint '**/*.{ts,tsx}'",
-    "lint:fix": "eslint '**/*.{ts,tsx}' --fix"
+    "lint:fix": "eslint '**/*.{ts,tsx}' --fix",
+    "test": "jest --watchAll --verbose"
   },
   "dependencies": {
     "@balancer-labs/sor": "4.1.1-beta.14",

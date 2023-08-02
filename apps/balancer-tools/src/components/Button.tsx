@@ -1,7 +1,7 @@
 import cn from "clsx";
 import { Children, cloneElement, forwardRef, isValidElement } from "react";
 
-const predefinedClasses = {
+export const PREDEFINED_CLASSES = {
   blue: {
     solid: {
       light: "bg-blue9 text-slate12 hover:bg-blue10 border-blue9",
@@ -48,9 +48,9 @@ const predefinedClasses = {
   },
 } as const;
 
-type ButtonColor = keyof typeof predefinedClasses;
-type ButtonVariant = keyof typeof predefinedClasses.blue;
-type ButtonShade = keyof typeof predefinedClasses.blue.solid;
+type ButtonColor = keyof typeof PREDEFINED_CLASSES;
+type ButtonVariant = keyof typeof PREDEFINED_CLASSES.blue;
+type ButtonShade = keyof typeof PREDEFINED_CLASSES.blue.solid;
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -70,24 +70,25 @@ const Button = forwardRef(function (
     disabled = false,
     ...rest
   }: ButtonProps,
-  ref: React.Ref<HTMLButtonElement>,
+  ref: React.Ref<HTMLButtonElement>
 ) {
-  let hasIconLeft = false;
+  const childrenArray = Children.toArray(children);
+  const hasIconLeft =
+    isValidElement(childrenArray[0]) && childrenArray[0].type === ButtonIcon;
 
-  const modifiedChildren = Children.map(children, (child) => {
+  const modifiedChildren = childrenArray.map((child) => {
     if (isValidElement(child) && child.type === ButtonIcon) {
-      const positionClass = hasIconLeft ? "ml-2" : "mr-2";
-      hasIconLeft = true;
+      const positionClass = hasIconLeft ? "mr-2" : "ml-2";
 
       return cloneElement(child, {
-        // @ts-expect-error
+        // @ts-ignore
         className: positionClass,
       });
     }
     return child;
   });
 
-  const buttonClasses = predefinedClasses[color][variant][shade];
+  const buttonClasses = PREDEFINED_CLASSES[color][variant][shade];
 
   return (
     <button
@@ -97,7 +98,7 @@ const Button = forwardRef(function (
       className={cn(
         className,
         buttonClasses,
-        "rounded-md py-3 px-5 text-center text-sm font-semibold border focus-visible:outline-blue7 focus-visible:outline-offset-2 disabled:opacity-40",
+        "rounded-md py-3 px-5 text-center text-sm font-semibold border focus-visible:outline-blue7 focus-visible:outline-offset-2 disabled:opacity-40"
       )}
     >
       {modifiedChildren}
@@ -105,8 +106,14 @@ const Button = forwardRef(function (
   );
 });
 
-export function ButtonIcon({ icon }: { icon: React.ReactNode }) {
-  return <span>{icon}</span>;
+export function ButtonIcon({
+  icon,
+  className,
+}: {
+  icon: React.ReactNode;
+  className?: string;
+}) {
+  return <span className={className}>{icon}</span>;
 }
 
 export default Button;

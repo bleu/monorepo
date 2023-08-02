@@ -45,7 +45,7 @@ function IndexMenu() {
     handleImportPoolParametersById,
   } = usePoolSimulator();
   const [tabValue, setTabValue] = useState<PoolSimulatorFormTabs>(
-    PoolSimulatorFormTabs.InitialData
+    PoolSimulatorFormTabs.InitialData,
   );
 
   return (
@@ -109,7 +109,7 @@ function IndexMenu() {
             handleImportPoolParametersById(
               data,
               ({ poolParams }: AnalysisData) =>
-                setCustomData({ ...customData, poolParams })
+                setCustomData({ ...customData, poolParams }),
             );
           }}
         >

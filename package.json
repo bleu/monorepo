@@ -22,7 +22,7 @@
   },
   "config": {
     "ghooks": {
-      "pre-commit": "npx lint-staged --relative"
+      "pre-commit": "pnpx lint-staged --relative"
     }
   },
   "engines": {

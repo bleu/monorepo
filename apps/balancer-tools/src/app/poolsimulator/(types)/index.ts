@@ -20,14 +20,14 @@ export interface MetaStableParams {
   swapFee?: number;
 }
 
-//TODO substitute with Gyro2ParamsFromSubgraph
+//TODO substitute with Gyro2ParamsFromSubgraph issue BAL-501
 export interface Gyro2Params {
   swapFee?: number;
   sqrtAlpha?: number;
   sqrtBeta?: number;
 }
 
-//TODO substitute with Gyro3ParamsFromSubgraph
+//TODO substitute with Gyro3ParamsFromSubgraph issue BAL-501
 export interface Gyro3Params {
   swapFee?: number;
   root3Alpha?: number;

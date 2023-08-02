@@ -22,7 +22,8 @@ describe("Button component", () => {
         Test Button
       </Button>
     );
-    const firstIconParent = screen.getByRole("button").querySelector("svg")?.parentElement;
+    const firstIconParent = screen.getByRole("button").querySelector("svg")
+      ?.parentElement;
     expect(firstIconParent).toHaveClass("mr-2");
 
     rerender(
@@ -31,7 +32,8 @@ describe("Button component", () => {
         <ButtonIcon icon={<DotIcon />} />
       </Button>
     );
-    const secondIconParent = screen.getByRole("button").querySelector("svg")?.parentElement;
+    const secondIconParent = screen.getByRole("button").querySelector("svg")
+      ?.parentElement;
     expect(secondIconParent).toHaveClass("ml-2");
   });
 
@@ -40,12 +42,12 @@ describe("Button component", () => {
       <Button color="blue" variant="solid" shade="light" />
     );
     expect(screen.getByRole("button")).toHaveClass(
-      "bg-blue9 text-slate12 hover:bg-blue10 border-blue9"
+      PREDEFINED_CLASSES.blue.solid.light
     );
 
     rerender(<Button color="amber" variant="outline" shade="dark" />);
     expect(screen.getByRole("button")).toHaveClass(
-      "bg-transparent text-amber10 border-amber3 hover:bg-amber2 hover:border-amber2"
+      PREDEFINED_CLASSES.amber.outline.dark
     );
   });
 

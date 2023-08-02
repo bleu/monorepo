@@ -9,8 +9,10 @@ import {
 import { Dialog } from "#/components/Dialog";
 import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
-import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
-import { usePoolFormContext } from "#/contexts/PoolSimulatorFormContext";
+import {
+  AnalysisData,
+  usePoolSimulator,
+} from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
 import { PoolTypeEnum, TokensData } from "../(types)";
@@ -24,8 +26,7 @@ const MAX_POOL_TOKENS_MAPPER = {
   [PoolTypeEnum.GyroE]: 2,
 };
 
-export function TokenTable({ minTokens = 2 }: { minTokens?: number }) {
-  const { data } = usePoolFormContext();
+export function TokenTable({ data }: { data: AnalysisData }) {
   const MAX_POOL_TOKENS = MAX_POOL_TOKENS_MAPPER[data.poolType];
 
   const aboveOrEqualLimit = data?.tokens?.length >= MAX_POOL_TOKENS;
@@ -68,7 +69,7 @@ export function TokenTable({ minTokens = 2 }: { minTokens?: number }) {
         </Table.HeaderRow>
         <Table.Body>
           {data?.tokens?.map((token) => (
-            <TableRow token={token} minTokens={minTokens} key={token.symbol} />
+            <TableRow token={token} minTokens={2} key={token.symbol} />
           ))}
         </Table.Body>
       </Table>

@@ -35,7 +35,7 @@ export function StableCurve() {
     amountIn: number,
     tokenIn: string,
     amountOut: number,
-    tokenOut: string
+    tokenOut: string,
   ) => {
     const formattedAmountIn = formatNumber(amountIn, 2);
     const formattedAmountOut = formatNumber(amountOut, 2);
@@ -48,7 +48,7 @@ export function StableCurve() {
     legendGroup: string,
     name: string,
     showlegend = true,
-    hovertemplate: string[]
+    hovertemplate: string[],
   ) => {
     return {
       x,
@@ -73,9 +73,9 @@ export function StableCurve() {
           amount,
           analysisToken.symbol,
           -initialAmountTabTokenOut[index],
-          currentTabToken.symbol
-        )
-      )
+          currentTabToken.symbol,
+        ),
+      ),
     ),
     createDataObject(
       customAmountsAnalysisTokenIn,
@@ -88,9 +88,9 @@ export function StableCurve() {
           amount,
           analysisToken.symbol,
           -customAmountTabTokenOut[index],
-          currentTabToken.symbol
-        )
-      )
+          currentTabToken.symbol,
+        ),
+      ),
     ),
     createDataObject(
       initialAmountsAnalysisTokenOut,
@@ -103,9 +103,9 @@ export function StableCurve() {
           initialAmountTabTokenIn[index],
           currentTabToken.symbol,
           -amount,
-          analysisToken.symbol
-        )
-      )
+          analysisToken.symbol,
+        ),
+      ),
     ),
     createDataObject(
       customAmountsAnalysisTokenOut,
@@ -118,9 +118,9 @@ export function StableCurve() {
           customAmountTabTokenIn[index],
           currentTabToken.symbol,
           -amount,
-          analysisToken.symbol
-        )
-      )
+          analysisToken.symbol,
+        ),
+      ),
     ),
   ];
 
@@ -163,7 +163,7 @@ export function calculateCurvePoints({
     start,
     ...Array.from(
       { length: numberOfPoints + 20 },
-      (_, index) => initialValue * stepRatio ** index
+      (_, index) => initialValue * stepRatio ** index,
     ),
   ];
 }
@@ -171,7 +171,7 @@ export function calculateCurvePoints({
 const calculateTokenAmounts = (
   tokenIn: TokensData,
   tokenOut: TokensData,
-  amm: AMM<MetaStablePoolPairData>
+  amm: AMM<MetaStablePoolPairData>,
 ) => {
   const amountsAnalysisTokenIn = calculateCurvePoints({
     balance: tokenIn.balance,
@@ -182,12 +182,12 @@ const calculateTokenAmounts = (
 
   const amountsTabTokenOut = amountsAnalysisTokenIn.map(
     (amount) =>
-      amm.exactTokenInForTokenOut(amount, tokenIn.symbol, tokenOut.symbol) * -1
+      amm.exactTokenInForTokenOut(amount, tokenIn.symbol, tokenOut.symbol) * -1,
   );
 
   const amountsAnalysisTokenOut = amountsTabTokenIn.map(
     (amount) =>
-      amm.exactTokenInForTokenOut(amount, tokenOut.symbol, tokenIn.symbol) * -1
+      amm.exactTokenInForTokenOut(amount, tokenOut.symbol, tokenIn.symbol) * -1,
   );
 
   return {

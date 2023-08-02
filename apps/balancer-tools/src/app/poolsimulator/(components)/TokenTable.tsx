@@ -27,7 +27,7 @@ const MAX_POOL_TOKENS_MAPPER = {
 const TokenTableContext = createContext(
   {} as {
     custom: boolean;
-  }
+  },
 );
 
 export function useTokenTableContext() {

@@ -63,7 +63,7 @@ const defaultPool = {
 };
 
 export const PoolSimulatorContext = createContext(
-  {} as PoolSimulatorContextType
+  {} as PoolSimulatorContextType,
 );
 
 export function PoolSimulatorProvider({ children }: PropsWithChildren) {

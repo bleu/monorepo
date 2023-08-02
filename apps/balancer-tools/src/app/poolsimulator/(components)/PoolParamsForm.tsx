@@ -27,16 +27,16 @@ const inputMapper = {
       label: "Swap Fee",
       placeholder: "Enter swap fee",
       unit: "%",
-      transformFromDataToForm: (n) => (n ? n * 100 : undefined),
-      transformFromFormToData: (n) => (n ? n / 100 : undefined),
+      transformFromDataToForm: (n?: number) => (n ? n * 100 : undefined),
+      transformFromFormToData: (n?: number) => (n ? n / 100 : undefined),
     },
     {
       name: "ampFactor",
       label: "Amplification Factor",
       placeholder: "Enter amplification factor",
       unit: "",
-      transformFromDataToForm: (n) => n,
-      transformFromFormToData: (n) => n,
+      transformFromDataToForm: (n?: number) => n,
+      transformFromFormToData: (n?: number) => n,
     },
   ],
   [PoolTypeEnum.GyroE]: [
@@ -45,61 +45,61 @@ const inputMapper = {
       label: "Swap Fee",
       placeholder: "Enter swap fee",
       unit: "%",
-      transformFromDataToForm: (n) => (n ? n * 100 : undefined),
-      transformFromFormToData: (n) => (n ? n / 100 : undefined),
+      transformFromDataToForm: (n?: number) => (n ? n * 100 : undefined),
+      transformFromFormToData: (n?: number) => (n ? n / 100 : undefined),
     },
     {
       name: "alpha",
       label: "Alpha",
       placeholder: "Enter alpha",
       unit: "",
-      transformFromDataToForm: (n) => n,
-      transformFromFormToData: (n) => n,
+      transformFromDataToForm: (n?: number) => n,
+      transformFromFormToData: (n?: number) => n,
     },
     {
       name: "beta",
       label: "Beta",
       placeholder: "Enter beta",
       unit: "",
-      transformFromDataToForm: (n) => n,
-      transformFromFormToData: (n) => n,
+      transformFromDataToForm: (n?: number) => n,
+      transformFromFormToData: (n?: number) => n,
     },
     {
       name: "lambda",
       label: "Lambda",
       placeholder: "Enter lambda",
       unit: "",
-      transformFromDataToForm: (n) => n,
-      transformFromFormToData: (n) => n,
+      transformFromDataToForm: (n?: number) => n,
+      transformFromFormToData: (n?: number) => n,
     },
     {
       name: "c",
       label: "C",
       placeholder: "Enter c",
       unit: "",
-      transformFromDataToForm: (n) => n,
-      transformFromFormToData: (n) => n,
+      transformFromDataToForm: (n?: number) => n,
+      transformFromFormToData: (n?: number) => n,
     },
     {
       name: "s",
       label: "S",
       placeholder: "Enter s",
       unit: "",
-      transformFromDataToForm: (n) => n,
-      transformFromFormToData: (n) => n,
+      transformFromDataToForm: (n?: number) => n,
+      transformFromFormToData: (n?: number) => n,
     },
   ],
 } as const;
 
 const createPayload = (
   poolType: keyof typeof inputMapper,
-  fieldData: FieldValues,
+  fieldData: FieldValues
 ): AnalysisData => ({
   poolParams: Object.fromEntries(
     inputMapper[poolType].map((input) => [
       input.name,
       input.transformFromFormToData(fieldData[input.name]),
-    ]),
+    ])
   ),
   tokens: fieldData.tokens,
   poolType: poolType,
@@ -131,7 +131,7 @@ export const PoolParamsForm = forwardRef<unknown, PoolParamsFormProps>(
 
     useImperativeHandle(ref, () => ({
       triggerValidation: () => {
-        trigger(); // Calls validation
+        trigger();
       },
     }));
 
@@ -166,10 +166,6 @@ export const PoolParamsForm = forwardRef<unknown, PoolParamsFormProps>(
       onTabChanged(createPayload(poolType, data));
     }, [currentTab]);
 
-    // useEffect(()=> {
-    //   if (errors.length) {setChangeTabAllowed(false)} else {setChangeTabAllowed(true)}
-    // },[errors])
-
     return (
       <Form
         {...form}
@@ -192,7 +188,7 @@ export const PoolParamsForm = forwardRef<unknown, PoolParamsFormProps>(
                       value: data.poolParams?.[input.name],
                     }}
                     defaultValue={input.transformFromDataToForm(
-                      data.poolParams?.[input.name],
+                      data.poolParams?.[input.name]
                     )}
                     placeholder={input.placeholder}
                   />
@@ -223,5 +219,5 @@ export const PoolParamsForm = forwardRef<unknown, PoolParamsFormProps>(
         </div>
       </Form>
     );
-  },
+  }
 );

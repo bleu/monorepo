@@ -173,6 +173,10 @@ export const getStableSwapSimulatorTokensSchema = ({
   return StableSwapSimulatorTokensSchema;
 };
 
+export const BasePoolSchema = z.object({
+  swapFee: z.coerce.number().positive().min(0.0001).max(10), //source: https://github.com/balancer/balancer-v2-monorepo/blob/c4cc3d466eaa3c1e5fa62d303208c6c4a10db48a/pkg/pool-utils/contracts/BasePool.sol#L74
+});
+
 export const BaseTokenSchema = z.object({
   symbol: z.string().min(1),
   balance: z.coerce.number().positive(),
@@ -184,22 +188,21 @@ export const MetaStableParamsSchema = z.object({
   ampFactor: z.coerce.number().positive().min(1).max(5000), //source: https://github.com/balancer/balancer-v2-monorepo/blob/c4cc3d466eaa3c1e5fa62d303208c6c4a10db48a/pkg/pool-stable/contracts/StableMath.sol#L28
 });
 
-export const GyroESimulatorDataSchema = z
-  .object({
-    swapFee: z.coerce.number().positive().min(0.0001).max(10), //source: https://github.com/balancer/balancer-v2-monorepo/blob/c4cc3d466eaa3c1e5fa62d303208c6c4a10db48a/pkg/pool-utils/contracts/BasePool.sol#L74
-    alpha: z.coerce.number().min(0), //source: https://github.com/gyrostable/concentrated-lps/blob/7e9bd3b20dd52663afca04ca743808b1d6a9521f/contracts/eclp/GyroECLPMath.sol#L47C10-L47C60
-    beta: z.coerce.number().min(0), //source: https://github.com/gyrostable/concentrated-lps/blob/7e9bd3b20dd52663afca04ca743808b1d6a9521f/contracts/eclp/GyroECLPMath.sol#L47C10-L47C60
-    lambda: z.number().min(1).max(1e8), //source: https://2063019688-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-MU527HCtxlYaQoNazhF%2Fuploads%2Fh7LxmzxixMlcZfja8q2K%2FE-CLP%20high-precision%20calculations.pdf?alt=media&token=f4fd00a2-3cb7-4318-a8f3-ed06ecdf52dd
-    c: z.coerce.number().max(1), //source : on page 8 https://2063019688-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-MU527HCtxlYaQoNazhF%2Fuploads%2Fh7LxmzxixMlcZfja8q2K%2FE-CLP%20high-precision%20calculations.pdf?alt=media&token=f4fd00a2-3cb7-4318-a8f3-ed06ecdf52dd
-    s: z.coerce.number().max(1), //source : on page 8 https://2063019688-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-MU527HCtxlYaQoNazhF%2Fuploads%2Fh7LxmzxixMlcZfja8q2K%2FE-CLP%20high-precision%20calculations.pdf?alt=media&token=f4fd00a2-3cb7-4318-a8f3-ed06ecdf52dd
-    tokens: z
-      .array(
-        BaseTokenSchema.extend({
-          rate: z.coerce.number().positive(),
-        }),
-      )
-      .length(2),
-  })
+export const GyroESimulatorDataSchema = BasePoolSchema.extend({
+  swapFee: z.coerce.number().positive().min(0.0001).max(10), //source: https://github.com/balancer/balancer-v2-monorepo/blob/c4cc3d466eaa3c1e5fa62d303208c6c4a10db48a/pkg/pool-utils/contracts/BasePool.sol#L74
+  alpha: z.coerce.number().min(0), //source: https://github.com/gyrostable/concentrated-lps/blob/7e9bd3b20dd52663afca04ca743808b1d6a9521f/contracts/eclp/GyroECLPMath.sol#L47C10-L47C60
+  beta: z.coerce.number().min(0), //source: https://github.com/gyrostable/concentrated-lps/blob/7e9bd3b20dd52663afca04ca743808b1d6a9521f/contracts/eclp/GyroECLPMath.sol#L47C10-L47C60
+  lambda: z.number().min(1).max(1e8), //source: https://2063019688-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-MU527HCtxlYaQoNazhF%2Fuploads%2Fh7LxmzxixMlcZfja8q2K%2FE-CLP%20high-precision%20calculations.pdf?alt=media&token=f4fd00a2-3cb7-4318-a8f3-ed06ecdf52dd
+  c: z.coerce.number().max(1), //source : on page 8 https://2063019688-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-MU527HCtxlYaQoNazhF%2Fuploads%2Fh7LxmzxixMlcZfja8q2K%2FE-CLP%20high-precision%20calculations.pdf?alt=media&token=f4fd00a2-3cb7-4318-a8f3-ed06ecdf52dd
+  s: z.coerce.number().max(1), //source : on page 8 https://2063019688-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-MU527HCtxlYaQoNazhF%2Fuploads%2Fh7LxmzxixMlcZfja8q2K%2FE-CLP%20high-precision%20calculations.pdf?alt=media&token=f4fd00a2-3cb7-4318-a8f3-ed06ecdf52dd
+  tokens: z
+    .array(
+      BaseTokenSchema.extend({
+        rate: z.coerce.number().positive(),
+      }),
+    )
+    .length(2),
+})
   .refine(
     (data) => {
       const k2 = Math.pow(data.s, 2) + Math.pow(data.c, 2); //calculates the squared L2 norm (Euclidean norm) of the vector formed by s and c
@@ -221,30 +224,25 @@ export const GyroESimulatorDataSchema = z
     },
   );
 
-export const Gyro2SimulatorDataSchema = z
-  .object({
-    swapFee: z.coerce.number().positive().min(0.0001).max(10), //source: https://github.com/balancer/balancer-v2-monorepo/blob/c4cc3d466eaa3c1e5fa62d303208c6c4a10db48a/pkg/pool-utils/contracts/BasePool.sol#L74
-    sqrtAlpha: z.coerce.number().min(0), //source: https://github.com/gyrostable/concentrated-lps/blob/7e9bd3b20dd52663afca04ca743808b1d6a9521f/contracts/2clp/Gyro2CLPPool.sol#L51
-    sqrtBeta: z.coerce.number().min(0), //source: https://github.com/gyrostable/concentrated-lps/blob/7e9bd3b20dd52663afca04ca743808b1d6a9521f/contracts/2clp/Gyro2CLPPool.sol#L51
-    tokens: z.array(BaseTokenSchema).length(2),
-  })
-  .refine(
-    (data) => {
-      return data.sqrtBeta > data.sqrtAlpha; //source: https://github.com/gyrostable/concentrated-lps/blob/7e9bd3b20dd52663afca04ca743808b1d6a9521f/contracts/2clp/Gyro2CLPPool.sol#L51
-    },
-    {
-      message: "Beta must be greater than alpha",
-    },
-  );
+export const Gyro2SimulatorDataSchema = BasePoolSchema.extend({
+  sqrtAlpha: z.coerce.number().min(0), //source: https://github.com/gyrostable/concentrated-lps/blob/7e9bd3b20dd52663afca04ca743808b1d6a9521f/contracts/2clp/Gyro2CLPPool.sol#L51
+  sqrtBeta: z.coerce.number().min(0), //source: https://github.com/gyrostable/concentrated-lps/blob/7e9bd3b20dd52663afca04ca743808b1d6a9521f/contracts/2clp/Gyro2CLPPool.sol#L51
+  tokens: z.array(BaseTokenSchema).length(2),
+}).refine(
+  (data) => {
+    return data.sqrtBeta > data.sqrtAlpha; //source: https://github.com/gyrostable/concentrated-lps/blob/7e9bd3b20dd52663afca04ca743808b1d6a9521f/contracts/2clp/Gyro2CLPPool.sol#L51
+  },
+  {
+    message: "Beta must be greater than alpha",
+  },
+);
 
-export const Gyro3SimulatorDataSchema = z.object({
-  swapFee: z.coerce.number().positive().min(0.0001).max(10), //source: https://github.com/balancer/balancer-v2-monorepo/blob/c4cc3d466eaa3c1e5fa62d303208c6c4a10db48a/pkg/pool-utils/contracts/BasePool.sol#L74
+export const Gyro3SimulatorDataSchema = BasePoolSchema.extend({
   root3Alpha: z.coerce.number().min(0), //source: https://github.com/gyrostable/concentrated-lps/blob/7e9bd3b20dd52663afca04ca743808b1d6a9521f/contracts/3clp/Gyro3CLPPool.sol#L98
   tokens: z.array(BaseTokenSchema).length(3),
 });
 
-export const StableSwapSimulatorDataSchema = z.object({
-  swapFee: z.coerce.number().positive().min(0.0001).max(10), //source: https://github.com/balancer/balancer-v2-monorepo/blob/c4cc3d466eaa3c1e5fa62d303208c6c4a10db48a/pkg/pool-utils/contracts/BasePool.sol#L74
+export const StableSwapSimulatorDataSchema = BasePoolSchema.extend({
   ampFactor: z.coerce.number().positive().min(1).max(5000), //source: https://github.com/balancer/balancer-v2-monorepo/blob/c4cc3d466eaa3c1e5fa62d303208c6c4a10db48a/pkg/pool-stable/contracts/StableMath.sol#L28
   tokens: z
     .array(

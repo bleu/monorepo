@@ -1,11 +1,23 @@
 import uvicorn
 from concentrated_lps import geclp
-from fastapi import FastAPI
 from pydantic import BaseModel
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+# List of allowed origins (clients that can access the API)
+# Use '*' to allow any origin, but it's recommended to set specific origins in production.
+origins = ["*"]
 
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 class ParamsModel(BaseModel):
     alpha: str
     beta: str

@@ -24,7 +24,11 @@ const pin = async (json: Record<string, string>) => {
     body: formData,
   })
     .then((res) => res.json())
-    .then((res) => res.Hash as string);
+    .then((res) => res.Hash as string)
+    .catch((error) => {
+      console.error(error);
+      return { error: error };
+    });
 };
 
 export async function POST(req: Request) {

@@ -182,8 +182,7 @@ export function SearchPoolForm({
                 ) : (
                   <div className="flex flex-col items-center">
                     <span className="text-center text-slate12">
-                      Sorry, no pools were found &#128531;{" "}
-                      {/* &#128531; = 😓 */}
+                      Sorry, no pools were found 😓
                     </span>
                     <span className="text-center text-slate9 text-sm">
                       Please try another network

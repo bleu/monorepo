@@ -36,7 +36,7 @@ export default function AnalysisPoolParamsForm() {
   }, []);
 
   const indexCurrentTabToken = initialData?.tokens.findIndex(
-    ({ symbol }) => symbol.toLowerCase() !== analysisToken.symbol.toLowerCase()
+    ({ symbol }) => symbol.toLowerCase() !== analysisToken.symbol.toLowerCase(),
   );
 
   useEffect(() => {
@@ -57,8 +57,8 @@ export default function AnalysisPoolParamsForm() {
               if (indexCurrentTabToken === Number(i)) {
                 setCurrentTabTokenByIndex(
                   initialData?.tokens.findIndex(
-                    (value, index) => index !== Number(i)
-                  )
+                    (value, index) => index !== Number(i),
+                  ),
                 );
               }
               setAnalysisTokenByIndex(Number(i));

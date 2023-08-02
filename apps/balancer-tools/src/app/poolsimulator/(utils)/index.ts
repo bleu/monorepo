@@ -10,9 +10,12 @@ import { AnalysisData } from "#/contexts/PoolSimulatorContext";
 
 import { PoolTypeEnum } from "../(types)";
 
-// const PROD = "https://gyro-eclp-api.fly.dev/"
 const fetchECLPDerivativeParams = async (data: AnalysisData) => {
-  return await fetch("https://gyro-eclp-api.fly.dev/calculate_derivative_parameters", {
+  const url =
+    process.env.NODE_ENV == "development"
+      ? "http://localhost:8000"
+      : "https://gyro-eclp-api.fly.dev";
+  return await fetch(`${url}/calculate_derivative_parameters`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -39,7 +42,7 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
           amp: String(data.poolParams?.ampFactor),
           swapFee: String(data.poolParams?.swapFee),
           totalShares: String(
-            data.tokens.reduce((acc, token) => acc + token.balance, 0),
+            data.tokens.reduce((acc, token) => acc + token.balance, 0)
           ),
           tokens: data.tokens.map((token) => ({
             address: String(token.symbol), // math use address as key, but we will use symbol because custom token will not have address
@@ -48,7 +51,7 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
             priceRate: String(token.rate),
           })),
           tokensList: data.tokens.map((token) => String(token.symbol)),
-        }),
+        })
       );
     }
     case PoolTypeEnum.GyroE: {
@@ -58,7 +61,7 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
             new ExtendedGyroEV2({
               swapFee: String(data.poolParams?.swapFee),
               totalShares: String(
-                data.tokens.reduce((acc, token) => acc + token.balance, 0),
+                data.tokens.reduce((acc, token) => acc + token.balance, 0)
               ),
               tokens: data.tokens.map((token) => ({
                 address: String(token.symbol), // math use address as key, but we will use symbol because custom token will not have address
@@ -77,7 +80,7 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
               },
               derivedGyroEParams: derivedParams,
               tokenRates: data.tokens.map((token) => String(token.rate)),
-            }),
+            })
           );
         })
         .catch((_err) => undefined);

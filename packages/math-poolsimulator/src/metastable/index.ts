@@ -41,7 +41,7 @@ export class ExtendedMetaStableMath
       poolParams.swapFee,
       poolParams.totalShares,
       poolParams.tokens,
-      poolParams.tokensList
+      poolParams.tokensList,
     );
   }
 
@@ -66,7 +66,7 @@ export class ExtendedMetaStableMath
     const tokenInPriceRate = parseFixed(tI.priceRate, 18);
     const balanceIn = formatFixed(
       parseFixed(tI.balance, decimalsIn).mul(tokenInPriceRate).div(EONE),
-      decimalsIn
+      decimalsIn,
     );
 
     const tokenIndexOut = this.tokens.findIndex((t) => t.address === tokenOut);
@@ -77,15 +77,15 @@ export class ExtendedMetaStableMath
     const tokenOutPriceRate = parseFixed(tO.priceRate, 18);
     const balanceOut = formatFixed(
       parseFixed(tO.balance, decimalsOut).mul(tokenOutPriceRate).div(EONE),
-      decimalsOut
+      decimalsOut,
     );
 
     // Get all token balances
     const allBalances = this.tokens.map(({ balance, priceRate }) =>
-      bnum(balance).times(bnum(priceRate))
+      bnum(balance).times(bnum(priceRate)),
     );
     const allBalancesScaled = this.tokens.map(({ balance, priceRate }) =>
-      parseFixed(balance, 18).mul(parseFixed(priceRate, 18)).div(EONE)
+      parseFixed(balance, 18).mul(parseFixed(priceRate, 18)).div(EONE),
     );
 
     const poolPairData: MetaStablePoolPairData = {
@@ -117,7 +117,7 @@ export class ExtendedMetaStableMath
     tokenIndexIn: number,
     tokenIndexOut: number,
     is_first_derivative: boolean,
-    wrt_out: boolean
+    wrt_out: boolean,
   ): OldBigNumber {
     // This function was copied from @balancer/sor package, since was not exported
     const totalCoins = balances.length;
@@ -173,10 +173,10 @@ export class ExtendedMetaStableMath
       tokenIndexIn,
       tokenIndexOut,
       true,
-      false
+      false,
     );
     const spotPriceWithoutRates = ONE.div(
-      ans.times(EONE.sub(swapFee).toString()).div(EONE.toString())
+      ans.times(EONE.sub(swapFee).toString()).div(EONE.toString()),
     );
 
     const priceRateIn = bnum(formatFixed(poolPairData.tokenInPriceRate, 18));
@@ -185,10 +185,10 @@ export class ExtendedMetaStableMath
   }
 
   _firstGuessOfTokenInForExactSpotPriceAfterSwap(
-    poolPairData: MetaStablePoolPairData
+    poolPairData: MetaStablePoolPairData,
   ): OldBigNumber {
     return poolPairData.allBalances[poolPairData.tokenIndexIn].times(
-      bnum(0.01)
+      bnum(0.01),
     );
   }
 }

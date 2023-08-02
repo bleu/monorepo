@@ -106,7 +106,7 @@ export function SwapSimulator() {
         <label className="block text-sm text-slate12">Effective Price</label>
         <BaseInput
           value={`${effectivePrice.toFixed(
-            2
+            2,
           )} ${tokenInSymbol}/${tokenOutSymbol}`}
           disabled
         />
@@ -200,7 +200,7 @@ export function SwapSimulator() {
                   label="Amount"
                   type="number"
                   defaultValue={(initialData?.tokens[0]?.balance / 10).toFixed(
-                    2
+                    2,
                   )}
                 />
               )}
@@ -251,35 +251,35 @@ function calculateSimulation({
   let amountOut = amm.exactTokenInForTokenOut(
     amount,
     tokenInSymbol,
-    tokenOutSymbol
+    tokenOutSymbol,
   );
   let effectivePrice = amm.effectivePriceForExactTokenInSwap(
     amount,
     tokenInSymbol,
-    tokenOutSymbol
+    tokenOutSymbol,
   );
   let priceImpact = amm.priceImpactForExactTokenInSwap(
     amount,
     tokenInSymbol,
-    tokenOutSymbol
+    tokenOutSymbol,
   );
 
   if (swapType == "Exact Out") {
     amountIn = amm.tokenInForExactTokenOut(
       amount,
       tokenInSymbol,
-      tokenOutSymbol
+      tokenOutSymbol,
     );
     amountOut = amount;
     effectivePrice = amm.effectivePriceForExactTokenOutSwap(
       amount,
       tokenInSymbol,
-      tokenOutSymbol
+      tokenOutSymbol,
     );
     priceImpact = amm.priceImpactForExactTokenOutSwap(
       amount,
       tokenInSymbol,
-      tokenOutSymbol
+      tokenOutSymbol,
     );
   }
 

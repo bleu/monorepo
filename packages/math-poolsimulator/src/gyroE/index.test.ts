@@ -37,7 +37,7 @@ describe("Tests new Gyro ECLP math function based on package other functions", (
         z: poolData.z,
         dSq: poolData.dSq,
       },
-    })
+    }),
   );
   const pool = ExtendedGyroEV2.fromPool(poolData as SubgraphPoolBase);
   const poolPairData = pool.parsePoolPairData(tokenIn, tokenOut);
@@ -45,28 +45,28 @@ describe("Tests new Gyro ECLP math function based on package other functions", (
   const amountOldBigNumber = bnum(amount);
   const spotPriceExpected = pool._spotPriceAfterSwapExactTokenInForTokenOut(
     poolPairData,
-    amountOldBigNumber
+    amountOldBigNumber,
   );
 
   const amountOut = amm.exactTokenInForTokenOut(amount, tokenIn, tokenOut);
   poolPairData.balanceIn = poolPairData.balanceIn.add(
-    numberToBigNumber({ number: amount })
+    numberToBigNumber({ number: amount }),
   );
   poolPairData.balanceOut = poolPairData.balanceOut.sub(
-    numberToBigNumber({ number: amountOut })
+    numberToBigNumber({ number: amountOut }),
   );
 
   test("_spotPrice", () => {
     checkResult(
       pool._spotPrice(poolPairData).toNumber(),
-      spotPriceExpected.toNumber()
+      spotPriceExpected.toNumber(),
     );
   });
   test("_tokenInForExactSpotPriceAfterSwap", () => {
     const tokenInCalculated = amm.tokenInForExactSpotPriceAfterSwap(
       spotPriceExpected.toNumber(),
       tokenIn,
-      tokenOut
+      tokenOut,
     );
     checkResult(tokenInCalculated, amount);
   });

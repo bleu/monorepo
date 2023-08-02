@@ -11,6 +11,7 @@ import {
   polygonZkEvm as polygonZkEvmChain,
   sepolia,
 } from "wagmi/chains";
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
 /**
  * Project ID is required by Rainbowkit Migration Guide to Viem
@@ -33,9 +34,28 @@ const polygonZkEvm = {
     "https://raw.githubusercontent.com/balancer/frontend-v2/a53e98f1bd44b17cf002616100d23f8c1065f7b1/src/assets/images/icons/networks/zkevm.svg",
 };
 
+const RPC_ENDPOINT_MAP = {
+  [mainnet.id]: "https://eth.llamarpc.com",
+  [optimism.id]: "https://optimism.meowrpc.com",
+  [arbitrum.id]: "https://arb1.arbitrum.io/rpc",
+  [goerli.id]: "https://ethereum-goerli.publicnode.com",
+  [gnosis.id]: "https://rpc.ankr.com/gnosis",
+  [polygon.id]: "https://polygon.llamarpc.com",
+  [polygonZkEvm.id]: "https://1rpc.io/zkevm",
+  [sepolia.id]: "https://endpoints.omniatech.io/v1/eth/sepolia/public",
+} as const;
+
 export const { chains, publicClient, webSocketPublicClient } = configureChains(
   [mainnet, polygon, gnosis, arbitrum, optimism, polygonZkEvm, goerli, sepolia],
-  [publicProvider()],
+  [
+    jsonRpcProvider({
+      rpc: (chain) => ({
+        http: RPC_ENDPOINT_MAP[chain.id as keyof typeof RPC_ENDPOINT_MAP],
+      }),
+    }),
+    publicProvider(),
+  ],
+  { retryCount: 5 },
 );
 
 const { connectors } = getDefaultWallets({

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { OldBigNumber } from "@balancer-labs/sor";
+
 import { GyroEPoolPairData, IGyroEMaths } from "./gyroE";
 import { IMetaStableMath, MetaStablePoolPairData } from "./metastable";
 

@@ -65,7 +65,7 @@ export class ExtendedGyroEV2
       poolParams.tokensList,
       poolParams.gyroEParams,
       poolParams.derivedGyroEParams,
-      poolParams.tokenRates
+      poolParams.tokenRates,
     );
   }
 
@@ -165,7 +165,7 @@ export class ExtendedGyroEV2
     params: GyroEParams,
     derived: DerivedGyroEParams,
     invariant: Vector2,
-    swapFee: BigNumber
+    swapFee: BigNumber,
   ): BigNumber {
     const calcSpotPriceGiven = tokenInIsToken0
       ? GyroEMathFunctions.calcSpotPriceYGivenX
@@ -175,27 +175,30 @@ export class ExtendedGyroEV2
       balances[Number(!tokenInIsToken0)],
       params,
       derived,
-      invariant
+      invariant,
     );
     return GyroHelpersSignedFixedPoint.divDown(
       EONE,
-      GyroHelpersSignedFixedPoint.mulDown(newSpotPriceFactor, EONE.sub(swapFee))
+      GyroHelpersSignedFixedPoint.mulDown(
+        newSpotPriceFactor,
+        EONE.sub(swapFee),
+      ),
     );
   }
   _spotPrice(poolPairData: GyroEPoolPairData): OldBigNumber {
     const normalizedBalances = GyroHelpers._normalizeBalances(
       [poolPairData.balanceIn, poolPairData.balanceOut],
-      [poolPairData.decimalsIn, poolPairData.decimalsOut]
+      [poolPairData.decimalsIn, poolPairData.decimalsOut],
     );
     const orderedNormalizedBalances = balancesFromTokenInOut(
       normalizedBalances[0],
       normalizedBalances[1],
-      poolPairData.tokenInIsToken0
+      poolPairData.tokenInIsToken0,
     );
     const [currentInvariant, invErr] = GyroEMaths.calculateInvariantWithError(
       orderedNormalizedBalances,
       this.gyroEParams,
-      this.derivedGyroEParams
+      this.derivedGyroEParams,
     );
     const invariant: Vector2 = {
       x: currentInvariant.add(invErr.mul(2)),
@@ -207,17 +210,17 @@ export class ExtendedGyroEV2
       this.gyroEParams,
       this.derivedGyroEParams,
       invariant,
-      poolPairData.swapFee
+      poolPairData.swapFee,
     );
     return bnum(formatFixed(newSpotPrice, 18));
   }
 
   _firstGuessOfTokenInForExactSpotPriceAfterSwap(
-    poolPairData: GyroEPoolPairData
+    poolPairData: GyroEPoolPairData,
   ): OldBigNumber {
     return bigNumberToOldBigNumber(
       poolPairData.balanceIn,
-      poolPairData.decimalsIn
+      poolPairData.decimalsIn,
     ).times(bnum(0.01));
   }
 }

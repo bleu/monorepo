@@ -66,8 +66,6 @@ interface PoolSimulatorContextType {
   initialAMM?: AMM<PoolPairData>;
   customAMM?: AMM<PoolPairData>;
   generateURL: () => string;
-  tabValue: DataType;
-  setTabValue: (value: DataType) => void;
 }
 
 const defaultPool = {
@@ -106,7 +104,6 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     useState<TokensData>(defaultTokensData);
   const [currentTabToken, setCurrentTabToken] =
     useState<TokensData>(defaultTokensData);
-  const [tabValue, setTabValue] = useState(DataType.initialData);
 
   const [isGraphLoading, setIsGraphLoading] = useState<boolean>(false);
 
@@ -139,23 +136,15 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
 
   async function handleImportPoolParametersById(
     formData: PoolAttribute,
-    setData: (data: AnalysisData) => void,
-    changeTokens = true,
-    data = defaultAnalysisData
+    setData: (data: AnalysisData) => void
   ) {
     const poolData = await pools.gql(formData.network || "1").Pool({
       poolId: formData.poolId,
     });
     if (!poolData) return;
     const importedData = convertGqlToAnalysisData(poolData);
-    if (changeTokens) {
-      setData(importedData);
-      return;
-    }
-    setData({
-      ...importedData,
-      tokens: data.tokens,
-    });
+
+    setData(importedData);
   }
 
   useEffect(() => {
@@ -177,14 +166,22 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
   }, []);
 
   useEffect(() => {
-    if (initialData.poolParams === undefined) return;
-    if (!initialData.poolType && !initialData.poolParams?.swapFee) return;
+    if (
+      initialData.poolParams === undefined ||
+      !initialData.poolType ||
+      initialData.poolParams.swapFee === undefined
+    )
+      return;
     setInitialAMM(convertAnalysisDataToAMM(initialData));
   }, [initialData]);
 
   useEffect(() => {
-    if (customData.poolParams === undefined) return;
-    if (!customData.poolType && !customData.poolParams?.swapFee) return;
+    if (
+      customData.poolParams === undefined ||
+      !customData.poolType ||
+      customData.poolParams.swapFee === undefined
+    )
+      return;
     setCustomAMM(convertAnalysisDataToAMM(customData));
   }, [customData]);
 
@@ -223,8 +220,6 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
         initialAMM,
         customAMM,
         generateURL,
-        tabValue,
-        setTabValue,
       }}
     >
       {children}

@@ -147,7 +147,6 @@ export function StableCurve() {
       className="h-1/2 w-full"
     />
   );
-  return <div className="text-slate12">stable curve</div>;
 }
 
 export function calculateCurvePoints({

@@ -1,21 +1,14 @@
-import { Close, DialogClose } from "@radix-ui/react-dialog";
+import { DialogClose } from "@radix-ui/react-dialog";
 
-import { usePoolFormContext } from "#/contexts/FormContext";
 import { PoolType } from "#/contexts/PoolSimulatorContext";
 
-export function SelectPoolType({ selectedType }: { selectedType: PoolType }) {
-  const { setData, data } = usePoolFormContext();
-  const event = new CustomEvent("changePoolType");
-
-  function onSubmit() {
-    setData({
-      tokens: data.tokens,
-      poolType: selectedType,
-      poolParams: undefined,
-    });
-    document.dispatchEvent(event);
-    Close;
-  }
+export function PoolTypeChangeConfirmation({
+  selectedType,
+  onConfirm,
+}: {
+  selectedType: PoolType;
+  onConfirm: React.MouseEventHandler;
+}) {
   return (
     <div className="text-slate12 flex flex-col items-center gap-y-4">
       <div className="text-center flex flex-col items-center">
@@ -28,7 +21,7 @@ export function SelectPoolType({ selectedType }: { selectedType: PoolType }) {
             Cancel
           </span>
         </DialogClose>
-        <DialogClose onClick={onSubmit}>
+        <DialogClose onClick={onConfirm}>
           <span className="bg-blue9 text-slate12 hover:bg-blue10 border-blue9 rounded-md py-3 px-5 text-center text-sm font-semibold border focus-visible:outline-blue7 focus-visible:outline-offset-2 disabled:opacity-40">
             Confirm
           </span>

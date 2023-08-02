@@ -4,8 +4,8 @@ import { useForm } from "react-hook-form";
 
 import Button from "#/components/Button";
 import { Input } from "#/components/Input";
+import { useTabContext } from "#/components/Tabs";
 import { Form } from "#/components/ui/form";
-import { usePoolFormContext } from "#/contexts/FormContext";
 import {
   AnalysisData,
   usePoolSimulator,
@@ -13,6 +13,7 @@ import {
 import { getStableSwapSimulatorTokensSchema } from "#/lib/schema";
 
 import { TokensData } from "../(types)";
+import { PoolSimulatorFormTabs } from "./Menu";
 
 export default function TokenForm({
   symbolToEdit,
@@ -23,7 +24,8 @@ export default function TokenForm({
 }) {
   const { initialData, setInitialData, customData, setCustomData } =
     usePoolSimulator();
-  const { isCustomData } = usePoolFormContext();
+  const { value: selectedTab } = useTabContext();
+  const isCustomData = selectedTab === PoolSimulatorFormTabs.CustomData;
 
   const stableSwapTokensSchema = getStableSwapSimulatorTokensSchema({
     symbolToEdit,

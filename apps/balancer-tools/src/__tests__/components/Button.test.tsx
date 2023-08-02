@@ -20,7 +20,7 @@ describe("Button component", () => {
       <Button>
         <ButtonIcon icon={<DotIcon />} />
         Test Button
-      </Button>
+      </Button>,
     );
     const firstIconParent = screen.getByRole("button").querySelector("svg")
       ?.parentElement;
@@ -30,7 +30,7 @@ describe("Button component", () => {
       <Button>
         Test Button
         <ButtonIcon icon={<DotIcon />} />
-      </Button>
+      </Button>,
     );
     const secondIconParent = screen.getByRole("button").querySelector("svg")
       ?.parentElement;
@@ -39,15 +39,15 @@ describe("Button component", () => {
 
   it("applies predefined class for a given color, variant and shade", () => {
     const { rerender } = render(
-      <Button color="blue" variant="solid" shade="light" />
+      <Button color="blue" variant="solid" shade="light" />,
     );
     expect(screen.getByRole("button")).toHaveClass(
-      PREDEFINED_CLASSES.blue.solid.light
+      PREDEFINED_CLASSES.blue.solid.light,
     );
 
     rerender(<Button color="amber" variant="outline" shade="dark" />);
     expect(screen.getByRole("button")).toHaveClass(
-      PREDEFINED_CLASSES.amber.outline.dark
+      PREDEFINED_CLASSES.amber.outline.dark,
     );
   });
 
@@ -65,7 +65,7 @@ describe("Button component", () => {
     const { getByRole } = render(<Button />);
     expect(getByRole("button")).toHaveClass(
       PREDEFINED_CLASSES.blue.solid.light,
-      "rounded-md py-3 px-5 text-center text-sm font-semibold border focus-visible:outline-blue7 focus-visible:outline-offset-2 disabled:opacity-40"
+      "rounded-md py-3 px-5 text-center text-sm font-semibold border focus-visible:outline-blue7 focus-visible:outline-offset-2 disabled:opacity-40",
     );
   });
 

@@ -7,7 +7,7 @@ type TabContextType<T> = {
   setValue: (value: T) => void;
 };
 
-// tslint:disable-next-line: no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const TabContext = createContext<TabContextType<any> | undefined>(undefined);
 
 export function useTabContext<T>() {
@@ -15,7 +15,7 @@ export function useTabContext<T>() {
 
   if (!context) {
     throw new Error(
-      "Child components of Tab cannot be rendered outside the Tab component!"
+      "Child components of Tab cannot be rendered outside the Tab component!",
     );
   }
 
@@ -87,7 +87,7 @@ function TabItemTrigger({
   return (
     <TabsPrimitive.Trigger
       className={cn(
-        "px-5 h-[45px] flex-1 flex items-center justify-center text-[15px] hover:text-white hover:bg-blue4 data-[state=active]:text-white outline-none cursor-defaul} data-[state=active]:shadow-[inset_0_-1px_0_0,0_1px_0_0]"
+        "px-5 h-[45px] flex-1 flex items-center justify-center text-[15px] hover:text-white hover:bg-blue4 data-[state=active]:text-white outline-none cursor-defaul} data-[state=active]:shadow-[inset_0_-1px_0_0,0_1px_0_0]",
       )}
       value={tabName}
       onClick={(e) => {

@@ -8,7 +8,9 @@ import { useTabContext } from "#/components/Tabs";
 import { Form, FormField } from "#/components/ui/form";
 import { AnalysisData } from "#/contexts/PoolSimulatorContext";
 import {
-  ECLPSimulatorDataSchema,
+  Gyro2SimulatorDataSchema,
+  Gyro3SimulatorDataSchema,
+  GyroESimulatorDataSchema,
   StableSwapSimulatorDataSchema,
 } from "#/lib/schema";
 
@@ -17,7 +19,9 @@ import { TokenTable } from "./TokenTable";
 
 const schemaMapper = {
   [PoolTypeEnum.MetaStable]: StableSwapSimulatorDataSchema,
-  [PoolTypeEnum.GyroE]: ECLPSimulatorDataSchema,
+  [PoolTypeEnum.GyroE]: GyroESimulatorDataSchema,
+  [PoolTypeEnum.Gyro2]: Gyro2SimulatorDataSchema,
+  [PoolTypeEnum.Gyro3]: Gyro3SimulatorDataSchema,
 };
 
 const inputMapper = {
@@ -57,7 +61,7 @@ const inputMapper = {
       transformFromFormToData: (n?: number) => n,
     },
     {
-      name: "beta",
+      name: "beta" as const,
       label: "Beta",
       placeholder: "Enter beta",
       unit: "",
@@ -89,17 +93,61 @@ const inputMapper = {
       transformFromFormToData: (n?: number) => n,
     },
   ],
+  [PoolTypeEnum.Gyro2]: [
+    {
+      name: "swapFee",
+      label: "Swap Fee",
+      placeholder: "Enter swap fee",
+      unit: "%",
+      transformFromDataToForm: (n?: number) => (n ? n * 100 : undefined),
+      transformFromFormToData: (n?: number) => (n ? n / 100 : undefined),
+    },
+    {
+      name: "sqrtAlpha" as const,
+      label: "Alpha",
+      placeholder: "Enter alpha",
+      unit: "",
+      transformFromDataToForm: (n?: number) => (n ? n ** 2 : undefined),
+      transformFromFormToData: (n?: number) => (n ? n ** (1 / 2) : undefined),
+    },
+    {
+      name: "sqrtBeta" as const,
+      label: "Beta",
+      placeholder: "Enter beta",
+      unit: "",
+      transformFromDataToForm: (n?: number) => (n ? n ** 2 : undefined),
+      transformFromFormToData: (n?: number) => (n ? n ** (1 / 2) : undefined),
+    },
+  ],
+  [PoolTypeEnum.Gyro3]: [
+    {
+      name: "swapFee",
+      label: "Swap Fee",
+      placeholder: "Enter swap fee",
+      unit: "%",
+      transformFromDataToForm: (n?: number) => (n ? n * 100 : undefined),
+      transformFromFormToData: (n?: number) => (n ? n / 100 : undefined),
+    },
+    {
+      name: "root3Alpha" as const,
+      label: "Alpha",
+      placeholder: "Enter alpha",
+      unit: "",
+      transformFromDataToForm: (n?: number) => (n ? n ** 3 : undefined),
+      transformFromFormToData: (n?: number) => (n ? n ** (1 / 3) : undefined),
+    },
+  ],
 } as const;
 
 const createPayload = (
   poolType: keyof typeof inputMapper,
-  fieldData: FieldValues
+  fieldData: FieldValues,
 ): AnalysisData => ({
   poolParams: Object.fromEntries(
     inputMapper[poolType].map((input) => [
       input.name,
       input.transformFromFormToData(fieldData[input.name]),
-    ])
+    ]),
   ),
   tokens: fieldData.tokens,
   poolType: poolType,
@@ -188,7 +236,7 @@ export const PoolParamsForm = forwardRef<unknown, PoolParamsFormProps>(
                       value: data.poolParams?.[input.name],
                     }}
                     defaultValue={input.transformFromDataToForm(
-                      data.poolParams?.[input.name]
+                      data.poolParams?.[input.name],
                     )}
                     placeholder={input.placeholder}
                   />
@@ -219,5 +267,5 @@ export const PoolParamsForm = forwardRef<unknown, PoolParamsFormProps>(
         </div>
       </Form>
     );
-  }
+  },
 );

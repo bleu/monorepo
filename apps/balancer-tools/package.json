@@ -10,6 +10,7 @@
     "dev": "pnpm npm-run-all -l --parallel dev:**",
     "dev:wagmi": "wagmi generate --watch",
     "dev:next": "next dev",
+    "dev:gyro-eclp-api": "cd ../gyro-eclp-api && poetry run dev",
     "start": "next start",
     "wagmi": "wagmi generate",
     "lint": "eslint '**/*.{ts,tsx}'",

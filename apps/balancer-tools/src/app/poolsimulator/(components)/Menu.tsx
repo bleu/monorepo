@@ -80,7 +80,11 @@ function IndexMenu() {
           <div className="flex flex-col mt-4">
             <FormWithPoolType
               onPoolTypeChanged={(poolType) =>
-                setInitialData({ ...initialData, poolType })
+                setInitialData({
+                  ...initialData,
+                  poolType,
+                  poolParams: undefined,
+                })
               }
               defaultValue={initialData}
               onTabChanged={(data) => {
@@ -116,7 +120,11 @@ function IndexMenu() {
           <div className="flex flex-col mt-4">
             <FormWithPoolType
               onPoolTypeChanged={(poolType) =>
-                setCustomData({ ...initialData, poolType })
+                setCustomData({
+                  ...initialData,
+                  poolType,
+                  poolParams: undefined,
+                })
               }
               defaultValue={customData}
               onTabChanged={setCustomData}

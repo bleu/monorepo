@@ -93,13 +93,13 @@ const inputMapper = {
 
 const createPayload = (
   poolType: keyof typeof inputMapper,
-  fieldData: FieldValues
+  fieldData: FieldValues,
 ): AnalysisData => ({
   poolParams: Object.fromEntries(
     inputMapper[poolType].map((input) => [
       input.name,
       input.transformFromFormToData(fieldData[input.name]),
-    ])
+    ]),
   ),
   tokens: fieldData.tokens,
   poolType: poolType,
@@ -188,7 +188,7 @@ export const PoolParamsForm = forwardRef<unknown, PoolParamsFormProps>(
                       value: data.poolParams?.[input.name],
                     }}
                     defaultValue={input.transformFromDataToForm(
-                      data.poolParams?.[input.name]
+                      data.poolParams?.[input.name],
                     )}
                     placeholder={input.placeholder}
                   />
@@ -219,5 +219,5 @@ export const PoolParamsForm = forwardRef<unknown, PoolParamsFormProps>(
         </div>
       </Form>
     );
-  }
+  },
 );

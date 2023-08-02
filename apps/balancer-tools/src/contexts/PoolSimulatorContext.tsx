@@ -1,7 +1,7 @@
 "use client";
 
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
-import { MetaStablePoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
+import { PoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/types";
 import { NetworkChainId } from "@bleu-balancer-tools/utils";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -18,7 +18,10 @@ import {
   PoolTypeEnum,
   TokensData,
 } from "#/app/poolsimulator/(types)";
-import { convertGqlToAnalysisData } from "#/app/poolsimulator/(utils)";
+import {
+  convertAnalysisDataToAMM,
+  convertGqlToAnalysisData,
+} from "#/app/poolsimulator/(utils)";
 import { PoolAttribute } from "#/components/SearchPoolForm";
 import { pools } from "#/lib/gql";
 
@@ -49,12 +52,12 @@ interface PoolSimulatorContextType {
     formData: PoolAttribute,
     setData: (data: AnalysisData) => void,
     changeTokens?: boolean,
-    data?: AnalysisData,
+    data?: AnalysisData
   ) => void;
   isGraphLoading: boolean;
   setIsGraphLoading: (value: boolean) => void;
-  initialAMM?: AMM<MetaStablePoolPairData>;
-  customAMM?: AMM<MetaStablePoolPairData>;
+  initialAMM?: AMM<PoolPairData>;
+  customAMM?: AMM<PoolPairData>;
   generateURL: () => string;
 }
 
@@ -65,7 +68,7 @@ const defaultPool = {
 };
 
 export const PoolSimulatorContext = createContext(
-  {} as PoolSimulatorContextType,
+  {} as PoolSimulatorContextType
 );
 
 export function PoolSimulatorProvider({ children }: PropsWithChildren) {
@@ -89,10 +92,8 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
   const [customData, setCustomData] =
     useState<AnalysisData>(defaultAnalysisData);
   // TODO: BAL-539
-  // const [initialAMM, setInitialAMM] = useState<AMM<MetaStablePoolPairData>>();
-  // const [customAMM, setCustomAMM] = useState<AMM<MetaStablePoolPairData>>();
-  const initialAMM = undefined;
-  const customAMM = undefined;
+  const [initialAMM, setInitialAMM] = useState<AMM<PoolPairData>>();
+  const [customAMM, setCustomAMM] = useState<AMM<PoolPairData>>();
   const [analysisToken, setAnalysisToken] =
     useState<TokensData>(defaultTokensData);
   const [currentTabToken, setCurrentTabToken] =
@@ -128,7 +129,7 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
 
   async function handleImportPoolParametersById(
     formData: PoolAttribute,
-    setData: (data: AnalysisData) => void,
+    setData: (data: AnalysisData) => void
   ) {
     const poolData = await pools.gql(formData.network || "1").Pool({
       poolId: formData.poolId,
@@ -165,13 +166,25 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
           poolId: defaultPool.id,
           network: defaultPool.network,
         },
-        setInitialData,
+        setInitialData
       );
     }
     if (pathname === "/poolsimulator/analysis") {
       setIsGraphLoading(false);
     }
   }, [pathname]);
+
+  useEffect(() => {
+    if (!initialData.poolParams) return;
+    if (!initialData.poolType && !initialData.poolParams?.swapFee) return;
+    convertAnalysisDataToAMM(initialData).then(setInitialAMM);
+  }, [initialData]);
+
+  useEffect(() => {
+    if (!customData.poolParams) return;
+    if (!customData.poolType && !customData.poolParams?.swapFee) return;
+    convertAnalysisDataToAMM(customData).then(setCustomAMM);
+  }, [customData]);
 
   return (
     <PoolSimulatorContext.Provider

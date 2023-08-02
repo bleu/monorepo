@@ -70,10 +70,11 @@ const Button = forwardRef(function (
     disabled = false,
     ...rest
   }: ButtonProps,
-  ref: React.Ref<HTMLButtonElement>,
+  ref: React.Ref<HTMLButtonElement>
 ) {
   const childrenArray = Children.toArray(children);
-  const hasIconLeft = isValidElement(childrenArray[0]) && childrenArray[0].type === ButtonIcon;
+  const hasIconLeft =
+    isValidElement(childrenArray[0]) && childrenArray[0].type === ButtonIcon;
 
   const modifiedChildren = childrenArray.map((child) => {
     if (isValidElement(child) && child.type === ButtonIcon) {
@@ -97,7 +98,7 @@ const Button = forwardRef(function (
       className={cn(
         className,
         buttonClasses,
-        "rounded-md py-3 px-5 text-center text-sm font-semibold border focus-visible:outline-blue7 focus-visible:outline-offset-2 disabled:opacity-40",
+        "rounded-md py-3 px-5 text-center text-sm font-semibold border focus-visible:outline-blue7 focus-visible:outline-offset-2 disabled:opacity-40"
       )}
     >
       {modifiedChildren}
@@ -105,7 +106,13 @@ const Button = forwardRef(function (
   );
 });
 
-export function ButtonIcon({ icon, className }: { icon: React.ReactNode, className?: string }) {
+export function ButtonIcon({
+  icon,
+  className,
+}: {
+  icon: React.ReactNode;
+  className?: string;
+}) {
   return <span className={className}>{icon}</span>;
 }
 

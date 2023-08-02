@@ -30,7 +30,7 @@ const metadataDateSchema = z
   .object({
     typename: z.literal(TypenameEnum.enum.date),
     value: datelike.pipe(
-      z.coerce.string().min(1, { message: "Please pick a date" })
+      z.coerce.string().min(1, { message: "Please pick a date" }),
     ),
   })
   .merge(baseMetadataItemSchema);
@@ -164,7 +164,7 @@ export const getStableSwapSimulatorTokensSchema = ({
         },
         {
           message: "Symbol already exists",
-        }
+        },
       ),
     balance: z.coerce.number().positive(),
     rate: z.coerce.number().positive(),
@@ -196,7 +196,7 @@ export const ECLPSimulatorDataSchema = z
       .array(
         BaseTokenSchema.extend({
           rate: z.coerce.number().positive(),
-        })
+        }),
       )
       .length(2),
   })
@@ -210,7 +210,7 @@ export const ECLPSimulatorDataSchema = z
     },
     {
       message: "The squared norm of vector [s, c] must be 1 ± 1e−15",
-    }
+    },
   )
   .refine(
     (data) => {
@@ -218,7 +218,7 @@ export const ECLPSimulatorDataSchema = z
     },
     {
       message: "Beta must be greater than alpha",
-    }
+    },
   );
 
 export const StableSwapSimulatorDataSchema = z.object({
@@ -228,7 +228,7 @@ export const StableSwapSimulatorDataSchema = z.object({
     .array(
       BaseTokenSchema.extend({
         rate: z.coerce.number().positive(),
-      })
+      }),
     )
     .min(2)
     .max(5),

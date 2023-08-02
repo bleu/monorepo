@@ -115,7 +115,7 @@ export function PoolParamsForm() {
     setIsGraphLoading(true);
     const dataWithPoolType = {
       poolParams: Object.fromEntries(
-        inputMapper[poolType].map((input) => [input.name, data[input.name]])
+        inputMapper[poolType].map((input) => [input.name, data[input.name]]),
       ),
       tokens: initialData.tokens,
       poolType,

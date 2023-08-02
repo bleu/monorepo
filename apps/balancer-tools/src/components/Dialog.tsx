@@ -35,14 +35,14 @@ export function Dialog({
         <DialogPrimitive.Overlay
           id="dialog-overlay"
           className={cn(
-            "bg-blackA9 data-[state=open]:animate-overlayShow fixed inset-0"
+            "bg-blackA9 data-[state=open]:animate-overlayShow fixed inset-0",
           )}
         />
         <DialogPrimitive.Content
           className={cn(
             "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-[6px] bg-blue3 shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] focus:outline-none",
             customWidth ? customWidth : "w-[90vw] max-w-[450px]",
-            noPadding ? "p-0" : "p-[25px]"
+            noPadding ? "p-0" : "p-[25px]",
           )}
           onCloseAutoFocus={onClose}
         >

@@ -16,7 +16,7 @@ enum dataStatus {
 export default function Page() {
   const { isGraphLoading, initialData } = usePoolSimulator();
   const [poolDataStatus, setPoolDataStatus] = useState<dataStatus>(
-    dataStatus.NONE
+    dataStatus.NONE,
   );
 
   const { poolType } = usePoolSimulator();

@@ -54,7 +54,7 @@ export function SwapSimulator() {
         tokenInSymbol,
         tokenOutSymbol,
         amm: initialAMM,
-      })
+      }),
     );
     setCustomResult(
       calculateSimulation({
@@ -65,7 +65,7 @@ export function SwapSimulator() {
         tokenInSymbol,
         tokenOutSymbol,
         amm: customAMM,
-      })
+      }),
     );
   }, [amount, debouncedAmount, initialData]);
 

@@ -11,22 +11,22 @@ export interface IAMMFunctionality<TPoolPairData extends PoolPairData> {
   parsePoolPairData(tokenIn: string, tokenOut: string): TPoolPairData;
   _exactTokenInForTokenOut(
     poolPairData: TPoolPairData,
-    amountIn: OldBigNumber
+    amountIn: OldBigNumber,
   ): OldBigNumber;
   _tokenInForExactTokenOut(
     poolPairData: TPoolPairData,
-    amountOut: OldBigNumber
+    amountOut: OldBigNumber,
   ): OldBigNumber;
   _spotPrice(poolPairData: TPoolPairData): OldBigNumber;
   _spotPriceAfterSwapExactTokenInForTokenOut(
     poolPairData: TPoolPairData,
-    amountIn: OldBigNumber
+    amountIn: OldBigNumber,
   ): OldBigNumber;
   _derivativeSpotPriceAfterSwapExactTokenInForTokenOut(
     poolPairData: TPoolPairData,
-    amountIn: OldBigNumber
+    amountIn: OldBigNumber,
   ): OldBigNumber;
   _firstGuessOfTokenInForExactSpotPriceAfterSwap(
-    poolPairData: TPoolPairData
+    poolPairData: TPoolPairData,
   ): OldBigNumber;
 }

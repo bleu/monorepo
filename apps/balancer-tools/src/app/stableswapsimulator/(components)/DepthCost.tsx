@@ -14,7 +14,7 @@ const createHoverTemplate = (
   amounts: number[],
   analysisSymbol: string | undefined,
   tokenSymbols: string[],
-  templateDirection: string
+  templateDirection: string,
 ): string[] => {
   return amounts.map((amount, i) => {
     const displayAmount = `${formatNumber(amount, 2)} ${analysisSymbol}`;
@@ -37,7 +37,7 @@ const createDataObject = (
   analysisSymbol: string | undefined,
   hovertemplateData: number[],
   yAxis = "",
-  xAxis = ""
+  xAxis = "",
 ) => {
   const templateDirection = direction === "in" ? "-2%" : "+2%";
 
@@ -56,7 +56,7 @@ const createDataObject = (
       hovertemplateData,
       analysisSymbol,
       x,
-      templateDirection
+      templateDirection,
     ),
   };
 };
@@ -73,27 +73,27 @@ export function DepthCost() {
 
   const analysisToken = initialData?.tokens[indexAnalysisToken];
   const pairTokens = initialData?.tokens.filter(
-    (token) => token.symbol !== analysisToken.symbol
+    (token) => token.symbol !== analysisToken.symbol,
   );
   const pairTokensIndexes = pairTokens.map(
-    (token) => initialData?.tokens.indexOf(token)
+    (token) => initialData?.tokens.indexOf(token),
   );
 
   const depthCostAmounts = {
     initial: {
       in: pairTokensIndexes.map((pairTokenIndex) =>
-        calculateDepthCostAmount(pairTokenIndex, initialData, "in")
+        calculateDepthCostAmount(pairTokenIndex, initialData, "in"),
       ),
       out: pairTokensIndexes.map((pairTokenIndex) =>
-        calculateDepthCostAmount(pairTokenIndex, initialData, "out")
+        calculateDepthCostAmount(pairTokenIndex, initialData, "out"),
       ),
     },
     custom: {
       in: pairTokensIndexes.map((pairTokenIndex) =>
-        calculateDepthCostAmount(pairTokenIndex, customData, "in")
+        calculateDepthCostAmount(pairTokenIndex, customData, "in"),
       ),
       out: pairTokensIndexes.map((pairTokenIndex) =>
-        calculateDepthCostAmount(pairTokenIndex, customData, "out")
+        calculateDepthCostAmount(pairTokenIndex, customData, "out"),
       ),
     },
   };
@@ -102,7 +102,7 @@ export function DepthCost() {
     ...depthCostAmounts.initial.in,
     ...depthCostAmounts.initial.out,
     ...depthCostAmounts.custom.in,
-    ...depthCostAmounts.custom.out
+    ...depthCostAmounts.custom.out,
   );
 
   if (!maxDepthCostAmount) return <Spinner />;
@@ -118,7 +118,7 @@ export function DepthCost() {
       true,
       "in",
       analysisToken?.symbol,
-      depthCostAmounts.initial.in
+      depthCostAmounts.initial.in,
     ),
     createDataObject(
       dataX,
@@ -128,7 +128,7 @@ export function DepthCost() {
       true,
       "in",
       analysisToken?.symbol,
-      depthCostAmounts.custom.in
+      depthCostAmounts.custom.in,
     ),
     createDataObject(
       dataX,
@@ -140,7 +140,7 @@ export function DepthCost() {
       analysisToken?.symbol,
       depthCostAmounts.initial.out,
       "y2",
-      "x2"
+      "x2",
     ),
     createDataObject(
       dataX,
@@ -152,7 +152,7 @@ export function DepthCost() {
       analysisToken?.symbol,
       depthCostAmounts.custom.out,
       "y2",
-      "x2"
+      "x2",
     ),
   ];
 
@@ -195,7 +195,7 @@ export function DepthCost() {
 function calculateDepthCostAmount(
   pairTokenIndex: number,
   data: AnalysisData,
-  poolSide: "in" | "out"
+  poolSide: "in" | "out",
 ) {
   if (!data.swapFee || !data.ampFactor) return 0;
 
@@ -217,17 +217,17 @@ function calculateDepthCostAmount(
   const currentSpotPriceFromStableMath = MetaStableMath.spotPrice(poolPairData);
 
   const newSpotPriceToStableMath = currentSpotPriceFromStableMath.times(
-    bnum(1.02)
+    bnum(1.02),
   );
 
   if (poolSide === "in") {
     return MetaStableMath.tokenInForExactSpotPriceAfterSwap(
       newSpotPriceToStableMath,
-      poolPairData
+      poolPairData,
     ).toNumber();
   }
   return MetaStableMath.tokenOutForExactSpotPriceAfterSwap(
     newSpotPriceToStableMath,
-    poolPairData
+    poolPairData,
   ).toNumber();
 }

@@ -3,11 +3,8 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
-import { Input } from "#/components/Input";
 import { Select, SelectItem } from "#/components/Select";
 import { Form, FormLabel } from "#/components/ui/form";
-
-import { TokenTable } from "./TokenTable";
 import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 
 export default function AnalysisPoolParamsForm() {
@@ -24,7 +21,6 @@ export default function AnalysisPoolParamsForm() {
   });
 
   const {
-    register,
     setValue,
     getValues,
     formState: { errors },
@@ -32,8 +28,6 @@ export default function AnalysisPoolParamsForm() {
 
   const onSubmit = () => {
     if (Object.keys(errors).length) return;
-
-    const data = getValues();
   };
 
   useEffect(() => {

@@ -20,7 +20,7 @@ export function DepthCost() {
   if (!initialAMM || !customAMM) return <Spinner />;
 
   const pairTokens = initialData?.tokens.filter(
-    (token) => token.symbol !== analysisToken.symbol
+    (token) => token.symbol !== analysisToken.symbol,
   );
 
   const depthCostAmounts = {
@@ -30,16 +30,16 @@ export function DepthCost() {
           pairToken,
           "in",
           initialAMM,
-          initialData.poolType
-        )
+          initialData.poolType,
+        ),
       ),
       out: pairTokens.map((pairToken) =>
         calculateDepthCostAmount(
           pairToken,
           "out",
           initialAMM,
-          initialData.poolType
-        )
+          initialData.poolType,
+        ),
       ),
     },
     custom: {
@@ -48,16 +48,16 @@ export function DepthCost() {
           pairToken,
           "in",
           customAMM,
-          customData.poolType
-        )
+          customData.poolType,
+        ),
       ),
       out: pairTokens.map((pairToken) =>
         calculateDepthCostAmount(
           pairToken,
           "out",
           customAMM,
-          customData.poolType
-        )
+          customData.poolType,
+        ),
       ),
     },
   };
@@ -66,7 +66,7 @@ export function DepthCost() {
     ...depthCostAmounts.initial.in,
     ...depthCostAmounts.initial.out,
     ...depthCostAmounts.custom.in,
-    ...depthCostAmounts.custom.out
+    ...depthCostAmounts.custom.out,
   );
 
   if (!maxDepthCostAmount) return <Spinner />;
@@ -82,7 +82,7 @@ export function DepthCost() {
       true,
       "in",
       analysisToken?.symbol,
-      depthCostAmounts.initial.in
+      depthCostAmounts.initial.in,
     ),
     createDataObject(
       dataX,
@@ -92,7 +92,7 @@ export function DepthCost() {
       true,
       "in",
       analysisToken?.symbol,
-      depthCostAmounts.custom.in
+      depthCostAmounts.custom.in,
     ),
     createDataObject(
       dataX,
@@ -104,7 +104,7 @@ export function DepthCost() {
       analysisToken?.symbol,
       depthCostAmounts.initial.out,
       "y2",
-      "x2"
+      "x2",
     ),
     createDataObject(
       dataX,
@@ -116,7 +116,7 @@ export function DepthCost() {
       analysisToken?.symbol,
       depthCostAmounts.custom.out,
       "y2",
-      "x2"
+      "x2",
     ),
   ];
 
@@ -154,14 +154,13 @@ export function DepthCost() {
   };
 
   return <Plot {...props} />;
-  return <div className="text-slate12">depth cost</div>;
 }
 
 const createHoverTemplate = (
   direction: "in" | "out",
   amounts: number[],
   analysisSymbol: string | undefined,
-  tokenSymbols: string[]
+  tokenSymbols: string[],
 ): string[] => {
   return amounts.map((amount, i) => {
     const displayAmount = `${formatNumber(amount, 2)} ${analysisSymbol}`;
@@ -189,7 +188,7 @@ const createDataObject = (
   analysisSymbol: string | undefined,
   hovertemplateData: number[],
   yAxis = "",
-  xAxis = ""
+  xAxis = "",
 ) => {
   return {
     x,
@@ -205,7 +204,7 @@ const createDataObject = (
       direction,
       hovertemplateData,
       analysisSymbol,
-      x
+      x,
     ),
   };
 };
@@ -214,7 +213,7 @@ function calculateDepthCostAmount(
   pairToken: TokensData,
   poolSide: "in" | "out",
   amm: AMM<PoolPairData>,
-  poolType: PoolTypeEnum //TODO remove this on BAL-503
+  poolType: PoolTypeEnum, //TODO remove this on BAL-503
 ) {
   const { analysisToken } = usePoolSimulator();
 
@@ -233,12 +232,12 @@ function calculateDepthCostAmount(
     return amm.tokenInForExactSpotPriceAfterSwap(
       newSpotPrice,
       tokenIn.symbol,
-      tokenOut.symbol
+      tokenOut.symbol,
     );
   }
   return amm.tokenOutForExactSpotPriceAfterSwap(
     newSpotPrice,
     tokenIn.symbol,
-    tokenOut.symbol
+    tokenOut.symbol,
   );
 }

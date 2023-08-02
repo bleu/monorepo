@@ -18,11 +18,11 @@ export default function Page() {
     return <Spinner />;
   }
   const indexCurrentTabToken = initialData?.tokens.findIndex(
-    ({ symbol }) => symbol.toLowerCase() !== analysisToken.symbol.toLowerCase()
+    ({ symbol }) => symbol.toLowerCase() !== analysisToken.symbol.toLowerCase(),
   );
   const tokensSymbol = initialData.tokens.map((token) => token.symbol);
   const tabTokens = tokensSymbol.filter(
-    (token) => token !== analysisToken.symbol
+    (token) => token !== analysisToken.symbol,
   );
 
   function handleTabClick(event: React.FormEvent<HTMLButtonElement>) {

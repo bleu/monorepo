@@ -7,7 +7,7 @@ type TabContextType<T> = {
   setValue: (value: T) => void;
 };
 
-// tslint:disable-next-line: no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const TabContext = createContext<TabContextType<any> | undefined>(undefined);
 
 export function useTabContext<T>() {

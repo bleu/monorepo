@@ -23,6 +23,8 @@ import { SelectPoolType } from "./SelectPoolType";
 const POOL_TYPES_MAPPER = {
   MetaStable: "Meta Stable",
   GyroE: "Gyro E-CLP",
+  Gyro2: "Gyro 2CLP",
+  Gyro3: "Gyro 3CLP",
 };
 
 function IndexMenu() {

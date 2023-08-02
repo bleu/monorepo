@@ -11,7 +11,9 @@ import {
   usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
 import {
-  ECLPSimulatorDataSchema,
+  Gyro2SimulatorDataSchema,
+  Gyro3SimulatorDataSchema,
+  GyroESimulatorDataSchema,
   StableSwapSimulatorDataSchema,
 } from "#/lib/schema";
 
@@ -20,7 +22,9 @@ import { TokenTable } from "./TokenTable";
 
 const schemaMapper = {
   [PoolTypeEnum.MetaStable]: StableSwapSimulatorDataSchema,
-  [PoolTypeEnum.GyroE]: ECLPSimulatorDataSchema,
+  [PoolTypeEnum.GyroE]: GyroESimulatorDataSchema,
+  [PoolTypeEnum.Gyro2]: Gyro2SimulatorDataSchema,
+  [PoolTypeEnum.Gyro3]: Gyro3SimulatorDataSchema,
 };
 
 interface IInput {
@@ -28,63 +32,106 @@ interface IInput {
   label: string;
   placeholder: string;
   unit: string;
+  transformFromDataToForm: (n?: number) => number | undefined;
+  transformFromFormToData: (n?: number) => number | undefined;
 }
 
 type InputMapperType = {
   [key: string]: IInput[];
 };
 
+const swapFeeInput = {
+  name: "swapFee" as const,
+  label: "Swap Fee",
+  placeholder: "Enter swap fee",
+  unit: "%",
+  transformFromDataToForm: (n?: number) => (n ? n * 100 : undefined),
+  transformFromFormToData: (n?: number) => (n ? n / 100 : undefined),
+};
+
 const inputMapper: InputMapperType = {
   [PoolTypeEnum.MetaStable]: [
-    {
-      name: "swapFee",
-      label: "Swap Fee",
-      placeholder: "Enter swap fee",
-      unit: "%",
-    },
+    swapFeeInput,
     {
       name: "ampFactor",
       label: "Amplification Factor",
       placeholder: "Enter amplification factor",
       unit: "",
+      transformFromDataToForm: (n) => n,
+      transformFromFormToData: (n) => n,
     },
   ],
   [PoolTypeEnum.GyroE]: [
+    swapFeeInput,
     {
-      name: "swapFee",
-      label: "Swap Fee",
-      placeholder: "Enter swap fee",
-      unit: "%",
-    },
-    {
-      name: "alpha",
+      name: "alpha" as const,
       label: "Alpha",
       placeholder: "Enter alpha",
       unit: "",
+      transformFromDataToForm: (n?: number) => n,
+      transformFromFormToData: (n?: number) => n,
     },
     {
-      name: "beta",
+      name: "beta" as const,
       label: "Beta",
       placeholder: "Enter beta",
       unit: "",
+      transformFromDataToForm: (n?: number) => n,
+      transformFromFormToData: (n?: number) => n,
     },
     {
       name: "lambda",
       label: "Lambda",
       placeholder: "Enter lambda",
       unit: "",
+      transformFromDataToForm: (n) => n,
+      transformFromFormToData: (n) => n,
     },
     {
       name: "c",
       label: "C",
       placeholder: "Enter c",
       unit: "",
+      transformFromDataToForm: (n) => n,
+      transformFromFormToData: (n) => n,
     },
     {
       name: "s",
       label: "S",
       placeholder: "Enter s",
       unit: "",
+      transformFromDataToForm: (n) => n,
+      transformFromFormToData: (n) => n,
+    },
+  ],
+  [PoolTypeEnum.Gyro2]: [
+    swapFeeInput,
+    {
+      name: "sqrtAlpha" as const,
+      label: "Alpha",
+      placeholder: "Enter alpha",
+      unit: "",
+      transformFromDataToForm: (n?: number) => (n ? n ** 2 : undefined),
+      transformFromFormToData: (n?: number) => (n ? n ** (1 / 2) : undefined),
+    },
+    {
+      name: "sqrtBeta" as const,
+      label: "Beta",
+      placeholder: "Enter beta",
+      unit: "",
+      transformFromDataToForm: (n?: number) => (n ? n ** 2 : undefined),
+      transformFromFormToData: (n?: number) => (n ? n ** (1 / 2) : undefined),
+    },
+  ],
+  [PoolTypeEnum.Gyro3]: [
+    swapFeeInput,
+    {
+      name: "root3Alpha" as const,
+      label: "Alpha",
+      placeholder: "Enter alpha",
+      unit: "",
+      transformFromDataToForm: (n?: number) => (n ? n ** 3 : undefined),
+      transformFromFormToData: (n?: number) => (n ? n ** (1 / 3) : undefined),
     },
   ],
 };
@@ -115,10 +162,13 @@ export function PoolParamsForm() {
     setIsGraphLoading(true);
     const dataWithPoolType = {
       poolParams: Object.fromEntries(
-        inputMapper[poolType].map((input) => [input.name, data[input.name]]),
+        inputMapper[poolType].map((input) => [
+          input.name,
+          input.transformFromFormToData(data[input.name]),
+        ])
       ),
-      tokens: initialData.tokens,
-      poolType,
+      tokens: data.tokens,
+      poolType: data.poolType,
     };
 
     setInitialData(dataWithPoolType as AnalysisData);
@@ -132,7 +182,7 @@ export function PoolParamsForm() {
     inputMapper[poolType].forEach((input) => {
       const dataValue = initialData.poolParams?.[input.name];
       if (dataValue) {
-        setValue(input.name, dataValue);
+        setValue(input.name, input.transformFromDataToForm(dataValue));
       }
     });
     if (initialData?.tokens) setValue("tokens", initialData?.tokens);

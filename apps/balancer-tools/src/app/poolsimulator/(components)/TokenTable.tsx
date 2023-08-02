@@ -22,12 +22,14 @@ const customPadding = "py-4 px-1";
 const MAX_POOL_TOKENS_MAPPER = {
   [PoolTypeEnum.MetaStable]: 5,
   [PoolTypeEnum.GyroE]: 2,
+  [PoolTypeEnum.Gyro2]: 2,
+  [PoolTypeEnum.Gyro3]: 3,
 };
 
 const TokenTableContext = createContext(
   {} as {
     custom: boolean;
-  },
+  }
 );
 
 export function useTokenTableContext() {

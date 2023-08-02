@@ -20,13 +20,31 @@ export interface MetaStableParams {
   swapFee?: number;
 }
 
+//TODO substitute with Gyro2ParamsFromSubgraph
+export interface Gyro2Params {
+  swapFee?: number;
+  sqrtAlpha?: number;
+  sqrtBeta?: number;
+}
+
+//TODO substitute with Gyro3ParamsFromSubgraph
+export interface Gyro3Params {
+  swapFee?: number;
+  root3Alpha?: number;
+}
+
 export type GyroEParams = NumberGyroEParams<
   GyroEParamsFromSubgraph & DerivedGyroEParamsFromSubgraph
 >;
 
-export type CombinedParams = MetaStableParams & GyroEParams;
+export type CombinedParams = MetaStableParams &
+  GyroEParams &
+  Gyro2Params &
+  Gyro3Params;
 
 export enum PoolTypeEnum {
   MetaStable = "MetaStable",
   GyroE = "GyroE",
+  Gyro2 = "Gyro2",
+  Gyro3 = "Gyro3",
 }

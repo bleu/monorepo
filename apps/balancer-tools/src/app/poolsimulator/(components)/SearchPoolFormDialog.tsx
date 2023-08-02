@@ -11,6 +11,8 @@ import { PoolTypeEnum } from "../(types)";
 const poolTypes = {
   [PoolTypeEnum.MetaStable]: ["Stable", "MetaStable", "ComposableStable"],
   [PoolTypeEnum.GyroE]: ["GyroE"],
+  [PoolTypeEnum.Gyro2]: ["Gyro2"],
+  [PoolTypeEnum.Gyro3]: ["Gyro3"],
 };
 export function SearchPoolFormDialog({
   children,

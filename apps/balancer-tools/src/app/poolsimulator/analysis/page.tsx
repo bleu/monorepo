@@ -9,6 +9,7 @@ import { ImpactCurve } from "../(components)/ImpactCurve";
 import { StableCurve } from "../(components)/StableCurve";
 import { SwapSimulator } from "../(components)/SwapSimulator";
 import { TokensDistribution } from "../(components)/TokensDistribution";
+import { PoolTypeEnum } from "../(types)";
 
 export default function Page() {
   const { initialData, analysisToken, setCurrentTabTokenByIndex } =
@@ -31,50 +32,64 @@ export default function Page() {
     setCurrentTabTokenByIndex(tokensSymbol.indexOf(target.innerText));
   }
 
-  return (
-    <div className="flex lg:max-h-[calc(100vh-132px)] w-full flex-col gap-y-20 lg:overflow-auto pr-8 pt-8">
-      {/* (h-screen - (header's height + footer's height)) = graph's height space */}
+  if (
+    initialData.poolType === PoolTypeEnum.Gyro2 ||
+    initialData.poolType === PoolTypeEnum.Gyro3
+  )
+    return (
       <div>
-        <div className="flex h-full w-full flex-col lg:flex-row gap-5">
-          <SwapSimulator />
-          <TokensDistribution />
-        </div>
+        <h1 className="text-slate12">
+          Analysis page not avaliable to {initialData.poolType}
+        </h1>
       </div>
-      <div className="w-full flex justify-center">
-        <div className="w-[95%] xl:w-[95%] max-w-[calc(100vw-320px)]">
-          <DepthCost />
+    );
+
+  return (
+    <>
+      <div className="flex lg:max-h-[calc(100vh-132px)] w-full flex-col gap-y-20 lg:overflow-auto pr-8 pt-8">
+        {/* (h-screen - (header's height + footer's height)) = graph's height space */}
+        <div>
+          <div className="flex h-full w-full flex-col lg:flex-row gap-5">
+            <SwapSimulator />
+            <TokensDistribution />
+          </div>
         </div>
-      </div>
-      <div className="w-full flex justify-center">
-        <div className="w-[95%] xl:w-[95%] max-w-[calc(100vw-320px)]">
-          <Tabs
-            defaultValue={tokensSymbol[indexCurrentTabToken]}
-            value={tokensSymbol[indexCurrentTabToken]}
-          >
-            <Tabs.ItemTriggerWrapper>
+        <div className="w-full flex justify-center">
+          <div className="w-[95%] xl:w-[95%] max-w-[calc(100vw-320px)]">
+            <DepthCost />
+          </div>
+        </div>
+        <div className="w-full flex justify-center">
+          <div className="w-[95%] xl:w-[95%] max-w-[calc(100vw-320px)]">
+            <Tabs
+              defaultValue={tokensSymbol[indexCurrentTabToken]}
+              value={tokensSymbol[indexCurrentTabToken]}
+            >
+              <Tabs.ItemTriggerWrapper>
+                {tabTokens.map((symbol) => (
+                  <Tabs.ItemTrigger
+                    tabName={symbol}
+                    key={symbol}
+                    onClick={handleTabClick}
+                  >
+                    <span>{symbol}</span>
+                  </Tabs.ItemTrigger>
+                ))}
+              </Tabs.ItemTriggerWrapper>
               {tabTokens.map((symbol) => (
-                <Tabs.ItemTrigger
-                  tabName={symbol}
-                  key={symbol}
-                  onClick={handleTabClick}
-                >
-                  <span>{symbol}</span>
-                </Tabs.ItemTrigger>
+                <div key={symbol}>
+                  <Tabs.ItemContent tabName={symbol} bgColor="bg-blue1">
+                    <div className="flex flex-col gap-y-10 py-4">
+                      <StableCurve />
+                      <ImpactCurve />
+                    </div>
+                  </Tabs.ItemContent>
+                </div>
               ))}
-            </Tabs.ItemTriggerWrapper>
-            {tabTokens.map((symbol) => (
-              <div key={symbol}>
-                <Tabs.ItemContent tabName={symbol} bgColor="bg-blue1">
-                  <div className="flex flex-col gap-y-10 py-4">
-                    <StableCurve />
-                    <ImpactCurve />
-                  </div>
-                </Tabs.ItemContent>
-              </div>
-            ))}
-          </Tabs>
+            </Tabs>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -66,10 +66,55 @@ export function convertAnalysisDataToAMM(data: AnalysisData) {
         }),
       );
     }
+    // TODO on issue BAL-501 add math for Gyro2 and Gyro3
+    // case PoolTypeEnum.Gyro2: {
+    //   console.log({
+    //     swapFee: String(data.poolParams?.swapFee),
+    //     totalShares: String(
+    //       data.tokens.reduce((acc, token) => acc + token.balance, 0)
+    //     ),
+    //     tokens: data.tokens.map((token) => ({
+    //       address: String(token.symbol), // math use address as key, but we will use symbol because custom token will not have address
+    //       balance: String(token.balance),
+    //       decimals: token.decimal,
+    //       priceRate: String(token.rate),
+    //     })),
+    //     tokensList: data.tokens.map((token) => String(token.symbol)),
+    //     sqrtAlpha: String(data.poolParams?.sqrtAlpha),
+    //     sqrtBeta: String(data.poolParams?.sqrtBeta),
+    //   });
+    // }
+    // case PoolTypeEnum.Gyro3: {
+    //   console.log({
+    //     swapFee: String(data.poolParams?.swapFee),
+    //     totalShares: String(
+    //       data.tokens.reduce((acc, token) => acc + token.balance, 0)
+    //     ),
+    //     tokens: data.tokens.map((token) => ({
+    //       address: String(token.symbol), // math use address as key, but we will use symbol because custom token will not have address
+    //       balance: String(token.balance),
+    //       decimals: token.decimal,
+    //       priceRate: String(token.rate),
+    //     })),
+    //     tokensList: data.tokens.map((token) => String(token.symbol)),
+    //     root3Alpha: String(data.poolParams?.root3Alpha),
+    //   });
+    // }
+    default:
+      return;
   }
 }
 
 export function convertGqlToAnalysisData(poolData: PoolQuery): AnalysisData {
+  const tokensData =
+    poolData?.pool?.tokens
+      ?.filter((token) => token.address !== poolData?.pool?.address) // filter out BPT
+      .map((token) => ({
+        symbol: token?.symbol,
+        balance: Number(token?.balance),
+        rate: Number(token?.priceRate),
+        decimal: Number(token?.decimals),
+      })) || [];
   switch (poolData.pool?.poolType) {
     case PoolTypeEnum.GyroE:
       return {
@@ -91,15 +136,7 @@ export function convertGqlToAnalysisData(poolData: PoolQuery): AnalysisData {
           z: poolData?.pool?.z,
           dSq: poolData?.pool?.dSq,
         },
-        tokens:
-          poolData?.pool?.tokens
-            ?.filter((token) => token.address !== poolData?.pool?.address) // filter out BPT
-            .map((token) => ({
-              symbol: token?.symbol,
-              balance: Number(token?.balance),
-              rate: Number(token?.priceRate),
-              decimal: Number(token?.decimals),
-            })) || [],
+        tokens: tokensData,
       };
     case PoolTypeEnum.MetaStable:
       return {
@@ -108,15 +145,26 @@ export function convertGqlToAnalysisData(poolData: PoolQuery): AnalysisData {
           swapFee: Number(poolData?.pool?.swapFee),
           ampFactor: Number(poolData?.pool?.amp),
         },
-        tokens:
-          poolData?.pool?.tokens
-            ?.filter((token) => token.address !== poolData?.pool?.address) // filter out BPT
-            .map((token) => ({
-              symbol: token?.symbol,
-              balance: Number(token?.balance),
-              rate: Number(token?.priceRate),
-              decimal: Number(token?.decimals),
-            })) || [],
+        tokens: tokensData,
+      };
+    case PoolTypeEnum.Gyro2:
+      return {
+        poolType: PoolTypeEnum.Gyro2,
+        poolParams: {
+          swapFee: Number(poolData?.pool?.swapFee),
+          sqrtAlpha: Number(poolData?.pool?.sqrtAlpha),
+          sqrtBeta: Number(poolData?.pool?.sqrtBeta),
+        },
+        tokens: tokensData,
+      };
+    case PoolTypeEnum.Gyro3:
+      return {
+        poolType: PoolTypeEnum.Gyro3,
+        poolParams: {
+          swapFee: Number(poolData?.pool?.swapFee),
+          root3Alpha: Number(poolData?.pool?.root3Alpha),
+        },
+        tokens: tokensData,
       };
     default:
       return {

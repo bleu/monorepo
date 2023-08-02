@@ -35,7 +35,10 @@ const Form = <T extends FieldValues>({
   return (
     <FormProvider {...formMethods}>
       <form
-        onSubmit={onSubmit}
+        onSubmit={(e) => {
+          e.stopPropagation();
+          onSubmit(e);
+        }}
         {...((id && { id }) || {})}
         className={clsx(className)}
       >

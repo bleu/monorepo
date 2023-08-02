@@ -1,28 +1,61 @@
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 import cn from "clsx";
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
-const TabContext = createContext({});
+type TabContextType<T> = {
+  value: T;
+  setValue: (value: T) => void;
+};
 
-function useTabContext() {
-  const context = useContext(TabContext);
+// tslint:disable-next-line: no-any
+const TabContext = createContext<TabContextType<any> | undefined>(undefined);
+
+export function useTabContext<T>() {
+  const context = useContext<TabContextType<T> | undefined>(TabContext);
 
   if (!context) {
     throw new Error(
-      "Child components of Tab cannot be rendered outside the Tab component!",
+      "Child components of Tab cannot be rendered outside the Tab component!"
     );
   }
 
   return context;
 }
 
-export function Tabs({
+type TabsProps<T> = React.PropsWithChildren<{
+  defaultValue: T;
+  value?: T;
+  onChange?: (value: T) => void;
+}>;
+
+export function Tabs<T extends string | undefined>({
   children,
   defaultValue,
-  value,
-}: React.PropsWithChildren<{ defaultValue: string; value?: string }>) {
+  value: propValue,
+  onChange,
+}: TabsProps<T>) {
+  const [value, setValue] = useState(propValue || defaultValue);
+
+  const handleChange = (newValue: T) => {
+    setValue(newValue);
+    if (onChange) {
+      onChange(newValue);
+    }
+  };
+
+  useEffect(() => {
+    if (propValue !== undefined) {
+      setValue(propValue);
+    }
+  }, [propValue]);
+
   return (
-    <TabContext.Provider value={{}}>
+    <TabContext.Provider
+      value={{
+        value,
+        setValue: handleChange,
+      }}
+    >
       <TabsPrimitive.Root
         className="flex h-full w-full flex-col bg-blue2 text-slate8"
         value={value}
@@ -50,14 +83,17 @@ function TabItemTrigger({
   color?: string;
   onClick?: (event: React.FormEvent<HTMLButtonElement>) => void;
 }>) {
-  useTabContext();
+  const { setValue } = useTabContext();
   return (
     <TabsPrimitive.Trigger
       className={cn(
-        "px-5 h-[45px] flex-1 flex items-center justify-center text-[15px] hover:text-white hover:bg-blue4 data-[state=active]:text-white outline-none cursor-defaul} data-[state=active]:shadow-[inset_0_-1px_0_0,0_1px_0_0]",
+        "px-5 h-[45px] flex-1 flex items-center justify-center text-[15px] hover:text-white hover:bg-blue4 data-[state=active]:text-white outline-none cursor-defaul} data-[state=active]:shadow-[inset_0_-1px_0_0,0_1px_0_0]"
       )}
       value={tabName}
-      onClick={onClick}
+      onClick={(e) => {
+        onClick?.(e);
+        setValue(tabName);
+      }}
     >
       <div className="flex items-center justify-center gap-x-3">
         {color && <div className={cn(`w-3 h-3 rounded-full bg-${color}`)} />}
@@ -82,6 +118,7 @@ function TabItemContent({
     </TabsPrimitive.Content>
   );
 }
+
 Tabs.ItemTriggerWrapper = TabItemTriggerWrapper;
 Tabs.ItemTrigger = TabItemTrigger;
 Tabs.ItemContent = TabItemContent;

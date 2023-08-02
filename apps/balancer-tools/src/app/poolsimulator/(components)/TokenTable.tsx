@@ -5,12 +5,14 @@ import {
   Pencil1Icon,
   PlusCircledIcon,
 } from "@radix-ui/react-icons";
-import { createContext, useContext } from "react";
 
 import { Dialog } from "#/components/Dialog";
 import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
-import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
+import {
+  AnalysisData,
+  usePoolSimulator,
+} from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
 import { PoolTypeEnum, TokensData } from "../(types)";
@@ -24,83 +26,52 @@ const MAX_POOL_TOKENS_MAPPER = {
   [PoolTypeEnum.GyroE]: 2,
 };
 
-const TokenTableContext = createContext(
-  {} as {
-    custom: boolean;
-  },
-);
+export function TokenTable({ data }: { data: AnalysisData }) {
+  const MAX_POOL_TOKENS = MAX_POOL_TOKENS_MAPPER[data.poolType];
 
-export function useTokenTableContext() {
-  const context = useContext(TokenTableContext);
-  return context;
-}
-
-export function TokenTable({
-  custom = false,
-  minTokens = 0,
-}: {
-  custom?: boolean;
-  minTokens?: number;
-}) {
-  const { initialData } = usePoolSimulator();
-  let tableData = initialData;
-  let MAX_POOL_TOKENS = MAX_POOL_TOKENS_MAPPER[initialData.poolType];
-
-  if (custom) {
-    const { customData } = usePoolSimulator();
-    tableData = customData;
-    MAX_POOL_TOKENS = MAX_POOL_TOKENS_MAPPER[customData.poolType];
-  }
-
-  const aboveOrEqualLimit = tableData?.tokens?.length >= MAX_POOL_TOKENS;
+  const aboveOrEqualLimit = data?.tokens?.length >= MAX_POOL_TOKENS;
   return (
     <div className="flex w-full flex-1 justify-center text-white">
       <Table classNames="max-h-[220px] overflow-y-auto">
-        <TokenTableContext.Provider value={{ custom }}>
-          <Table.HeaderRow>
-            <Table.HeaderCell padding={customPadding}>
-              <span className="sr-only">Edit</span>
-            </Table.HeaderCell>
-            <Table.HeaderCell padding={customPadding}>Symbol</Table.HeaderCell>
-            <Table.HeaderCell padding={customPadding}>Balance</Table.HeaderCell>
-            <Table.HeaderCell padding={customPadding}>Rate</Table.HeaderCell>
-            <Table.HeaderCell padding={customPadding}>
-              {aboveOrEqualLimit && (
-                <Tooltip
-                  content={`This pool type can't have more than ${MAX_POOL_TOKENS} tokens.`}
-                >
-                  <button type="button" className="flex items-center" disabled>
-                    <PlusCircledIcon
-                      width={20}
-                      height={20}
-                      className="text-slate9"
-                    />
-                  </button>
-                </Tooltip>
-              )}
-              {!aboveOrEqualLimit && (
-                <ButtonToOpenTokenForm
-                  icon={
-                    <PlusCircledIcon
-                      width={22}
-                      height={22}
-                      className="text-green9 hover:text-green11"
-                    />
-                  }
-                />
-              )}
-            </Table.HeaderCell>
-          </Table.HeaderRow>
-          <Table.Body>
-            {tableData?.tokens?.map((token) => (
-              <TableRow
-                token={token}
-                minTokens={minTokens}
-                key={token.symbol}
+        <Table.HeaderRow>
+          <Table.HeaderCell padding={customPadding}>
+            <span className="sr-only">Edit</span>
+          </Table.HeaderCell>
+          <Table.HeaderCell padding={customPadding}>Symbol</Table.HeaderCell>
+          <Table.HeaderCell padding={customPadding}>Balance</Table.HeaderCell>
+          <Table.HeaderCell padding={customPadding}>Rate</Table.HeaderCell>
+          <Table.HeaderCell padding={customPadding}>
+            {aboveOrEqualLimit && (
+              <Tooltip
+                content={`This pool type can't have more than ${MAX_POOL_TOKENS} tokens.`}
+              >
+                <button type="button" className="flex items-center" disabled>
+                  <PlusCircledIcon
+                    width={20}
+                    height={20}
+                    className="text-slate9"
+                  />
+                </button>
+              </Tooltip>
+            )}
+            {!aboveOrEqualLimit && (
+              <ButtonToOpenTokenForm
+                icon={
+                  <PlusCircledIcon
+                    width={22}
+                    height={22}
+                    className="text-green9 hover:text-green11"
+                  />
+                }
               />
-            ))}
-          </Table.Body>
-        </TokenTableContext.Provider>
+            )}
+          </Table.HeaderCell>
+        </Table.HeaderRow>
+        <Table.Body>
+          {data?.tokens?.map((token) => (
+            <TableRow token={token} minTokens={2} key={token.symbol} />
+          ))}
+        </Table.Body>
       </Table>
     </div>
   );

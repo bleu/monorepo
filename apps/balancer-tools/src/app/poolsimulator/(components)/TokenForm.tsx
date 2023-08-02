@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 
 import Button from "#/components/Button";
 import { Input } from "#/components/Input";
+import { useTabContext } from "#/components/Tabs";
 import { Form } from "#/components/ui/form";
 import {
   AnalysisData,
@@ -12,7 +13,7 @@ import {
 import { getStableSwapSimulatorTokensSchema } from "#/lib/schema";
 
 import { TokensData } from "../(types)";
-import { useTokenTableContext } from "./TokenTable";
+import { PoolSimulatorFormTabs } from "./Menu";
 
 export default function TokenForm({
   symbolToEdit,
@@ -23,7 +24,8 @@ export default function TokenForm({
 }) {
   const { initialData, setInitialData, customData, setCustomData } =
     usePoolSimulator();
-  const { custom } = useTokenTableContext();
+  const { value: selectedTab } = useTabContext();
+  const isCustomData = selectedTab === PoolSimulatorFormTabs.CustomData;
 
   const stableSwapTokensSchema = getStableSwapSimulatorTokensSchema({
     symbolToEdit,
@@ -37,7 +39,7 @@ export default function TokenForm({
 
   const { register } = form;
 
-  const tokens = custom ? customData?.tokens : initialData?.tokens;
+  const tokens = isCustomData ? customData?.tokens : initialData?.tokens;
   const currentToken = tokens?.find(
     (token: TokensData) => token.symbol == symbolToEdit,
   );
@@ -58,18 +60,18 @@ export default function TokenForm({
   function addToken({
     analysisData,
     setAnalysisData,
-    data,
+    tokensData,
   }: {
     analysisData: AnalysisData;
     setAnalysisData: (data: AnalysisData) => void;
-    data: TokensData;
+    tokensData: TokensData;
   }) {
     setAnalysisData({
       ...analysisData,
       tokens: [
         ...(analysisData?.tokens || []),
         {
-          ...data,
+          ...tokensData,
         },
       ],
     });
@@ -78,11 +80,11 @@ export default function TokenForm({
   function editSymbol({
     analysisData,
     setAnalysisData,
-    data,
+    tokensData,
   }: {
     analysisData: AnalysisData;
     setAnalysisData: (data: AnalysisData) => void;
-    data: TokensData;
+    tokensData: TokensData;
   }) {
     setAnalysisData({
       ...analysisData,
@@ -90,7 +92,7 @@ export default function TokenForm({
         if (token.symbol == symbolToEdit) {
           return {
             ...token,
-            symbol: data.symbol,
+            symbol: tokensData.symbol,
           };
         }
         return token;
@@ -101,18 +103,18 @@ export default function TokenForm({
   function editAll({
     analysisData,
     setAnalysisData,
-    data,
+    tokensData,
   }: {
     analysisData: AnalysisData;
     setAnalysisData: (data: AnalysisData) => void;
-    data: TokensData;
+    tokensData: TokensData;
   }) {
     setAnalysisData({
       ...analysisData,
       tokens: analysisData?.tokens?.map((token: TokensData) => {
         if (token.symbol == symbolToEdit) {
           return {
-            ...data,
+            ...tokensData,
           };
         }
         return token;
@@ -120,52 +122,52 @@ export default function TokenForm({
     });
   }
 
-  function handleEdit(data: TokensData) {
+  function handleEdit(tokensData: TokensData) {
     // Edit the balance and rate on the table
     // and the symbol on the baseline and custom
-    if (custom) {
+    if (isCustomData) {
       editAll({
         analysisData: customData,
         setAnalysisData: setCustomData,
-        data,
+        tokensData,
       });
       editSymbol({
         analysisData: initialData,
         setAnalysisData: setInitialData,
-        data,
+        tokensData,
       });
       return;
     }
     editAll({
       analysisData: initialData,
       setAnalysisData: setInitialData,
-      data,
+      tokensData,
     });
     editSymbol({
       analysisData: customData,
       setAnalysisData: setCustomData,
-      data,
+      tokensData,
     });
   }
 
-  function handleAdd(data: TokensData) {
+  function handleAdd(tokensData: TokensData) {
     addToken({
       analysisData: customData,
       setAnalysisData: setCustomData,
-      data,
+      tokensData,
     });
     addToken({
       analysisData: initialData,
       setAnalysisData: setInitialData,
-      data,
+      tokensData,
     });
   }
 
-  function onSubmit(data: TokensData) {
+  function onSubmit(tokensData: TokensData) {
     if (symbolToEdit) {
-      handleEdit(data);
+      handleEdit(tokensData);
     } else {
-      handleAdd(data);
+      handleAdd(tokensData);
     }
     close?.();
   }

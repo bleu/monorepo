@@ -9,48 +9,63 @@ import { Spinner } from "#/components/Spinner";
 import { TokensData, usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
-import { calculateCurvePoints } from "./StableCurve";
+import { PoolTypeEnum } from "../(types)";
+import { calculateCurvePoints } from "./SwapCurve";
 
 export function ImpactCurve() {
-  const { analysisToken, currentTabToken, initialAMM, customAMM } =
-    usePoolSimulator();
+  const {
+    analysisToken,
+    currentTabToken,
+    initialAMM,
+    customAMM,
+    initialData,
+    customData,
+  } = usePoolSimulator();
 
   if (!initialAMM || !customAMM) return <Spinner />;
 
   const {
-    amountsIn: initialAmountsAnalysisTokenIn,
+    amounts: initialAmountsAnalysisTokenIn,
     priceImpact: initialImpactAnalysisTokenIn,
   } = calculateTokenImpact({
     tokenIn: analysisToken,
     tokenOut: currentTabToken,
     amm: initialAMM,
+    poolType: initialData.poolType,
+    swapDirection: "in",
   });
 
   const {
-    amountsIn: initialAmountsTabTokenIn,
+    amounts: initialAmountsTabTokenIn,
     priceImpact: initialImpactTabTokenIn,
   } = calculateTokenImpact({
-    tokenIn: currentTabToken,
-    tokenOut: analysisToken,
+    tokenIn: analysisToken,
+    tokenOut: currentTabToken,
     amm: initialAMM,
+    poolType: initialData.poolType,
+    swapDirection: "out",
   });
 
   const {
-    amountsIn: variantAmountsAnalysisTokenIn,
+    amounts: variantAmountsAnalysisTokenIn,
     priceImpact: variantImpactAnalysisTokenIn,
   } = calculateTokenImpact({
     tokenIn: analysisToken,
     tokenOut: currentTabToken,
     amm: customAMM,
+    poolType: customData.poolType,
+    swapDirection: "in",
   });
 
   const {
-    amountsIn: variantAmountsTabTokenIn,
+    amounts: variantAmountsTabTokenIn,
     priceImpact: variantImpactTabTokenIn,
   } = calculateTokenImpact({
-    tokenIn: currentTabToken,
-    tokenOut: analysisToken,
+    tokenIn: analysisToken,
+    tokenOut: currentTabToken,
     amm: customAMM,
+    poolType: customData.poolType,
+    swapDirection: "out",
   });
 
   // Helper function to format the swap action string
@@ -178,28 +193,40 @@ const calculateTokenImpact = ({
   tokenIn,
   tokenOut,
   amm,
+  poolType,
+  swapDirection,
 }: {
   tokenIn: TokensData;
   tokenOut: TokensData;
   amm: AMM<MetaStablePoolPairData>;
+  poolType: PoolTypeEnum;
+  swapDirection: "in" | "out";
 }) => {
   const maxBalance = Math.max(tokenIn.balance, tokenOut.balance);
-  const amountsIn = calculateCurvePoints({
-    balance: maxBalance,
-    start: 0.001,
-  });
+  const limitBalance =
+    swapDirection === "in" ? tokenOut.balance : tokenIn.balance;
+  const amounts =
+    poolType === PoolTypeEnum.MetaStable
+      ? calculateCurvePoints({
+          balance: maxBalance,
+          start: 0.001,
+        })
+      : calculateCurvePoints({
+          balance: maxBalance,
+          start: 0.001,
+        }).filter((value) => value <= limitBalance);
 
-  const priceImpact = amountsIn.map(
+  const priceImpact = amounts.map(
     (amount) =>
       amm.priceImpactForExactTokenInSwap(
         amount,
-        tokenIn.symbol,
-        tokenOut.symbol,
+        swapDirection === "in" ? tokenIn.symbol : tokenOut.symbol,
+        swapDirection === "in" ? tokenOut.symbol : tokenIn.symbol,
       ) * 100,
   );
 
   return {
-    amountsIn,
+    amounts,
     priceImpact,
   };
 };

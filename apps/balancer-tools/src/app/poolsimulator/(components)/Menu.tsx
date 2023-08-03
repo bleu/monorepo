@@ -45,7 +45,7 @@ function IndexMenu() {
     handleImportPoolParametersById,
   } = usePoolSimulator();
   const [tabValue, setTabValue] = useState<PoolSimulatorFormTabs>(
-    PoolSimulatorFormTabs.InitialData
+    PoolSimulatorFormTabs.InitialData,
   );
 
   return (
@@ -113,7 +113,7 @@ function IndexMenu() {
             handleImportPoolParametersById(
               data,
               ({ poolParams }: AnalysisData) =>
-                setCustomData({ ...customData, poolParams })
+                setCustomData({ ...customData, poolParams }),
             );
           }}
         >
@@ -243,7 +243,7 @@ export function AnalysisMenu() {
   } = usePoolSimulator();
 
   const [tabValue, setTabValue] = useState<PoolSimulatorFormTabs>(
-    PoolSimulatorFormTabs.InitialData
+    PoolSimulatorFormTabs.InitialData,
   );
   useEffect(() => {
     setAnalysisTokenByIndex(0);
@@ -251,7 +251,7 @@ export function AnalysisMenu() {
   }, []);
 
   const indexCurrentTabToken = initialData?.tokens.findIndex(
-    ({ symbol }) => symbol.toLowerCase() !== analysisToken.symbol.toLowerCase()
+    ({ symbol }) => symbol.toLowerCase() !== analysisToken.symbol.toLowerCase(),
   );
 
   return (
@@ -268,8 +268,8 @@ export function AnalysisMenu() {
                 if (indexCurrentTabToken === Number(i)) {
                   setCurrentTabTokenByIndex(
                     initialData?.tokens.findIndex(
-                      (_, index) => index !== Number(i)
-                    )
+                      (_, index) => index !== Number(i),
+                    ),
                   );
                 }
                 setAnalysisTokenByIndex(Number(i));
@@ -304,6 +304,9 @@ export function AnalysisMenu() {
             </Tabs.ItemTriggerWrapper>
             <Tabs.ItemContent tabName={PoolSimulatorFormTabs.InitialData}>
               <div className="flex flex-col">
+                <Label className="mb-2 block text-md text-slate12">
+                  {POOL_TYPES_MAPPER[initialData.poolType]}
+                </Label>
                 <PoolParamsForm
                   defaultValue={initialData}
                   onSubmit={setInitialData}
@@ -313,6 +316,9 @@ export function AnalysisMenu() {
             </Tabs.ItemContent>
             <Tabs.ItemContent tabName={PoolSimulatorFormTabs.CustomData}>
               <div className="flex flex-col">
+                <Label className="mb-2 block text-md text-slate12">
+                  {POOL_TYPES_MAPPER[customData.poolType]}
+                </Label>
                 <PoolParamsForm
                   defaultValue={customData}
                   onSubmit={setCustomData}

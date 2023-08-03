@@ -49,6 +49,45 @@ export function SwapCurve() {
     customData.poolType,
   );
 
+  function getGraphScale({
+    initialAmountsIn,
+    customAmountsIn,
+    initialAmountsOut,
+    customAmountsOut,
+  }: {
+    initialAmountsIn: number[];
+    customAmountsIn: number[];
+    initialAmountsOut: number[];
+    customAmountsOut: number[];
+  }) {
+    const maxOfIn = {
+      initial: Math.max(...initialAmountsIn),
+      custom: Math.max(...customAmountsIn),
+    };
+    const minOfOut = {
+      initial: Math.min(...initialAmountsOut),
+      custom: Math.min(...customAmountsOut),
+    };
+
+    const limits = {
+      lowerIn: Math.min(maxOfIn.initial, maxOfIn.custom),
+      higherOut: Math.max(minOfOut.initial, minOfOut.custom),
+    };
+
+    if (maxOfIn.initial === limits.lowerIn) {
+      const indexMax = initialAmountsIn.indexOf(limits.lowerIn);
+      const indexMin = initialAmountsOut.indexOf(limits.higherOut);
+      return [initialAmountsOut[indexMin], initialAmountsIn[indexMax]];
+    }
+    if (maxOfIn.initial === limits.lowerIn) {
+      const indexMax = customAmountsIn.indexOf(limits.lowerIn);
+      const indexMin = customAmountsOut.indexOf(limits.higherOut);
+      return [customAmountsOut[indexMin], customAmountsIn[indexMax]];
+    } else {
+      return [initialAmountsOut[100], initialAmountsIn[100]];
+    }
+  }
+
   const formatSwap = (
     amountIn: number,
     tokenIn: string,
@@ -150,14 +189,21 @@ export function SwapCurve() {
       layout={{
         xaxis: {
           title: `Amount of ${analysisToken.symbol}`,
-          range: [
-            initialAmountsAnalysisTokenOut[100],
-            initialAmountsAnalysisTokenIn[100],
-          ],
+          range: getGraphScale({
+            initialAmountsOut: initialAmountsAnalysisTokenOut,
+            customAmountsOut: customAmountsAnalysisTokenOut,
+            initialAmountsIn: initialAmountsAnalysisTokenIn,
+            customAmountsIn: customAmountsAnalysisTokenIn,
+          }),
         },
         yaxis: {
           title: `Amount of ${currentTabToken.symbol}`,
-          range: [initialAmountTabTokenOut[100], initialAmountTabTokenIn[100]],
+          range: getGraphScale({
+            initialAmountsOut: initialAmountTabTokenOut,
+            customAmountsOut: customAmountTabTokenOut,
+            initialAmountsIn: initialAmountTabTokenIn,
+            customAmountsIn: customAmountTabTokenIn,
+          }),
         },
       }}
       className="h-1/2 w-full"

@@ -18,7 +18,7 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
           amp: String(data.poolParams?.ampFactor),
           swapFee: String(data.poolParams?.swapFee),
           totalShares: String(
-            data.tokens.reduce((acc, token) => acc + token.balance, 0)
+            data.tokens.reduce((acc, token) => acc + token.balance, 0),
           ),
           tokens: data.tokens.map((token) => ({
             address: String(token.symbol), // math use address as key, but we will use symbol because custom token will not have address
@@ -27,7 +27,7 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
             priceRate: String(token.rate),
           })),
           tokensList: data.tokens.map((token) => String(token.symbol)),
-        })
+        }),
       );
     }
     case PoolTypeEnum.GyroE: {
@@ -36,7 +36,7 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
         new ExtendedGyroEV2({
           swapFee: String(data.poolParams?.swapFee),
           totalShares: String(
-            data.tokens.reduce((acc, token) => acc + token.balance, 0)
+            data.tokens.reduce((acc, token) => acc + token.balance, 0),
           ),
           tokens: data.tokens.map((token) => ({
             address: String(token.symbol), // math use address as key, but we will use symbol because custom token will not have address
@@ -55,7 +55,7 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
           },
           derivedGyroEParams: derivedParams,
           tokenRates: data.tokens.map((token) => String(token.rate)),
-        })
+        }),
       );
     }
     // TODO on issue BAL-501 add math for Gyro2 and Gyro3

@@ -60,7 +60,7 @@ interface PoolSimulatorContextType {
     formData: PoolAttribute,
     setData: (data: AnalysisData) => void,
     changeTokens?: boolean,
-    data?: AnalysisData
+    data?: AnalysisData,
   ) => void;
   isGraphLoading: boolean;
   setIsGraphLoading: (value: boolean) => void;
@@ -76,7 +76,7 @@ const defaultPool = {
 };
 
 export const PoolSimulatorContext = createContext(
-  {} as PoolSimulatorContextType
+  {} as PoolSimulatorContextType,
 );
 
 export function PoolSimulatorProvider({ children }: PropsWithChildren) {
@@ -137,7 +137,7 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
 
   async function handleImportPoolParametersById(
     formData: PoolAttribute,
-    setData: (data: AnalysisData) => void
+    setData: (data: AnalysisData) => void,
   ) {
     const poolData = await pools.gql(formData.network || "1").Pool({
       poolId: formData.poolId,
@@ -202,7 +202,7 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
           poolId: defaultPool.id,
           network: defaultPool.network,
         },
-        setInitialData
+        setInitialData,
       );
     }
     if (pathname === "/poolsimulator/analysis") {

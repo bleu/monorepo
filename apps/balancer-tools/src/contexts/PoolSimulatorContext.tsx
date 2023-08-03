@@ -60,7 +60,7 @@ interface PoolSimulatorContextType {
     formData: PoolAttribute,
     setData: (data: AnalysisData) => void,
     changeTokens?: boolean,
-    data?: AnalysisData,
+    data?: AnalysisData
   ) => void;
   isGraphLoading: boolean;
   setIsGraphLoading: (value: boolean) => void;
@@ -76,7 +76,7 @@ const defaultPool = {
 };
 
 export const PoolSimulatorContext = createContext(
-  {} as PoolSimulatorContextType,
+  {} as PoolSimulatorContextType
 );
 
 export function PoolSimulatorProvider({ children }: PropsWithChildren) {
@@ -137,7 +137,7 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
 
   async function handleImportPoolParametersById(
     formData: PoolAttribute,
-    setData: (data: AnalysisData) => void,
+    setData: (data: AnalysisData) => void
   ) {
     const poolData = await pools.gql(formData.network || "1").Pool({
       poolId: formData.poolId,
@@ -173,7 +173,11 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
       initialData.poolParams.swapFee === undefined
     )
       return;
-    setInitialAMM(convertAnalysisDataToAMM(initialData));
+    async function setAMM() {
+      const amm = await convertAnalysisDataToAMM(initialData);
+      setInitialAMM(amm);
+    }
+    setAMM();
   }, [initialData]);
 
   useEffect(() => {
@@ -183,7 +187,11 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
       customData.poolParams.swapFee === undefined
     )
       return;
-    setCustomAMM(convertAnalysisDataToAMM(customData));
+    async function setAMM() {
+      const amm = await convertAnalysisDataToAMM(customData);
+      setCustomAMM(amm);
+    }
+    setAMM();
   }, [customData]);
 
   useEffect(() => {
@@ -194,13 +202,23 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
           poolId: defaultPool.id,
           network: defaultPool.network,
         },
-        setInitialData,
+        setInitialData
       );
     }
     if (pathname === "/poolsimulator/analysis") {
       setIsGraphLoading(false);
     }
   }, [pathname]);
+
+  useEffect(() => {
+    if (!initialData.poolType && !initialData.poolParams?.swapFee) return;
+    convertAnalysisDataToAMM(initialData).then(setInitialAMM);
+  }, [initialData]);
+
+  useEffect(() => {
+    if (!customData.poolType && !customData.poolParams?.swapFee) return;
+    convertAnalysisDataToAMM(customData).then(setCustomAMM);
+  }, [customData]);
 
   return (
     <PoolSimulatorContext.Provider

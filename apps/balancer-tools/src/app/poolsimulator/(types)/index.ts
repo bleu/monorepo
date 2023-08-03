@@ -1,7 +1,4 @@
-import {
-  DerivedGyroEParamsFromSubgraph,
-  GyroEParamsFromSubgraph,
-} from "@bleu-balancer-tools/math-poolsimulator/src/gyroE";
+import { GyroEParamsFromSubgraph } from "@bleu-balancer-tools/math-poolsimulator/src/gyroE";
 
 type NumberGyroEParams<T> = {
   [K in keyof T]?: number;
@@ -33,9 +30,7 @@ export interface Gyro3Params {
   root3Alpha?: number;
 }
 
-export type GyroEParams = NumberGyroEParams<
-  GyroEParamsFromSubgraph & DerivedGyroEParamsFromSubgraph
->;
+export type GyroEParams = NumberGyroEParams<GyroEParamsFromSubgraph>;
 
 export type CombinedParams = MetaStableParams &
   GyroEParams &

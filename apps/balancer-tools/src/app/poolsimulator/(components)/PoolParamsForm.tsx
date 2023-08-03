@@ -156,11 +156,12 @@ const createPayload = (
 type PoolParamsFormProps = {
   defaultValue: AnalysisData;
   onSubmit: (data: AnalysisData) => void;
-  onTabChanged: (data: AnalysisData) => void;
+  onTabChanged?: (data: AnalysisData) => void;
+  submitButtonText?: string;
 };
 
 export const PoolParamsForm = forwardRef<unknown, PoolParamsFormProps>(
-  ({ defaultValue: data, onSubmit, onTabChanged }, ref) => {
+  ({ defaultValue: data, onSubmit, onTabChanged, submitButtonText }, ref) => {
     const poolType = data.poolType || PoolTypeEnum.MetaStable;
 
     const form = useForm({
@@ -211,7 +212,7 @@ export const PoolParamsForm = forwardRef<unknown, PoolParamsFormProps>(
 
     useEffect(() => {
       const data = getValues();
-      onTabChanged(createPayload(poolType, data));
+      onTabChanged?.(createPayload(poolType, data));
     }, [currentTab]);
 
     return (
@@ -261,8 +262,8 @@ export const PoolParamsForm = forwardRef<unknown, PoolParamsFormProps>(
               {errors[""]?.message as string}
             </span>
           )}
-          <Button type="submit" shade="light" className="h-min w-32 self-end">
-            Next step
+          <Button type="submit" shade="light" className="h-min self-end">
+            {submitButtonText || "Next step"}
           </Button>
         </div>
       </Form>

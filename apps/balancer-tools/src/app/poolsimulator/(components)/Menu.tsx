@@ -1,7 +1,7 @@
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import * as Separator from "@radix-ui/react-separator";
 import { usePathname, useRouter } from "next/navigation";
-import { ReactElement, useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
 
 import { Dialog } from "#/components/Dialog";
 import { PoolAttribute } from "#/components/SearchPoolForm";
@@ -18,7 +18,6 @@ import {
 } from "#/contexts/PoolSimulatorContext";
 
 import { PoolTypeEnum } from "../(types)";
-import AnalysisPoolParamsForm from "./AnalysisPoolParamsForm";
 import { PoolParamsForm } from "./PoolParamsForm";
 import { PoolTypeChangeConfirmation } from "./PoolTypeChangeConfirmation";
 import { SearchPoolFormDialog } from "./SearchPoolFormDialog";
@@ -46,7 +45,7 @@ function IndexMenu() {
     handleImportPoolParametersById,
   } = usePoolSimulator();
   const [tabValue, setTabValue] = useState<PoolSimulatorFormTabs>(
-    PoolSimulatorFormTabs.InitialData
+    PoolSimulatorFormTabs.InitialData,
   );
 
   return (
@@ -114,7 +113,7 @@ function IndexMenu() {
             handleImportPoolParametersById(
               data,
               ({ poolParams }: AnalysisData) =>
-                setCustomData({ ...customData, poolParams })
+                setCustomData({ ...customData, poolParams }),
             );
           }}
         >
@@ -232,6 +231,108 @@ function SearchPoolFormWithDataForm({
   );
 }
 
+export function AnalysisMenu() {
+  const {
+    initialData,
+    setInitialData,
+    customData,
+    setCustomData,
+    setAnalysisTokenByIndex,
+    analysisToken,
+    setCurrentTabTokenByIndex,
+  } = usePoolSimulator();
+
+  const [tabValue, setTabValue] = useState<PoolSimulatorFormTabs>(
+    PoolSimulatorFormTabs.InitialData,
+  );
+  useEffect(() => {
+    setAnalysisTokenByIndex(0);
+    setCurrentTabTokenByIndex(1);
+  }, []);
+
+  const indexCurrentTabToken = initialData?.tokens.findIndex(
+    ({ symbol }) => symbol.toLowerCase() !== analysisToken.symbol.toLowerCase(),
+  );
+
+  return (
+    <>
+      <Sidebar.Header name="Simulation menu" />
+      <Sidebar.Content>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col">
+            <span className="mb-2 block text-sm text-slate12">
+              Analysis Token
+            </span>
+            <Select
+              onValueChange={(i) => {
+                if (indexCurrentTabToken === Number(i)) {
+                  setCurrentTabTokenByIndex(
+                    initialData?.tokens.findIndex(
+                      (_, index) => index !== Number(i),
+                    ),
+                  );
+                }
+                setAnalysisTokenByIndex(Number(i));
+              }}
+              defaultValue={"0"}
+            >
+              {initialData?.tokens.map(({ symbol }, index) => (
+                <SelectItem key={symbol} value={index.toString()}>
+                  {symbol}
+                </SelectItem>
+              ))}
+            </Select>
+          </div>
+          <Tabs
+            value={tabValue}
+            onChange={setTabValue}
+            defaultValue={PoolSimulatorFormTabs.InitialData}
+          >
+            <Tabs.ItemTriggerWrapper>
+              <Tabs.ItemTrigger
+                tabName={PoolSimulatorFormTabs.InitialData}
+                color="blue7"
+              >
+                <span>Initial</span>
+              </Tabs.ItemTrigger>
+              <Tabs.ItemTrigger
+                tabName={PoolSimulatorFormTabs.CustomData}
+                color="amber9"
+              >
+                <span>Custom</span>
+              </Tabs.ItemTrigger>
+            </Tabs.ItemTriggerWrapper>
+            <Tabs.ItemContent tabName={PoolSimulatorFormTabs.InitialData}>
+              <div className="flex flex-col">
+                <Label className="mb-2 block text-md text-slate12">
+                  {POOL_TYPES_MAPPER[initialData.poolType]}
+                </Label>
+                <PoolParamsForm
+                  defaultValue={initialData}
+                  onSubmit={setInitialData}
+                  submitButtonText="Refresh simulation"
+                />
+              </div>
+            </Tabs.ItemContent>
+            <Tabs.ItemContent tabName={PoolSimulatorFormTabs.CustomData}>
+              <div className="flex flex-col">
+                <Label className="mb-2 block text-md text-slate12">
+                  {POOL_TYPES_MAPPER[customData.poolType]}
+                </Label>
+                <PoolParamsForm
+                  defaultValue={customData}
+                  onSubmit={setCustomData}
+                  submitButtonText="Refresh simulation"
+                />
+              </div>
+            </Tabs.ItemContent>
+          </Tabs>
+        </div>
+      </Sidebar.Content>
+    </>
+  );
+}
+
 export default function Menu() {
   const pathname = usePathname();
   const { customData, initialData } = usePoolSimulator();
@@ -244,7 +345,7 @@ export default function Menu() {
     ) {
       return <Spinner />;
     }
-    return <AnalysisPoolParamsForm />;
+    return <AnalysisMenu />;
   }
   return <IndexMenu />;
 }

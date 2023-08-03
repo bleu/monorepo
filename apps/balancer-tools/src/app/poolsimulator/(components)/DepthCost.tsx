@@ -6,6 +6,7 @@ import { PlotType } from "plotly.js";
 import Plot, { defaultAxisLayout } from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
 import {
+  AnalysisData,
   PoolPairData,
   usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
@@ -29,6 +30,7 @@ export function DepthCost() {
         calculateDepthCostAmount(
           pairToken,
           "in",
+          initialData,
           initialAMM,
           initialData.poolType,
         ),
@@ -37,6 +39,7 @@ export function DepthCost() {
         calculateDepthCostAmount(
           pairToken,
           "out",
+          initialData,
           initialAMM,
           initialData.poolType,
         ),
@@ -47,6 +50,7 @@ export function DepthCost() {
         calculateDepthCostAmount(
           pairToken,
           "in",
+          customData,
           customAMM,
           customData.poolType,
         ),
@@ -55,6 +59,7 @@ export function DepthCost() {
         calculateDepthCostAmount(
           pairToken,
           "out",
+          customData,
           customAMM,
           customData.poolType,
         ),
@@ -124,7 +129,7 @@ export function DepthCost() {
     data: data,
     title: "Depth cost (2% of price change)",
     toolTip:
-      "Indicates the amount of tokens needed on a swap to alter the spot price (rate between the price of both tokens) in 2%",
+      "Indicates the amount of tokens needed on a swap to alter the spot price (rate between the price of both tokens) to the depth cost point. For stable pools, the depth cost point is 2% of the spot price. For concentrated liquidity pools is 99% of the liquidity range or 2% of the spot price, whichever is closer.",
     layout: {
       margin: { l: 3, r: 3 },
       xaxis: {
@@ -149,7 +154,6 @@ export function DepthCost() {
       },
       grid: { columns: 2, rows: 1, pattern: "independent" as const },
     },
-
     config: { displayModeBar: false },
   };
 
@@ -174,7 +178,7 @@ const createHoverTemplate = (
         ? `${analysisSymbol}/${tokenSymbols[i]}`
         : `${tokenSymbols[i]}/${analysisSymbol}`;
 
-    return `Swap ${action} to move the price ${price} on 2% <extra></extra>`;
+    return `Swap ${action} to move the price ${price} until the depth cost point <extra></extra>`;
   });
 };
 
@@ -212,8 +216,9 @@ const createDataObject = (
 function calculateDepthCostAmount(
   pairToken: TokensData,
   poolSide: "in" | "out",
+  data: AnalysisData,
   amm: AMM<PoolPairData>,
-  poolType: PoolTypeEnum, //TODO remove this on BAL-503
+  poolType: PoolTypeEnum,
 ) {
   const { analysisToken } = usePoolSimulator();
 
@@ -221,23 +226,49 @@ function calculateDepthCostAmount(
   const tokenOut = poolSide === "in" ? pairToken : analysisToken;
 
   const currentSpotPrice = amm.spotPrice(tokenIn.symbol, tokenOut.symbol);
+  const newSpotPrice = currentSpotPrice * 1.02;
 
-  //TODO fix this on BAL-503
-  const newSpotPrice =
-    poolType === PoolTypeEnum.MetaStable
-      ? currentSpotPrice * 1.02
-      : currentSpotPrice * 1.002;
-
-  if (poolSide === "in") {
-    return amm.tokenInForExactSpotPriceAfterSwap(
-      newSpotPrice,
-      tokenIn.symbol,
-      tokenOut.symbol,
-    );
+  switch (poolType) {
+    case PoolTypeEnum.MetaStable:
+      // For metastable pools we'll assume depth cost as 2% of the current spot price
+      return poolSide === "in"
+        ? amm.tokenInForExactSpotPriceAfterSwap(
+            newSpotPrice,
+            tokenIn.symbol,
+            tokenOut.symbol,
+          )
+        : amm.tokenOutForExactSpotPriceAfterSwap(
+            newSpotPrice,
+            tokenIn.symbol,
+            tokenOut.symbol,
+          );
+    case PoolTypeEnum.GyroE: {
+      // For CLP pools we'll assume depth cost as the pool depth == 99% of the liquidity or 2% of the current spot price, whichever is closer
+      if (
+        newSpotPrice < (data.poolParams?.alpha as number) ||
+        newSpotPrice > (data.poolParams?.beta as number)
+      ) {
+        return poolSide === "in"
+          ? amm.tokenInForExactTokenOut(
+              tokenOut.balance * 0.99,
+              tokenIn.symbol,
+              tokenOut.symbol,
+            )
+          : tokenOut.balance * 0.99;
+      }
+      return poolSide === "in"
+        ? amm.tokenInForExactSpotPriceAfterSwap(
+            newSpotPrice,
+            tokenIn.symbol,
+            tokenOut.symbol,
+          )
+        : amm.tokenOutForExactSpotPriceAfterSwap(
+            newSpotPrice,
+            tokenIn.symbol,
+            tokenOut.symbol,
+          );
+    }
+    default:
+      return 0;
   }
-  return amm.tokenOutForExactSpotPriceAfterSwap(
-    newSpotPrice,
-    tokenIn.symbol,
-    tokenOut.symbol,
-  );
 }

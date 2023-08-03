@@ -11,7 +11,7 @@ import {
   PoolPairData,
   usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
-import useDebounce from "#/hooks/useDebounce";
+// import useDebounce from "#/hooks/useDebounce";
 
 export function SwapSimulator() {
   const form = useForm();
@@ -39,35 +39,35 @@ export function SwapSimulator() {
   const swapType = watch("swapType");
   const tokenInIndex = watch("tokenInIndex");
   const tokenOutIndex = watch("tokenOutIndex");
-  const debouncedAmount = useDebounce(amount);
+  // const debouncedAmount = useDebounce(amount);
 
   const tokenInSymbol = initialData?.tokens[tokenInIndex]?.symbol;
   const tokenOutSymbol = initialData?.tokens[tokenOutIndex]?.symbol;
 
-  useEffect(() => {
-    setInitialResult(
-      calculateSimulation({
-        amount: Number.isNaN(Number(debouncedAmount))
-          ? initialData?.tokens[0]?.balance / 10
-          : Number(debouncedAmount),
-        swapType,
-        tokenInSymbol,
-        tokenOutSymbol,
-        amm: initialAMM,
-      }),
-    );
-    setCustomResult(
-      calculateSimulation({
-        amount: Number.isNaN(Number(debouncedAmount))
-          ? customData?.tokens[0]?.balance / 10
-          : Number(debouncedAmount),
-        swapType,
-        tokenInSymbol,
-        tokenOutSymbol,
-        amm: customAMM,
-      }),
-    );
-  }, [amount, debouncedAmount, initialData]);
+  // useEffect(() => {
+  //   setInitialResult(
+  //     calculateSimulation({
+  //       amount: Number.isNaN(Number(amount))
+  //         ? initialData?.tokens[0]?.balance / 10
+  //         : Number(amount),
+  //       swapType,
+  //       tokenInSymbol,
+  //       tokenOutSymbol,
+  //       amm: initialAMM,
+  //     })
+  //   );
+  //   setCustomResult(
+  //     calculateSimulation({
+  //       amount: Number.isNaN(Number(amount))
+  //         ? customData?.tokens[0]?.balance / 10
+  //         : Number(amount),
+  //       swapType,
+  //       tokenInSymbol,
+  //       tokenOutSymbol,
+  //       amm: customAMM,
+  //     })
+  //   );
+  // }, [amount, amount, initialData]);
 
   function SimulationResult({
     amountIn,

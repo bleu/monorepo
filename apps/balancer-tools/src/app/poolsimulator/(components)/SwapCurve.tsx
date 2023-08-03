@@ -167,6 +167,10 @@ export function SwapCurve() {
       higherOut: Math.max(minOfOut.initial, minOfOut.custom),
     };
 
+    if (maxOfIn.initial === maxOfIn.custom) {
+      return [initialAmountsOut[100], initialAmountsIn[100]];
+    }
+
     if (maxOfIn.initial === limits.lowerIn) {
       const indexMax = initialAmountsIn.indexOf(limits.lowerIn);
       const indexMin = initialAmountsOut.indexOf(limits.higherOut);
@@ -176,8 +180,6 @@ export function SwapCurve() {
       const indexMax = customAmountsIn.indexOf(limits.lowerIn);
       const indexMin = customAmountsOut.indexOf(limits.higherOut);
       return [customAmountsOut[indexMin], customAmountsIn[indexMax]];
-    } else {
-      return [initialAmountsOut[100], initialAmountsIn[100]];
     }
   }
 

@@ -13,8 +13,7 @@ import {
 } from "react";
 
 import {
-  GyroEParams,
-  MetaStableParams,
+  CombinedParams,
   PoolTypeEnum,
   TokensData,
 } from "#/app/poolsimulator/(types)";
@@ -25,11 +24,13 @@ import {
 import { PoolAttribute } from "#/components/SearchPoolForm";
 import { pools } from "#/lib/gql";
 
-export type PoolParams = MetaStableParams & GyroEParams;
+export type PoolParams = CombinedParams;
 export type PoolType = PoolTypeEnum;
 export const POOL_TYPES: PoolType[] = [
   PoolTypeEnum.MetaStable,
   PoolTypeEnum.GyroE,
+  PoolTypeEnum.Gyro2,
+  PoolTypeEnum.Gyro3,
 ];
 export interface AnalysisData {
   tokens: TokensData[];

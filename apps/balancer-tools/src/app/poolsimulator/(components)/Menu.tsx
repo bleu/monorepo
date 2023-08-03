@@ -25,6 +25,8 @@ import { SearchPoolFormDialog } from "./SearchPoolFormDialog";
 const POOL_TYPES_MAPPER = {
   MetaStable: "Meta Stable",
   GyroE: "Gyro E-CLP",
+  Gyro2: "Gyro 2CLP",
+  Gyro3: "Gyro 3CLP",
 };
 
 export enum PoolSimulatorFormTabs {
@@ -113,8 +115,6 @@ function IndexMenu() {
               ({ poolParams }: AnalysisData) =>
                 setCustomData({ ...customData, poolParams }),
             );
-            setIsGraphLoading(true);
-            push("/poolsimulator/analysis");
           }}
         >
           <div className="flex flex-col mt-4">
@@ -128,7 +128,11 @@ function IndexMenu() {
               }
               defaultValue={customData}
               onTabChanged={setCustomData}
-              onSubmit={setCustomData}
+              onSubmit={(data) => {
+                setCustomData(data);
+                setIsGraphLoading(true);
+                push("/poolsimulator/analysis");
+              }}
             />
           </div>
         </SearchPoolFormWithDataForm>

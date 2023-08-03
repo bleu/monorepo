@@ -154,12 +154,11 @@ export function SearchPoolForm({
             onBlur={!showPools ? undefined : closeCombobox}
           />
           <p className="text-sm text-tomato10">{errors.poolId?.message}</p>
-          {comboBoxIsOpen &&
-            filteredPoolList &&
-            filteredPoolList?.length > 0 && (
-              <div className="absolute z-50 my-2 flex max-h-52 flex-col gap-y-2 overflow-y-scroll rounded border-[1px] border-blue6 bg-blue3 scrollbar-thin scrollbar-track-blue2 scrollbar-thumb-slate12">
-                <div className="p-2">
-                  {filteredPoolList?.map((pool) => (
+          {comboBoxIsOpen && filteredPoolList && (
+            <div className="absolute z-50 my-2 flex max-h-52 flex-col gap-y-2 overflow-y-scroll rounded border-[1px] border-blue6 bg-blue3 scrollbar-thin scrollbar-track-blue2 scrollbar-thumb-slate12 w-full">
+              <div className="p-2">
+                {filteredPoolList?.length > 0 ? (
+                  filteredPoolList?.map((pool) => (
                     <Button
                       key={pool.id}
                       type="button"
@@ -179,10 +178,20 @@ export function SearchPoolForm({
                         </div>
                       </div>
                     </Button>
-                  ))}
-                </div>
+                  ))
+                ) : (
+                  <div className="flex flex-col items-center">
+                    <span className="text-center text-slate12">
+                      Sorry, no pools were found 😓
+                    </span>
+                    <span className="text-center text-slate9 text-sm">
+                      Please try another network
+                    </span>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
+          )}
         </div>
 
         <div className="mt-4 flex items-center justify-end">

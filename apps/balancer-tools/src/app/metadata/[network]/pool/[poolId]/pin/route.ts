@@ -8,7 +8,7 @@ const pin = async (json: Record<string, string>) => {
     new Blob([JSON.stringify(json)], {
       type: "application/json",
     }),
-    "metadata.json"
+    "metadata.json",
   );
 
   const projectId = process.env.INFURA_IPFS_PROJECT_ID;
@@ -18,7 +18,7 @@ const pin = async (json: Record<string, string>) => {
     method: "POST",
     headers: {
       Authorization: `Basic ${Buffer.from(
-        `${projectId}:${projectSecret}`
+        `${projectId}:${projectSecret}`,
       ).toString("base64")}`,
     },
     body: formData,

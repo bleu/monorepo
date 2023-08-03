@@ -78,6 +78,9 @@ export const poolById = gql`
       s
       alpha
       beta
+      sqrtAlpha
+      sqrtBeta
+      root3Alpha
       lambda
       tauAlphaX
       tauAlphaY

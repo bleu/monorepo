@@ -9,12 +9,12 @@
   "scripts": {
     "dev": "pnpm --stream -r dev",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "format-all": "pnpm --stream --parallel --if-present -r --include-workspace-root format",
+    "format:check": "prettier --check .",
     "lint-all": "pnpm --stream --parallel --if-present -r --include-workspace-root lint",
     "lint-fix-all": "pnpm --stream --parallel --if-present -r --include-workspace-root lint:fix",
     "format": "prettier --write .",
     "graphql:update-types": "pnpm --stream --parallel --if-present -r graphql:update-types",
-    "ci": "concurrently -c \"auto\" -p \"name\" -n \"format,lint\" \"pnpm format-all\" \"pnpm lint-all\" "
+    "ci": "concurrently -c \"auto\" -p \"name\" -n \"format,lint\" \"pnpm format:check\" \"pnpm lint-all\" "
   },
   "repository": {
     "type": "git",

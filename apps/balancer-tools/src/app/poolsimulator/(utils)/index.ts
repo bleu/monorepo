@@ -1,36 +1,12 @@
 import { PoolQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
-import {
-  DerivedGyroEParamsFromSubgraph,
-  ExtendedGyroEV2,
-} from "@bleu-balancer-tools/math-poolsimulator/src/gyroE";
+import { ExtendedGyroEV2 } from "@bleu-balancer-tools/math-poolsimulator/src/gyroE";
 import { ExtendedMetaStableMath } from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
 
 import { AnalysisData } from "#/contexts/PoolSimulatorContext";
+import { fetchECLPDerivativeParams } from "#/lib/eclp-derivative";
 
 import { PoolTypeEnum } from "../(types)";
-
-const fetchECLPDerivativeParams = async (data: AnalysisData) => {
-  const url =
-    process.env.NODE_ENV == "development"
-      ? "http://localhost:8000"
-      : "https://gyro-eclp-api.fly.dev";
-  return await fetch(`${url}/calculate_derivative_parameters`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      alpha: String(data.poolParams?.alpha),
-      beta: String(data.poolParams?.beta),
-      l: String(data.poolParams?.lambda),
-      c: String(data.poolParams?.c),
-      s: String(data.poolParams?.s),
-    }),
-  })
-    .then((res) => res.json())
-    .then((res) => res as DerivedGyroEParamsFromSubgraph);
-};
 
 export async function convertAnalysisDataToAMM(data: AnalysisData) {
   if (!data.poolType || !data.poolParams?.swapFee) return;
@@ -55,35 +31,32 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
       );
     }
     case PoolTypeEnum.GyroE: {
-      return fetchECLPDerivativeParams(data)
-        .then((derivedParams) => {
-          return new AMM(
-            new ExtendedGyroEV2({
-              swapFee: String(data.poolParams?.swapFee),
-              totalShares: String(
-                data.tokens.reduce((acc, token) => acc + token.balance, 0)
-              ),
-              tokens: data.tokens.map((token) => ({
-                address: String(token.symbol), // math use address as key, but we will use symbol because custom token will not have address
-                balance: String(token.balance),
-                decimals: token.decimal,
-                priceRate: String(token.rate),
-              })),
-              tokensList: data.tokens.map((token) => String(token.symbol)),
+      const derivedParams = await fetchECLPDerivativeParams(data);
+      return new AMM(
+        new ExtendedGyroEV2({
+          swapFee: String(data.poolParams?.swapFee),
+          totalShares: String(
+            data.tokens.reduce((acc, token) => acc + token.balance, 0)
+          ),
+          tokens: data.tokens.map((token) => ({
+            address: String(token.symbol), // math use address as key, but we will use symbol because custom token will not have address
+            balance: String(token.balance),
+            decimals: token.decimal,
+            priceRate: String(token.rate),
+          })),
+          tokensList: data.tokens.map((token) => String(token.symbol)),
 
-              gyroEParams: {
-                alpha: String(data.poolParams?.alpha),
-                beta: String(data.poolParams?.beta),
-                lambda: String(data.poolParams?.lambda),
-                c: String(data.poolParams?.c),
-                s: String(data.poolParams?.s),
-              },
-              derivedGyroEParams: derivedParams,
-              tokenRates: data.tokens.map((token) => String(token.rate)),
-            })
-          );
+          gyroEParams: {
+            alpha: String(data.poolParams?.alpha),
+            beta: String(data.poolParams?.beta),
+            lambda: String(data.poolParams?.lambda),
+            c: String(data.poolParams?.c),
+            s: String(data.poolParams?.s),
+          },
+          derivedGyroEParams: derivedParams,
+          tokenRates: data.tokens.map((token) => String(token.rate)),
         })
-        .catch((_err) => undefined);
+      );
     }
     // TODO on issue BAL-501 add math for Gyro2 and Gyro3
     // case PoolTypeEnum.Gyro2: {

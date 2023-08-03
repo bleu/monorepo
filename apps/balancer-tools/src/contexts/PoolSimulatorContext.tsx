@@ -176,13 +176,11 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
   }, [pathname]);
 
   useEffect(() => {
-    if (!initialData.poolParams) return;
     if (!initialData.poolType && !initialData.poolParams?.swapFee) return;
     convertAnalysisDataToAMM(initialData).then(setInitialAMM);
   }, [initialData]);
 
   useEffect(() => {
-    if (!customData.poolParams) return;
     if (!customData.poolType && !customData.poolParams?.swapFee) return;
     convertAnalysisDataToAMM(customData).then(setCustomAMM);
   }, [customData]);

@@ -18,6 +18,7 @@ import {
 } from "#/contexts/PoolSimulatorContext";
 
 import { PoolTypeEnum } from "../(types)";
+import AnalysisPoolParamsForm from "./AnalysisPoolParamsForm";
 import { PoolParamsForm } from "./PoolParamsForm";
 import { PoolTypeChangeConfirmation } from "./PoolTypeChangeConfirmation";
 import { SearchPoolFormDialog } from "./SearchPoolFormDialog";
@@ -45,7 +46,7 @@ function IndexMenu() {
     handleImportPoolParametersById,
   } = usePoolSimulator();
   const [tabValue, setTabValue] = useState<PoolSimulatorFormTabs>(
-    PoolSimulatorFormTabs.InitialData,
+    PoolSimulatorFormTabs.InitialData
   );
 
   return (
@@ -113,7 +114,7 @@ function IndexMenu() {
             handleImportPoolParametersById(
               data,
               ({ poolParams }: AnalysisData) =>
-                setCustomData({ ...customData, poolParams }),
+                setCustomData({ ...customData, poolParams })
             );
           }}
         >
@@ -121,7 +122,7 @@ function IndexMenu() {
             <FormWithPoolType
               onPoolTypeChanged={(poolType) =>
                 setCustomData({
-                  ...initialData,
+                  ...customData,
                   poolType,
                   poolParams: undefined,
                 })
@@ -243,7 +244,7 @@ export default function Menu() {
     ) {
       return <Spinner />;
     }
-    return <div className="text-slate12">Analysis Menu</div>;
+    return <AnalysisPoolParamsForm />;
   }
   return <IndexMenu />;
 }

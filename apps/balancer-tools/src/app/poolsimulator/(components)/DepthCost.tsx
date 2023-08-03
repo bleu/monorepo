@@ -1,18 +1,20 @@
 "use client";
 
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
-import { MetaStablePoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
 import { PlotType } from "plotly.js";
 
 import Plot, { defaultAxisLayout } from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
-import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
+import {
+  PoolPairData,
+  usePoolSimulator,
+} from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
-import { TokensData } from "../(types)";
+import { PoolTypeEnum, TokensData } from "../(types)";
 
 export function DepthCost() {
-  const { analysisToken, initialData, initialAMM, customAMM } =
+  const { analysisToken, initialData, customData, initialAMM, customAMM } =
     usePoolSimulator();
 
   if (!initialAMM || !customAMM) return <Spinner />;
@@ -24,18 +26,38 @@ export function DepthCost() {
   const depthCostAmounts = {
     initial: {
       in: pairTokens.map((pairToken) =>
-        calculateDepthCostAmount(pairToken, "in", initialAMM),
+        calculateDepthCostAmount(
+          pairToken,
+          "in",
+          initialAMM,
+          initialData.poolType,
+        ),
       ),
       out: pairTokens.map((pairToken) =>
-        calculateDepthCostAmount(pairToken, "out", initialAMM),
+        calculateDepthCostAmount(
+          pairToken,
+          "out",
+          initialAMM,
+          initialData.poolType,
+        ),
       ),
     },
     custom: {
       in: pairTokens.map((pairToken) =>
-        calculateDepthCostAmount(pairToken, "in", customAMM),
+        calculateDepthCostAmount(
+          pairToken,
+          "in",
+          customAMM,
+          customData.poolType,
+        ),
       ),
       out: pairTokens.map((pairToken) =>
-        calculateDepthCostAmount(pairToken, "out", customAMM),
+        calculateDepthCostAmount(
+          pairToken,
+          "out",
+          customAMM,
+          customData.poolType,
+        ),
       ),
     },
   };
@@ -190,7 +212,8 @@ const createDataObject = (
 function calculateDepthCostAmount(
   pairToken: TokensData,
   poolSide: "in" | "out",
-  amm: AMM<MetaStablePoolPairData>,
+  amm: AMM<PoolPairData>,
+  poolType: PoolTypeEnum, //TODO remove this on BAL-503
 ) {
   const { analysisToken } = usePoolSimulator();
 
@@ -199,7 +222,11 @@ function calculateDepthCostAmount(
 
   const currentSpotPrice = amm.spotPrice(tokenIn.symbol, tokenOut.symbol);
 
-  const newSpotPrice = currentSpotPrice * 1.02;
+  //TODO fix this on BAL-503
+  const newSpotPrice =
+    poolType === PoolTypeEnum.MetaStable
+      ? currentSpotPrice * 1.02
+      : currentSpotPrice * 1.002;
 
   if (poolSide === "in") {
     return amm.tokenInForExactSpotPriceAfterSwap(

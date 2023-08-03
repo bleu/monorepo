@@ -1,5 +1,5 @@
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
-import { MetaStablePoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import { BaseInput, Input } from "#/components/Input";
@@ -7,7 +7,10 @@ import { PlotTitle } from "#/components/Plot";
 import { Select, SelectItem } from "#/components/Select";
 import { Spinner } from "#/components/Spinner";
 import { Form, FormField } from "#/components/ui/form";
-import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
+import {
+  PoolPairData,
+  usePoolSimulator,
+} from "#/contexts/PoolSimulatorContext";
 import useDebounce from "#/hooks/useDebounce";
 
 export function SwapSimulator() {
@@ -15,8 +18,20 @@ export function SwapSimulator() {
   const { watch, control } = form;
 
   const swapTypes = ["Exact In", "Exact Out"];
-  const { initialData, initialAMM, customAMM } = usePoolSimulator();
+  const { initialData, customData, initialAMM, customAMM } = usePoolSimulator();
   const tokensSymbol = initialData?.tokens.map((token) => token.symbol);
+  const [initialResult, setInitialResult] = useState({
+    amountIn: 0,
+    amountOut: 0,
+    effectivePrice: 0,
+    priceImpact: 0,
+  });
+  const [customResult, setCustomResult] = useState({
+    amountIn: 0,
+    amountOut: 0,
+    effectivePrice: 0,
+    priceImpact: 0,
+  });
 
   if (!initialAMM || !customAMM) return <Spinner />;
 
@@ -29,21 +44,30 @@ export function SwapSimulator() {
   const tokenInSymbol = initialData?.tokens[tokenInIndex]?.symbol;
   const tokenOutSymbol = initialData?.tokens[tokenOutIndex]?.symbol;
 
-  const initialResult = calculateSimulation({
-    amount: Number(debouncedAmount),
-    swapType,
-    tokenInSymbol,
-    tokenOutSymbol,
-    amm: initialAMM,
-  });
-
-  const customResult = calculateSimulation({
-    amount: Number(debouncedAmount),
-    swapType,
-    tokenInSymbol,
-    tokenOutSymbol,
-    amm: customAMM,
-  });
+  useEffect(() => {
+    setInitialResult(
+      calculateSimulation({
+        amount: Number.isNaN(Number(debouncedAmount))
+          ? initialData?.tokens[0]?.balance / 10
+          : Number(debouncedAmount),
+        swapType,
+        tokenInSymbol,
+        tokenOutSymbol,
+        amm: initialAMM,
+      }),
+    );
+    setCustomResult(
+      calculateSimulation({
+        amount: Number.isNaN(Number(debouncedAmount))
+          ? customData?.tokens[0]?.balance / 10
+          : Number(debouncedAmount),
+        swapType,
+        tokenInSymbol,
+        tokenOutSymbol,
+        amm: customAMM,
+      }),
+    );
+  }, [amount, debouncedAmount, initialData]);
 
   function SimulationResult({
     amountIn,
@@ -209,7 +233,7 @@ function calculateSimulation({
   tokenInSymbol,
   tokenOutSymbol,
 }: {
-  amm: AMM<MetaStablePoolPairData>;
+  amm: AMM<PoolPairData>;
   swapType: string;
   amount: number;
   tokenInSymbol: string;

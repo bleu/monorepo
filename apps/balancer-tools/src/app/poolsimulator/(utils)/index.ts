@@ -8,8 +8,7 @@ import { AnalysisData } from "#/contexts/PoolSimulatorContext";
 import { PoolTypeEnum } from "../(types)";
 
 export function convertAnalysisDataToAMM(data: AnalysisData) {
-  if (!data.poolType) return;
-
+  if (!data.poolType || !data.poolParams?.swapFee) return;
   switch (data.poolType) {
     case PoolTypeEnum.MetaStable: {
       return new AMM(
@@ -30,6 +29,7 @@ export function convertAnalysisDataToAMM(data: AnalysisData) {
       );
     }
     case PoolTypeEnum.GyroE: {
+      if (!data.poolParams?.lambda) return;
       return new AMM(
         new ExtendedGyroEV2({
           swapFee: String(data.poolParams?.swapFee),
@@ -52,15 +52,15 @@ export function convertAnalysisDataToAMM(data: AnalysisData) {
             s: String(data.poolParams?.s),
           },
           derivedGyroEParams: {
-            tauAlphaX: String(data.poolParams?.tauAlphaX),
-            tauAlphaY: String(data.poolParams?.tauAlphaY),
-            tauBetaX: String(data.poolParams?.tauBetaX),
-            tauBetaY: String(data.poolParams?.tauBetaY),
-            u: String(data.poolParams?.u),
-            v: String(data.poolParams?.v),
-            w: String(data.poolParams?.w),
-            z: String(data.poolParams?.z),
-            dSq: String(data.poolParams?.dSq),
+            tauAlphaX: String(-0.7479871214549773),
+            tauAlphaY: String(0.6637132408936085),
+            tauBetaX: String(0.8338367829725988),
+            tauBetaY: String(0.5520110681516334),
+            u: String(0.7909055995583698),
+            v: String(0.6076383033720348),
+            w: String(-0.05585063777148738),
+            z: String(0.03975485570515916),
+            dSq: String(1),
           },
           tokenRates: data.tokens.map((token) => String(token.rate)),
         }),
@@ -125,16 +125,16 @@ export function convertGqlToAnalysisData(poolData: PoolQuery): AnalysisData {
           lambda: Number(poolData?.pool?.lambda),
           c: Number(poolData?.pool?.c),
           s: Number(poolData?.pool?.s),
-          swapFee: Number(poolData?.pool?.swapFee),
-          tauAlphaX: Number(poolData?.pool?.tauAlphaX),
-          tauAlphaY: Number(poolData?.pool?.tauAlphaY),
-          tauBetaX: Number(poolData?.pool?.tauBetaX),
-          tauBetaY: Number(poolData?.pool?.tauBetaY),
-          u: Number(poolData?.pool?.u),
-          v: Number(poolData?.pool?.v),
-          w: Number(poolData?.pool?.w),
-          z: Number(poolData?.pool?.z),
-          dSq: Number(poolData?.pool?.dSq),
+          swapFee: poolData?.pool?.swapFee,
+          tauAlphaX: poolData?.pool?.tauAlphaX,
+          tauAlphaY: poolData?.pool?.tauAlphaY,
+          tauBetaX: poolData?.pool?.tauBetaX,
+          tauBetaY: poolData?.pool?.tauBetaY,
+          u: poolData?.pool?.u,
+          v: poolData?.pool?.v,
+          w: poolData?.pool?.w,
+          z: poolData?.pool?.z,
+          dSq: poolData?.pool?.dSq,
         },
         tokens: tokensData,
       };

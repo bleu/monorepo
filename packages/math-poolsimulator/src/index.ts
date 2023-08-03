@@ -15,7 +15,9 @@ export class AMM<TPoolPairData extends PoolPairData> {
     tokenOut: string,
   ): number {
     const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
-    return this.math._exactTokenInForTokenOut(poolPairData, amountIn);
+    return this.math
+      ._exactTokenInForTokenOut(poolPairData, bnum(amountIn))
+      .toNumber();
   }
 
   tokenInForExactTokenOut(

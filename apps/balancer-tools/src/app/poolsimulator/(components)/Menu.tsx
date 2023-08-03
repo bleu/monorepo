@@ -18,6 +18,7 @@ import {
 } from "#/contexts/PoolSimulatorContext";
 
 import { PoolTypeEnum } from "../(types)";
+import AnalysisPoolParamsForm from "./AnalysisPoolParamsForm";
 import { PoolParamsForm } from "./PoolParamsForm";
 import { PoolTypeChangeConfirmation } from "./PoolTypeChangeConfirmation";
 import { SearchPoolFormDialog } from "./SearchPoolFormDialog";
@@ -82,7 +83,11 @@ function IndexMenu() {
           <div className="flex flex-col mt-4">
             <FormWithPoolType
               onPoolTypeChanged={(poolType) =>
-                setInitialData({ ...initialData, poolType })
+                setInitialData({
+                  ...initialData,
+                  poolType,
+                  poolParams: undefined,
+                })
               }
               defaultValue={initialData}
               onTabChanged={(data) => {
@@ -116,7 +121,11 @@ function IndexMenu() {
           <div className="flex flex-col mt-4">
             <FormWithPoolType
               onPoolTypeChanged={(poolType) =>
-                setCustomData({ ...initialData, poolType })
+                setCustomData({
+                  ...customData,
+                  poolType,
+                  poolParams: undefined,
+                })
               }
               defaultValue={customData}
               onTabChanged={setCustomData}
@@ -235,7 +244,7 @@ export default function Menu() {
     ) {
       return <Spinner />;
     }
-    return <div className="text-slate12">Analysis Menu</div>;
+    return <AnalysisPoolParamsForm />;
   }
   return <IndexMenu />;
 }

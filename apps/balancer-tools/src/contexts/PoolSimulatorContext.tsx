@@ -1,6 +1,7 @@
 "use client";
 
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
+import { GyroEPoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/gyroE";
 import { MetaStablePoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
 import { NetworkChainId } from "@bleu-balancer-tools/utils";
 import { usePathname, useRouter } from "next/navigation";
@@ -17,10 +18,14 @@ import {
   PoolTypeEnum,
   TokensData,
 } from "#/app/poolsimulator/(types)";
-import { convertGqlToAnalysisData } from "#/app/poolsimulator/(utils)";
+import {
+  convertAnalysisDataToAMM,
+  convertGqlToAnalysisData,
+} from "#/app/poolsimulator/(utils)";
 import { PoolAttribute } from "#/components/SearchPoolForm";
 import { pools } from "#/lib/gql";
 
+export type PoolPairData = MetaStablePoolPairData | GyroEPoolPairData;
 export type PoolParams = CombinedParams;
 export type PoolType = PoolTypeEnum;
 export const POOL_TYPES: PoolType[] = [
@@ -33,6 +38,11 @@ export interface AnalysisData {
   tokens: TokensData[];
   poolType: PoolType;
   poolParams?: PoolParams;
+}
+
+export enum DataType {
+  initialData = "initialData",
+  customData = "customData",
 }
 
 interface PoolSimulatorContextType {
@@ -54,8 +64,8 @@ interface PoolSimulatorContextType {
   ) => void;
   isGraphLoading: boolean;
   setIsGraphLoading: (value: boolean) => void;
-  initialAMM?: AMM<MetaStablePoolPairData>;
-  customAMM?: AMM<MetaStablePoolPairData>;
+  initialAMM?: AMM<PoolPairData>;
+  customAMM?: AMM<PoolPairData>;
   generateURL: () => string;
 }
 
@@ -70,8 +80,8 @@ export const PoolSimulatorContext = createContext(
 );
 
 export function PoolSimulatorProvider({ children }: PropsWithChildren) {
-  const pathname = usePathname();
   const { push } = useRouter();
+  const pathname = usePathname();
   const defaultAnalysisData: AnalysisData = {
     poolParams: undefined,
     tokens: [],
@@ -89,11 +99,8 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     useState<AnalysisData>(defaultAnalysisData);
   const [customData, setCustomData] =
     useState<AnalysisData>(defaultAnalysisData);
-  // TODO: BAL-539
-  // const [initialAMM, setInitialAMM] = useState<AMM<MetaStablePoolPairData>>();
-  // const [customAMM, setCustomAMM] = useState<AMM<MetaStablePoolPairData>>();
-  const initialAMM = undefined;
-  const customAMM = undefined;
+  const [initialAMM, setInitialAMM] = useState<AMM<PoolPairData>>();
+  const [customAMM, setCustomAMM] = useState<AMM<PoolPairData>>();
   const [analysisToken, setAnalysisToken] =
     useState<TokensData>(defaultTokensData);
   const [currentTabToken, setCurrentTabToken] =
@@ -120,6 +127,7 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     const token = initialData.tokens[index];
     if (token) setCurrentTabToken(token);
   }
+
   function generateURL() {
     const jsonState = JSON.stringify({ initialData, customData });
 
@@ -157,6 +165,26 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
       }
     }
   }, []);
+
+  useEffect(() => {
+    if (
+      initialData.poolParams === undefined ||
+      !initialData.poolType ||
+      initialData.poolParams.swapFee === undefined
+    )
+      return;
+    setInitialAMM(convertAnalysisDataToAMM(initialData));
+  }, [initialData]);
+
+  useEffect(() => {
+    if (
+      customData.poolParams === undefined ||
+      !customData.poolType ||
+      customData.poolParams.swapFee === undefined
+    )
+      return;
+    setCustomAMM(convertAnalysisDataToAMM(customData));
+  }, [customData]);
 
   useEffect(() => {
     if (pathname === "/poolsimulator") {

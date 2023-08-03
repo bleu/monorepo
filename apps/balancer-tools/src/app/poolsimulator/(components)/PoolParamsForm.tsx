@@ -141,13 +141,13 @@ const inputMapper = {
 
 const createPayload = (
   poolType: keyof typeof inputMapper,
-  fieldData: FieldValues,
+  fieldData: FieldValues
 ): AnalysisData => ({
   poolParams: Object.fromEntries(
     inputMapper[poolType].map((input) => [
       input.name,
       input.transformFromFormToData(fieldData[input.name]),
-    ]),
+    ])
   ),
   tokens: fieldData.tokens,
   poolType: poolType,
@@ -156,11 +156,12 @@ const createPayload = (
 type PoolParamsFormProps = {
   defaultValue: AnalysisData;
   onSubmit: (data: AnalysisData) => void;
-  onTabChanged: (data: AnalysisData) => void;
+  onTabChanged?: (data: AnalysisData) => void;
+  submitButtonText?: string;
 };
 
 export const PoolParamsForm = forwardRef<unknown, PoolParamsFormProps>(
-  ({ defaultValue: data, onSubmit, onTabChanged }, ref) => {
+  ({ defaultValue: data, onSubmit, onTabChanged, submitButtonText }, ref) => {
     const poolType = data.poolType || PoolTypeEnum.MetaStable;
 
     const form = useForm({
@@ -211,7 +212,7 @@ export const PoolParamsForm = forwardRef<unknown, PoolParamsFormProps>(
 
     useEffect(() => {
       const data = getValues();
-      onTabChanged(createPayload(poolType, data));
+      onTabChanged?.(createPayload(poolType, data));
     }, [currentTab]);
 
     return (
@@ -236,7 +237,7 @@ export const PoolParamsForm = forwardRef<unknown, PoolParamsFormProps>(
                       value: data.poolParams?.[input.name],
                     }}
                     defaultValue={input.transformFromDataToForm(
-                      data.poolParams?.[input.name],
+                      data.poolParams?.[input.name]
                     )}
                     placeholder={input.placeholder}
                   />
@@ -261,11 +262,11 @@ export const PoolParamsForm = forwardRef<unknown, PoolParamsFormProps>(
               {errors[""]?.message as string}
             </span>
           )}
-          <Button type="submit" shade="light" className="h-min w-32 self-end">
-            Next step
+          <Button type="submit" shade="light" className="h-min self-end">
+            {submitButtonText || "Next step"}
           </Button>
         </div>
       </Form>
     );
-  },
+  }
 );

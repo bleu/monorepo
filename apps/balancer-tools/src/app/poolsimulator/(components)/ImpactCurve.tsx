@@ -9,7 +9,7 @@ import { Spinner } from "#/components/Spinner";
 import { TokensData, usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
-import { calculateCurvePoints } from "./StableCurve";
+import { calculateCurvePoints } from "./SwapCurve";
 
 export function ImpactCurve() {
   const { analysisToken, currentTabToken, initialAMM, customAMM } =

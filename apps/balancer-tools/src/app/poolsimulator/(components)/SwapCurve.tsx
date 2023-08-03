@@ -11,11 +11,17 @@ import {
 } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
-import { TokensData } from "../(types)";
+import { PoolTypeEnum, TokensData } from "../(types)";
 
-export function StableCurve() {
-  const { analysisToken, currentTabToken, initialAMM, customAMM } =
-    usePoolSimulator();
+export function SwapCurve() {
+  const {
+    analysisToken,
+    currentTabToken,
+    initialAMM,
+    customAMM,
+    initialData,
+    customData,
+  } = usePoolSimulator();
 
   if (!initialAMM || !customAMM) return <Spinner />;
 
@@ -24,14 +30,24 @@ export function StableCurve() {
     amountsAnalysisTokenOut: initialAmountsAnalysisTokenOut,
     amountsTabTokenOut: initialAmountTabTokenOut,
     amountsTabTokenIn: initialAmountTabTokenIn,
-  } = calculateTokenAmounts(analysisToken, currentTabToken, initialAMM);
+  } = calculateTokenAmounts(
+    analysisToken,
+    currentTabToken,
+    initialAMM,
+    initialData.poolType,
+  );
 
   const {
     amountsAnalysisTokenIn: customAmountsAnalysisTokenIn,
     amountsAnalysisTokenOut: customAmountsAnalysisTokenOut,
     amountsTabTokenOut: customAmountTabTokenOut,
     amountsTabTokenIn: customAmountTabTokenIn,
-  } = calculateTokenAmounts(analysisToken, currentTabToken, customAMM);
+  } = calculateTokenAmounts(
+    analysisToken,
+    currentTabToken,
+    customAMM,
+    customData.poolType,
+  );
 
   const formatSwap = (
     amountIn: number,
@@ -174,13 +190,25 @@ const calculateTokenAmounts = (
   tokenIn: TokensData,
   tokenOut: TokensData,
   amm: AMM<PoolPairData>,
+  poolType: PoolTypeEnum,
 ) => {
-  const amountsAnalysisTokenIn = calculateCurvePoints({
-    balance: tokenIn.balance,
-  });
-  const amountsTabTokenIn = calculateCurvePoints({
-    balance: tokenOut.balance,
-  });
+  const amountsAnalysisTokenIn =
+    poolType === PoolTypeEnum.MetaStable
+      ? calculateCurvePoints({
+          balance: tokenIn.balance,
+        })
+      : calculateCurvePoints({
+          balance: tokenIn.balance,
+        }).filter((value) => value <= tokenOut.balance);
+
+  const amountsTabTokenIn =
+    poolType === PoolTypeEnum.MetaStable
+      ? calculateCurvePoints({
+          balance: tokenOut.balance,
+        })
+      : calculateCurvePoints({
+          balance: tokenIn.balance,
+        }).filter((value) => value <= tokenIn.balance);
 
   const amountsTabTokenOut = amountsAnalysisTokenIn.map(
     (amount) =>

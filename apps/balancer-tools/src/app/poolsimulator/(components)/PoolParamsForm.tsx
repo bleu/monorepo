@@ -166,7 +166,7 @@ export const PoolParamsForm = forwardRef<unknown, PoolParamsFormProps>(
 
     const form = useForm({
       resolver: zodResolver(schemaMapper[poolType]),
-      mode: "onTouched",
+      mode: "onSubmit",
     });
 
     const {

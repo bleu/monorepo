@@ -128,6 +128,14 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     if (token) setCurrentTabToken(token);
   }
 
+  async function asyncSetAMM(
+    data: AnalysisData,
+    setAMM: (amm: AMM<PoolPairData>) => void,
+  ) {
+    const amm = await convertAnalysisDataToAMM(data);
+    if (amm) setAMM(amm);
+  }
+
   function generateURL() {
     const jsonState = JSON.stringify({ initialData, customData });
 
@@ -167,31 +175,13 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
   }, []);
 
   useEffect(() => {
-    if (
-      initialData.poolParams === undefined ||
-      !initialData.poolType ||
-      initialData.poolParams.swapFee === undefined
-    )
-      return;
-    async function setAMM() {
-      const amm = await convertAnalysisDataToAMM(initialData);
-      setInitialAMM(amm);
-    }
-    setAMM();
+    if (!customData.poolType || !customData.poolParams?.swapFee) return;
+    asyncSetAMM(initialData, setInitialAMM);
   }, [initialData]);
 
   useEffect(() => {
-    if (
-      customData.poolParams === undefined ||
-      !customData.poolType ||
-      customData.poolParams.swapFee === undefined
-    )
-      return;
-    async function setAMM() {
-      const amm = await convertAnalysisDataToAMM(customData);
-      setCustomAMM(amm);
-    }
-    setAMM();
+    if (!customData.poolType || !customData.poolParams?.swapFee) return;
+    asyncSetAMM(customData, setCustomAMM);
   }, [customData]);
 
   useEffect(() => {
@@ -209,16 +199,6 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
       setIsGraphLoading(false);
     }
   }, [pathname]);
-
-  useEffect(() => {
-    if (!initialData.poolType && !initialData.poolParams?.swapFee) return;
-    convertAnalysisDataToAMM(initialData).then(setInitialAMM);
-  }, [initialData]);
-
-  useEffect(() => {
-    if (!customData.poolType && !customData.poolParams?.swapFee) return;
-    convertAnalysisDataToAMM(customData).then(setCustomAMM);
-  }, [customData]);
 
   return (
     <PoolSimulatorContext.Provider

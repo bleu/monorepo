@@ -11,11 +11,17 @@ import {
 } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
-import { TokensData } from "../(types)";
+import { PoolTypeEnum, TokensData } from "../(types)";
 
-export function StableCurve() {
-  const { analysisToken, currentTabToken, initialAMM, customAMM } =
-    usePoolSimulator();
+export function SwapCurve() {
+  const {
+    analysisToken,
+    currentTabToken,
+    initialAMM,
+    customAMM,
+    initialData,
+    customData,
+  } = usePoolSimulator();
 
   if (!initialAMM || !customAMM) return <Spinner />;
 
@@ -24,14 +30,24 @@ export function StableCurve() {
     amountsAnalysisTokenOut: initialAmountsAnalysisTokenOut,
     amountsTabTokenOut: initialAmountTabTokenOut,
     amountsTabTokenIn: initialAmountTabTokenIn,
-  } = calculateTokenAmounts(analysisToken, currentTabToken, initialAMM);
+  } = calculateTokenAmounts(
+    analysisToken,
+    currentTabToken,
+    initialAMM,
+    initialData.poolType,
+  );
 
   const {
     amountsAnalysisTokenIn: customAmountsAnalysisTokenIn,
     amountsAnalysisTokenOut: customAmountsAnalysisTokenOut,
     amountsTabTokenOut: customAmountTabTokenOut,
     amountsTabTokenIn: customAmountTabTokenIn,
-  } = calculateTokenAmounts(analysisToken, currentTabToken, customAMM);
+  } = calculateTokenAmounts(
+    analysisToken,
+    currentTabToken,
+    customAMM,
+    customData.poolType,
+  );
 
   const formatSwap = (
     amountIn: number,
@@ -126,6 +142,47 @@ export function StableCurve() {
     ),
   ];
 
+  function getGraphScale({
+    initialAmountsIn,
+    customAmountsIn,
+    initialAmountsOut,
+    customAmountsOut,
+  }: {
+    initialAmountsIn: number[];
+    customAmountsIn: number[];
+    initialAmountsOut: number[];
+    customAmountsOut: number[];
+  }) {
+    const maxOfIn = {
+      initial: Math.max(...initialAmountsIn),
+      custom: Math.max(...customAmountsIn),
+    };
+    const minOfOut = {
+      initial: Math.min(...initialAmountsOut),
+      custom: Math.min(...customAmountsOut),
+    };
+
+    const limits = {
+      lowerIn: Math.min(maxOfIn.initial, maxOfIn.custom),
+      higherOut: Math.max(minOfOut.initial, minOfOut.custom),
+    };
+
+    if (maxOfIn.initial === maxOfIn.custom) {
+      return [initialAmountsOut[100], initialAmountsIn[100]];
+    }
+
+    if (maxOfIn.initial === limits.lowerIn) {
+      const indexMax = initialAmountsIn.indexOf(limits.lowerIn);
+      const indexMin = initialAmountsOut.indexOf(limits.higherOut);
+      return [initialAmountsOut[indexMin], initialAmountsIn[indexMax]];
+    }
+    if (maxOfIn.initial === limits.lowerIn) {
+      const indexMax = customAmountsIn.indexOf(limits.lowerIn);
+      const indexMin = customAmountsOut.indexOf(limits.higherOut);
+      return [customAmountsOut[indexMin], customAmountsIn[indexMax]];
+    }
+  }
+
   return (
     <Plot
       title="Swap Curve"
@@ -134,14 +191,21 @@ export function StableCurve() {
       layout={{
         xaxis: {
           title: `Amount of ${analysisToken.symbol}`,
-          range: [
-            initialAmountsAnalysisTokenOut[100],
-            initialAmountsAnalysisTokenIn[100],
-          ],
+          range: getGraphScale({
+            initialAmountsOut: initialAmountsAnalysisTokenOut,
+            customAmountsOut: customAmountsAnalysisTokenOut,
+            initialAmountsIn: initialAmountsAnalysisTokenIn,
+            customAmountsIn: customAmountsAnalysisTokenIn,
+          }),
         },
         yaxis: {
           title: `Amount of ${currentTabToken.symbol}`,
-          range: [initialAmountTabTokenOut[100], initialAmountTabTokenIn[100]],
+          range: getGraphScale({
+            initialAmountsOut: initialAmountTabTokenOut,
+            customAmountsOut: customAmountTabTokenOut,
+            initialAmountsIn: initialAmountTabTokenIn,
+            customAmountsIn: customAmountTabTokenIn,
+          }),
         },
       }}
       className="h-1/2 w-full"
@@ -174,13 +238,25 @@ const calculateTokenAmounts = (
   tokenIn: TokensData,
   tokenOut: TokensData,
   amm: AMM<PoolPairData>,
+  poolType: PoolTypeEnum,
 ) => {
-  const amountsAnalysisTokenIn = calculateCurvePoints({
-    balance: tokenIn.balance,
-  });
-  const amountsTabTokenIn = calculateCurvePoints({
-    balance: tokenOut.balance,
-  });
+  const amountsAnalysisTokenIn =
+    poolType === PoolTypeEnum.MetaStable
+      ? calculateCurvePoints({
+          balance: tokenIn.balance,
+        })
+      : calculateCurvePoints({
+          balance: tokenIn.balance,
+        }).filter((value) => value <= tokenOut.balance);
+
+  const amountsTabTokenIn =
+    poolType === PoolTypeEnum.MetaStable
+      ? calculateCurvePoints({
+          balance: tokenOut.balance,
+        })
+      : calculateCurvePoints({
+          balance: tokenIn.balance,
+        }).filter((value) => value <= tokenIn.balance);
 
   const amountsTabTokenOut = amountsAnalysisTokenIn.map(
     (amount) =>

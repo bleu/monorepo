@@ -253,3 +253,19 @@ export const StableSwapSimulatorDataSchema = BasePoolSchema.extend({
     .min(2)
     .max(5),
 });
+
+export const SwapSimulatorDataSchema = z
+  .object({
+    tokenInIndex: z.coerce.string(),
+    tokenOutIndex: z.coerce.string(),
+    amount: z.coerce.number().positive(),
+    swapType: z.enum(["Exact In", "Exact Out"]),
+  })
+  .refine(
+    (data) => {
+      return data.tokenInIndex !== data.tokenOutIndex;
+    },
+    {
+      message: "Token in and token out must be different",
+    },
+  );

@@ -11,7 +11,7 @@ import {
   PoolPairData,
   usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
-// import useDebounce from "#/hooks/useDebounce";
+import useDebounce from "#/hooks/useDebounce";
 
 export function SwapSimulator() {
   const form = useForm();
@@ -39,35 +39,35 @@ export function SwapSimulator() {
   const swapType = watch("swapType");
   const tokenInIndex = watch("tokenInIndex");
   const tokenOutIndex = watch("tokenOutIndex");
-  // const debouncedAmount = useDebounce(amount);
+  const debouncedAmount = useDebounce(amount);
 
   const tokenInSymbol = initialData?.tokens[tokenInIndex]?.symbol;
   const tokenOutSymbol = initialData?.tokens[tokenOutIndex]?.symbol;
 
-  // useEffect(() => {
-  //   setInitialResult(
-  //     calculateSimulation({
-  //       amount: Number.isNaN(Number(amount))
-  //         ? initialData?.tokens[0]?.balance / 10
-  //         : Number(amount),
-  //       swapType,
-  //       tokenInSymbol,
-  //       tokenOutSymbol,
-  //       amm: initialAMM,
-  //     })
-  //   );
-  //   setCustomResult(
-  //     calculateSimulation({
-  //       amount: Number.isNaN(Number(amount))
-  //         ? customData?.tokens[0]?.balance / 10
-  //         : Number(amount),
-  //       swapType,
-  //       tokenInSymbol,
-  //       tokenOutSymbol,
-  //       amm: customAMM,
-  //     })
-  //   );
-  // }, [amount, amount, initialData]);
+  useEffect(() => {
+    setInitialResult(
+      calculateSimulation({
+        amount: Number.isNaN(Number(debouncedAmount))
+          ? initialData?.tokens[0]?.balance / 10
+          : Number(debouncedAmount),
+        swapType,
+        tokenInSymbol,
+        tokenOutSymbol,
+        amm: initialAMM,
+      })
+    );
+    setCustomResult(
+      calculateSimulation({
+        amount: Number.isNaN(Number(debouncedAmount))
+          ? customData?.tokens[0]?.balance / 10
+          : Number(debouncedAmount),
+        swapType,
+        tokenInSymbol,
+        tokenOutSymbol,
+        amm: customAMM,
+      })
+    );
+  }, [amount, debouncedAmount, initialData]);
 
   function SimulationResult({
     amountIn,
@@ -106,7 +106,7 @@ export function SwapSimulator() {
         <label className="block text-sm text-slate12">Effective Price</label>
         <BaseInput
           value={`${effectivePrice.toFixed(
-            2,
+            2
           )} ${tokenInSymbol}/${tokenOutSymbol}`}
           disabled
         />
@@ -200,7 +200,7 @@ export function SwapSimulator() {
                   label="Amount"
                   type="number"
                   defaultValue={(initialData?.tokens[0]?.balance / 10).toFixed(
-                    2,
+                    2
                   )}
                 />
               )}
@@ -251,35 +251,35 @@ function calculateSimulation({
   let amountOut = amm.exactTokenInForTokenOut(
     amount,
     tokenInSymbol,
-    tokenOutSymbol,
+    tokenOutSymbol
   );
   let effectivePrice = amm.effectivePriceForExactTokenInSwap(
     amount,
     tokenInSymbol,
-    tokenOutSymbol,
+    tokenOutSymbol
   );
   let priceImpact = amm.priceImpactForExactTokenInSwap(
     amount,
     tokenInSymbol,
-    tokenOutSymbol,
+    tokenOutSymbol
   );
 
   if (swapType == "Exact Out") {
     amountIn = amm.tokenInForExactTokenOut(
       amount,
       tokenInSymbol,
-      tokenOutSymbol,
+      tokenOutSymbol
     );
     amountOut = amount;
     effectivePrice = amm.effectivePriceForExactTokenOutSwap(
       amount,
       tokenInSymbol,
-      tokenOutSymbol,
+      tokenOutSymbol
     );
     priceImpact = amm.priceImpactForExactTokenOutSwap(
       amount,
       tokenInSymbol,
-      tokenOutSymbol,
+      tokenOutSymbol
     );
   }
 

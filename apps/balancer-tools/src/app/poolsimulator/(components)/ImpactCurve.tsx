@@ -10,7 +10,7 @@ import { TokensData, usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
 import { PoolTypeEnum } from "../(types)";
-import { calculateCurvePoints } from "./SwapCurve";
+import { calculateCurvePoints } from "../(utils)";
 
 export function ImpactCurve() {
   const {
@@ -73,7 +73,7 @@ export function ImpactCurve() {
     direction: "in" | "out",
     amount: number,
     tokenFrom: string,
-    tokenTo: string
+    tokenTo: string,
   ) => {
     const formattedAmount = formatNumber(amount, 2);
     return direction === "in"
@@ -84,7 +84,7 @@ export function ImpactCurve() {
   const createHoverTemplate = (
     amounts: number[],
     direction: "in" | "out",
-    impactData: number[]
+    impactData: number[],
   ): string[] => {
     return amounts.map((amount, i) => {
       const swapFromSymbol =
@@ -96,7 +96,7 @@ export function ImpactCurve() {
         direction,
         amount,
         swapFromSymbol,
-        swapToSymbol
+        swapToSymbol,
       );
 
       const impact = formatNumber(impactData[i] / 100, 2, "percent");
@@ -112,7 +112,7 @@ export function ImpactCurve() {
     name: string,
     isLegendShown: boolean,
     direction: "in" | "out",
-    lineStyle: "solid" | "dashdot" = "solid"
+    lineStyle: "solid" | "dashdot" = "solid",
   ) => {
     const line = lineStyle === "dashdot" ? { dash: "dashdot" } : {};
 
@@ -128,7 +128,7 @@ export function ImpactCurve() {
       hovertemplate: createHoverTemplate(
         hovertemplateData,
         direction,
-        impactData
+        impactData,
       ),
       line,
     };
@@ -141,7 +141,7 @@ export function ImpactCurve() {
       "Initial",
       analysisToken.symbol,
       true,
-      "in"
+      "in",
     ),
     createDataObject(
       variantAmountsAnalysisTokenIn,
@@ -149,7 +149,7 @@ export function ImpactCurve() {
       "Custom",
       analysisToken.symbol,
       true,
-      "in"
+      "in",
     ),
     createDataObject(
       initialAmountsTabTokenIn,
@@ -158,7 +158,7 @@ export function ImpactCurve() {
       currentTabToken.symbol,
       true,
       "out",
-      "dashdot"
+      "dashdot",
     ),
     createDataObject(
       variantAmountsTabTokenIn,
@@ -167,10 +167,28 @@ export function ImpactCurve() {
       currentTabToken.symbol,
       true,
       "out",
-      "dashdot"
+      "dashdot",
     ),
   ];
 
+  const maxOfInitial = Math.max(
+    ...initialAmountsAnalysisTokenIn,
+    ...initialAmountsTabTokenIn,
+  );
+  const maxOfCustom = Math.max(
+    ...variantAmountsAnalysisTokenIn,
+    ...variantAmountsTabTokenIn,
+  );
+  const xlimit = Math.min(maxOfInitial, maxOfCustom);
+  const indexOfXLimit = initialAmountsAnalysisTokenIn.indexOf(xlimit);
+
+  const getImpactOnXLimit = (analysis, tab) =>
+    Math.max(analysis[indexOfXLimit] || 0, tab[indexOfXLimit] || 0);
+
+  const ylimit = Math.max(
+    getImpactOnXLimit(initialImpactAnalysisTokenIn, initialImpactTabTokenIn),
+    getImpactOnXLimit(variantImpactAnalysisTokenIn, variantImpactTabTokenIn),
+  );
   return (
     <Plot
       title="Price Impact Curve"
@@ -179,9 +197,11 @@ export function ImpactCurve() {
       layout={{
         xaxis: {
           title: `Amount in`,
+          range: [0, xlimit],
         },
         yaxis: {
           title: `Price impact (%)`,
+          range: [-5, ylimit],
         },
       }}
       className="h-1/2 w-full"
@@ -221,8 +241,8 @@ const calculateTokenImpact = ({
       amm.priceImpactForExactTokenInSwap(
         amount,
         swapDirection === "in" ? tokenIn.symbol : tokenOut.symbol,
-        swapDirection === "in" ? tokenOut.symbol : tokenIn.symbol
-      ) * 100
+        swapDirection === "in" ? tokenOut.symbol : tokenIn.symbol,
+      ) * 100,
   );
 
   return {

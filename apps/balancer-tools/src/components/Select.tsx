@@ -12,6 +12,7 @@ type SelectProps = ComponentPropsWithRef<typeof SelectPrimitive.Root>;
 
 interface ISelect extends SelectProps {
   theme?: "dark" | "light";
+  className?: string;
 }
 type SelectItemProps = React.ComponentPropsWithRef<typeof SelectPrimitive.Item>;
 
@@ -24,7 +25,7 @@ const baseLight =
   "bg-white text-slate12 data-[highlighted]:bg-blue5 data-[highlighted]:text-white";
 
 export const Select = forwardRef<HTMLButtonElement, ISelect>(
-  ({ children, theme = "dark", ...props }, forwardedRef) => {
+  ({ children, theme = "dark", className = "", ...props }, forwardedRef) => {
     const baseTheme = theme === "dark" ? baseDark : baseLight;
     return (
       <SelectPrimitive.Root {...props}>
@@ -35,6 +36,7 @@ export const Select = forwardRef<HTMLButtonElement, ISelect>(
             theme === "dark"
               ? "shadow-blue1/10 border-blue6 border hover:bg-blue4 focus:shadow-[0_0_0_2px] focus:shadow-blue1 disabled:bg-blackA9 data-[placeholder]:text-blue9 shadow-[0_2px_10px]"
               : "",
+            className,
           )}
           ref={forwardedRef}
         >

@@ -201,7 +201,7 @@ export function ImpactCurve() {
         },
         yaxis: {
           title: `Price impact (%)`,
-          range: [-5, ylimit],
+          range: [0, ylimit],
         },
       }}
       className="h-1/2 w-full"

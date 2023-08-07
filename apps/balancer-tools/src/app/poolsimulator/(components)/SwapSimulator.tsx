@@ -16,6 +16,7 @@ import {
   usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
 import { SwapSimulatorDataSchema } from "#/lib/schema";
+import { formatNumber } from "#/utils/formatNumber";
 
 import { PoolTypeEnum } from "../(types)";
 
@@ -153,7 +154,35 @@ function SwapSimulatorForm({
 }) {
   const { initialData, initialAMM, customAMM } = usePoolSimulator();
 
-  if (!initialData || !initialAMM || !customAMM) return <Spinner />;
+  useEffect(() => {
+    if (!initialData || !initialAMM || !customAMM) return;
+    const defaultInitialResult = calculateSimulation({
+      amm: initialAMM,
+      swapType: defaultSwapType,
+      amount: Number(defaultAmount),
+      tokenInSymbol: tokensSymbol?.[Number(defaultTokenInIndex)],
+      tokenOutSymbol: tokensSymbol?.[Number(defaultTokenOutIndex)],
+    });
+    const defaultCustomResult = calculateSimulation({
+      amm: customAMM,
+      swapType: defaultSwapType,
+      amount: Number(defaultAmount),
+      tokenInSymbol: tokensSymbol?.[Number(defaultTokenInIndex)],
+      tokenOutSymbol: tokensSymbol?.[Number(defaultTokenOutIndex)],
+    });
+    setInitialResult({
+      swapType: defaultSwapType,
+      tokenInSymbol: tokensSymbol?.[Number(defaultTokenInIndex)],
+      tokenOutSymbol: tokensSymbol?.[Number(defaultTokenOutIndex)],
+      ...defaultInitialResult,
+    });
+    setCustomResult({
+      swapType: defaultSwapType,
+      tokenInSymbol: tokensSymbol?.[Number(defaultTokenInIndex)],
+      tokenOutSymbol: tokensSymbol?.[Number(defaultTokenOutIndex)],
+      ...defaultCustomResult,
+    });
+  }, [initialAMM, customAMM]);
 
   const form = useForm({
     resolver: zodResolver(SwapSimulatorDataSchema),
@@ -163,6 +192,8 @@ function SwapSimulatorForm({
     control,
     formState: { errors },
   } = form;
+
+  if (!initialData || !initialAMM || !customAMM) return <Spinner />;
 
   const swapTypes = ["Exact In", "Exact Out"];
   const tokensSymbol = initialData?.tokens.map((token) => token.symbol);
@@ -202,86 +233,64 @@ function SwapSimulatorForm({
     });
   };
 
-  useEffect(() => {
-    const defaultInitialResult = calculateSimulation({
-      amm: initialAMM,
-      swapType: defaultSwapType,
-      amount: Number(defaultAmount),
-      tokenInSymbol: tokensSymbol?.[Number(defaultTokenInIndex)],
-      tokenOutSymbol: tokensSymbol?.[Number(defaultTokenOutIndex)],
-    });
-    const defaultCustomResult = calculateSimulation({
-      amm: customAMM,
-      swapType: defaultSwapType,
-      amount: Number(defaultAmount),
-      tokenInSymbol: tokensSymbol?.[Number(defaultTokenInIndex)],
-      tokenOutSymbol: tokensSymbol?.[Number(defaultTokenOutIndex)],
-    });
-    setInitialResult({
-      swapType: defaultSwapType,
-      tokenInSymbol: tokensSymbol?.[Number(defaultTokenInIndex)],
-      tokenOutSymbol: tokensSymbol?.[Number(defaultTokenOutIndex)],
-      ...defaultInitialResult,
-    });
-    setCustomResult({
-      swapType: defaultSwapType,
-      tokenInSymbol: tokensSymbol?.[Number(defaultTokenInIndex)],
-      tokenOutSymbol: tokensSymbol?.[Number(defaultTokenOutIndex)],
-      ...defaultCustomResult,
-    });
-  }, [initialAMM, customAMM]);
+  function SelectInput({
+    label,
+    name,
+    defaultValue,
+    options,
+    values,
+  }: {
+    label: string;
+    name: string;
+    defaultValue: string;
+    options: string[];
+    values: string[];
+  }) {
+    return (
+      <div>
+        <FormLabel className="mb-2 block text-sm text-slate12">
+          {label}
+        </FormLabel>
+        <Controller
+          control={control}
+          name={name}
+          defaultValue={defaultValue}
+          render={({ field: { onChange, value, ref } }) => (
+            <Select
+              onValueChange={onChange}
+              value={value as string}
+              ref={ref}
+              className="w-full"
+            >
+              {options.map((option, index) => (
+                <SelectItem key={values[index]} value={values[index]}>
+                  {option}
+                </SelectItem>
+              ))}
+            </Select>
+          )}
+        />
+      </div>
+    );
+  }
 
   return (
     <Form {...form} onSubmit={onSubmit}>
       <div className="grid grid-cols-2 gap-2">
-        <div>
-          <FormLabel className="mb-2 block text-sm text-slate12">
-            Token In
-          </FormLabel>
-          <Controller
-            control={control}
-            name="tokenInIndex"
-            defaultValue={defaultTokenInIndex}
-            render={({ field: { onChange, value, ref } }) => (
-              <Select
-                onValueChange={onChange}
-                value={value as string}
-                ref={ref}
-                className="w-full"
-              >
-                {tokensSymbol.map((tokenSymbol, index) => (
-                  <SelectItem key={tokenSymbol} value={index.toString()}>
-                    {tokenSymbol}
-                  </SelectItem>
-                ))}
-              </Select>
-            )}
-          />
-        </div>
-        <div>
-          <FormLabel className="mb-2 block text-sm text-slate12">
-            Token Out
-          </FormLabel>
-          <Controller
-            control={control}
-            name="tokenOutIndex"
-            defaultValue={defaultTokenOutIndex}
-            render={({ field: { onChange, value, ref } }) => (
-              <Select
-                onValueChange={onChange}
-                value={value as string}
-                ref={ref}
-                className="w-full"
-              >
-                {initialData.tokens.map(({ symbol }, index) => (
-                  <SelectItem key={symbol} value={index.toString()}>
-                    {symbol}
-                  </SelectItem>
-                ))}
-              </Select>
-            )}
-          />
-        </div>
+        <SelectInput
+          label="Token In"
+          name="tokenInIndex"
+          defaultValue={defaultTokenInIndex}
+          options={tokensSymbol}
+          values={tokensSymbol.map((_, index) => index.toString())}
+        />
+        <SelectInput
+          label="Token Out"
+          name="tokenOutIndex"
+          defaultValue={defaultTokenOutIndex}
+          options={tokensSymbol}
+          values={tokensSymbol.map((_, index) => index.toString())}
+        />
         {errors[""] && (
           <div className="col-span-2">
             <span className="text-tomato10">
@@ -289,30 +298,13 @@ function SwapSimulatorForm({
             </span>
           </div>
         )}
-        <div>
-          <FormLabel className="mb-2 block text-sm text-slate12">
-            Swap Type
-          </FormLabel>
-          <Controller
-            control={control}
-            name="swapType"
-            defaultValue={defaultSwapType}
-            render={({ field: { onChange, value, ref } }) => (
-              <Select
-                onValueChange={onChange}
-                value={value as string}
-                ref={ref}
-                className="w-full"
-              >
-                {swapTypes.map((swapType) => (
-                  <SelectItem key={swapType} value={swapType}>
-                    {swapType}
-                  </SelectItem>
-                ))}
-              </Select>
-            )}
-          />
-        </div>
+        <SelectInput
+          label="Swap Type"
+          name="swapType"
+          defaultValue={defaultSwapType}
+          options={swapTypes}
+          values={swapTypes}
+        />
         <div>
           <FormField
             name="amount"
@@ -345,7 +337,7 @@ function ErrorMessage({
 }) {
   return (
     <div role="alert">
-      <div className="bg-tomato9 text-slate12 font-bold rounded-t px-4 py-2">
+      <div className="bg-tomato9 text-slate12 font-bold rounded-t px-4 py-2 mt-1">
         Error: {errorTitle}
       </div>
       <div className="border border-t-0 border-red-400 rounded-b bg-tomato12 px-4 py-3 text-tomato7">
@@ -378,14 +370,15 @@ function SimulationResult({
     return <Spinner />;
   }
   // When CLP is out of bounds in an exactIn swap it returns 0
+  const isGyroType = (type: PoolTypeEnum) =>
+    [PoolTypeEnum.Gyro2, PoolTypeEnum.Gyro3, PoolTypeEnum.GyroE].includes(type);
+  const getTokenBalance = (tokenSymbol: string) => {
+    const token = data.tokens.find((t) => t.symbol === tokenSymbol);
+    return token?.balance || 0;
+  };
   if (
-    (data.poolType === PoolTypeEnum.Gyro2 ||
-      data.poolType === PoolTypeEnum.Gyro3 ||
-      data.poolType === PoolTypeEnum.GyroE) &&
-    (!amountOut ||
-      amountOut >
-        (data.tokens.find((t) => t.symbol === tokenOutSymbol)
-          ?.balance as number))
+    isGyroType(data.poolType) &&
+    (!amountOut || amountOut > getTokenBalance(tokenOutSymbol))
   ) {
     return (
       <ErrorMessage
@@ -419,15 +412,15 @@ function SimulationResult({
       )}
       <Label className="block text-sm text-slate12">Effective Price</Label>
       <BaseInput
-        value={`${effectivePrice.toFixed(
-          2,
+        value={`${formatNumber(
+          effectivePrice,
         )} ${tokenInSymbol}/${tokenOutSymbol}`}
         disabled
       />
       <Label className="block text-sm text-slate12">Price Impact</Label>
       <BaseInput
         label="Price Impact"
-        value={`${(priceImpact * 100).toFixed(2)} %`}
+        value={`${formatNumber(priceImpact * 100)} %`}
         disabled
       />
     </div>

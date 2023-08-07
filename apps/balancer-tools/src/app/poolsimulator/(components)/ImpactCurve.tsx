@@ -171,19 +171,32 @@ export function ImpactCurve() {
     ),
   ];
 
-  const maxOfInitial = Math.max(
+  const maxFromInitialAmounts = Math.max(
     ...initialAmountsAnalysisTokenIn,
     ...initialAmountsTabTokenIn,
   );
-  const maxOfCustom = Math.max(
+  const maxFromCustomAmounts = Math.max(
     ...variantAmountsAnalysisTokenIn,
     ...variantAmountsTabTokenIn,
   );
-  const xlimit = Math.min(maxOfInitial, maxOfCustom);
-  const indexOfXLimit = initialAmountsAnalysisTokenIn.indexOf(xlimit);
+  const xlimit = Math.min(maxFromInitialAmounts, maxFromCustomAmounts);
+
+  function indexOfXLimit(value, ...arrays) {
+    return arrays.map((arr) => arr.indexOf(value)).find((idx) => idx !== -1);
+  }
+
+  const arraysToSearch = [
+    initialAmountsAnalysisTokenIn,
+    initialAmountsTabTokenIn,
+    variantAmountsAnalysisTokenIn,
+    variantAmountsTabTokenIn,
+  ];
+  const xLimitIndex = maxFromInitialAmounts
+    ? indexOfXLimit(xlimit, ...arraysToSearch)
+    : undefined;
 
   const getImpactOnXLimit = (analysis, tab) =>
-    Math.max(analysis[indexOfXLimit] || 0, tab[indexOfXLimit] || 0);
+    Math.max(analysis[xLimitIndex] || 0, tab[xLimitIndex] || 0);
 
   const ylimit = Math.max(
     getImpactOnXLimit(initialImpactAnalysisTokenIn, initialImpactTabTokenIn),
@@ -201,7 +214,7 @@ export function ImpactCurve() {
         },
         yaxis: {
           title: `Price impact (%)`,
-          range: [0, ylimit],
+          range: [, ylimit],
         },
       }}
       className="h-1/2 w-full"

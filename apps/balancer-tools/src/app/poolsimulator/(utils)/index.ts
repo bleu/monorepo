@@ -176,7 +176,7 @@ export function calculateCurvePoints({
   balance?: number;
   start?: number;
 }) {
-  if (!balance || typeof start == "undefined") return [];
+  if (!balance || start === undefined) return [];
   const numberOfPoints = 100;
   const initialValue = balance * 0.001;
   const stepRatio = Math.pow(balance / initialValue, 1 / (numberOfPoints - 1));

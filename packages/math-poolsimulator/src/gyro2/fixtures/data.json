@@ -1,0 +1,31 @@
+{
+  "data": {
+    "pool": {
+      "address": "0x08b83439aeaccbcfb172a7327af38832fb9b7af4",
+      "poolType": "Gyro2",
+      "symbol": "2CLP-WBTC-WETH",
+      "swapFee": "0.0025",
+      "sqrtAlpha": "0.2236067977",
+      "sqrtBeta": "0.3",
+      "tokens": [
+        {
+          "address": "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6",
+          "symbol": "WBTC",
+          "balance": "0.00000001",
+          "decimals": 8,
+          "priceRate": "1"
+        },
+        {
+          "address": "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+          "symbol": "WETH",
+          "balance": "0.000000000000037847",
+          "decimals": 18,
+          "priceRate": "1"
+        }
+      ],
+      "tokenRates": ["1", "1"],
+      "totalShares": "0.000000010000037847",
+      "tokensList": ["WBTC", "WETH"]
+    }
+  }
+}

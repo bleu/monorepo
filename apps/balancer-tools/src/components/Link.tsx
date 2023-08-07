@@ -1,10 +1,10 @@
 "use client";
 
-import { Url } from "next/dist/shared/lib/router/router";
+import { type Url } from "next/dist/shared/lib/router/router";
 import Link from "next/link";
 import React from "react";
 
-import { Spinner, SpinnerColor } from "./Spinner";
+import { Spinner, type SpinnerColor } from "./Spinner";
 
 export function LinkComponent({
   href,

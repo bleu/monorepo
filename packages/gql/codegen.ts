@@ -1,5 +1,5 @@
 import { capitalize, Network } from "@bleu-balancer-tools/utils";
-import { CodegenConfig } from "@graphql-codegen/cli";
+import { type CodegenConfig } from "@graphql-codegen/cli";
 
 export enum Subgraph {
   BalancerPoolsMetadata = "balancer-pools-metadata",

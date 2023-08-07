@@ -1,12 +1,13 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 import { Input } from "#/components/Input";
 import { Form, FormField } from "#/components/ui/form";
-import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
+import { type AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
 import useDebounce from "#/hooks/useDebounce";
 import { StableSwapSimulatorDataSchema } from "#/lib/schema";
 import { numberToPercent, percentToNumber } from "#/utils/formatNumber";
@@ -34,12 +35,12 @@ export default function InitialDataForm() {
   const debouncedAmpFactor = useDebounce(ampFactor);
   const debouncedTokens = useDebounce(tokens);
 
-  const baselineAndFieldsAreEqual = () => {
+  const baselineAndFieldsAreEqual = useCallback(() => {
     const ampIsEqual = initialData?.ampFactor == getValues().ampFactor;
     const swapFeeIsEqual = initialData?.swapFee == getValues().swapFee;
     const tokensAreEqual = initialData?.tokens == getValues().tokens;
     return ampIsEqual && swapFeeIsEqual && tokensAreEqual;
-  };
+  }, [initialData, getValues]);
 
   const onSubmit = () => {
     if (baselineAndFieldsAreEqual()) return;
@@ -60,13 +61,21 @@ export default function InitialDataForm() {
     if (swapFeeInPercentage) setValue("swapFee", swapFeeInPercentage);
     if (initialData?.ampFactor) setValue("ampFactor", initialData?.ampFactor);
     if (initialData?.tokens) setValue("tokens", initialData?.tokens);
-  }, [initialData]);
+  }, [baselineAndFieldsAreEqual, initialData, setValue, swapFeeInPercentage]);
 
-  useEffect(onSubmit, [debouncedSwapFee, debouncedAmpFactor, debouncedTokens]);
+  useEffect(onSubmit, [
+    debouncedSwapFee,
+    debouncedAmpFactor,
+    debouncedTokens,
+    baselineAndFieldsAreEqual,
+    errors,
+    getValues,
+    setInitialData,
+  ]);
 
   useEffect(() => {
     register("tokens", { required: true, value: initialData?.tokens });
-  }, []);
+  }, [initialData?.tokens, register]);
 
   return (
     <Form id="baseline-data-form" onSubmit={onSubmit} {...form}>

@@ -1,4 +1,4 @@
-import { bnum, OldBigNumber, StablePool } from "@balancer-labs/sor";
+import { bnum, type OldBigNumber, type StablePool } from "@balancer-labs/sor";
 import { parseFixed } from "@ethersproject/bignumber";
 import { WeiPerEther as ONE } from "@ethersproject/constants";
 

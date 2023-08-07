@@ -1,4 +1,4 @@
-import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
+import { type AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
@@ -8,7 +8,7 @@ import { Select, SelectItem } from "#/components/Select";
 import { Spinner } from "#/components/Spinner";
 import { Form, FormField } from "#/components/ui/form";
 import {
-  PoolPairData,
+  type PoolPairData,
   usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
 import useDebounce from "#/hooks/useDebounce";
@@ -33,8 +33,6 @@ export function SwapSimulator() {
     priceImpact: 0,
   });
 
-  if (!initialAMM || !customAMM) return <Spinner />;
-
   const amount = watch("amount");
   const swapType = watch("swapType");
   const tokenInIndex = watch("tokenInIndex");
@@ -45,6 +43,8 @@ export function SwapSimulator() {
   const tokenOutSymbol = initialData?.tokens[tokenOutIndex]?.symbol;
 
   useEffect(() => {
+    if (!initialAMM || !customAMM) return;
+
     setInitialResult(
       calculateSimulation({
         amount: Number.isNaN(Number(debouncedAmount))
@@ -67,7 +67,19 @@ export function SwapSimulator() {
         amm: customAMM,
       }),
     );
-  }, [amount, debouncedAmount, initialData]);
+  }, [
+    amount,
+    customAMM,
+    customData?.tokens,
+    debouncedAmount,
+    initialAMM,
+    initialData,
+    swapType,
+    tokenInSymbol,
+    tokenOutSymbol,
+  ]);
+
+  if (!initialAMM || !customAMM) return <Spinner />;
 
   function SimulationResult({
     amountIn,

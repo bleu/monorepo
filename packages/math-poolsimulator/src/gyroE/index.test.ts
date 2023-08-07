@@ -1,4 +1,4 @@
-import { bnum, SubgraphPoolBase } from "@balancer-labs/sor";
+import { bnum, type SubgraphPoolBase } from "@balancer-labs/sor";
 import { describe, expect, test } from "@jest/globals";
 
 import { numberToBigNumber } from "../conversions";

@@ -1,10 +1,10 @@
-import { Chain, waitForTransaction } from "@wagmi/core";
+import { type Chain, waitForTransaction } from "@wagmi/core";
 import { parseUnits } from "viem";
 
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { writeTokenApproval } from "#/wagmi/writeTokenApproval";
 
-import { SubmitData, TransactionStatus } from "../useTransaction";
+import { type SubmitData, TransactionStatus } from "../useTransaction";
 import { NOTIFICATION_MAP_INTERNAL_BALANCES } from "./useManageUserBalance";
 import { useTransactionStatus } from "./useTransactionStatus";
 

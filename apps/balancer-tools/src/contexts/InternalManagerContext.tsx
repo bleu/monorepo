@@ -1,18 +1,18 @@
 "use client";
 
-import { InternalBalanceQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
-import { Address } from "@bleu-balancer-tools/utils";
+import { type InternalBalanceQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
+import { type Address } from "@bleu-balancer-tools/utils";
 import {
   createContext,
-  PropsWithChildren,
+  type PropsWithChildren,
   useContext,
   useEffect,
   useState,
 } from "react";
 
 import { getTokensData } from "#/app/_serverActions";
-import { Notification, TransactionStatus } from "#/hooks/useTransaction";
-import { ArrElement, GetDeepProp } from "#/utils/getTypes";
+import { type Notification, TransactionStatus } from "#/hooks/useTransaction";
+import { type ArrElement, type GetDeepProp } from "#/utils/getTypes";
 
 import { useNetworks } from "./networks";
 

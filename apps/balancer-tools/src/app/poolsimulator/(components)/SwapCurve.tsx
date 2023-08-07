@@ -1,17 +1,17 @@
 "use client";
 
-import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
-import { PlotType } from "plotly.js";
+import { type AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
+import { type PlotType } from "plotly.js";
 
 import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
 import {
-  PoolPairData,
+  type PoolPairData,
   usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
-import { PoolTypeEnum, TokensData } from "../(types)";
+import { PoolTypeEnum, type TokensData } from "../(types)";
 
 export function SwapCurve() {
   const {

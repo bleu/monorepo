@@ -1,12 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { forwardRef, useEffect, useImperativeHandle } from "react";
-import { FieldValues, useForm } from "react-hook-form";
+import { type FieldValues, useForm } from "react-hook-form";
 
 import Button from "#/components/Button";
 import { Input } from "#/components/Input";
 import { useTabContext } from "#/components/Tabs";
 import { Form, FormField } from "#/components/ui/form";
-import { AnalysisData } from "#/contexts/PoolSimulatorContext";
+import { type AnalysisData } from "#/contexts/PoolSimulatorContext";
 import {
   Gyro2SimulatorDataSchema,
   Gyro3SimulatorDataSchema,
@@ -202,18 +202,18 @@ export const PoolParamsForm = forwardRef<unknown, PoolParamsFormProps>(
         }
       });
       if (data?.tokens) setValue("tokens", data?.tokens);
-    }, [data.poolParams, data.tokens, poolType]);
+    }, [clearErrors, data.poolParams, data?.tokens, poolType, setValue]);
 
     useEffect(() => {
       register("tokens", { required: true, value: data?.tokens });
-    }, []);
+    }, [data?.tokens, register]);
 
     const { value: currentTab } = useTabContext();
 
     useEffect(() => {
       const data = getValues();
       onTabChanged?.(createPayload(poolType, data));
-    }, [currentTab]);
+    }, [currentTab, getValues, onTabChanged, poolType]);
 
     return (
       <Form
@@ -223,7 +223,7 @@ export const PoolParamsForm = forwardRef<unknown, PoolParamsFormProps>(
       >
         <div className="flex flex-col gap-4">
           {inputMapper[poolType].map((input) => (
-            <div className="relative">
+            <div className="relative" key={input.name}>
               <FormField
                 name={input.name}
                 render={({ field }) => (
@@ -270,3 +270,5 @@ export const PoolParamsForm = forwardRef<unknown, PoolParamsFormProps>(
     );
   },
 );
+
+PoolParamsForm.displayName = "PoolParamsForm";

@@ -1,9 +1,9 @@
 "use client";
 
 import {
-  Address,
-  Network,
-  NetworkChainId,
+  type Address,
+  type Network,
+  type NetworkChainId,
   networkFor,
 } from "@bleu-balancer-tools/utils";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
@@ -45,7 +45,7 @@ export default function Page({
 
   useEffect(() => {
     clearNotification();
-  }, [isConnecting, addressLower]);
+  }, [isConnecting, addressLower, clearNotification]);
 
   if (!isConnected && !isReconnecting && !isConnecting) {
     return <WalletNotConnected isInternalManager />;

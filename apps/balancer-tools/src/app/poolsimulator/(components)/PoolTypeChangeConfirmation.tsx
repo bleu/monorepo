@@ -1,6 +1,6 @@
 import { DialogClose } from "@radix-ui/react-dialog";
 
-import { PoolType } from "#/contexts/PoolSimulatorContext";
+import { type PoolType } from "#/contexts/PoolSimulatorContext";
 
 export function PoolTypeChangeConfirmation({
   selectedType,

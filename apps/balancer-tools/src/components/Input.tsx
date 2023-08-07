@@ -1,8 +1,12 @@
 "use client";
 
 import cn from "clsx";
-import React, { HTMLProps } from "react";
-import { FieldError, RegisterOptions, useFormContext } from "react-hook-form";
+import React, { type HTMLProps } from "react";
+import {
+  type FieldError,
+  type RegisterOptions,
+  useFormContext,
+} from "react-hook-form";
 
 import { FormControl, FormLabel, FormMessage } from "./ui/form";
 
@@ -25,6 +29,8 @@ export const BaseInput = React.forwardRef<
     )}
   />
 ));
+
+BaseInput.displayName = "BaseInput";
 
 export const Input = React.forwardRef<HTMLInputElement, IInput>(
   ({ name, label, extraLabel, validation, ...props }: IInput) => {
@@ -66,3 +72,5 @@ export const Input = React.forwardRef<HTMLInputElement, IInput>(
     );
   },
 );
+
+Input.displayName = "Input";

@@ -7,12 +7,12 @@ import { Input } from "#/components/Input";
 import { useTabContext } from "#/components/Tabs";
 import { Form } from "#/components/ui/form";
 import {
-  AnalysisData,
+  type AnalysisData,
   usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
 import { getStableSwapSimulatorTokensSchema } from "#/lib/schema";
 
-import { TokensData } from "../(types)";
+import { type TokensData } from "../(types)";
 import { PoolSimulatorFormTabs } from "./Menu";
 
 export default function TokenForm({

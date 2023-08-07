@@ -1,16 +1,20 @@
 import {
   bnum,
   MetaStablePool,
-  OldBigNumber,
+  type OldBigNumber,
   StableMaths,
-  SubgraphPoolBase,
-  SubgraphToken,
+  type SubgraphPoolBase,
+  type SubgraphToken,
   ZERO,
 } from "@balancer-labs/sor";
-import { BigNumber, formatFixed, parseFixed } from "@ethersproject/bignumber";
+import {
+  type BigNumber,
+  formatFixed,
+  parseFixed,
+} from "@ethersproject/bignumber";
 import { WeiPerEther as EONE } from "@ethersproject/constants";
 
-import { IAMMFunctionality } from "../types";
+import { type IAMMFunctionality } from "../types";
 
 type MetaStablePoolToken = Pick<
   SubgraphToken,

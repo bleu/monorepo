@@ -1,18 +1,18 @@
 "use client";
 
-import { SingleInternalBalanceQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
+import { type SingleInternalBalanceQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
 import {
-  Address,
+  type Address,
   addressRegex,
   buildBlockExplorerAddressURL,
-  Network,
-  NetworkChainId,
+  type Network,
+  type NetworkChainId,
   networkFor,
 } from "@bleu-balancer-tools/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
-import { FieldValues, useForm } from "react-hook-form";
+import { type FieldValues, useForm } from "react-hook-form";
 import { useAccount, useBalance, useNetwork } from "wagmi";
 
 import { TokenSelect } from "#/app/internalmanager/(components)/TokenSelect";
@@ -39,8 +39,8 @@ import {
   UserBalanceOpKind,
 } from "#/lib/internal-balance-helper";
 import { getInternalBalanceSchema } from "#/lib/schema";
-import { refetchRequest } from "#/utils/fetcher";
-import { ArrElement, GetDeepProp } from "#/utils/getTypes";
+import { useRefetchRequest } from "#/utils/fetcher";
+import { type ArrElement, type GetDeepProp } from "#/utils/getTypes";
 
 type TokenData = Omit<
   ArrElement<GetDeepProp<SingleInternalBalanceQuery, "userInternalBalances">>,
@@ -78,7 +78,7 @@ export default function Page({
       tokenAddress: params.tokenAddress,
     });
 
-  refetchRequest({
+  useRefetchRequest({
     mutate,
     chainId: chain?.id.toString() || "1",
     userAddress: addressLower as Address,
@@ -89,25 +89,30 @@ export default function Page({
     token: params.tokenAddress,
   });
 
-  const tokenInfo = internalBalanceTokenData?.user
-    ?.userInternalBalances?.[0] || {
-    balance: "0",
-    tokenInfo: {
-      __typename: "Token",
-      address: params.tokenAddress,
-      decimals: walletAmount?.decimals || 0,
-      symbol: walletAmount?.symbol || "",
-      name: walletAmount?.symbol || "",
-    },
-  };
-
   useEffect(() => {
+    const tokenInfo = internalBalanceTokenData?.user
+      ?.userInternalBalances?.[0] || {
+      balance: "0",
+      tokenInfo: {
+        __typename: "Token",
+        address: params.tokenAddress,
+        decimals: walletAmount?.decimals || 0,
+        symbol: walletAmount?.symbol || "",
+        name: walletAmount?.symbol || "",
+      },
+    };
+
     setTokenData(tokenInfo);
-  }, [internalBalanceTokenData]);
+  }, [
+    internalBalanceTokenData?.user?.userInternalBalances,
+    params.tokenAddress,
+    walletAmount?.decimals,
+    walletAmount?.symbol,
+  ]);
 
   useEffect(() => {
     clearNotification();
-  }, [isConnecting, addressLower]);
+  }, [isConnecting, addressLower, clearNotification]);
 
   if (!isConnected && !isReconnecting && !isConnecting) {
     return <WalletNotConnected isInternalManager />;
@@ -251,7 +256,7 @@ function TransactionCard({
   useEffect(() => {
     register("receiverAddress");
     setValue("tokenAddress", tokenData.tokenInfo?.address);
-  }, []);
+  }, [register, setValue, tokenData.tokenInfo?.address]);
 
   useEffect(() => {
     if (
@@ -265,7 +270,14 @@ function TransactionCard({
         userAddress,
       });
     }
-  }, [tokenAmount]);
+  }, [
+    checkAllowance,
+    operationKindEnum,
+    tokenAmount,
+    tokenData?.tokenInfo?.address,
+    tokenData?.tokenInfo?.decimals,
+    userAddress,
+  ]);
 
   const explorerData = buildBlockExplorerAddressURL({
     chainId,

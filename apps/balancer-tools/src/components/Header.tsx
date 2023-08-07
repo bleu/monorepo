@@ -5,7 +5,7 @@ import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import Link from "next/link";
 import * as React from "react";
-import { ReactNode } from "react";
+import { type ReactNode } from "react";
 
 import { useNetworks } from "#/contexts/networks";
 import toTitleCase from "#/utils/toTitleCase";

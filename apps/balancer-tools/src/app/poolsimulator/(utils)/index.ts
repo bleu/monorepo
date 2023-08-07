@@ -1,9 +1,9 @@
-import { PoolQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
+import { type PoolQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
 import { ExtendedGyroEV2 } from "@bleu-balancer-tools/math-poolsimulator/src/gyroE";
 import { ExtendedMetaStableMath } from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
 
-import { AnalysisData } from "#/contexts/PoolSimulatorContext";
+import { type AnalysisData } from "#/contexts/PoolSimulatorContext";
 import { fetchECLPDerivativeParams } from "#/lib/eclp-derivative";
 
 import { PoolTypeEnum } from "../(types)";

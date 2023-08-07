@@ -1,6 +1,10 @@
 "use client";
 
-import { darkTheme, RainbowKitProvider, Theme } from "@rainbow-me/rainbowkit";
+import {
+  darkTheme,
+  RainbowKitProvider,
+  type Theme,
+} from "@rainbow-me/rainbowkit";
 import merge from "lodash.merge";
 import React from "react";
 import { WagmiConfig } from "wagmi";

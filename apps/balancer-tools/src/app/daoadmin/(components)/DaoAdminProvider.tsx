@@ -17,7 +17,7 @@ export function DaoAdminProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (chain) push("/daoadmin");
-  }, [chain]);
+  }, [chain, push]);
 
   return (
     <>

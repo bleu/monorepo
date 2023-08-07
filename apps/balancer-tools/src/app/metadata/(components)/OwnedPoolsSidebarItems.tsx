@@ -1,5 +1,9 @@
-import { PoolsWhereOwnerQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
-import { Address, networkFor, networkIdFor } from "@bleu-balancer-tools/utils";
+import { type PoolsWhereOwnerQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
+import {
+  type Address,
+  networkFor,
+  networkIdFor,
+} from "@bleu-balancer-tools/utils";
 import cn from "clsx";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,8 +14,8 @@ import { Badge } from "#/components/Badge";
 import { BaseInput } from "#/components/Input";
 import Sidebar from "#/components/Sidebar";
 import { impersonateWhetherDAO, pools } from "#/lib/gql";
-import { refetchRequest } from "#/utils/fetcher";
-import { ArrElement, GetDeepProp } from "#/utils/getTypes";
+import { useRefetchRequest } from "#/utils/fetcher";
+import { type ArrElement, type GetDeepProp } from "#/utils/getTypes";
 import { truncateAddress } from "#/utils/truncate";
 import { useAccount, useNetwork } from "#/wagmi";
 
@@ -52,7 +56,7 @@ function OwnedPoolsSidebarItems({
     .gql(chainId)
     .usePoolsWhereOwner({ owner }, { suspense: true });
 
-  refetchRequest({
+  useRefetchRequest({
     mutate,
     chainId: chainId,
     userAddress: owner,

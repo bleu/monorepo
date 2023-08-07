@@ -3,7 +3,7 @@ import { InfoCircledIcon } from "@radix-ui/react-icons";
 import cn from "clsx";
 import { merge } from "lodash";
 import dynamic from "next/dynamic";
-import { PlotParams } from "react-plotly.js";
+import { type PlotParams } from "react-plotly.js";
 
 import { Spinner } from "#/components/Spinner";
 

@@ -6,7 +6,7 @@ import {
 } from "@radix-ui/react-icons";
 import * as SelectPrimitive from "@radix-ui/react-select";
 import cn from "clsx";
-import { ComponentPropsWithRef, forwardRef } from "react";
+import { type ComponentPropsWithRef, forwardRef } from "react";
 
 type SelectProps = ComponentPropsWithRef<typeof SelectPrimitive.Root>;
 
@@ -76,6 +76,7 @@ export const Select = forwardRef<HTMLButtonElement, ISelect>(
   },
 );
 
+Select.displayName = "Select";
 export const SelectItem = forwardRef<HTMLDivElement, ISelectItem>(
   ({ children, className, theme = "dark", ...props }, forwardedRef) => {
     const baseTheme = theme === "dark" ? baseDark : baseLight;
@@ -97,3 +98,4 @@ export const SelectItem = forwardRef<HTMLDivElement, ISelectItem>(
     );
   },
 );
+SelectItem.displayName = "SelectItem";

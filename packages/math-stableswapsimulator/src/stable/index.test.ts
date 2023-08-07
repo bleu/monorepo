@@ -1,8 +1,8 @@
 import {
   bnum,
-  OldBigNumber,
+  type OldBigNumber,
   StablePool,
-  SubgraphPoolBase,
+  type SubgraphPoolBase,
 } from "@balancer-labs/sor";
 import { describe, expect, test } from "@jest/globals";
 import { StableMath } from "index";

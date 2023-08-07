@@ -1,9 +1,9 @@
-import { Address } from "@bleu-balancer-tools/utils";
+import { type Address } from "@bleu-balancer-tools/utils";
 import { prepareWriteContract, writeContract } from "@wagmi/core";
 import { parseUnits } from "viem";
 
-import { SubmitData } from "#/hooks/useTransaction";
-import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
+import { type SubmitData } from "#/hooks/useTransaction";
+import { type UserBalanceOpKind } from "#/lib/internal-balance-helper";
 
 import { vaultABI, vaultAddress } from "./generated";
 

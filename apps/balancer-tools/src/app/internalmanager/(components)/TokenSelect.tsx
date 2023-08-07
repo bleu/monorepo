@@ -1,8 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { SingleInternalBalanceQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
+import { type SingleInternalBalanceQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
 import {
-  Address,
+  type Address,
   addressRegex,
   buildBlockExplorerTokenURL,
 } from "@bleu-balancer-tools/utils";
@@ -11,7 +12,7 @@ import { erc20ABI, fetchBalance, multicall } from "@wagmi/core";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { tokenLogoUri } from "public/tokens/logoUri";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { formatUnits } from "viem";
 import { useAccount, useNetwork } from "wagmi";
 
@@ -20,8 +21,8 @@ import Table from "#/components/Table";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { getNetwork } from "#/contexts/networks";
 import { internalBalances } from "#/lib/gql";
-import { refetchRequest } from "#/utils/fetcher";
-import { ArrElement, GetDeepProp } from "#/utils/getTypes";
+import { useRefetchRequest } from "#/utils/fetcher";
+import { type ArrElement, type GetDeepProp } from "#/utils/getTypes";
 
 interface TokenWalletBalance {
   tokenAddress: string;
@@ -100,26 +101,28 @@ function TokenModal({
       userAddress: addressLower as Address,
     });
 
-  refetchRequest({
+  useRefetchRequest({
     mutate,
     chainId: chain?.id.toString() || "1",
     userAddress: addressLower as Address,
   });
 
-  const internalBalancesTokenAdresses = internalBalanceData?.user
-    ?.userInternalBalances
-    ? internalBalanceData.user.userInternalBalances.map(
-        (token) => token.tokenInfo?.address.toLowerCase(),
-      )
-    : [];
+  const tokenAdresses = useMemo(() => {
+    const internalBalancesTokenAdresses = internalBalanceData?.user
+      ?.userInternalBalances
+      ? internalBalanceData.user.userInternalBalances.map(
+          (token) => token.tokenInfo?.address.toLowerCase(),
+        )
+      : [];
 
-  const tokenListAdresses = tokenList
-    ? tokenList.map((token) => token.address.toLowerCase())
-    : [];
+    const tokenListAdresses = tokenList
+      ? tokenList.map((token) => token.address.toLowerCase())
+      : [];
 
-  const tokenAdresses = [
-    ...new Set([...internalBalancesTokenAdresses, ...tokenListAdresses]),
-  ];
+    return [
+      ...new Set([...internalBalancesTokenAdresses, ...tokenListAdresses]),
+    ];
+  }, [internalBalanceData, tokenList]);
 
   async function fetchSingleTokenBalance({
     tokenAddress,
@@ -192,7 +195,7 @@ function TokenModal({
 
   useEffect(() => {
     getWalletBalance(tokenAdresses as Address[]);
-  }, [internalBalanceData]);
+  }, [getWalletBalance, internalBalanceData, tokenAdresses]);
 
   const network = getNetwork(chain?.name);
   useEffect(() => {
@@ -218,7 +221,7 @@ function TokenModal({
         ]);
       });
     }
-  }, [tokenSearchQuery]);
+  }, [fetchSingleTokenBalance, tokenSearchQuery, tokens]);
 
   function filterTokenInput({
     tokenSearchQuery,

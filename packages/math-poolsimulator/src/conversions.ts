@@ -1,5 +1,5 @@
-import { bnum, OldBigNumber } from "@balancer-labs/sor";
-import { BigNumber, parseFixed } from "@ethersproject/bignumber";
+import { bnum, type OldBigNumber } from "@balancer-labs/sor";
+import { type BigNumber, parseFixed } from "@ethersproject/bignumber";
 
 export function numberToBigNumber({
   number,

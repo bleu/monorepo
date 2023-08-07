@@ -1,4 +1,4 @@
-import { Network } from "@bleu-balancer-tools/utils";
+import { type Network } from "@bleu-balancer-tools/utils";
 
 import { LinkComponent } from "#/components/Link";
 import { operationKindType } from "#/lib/internal-balance-helper";

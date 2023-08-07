@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { Input } from "#/components/Input";
 import { Select, SelectItem } from "#/components/Select";
 import { Form, FormField, FormLabel } from "#/components/ui/form";
-import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
+import { type AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
 import useDebounce from "#/hooks/useDebounce";
 import { StableSwapSimulatorDataSchema } from "#/lib/schema";
 import { numberToPercent, percentToNumber } from "#/utils/formatNumber";
@@ -56,7 +56,7 @@ export default function CustomDataForm() {
 
   useEffect(() => {
     register("tokens", { required: true, value: customData?.tokens });
-  }, []);
+  }, [customData?.tokens, register]);
 
   const swapFeeInPercentage = numberToPercent(customData?.swapFee);
 
@@ -64,9 +64,15 @@ export default function CustomDataForm() {
     // TODO: BAL 401
     if (customData?.tokens == getValues().tokens) return;
     if (customData?.tokens) setValue("tokens", customData?.tokens);
-  }, [customData?.tokens]);
+  }, [customData?.tokens, getValues, setValue]);
 
-  useEffect(onSubmit, [debouncedSwapFee, debouncedAmpFactor]);
+  useEffect(onSubmit, [
+    debouncedSwapFee,
+    debouncedAmpFactor,
+    errors,
+    getValues,
+    setCustomData,
+  ]);
 
   return (
     <Form id="variant-data-form" {...form} onSubmit={onSubmit}>

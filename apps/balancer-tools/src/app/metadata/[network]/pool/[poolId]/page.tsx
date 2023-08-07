@@ -1,4 +1,8 @@
-import { Address, Network, networkIdFor } from "@bleu-balancer-tools/utils";
+import {
+  type Address,
+  type Network,
+  networkIdFor,
+} from "@bleu-balancer-tools/utils";
 
 import { pools, poolsMetadata } from "#/lib/gql/server";
 

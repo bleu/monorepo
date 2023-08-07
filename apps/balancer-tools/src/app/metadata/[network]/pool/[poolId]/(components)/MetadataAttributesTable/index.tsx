@@ -1,6 +1,6 @@
 "use client";
 
-import { Address, Network } from "@bleu-balancer-tools/utils";
+import { type Address, type Network } from "@bleu-balancer-tools/utils";
 import {
   ArrowTopRightIcon,
   Pencil2Icon,
@@ -8,7 +8,7 @@ import {
 } from "@radix-ui/react-icons";
 import cn from "clsx";
 import {
-  TableHTMLAttributes,
+  type TableHTMLAttributes,
   useEffect,
   useLayoutEffect,
   useRef,
@@ -18,7 +18,7 @@ import {
 import { ClickToCopy } from "#/components/ClickToCopy";
 import { Dialog } from "#/components/Dialog";
 import {
-  PoolMetadataAttribute,
+  type PoolMetadataAttribute,
   usePoolMetadata,
 } from "#/contexts/PoolMetadataContext";
 import { toSlug } from "#/utils/formatStringCase";
@@ -57,7 +57,7 @@ function ClampedText({ text }: { text: string }) {
       setHasOverflow(numLines >= 4);
     }
     setHasBigword(text.split(" ").some((word) => word.length > 20));
-  }, []);
+  }, [text]);
 
   const toggleExpanded = () => {
     setIsExpanded(!isExpanded);
@@ -225,7 +225,7 @@ export default function MetadataAttributesTable({
   useEffect(() => {
     handleSetMetadata(data ? (data as PoolMetadataAttribute[]) : []);
     handleSetOriginalMetadata(data ? (data as PoolMetadataAttribute[]) : []);
-  }, [data]);
+  }, [data, handleSetMetadata, handleSetOriginalMetadata]);
 
   const balancerPoolLink = `https://app.balancer.fi/#/${network}/pool/${poolId}`;
 
@@ -245,6 +245,7 @@ export default function MetadataAttributesTable({
                 target="_blank"
                 href={balancerPoolLink}
                 className="flex flex-row items-center text-slate11"
+                rel="noreferrer"
               >
                 Open on app.balancer.fi
                 <ArrowTopRightIcon

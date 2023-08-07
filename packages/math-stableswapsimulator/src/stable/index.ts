@@ -1,11 +1,11 @@
 import {
   bnum,
-  OldBigNumber,
+  type OldBigNumber,
   StableMaths,
-  StablePool,
+  type StablePool,
   ZERO,
 } from "@balancer-labs/sor";
-import { BigNumber, formatFixed } from "@ethersproject/bignumber";
+import { type BigNumber, formatFixed } from "@ethersproject/bignumber";
 import { WeiPerEther as EONE } from "@ethersproject/constants";
 
 type StablePoolPairData = ReturnType<

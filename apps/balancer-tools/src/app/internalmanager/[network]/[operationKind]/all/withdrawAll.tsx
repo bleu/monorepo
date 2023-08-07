@@ -1,12 +1,12 @@
 "use client";
-import { InternalBalanceQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
-import { Address, networkFor } from "@bleu-balancer-tools/utils";
+import { type InternalBalanceQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
+import { type Address, networkFor } from "@bleu-balancer-tools/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import { tokenLogoUri } from "public/tokens/logoUri";
 import { useEffect } from "react";
-import { FieldValues, useForm } from "react-hook-form";
+import { type FieldValues, useForm } from "react-hook-form";
 import { useAccount, useNetwork } from "wagmi";
 
 import { ToastContent } from "#/app/metadata/[network]/pool/[poolId]/(components)/MetadataAttributesTable/TransactionModal";
@@ -24,8 +24,8 @@ import { TransactionStatus } from "#/hooks/useTransaction";
 import { internalBalances } from "#/lib/gql";
 import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
 import { AddressSchema } from "#/lib/schema";
-import { refetchRequest } from "#/utils/fetcher";
-import { ArrElement, GetDeepProp } from "#/utils/getTypes";
+import { useRefetchRequest } from "#/utils/fetcher";
+import { type ArrElement, type GetDeepProp } from "#/utils/getTypes";
 
 export function WithdrawAll() {
   const {
@@ -50,7 +50,7 @@ export function WithdrawAll() {
       userAddress: addressLower as Address,
     });
 
-  refetchRequest({
+  useRefetchRequest({
     mutate,
     chainId: chain?.id.toString() || "1",
     userAddress: addressLower as Address,
@@ -83,7 +83,7 @@ export function WithdrawAll() {
 
   useEffect(() => {
     clearNotification();
-  }, [isConnecting, addressLower]);
+  }, [isConnecting, addressLower, clearNotification]);
 
   if (!isConnected && !isReconnecting && !isConnecting) {
     return <WalletNotConnected isInternalManager />;

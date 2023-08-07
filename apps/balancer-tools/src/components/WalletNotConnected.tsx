@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useNetwork } from "wagmi";
 
 import { Dialog } from "./Dialog";
-import { PoolAttribute, SearchPoolForm } from "./SearchPoolForm";
+import { type PoolAttribute, SearchPoolForm } from "./SearchPoolForm";
 
 export default function WalletNotConnected({
   isInternalManager = false,

@@ -6,8 +6,8 @@ import Button from "#/components/Button";
 import { Input } from "#/components/Input";
 import { Form } from "#/components/ui/form";
 import {
-  AnalysisData,
-  TokensData,
+  type AnalysisData,
+  type TokensData,
   useStableSwap,
 } from "#/contexts/StableSwapContext";
 import { getStableSwapSimulatorTokensSchema } from "#/lib/schema";

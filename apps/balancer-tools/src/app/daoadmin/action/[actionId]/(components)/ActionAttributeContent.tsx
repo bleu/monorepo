@@ -33,7 +33,7 @@ export function ActionAttributeContent() {
     if (selectedAction?.name === "") {
       push("/daoadmin");
     }
-  }, [selectedAction]);
+  }, [push, selectedAction]);
 
   const { chain } = useNetwork();
 

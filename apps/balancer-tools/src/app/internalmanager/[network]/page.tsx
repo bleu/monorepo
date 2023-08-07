@@ -12,7 +12,7 @@ import { useAccount, useNetwork } from "#/wagmi";
 import { BatchWithdrawButton } from "../(components)/BatchWithdrawButton";
 import { TokenTable } from "../(components)/TokenTable";
 
-export default function page() {
+export default function Page() {
   const { isConnected, isReconnecting, isConnecting } = useAccount();
 
   const { chain } = useNetwork();

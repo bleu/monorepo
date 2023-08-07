@@ -1,8 +1,11 @@
-import { PropsWithChildren } from "react";
+import { type PropsWithChildren } from "react";
 
 import { Dialog } from "#/components/Dialog";
-import { PoolAttribute, SearchPoolForm } from "#/components/SearchPoolForm";
-import { PoolType } from "#/contexts/PoolSimulatorContext";
+import {
+  type PoolAttribute,
+  SearchPoolForm,
+} from "#/components/SearchPoolForm";
+import { type PoolType } from "#/contexts/PoolSimulatorContext";
 
 import { PoolTypeEnum } from "../(types)";
 

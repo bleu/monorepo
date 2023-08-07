@@ -106,6 +106,8 @@ const Button = forwardRef(function (
   );
 });
 
+Button.displayName = "Button";
+
 export function ButtonIcon({
   icon,
   className,

@@ -1,23 +1,23 @@
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import * as Separator from "@radix-ui/react-separator";
 import { usePathname, useRouter } from "next/navigation";
-import { ReactElement, useEffect, useState } from "react";
+import { type ReactElement, useEffect, useState } from "react";
 
 import { Dialog } from "#/components/Dialog";
-import { PoolAttribute } from "#/components/SearchPoolForm";
+import { type PoolAttribute } from "#/components/SearchPoolForm";
 import { Select, SelectItem } from "#/components/Select";
 import Sidebar from "#/components/Sidebar";
 import { Spinner } from "#/components/Spinner";
 import { Tabs, useTabContext } from "#/components/Tabs";
 import { Label } from "#/components/ui/label";
 import {
-  AnalysisData,
+  type AnalysisData,
   POOL_TYPES,
-  PoolType,
+  type PoolType,
   usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
 
-import { PoolTypeEnum } from "../(types)";
+import { type PoolTypeEnum } from "../(types)";
 import { PoolParamsForm } from "./PoolParamsForm";
 import { PoolTypeChangeConfirmation } from "./PoolTypeChangeConfirmation";
 import { SearchPoolFormDialog } from "./SearchPoolFormDialog";
@@ -248,7 +248,7 @@ export function AnalysisMenu() {
   useEffect(() => {
     setAnalysisTokenByIndex(0);
     setCurrentTabTokenByIndex(1);
-  }, []);
+  }, [setAnalysisTokenByIndex, setCurrentTabTokenByIndex]);
 
   const indexCurrentTabToken = initialData?.tokens.findIndex(
     ({ symbol }) => symbol.toLowerCase() !== analysisToken.symbol.toLowerCase(),

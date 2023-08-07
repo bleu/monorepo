@@ -1,7 +1,7 @@
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import * as Separator from "@radix-ui/react-separator";
 import { usePathname } from "next/navigation";
-import { ReactElement } from "react";
+import { type ReactElement } from "react";
 
 import Sidebar from "#/components/Sidebar";
 import { Spinner } from "#/components/Spinner";

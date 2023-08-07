@@ -3,15 +3,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { FieldValues, useForm } from "react-hook-form";
+import { type FieldValues, useForm } from "react-hook-form";
 
 import Button from "#/components/Button";
 import { Input } from "#/components/Input";
 import { Form, FormField } from "#/components/ui/form";
-import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
+import { type AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
 import { StableSwapSimulatorDataSchema } from "#/lib/schema";
 import { numberToPercent, percentToNumber } from "#/utils/formatNumber";
-import { GetDeepProp } from "#/utils/getTypes";
+import { type GetDeepProp } from "#/utils/getTypes";
 
 import { TokenTable } from "./TokenTable";
 
@@ -65,11 +65,18 @@ export default function InitialEmptyDataForm() {
     if (swapFeeInPercentage) setValue("swapFee", swapFeeInPercentage);
     if (initialData?.ampFactor) setValue("ampFactor", initialData?.ampFactor);
     if (initialData?.tokens) setValue("tokens", initialData?.tokens);
-  }, [initialData]);
+  }, [
+    clearErrors,
+    getValues,
+    initialData,
+    reset,
+    setValue,
+    swapFeeInPercentage,
+  ]);
 
   useEffect(() => {
     register("tokens", { required: true, value: initialData?.tokens });
-  }, []);
+  }, [initialData?.tokens, register]);
 
   return (
     <Form {...form} onSubmit={onSubmit} id="initial-data-form">

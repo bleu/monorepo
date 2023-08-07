@@ -1,7 +1,7 @@
-import { Address, networkFor } from "@bleu-balancer-tools/utils";
+import { type Address, networkFor } from "@bleu-balancer-tools/utils";
 import { waitForTransaction } from "@wagmi/core";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useNetwork } from "wagmi";
 
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
@@ -10,7 +10,7 @@ import { writeManageUserBalance } from "#/wagmi/writeManageUserBalance";
 
 import {
   NotificationVariant,
-  SubmitData,
+  type SubmitData,
   TransactionStatus,
 } from "../useTransaction";
 import { useTokenApproval } from "./useTokenApproval";
@@ -105,7 +105,7 @@ export function useManageUserBalance() {
     }
   }
 
-  const handleNotifier = () => {
+  const handleNotifier = useCallback(() => {
     if (isNotifierOpen) {
       setIsNotifierOpen(false);
       setTimeout(() => {
@@ -114,12 +114,12 @@ export function useManageUserBalance() {
     } else {
       setIsNotifierOpen(true);
     }
-  };
+  }, [isNotifierOpen, setIsNotifierOpen]);
 
   useEffect(() => {
     if (!notification) return;
     handleNotifier();
-  }, [notification]);
+  }, [handleNotifier, notification]);
 
   return {
     handleTransaction,

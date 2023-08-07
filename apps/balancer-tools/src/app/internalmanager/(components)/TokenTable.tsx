@@ -1,6 +1,6 @@
 "use client";
-import { InternalBalanceQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
-import { Address } from "@bleu-balancer-tools/utils";
+import { type InternalBalanceQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
+import { type Address } from "@bleu-balancer-tools/utils";
 import {
   MinusCircledIcon,
   PlusCircledIcon,
@@ -18,9 +18,9 @@ import { Toast } from "#/components/Toast";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { getNetwork } from "#/contexts/networks";
 import { internalBalances } from "#/lib/gql";
-import { refetchRequest } from "#/utils/fetcher";
+import { useRefetchRequest } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
-import { ArrElement, GetDeepProp } from "#/utils/getTypes";
+import { type ArrElement, type GetDeepProp } from "#/utils/getTypes";
 
 export function TokenTable() {
   const { chain } = useNetwork();
@@ -37,7 +37,7 @@ export function TokenTable() {
       userAddress: addressLower as Address,
     });
 
-  refetchRequest({
+  useRefetchRequest({
     mutate,
     chainId: chain?.id.toString() || "1",
     userAddress: addressLower as Address,

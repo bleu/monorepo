@@ -2,11 +2,11 @@
 
 import { bnum } from "@balancer-labs/sor";
 import { MetaStableMath } from "@bleu-balancer-tools/math-stableswapsimulator/src";
-import { PlotType } from "plotly.js";
+import { type PlotType } from "plotly.js";
 
 import Plot, { defaultAxisLayout } from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
-import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
+import { type AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
 import { formatNumber } from "#/utils/formatNumber";
 
 const createHoverTemplate = (
@@ -199,6 +199,7 @@ function calculateDepthCostAmount(
 ) {
   if (!data.swapFee || !data.ampFactor) return 0;
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const { indexAnalysisToken } = useStableSwap();
 
   const indexIn = poolSide === "in" ? indexAnalysisToken : pairTokenIndex;

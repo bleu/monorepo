@@ -1,16 +1,16 @@
 "use client";
 
-import { Address } from "@bleu-balancer-tools/utils";
+import { type Address } from "@bleu-balancer-tools/utils";
 import {
   createContext,
-  Dispatch,
-  ReactNode,
-  SetStateAction,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
   useContext,
   useState,
 } from "react";
 
-import { Chain } from "#/wagmi";
+import { type Chain } from "#/wagmi";
 
 type ValidationFunctions = "poolExists" | "gaugeExists";
 

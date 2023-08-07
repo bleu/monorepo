@@ -1,4 +1,4 @@
-import { OldBigNumber } from "@balancer-labs/sor";
+import { type OldBigNumber } from "@balancer-labs/sor";
 import { MetaStableMath } from "@bleu-balancer-tools/math-stableswapsimulator/src";
 import { Controller, useForm } from "react-hook-form";
 
@@ -7,7 +7,7 @@ import { PlotTitle } from "#/components/Plot";
 import { Select, SelectItem } from "#/components/Select";
 import { Spinner } from "#/components/Spinner";
 import { Form, FormField } from "#/components/ui/form";
-import { AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
+import { type AnalysisData, useStableSwap } from "#/contexts/StableSwapContext";
 import useDebounce from "#/hooks/useDebounce";
 
 export function SwapSimulator() {

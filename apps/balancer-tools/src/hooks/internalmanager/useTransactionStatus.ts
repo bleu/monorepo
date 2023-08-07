@@ -1,5 +1,8 @@
-import { Address, buildBlockExplorerTxUrl } from "@bleu-balancer-tools/utils";
-import { Chain } from "wagmi";
+import {
+  type Address,
+  buildBlockExplorerTxUrl,
+} from "@bleu-balancer-tools/utils";
+import { type Chain } from "wagmi";
 
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
 

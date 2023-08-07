@@ -3,15 +3,15 @@
 import isEqual from "lodash/isEqual";
 import {
   createContext,
-  Dispatch,
-  PropsWithChildren,
-  SetStateAction,
+  type Dispatch,
+  type PropsWithChildren,
+  type SetStateAction,
   useContext,
   useEffect,
   useState,
 } from "react";
 
-import { TypenameEnum } from "#/lib/schema";
+import { type TypenameEnum } from "#/lib/schema";
 import { toSlug } from "#/utils/formatStringCase";
 
 // TODO: generate TS types from zod: https://github.com/sachinraja/zod-to-ts

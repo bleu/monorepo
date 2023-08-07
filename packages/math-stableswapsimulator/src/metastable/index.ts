@@ -1,4 +1,4 @@
-import { OldBigNumber } from "@balancer-labs/sor";
+import { type OldBigNumber } from "@balancer-labs/sor";
 
 export function amountToStableMath(
   amount: OldBigNumber,

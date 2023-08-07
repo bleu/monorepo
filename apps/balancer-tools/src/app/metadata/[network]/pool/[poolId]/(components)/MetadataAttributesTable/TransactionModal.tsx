@@ -1,5 +1,5 @@
 "use client";
-import { Address } from "@bleu-balancer-tools/utils";
+import { type Address } from "@bleu-balancer-tools/utils";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import cn from "clsx";
@@ -61,7 +61,12 @@ export function ToastContent({
         <h3 className="mb-2 leading-3 text-slate11">{description}</h3>
       </div>
       {link && (
-        <a target="_blank" href={link} className="text-slate12">
+        <a
+          target="_blank"
+          href={link}
+          className="text-slate12"
+          rel="noreferrer"
+        >
           <ArrowTopRightIcon width={24} height={24} />
         </a>
       )}

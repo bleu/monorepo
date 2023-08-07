@@ -1,24 +1,24 @@
 import {
   balancesFromTokenInOut,
   bnum,
-  DerivedGyroEParams,
+  type DerivedGyroEParams,
   GyroEMathFunctions,
   GyroEMaths,
-  GyroEParams,
+  type GyroEParams,
   GyroEV2Pool,
   GyroHelpers,
   GyroHelpersSignedFixedPoint,
-  OldBigNumber,
+  type OldBigNumber,
   safeParseFixed,
-  SubgraphPoolBase,
-  SubgraphToken,
-  Vector2,
+  type SubgraphPoolBase,
+  type SubgraphToken,
+  type Vector2,
 } from "@balancer-labs/sor";
-import { BigNumber, formatFixed } from "@ethersproject/bignumber";
+import { type BigNumber, formatFixed } from "@ethersproject/bignumber";
 import { WeiPerEther as EONE } from "@ethersproject/constants";
 
 import { bigNumberToOldBigNumber } from "../conversions";
-import { IAMMFunctionality } from "../types";
+import { type IAMMFunctionality } from "../types";
 
 type GyroEPoolToken = Pick<SubgraphToken, "address" | "balance" | "decimals">;
 export type GyroEPoolPairData = ReturnType<

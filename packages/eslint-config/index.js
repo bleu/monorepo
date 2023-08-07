@@ -6,16 +6,36 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  plugins: ["simple-import-sort", "import", "tailwindcss"],
+  plugins: [
+    "simple-import-sort",
+    "import",
+    "tailwindcss",
+    "@typescript-eslint",
+  ],
   extends: [
     "plugin:@typescript-eslint/recommended",
     "plugin:tailwindcss/recommended",
-    "plugin:@next/next/recommended",
+    "next/core-web-vitals",
     "plugin:import/typescript",
     "prettier",
   ],
   parser: "@typescript-eslint/parser",
   rules: {
+    "@typescript-eslint/consistent-type-imports": [
+      "warn",
+      {
+        prefer: "type-imports",
+        fixStyle: "inline-type-imports",
+      },
+    ],
+    "react-hooks/exhaustive-deps": [
+      "warn",
+      {
+        enableDangerousAutofixThisMayCauseInfiniteLoops: true,
+      },
+    ],
+    "react/no-unescaped-entities": "off",
+    "import/no-anonymous-default-export": "off",
     "import/no-named-as-default": "off",
     "no-console": "error",
     "import/namespace": "off",
@@ -30,8 +50,14 @@ module.exports = {
     "@typescript-eslint/simple-import-sort/exports": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-unused-vars": [
-      "error",
-      { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+      "warn",
+      {
+        vars: "all",
+        args: "after-used",
+        ignoreRestSiblings: false,
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
+      },
     ],
     "tailwindcss/classnames-order": "off",
     "tailwindcss/enforces-negative-arbitrary-values": "warn",

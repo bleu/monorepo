@@ -1,7 +1,7 @@
 "use client";
 
 import { MetaStableMath } from "@bleu-balancer-tools/math-stableswapsimulator/src";
-import { PlotType } from "plotly.js";
+import { type PlotType } from "plotly.js";
 
 import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";

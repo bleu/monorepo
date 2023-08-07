@@ -1,8 +1,8 @@
 import * as Accordion from "@radix-ui/react-accordion";
 import {
-  AccordionContentProps,
-  AccordionItemProps,
-  AccordionTriggerProps,
+  type AccordionContentProps,
+  type AccordionItemProps,
+  type AccordionTriggerProps,
 } from "@radix-ui/react-accordion";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import cn from "clsx";
@@ -15,6 +15,8 @@ export const AccordionItem = forwardRef<HTMLDivElement, AccordionItemProps>(
     </Accordion.Item>
   ),
 );
+
+AccordionItem.displayName = "AccordionItem";
 
 export const AccordionTrigger = forwardRef<
   HTMLButtonElement,
@@ -38,6 +40,8 @@ export const AccordionTrigger = forwardRef<
   </Accordion.Header>
 ));
 
+AccordionTrigger.displayName = "AccordionTrigger";
+
 export const AccordionContent = forwardRef<
   HTMLDivElement,
   AccordionContentProps
@@ -53,3 +57,5 @@ export const AccordionContent = forwardRef<
     <div className="px-3">{children}</div>
   </Accordion.Content>
 ));
+
+AccordionContent.displayName = "AccordionContent";

@@ -1,28 +1,29 @@
 "use client";
 
-import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
-import { GyroEPoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/gyroE";
-import { MetaStablePoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
+import { type AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
+import { type GyroEPoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/gyroE";
+import { type MetaStablePoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
 import { NetworkChainId } from "@bleu-balancer-tools/utils";
 import { usePathname, useRouter } from "next/navigation";
 import {
   createContext,
-  PropsWithChildren,
+  type PropsWithChildren,
+  useCallback,
   useContext,
   useEffect,
   useState,
 } from "react";
 
 import {
-  CombinedParams,
+  type CombinedParams,
   PoolTypeEnum,
-  TokensData,
+  type TokensData,
 } from "#/app/poolsimulator/(types)";
 import {
   convertAnalysisDataToAMM,
   convertGqlToAnalysisData,
 } from "#/app/poolsimulator/(utils)";
-import { PoolAttribute } from "#/components/SearchPoolForm";
+import { type PoolAttribute } from "#/components/SearchPoolForm";
 import { pools } from "#/lib/gql";
 
 export type PoolPairData = MetaStablePoolPairData | GyroEPoolPairData;
@@ -136,12 +137,12 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     if (amm) setAMM(amm);
   }
 
-  function generateURL() {
+  const generateURL = useCallback(() => {
     const jsonState = JSON.stringify({ initialData, customData });
 
     const encodedState = encodeURIComponent(jsonState);
     return `${window.location.origin}${window.location.pathname}#${encodedState}`;
-  }
+  }, [initialData, customData]);
 
   async function handleImportPoolParametersById(
     formData: PoolAttribute,
@@ -158,7 +159,7 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     if (pathname === "/poolsimulator/analysis") push(generateURL());
-  }, [pathname]);
+  }, [generateURL, pathname, push]);
 
   useEffect(() => {
     if (window.location.hash) {
@@ -177,7 +178,7 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     if (!customData.poolType || !customData.poolParams?.swapFee) return;
     asyncSetAMM(initialData, setInitialAMM);
-  }, [initialData]);
+  }, [customData.poolParams?.swapFee, customData.poolType, initialData]);
 
   useEffect(() => {
     if (!customData.poolType || !customData.poolParams?.swapFee) return;

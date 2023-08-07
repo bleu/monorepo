@@ -1,18 +1,18 @@
 "use client";
 
-import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
-import { PlotType } from "plotly.js";
+import { type AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
+import { type PlotType } from "plotly.js";
 
 import Plot, { defaultAxisLayout } from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
 import {
-  AnalysisData,
-  PoolPairData,
+  type AnalysisData,
+  type PoolPairData,
   usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
-import { PoolTypeEnum, TokensData } from "../(types)";
+import { PoolTypeEnum, type TokensData } from "../(types)";
 
 export function DepthCost() {
   const { analysisToken, initialData, customData, initialAMM, customAMM } =
@@ -33,6 +33,7 @@ export function DepthCost() {
           initialData,
           initialAMM,
           initialData.poolType,
+          analysisToken,
         ),
       ),
       out: pairTokens.map((pairToken) =>
@@ -42,6 +43,7 @@ export function DepthCost() {
           initialData,
           initialAMM,
           initialData.poolType,
+          analysisToken,
         ),
       ),
     },
@@ -53,6 +55,7 @@ export function DepthCost() {
           customData,
           customAMM,
           customData.poolType,
+          analysisToken,
         ),
       ),
       out: pairTokens.map((pairToken) =>
@@ -62,6 +65,7 @@ export function DepthCost() {
           customData,
           customAMM,
           customData.poolType,
+          analysisToken,
         ),
       ),
     },
@@ -221,9 +225,8 @@ function calculateDepthCost(
   data: AnalysisData,
   amm: AMM<PoolPairData>,
   poolType: PoolTypeEnum,
+  analysisToken: TokensData,
 ) {
-  const { analysisToken } = usePoolSimulator();
-
   const tokenIn = poolSide === "in" ? analysisToken : pairToken;
   const tokenOut = poolSide === "in" ? pairToken : analysisToken;
 

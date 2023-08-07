@@ -5,7 +5,10 @@ import { useState } from "react";
 import { Badge } from "#/components/Badge";
 import { Select, SelectItem } from "#/components/Select";
 import Sidebar from "#/components/Sidebar";
-import { ActionAttribute, useAdminTools } from "#/contexts/AdminToolsContext";
+import {
+  type ActionAttribute,
+  useAdminTools,
+} from "#/contexts/AdminToolsContext";
 import { hardcodedData } from "#/utils/hardcodedData";
 import { truncateAddress } from "#/utils/truncate";
 

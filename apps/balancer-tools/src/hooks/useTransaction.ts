@@ -1,7 +1,10 @@
-import { Address, buildBlockExplorerTxUrl } from "@bleu-balancer-tools/utils";
-import { Dispatch, useEffect, useState } from "react";
+import {
+  type Address,
+  buildBlockExplorerTxUrl,
+} from "@bleu-balancer-tools/utils";
+import { type Dispatch, useCallback, useEffect, useState } from "react";
 
-import { PoolMetadataAttribute } from "#/contexts/PoolMetadataContext";
+import { type PoolMetadataAttribute } from "#/contexts/PoolMetadataContext";
 import { pinJSON } from "#/lib/ipfs";
 import { useNetwork, useWaitForTransaction } from "#/wagmi";
 import {
@@ -106,10 +109,18 @@ export function useMetadataTransaction({
   const { write, data } = usePoolMetadataRegistrySetPoolMetadata(config);
   const { chain } = useNetwork();
 
-  const handleSetTransactionLink = (hash: Address) => {
-    const txUrl = buildBlockExplorerTxUrl({ chainId: chain?.id, txHash: hash });
-    setTransactionUrl(txUrl);
-  };
+  const handleSetTransactionLink = useCallback(
+    (hash: Address) => {
+      const txUrl = buildBlockExplorerTxUrl({
+        chainId: chain?.id,
+        txHash: hash,
+      });
+
+      setTransactionUrl(txUrl);
+    },
+    [chain?.id],
+  );
+
   const { isLoading: isTransactionLoading, isSuccess: isTransactionSuccess } =
     useWaitForTransaction({
       hash: data?.hash,
@@ -127,7 +138,12 @@ export function useMetadataTransaction({
       setTransactionStatus(TransactionStatus.CONFIRMED);
       setNotification(NOTIFICATION_MAP[TransactionStatus.CONFIRMED]);
     }
-  }, [data, isTransactionLoading]);
+  }, [
+    data,
+    handleSetTransactionLink,
+    isTransactionLoading,
+    isTransactionSuccess,
+  ]);
 
   const handleTransaction = async () => {
     if (isTransactionDisabled) {
@@ -166,7 +182,7 @@ export function useMetadataTransaction({
     }
   };
 
-  const handleNotifier = () => {
+  const handleNotifier = useCallback(() => {
     if (isNotifierOpen) {
       setIsNotifierOpen(false);
       setTimeout(() => {
@@ -175,12 +191,12 @@ export function useMetadataTransaction({
     } else {
       setIsNotifierOpen(true);
     }
-  };
+  }, [isNotifierOpen]);
 
   useEffect(() => {
     if (!notification) return;
     handleNotifier();
-  }, [notification]);
+  }, [handleNotifier, notification]);
 
   return {
     handleTransaction,

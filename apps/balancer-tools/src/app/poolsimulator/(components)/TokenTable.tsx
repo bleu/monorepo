@@ -10,12 +10,12 @@ import { Dialog } from "#/components/Dialog";
 import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
 import {
-  AnalysisData,
+  type AnalysisData,
   usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
-import { PoolTypeEnum, TokensData } from "../(types)";
+import { PoolTypeEnum, type TokensData } from "../(types)";
 import TokenForm from "./TokenForm";
 
 const customPadding = "py-4 px-1";

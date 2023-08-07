@@ -11,13 +11,13 @@
     "test": "jest --watchAll --verbose"
   },
   "dependencies": {
-    "@balancer-labs/sor": "4.1.1-beta.14",
+    "@balancer-labs/sor": "4.1.1-beta.15",
     "@ethersproject/bignumber": "^5.7.0",
     "@ethersproject/constants": "^5.7.0"
   },
   "devDependencies": {
     "@bleu-balancer-tools/tsconfig": "workspace:^",
-    "@jest/globals": "^29.6.1",
+    "@jest/globals": "^29.6.2",
     "ts-jest": "^29.1.1"
   }
 }

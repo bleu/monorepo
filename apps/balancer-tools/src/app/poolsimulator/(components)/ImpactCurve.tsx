@@ -1,12 +1,15 @@
 // @ts-nocheck - TODO: remove this comment once plotly.js types are fixed (legendgrouptitle on PlotParams)
 "use client";
 
-import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
-import { MetaStablePoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
+import { type AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
+import { type MetaStablePoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
 
 import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
-import { TokensData, usePoolSimulator } from "#/contexts/PoolSimulatorContext";
+import {
+  type TokensData,
+  usePoolSimulator,
+} from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
 import { calculateCurvePoints } from "./SwapCurve";

@@ -1,7 +1,7 @@
 "use client";
 
 import { Network, networkFor } from "@bleu-balancer-tools/utils";
-import { Route } from "next";
+import { type Route } from "next";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 
@@ -57,7 +57,7 @@ export const NetworksContextProvider = ({
         `/${appName}/${networkFor(network.chain.id).toLowerCase()}` as Route,
       );
     }
-  }, [network]);
+  }, [appName, network, networkConnectedToWallet, push]);
 
   const mismatchedNetworks =
     networkConnectedToWallet !== undefined &&

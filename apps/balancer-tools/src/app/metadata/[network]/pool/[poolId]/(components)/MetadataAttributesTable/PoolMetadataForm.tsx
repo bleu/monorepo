@@ -10,7 +10,7 @@ import { Input } from "#/components/Input";
 import { Select, SelectItem } from "#/components/Select";
 import { Form } from "#/components/ui/form";
 import {
-  PoolMetadataAttribute,
+  type PoolMetadataAttribute,
   usePoolMetadata,
 } from "#/contexts/PoolMetadataContext";
 import { MetadataItemSchema } from "#/lib/schema";
@@ -73,7 +73,7 @@ export default function PoolMetadataForm({
 
   React.useLayoutEffect(() => {
     resetField("value");
-  }, [selectedTypename]);
+  }, [resetField, selectedTypename]);
 
   return (
     <Form {...form} onSubmit={handleSubmitForm} id="attribute-form">

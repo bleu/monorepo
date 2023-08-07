@@ -1,8 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { OldBigNumber } from "@balancer-labs/sor";
+import { type OldBigNumber } from "@balancer-labs/sor";
 
-import { GyroEPoolPairData, IGyroEMaths } from "./gyroE";
-import { IMetaStableMath, MetaStablePoolPairData } from "./metastable";
+import { type GyroEPoolPairData, type IGyroEMaths } from "./gyroE";
+import {
+  type IMetaStableMath,
+  type MetaStablePoolPairData,
+} from "./metastable";
 
 export type PoolPairData = MetaStablePoolPairData | GyroEPoolPairData;
 export type PoolParams = IMetaStableMath | IGyroEMaths;

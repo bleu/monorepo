@@ -1,4 +1,4 @@
-import { Address } from "@bleu-balancer-tools/utils";
+import type { Address } from "@bleu-balancer-tools/utils";
 import { useEffect } from "react";
 
 export async function fetcher<JSON = unknown>(
@@ -9,7 +9,7 @@ export async function fetcher<JSON = unknown>(
   return res.json();
 }
 
-export function refetchRequest({
+export function useRefetchRequest({
   mutate,
   userAddress,
   chainId,
@@ -20,5 +20,5 @@ export function refetchRequest({
 }) {
   useEffect(() => {
     mutate();
-  }, [userAddress, chainId]);
+  }, [userAddress, chainId, mutate]);
 }

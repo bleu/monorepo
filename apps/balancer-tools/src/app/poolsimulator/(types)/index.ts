@@ -1,4 +1,4 @@
-import { GyroEParamsFromSubgraph } from "@bleu-balancer-tools/math-poolsimulator/src/gyroE";
+import { type GyroEParamsFromSubgraph } from "@bleu-balancer-tools/math-poolsimulator/src/gyroE";
 
 type NumberGyroEParams<T> = {
   [K in keyof T]?: number;

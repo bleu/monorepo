@@ -13,7 +13,7 @@ import { PlotTitle } from "#/components/Plot";
 import { Tooltip } from "#/components/Tooltip";
 import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 
-import { TokensData } from "../(types)";
+import { type TokensData } from "../(types)";
 
 const colors = [
   blueDark.blue9,

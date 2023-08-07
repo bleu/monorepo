@@ -1,6 +1,6 @@
 import * as ToastPrimitive from "@radix-ui/react-toast";
 import cn from "clsx";
-import React, { Dispatch } from "react";
+import React, { type Dispatch } from "react";
 
 import { ProgressBar } from "./ProgressBar";
 

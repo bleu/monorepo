@@ -5,15 +5,12 @@ const { withSentryConfig } = require("@sentry/nextjs");
 const moduleExports = {
   transpilePackages: ["@bleu-balancer-tools/gql"],
   experimental: {
-    appDir: true,
     serverActions: true,
   },
-  reactStrictMode: true,
-  swcMinify: true,
   /**
-   * This configuration is following Rainbowkit Migration Guide to Viem
-   * 3. Ensure bundler and polyfill compatibility
+   * Added webpack config when migrating Viem
    * https://www.rainbowkit.com/docs/migration-guide
+   * see 3. Ensure bundler and polyfill compatibility
    */
   webpack: (config) => {
     config.resolve.fallback = { fs: false, net: false, tls: false };

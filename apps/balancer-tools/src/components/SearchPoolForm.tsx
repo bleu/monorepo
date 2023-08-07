@@ -1,6 +1,6 @@
 "use client";
 
-import { PoolsWherePoolTypeQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
+import { type PoolsWherePoolTypeQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -8,7 +8,7 @@ import Button from "#/components/Button";
 import { Input } from "#/components/Input";
 import { Select, SelectItem } from "#/components/Select";
 import { pools } from "#/lib/gql";
-import { ArrElement, GetDeepProp } from "#/utils/getTypes";
+import { type ArrElement, type GetDeepProp } from "#/utils/getTypes";
 import { truncateAddress } from "#/utils/truncate";
 
 import { Form, FormField, FormLabel } from "./ui/form";
@@ -105,12 +105,12 @@ export function SearchPoolForm({
     } else {
       clearErrors("poolId");
     }
-  }, [poolsData]);
+  }, [clearErrors, poolId, poolsData, setError]);
 
   useLayoutEffect(() => {
     poolsDataListMutate();
     resetField("poolId");
-  }, [network]);
+  }, [network, poolsDataListMutate, resetField]);
 
   function closeCombobox() {
     setTimeout(() => {

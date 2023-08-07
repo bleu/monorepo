@@ -15,19 +15,30 @@ export function Footer({
           target="_blank"
           href="https://github.com/bleu-studio"
           className="font-bold text-blue8"
+          rel="noreferrer"
         >
           bleu
         </a>
       </span>
       <div className="float-right flex flex-row items-center space-x-4">
         {githubLink && (
-          <a target="_blank" href={githubLink} className="text-slate12/90">
+          <a
+            target="_blank"
+            href={githubLink}
+            className="text-slate12/90"
+            rel="noreferrer"
+          >
             <GitHubLogoIcon width={20} height={20} />
             <span className="sr-only">GitHub account</span>
           </a>
         )}
         {discordLink && (
-          <a target="_blank" href={discordLink} className="text-slate12/90">
+          <a
+            target="_blank"
+            href={discordLink}
+            className="text-slate12/90"
+            rel="noreferrer"
+          >
             <DiscordLogoIcon width={20} height={20} />
             <span className="sr-only">Discord account</span>
           </a>

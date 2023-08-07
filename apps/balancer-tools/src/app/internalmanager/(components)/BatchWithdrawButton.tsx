@@ -1,4 +1,4 @@
-import { Address } from "@bleu-balancer-tools/utils";
+import { type Address } from "@bleu-balancer-tools/utils";
 import { MinusIcon } from "@radix-ui/react-icons";
 import { useAccount, useNetwork } from "wagmi";
 
@@ -6,7 +6,7 @@ import { Button } from "#/components";
 import { LinkComponent } from "#/components/Link";
 import { getNetwork } from "#/contexts/networks";
 import { internalBalances } from "#/lib/gql";
-import { refetchRequest } from "#/utils/fetcher";
+import { useRefetchRequest } from "#/utils/fetcher";
 
 export function BatchWithdrawButton() {
   const { address } = useAccount();
@@ -20,7 +20,7 @@ export function BatchWithdrawButton() {
       userAddress: addressLower as Address,
     });
 
-  refetchRequest({
+  useRefetchRequest({
     mutate,
     chainId: chain?.id.toString() || "1",
     userAddress: addressLower as Address,

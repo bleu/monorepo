@@ -11,7 +11,7 @@ import {
 
 import { PlotTitle } from "#/components/Plot";
 import { Tooltip } from "#/components/Tooltip";
-import { TokensData, useStableSwap } from "#/contexts/StableSwapContext";
+import { type TokensData, useStableSwap } from "#/contexts/StableSwapContext";
 
 const colors = [
   blueDark.blue9,

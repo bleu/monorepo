@@ -1,17 +1,18 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { PoolQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
+import { type PoolQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
 import { NetworkChainId } from "@bleu-balancer-tools/utils";
 import { usePathname, useRouter } from "next/navigation";
 import {
   createContext,
-  PropsWithChildren,
+  type PropsWithChildren,
   useContext,
   useEffect,
   useState,
 } from "react";
 
-import { PoolAttribute } from "#/components/SearchPoolForm";
+import { type PoolAttribute } from "#/components/SearchPoolForm";
 import { pools } from "#/lib/gql";
 
 export interface TokensData {
@@ -78,7 +79,7 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     if (pathname === "/stableswapsimulator/analysis") push(generateURL());
-  }, [initialData, customData]);
+  }, [initialData, customData, pathname, push, generateURL]);
 
   useEffect(() => {
     if (window.location.hash) {
@@ -131,7 +132,7 @@ export function StableSwapProvider({ children }: PropsWithChildren) {
     if (pathname === "/stableswapsimulator/analysis") {
       setIsGraphLoading(false);
     }
-  }, [pathname]);
+  }, [handleImportPoolParametersById, pathname]);
 
   return (
     <StableSwapContext.Provider

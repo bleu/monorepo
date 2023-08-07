@@ -10,7 +10,7 @@ import {
 } from "#/components/Accordion";
 import { Checkbox } from "#/components/Checkbox";
 import { usePoolMetadata } from "#/contexts/PoolMetadataContext";
-import { TypenameEnum } from "#/lib/schema";
+import { type TypenameEnum } from "#/lib/schema";
 import { toSlug } from "#/utils/formatStringCase";
 
 interface ITemplate {
@@ -133,7 +133,7 @@ export function PredefinedMetadataModal({ close }: { close?: () => void }) {
     <form onSubmit={onSubmit}>
       <Accordion.Root className="my-4 w-full" type="single" collapsible>
         {ATTRIBUTES_TEMPLATE.map(({ name, options }) => (
-          <AccordionItem value={name}>
+          <AccordionItem value={name} key={name}>
             <AccordionTrigger>{name}</AccordionTrigger>
             <AccordionContent>
               <div className="my-0 flex items-center">

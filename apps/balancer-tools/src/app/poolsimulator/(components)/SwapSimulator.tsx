@@ -2,7 +2,7 @@ import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@radix-ui/react-label";
 import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, FieldValues, useForm } from "react-hook-form";
 
 import { Button } from "#/components";
 import { BaseInput, Input } from "#/components/Input";
@@ -11,23 +11,13 @@ import { Select, SelectItem } from "#/components/Select";
 import { Spinner } from "#/components/Spinner";
 import { Form, FormField, FormLabel } from "#/components/ui/form";
 import {
+  AnalysisData,
   PoolPairData,
   usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
 import { SwapSimulatorDataSchema } from "#/lib/schema";
-import { GetDeepProp } from "#/utils/getTypes";
 
-type SwapSimulatorDataSchemaType = typeof SwapSimulatorDataSchema._type;
-
-interface ISwapSimulatorForm {
-  swapType: GetDeepProp<SwapSimulatorDataSchemaType, "swapType"> | null;
-  tokenInIndex: GetDeepProp<SwapSimulatorDataSchemaType, "tokenInIndex"> | null;
-  tokenOutIndex: GetDeepProp<
-    SwapSimulatorDataSchemaType,
-    "tokenOutIndex"
-  > | null;
-  amount: GetDeepProp<SwapSimulatorDataSchemaType, "amount"> | null;
-}
+import { PoolTypeEnum } from "../(types)";
 
 interface IResult {
   swapType: string;
@@ -40,6 +30,7 @@ interface IResult {
 }
 
 export function SwapSimulator() {
+  const { initialData, customData } = usePoolSimulator();
   const [initialResult, setInitialResult] = useState<IResult>({
     swapType: "",
     tokenInSymbol: "",
@@ -81,8 +72,8 @@ export function SwapSimulator() {
           setCustomResult={setCustomResult}
           setInitialResult={setInitialResult}
         />
-        <SimulationResult {...initialResult} />
-        <SimulationResult {...customResult} />
+        <SimulationResult {...initialResult} data={initialData} />
+        <SimulationResult {...customResult} data={customData} />
       </div>
     </div>
   );
@@ -164,11 +155,14 @@ function SwapSimulatorForm({
 
   if (!initialData || !initialAMM || !customAMM) return <Spinner />;
 
-  const form = useForm<ISwapSimulatorForm>({
+  const form = useForm({
     resolver: zodResolver(SwapSimulatorDataSchema),
-    mode: "onBlur",
+    mode: "onSubmit",
   });
-  const { control } = form;
+  const {
+    control,
+    formState: { errors },
+  } = form;
 
   const swapTypes = ["Exact In", "Exact Out"];
   const tokensSymbol = initialData?.tokens.map((token) => token.symbol);
@@ -177,7 +171,7 @@ function SwapSimulatorForm({
   const defaultTokenOutIndex = "1";
   const defaultAmount = (initialData?.tokens[0]?.balance / 10).toFixed(2);
 
-  const onSubmit = (data: ISwapSimulatorForm) => {
+  const onSubmit = (data: FieldValues) => {
     const tokenInSymbol = tokensSymbol?.[Number(data.tokenInIndex)];
     const tokenOutSymbol = tokensSymbol?.[Number(data.tokenOutIndex)];
     const initialResult = calculateSimulation({
@@ -288,6 +282,13 @@ function SwapSimulatorForm({
             )}
           />
         </div>
+        {errors[""] && (
+          <div className="col-span-2">
+            <span className="text-tomato10">
+              {errors[""]?.message as string}
+            </span>
+          </div>
+        )}
         <div>
           <FormLabel className="mb-2 block text-sm text-slate12">
             Swap Type
@@ -335,10 +336,30 @@ function SwapSimulatorForm({
   );
 }
 
+function ErrorMessage({
+  errorMessage,
+  errorTitle,
+}: {
+  errorMessage: string;
+  errorTitle: string;
+}) {
+  return (
+    <div role="alert">
+      <div className="bg-tomato9 text-slate12 font-bold rounded-t px-4 py-2">
+        Error: {errorTitle}
+      </div>
+      <div className="border border-t-0 border-red-400 rounded-b bg-tomato12 px-4 py-3 text-tomato7">
+        <p>{errorMessage}</p>
+      </div>
+    </div>
+  );
+}
+
 function SimulationResult({
   swapType,
   tokenInSymbol,
   tokenOutSymbol,
+  data,
   amountIn,
   amountOut,
   effectivePrice,
@@ -347,11 +368,32 @@ function SimulationResult({
   swapType: string;
   tokenInSymbol: string;
   tokenOutSymbol: string;
+  data: AnalysisData;
   amountIn?: number;
   amountOut?: number;
   effectivePrice?: number;
   priceImpact?: number;
 }) {
+  if (!data.poolType) {
+    return <Spinner />;
+  }
+  // When CLP is out of bounds in an exactIn swap it returns 0
+  if (
+    (data.poolType === PoolTypeEnum.Gyro2 ||
+      data.poolType === PoolTypeEnum.Gyro3 ||
+      data.poolType === PoolTypeEnum.GyroE) &&
+    (!amountOut ||
+      amountOut >
+        (data.tokens.find((t) => t.symbol === tokenOutSymbol)
+          ?.balance as number))
+  ) {
+    return (
+      <ErrorMessage
+        errorTitle="CLP limit"
+        errorMessage="The swap is greater than the pool limit. Please, change the amount to a lower value."
+      />
+    );
+  }
   if (!amountIn || !amountOut || !effectivePrice || !priceImpact)
     return <Spinner />;
 

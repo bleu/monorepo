@@ -31,7 +31,7 @@ export const Select = forwardRef<HTMLButtonElement, ISelect>(
       <SelectPrimitive.Root {...props}>
         <SelectPrimitive.Trigger
           className={cn(
-            "inline-flex h-[35px] outline-none items-center justify-between gap-[5px] rounded px-[15px] text-[13px] leading-none ",
+            "inline-flex h-[35px] outline-none items-center justify-between gap-[4px] rounded px-[8px] text-[13px] leading-none ",
             baseTheme,
             theme === "dark"
               ? "shadow-blue1/10 border-blue6 border hover:bg-blue4 focus:shadow-[0_0_0_2px] focus:shadow-blue1 disabled:bg-blackA9 data-[placeholder]:text-blue9 shadow-[0_2px_10px]"

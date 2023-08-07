@@ -258,7 +258,7 @@ export const SwapSimulatorDataSchema = z
   .object({
     tokenInIndex: z.coerce.string(),
     tokenOutIndex: z.coerce.string(),
-    amount: z.coerce.number().positive(),
+    amount: z.coerce.number().positive("Must be greater than 0"),
     swapType: z.enum(["Exact In", "Exact Out"]),
   })
   .refine(

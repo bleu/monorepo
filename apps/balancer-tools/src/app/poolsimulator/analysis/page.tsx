@@ -6,7 +6,7 @@ import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 
 import { DepthCost } from "../(components)/DepthCost";
 import { ImpactCurve } from "../(components)/ImpactCurve";
-import { StableCurve } from "../(components)/StableCurve";
+import { SwapCurve } from "../(components)/SwapCurve";
 import { SwapSimulator } from "../(components)/SwapSimulator";
 import { TokensDistribution } from "../(components)/TokensDistribution";
 import { PoolTypeEnum } from "../(types)";
@@ -80,7 +80,7 @@ export default function Page() {
                 <div key={symbol}>
                   <Tabs.ItemContent tabName={symbol} bgColor="bg-blue1">
                     <div className="flex flex-col gap-y-10 py-4">
-                      <StableCurve />
+                      <SwapCurve />
                       <ImpactCurve />
                     </div>
                   </Tabs.ItemContent>

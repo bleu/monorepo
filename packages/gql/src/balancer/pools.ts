@@ -99,6 +99,10 @@ export const poolById = gql`
         balance
         decimals
         priceRate
+        token {
+          fxOracleDecimals
+          latestFXPrice
+        }
       }
     }
   }

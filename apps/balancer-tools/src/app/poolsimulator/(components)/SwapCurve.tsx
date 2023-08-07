@@ -12,6 +12,7 @@ import {
 import { formatNumber } from "#/utils/formatNumber";
 
 import { PoolTypeEnum, TokensData } from "../(types)";
+import { calculateCurvePoints } from "../(utils)";
 
 export function SwapCurve() {
   const {
@@ -211,27 +212,6 @@ export function SwapCurve() {
       className="h-1/2 w-full"
     />
   );
-}
-
-export function calculateCurvePoints({
-  balance,
-  start = 0,
-}: {
-  balance?: number;
-  start?: number;
-}) {
-  if (!balance || typeof start == "undefined") return [];
-  const numberOfPoints = 100;
-  const initialValue = balance * 0.001;
-  const stepRatio = Math.pow(balance / initialValue, 1 / (numberOfPoints - 1));
-
-  return [
-    start,
-    ...Array.from(
-      { length: numberOfPoints + 20 },
-      (_, index) => initialValue * stepRatio ** index,
-    ),
-  ];
 }
 
 const calculateTokenAmounts = (

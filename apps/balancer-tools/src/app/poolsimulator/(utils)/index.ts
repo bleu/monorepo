@@ -149,6 +149,19 @@ export function convertGqlToAnalysisData(poolData: PoolQuery): AnalysisData {
         },
         tokens: tokensData,
       };
+    case PoolTypeEnum.Fx:
+      return {
+        poolType: PoolTypeEnum.Fx,
+        poolParams: {
+          swapFee: Number(poolData?.pool?.swapFee),
+          alpha: Number(poolData?.pool?.alpha),
+          beta: Number(poolData?.pool?.beta),
+          lambda: Number(poolData?.pool?.lambda),
+          delta: Number(poolData?.pool?.delta),
+          epsilon: Number(poolData?.pool?.epsilon),
+        },
+        tokens: tokensData,
+      };
     default:
       return {
         poolType: PoolTypeEnum.MetaStable,

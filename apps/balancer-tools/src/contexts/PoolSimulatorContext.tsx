@@ -33,6 +33,7 @@ export const POOL_TYPES: PoolType[] = [
   PoolTypeEnum.GyroE,
   PoolTypeEnum.Gyro2,
   PoolTypeEnum.Gyro3,
+  PoolTypeEnum.Fx,
 ];
 export interface AnalysisData {
   tokens: TokensData[];

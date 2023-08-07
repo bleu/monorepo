@@ -86,6 +86,8 @@ export const poolById = gql`
       tauAlphaY
       tauBetaX
       tauBetaY
+      delta
+      epsilon
       u
       v
       w

@@ -11,6 +11,7 @@ const poolTypes = {
   [PoolTypeEnum.GyroE]: ["GyroE"],
   [PoolTypeEnum.Gyro2]: ["Gyro2"],
   [PoolTypeEnum.Gyro3]: ["Gyro3"],
+  [PoolTypeEnum.Fx]: ["FX"],
 };
 export function SearchPoolFormDialog({
   children,

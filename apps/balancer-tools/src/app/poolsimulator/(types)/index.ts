@@ -30,16 +30,26 @@ export interface Gyro3Params {
   root3Alpha?: number;
 }
 
+export interface FxParams {
+  alpha?: number;
+  beta?: number;
+  lambda?: number;
+  delta?: number;
+  epsilon?: number;
+}
+
 export type GyroEParams = NumberGyroEParams<GyroEParamsFromSubgraph>;
 
 export type CombinedParams = MetaStableParams &
   GyroEParams &
   Gyro2Params &
-  Gyro3Params;
+  Gyro3Params &
+  FxParams;
 
 export enum PoolTypeEnum {
   MetaStable = "MetaStable",
   GyroE = "GyroE",
   Gyro2 = "Gyro2",
   Gyro3 = "Gyro3",
+  Fx = "FX",
 }

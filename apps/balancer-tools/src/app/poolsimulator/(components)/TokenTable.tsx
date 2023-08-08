@@ -26,6 +26,7 @@ const MAX_POOL_TOKENS_MAPPER = {
   [PoolTypeEnum.GyroE]: 2,
   [PoolTypeEnum.Gyro2]: 2,
   [PoolTypeEnum.Gyro3]: 3,
+  [PoolTypeEnum.Fx]: 2,
 };
 
 export function TokenTable({ data }: { data: AnalysisData }) {

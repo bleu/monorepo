@@ -179,7 +179,14 @@ export function SearchPoolForm({
                       }}
                     >
                       <div className="flex w-full flex-col items-start">
-                        <span>{pool.symbol}</span>
+                        <span>
+                          {/* By default, FX pools have the name equal to "BPT".
+                            So, we'll use name instead of the symbol, since it is more meaningful */}
+                          {poolTypeFilter?.[0] == "FX" &&
+                          poolTypeFilter?.length == 1
+                            ? pool.name
+                            : pool.symbol}
+                        </span>
                         <div className="flex w-full items-center gap-x-1 text-xs text-slate9">
                           <span>{truncateAddress(pool.id)}</span>
                         </div>

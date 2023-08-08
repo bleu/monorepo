@@ -95,12 +95,22 @@ export function convertGqlToAnalysisData(poolData: PoolQuery): AnalysisData {
   const tokensData =
     poolData?.pool?.tokens
       ?.filter((token) => token.address !== poolData?.pool?.address) // filter out BPT
-      .map((token) => ({
-        symbol: token?.symbol,
-        balance: Number(token?.balance),
-        rate: Number(token?.priceRate),
-        decimal: Number(token?.decimals),
-      })) || [];
+      .map((token) => {
+        if (poolData.pool?.poolType === PoolTypeEnum.Fx)
+          return {
+            symbol: token?.symbol,
+            balance: Number(token?.balance),
+            rate: Number(token?.token.latestFXPrice),
+            decimal: Number(token?.decimals),
+            fxOracleDecimals: Number(token?.token.fxOracleDecimals),
+          };
+        return {
+          symbol: token?.symbol,
+          balance: Number(token?.balance),
+          rate: Number(token?.priceRate),
+          decimal: Number(token?.decimals),
+        };
+      }) || [];
   switch (poolData.pool?.poolType) {
     case PoolTypeEnum.GyroE:
       return {
@@ -140,6 +150,19 @@ export function convertGqlToAnalysisData(poolData: PoolQuery): AnalysisData {
         poolParams: {
           swapFee: Number(poolData?.pool?.swapFee),
           root3Alpha: Number(poolData?.pool?.root3Alpha),
+        },
+        tokens: tokensData,
+      };
+    case PoolTypeEnum.Fx:
+      return {
+        poolType: PoolTypeEnum.Fx,
+        poolParams: {
+          swapFee: Number(poolData?.pool?.swapFee),
+          alpha: Number(poolData?.pool?.alpha),
+          beta: Number(poolData?.pool?.beta),
+          lambda: Number(poolData?.pool?.lambda),
+          delta: Number(poolData?.pool?.delta),
+          epsilon: Number(poolData?.pool?.epsilon),
         },
         tokens: tokensData,
       };

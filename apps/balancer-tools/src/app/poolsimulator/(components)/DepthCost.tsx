@@ -3,7 +3,8 @@
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
 import { PlotType } from "plotly.js";
 
-import Plot, { defaultAxisLayout } from "#/components/Plot";
+import { ErrorCard } from "#/components/ErrorCard";
+import Plot, { defaultAxisLayout, PlotTitle } from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
 import {
   AnalysisData,
@@ -13,6 +14,10 @@ import {
 import { formatNumber } from "#/utils/formatNumber";
 
 import { PoolTypeEnum, TokensData } from "../(types)";
+
+const PLOT_TITLE = "Depth cost";
+const PLOT_TOOLTIP =
+  "Indicates the amount of tokens needed on a swap to alter the spot price (rate between the price of both tokens) to the depth cost point. For stable pools, the depth cost point is 2% of the spot price. For concentrated liquidity pools is 99% of the liquidity range or 2% of the spot price, whichever is closer.";
 
 export function DepthCost() {
   const { analysisToken, initialData, customData, initialAMM, customAMM } =
@@ -24,140 +29,151 @@ export function DepthCost() {
     (token) => token.symbol !== analysisToken.symbol,
   );
 
-  const depthCostAmounts = {
-    initial: {
-      in: pairTokens.map((pairToken) =>
-        calculateDepthCost(
-          pairToken,
-          "in",
-          initialData,
-          initialAMM,
-          initialData.poolType,
+  try {
+    const depthCostAmounts = {
+      initial: {
+        in: pairTokens.map((pairToken) =>
+          calculateDepthCost(
+            pairToken,
+            "in",
+            initialData,
+            initialAMM,
+            initialData.poolType,
+          ),
         ),
-      ),
-      out: pairTokens.map((pairToken) =>
-        calculateDepthCost(
-          pairToken,
-          "out",
-          initialData,
-          initialAMM,
-          initialData.poolType,
+        out: pairTokens.map((pairToken) =>
+          calculateDepthCost(
+            pairToken,
+            "out",
+            initialData,
+            initialAMM,
+            initialData.poolType,
+          ),
         ),
-      ),
-    },
-    custom: {
-      in: pairTokens.map((pairToken) =>
-        calculateDepthCost(
-          pairToken,
-          "in",
-          customData,
-          customAMM,
-          customData.poolType,
+      },
+      custom: {
+        in: pairTokens.map((pairToken) =>
+          calculateDepthCost(
+            pairToken,
+            "in",
+            customData,
+            customAMM,
+            customData.poolType,
+          ),
         ),
-      ),
-      out: pairTokens.map((pairToken) =>
-        calculateDepthCost(
-          pairToken,
-          "out",
-          customData,
-          customAMM,
-          customData.poolType,
+        out: pairTokens.map((pairToken) =>
+          calculateDepthCost(
+            pairToken,
+            "out",
+            customData,
+            customAMM,
+            customData.poolType,
+          ),
         ),
+      },
+    };
+
+    const maxDepthCostAmount = Math.max(
+      ...depthCostAmounts.initial.in.map(({ amount }) => amount),
+      ...depthCostAmounts.initial.out.map(({ amount }) => amount),
+      ...depthCostAmounts.custom.in.map(({ amount }) => amount),
+      ...depthCostAmounts.custom.out.map(({ amount }) => amount),
+    );
+
+    if (!maxDepthCostAmount) return <Spinner />;
+
+    const dataX = pairTokens.map((token) => token.symbol);
+
+    const data = [
+      createDataObject(
+        dataX,
+        depthCostAmounts.initial.in.map(({ amount }) => amount),
+        "Initial",
+        "Initial",
+        true,
+        "in",
+        analysisToken?.symbol,
+        depthCostAmounts.initial.in.map(({ type }) => type),
       ),
-    },
-  };
+      createDataObject(
+        dataX,
+        depthCostAmounts.custom.in.map(({ amount }) => amount),
+        "Custom",
+        "Custom",
+        true,
+        "in",
+        analysisToken?.symbol,
+        depthCostAmounts.custom.in.map(({ type }) => type),
+      ),
+      createDataObject(
+        dataX,
+        depthCostAmounts.initial.out.map(({ amount }) => amount),
+        "Initial",
+        "Initial",
+        false,
+        "out",
+        analysisToken?.symbol,
+        depthCostAmounts.initial.out.map(({ type }) => type),
+        "y2",
+        "x2",
+      ),
+      createDataObject(
+        dataX,
+        depthCostAmounts.custom.out.map(({ amount }) => amount),
+        "Custom",
+        "Custom",
+        false,
+        "out",
+        analysisToken?.symbol,
+        depthCostAmounts.custom.out.map(({ type }) => type),
+        "y2",
+        "x2",
+      ),
+    ];
 
-  const maxDepthCostAmount = Math.max(
-    ...depthCostAmounts.initial.in.map(({ amount }) => amount),
-    ...depthCostAmounts.initial.out.map(({ amount }) => amount),
-    ...depthCostAmounts.custom.in.map(({ amount }) => amount),
-    ...depthCostAmounts.custom.out.map(({ amount }) => amount),
-  );
-
-  if (!maxDepthCostAmount) return <Spinner />;
-
-  const dataX = pairTokens.map((token) => token.symbol);
-
-  const data = [
-    createDataObject(
-      dataX,
-      depthCostAmounts.initial.in.map(({ amount }) => amount),
-      "Initial",
-      "Initial",
-      true,
-      "in",
-      analysisToken?.symbol,
-      depthCostAmounts.initial.in.map(({ type }) => type),
-    ),
-    createDataObject(
-      dataX,
-      depthCostAmounts.custom.in.map(({ amount }) => amount),
-      "Custom",
-      "Custom",
-      true,
-      "in",
-      analysisToken?.symbol,
-      depthCostAmounts.custom.in.map(({ type }) => type),
-    ),
-    createDataObject(
-      dataX,
-      depthCostAmounts.initial.out.map(({ amount }) => amount),
-      "Initial",
-      "Initial",
-      false,
-      "out",
-      analysisToken?.symbol,
-      depthCostAmounts.initial.out.map(({ type }) => type),
-      "y2",
-      "x2",
-    ),
-    createDataObject(
-      dataX,
-      depthCostAmounts.custom.out.map(({ amount }) => amount),
-      "Custom",
-      "Custom",
-      false,
-      "out",
-      analysisToken?.symbol,
-      depthCostAmounts.custom.out.map(({ type }) => type),
-      "y2",
-      "x2",
-    ),
-  ];
-
-  const props = {
-    data: data,
-    title: "Depth cost",
-    toolTip:
-      "Indicates the amount of tokens needed on a swap to alter the spot price (rate between the price of both tokens) to the depth cost point. For stable pools, the depth cost point is 2% of the spot price. For concentrated liquidity pools is 99% of the liquidity range or 2% of the spot price, whichever is closer.",
-    layout: {
-      margin: { l: 3, r: 3 },
-      xaxis: {
-        tickmode: "array" as const,
-        tickvals: dataX,
-        ticktext: pairTokens.map((token) => token.symbol),
+    const props = {
+      data: data,
+      title: PLOT_TITLE,
+      toolTip: PLOT_TOOLTIP,
+      layout: {
+        margin: { l: 3, r: 3 },
+        xaxis: {
+          tickmode: "array" as const,
+          tickvals: dataX,
+          ticktext: pairTokens.map((token) => token.symbol),
+        },
+        xaxis2: {
+          ...defaultAxisLayout,
+          tickmode: "array" as const,
+          tickvals: dataX,
+          ticktext: pairTokens.map((token) => token.symbol),
+        },
+        yaxis: {
+          title: `${analysisToken?.symbol} in`,
+          range: [0, maxDepthCostAmount],
+        },
+        yaxis2: {
+          ...defaultAxisLayout,
+          title: `${analysisToken?.symbol} out`,
+          range: [0, maxDepthCostAmount],
+        },
+        grid: { columns: 2, rows: 1, pattern: "independent" as const },
       },
-      xaxis2: {
-        ...defaultAxisLayout,
-        tickmode: "array" as const,
-        tickvals: dataX,
-        ticktext: pairTokens.map((token) => token.symbol),
-      },
-      yaxis: {
-        title: `${analysisToken?.symbol} in`,
-        range: [0, maxDepthCostAmount],
-      },
-      yaxis2: {
-        ...defaultAxisLayout,
-        title: `${analysisToken?.symbol} out`,
-        range: [0, maxDepthCostAmount],
-      },
-      grid: { columns: 2, rows: 1, pattern: "independent" as const },
-    },
-    config: { displayModeBar: false },
-  };
+      config: { displayModeBar: false },
+    };
 
-  return <Plot {...props} />;
+    return <Plot {...props} />;
+  } catch (e) {
+    return (
+      <div className="flex w-full flex-col">
+        <PlotTitle title={PLOT_TITLE} tooltip={PLOT_TOOLTIP} />
+        <ErrorCard
+          message="The depth cost chart uses numeric calculus methods to do the calculations. Usually when this happens is because at least one pool parameter value is not defined properly. Please, review initial and custom pool parameters used."
+          title="Depth Cost not converged"
+        />
+      </div>
+    );
+  }
 }
 
 const createHoverTemplate = (

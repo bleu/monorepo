@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 
 import { Button } from "#/components";
-import { ErrorMessage } from "#/components/ErrorMessage";
+import { ErrorCard } from "#/components/ErrorCard";
 import { BaseInput, Input } from "#/components/Input";
 import { PlotTitle } from "#/components/Plot";
 import { Select, SelectItem } from "#/components/Select";
@@ -363,9 +363,9 @@ function SimulationResult({
     (!amountOut || amountOut > getTokenBalance(tokenOutSymbol))
   ) {
     return (
-      <ErrorMessage
-        errorTitle="CLP limit"
-        errorMessage="The swap is greater than the pool limit. Please, change the amount to a lower value."
+      <ErrorCard
+        title="CLP limit"
+        message="The swap is greater than the pool limit. Please, change the amount to a lower value."
       />
     );
   }

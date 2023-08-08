@@ -108,6 +108,7 @@ export function convertGqlToAnalysisData(poolData: PoolQuery): AnalysisData {
             balance: Number(token?.balance),
             rate: Number(token?.token.latestFXPrice),
             decimal: Number(token?.decimals),
+            fxOracleDecimals: Number(token?.token.fxOracleDecimals),
           };
         return {
           symbol: token?.symbol,

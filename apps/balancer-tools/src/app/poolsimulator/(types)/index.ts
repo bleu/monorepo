@@ -9,7 +9,7 @@ export interface TokensData {
   balance: number;
   decimal: number;
   rate?: number;
-  weight?: number;
+  fxOracleDecimals?: number;
 }
 
 export interface MetaStableParams {

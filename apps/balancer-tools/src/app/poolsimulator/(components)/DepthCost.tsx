@@ -169,7 +169,7 @@ export function DepthCost() {
         <PlotTitle title={PLOT_TITLE} tooltip={PLOT_TOOLTIP} />
         <ErrorCard
           message="The depth cost chart runs using numerical calculus. Usually this happens because at least one pool parameter value is not defined properly, so the simulation does not converge. Please review the initial and custom pool parameters used."
-          title="Depth Cost not converged"
+          title="Depth Cost didn't converge"
         />
       </div>
     );

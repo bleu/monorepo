@@ -7,6 +7,11 @@ settings:
 overrides:
   ipfs-http-client: ^60
 
+patchedDependencies:
+  '@netlify/plugin-nextjs@4.39.3':
+    hash: mska4rkpkvqexrtoasjyfvtwia
+    path: patches/@netlify__plugin-nextjs@4.39.3.patch
+
 importers:
 
   .:
@@ -173,7 +178,7 @@ importers:
         version: 5.7.0
       '@netlify/plugin-nextjs':
         specifier: ^4.39.3
-        version: 4.39.3
+        version: 4.39.3(patch_hash=mska4rkpkvqexrtoasjyfvtwia)
       '@testing-library/jest-dom':
         specifier: 5.17.0
         version: 5.17.0
@@ -3506,7 +3511,7 @@ packages:
       - supports-color
     dev: true
 
-  /@netlify/plugin-nextjs@4.39.3:
+  /@netlify/plugin-nextjs@4.39.3(patch_hash=mska4rkpkvqexrtoasjyfvtwia):
     resolution: {integrity: sha512-WbGW1CQ8jOW59gjAQVaG3Vcn6B4CoXfu8NV9DSDV0bvzHkapGfPV9YOa0u/2ipMO+9NG7yu3UNq3RLFHwk0F4Q==}
     engines: {node: '>=12.0.0'}
     dependencies:
@@ -3549,6 +3554,7 @@ packages:
       - idb-keyval
       - supports-color
     dev: true
+    patched: true
 
   /@next/env@13.4.13:
     resolution: {integrity: sha512-fwz2QgVg08v7ZL7KmbQBLF2PubR/6zQdKBgmHEl3BCyWTEDsAQEijjw2gbFhI1tcKfLdOOJUXntz5vZ4S0Polg==}

@@ -12,6 +12,13 @@ import { PoolTypeEnum } from "../(types)";
 export async function convertAnalysisDataToAMM(data: AnalysisData) {
   if (!data.poolType || !data.poolParams?.swapFee) return;
 
+  const tokensData = data.tokens.map((token) => ({
+    address: token.symbol, // math use address as key, but we will use symbol because custom token will not have address
+    balance: String(token.balance),
+    decimals: token.decimal,
+    priceRate: String(token.rate),
+  }));
+
   switch (data.poolType) {
     case PoolTypeEnum.MetaStable: {
       return new AMM(
@@ -21,12 +28,7 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
           totalShares: String(
             data.tokens.reduce((acc, token) => acc + token.balance, 0),
           ),
-          tokens: data.tokens.map((token) => ({
-            address: String(token.symbol), // math use address as key, but we will use symbol because custom token will not have address
-            balance: String(token.balance),
-            decimals: token.decimal,
-            priceRate: String(token.rate),
-          })),
+          tokens: tokensData,
           tokensList: data.tokens.map((token) => String(token.symbol)),
         }),
       );
@@ -39,12 +41,7 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
           totalShares: String(
             data.tokens.reduce((acc, token) => acc + token.balance, 0),
           ),
-          tokens: data.tokens.map((token) => ({
-            address: String(token.symbol), // math use address as key, but we will use symbol because custom token will not have address
-            balance: String(token.balance),
-            decimals: token.decimal,
-            priceRate: String(token.rate),
-          })),
+          tokens: tokensData,
           tokensList: data.tokens.map((token) => String(token.symbol)),
 
           gyroEParams: {
@@ -66,12 +63,7 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
           totalShares: String(
             data.tokens.reduce((acc, token) => acc + token.balance, 0),
           ),
-          tokens: data.tokens.map((token) => ({
-            address: String(token.symbol), // math use address as key, but we will use symbol because custom token will not have address
-            balance: String(token.balance),
-            decimals: token.decimal,
-            priceRate: String(token.rate),
-          })),
+          tokens: tokensData,
           tokensList: data.tokens.map((token) => String(token.symbol)),
           sqrtAlpha: String(data.poolParams?.sqrtAlpha),
           sqrtBeta: String(data.poolParams?.sqrtBeta),
@@ -190,4 +182,25 @@ export function calculateCurvePoints({
       (_, index) => initialValue * stepRatio ** index,
     ),
   ];
+}
+
+export function trimTrailingValues(
+  amountsIn: number[],
+  amountsOut: number[],
+  valueToTrim: number = 100,
+): { trimmedIn: number[]; trimmedOut: number[] } {
+  const lastIndexNonValue = amountsOut
+    .slice()
+    .reverse()
+    .findIndex((value) => value !== valueToTrim);
+
+  const cutIndex =
+    lastIndexNonValue !== -1
+      ? amountsOut.length - lastIndexNonValue
+      : amountsOut.length;
+
+  const trimmedIn = amountsIn.slice(0, cutIndex);
+  const trimmedOut = amountsOut.slice(0, cutIndex);
+
+  return { trimmedIn, trimmedOut };
 }

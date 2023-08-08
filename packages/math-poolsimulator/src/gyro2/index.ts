@@ -12,9 +12,9 @@ import {
 } from "@balancer-labs/sor";
 import { BigNumber, formatFixed } from "@ethersproject/bignumber";
 import { WeiPerEther as ONE } from "@ethersproject/constants";
-import { IAMMFunctionality } from "types";
 
 import { bigNumberToOldBigNumber } from "../conversions";
+import { IAMMFunctionality } from "../types";
 
 type Gyro2PoolToken = Pick<SubgraphToken, "address" | "balance" | "decimals">;
 
@@ -44,7 +44,7 @@ export class ExtendedGyro2
       poolParams.tokens,
       poolParams.tokensList,
       poolParams.sqrtAlpha,
-      poolParams.sqrtBeta
+      poolParams.sqrtBeta,
     );
   }
 
@@ -103,7 +103,7 @@ export class ExtendedGyro2
     balances: BigNumber[],
     virtualParamIn: BigNumber,
     virtualParamOut: BigNumber,
-    swapFee: BigNumber
+    swapFee: BigNumber,
   ): BigNumber {
     const afterFeeMultiplier = ONE.sub(swapFee); // 1 - s
     const virtIn = balances[0].add(virtualParamIn); // x + virtualParamX = x'
@@ -112,11 +112,11 @@ export class ExtendedGyro2
     const numerator = virtIn;
     const denominator = GyroHelpersSignedFixedPoint.mulDown(
       afterFeeMultiplier,
-      virtOut
+      virtOut,
     );
     const newSpotPrice = GyroHelpersSignedFixedPoint.divDown(
       numerator,
-      denominator
+      denominator,
     );
 
     return newSpotPrice;
@@ -132,13 +132,13 @@ export class ExtendedGyro2
       const invariant = Gyro2Maths._calculateInvariant(
         normalizedBalances,
         poolPairData.sqrtAlpha,
-        poolPairData.sqrtBeta
+        poolPairData.sqrtBeta,
       );
 
       const [virtualParamIn, virtualParamOut] = Gyro2Maths._findVirtualParams(
         invariant,
         poolPairData.sqrtAlpha,
-        poolPairData.sqrtBeta
+        poolPairData.sqrtBeta,
       );
 
       // Here you can calculate the spot price based on the current state of the pool
@@ -147,7 +147,7 @@ export class ExtendedGyro2
         normalizedBalances,
         virtualParamIn,
         virtualParamOut,
-        poolPairData.swapFee
+        poolPairData.swapFee,
       );
 
       return bnum(formatFixed(spotPrice, 18));
@@ -156,11 +156,11 @@ export class ExtendedGyro2
     }
   }
   _firstGuessOfTokenInForExactSpotPriceAfterSwap(
-    poolPairData: Gyro2PoolPairData
+    poolPairData: Gyro2PoolPairData,
   ): OldBigNumber {
     return bigNumberToOldBigNumber(
       poolPairData.balanceIn,
-      poolPairData.decimalsIn
+      poolPairData.decimalsIn,
     ).times(bnum(0.01));
   }
 }

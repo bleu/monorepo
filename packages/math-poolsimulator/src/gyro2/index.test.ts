@@ -20,7 +20,7 @@ describe("Tests new Gyro 2CLP math function based on package other functions", (
       tokensList: poolData.tokensList,
       sqrtAlpha: poolData.sqrtAlpha,
       sqrtBeta: poolData.sqrtBeta,
-    })
+    }),
   );
 
   const pool = ExtendedGyro2.fromPool(poolData as SubgraphPoolBase);
@@ -29,22 +29,22 @@ describe("Tests new Gyro 2CLP math function based on package other functions", (
   const amountOldBigNumber = bnum(amount);
   const spotPriceExpected = pool._spotPriceAfterSwapExactTokenInForTokenOut(
     poolPairData,
-    amountOldBigNumber
+    amountOldBigNumber,
   );
   const amountOut = amm.exactTokenInForTokenOut(amount, tokenIn, tokenOut);
 
   poolPairData.balanceIn = poolPairData.balanceIn.add(
-    numberToBigNumber({ number: amount })
+    numberToBigNumber({ number: amount }),
   );
 
   poolPairData.balanceOut = poolPairData.balanceOut.sub(
-    numberToBigNumber({ number: amountOut })
+    numberToBigNumber({ number: amountOut }),
   );
 
   test("_spotPrice", () => {
     checkResult(
       pool._spotPrice(poolPairData).toNumber(),
-      spotPriceExpected.toNumber()
+      spotPriceExpected.toNumber(),
     );
   });
 
@@ -52,7 +52,7 @@ describe("Tests new Gyro 2CLP math function based on package other functions", (
     const tokenInCalculated = amm.tokenInForExactSpotPriceAfterSwap(
       spotPriceExpected.toNumber(),
       tokenIn,
-      tokenOut
+      tokenOut,
     );
     checkResult(tokenInCalculated, amount);
   });

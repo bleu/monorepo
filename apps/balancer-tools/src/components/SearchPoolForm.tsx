@@ -32,15 +32,15 @@ export function SearchPoolForm({
   showPools = false,
   defaultValuePool,
   form = useForm<PoolAttribute>(),
-  children
+  children,
 }: {
   onSubmit?: (formData: PoolAttribute) => void;
   close?: () => void;
   poolTypeFilter?: string[];
   showPools?: boolean;
-  defaultValuePool?: string
-  form?: any
-  children?: ReactNode | undefined
+  defaultValuePool?: string;
+  form?: any;
+  children?: ReactNode | undefined;
 }) {
   const [comboBoxIsOpen, setComboBoxIsOpen] = useState(false);
   const {
@@ -67,7 +67,7 @@ export function SearchPoolForm({
     .gql(network || "1")
     .usePoolsWherePoolType(
       poolTypeFilter?.length ? { poolTypes: poolTypeFilter } : {},
-      { revalidateIfStale: true },
+      { revalidateIfStale: true }
     );
   const isPool = !!poolsData?.pools?.length;
 
@@ -94,7 +94,7 @@ export function SearchPoolForm({
   const filteredPoolList = poolsDataList?.pools
     .filter((pool) => filterPoolInput({ poolSearchQuery: poolId, pool }))
     .sort((a, b) =>
-      Number(a!.totalLiquidity) < Number(b!.totalLiquidity) ? 1 : -1,
+      Number(a!.totalLiquidity) < Number(b!.totalLiquidity) ? 1 : -1
     );
 
   useEffect(() => {
@@ -105,7 +105,7 @@ export function SearchPoolForm({
           type: "notfound",
           message: "Pool not found. Check the Pool ID and network.",
         },
-        { shouldFocus: true },
+        { shouldFocus: true }
       );
       return;
     } else {

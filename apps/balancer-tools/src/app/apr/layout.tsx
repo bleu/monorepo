@@ -2,12 +2,12 @@
 
 import { useParams, usePathname, useRouter } from "next/navigation";
 import * as React from "react";
+import { useForm } from "react-hook-form";
 import invariant from "tiny-invariant";
 
 import { Header } from "#/components/Header";
 import { PoolAttribute, SearchPoolForm } from "#/components/SearchPoolForm";
 import { Select, SelectItem } from "#/components/Select";
-import { useForm } from "react-hook-form";
 
 const ROUNDS = [
   {
@@ -23,7 +23,7 @@ const ROUNDS = [
 export default function Layout({ children }: React.PropsWithChildren) {
   const router = useRouter();
   const pathname = usePathname();
-  
+
   const { roundId, poolId } = useParams();
   const form = useForm<PoolAttribute>();
   const { setValue } = form;
@@ -31,15 +31,15 @@ export default function Layout({ children }: React.PropsWithChildren) {
   invariant(!Array.isArray(poolId), "poolId cannot be a list");
 
   React.useEffect(() => {
-    if(roundId == "latest") {
-      router.push(`/apr/round/${ROUNDS[0].value}`);}
+    if (roundId == "latest") {
+      router.push(`/apr/round/${ROUNDS[0].value}`);
+    }
 
-    if(!roundId) {
+    if (!roundId) {
       router.push(`${pathname}/round/${ROUNDS[0].value}`);
     }
-  }, [roundId])
-  
-  
+  }, [roundId]);
+
   // invariant(!Array.isArray(roundId), "roundId cannot be a list");
 
   return (
@@ -56,20 +56,18 @@ export default function Layout({ children }: React.PropsWithChildren) {
           form={form}
           defaultValuePool={poolId}
           onSubmit={(value) => {
-            router.push(`/apr/pool/${value.network}/${value.poolId}/round/${roundId}`);
+            router.push(
+              `/apr/pool/${value.network}/${value.poolId}/round/${roundId}`
+            );
             setValue("poolId", value.poolId);
           }}
         >
           <div className="relative">
-      <label className="mb-2 block text-sm text-slate12">Round</label>
+            <label className="mb-2 block text-sm text-slate12">Round</label>
             <Select
               value={roundId ?? ""}
               onValueChange={(value) => {
-                router.push(
-                  !poolId
-                    ? `/apr/round/${value}`
-                    : `${value}`,
-                );
+                router.push(!poolId ? `/apr/round/${value}` : `${value}`);
               }}
               className="w-full"
             >

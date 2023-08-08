@@ -1,8 +1,8 @@
 "use client";
 
 import { PoolsWherePoolTypeQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
-import { useEffect, useLayoutEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { ReactNode, useEffect, useLayoutEffect, useState } from "react";
+import { useForm, UseFormReturn } from "react-hook-form";
 
 import Button from "#/components/Button";
 import { Input } from "#/components/Input";
@@ -30,14 +30,19 @@ export function SearchPoolForm({
   poolTypeFilter,
   onSubmit,
   showPools = false,
+  defaultValuePool,
+  form = useForm<PoolAttribute>(),
+  children,
 }: {
   onSubmit?: (formData: PoolAttribute) => void;
   close?: () => void;
   poolTypeFilter?: string[];
   showPools?: boolean;
+  defaultValuePool?: string;
+  form?: UseFormReturn<PoolAttribute>;
+  children?: ReactNode | undefined;
 }) {
   const [comboBoxIsOpen, setComboBoxIsOpen] = useState(false);
-  const form = useForm<PoolAttribute>();
   const {
     register,
     setError,
@@ -69,6 +74,7 @@ export function SearchPoolForm({
   function handleSubmitForm(formData: PoolAttribute) {
     onSubmit?.(formData);
     close?.();
+    closeCombobox();
   }
 
   function filterPoolInput({
@@ -143,6 +149,7 @@ export function SearchPoolForm({
 
         <div className="relative">
           <Input
+            defaultValue={defaultValuePool}
             label={!showPools ? "Pool ID" : "Pool Name or ID"}
             placeholder={
               !showPools
@@ -193,6 +200,8 @@ export function SearchPoolForm({
             </div>
           )}
         </div>
+
+        {children}
 
         <div className="mt-4 flex items-center justify-end">
           <Button type="submit" disabled={!isPool || poolId === ""}>

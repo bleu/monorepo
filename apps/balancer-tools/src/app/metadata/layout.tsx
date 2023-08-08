@@ -46,7 +46,9 @@ export default function Layout({ children }: React.PropsWithChildren) {
               <Sidebar isFloating>
                 <Dialog
                   title="Go to pool"
-                  content={<SearchPoolForm onSubmit={handleGoToPool} />}
+                  content={
+                    <SearchPoolForm onSubmit={handleGoToPool} showPools />
+                  }
                 >
                   <span className="flex cursor-pointer items-center space-x-2 text-sm font-normal text-slate12">
                     <MagnifyingGlassIcon

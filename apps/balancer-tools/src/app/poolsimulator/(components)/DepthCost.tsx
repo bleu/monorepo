@@ -1,6 +1,7 @@
 "use client";
 
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
+import { PoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/types";
 import { PlotType } from "plotly.js";
 
 import { ErrorCard } from "#/components/ErrorCard";
@@ -8,7 +9,6 @@ import Plot, { defaultAxisLayout, PlotTitle } from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
 import {
   AnalysisData,
-  PoolPairData,
   usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";

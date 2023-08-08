@@ -27,6 +27,7 @@ const POOL_TYPES_MAPPER = {
   GyroE: "Gyro E-CLP",
   Gyro2: "Gyro 2CLP",
   Gyro3: "Gyro 3CLP",
+  FX: "FX",
 };
 
 export enum PoolSimulatorFormTabs {

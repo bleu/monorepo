@@ -1,28 +1,20 @@
 "use client";
 
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
+import { PoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/types";
 import { PlotType } from "plotly.js";
 
 import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
-import {
-  PoolPairData,
-  usePoolSimulator,
-} from "#/contexts/PoolSimulatorContext";
+import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
-import { PoolTypeEnum, TokensData } from "../(types)";
-import { calculateCurvePoints } from "../(utils)";
+import { TokensData } from "../(types)";
+import { calculateCurvePoints, trimTrailingValues } from "../(utils)";
 
 export function SwapCurve() {
-  const {
-    analysisToken,
-    currentTabToken,
-    initialAMM,
-    customAMM,
-    initialData,
-    customData,
-  } = usePoolSimulator();
+  const { analysisToken, currentTabToken, initialAMM, customAMM } =
+    usePoolSimulator();
 
   if (!initialAMM || !customAMM) return <Spinner />;
 
@@ -31,24 +23,14 @@ export function SwapCurve() {
     amountsAnalysisTokenOut: initialAmountsAnalysisTokenOut,
     amountsTabTokenOut: initialAmountTabTokenOut,
     amountsTabTokenIn: initialAmountTabTokenIn,
-  } = calculateTokenAmounts(
-    analysisToken,
-    currentTabToken,
-    initialAMM,
-    initialData.poolType,
-  );
+  } = calculateTokenAmounts(analysisToken, currentTabToken, initialAMM);
 
   const {
     amountsAnalysisTokenIn: customAmountsAnalysisTokenIn,
     amountsAnalysisTokenOut: customAmountsAnalysisTokenOut,
     amountsTabTokenOut: customAmountTabTokenOut,
     amountsTabTokenIn: customAmountTabTokenIn,
-  } = calculateTokenAmounts(
-    analysisToken,
-    currentTabToken,
-    customAMM,
-    customData.poolType,
-  );
+  } = calculateTokenAmounts(analysisToken, currentTabToken, customAMM);
 
   const formatSwap = (
     amountIn: number,
@@ -218,35 +200,30 @@ const calculateTokenAmounts = (
   tokenIn: TokensData,
   tokenOut: TokensData,
   amm: AMM<PoolPairData>,
-  poolType: PoolTypeEnum,
 ) => {
-  const amountsAnalysisTokenIn =
-    poolType === PoolTypeEnum.MetaStable
-      ? calculateCurvePoints({
-          balance: tokenIn.balance,
-        })
-      : calculateCurvePoints({
-          balance: tokenIn.balance,
-        }).filter((value) => value <= tokenOut.balance);
+  const rawAmountsAnalysisTokenIn = calculateCurvePoints({
+    balance: tokenIn.balance,
+  });
 
-  const amountsTabTokenIn =
-    poolType === PoolTypeEnum.MetaStable
-      ? calculateCurvePoints({
-          balance: tokenOut.balance,
-        })
-      : calculateCurvePoints({
-          balance: tokenIn.balance,
-        }).filter((value) => value <= tokenIn.balance);
+  const rawAmountsTabTokenIn = calculateCurvePoints({
+    balance: tokenOut.balance,
+  });
 
-  const amountsTabTokenOut = amountsAnalysisTokenIn.map(
+  const rawAmountsTabTokenOut = rawAmountsAnalysisTokenIn.map(
     (amount) =>
       amm.exactTokenInForTokenOut(amount, tokenIn.symbol, tokenOut.symbol) * -1,
   );
 
-  const amountsAnalysisTokenOut = amountsTabTokenIn.map(
+  const rawAmountsAnalysisTokenOut = rawAmountsTabTokenIn.map(
     (amount) =>
       amm.exactTokenInForTokenOut(amount, tokenOut.symbol, tokenIn.symbol) * -1,
   );
+
+  const { trimmedIn: amountsTabTokenIn, trimmedOut: amountsAnalysisTokenOut } =
+    trimTrailingValues(rawAmountsTabTokenIn, rawAmountsAnalysisTokenOut, 0);
+
+  const { trimmedIn: amountsAnalysisTokenIn, trimmedOut: amountsTabTokenOut } =
+    trimTrailingValues(rawAmountsAnalysisTokenIn, rawAmountsTabTokenOut, 0);
 
   return {
     amountsAnalysisTokenIn,

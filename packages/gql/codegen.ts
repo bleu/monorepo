@@ -73,8 +73,7 @@ export const SUBGRAPHS = {
         [Network.Goerli]: `${baseEndpoint}/balancer-goerli-v2`,
         [Network.Polygon]: `${baseEndpoint}/balancer-polygon-v2`,
         [Network.PolygonZKEVM]: `https://api.studio.thegraph.com/query/24660/balancer-polygon-zk-v2/version/latest`,
-        //TODO: substitute Arbitrum to balancer-labs subgraph once it shows tokenInfo
-        [Network.Arbitrum]: `https://api.thegraph.com/subgraphs/name/bleu-studio/balancer-arbitrum-v2`,
+        [Network.Arbitrum]: `${baseEndpoint}/balancer-arbitrum-v2`,
         [Network.Gnosis]: `${baseEndpoint}/balancer-gnosis-chain-v2-beta`,
         [Network.Optimism]: `${baseEndpoint}/balancer-optimism-v2`,
       };

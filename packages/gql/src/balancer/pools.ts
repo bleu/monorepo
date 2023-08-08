@@ -86,6 +86,8 @@ export const poolById = gql`
       tauAlphaY
       tauBetaX
       tauBetaY
+      delta
+      epsilon
       u
       v
       w
@@ -97,6 +99,10 @@ export const poolById = gql`
         balance
         decimals
         priceRate
+        token {
+          fxOracleDecimals
+          latestFXPrice
+        }
       }
     }
   }

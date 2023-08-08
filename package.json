@@ -47,6 +47,9 @@
   "pnpm": {
     "overrides": {
       "ipfs-http-client": "^60"
+    },
+    "patchedDependencies": {
+      "@netlify/plugin-nextjs@4.39.3": "patches/@netlify__plugin-nextjs@4.39.3.patch"
     }
   }
 }

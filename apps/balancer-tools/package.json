@@ -49,7 +49,7 @@
     "inputmask": "^5.0.8",
     "lodash": "^4.17.21",
     "lodash.merge": "^4.6.2",
-    "next": "^13.4.10",
+    "next": "^13.4.13",
     "plotly.js": "^2.24.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

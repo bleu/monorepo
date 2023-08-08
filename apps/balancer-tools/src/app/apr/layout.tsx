@@ -20,9 +20,7 @@ const ROUNDS = [
 
 export default function Layout({ children }: React.PropsWithChildren) {
   const router = useRouter();
-  // roundId is always undefined here?
-  const { roundId } = useParams(); // If in /pool/ethereum/poolId/1, that would be the selected value
-  // same needs to happen for poolId
+  const { roundId, poolId } = useParams();
 
   invariant(!Array.isArray(roundId), "roundId cannot be a list");
 
@@ -45,6 +43,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
           theme="dark"
           value={roundId ?? ""}
           onValueChange={(value) => router.push(`/apr/round/${value}`)}
+          defaultValuePool={poolId}
         >
           {ROUNDS.map((round) => (
             <SelectItem key="roundId" value={round.value}>

@@ -1,5 +1,6 @@
 "use client";
 
+import clsx from "clsx";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import * as React from "react";
 import { useForm } from "react-hook-form";
@@ -9,16 +10,23 @@ import { Header } from "#/components/Header";
 import { PoolAttribute, SearchPoolForm } from "#/components/SearchPoolForm";
 import { Select, SelectItem } from "#/components/Select";
 
-const ROUNDS = [
-  {
-    value: "1",
-    label: "1 - 10/10/2023",
-  },
-  {
-    value: "2",
-    label: "2 - 08/08/2023",
-  },
-];
+const FIRST_ROUND_END_DATE = new Date("2022-04-13T23:59:59.999Z");
+const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
+
+const ROUNDS_COUNT =
+  Math.ceil((Date.now() - FIRST_ROUND_END_DATE.getTime()) / ONE_WEEK_IN_MS) + 1;
+
+const ROUNDS = Array.from({ length: ROUNDS_COUNT }, (_, i) => ({
+  label: `${new Date(
+    FIRST_ROUND_END_DATE.getTime() + i * ONE_WEEK_IN_MS,
+  ).toLocaleDateString("en-US", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  })}`,
+  value: String(i + 1),
+  activeRound: i === ROUNDS_COUNT - 1,
+})).reverse();
 
 export default function Layout({ children }: React.PropsWithChildren) {
   const router = useRouter();
@@ -27,11 +35,12 @@ export default function Layout({ children }: React.PropsWithChildren) {
   const { roundId, poolId } = useParams();
   const form = useForm<PoolAttribute>();
   const { setValue } = form;
+
   invariant(!Array.isArray(roundId), "roundId cannot be a list");
   invariant(!Array.isArray(poolId), "poolId cannot be a list");
 
   React.useEffect(() => {
-    if (roundId == "latest") {
+    if (roundId == "current") {
       router.push(`/apr/round/${ROUNDS[0].value}`);
     }
 
@@ -39,8 +48,6 @@ export default function Layout({ children }: React.PropsWithChildren) {
       router.push(`${pathname}/round/${ROUNDS[0].value}`);
     }
   }, [roundId]);
-
-  // invariant(!Array.isArray(roundId), "roundId cannot be a list");
 
   return (
     <div className="flex h-full flex-col">
@@ -63,7 +70,20 @@ export default function Layout({ children }: React.PropsWithChildren) {
           }}
         >
           <div className="relative">
-            <label className="mb-2 block text-sm text-slate12">Round</label>
+            <div className="space-x-2">
+              <label className="mb-2 text-sm text-slate12">Round</label>
+              <label
+                className={clsx("px-1 float-right text-sm rounded-full", {
+                  "text-slate12 bg-blue-600 hover:bg-blue-700":
+                    roundId === ROUNDS[0].value,
+                  "text-slate12 bg-gray-600 hover:bg-gray-700":
+                    roundId !== ROUNDS[0].value,
+                })}
+              >
+                {roundId === ROUNDS[0].value ? "Current" : "Ended"}
+              </label>
+            </div>
+
             <Select
               value={roundId ?? ""}
               onValueChange={(value) => {

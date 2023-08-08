@@ -1,7 +1,6 @@
 "use client";
 
 import { Network, networkFor } from "@bleu-balancer-tools/utils";
-import { Route } from "next";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 
@@ -53,9 +52,7 @@ export const NetworksContextProvider = ({
       networkConnectedToWallet !== undefined &&
       networkConnectedToWallet !== network.chain?.id
     ) {
-      push(
-        `/${appName}/${networkFor(network.chain.id).toLowerCase()}` as Route,
-      );
+      push(`/${appName}/${networkFor(network.chain.id).toLowerCase()}`);
     }
   }, [network]);
 

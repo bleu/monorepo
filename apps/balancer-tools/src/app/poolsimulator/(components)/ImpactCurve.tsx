@@ -10,7 +10,7 @@ import { TokensData, usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
 import { PoolTypeEnum } from "../(types)";
-import { calculateCurvePoints } from "../(utils)";
+import { calculateCurvePoints, trimTrailingValues } from "../(utils)";
 
 export function ImpactCurve() {
   const {
@@ -180,7 +180,6 @@ export function ImpactCurve() {
     ...variantAmountsTabTokenIn,
   );
   const xlimit = Math.min(maxFromInitialAmounts, maxFromCustomAmounts);
-
   function indexOfXLimit(value, ...arrays) {
     return arrays.map((arr) => arr.indexOf(value)).find((idx) => idx !== -1);
   }
@@ -238,7 +237,7 @@ const calculateTokenImpact = ({
   const maxBalance = Math.max(tokenIn.balance, tokenOut.balance);
   const limitBalance =
     swapDirection === "in" ? tokenOut.balance : tokenIn.balance;
-  const amounts =
+  const rawAmounts =
     poolType === PoolTypeEnum.MetaStable
       ? calculateCurvePoints({
           balance: maxBalance,
@@ -249,7 +248,7 @@ const calculateTokenImpact = ({
           start: 0.001,
         }).filter((value) => value <= limitBalance);
 
-  const priceImpact = amounts.map(
+  const rawPriceImpact = rawAmounts.map(
     (amount) =>
       amm.priceImpactForExactTokenInSwap(
         amount,
@@ -258,8 +257,14 @@ const calculateTokenImpact = ({
       ) * 100,
   );
 
+  const { trimmedIn: amounts, trimmedOut: priceImpact } = trimTrailingValues(
+    rawAmounts,
+    rawPriceImpact,
+    100,
+  );
+
   return {
-    amounts,
-    priceImpact,
+    amounts: amounts,
+    priceImpact: priceImpact,
   };
 };

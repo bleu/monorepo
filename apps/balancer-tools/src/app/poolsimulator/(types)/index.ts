@@ -1,6 +1,7 @@
+import { IGyro2Maths } from "@bleu-balancer-tools/math-poolsimulator/src/gyro2";
 import { GyroEParamsFromSubgraph } from "@bleu-balancer-tools/math-poolsimulator/src/gyroE";
 
-type NumberGyroEParams<T> = {
+type ConvertToNumber<T> = {
   [K in keyof T]?: number;
 };
 
@@ -17,12 +18,9 @@ export interface MetaStableParams {
   swapFee?: number;
 }
 
-//TODO substitute with Gyro2ParamsFromSubgraph issue BAL-501
-export interface Gyro2Params {
-  swapFee?: number;
-  sqrtAlpha?: number;
-  sqrtBeta?: number;
-}
+export type Gyro2Params = Partial<
+  ConvertToNumber<Pick<IGyro2Maths, "swapFee" | "sqrtAlpha" | "sqrtBeta">>
+>;
 
 //TODO substitute with Gyro3ParamsFromSubgraph issue BAL-501
 export interface Gyro3Params {
@@ -38,7 +36,7 @@ export interface FxParams {
   epsilon?: number;
 }
 
-export type GyroEParams = NumberGyroEParams<GyroEParamsFromSubgraph>;
+export type GyroEParams = ConvertToNumber<GyroEParamsFromSubgraph>;
 
 export type CombinedParams = MetaStableParams &
   GyroEParams &

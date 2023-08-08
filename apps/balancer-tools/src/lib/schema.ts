@@ -183,7 +183,7 @@ export const BaseTokenSchema = z.object({
   decimal: z.coerce.number().int().positive().max(60),
 });
 
-export const GyroEDataSchema = BasePoolSchema.extend({
+export const GyroESchema = BasePoolSchema.extend({
   alpha: z.coerce.number().min(0), //source: https://github.com/gyrostable/concentrated-lps/blob/7e9bd3b20dd52663afca04ca743808b1d6a9521f/contracts/eclp/GyroECLPMath.sol#L47C10-L47C60
   beta: z.coerce.number().min(0), //source: https://github.com/gyrostable/concentrated-lps/blob/7e9bd3b20dd52663afca04ca743808b1d6a9521f/contracts/eclp/GyroECLPMath.sol#L47C10-L47C60
   lambda: z.number().min(1).max(1e8), //source: https://2063019688-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-MU527HCtxlYaQoNazhF%2Fuploads%2Fh7LxmzxixMlcZfja8q2K%2FE-CLP%20high-precision%20calculations.pdf?alt=media&token=f4fd00a2-3cb7-4318-a8f3-ed06ecdf52dd
@@ -218,7 +218,7 @@ export const GyroEDataSchema = BasePoolSchema.extend({
     },
   );
 
-export const Gyro2DataSchema = BasePoolSchema.extend({
+export const Gyro2Schema = BasePoolSchema.extend({
   sqrtAlpha: z.coerce.number().min(0), //source: https://github.com/gyrostable/concentrated-lps/blob/7e9bd3b20dd52663afca04ca743808b1d6a9521f/contracts/2clp/Gyro2CLPPool.sol#L51
   sqrtBeta: z.coerce.number().min(0), //source: https://github.com/gyrostable/concentrated-lps/blob/7e9bd3b20dd52663afca04ca743808b1d6a9521f/contracts/2clp/Gyro2CLPPool.sol#L51
   tokens: z.array(BaseTokenSchema).length(2),
@@ -231,12 +231,12 @@ export const Gyro2DataSchema = BasePoolSchema.extend({
   },
 );
 
-export const Gyro3DataSchema = BasePoolSchema.extend({
+export const Gyro3Schema = BasePoolSchema.extend({
   root3Alpha: z.coerce.number().min(0), //source: https://github.com/gyrostable/concentrated-lps/blob/7e9bd3b20dd52663afca04ca743808b1d6a9521f/contracts/3clp/Gyro3CLPPool.sol#L98
   tokens: z.array(BaseTokenSchema).length(3),
 });
 
-export const FxDataSchema = BasePoolSchema.extend({
+export const FxSchema = BasePoolSchema.extend({
   // source: https://etherscan.io/address/0x55bec22f8f6c69137ceaf284d9b441db1b9bfedc#code
   alpha: z.coerce.number().positive().max(100),
   beta: z.coerce.number().positive().max(100),
@@ -264,7 +264,7 @@ export const FxDataSchema = BasePoolSchema.extend({
     },
   );
 
-// TODO: Rename this to StableSwapDataSchema when pool simulator is finished
+// TODO: BAL-518 Rename this to StableSwapSchema when pool simulator is finished
 export const StableSwapSimulatorDataSchema = BasePoolSchema.extend({
   ampFactor: z.coerce.number().positive().min(1).max(5000), //source: https://github.com/balancer/balancer-v2-monorepo/blob/c4cc3d466eaa3c1e5fa62d303208c6c4a10db48a/pkg/pool-stable/contracts/StableMath.sol#L28
   tokens: z

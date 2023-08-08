@@ -8,10 +8,10 @@ import { useTabContext } from "#/components/Tabs";
 import { Form, FormField } from "#/components/ui/form";
 import { AnalysisData } from "#/contexts/PoolSimulatorContext";
 import {
-  FxDataSchema,
-  Gyro2DataSchema,
-  Gyro3DataSchema,
-  GyroEDataSchema,
+  FxSchema,
+  Gyro2Schema,
+  Gyro3Schema,
+  GyroESchema,
   StableSwapSimulatorDataSchema,
 } from "#/lib/schema";
 
@@ -20,10 +20,10 @@ import { TokenTable } from "./TokenTable";
 
 const schemaMapper = {
   [PoolTypeEnum.MetaStable]: StableSwapSimulatorDataSchema,
-  [PoolTypeEnum.GyroE]: GyroEDataSchema,
-  [PoolTypeEnum.Gyro2]: Gyro2DataSchema,
-  [PoolTypeEnum.Gyro3]: Gyro3DataSchema,
-  [PoolTypeEnum.Fx]: FxDataSchema,
+  [PoolTypeEnum.GyroE]: GyroESchema,
+  [PoolTypeEnum.Gyro2]: Gyro2Schema,
+  [PoolTypeEnum.Gyro3]: Gyro3Schema,
+  [PoolTypeEnum.Fx]: FxSchema,
 };
 
 const inputMapper = {

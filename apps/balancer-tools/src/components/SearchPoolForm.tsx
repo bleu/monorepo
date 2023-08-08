@@ -173,6 +173,8 @@ export function SearchPoolForm({
                     >
                       <div className="flex w-full flex-col items-start">
                         <span>
+                          {/* By default, FX pools have the name equal to "BPT".
+                            So, we'll use name instead of the symbol, since it is more meaningful */}
                           {poolTypeFilter?.[0] == "FX" &&
                           poolTypeFilter?.length == 1
                             ? pool.name

@@ -1,5 +1,6 @@
 import { PoolQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
+import { ExtendedGyro2 } from "@bleu-balancer-tools/math-poolsimulator/src/gyro2";
 import { ExtendedGyroEV2 } from "@bleu-balancer-tools/math-poolsimulator/src/gyroE";
 import { ExtendedMetaStableMath } from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
 
@@ -58,24 +59,25 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
         }),
       );
     }
-    // TODO on issue BAL-501 add math for Gyro2 and Gyro3
-    // case PoolTypeEnum.Gyro2: {
-    //   console.log({
-    //     swapFee: String(data.poolParams?.swapFee),
-    //     totalShares: String(
-    //       data.tokens.reduce((acc, token) => acc + token.balance, 0)
-    //     ),
-    //     tokens: data.tokens.map((token) => ({
-    //       address: String(token.symbol), // math use address as key, but we will use symbol because custom token will not have address
-    //       balance: String(token.balance),
-    //       decimals: token.decimal,
-    //       priceRate: String(token.rate),
-    //     })),
-    //     tokensList: data.tokens.map((token) => String(token.symbol)),
-    //     sqrtAlpha: String(data.poolParams?.sqrtAlpha),
-    //     sqrtBeta: String(data.poolParams?.sqrtBeta),
-    //   });
-    // }
+    case PoolTypeEnum.Gyro2: {
+      return new AMM(
+        new ExtendedGyro2({
+          swapFee: String(data.poolParams?.swapFee),
+          totalShares: String(
+            data.tokens.reduce((acc, token) => acc + token.balance, 0),
+          ),
+          tokens: data.tokens.map((token) => ({
+            address: String(token.symbol), // math use address as key, but we will use symbol because custom token will not have address
+            balance: String(token.balance),
+            decimals: token.decimal,
+            priceRate: String(token.rate),
+          })),
+          tokensList: data.tokens.map((token) => String(token.symbol)),
+          sqrtAlpha: String(data.poolParams?.sqrtAlpha),
+          sqrtBeta: String(data.poolParams?.sqrtBeta),
+        }),
+      );
+    }
     // case PoolTypeEnum.Gyro3: {
     //   console.log({
     //     swapFee: String(data.poolParams?.swapFee),

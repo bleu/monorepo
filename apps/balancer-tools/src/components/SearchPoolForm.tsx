@@ -30,14 +30,17 @@ export function SearchPoolForm({
   poolTypeFilter,
   onSubmit,
   showPools = false,
+  defaultValuePool,
+  form = useForm<PoolAttribute>(),
 }: {
   onSubmit?: (formData: PoolAttribute) => void;
   close?: () => void;
   poolTypeFilter?: string[];
   showPools?: boolean;
+  defaultValuePool?: string
+  form?: any
 }) {
   const [comboBoxIsOpen, setComboBoxIsOpen] = useState(false);
-  const form = useForm<PoolAttribute>();
   const {
     register,
     setError,
@@ -69,6 +72,7 @@ export function SearchPoolForm({
   function handleSubmitForm(formData: PoolAttribute) {
     onSubmit?.(formData);
     close?.();
+    closeCombobox(); // For whatever reason this isnt being called onBlur to me
   }
 
   function filterPoolInput({
@@ -143,6 +147,7 @@ export function SearchPoolForm({
 
         <div className="relative">
           <Input
+            defaultValue={defaultValuePool}
             label={!showPools ? "Pool ID" : "Pool Name or ID"}
             placeholder={
               !showPools

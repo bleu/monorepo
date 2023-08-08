@@ -21,6 +21,8 @@ const ROUNDS = [
 export default function Layout({ children }: React.PropsWithChildren) {
   const router = useRouter();
   const { roundId, poolId } = useParams();
+  const form = useForm<PoolAttribute>();
+  const { setValue } = form;
 
   invariant(!Array.isArray(roundId), "roundId cannot be a list");
 
@@ -35,15 +37,11 @@ export default function Layout({ children }: React.PropsWithChildren) {
       <div className="flex flex-1">
         <SearchPoolForm
           showPools
-          onSubmit={(value) =>
-            router.push(`/apr/pool/${value.network}/${value.poolId}`)
-          }
-        />
-        <Select
-          theme="dark"
-          value={roundId ?? ""}
-          onValueChange={(value) => router.push(`/apr/round/${value}`)}
           defaultValuePool={poolId}
+          onSubmit={(value) => {
+            router.push(`/apr/pool/${value.network}/${value.poolId}/round/${roundId}`);
+            setValue("poolId", value.poolId);
+          }}
         >
           {ROUNDS.map((round) => (
             <SelectItem key="roundId" value={round.value}>

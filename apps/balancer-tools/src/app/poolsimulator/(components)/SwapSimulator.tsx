@@ -1,4 +1,5 @@
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
+import { PoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@radix-ui/react-label";
 import { useEffect, useState } from "react";
@@ -12,7 +13,6 @@ import { Spinner } from "#/components/Spinner";
 import { Form, FormField, FormLabel } from "#/components/ui/form";
 import {
   AnalysisData,
-  PoolPairData,
   usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
 import { SwapSimulatorDataSchema } from "#/lib/schema";

@@ -1,9 +1,7 @@
 "use client";
 
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
-import { Gyro2PoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/gyro2";
-import { GyroEPoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/gyroE";
-import { MetaStablePoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
+import { PoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/types";
 import { NetworkChainId } from "@bleu-balancer-tools/utils";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -26,10 +24,6 @@ import {
 import { PoolAttribute } from "#/components/SearchPoolForm";
 import { pools } from "#/lib/gql";
 
-export type PoolPairData =
-  | MetaStablePoolPairData
-  | GyroEPoolPairData
-  | Gyro2PoolPairData;
 export type PoolParams = CombinedParams;
 export type PoolType = PoolTypeEnum;
 export const POOL_TYPES: PoolType[] = [

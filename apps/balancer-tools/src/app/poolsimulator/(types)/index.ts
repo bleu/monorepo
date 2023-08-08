@@ -13,10 +13,10 @@ export interface TokensData {
   weight?: number;
 }
 
-export type MetaStableParams = {
+export interface MetaStableParams {
   ampFactor?: number;
   swapFee?: number;
-};
+}
 
 export type Gyro2Params = Partial<
   ConvertToNumber<Pick<IGyro2Maths, "swapFee" | "sqrtAlpha" | "sqrtBeta">>

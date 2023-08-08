@@ -2,7 +2,7 @@
 
 import { PoolsWherePoolTypeQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
 import { ReactNode, useEffect, useLayoutEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, UseFormReturn } from "react-hook-form";
 
 import Button from "#/components/Button";
 import { Input } from "#/components/Input";
@@ -39,7 +39,7 @@ export function SearchPoolForm({
   poolTypeFilter?: string[];
   showPools?: boolean;
   defaultValuePool?: string;
-  form?: any;
+  form?: UseFormReturn<PoolAttribute>;
   children?: ReactNode | undefined;
 }) {
   const [comboBoxIsOpen, setComboBoxIsOpen] = useState(false);
@@ -67,14 +67,14 @@ export function SearchPoolForm({
     .gql(network || "1")
     .usePoolsWherePoolType(
       poolTypeFilter?.length ? { poolTypes: poolTypeFilter } : {},
-      { revalidateIfStale: true }
+      { revalidateIfStale: true },
     );
   const isPool = !!poolsData?.pools?.length;
 
   function handleSubmitForm(formData: PoolAttribute) {
     onSubmit?.(formData);
     close?.();
-    closeCombobox(); // For whatever reason this isnt being called onBlur to me
+    closeCombobox();
   }
 
   function filterPoolInput({
@@ -94,7 +94,7 @@ export function SearchPoolForm({
   const filteredPoolList = poolsDataList?.pools
     .filter((pool) => filterPoolInput({ poolSearchQuery: poolId, pool }))
     .sort((a, b) =>
-      Number(a!.totalLiquidity) < Number(b!.totalLiquidity) ? 1 : -1
+      Number(a!.totalLiquidity) < Number(b!.totalLiquidity) ? 1 : -1,
     );
 
   useEffect(() => {
@@ -105,7 +105,7 @@ export function SearchPoolForm({
           type: "notfound",
           message: "Pool not found. Check the Pool ID and network.",
         },
-        { shouldFocus: true }
+        { shouldFocus: true },
       );
       return;
     } else {

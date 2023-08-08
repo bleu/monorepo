@@ -57,7 +57,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
           defaultValuePool={poolId}
           onSubmit={(value) => {
             router.push(
-              `/apr/pool/${value.network}/${value.poolId}/round/${roundId}`
+              `/apr/pool/${value.network}/${value.poolId}/round/${roundId}`,
             );
             setValue("poolId", value.poolId);
           }}

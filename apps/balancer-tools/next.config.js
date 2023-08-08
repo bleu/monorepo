@@ -20,25 +20,6 @@ const moduleExports = {
     config.externals.push("pino-pretty", "lokijs", "encoding");
     return config;
   },
-  async redirects() {
-    return [
-      {
-        source: "/",
-        destination: "/metadata/ethereum",
-        permanent: false,
-      },
-      {
-        source: "/metadata",
-        destination: "/metadata/ethereum",
-        permanent: false,
-      },
-      {
-        source: "/internalmanager",
-        destination: "/internalmanager/ethereum",
-        permanent: false,
-      },
-    ];
-  },
   sentry: {
     hideSourceMaps: true,
   },

@@ -8,3 +8,5 @@ node_modules
 **.tsbuildinfo
 
 .vscode
+# Local Netlify folder
+.netlify

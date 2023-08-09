@@ -18,9 +18,9 @@ import { Toast } from "#/components/Toast";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { getNetwork } from "#/contexts/networks";
 import { internalBalances } from "#/lib/gql";
-import { refetchRequest } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
+import { refetchRequest } from "#/utils/refetchRequest";
 
 export function TokenTable() {
   const { chain } = useNetwork();

@@ -20,8 +20,8 @@ import Table from "#/components/Table";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { getNetwork } from "#/contexts/networks";
 import { internalBalances } from "#/lib/gql";
-import { refetchRequest } from "#/utils/fetcher";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
+import { refetchRequest } from "#/utils/refetchRequest";
 
 interface TokenWalletBalance {
   tokenAddress: string;

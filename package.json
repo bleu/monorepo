@@ -49,8 +49,7 @@
       "ipfs-http-client": "^60"
     },
     "patchedDependencies": {
-      "@netlify/plugin-nextjs@4.39.3": "patches/@netlify__plugin-nextjs@4.39.3.patch",
-      "next@13.4.13": "patches/next@13.4.13.patch"
+      "@netlify/plugin-nextjs@4.39.3": "patches/@netlify__plugin-nextjs@4.39.3.patch"
     }
   }
 }

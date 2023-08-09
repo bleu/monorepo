@@ -10,6 +10,6 @@ export async function GET(
   if (!context.params.roundId) return "Missing round_id";
   // const duneAPI = new DuneAPI();
   // const dune_request = await duneAPI.getPoolsByRoundId(context.params.roundId)
-  const dune_request = voteGaugeByID
+  const dune_request = voteGaugeByID;
   return NextResponse.json(dune_request);
 }

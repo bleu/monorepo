@@ -9,6 +9,7 @@ import invariant from "tiny-invariant";
 import { Header } from "#/components/Header";
 import { PoolAttribute, SearchPoolForm } from "#/components/SearchPoolForm";
 import { Select, SelectItem } from "#/components/Select";
+import { SelectedPoolRoundContextProvider } from "#/contexts/SelectedPoolRound";
 
 import { Round } from "./(utils)/rounds";
 
@@ -82,9 +83,11 @@ export default function Layout({ children }: React.PropsWithChildren) {
               </Select>
             </div>
           </SearchPoolForm>
+    <SelectedPoolRoundContextProvider>
         </div>
         <div className="h-full flex-1 py-5 pr-8 text-white">{children}</div>
       </div>
     </div>
+    </SelectedPoolRoundContextProvider>
   );
 }

@@ -1,20 +1,26 @@
+"use client";
+
 import { Suspense } from "react";
 
-import BALPrice from "../../(components)/BALPrice";
+import Loading from "#/app/metadata/[network]/pool/[poolId]/loading";
+import { fetcher } from "#/utils/fetcher";
 
-export default async function Page({
-  params,
+import PoolsCards from "../(components)/PoolsCards";
+
+export default function Page({
+  params: { roundId },
 }: {
   params: { roundId: string };
 }) {
-  const { roundId } = params;
-
   return (
-    <div className="flex h-full w-full flex-col justify-center rounded-3xl text-white">
-      <div>data from round {params.roundId}</div>
-      <Suspense fallback={"Loading..."}>
-        <BALPrice roundId={roundId} />
-      </Suspense>
-    </div>
+    <Suspense
+      fallback={
+        <div className="flex h-full w-full flex-col justify-center rounded-3xl">
+          <Loading />
+        </div>
+      }
+    >
+      <PoolsCards data={fetcher(`/apr/rounds/${roundId}`)} />
+    </Suspense>
   );
 }

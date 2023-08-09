@@ -43,49 +43,51 @@ export default function Layout({ children }: React.PropsWithChildren) {
         imageSrc={"/assets/balancer-symbol.svg"}
         endButton={<></>}
       />
-      <div className="flex flex-1">
-        <SearchPoolForm
-          showPools
-          form={form}
-          defaultValuePool={poolId}
-          onSubmit={(value) => {
-            router.push(
-              `/apr/pool/${value.network}/${value.poolId}/round/${roundId}`,
-            );
-            setValue("poolId", value.poolId);
-          }}
-        >
-          <div className="relative">
-            <div className="space-x-2">
-              <label className="mb-2 text-sm text-slate12">Round</label>
-              <label
-                className={clsx("px-1 float-right text-sm rounded-full", {
-                  "text-slate12 bg-blue-600 hover:bg-blue-700":
-                    roundId === LAST_ROUND_ID,
-                  "text-slate12 bg-gray-600 hover:bg-gray-700":
-                    roundId !== LAST_ROUND_ID,
-                })}
-              >
-                {roundId === LAST_ROUND_ID ? "Current" : "Ended"}
-              </label>
-            </div>
+      <div className="flex flex-1 gap-x-8">
+        <div className="h-full w-72 lg:w-80 max-w-sm">
+          <SearchPoolForm
+            showPools
+            form={form}
+            defaultValuePool={poolId}
+            onSubmit={(value) => {
+              router.push(
+                `/apr/pool/${value.network}/${value.poolId}/round/${roundId}`,
+              );
+              setValue("poolId", value.poolId);
+            }}
+          >
+            <div className="relative">
+              <div className="space-x-2">
+                <label className="mb-2 text-sm text-slate12">Round</label>
+                <label
+                  className={clsx("px-1 float-right text-sm rounded-full", {
+                    "text-slate12 bg-blue-600 hover:bg-blue-700":
+                      roundId === ALL_ROUNDS[0].value,
+                    "text-slate12 bg-gray-600 hover:bg-gray-700":
+                      roundId !== ALL_ROUNDS[0].value,
+                  })}
+                >
+                  {roundId === ALL_ROUNDS[0].value ? "Current" : "Ended"}
+                </label>
+              </div>
 
-            <Select
-              value={roundId ?? ""}
-              onValueChange={(value) => {
-                router.push(!poolId ? `/apr/round/${value}` : `${value}`);
-              }}
-              className="w-full"
-            >
-              {ALL_ROUNDS.map((round) => (
-                <SelectItem key={round.value} value={round.value}>
-                  {round.label}
-                </SelectItem>
-              ))}
-            </Select>
-          </div>
-        </SearchPoolForm>
-        <div className="w-full">{children}</div>
+              <Select
+                value={roundId ?? ""}
+                onValueChange={(value) => {
+                  router.push(!poolId ? `/apr/round/${value}` : `${value}`);
+                }}
+                className="w-full"
+              >
+                {ALL_ROUNDS.map((round) => (
+                  <SelectItem key={round.value} value={round.value}>
+                    {round.label}
+                  </SelectItem>
+                ))}
+              </Select>
+            </div>
+          </SearchPoolForm>
+        </div>
+        <div className="h-full flex-1 py-5 pr-8 text-white">{children}</div>
       </div>
     </div>
   );

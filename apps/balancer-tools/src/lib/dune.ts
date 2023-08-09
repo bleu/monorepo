@@ -6,6 +6,7 @@ import invariant from "tiny-invariant";
 const duneApiKey = process.env.DUNE_API_KEY;
 
 export interface Row {
+export interface DunePoolData {
   pct_votes: number;
   symbol: string;
   votes: number;
@@ -22,7 +23,7 @@ export class DuneAPI {
     this.client = new DuneClient(duneApiKey ?? "");
   }
 
-  async getPoolsByRoundId(roundId: number = 0): Promise<Row[] | ErrorReturn> {
+  async getPoolsByRoundId(roundId: number = 0): Promise<DunePoolData[] | ErrorReturn> {
     invariant(roundId > 0, "An valid roundId must be passed");
     const parameters = [QueryParameter.text("round_id", String(roundId))];
 

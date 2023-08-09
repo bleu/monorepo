@@ -1,13 +1,9 @@
 import { ChevronRightIcon } from "@radix-ui/react-icons";
 
+import { DunePoolData } from "#/lib/dune";
 import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 
-interface DunePoolData {
-  symbol: string;
-  pct_votes: number;
-  votes: string;
-}
 
 function PoolCard({
   data: { symbol, pct_votes: pctVotes, votes },

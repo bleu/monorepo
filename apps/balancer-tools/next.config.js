@@ -8,6 +8,7 @@ const moduleExports = {
     appDir: true,
     serverActions: true,
   },
+  output: "standalone",
   reactStrictMode: true,
   swcMinify: true,
   /**

@@ -12,7 +12,6 @@ import { Select, SelectItem } from "#/components/Select";
 
 import { Round } from "./(utils)/rounds";
 
-
 export default function Layout({ children }: React.PropsWithChildren) {
   const router = useRouter();
   const pathname = usePathname();
@@ -65,7 +64,9 @@ export default function Layout({ children }: React.PropsWithChildren) {
                     roundId !== Round.getAllRounds()[0].value,
                 })}
               >
-                {roundId === Round.getAllRounds()[0].value ? "Current" : "Ended"}
+                {roundId === Round.getAllRounds()[0].value
+                  ? "Current"
+                  : "Ended"}
               </label>
             </div>
 

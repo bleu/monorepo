@@ -9,7 +9,6 @@ import { ImpactCurve } from "../(components)/ImpactCurve";
 import { SwapCurve } from "../(components)/SwapCurve";
 import { SwapSimulator } from "../(components)/SwapSimulator";
 import { TokensDistribution } from "../(components)/TokensDistribution";
-import { PoolTypeEnum } from "../(types)";
 
 export default function Page() {
   const { initialData, analysisToken, setCurrentTabTokenByIndex } =
@@ -31,15 +30,6 @@ export default function Page() {
 
     setCurrentTabTokenByIndex(tokensSymbol.indexOf(target.innerText));
   }
-
-  if (initialData.poolType === PoolTypeEnum.Gyro3)
-    return (
-      <div>
-        <h1 className="text-slate12">
-          Analysis page not avaliable to {initialData.poolType}
-        </h1>
-      </div>
-    );
 
   return (
     <>

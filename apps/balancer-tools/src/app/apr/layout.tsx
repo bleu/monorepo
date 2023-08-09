@@ -26,12 +26,8 @@ export default function Layout({ children }: React.PropsWithChildren) {
   invariant(!Array.isArray(poolId), "poolId cannot be a list");
 
   React.useEffect(() => {
-    if (roundId == "current") {
+    if (!roundId || roundId === "current") {
       router.push(`/apr/round/${LAST_ROUND_ID}`);
-    }
-
-    if (!roundId) {
-      router.push(`round/${LAST_ROUND_ID}`);
     }
   }, [roundId]);
 

@@ -125,11 +125,15 @@ export class AMM<TPoolPairData extends PoolPairData> {
     spotPriceAfterSwap: number,
     tokenIn: string,
     tokenOut: string,
+    spotPricePrecision?: number,
   ): number {
     const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
     return this._tokenInForExactSpotPriceAfterSwap({
       spotPrice: bnum(spotPriceAfterSwap),
       poolPairData,
+      spotPricePrecision: spotPricePrecision
+        ? bnum(spotPricePrecision)
+        : undefined,
     }).toNumber();
   }
 
@@ -137,11 +141,15 @@ export class AMM<TPoolPairData extends PoolPairData> {
     spotPriceAfterSwap: number,
     tokenIn: string,
     tokenOut: string,
+    spotPricePrecision?: number,
   ): number {
     const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
     const amountTokenIn = this._tokenInForExactSpotPriceAfterSwap({
       spotPrice: bnum(spotPriceAfterSwap),
       poolPairData,
+      spotPricePrecision: spotPricePrecision
+        ? bnum(spotPricePrecision)
+        : undefined,
     });
     return this.math
       ._exactTokenInForTokenOut(poolPairData, amountTokenIn)

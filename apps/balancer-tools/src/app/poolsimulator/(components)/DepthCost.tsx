@@ -239,39 +239,47 @@ function calculateDepthCost(
   poolType: PoolTypeEnum,
 ) {
   const { analysisToken } = usePoolSimulator();
-
   const tokenIn = poolSide === "in" ? analysisToken : pairToken;
   const tokenOut = poolSide === "in" ? pairToken : analysisToken;
+  const newSpotPrice = amm.spotPrice(tokenIn.symbol, tokenOut.symbol) * 1.02;
+  const amountCalculator = (price: number) =>
+    poolSide === "in"
+      ? amm.tokenInForExactSpotPriceAfterSwap(
+          price,
+          tokenIn.symbol,
+          tokenOut.symbol,
+        )
+      : amm.tokenOutForExactSpotPriceAfterSwap(
+          price,
+          tokenIn.symbol,
+          tokenOut.symbol,
+        );
 
-  const currentSpotPrice = amm.spotPrice(tokenIn.symbol, tokenOut.symbol);
-  const newSpotPrice = currentSpotPrice * 1.02;
+  const alphaBeta = {
+    alpha:
+      poolType === PoolTypeEnum.GyroE
+        ? data.poolParams?.alpha
+        : (data.poolParams?.sqrtAlpha as number) ** 2,
+    beta:
+      poolType === PoolTypeEnum.GyroE
+        ? data.poolParams?.beta
+        : (data.poolParams?.sqrtBeta as number) ** 2,
+  };
+
+  if (!alphaBeta.alpha || !alphaBeta.beta)
+    throw new Error("Alpha or beta not defined");
 
   switch (poolType) {
+    // For metastable pools we'll assume depth cost as 2% of the current spot price
     case PoolTypeEnum.MetaStable:
-      // For metastable pools we'll assume depth cost as 2% of the current spot price
-      return poolSide === "in"
-        ? {
-            amount: amm.tokenInForExactSpotPriceAfterSwap(
-              newSpotPrice,
-              tokenIn.symbol,
-              tokenOut.symbol,
-            ),
-            type: "2% of price change",
-          }
-        : {
-            amount: amm.tokenOutForExactSpotPriceAfterSwap(
-              newSpotPrice,
-              tokenIn.symbol,
-              tokenOut.symbol,
-            ),
-            type: "2% of price change",
-          };
-    case PoolTypeEnum.GyroE: {
-      // For CLP pools we'll assume depth cost as the pool depth == 99% of the liquidity or 2% of the current spot price (if possible)
-      if (
-        newSpotPrice < (data.poolParams?.alpha as number) ||
-        newSpotPrice > (data.poolParams?.beta as number)
-      ) {
+      return {
+        amount: amountCalculator(newSpotPrice),
+        type: "2% of price change",
+      };
+    // For Gyros' CLP pools we'll assume depth cost as the pool depth == 99% of the liquidity or 2% of the current spot price (if possible)
+    case PoolTypeEnum.GyroE:
+    case PoolTypeEnum.Gyro2:
+      if (newSpotPrice < alphaBeta.alpha || newSpotPrice > alphaBeta.beta) {
         return poolSide === "in"
           ? {
               amount: amm.tokenInForExactTokenOut(
@@ -283,24 +291,10 @@ function calculateDepthCost(
             }
           : { amount: tokenOut.balance * 0.99, type: "price limit" };
       }
-      return poolSide === "in"
-        ? {
-            amount: amm.tokenInForExactSpotPriceAfterSwap(
-              newSpotPrice,
-              tokenIn.symbol,
-              tokenOut.symbol,
-            ),
-            type: "2% of price change",
-          }
-        : {
-            amount: amm.tokenOutForExactSpotPriceAfterSwap(
-              newSpotPrice,
-              tokenIn.symbol,
-              tokenOut.symbol,
-            ),
-            type: "2% of price change",
-          };
-    }
+      return {
+        amount: amountCalculator(newSpotPrice),
+        type: "2% of price change",
+      };
     default:
       return { amount: 0, type: "" };
   }

@@ -6,13 +6,15 @@ import { useEffect, useState } from "react";
 import { Spinner } from "#/components/Spinner";
 import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 
+import AnalysisPage from "./analysis/AnalysisPage";
+
 enum dataStatus {
   NONE = "none",
   IMPORTED = "imported",
 }
 
 export default function Page() {
-  const { isGraphLoading, initialData } = usePoolSimulator();
+  const { isGraphLoading, initialData, isAnalysis } = usePoolSimulator();
   const [poolDataStatus, setPoolDataStatus] = useState<dataStatus>(
     dataStatus.NONE,
   );
@@ -47,7 +49,10 @@ export default function Page() {
       setPoolDataStatus(dataStatus.NONE);
     }
   }, [initialData]);
-  return (
+
+  return isAnalysis ? (
+    <AnalysisPage />
+  ) : (
     <div className="flex h-full w-full flex-col justify-center rounded-3xl">
       {isGraphLoading || poolDataStatus === dataStatus.NONE ? (
         <Spinner />

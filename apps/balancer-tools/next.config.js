@@ -6,8 +6,8 @@ const moduleExports = {
   transpilePackages: ["@bleu-balancer-tools/gql"],
   experimental: {
     appDir: true,
-    serverActions: true,
   },
+  output: "standalone",
   reactStrictMode: true,
   swcMinify: true,
   /**

@@ -99,61 +99,11 @@ export class ExtendedGyro2
     return poolPairData;
   }
 
-  _calculateSpotPriceWithoutSwap(
-    balances: BigNumber[],
-    virtualParamIn: BigNumber,
-    virtualParamOut: BigNumber,
-    swapFee: BigNumber,
-  ): BigNumber {
-    const afterFeeMultiplier = ONE.sub(swapFee); // 1 - s
-    const virtIn = balances[0].add(virtualParamIn); // x + virtualParamX = x'
-    const virtOut = balances[1].add(virtualParamOut); // y + virtualParamY = y'
-
-    const numerator = virtIn;
-    const denominator = GyroHelpersSignedFixedPoint.mulDown(
-      afterFeeMultiplier,
-      virtOut,
-    );
-    const newSpotPrice = GyroHelpersSignedFixedPoint.divDown(
-      numerator,
-      denominator,
-    );
-
-    return newSpotPrice;
-  }
-
   _spotPrice(poolPairData: Gyro2PoolPairData): OldBigNumber {
-    try {
-      const balances = [poolPairData.balanceIn, poolPairData.balanceOut];
-      const normalizedBalances = GyroHelpers._normalizeBalances(balances, [
-        poolPairData.decimalsIn,
-        poolPairData.decimalsOut,
-      ]);
-      const invariant = Gyro2Maths._calculateInvariant(
-        normalizedBalances,
-        poolPairData.sqrtAlpha,
-        poolPairData.sqrtBeta,
-      );
-
-      const [virtualParamIn, virtualParamOut] = Gyro2Maths._findVirtualParams(
-        invariant,
-        poolPairData.sqrtAlpha,
-        poolPairData.sqrtBeta,
-      );
-
-      // Here you can calculate the spot price based on the current state of the pool
-      // without performing any swaps.
-      const spotPrice = this._calculateSpotPriceWithoutSwap(
-        normalizedBalances,
-        virtualParamIn,
-        virtualParamOut,
-        poolPairData.swapFee,
-      );
-
-      return bnum(formatFixed(spotPrice, 18));
-    } catch (error) {
-      return bnum(0);
-    }
+    return this._spotPriceAfterSwapExactTokenInForTokenOut(
+      poolPairData,
+      bnum(0),
+    );
   }
   _firstGuessOfTokenInForExactSpotPriceAfterSwap(
     poolPairData: Gyro2PoolPairData,

@@ -11,6 +11,9 @@ patchedDependencies:
   '@netlify/plugin-nextjs@4.39.3':
     hash: mska4rkpkvqexrtoasjyfvtwia
     path: patches/@netlify__plugin-nextjs@4.39.3.patch
+  next@13.4.13:
+    hash: ouyjnxmrqeqj2eam6h3q7uep6u
+    path: patches/next@13.4.13.patch
 
 importers:
 
@@ -135,7 +138,7 @@ importers:
         version: 4.6.2
       next:
         specifier: ^13.4.13
-        version: 13.4.13(@babel/core@7.22.9)(react-dom@18.2.0)(react@18.2.0)
+        version: 13.4.13(patch_hash=ouyjnxmrqeqj2eam6h3q7uep6u)(@babel/core@7.22.9)(react-dom@18.2.0)(react@18.2.0)
       plotly.js:
         specifier: ^2.24.3
         version: 2.24.3
@@ -4869,7 +4872,7 @@ packages:
       '@sentry/utils': 7.59.2
       '@sentry/webpack-plugin': 1.20.0
       chalk: 3.0.0
-      next: 13.4.13(@babel/core@7.22.9)(react-dom@18.2.0)(react@18.2.0)
+      next: 13.4.13(patch_hash=ouyjnxmrqeqj2eam6h3q7uep6u)(@babel/core@7.22.9)(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
       rollup: 2.78.0
       stacktrace-parser: 0.1.10
@@ -12953,7 +12956,7 @@ packages:
     resolution: {integrity: sha512-CXdUiJembsNjuToQvxayPZF9Vqht7hewsvy2sOWafLvi2awflj9mOC6bHIg50orX8IJvWKY9wYQ/zB2kogPslQ==}
     dev: false
 
-  /next@13.4.13(@babel/core@7.22.9)(react-dom@18.2.0)(react@18.2.0):
+  /next@13.4.13(patch_hash=ouyjnxmrqeqj2eam6h3q7uep6u)(@babel/core@7.22.9)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-A3YVbVDNeXLhWsZ8Nf6IkxmNlmTNz0yVg186NJ97tGZqPDdPzTrHotJ+A1cuJm2XfuWPrKOUZILl5iBQkIf8Jw==}
     engines: {node: '>=16.8.0'}
     hasBin: true
@@ -12992,6 +12995,7 @@ packages:
       - '@babel/core'
       - babel-plugin-macros
     dev: false
+    patched: true
 
   /nice-try@1.0.5:
     resolution: {integrity: sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==}

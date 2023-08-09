@@ -1,0 +1,26 @@
+diff --git a/dist/client/components/router-reducer/reducers/server-action-reducer.js b/dist/client/components/router-reducer/reducers/server-action-reducer.js
+index 9c6b02ab62da1558bfe365d3665d3400a06409bb..7b9874dbfbefd21a5f8fcbb1d8cdd3b6162ea198 100644
+--- a/dist/client/components/router-reducer/reducers/server-action-reducer.js
++++ b/dist/client/components/router-reducer/reducers/server-action-reducer.js
+@@ -29,7 +29,7 @@ async function fetchServerAction(state, param) {
+         headers: {
+             Accept: _approuterheaders.RSC_CONTENT_TYPE_HEADER,
+             "Next-Action": actionId,
+-            [_approuterheaders.NEXT_ROUTER_STATE_TREE]: JSON.stringify(state.tree),
++            [_approuterheaders.NEXT_ROUTER_STATE_TREE]: encodeURIComponent(JSON.stringify(state.tree)),
+             ...process.env.__NEXT_ACTIONS_DEPLOYMENT_ID && process.env.NEXT_DEPLOYMENT_ID ? {
+                 "x-deployment-id": process.env.NEXT_DEPLOYMENT_ID
+             } : {},
+diff --git a/dist/esm/client/components/router-reducer/reducers/server-action-reducer.js b/dist/esm/client/components/router-reducer/reducers/server-action-reducer.js
+index a296c173a20ff139e4865904663deaedf44599fe..fb80b5253dbc19d4b5ae8d024995652f7e002d76 100644
+--- a/dist/esm/client/components/router-reducer/reducers/server-action-reducer.js
++++ b/dist/esm/client/components/router-reducer/reducers/server-action-reducer.js
+@@ -22,7 +22,7 @@ async function fetchServerAction(state, param) {
+         headers: {
+             Accept: RSC_CONTENT_TYPE_HEADER,
+             "Next-Action": actionId,
+-            [NEXT_ROUTER_STATE_TREE]: JSON.stringify(state.tree),
++            [NEXT_ROUTER_STATE_TREE]: encodeURIComponent(JSON.stringify(state.tree)),
+             ...process.env.__NEXT_ACTIONS_DEPLOYMENT_ID && process.env.NEXT_DEPLOYMENT_ID ? {
+                 "x-deployment-id": process.env.NEXT_DEPLOYMENT_ID
+             } : {},

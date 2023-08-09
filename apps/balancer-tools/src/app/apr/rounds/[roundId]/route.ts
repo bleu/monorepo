@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { DuneAPI } from "#/lib/dune";
+// import { DuneAPI } from "#/lib/dune";
 import { voteGaugeByID } from "../../mock_apis";
 
 export async function GET(

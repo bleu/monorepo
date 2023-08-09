@@ -231,14 +231,17 @@ const createDataObject = (
   };
 };
 
-function calculateDepthCost(
+export function calculateDepthCost(
   pairToken: TokensData,
   poolSide: "in" | "out",
   data: AnalysisData,
   amm: AMM<PoolPairData>,
   poolType: PoolTypeEnum,
 ) {
-  const { analysisToken } = usePoolSimulator();
+  const analysisToken = data.tokens.find(
+    (token) => token.symbol !== pairToken.symbol,
+  );
+  if (!analysisToken) throw new Error("Analysis token not found");
   const tokenIn = poolSide === "in" ? analysisToken : pairToken;
   const tokenOut = poolSide === "in" ? pairToken : analysisToken;
   const newSpotPrice = amm.spotPrice(tokenIn.symbol, tokenOut.symbol) * 1.02;
@@ -266,9 +269,6 @@ function calculateDepthCost(
         : (data.poolParams?.sqrtBeta as number) ** 2,
   };
 
-  if (!alphaBeta.alpha || !alphaBeta.beta)
-    throw new Error("Alpha or beta not defined");
-
   switch (poolType) {
     // For metastable pools we'll assume depth cost as 2% of the current spot price
     case PoolTypeEnum.MetaStable:
@@ -279,6 +279,8 @@ function calculateDepthCost(
     // For Gyros' CLP pools we'll assume depth cost as the pool depth == 99% of the liquidity or 2% of the current spot price (if possible)
     case PoolTypeEnum.GyroE:
     case PoolTypeEnum.Gyro2:
+      if (!alphaBeta.alpha || !alphaBeta.beta)
+        throw new Error("Alpha or beta not defined");
       if (newSpotPrice < alphaBeta.alpha || newSpotPrice > alphaBeta.beta) {
         return poolSide === "in"
           ? {

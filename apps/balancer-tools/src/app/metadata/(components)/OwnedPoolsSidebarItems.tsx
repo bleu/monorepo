@@ -10,7 +10,7 @@ import { Badge } from "#/components/Badge";
 import { BaseInput } from "#/components/Input";
 import Sidebar from "#/components/Sidebar";
 import { impersonateWhetherDAO, pools } from "#/lib/gql";
-import { refetchRequest } from "#/utils/fetcher";
+import { refetchRequest } from "#/utils/refetchRequest";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 import { truncateAddress } from "#/utils/truncate";
 import { useAccount, useNetwork } from "#/wagmi";

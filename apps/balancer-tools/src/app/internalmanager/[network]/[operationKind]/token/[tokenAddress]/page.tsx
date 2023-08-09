@@ -39,7 +39,7 @@ import {
   UserBalanceOpKind,
 } from "#/lib/internal-balance-helper";
 import { getInternalBalanceSchema } from "#/lib/schema";
-import { refetchRequest } from "#/utils/fetcher";
+import { refetchRequest } from "#/utils/refetchRequest";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
 type TokenData = Omit<

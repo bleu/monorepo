@@ -36,8 +36,10 @@ function PoolCard({
 
 export default async function PoolsCards({
   data,
+  onClick,
 }: {
   data: ReturnType<typeof fetcher<DunePoolData[] | { error: string }>>;
+  onClick: (poolId: string) => void;
 }) {
   const poolsData = await data;
 
@@ -46,7 +48,9 @@ export default async function PoolsCards({
   return (
     <div className="space-y-6 w-full">
       {poolsData.map((poolData) => (
-        <PoolCard data={poolData} />
+        <div onClick={() => onClick(poolData.symbol)}>
+          <PoolCard data={poolData} />
+        </div>
       ))}
     </div>
   );

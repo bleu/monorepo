@@ -3,6 +3,7 @@
 import { Suspense } from "react";
 
 import Loading from "#/app/metadata/[network]/pool/[poolId]/loading";
+import { useSelectedPoolRoundContext } from "#/contexts/SelectedPoolRound";
 import { fetcher } from "#/utils/fetcher";
 
 import PoolsCards from "../(components)/PoolsCards";
@@ -12,6 +13,12 @@ export default function Page({
 }: {
   params: { roundId: string };
 }) {
+  const { setSelectedPool } = useSelectedPoolRoundContext();
+
+  function onClick(poolId: string) {
+    setSelectedPool(poolId);
+  }
+
   return (
     <Suspense
       fallback={
@@ -20,7 +27,7 @@ export default function Page({
         </div>
       }
     >
-      <PoolsCards data={fetcher(`/apr/rounds/${roundId}`)} />
+      <PoolsCards onClick={onClick} data={fetcher(`/apr/rounds/${roundId}`)} />
     </Suspense>
   );
 }

@@ -1,16 +1,12 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   bnum,
-  Gyro2Maths,
   Gyro2Pool,
-  GyroHelpers,
   GyroHelpersSignedFixedPoint,
   OldBigNumber,
   safeParseFixed,
   SubgraphPoolBase,
   SubgraphToken,
 } from "@balancer-labs/sor";
-import { BigNumber, formatFixed } from "@ethersproject/bignumber";
 import { WeiPerEther as ONE } from "@ethersproject/constants";
 
 import { bigNumberToOldBigNumber } from "../conversions";

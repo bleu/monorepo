@@ -6,9 +6,9 @@ import {
   SubgraphPoolBase,
   SubgraphToken,
 } from "@balancer-labs/sor";
-import { IAMMFunctionality } from "types";
 
 import { bigNumberToOldBigNumber } from "../conversions";
+import { IAMMFunctionality } from "../types";
 
 type Gyro3PoolToken = Pick<SubgraphToken, "address" | "balance" | "decimals">;
 
@@ -36,7 +36,7 @@ export class ExtendedGyro3
       poolParams.totalShares,
       poolParams.tokens,
       poolParams.tokensList,
-      poolParams.root3Alpha,
+      poolParams.root3Alpha
     );
   }
   static fromPool(pool: SubgraphPoolBase): ExtendedGyro3 {
@@ -64,7 +64,7 @@ export class ExtendedGyro3
     const decimalsOut = tO.decimals;
 
     const tokenTertiary = this.tokens.find(
-      (t) => t.address !== tokenOut && t.address !== tokenIn,
+      (t) => t.address !== tokenOut && t.address !== tokenIn
     );
 
     if (!tokenTertiary)
@@ -94,15 +94,15 @@ export class ExtendedGyro3
   _spotPrice(poolPairData: Gyro3PoolPairData): OldBigNumber {
     return this._spotPriceAfterSwapExactTokenInForTokenOut(
       poolPairData,
-      bnum(0),
+      bnum(0)
     );
   }
   _firstGuessOfTokenInForExactSpotPriceAfterSwap(
-    poolPairData: Gyro3PoolPairData,
+    poolPairData: Gyro3PoolPairData
   ): OldBigNumber {
     return bigNumberToOldBigNumber(
       poolPairData.balanceIn,
-      poolPairData.decimalsIn,
+      poolPairData.decimalsIn
     ).times(bnum(0.01));
   }
 }

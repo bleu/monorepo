@@ -26,7 +26,7 @@ export class DuneAPI {
     roundId: number = 0,
     limitBy: number = 20,
     offsetBy: number = 0,
-  ): Promise<DunePoolData[] | ErrorReturn> {
+  ): Promise<undefined | DunePoolData[] | ErrorReturn> {
     invariant(roundId > 0, "An valid roundId must be passed");
     // https://dune.com/queries/2834602/4732373
     const queryId = 2834602;
@@ -38,7 +38,10 @@ export class DuneAPI {
 
     return this.client
       .refresh(queryId, parameters)
-      .then((executionResult) => executionResult.result?.rows)
-      .catch((error) => ({ error: error.message }));
+      .then(
+        (executionResult) =>
+          executionResult.result?.rows as unknown as DunePoolData[],
+      )
+      .catch((error: { message: string }) => ({ error: error.message }));
   }
 }

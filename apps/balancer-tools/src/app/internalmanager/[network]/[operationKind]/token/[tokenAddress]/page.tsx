@@ -39,8 +39,8 @@ import {
   UserBalanceOpKind,
 } from "#/lib/internal-balance-helper";
 import { getInternalBalanceSchema } from "#/lib/schema";
-import { refetchRequest } from "#/utils/fetcher";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
+import { refetchRequest } from "#/utils/refetchRequest";
 
 type TokenData = Omit<
   ArrElement<GetDeepProp<SingleInternalBalanceQuery, "userInternalBalances">>,

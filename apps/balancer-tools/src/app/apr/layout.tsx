@@ -12,6 +12,9 @@ import { Select, SelectItem } from "#/components/Select";
 
 import { Round } from "./(utils)/rounds";
 
+const ALL_ROUNDS = Round.getAllRounds();
+const LAST_ROUND_ID = ALL_ROUNDS[0].value;
+
 export default function Layout({ children }: React.PropsWithChildren) {
   const router = useRouter();
 
@@ -24,11 +27,11 @@ export default function Layout({ children }: React.PropsWithChildren) {
 
   React.useEffect(() => {
     if (roundId == "current") {
-      router.push(`/apr/round/${Round.getAllRounds()[0].value}`);
+      router.push(`/apr/round/${LAST_ROUND_ID}`);
     }
 
     if (!roundId) {
-      router.push(`round/${Round.getAllRounds()[0].value}`);
+      router.push(`round/${LAST_ROUND_ID}`);
     }
   }, [roundId]);
 
@@ -58,14 +61,12 @@ export default function Layout({ children }: React.PropsWithChildren) {
               <label
                 className={clsx("px-1 float-right text-sm rounded-full", {
                   "text-slate12 bg-blue-600 hover:bg-blue-700":
-                    roundId === Round.getAllRounds()[0].value,
+                    roundId === LAST_ROUND_ID,
                   "text-slate12 bg-gray-600 hover:bg-gray-700":
-                    roundId !== Round.getAllRounds()[0].value,
+                    roundId !== LAST_ROUND_ID,
                 })}
               >
-                {roundId === Round.getAllRounds()[0].value
-                  ? "Current"
-                  : "Ended"}
+                {roundId === LAST_ROUND_ID ? "Current" : "Ended"}
               </label>
             </div>
 
@@ -76,7 +77,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
               }}
               className="w-full"
             >
-              {Round.getAllRounds().map((round) => (
+              {ALL_ROUNDS.map((round) => (
                 <SelectItem key={round.value} value={round.value}>
                   {round.label}
                 </SelectItem>

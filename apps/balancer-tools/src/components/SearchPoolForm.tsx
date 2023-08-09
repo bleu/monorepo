@@ -29,15 +29,19 @@ export function SearchPoolForm({
   close,
   poolTypeFilter,
   onSubmit,
+  onChangeNetwork,
   showPools = false,
+  defaultValueNetwork,
   defaultValuePool,
   form = useForm<PoolAttribute>(),
   children,
 }: {
   onSubmit?: (formData: PoolAttribute) => void;
+  onChangeNetwork?: (network: string) => void;
   close?: () => void;
   poolTypeFilter?: string[];
   showPools?: boolean;
+  defaultValueNetwork?: string;
   defaultValuePool?: string;
   form?: UseFormReturn<PoolAttribute>;
   children?: ReactNode | undefined;
@@ -116,6 +120,7 @@ export function SearchPoolForm({
   useLayoutEffect(() => {
     poolsDataListMutate();
     resetField("poolId");
+    onChangeNetwork?.(network);
   }, [network]);
 
   function closeCombobox() {
@@ -134,7 +139,7 @@ export function SearchPoolForm({
 
           <FormField
             name="network"
-            defaultValue="1"
+            defaultValue={defaultValueNetwork ?? "1"}
             render={({ field: { onChange, value, ref } }) => (
               <Select onValueChange={onChange} value={value} ref={ref}>
                 {inputTypenames.map(({ value, label }) => (

@@ -4,7 +4,6 @@ import { DunePoolData } from "#/lib/dune";
 import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 
-
 function PoolCard({
   data: { symbol, pct_votes: pctVotes, votes },
 }: {

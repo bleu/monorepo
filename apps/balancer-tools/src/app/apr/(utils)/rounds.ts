@@ -20,10 +20,10 @@ export class Round {
     });
   }
 
-  static getRoundTimestamp(roundNumber: number): number {
+  static getRoundTimestamp(roundNumber: number | string): number {
     return (
       Round.FIRST_ROUND_END_DATE.getTime() +
-      (roundNumber - 1) * Round.ONE_WEEK_IN_MS
+      (Math.floor(Number(roundNumber)) - 1) * Round.ONE_WEEK_IN_MS
     );
   }
 
@@ -42,7 +42,7 @@ export class Round {
     }).reverse();
   }
 
-  static getRoundByNumber(roundNumber: number): Round {
+  static getRoundByNumber(roundNumber: number | string): Round {
     const allRounds = Round.getAllRounds();
     return allRounds.find((round) => round.value === String(roundNumber))!;
   }
@@ -55,8 +55,3 @@ export class Round {
     return Round.getRoundByNumber(roundNumber);
   }
 }
-
-//   console.log(Round.getRoundTimestamp(5));
-//   export console.log(Round.getAllRounds());
-//   console.log(Round.getRoundByNumber(2));
-//   console.log(Round.getRoundByDate(new Date("2022-05-10T10:00:00.000Z")));

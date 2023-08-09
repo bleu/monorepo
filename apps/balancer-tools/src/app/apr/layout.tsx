@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import * as React from "react";
 import { useForm } from "react-hook-form";
 import invariant from "tiny-invariant";
@@ -12,9 +12,11 @@ import { Select, SelectItem } from "#/components/Select";
 
 import { Round } from "./(utils)/rounds";
 
+const ALL_ROUNDS = Round.getAllRounds();
+const LAST_ROUND_ID = ALL_ROUNDS[0].value;
+
 export default function Layout({ children }: React.PropsWithChildren) {
   const router = useRouter();
-  const pathname = usePathname();
 
   const { roundId, poolId } = useParams();
   const form = useForm<PoolAttribute>();
@@ -25,11 +27,11 @@ export default function Layout({ children }: React.PropsWithChildren) {
 
   React.useEffect(() => {
     if (roundId == "current") {
-      router.push(`/apr/round/${Round.getAllRounds()[0].value}`);
+      router.push(`/apr/round/${LAST_ROUND_ID}`);
     }
 
     if (!roundId) {
-      router.push(`${pathname}/round/${Round.getAllRounds()[0].value}`);
+      router.push(`round/${LAST_ROUND_ID}`);
     }
   }, [roundId]);
 
@@ -60,12 +62,12 @@ export default function Layout({ children }: React.PropsWithChildren) {
                 <label
                   className={clsx("px-1 float-right text-sm rounded-full", {
                     "text-slate12 bg-blue-600 hover:bg-blue-700":
-                      roundId === Round.getAllRounds()[0].value,
+                      roundId === ALL_ROUNDS[0].value,
                     "text-slate12 bg-gray-600 hover:bg-gray-700":
-                      roundId !== Round.getAllRounds()[0].value,
+                      roundId !== ALL_ROUNDS[0].value,
                   })}
                 >
-                  {roundId === Round.getAllRounds()[0].value ? "Current" : "Ended"}
+                  {roundId === ALL_ROUNDS[0].value ? "Current" : "Ended"}
                 </label>
               </div>
 
@@ -76,7 +78,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
                 }}
                 className="w-full"
               >
-                {Round.getAllRounds().map((round) => (
+                {ALL_ROUNDS.map((round) => (
                   <SelectItem key={round.value} value={round.value}>
                     {round.label}
                   </SelectItem>

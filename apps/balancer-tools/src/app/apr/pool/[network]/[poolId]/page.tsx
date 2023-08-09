@@ -1,9 +1,9 @@
-"use client";
-
-import { useParams } from "next/navigation";
-
-export default function Page() {
-  const { network, poolId } = useParams();
+export default function Page({
+  params,
+}: {
+  params: { poolId: string; network: string };
+}) {
+  const { network, poolId } = params;
 
   return (
     <div className="flex h-full w-full flex-col justify-center rounded-3xl">

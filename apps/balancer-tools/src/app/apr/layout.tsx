@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import * as React from "react";
 import { useForm } from "react-hook-form";
 import invariant from "tiny-invariant";
@@ -14,7 +14,6 @@ import { Round } from "./(utils)/rounds";
 
 export default function Layout({ children }: React.PropsWithChildren) {
   const router = useRouter();
-  const pathname = usePathname();
 
   const { roundId, poolId } = useParams();
   const form = useForm<PoolAttribute>();
@@ -29,7 +28,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
     }
 
     if (!roundId) {
-      router.push(`${pathname}/round/${Round.getAllRounds()[0].value}`);
+      router.push(`round/${Round.getAllRounds()[0].value}`);
     }
   }, [roundId]);
 

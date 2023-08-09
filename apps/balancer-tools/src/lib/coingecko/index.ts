@@ -1,3 +1,5 @@
+import "server-only";
+
 import invariant from "tiny-invariant";
 
 import { fetcher } from "#/utils/fetcher";
@@ -21,19 +23,20 @@ export class DefiLlamaAPI {
   }
 
   async getHistoricalPrice(
-    timestamp: number,
+    date: Date,
     coins: string[],
     searchWidth: string = "6h",
   ): Promise<HistoricalPriceResponse> {
     invariant(coins.length > 0, "coins must not be empty");
     invariant(
-      coins.every((coin) => coin.includes(":")),
+      coins.every((coin) => coin.split(":").length === 2),
       'coins must be in format "chain:address"',
     );
+    invariant(date <= new Date(), "date must be in the past");
 
-    const url = `${this.baseURL}/prices/historical/${timestamp}/${coins.join(
-      ",",
-    )}?searchWidth=${searchWidth}`;
+    const url = `${this.baseURL}/prices/historical/${Math.floor(
+      date.getTime() / 1000,
+    )}/${coins.join(",")}?searchWidth=${searchWidth}`;
 
     return await fetcher<HistoricalPriceResponse>(url);
   }

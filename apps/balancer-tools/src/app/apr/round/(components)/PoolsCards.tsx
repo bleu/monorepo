@@ -1,15 +1,18 @@
 import { ChevronRightIcon } from "@radix-ui/react-icons";
 
+import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 
-export default function PoolCard({
-  symbol,
-  pctVotes,
-  numVotes,
-}: {
+interface DunePoolData {
   symbol: string;
-  pctVotes: number;
-  numVotes: string;
+  pct_votes: number;
+  votes: string;
+}
+
+function PoolCard({
+  data: { symbol, pct_votes: pctVotes, votes },
+}: {
+  data: DunePoolData;
 }) {
   return (
     <div
@@ -25,13 +28,31 @@ export default function PoolCard({
             <p className="text-white leading-none mb-1">
               {pctVotes.toFixed(2)}% Voted
             </p>
-            <p className="text-white text-xs">{formatNumber(numVotes)} Votes</p>
+            <p className="text-white text-xs">{formatNumber(votes)} Votes</p>
           </div>
         </div>
       </div>
       <div className="text-white flex flex-col justify-center">
         <ChevronRightIcon />
       </div>
+    </div>
+  );
+}
+
+export default async function PoolsCards({
+  data,
+}: {
+  data: ReturnType<typeof fetcher<DunePoolData[] | { error: string }>>;
+}) {
+  const poolsData = await data;
+
+  if ("error" in poolsData) throw new Error(poolsData.error);
+
+  return (
+    <div className="space-y-6 w-full">
+      {poolsData.map((poolData) => (
+        <PoolCard data={poolData} />
+      ))}
     </div>
   );
 }

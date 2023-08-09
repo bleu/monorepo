@@ -223,4 +223,12 @@ export class ExtendedGyroEV2
       poolPairData.decimalsIn,
     ).times(bnum(0.01));
   }
+
+  _checkIfInIsOnLimit(
+    poolPairData: GyroEPoolPairData,
+    amountIn: OldBigNumber,
+  ): boolean {
+    const amountOut = this._exactTokenInForTokenOut(poolPairData, amountIn);
+    return amountOut.toNumber() > 0 && amountIn.toNumber() > 0;
+  }
 }

@@ -191,4 +191,11 @@ export class ExtendedMetaStableMath
       bnum(0.01),
     );
   }
+
+  _checkIfInIsOnLimit(
+    poolPairData: MetaStablePoolPairData,
+    amountIn: OldBigNumber,
+  ): boolean {
+    return true;
+  }
 }

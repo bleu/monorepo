@@ -10,23 +10,8 @@ import { Header } from "#/components/Header";
 import { PoolAttribute, SearchPoolForm } from "#/components/SearchPoolForm";
 import { Select, SelectItem } from "#/components/Select";
 
-const FIRST_ROUND_END_DATE = new Date("2022-04-13T23:59:59.999Z");
-const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
+import { Round } from "./(utils)/rounds";
 
-const ROUNDS_COUNT =
-  Math.ceil((Date.now() - FIRST_ROUND_END_DATE.getTime()) / ONE_WEEK_IN_MS) + 1;
-
-const ROUNDS = Array.from({ length: ROUNDS_COUNT }, (_, i) => ({
-  label: `${new Date(
-    FIRST_ROUND_END_DATE.getTime() + i * ONE_WEEK_IN_MS,
-  ).toLocaleDateString("en-US", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  })}`,
-  value: String(i + 1),
-  activeRound: i === ROUNDS_COUNT - 1,
-})).reverse();
 
 export default function Layout({ children }: React.PropsWithChildren) {
   const router = useRouter();
@@ -41,11 +26,11 @@ export default function Layout({ children }: React.PropsWithChildren) {
 
   React.useEffect(() => {
     if (roundId == "current") {
-      router.push(`/apr/round/${ROUNDS[0].value}`);
+      router.push(`/apr/round/${Round.getAllRounds()[0].value}`);
     }
 
     if (!roundId) {
-      router.push(`${pathname}/round/${ROUNDS[0].value}`);
+      router.push(`${pathname}/round/${Round.getAllRounds()[0].value}`);
     }
   }, [roundId]);
 
@@ -75,12 +60,12 @@ export default function Layout({ children }: React.PropsWithChildren) {
               <label
                 className={clsx("px-1 float-right text-sm rounded-full", {
                   "text-slate12 bg-blue-600 hover:bg-blue-700":
-                    roundId === ROUNDS[0].value,
+                    roundId === Round.getAllRounds()[0].value,
                   "text-slate12 bg-gray-600 hover:bg-gray-700":
-                    roundId !== ROUNDS[0].value,
+                    roundId !== Round.getAllRounds()[0].value,
                 })}
               >
-                {roundId === ROUNDS[0].value ? "Current" : "Ended"}
+                {roundId === Round.getAllRounds()[0].value ? "Current" : "Ended"}
               </label>
             </div>
 
@@ -91,7 +76,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
               }}
               className="w-full"
             >
-              {ROUNDS.map((round) => (
+              {Round.getAllRounds().map((round) => (
                 <SelectItem key={round.value} value={round.value}>
                   {round.label}
                 </SelectItem>

@@ -67,6 +67,8 @@ interface PoolSimulatorContextType {
   initialAMM?: AMM<PoolPairData>;
   customAMM?: AMM<PoolPairData>;
   generateURL: () => string;
+  isAnalysis: boolean;
+  setIsAnalysis: (_: boolean) => void;
 }
 
 const defaultPool = {
@@ -95,6 +97,7 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     decimal: 0,
   };
 
+  const [isAnalysis, setIsAnalysis] = useState<boolean>(false);
   const [initialData, setInitialData] =
     useState<AnalysisData>(defaultAnalysisData);
   const [customData, setCustomData] =
@@ -195,10 +198,11 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
         setInitialData,
       );
     }
-    if (pathname === "/poolsimulator/analysis") {
+    if (isAnalysis) {
+      // if (pathname === "/poolsimulator/analysis") {
       setIsGraphLoading(false);
     }
-  }, [pathname]);
+  }, []);
 
   return (
     <PoolSimulatorContext.Provider
@@ -219,6 +223,8 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
         initialAMM,
         customAMM,
         generateURL,
+        isAnalysis,
+        setIsAnalysis,
       }}
     >
       {children}

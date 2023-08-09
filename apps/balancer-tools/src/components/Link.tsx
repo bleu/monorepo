@@ -26,5 +26,9 @@ export function LinkComponent({
     ),
   });
 
-  return <Link href={href}>{ClonedElement}</Link>;
+  return (
+    <Link href={href} prefetch={false}>
+      {ClonedElement}
+    </Link>
+  );
 }

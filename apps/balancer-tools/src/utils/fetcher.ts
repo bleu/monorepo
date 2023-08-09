@@ -5,8 +5,13 @@ export async function fetcher<JSON = unknown>(
   input: RequestInfo,
   init?: RequestInit,
 ): Promise<JSON> {
-  const res = await fetch(input, init);
-  return res.json();
+  const response = await fetch(input, init);
+
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+
+  return response.json();
 }
 
 export function refetchRequest({

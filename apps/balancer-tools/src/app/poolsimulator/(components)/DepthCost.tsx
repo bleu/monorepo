@@ -271,6 +271,10 @@ function calculateDepthCost(
           };
     case PoolTypeEnum.GyroE: {
       // For CLP pools we'll assume depth cost as the pool depth == 99% of the liquidity or 2% of the current spot price (if possible)
+
+      // The Alpha and Beta values are considering token 0 in units of token 1.
+      // This means that token 1 must be the the tokenIn
+      // And token 0 must be the tokenOut
       const newSpotPriceOnAlphaAndBetaBase =
         tokenIn.symbol === data.tokens[1].symbol
           ? newSpotPrice

@@ -87,7 +87,7 @@ export class AMM<TPoolPairData extends PoolPairData> {
     }
 
     // This is the backtracking line search variation of the Newton-Raphson method
-    // that avoids guesses that not significantly improve the result
+    // that avoids guesses that don't significantly improve the result
     const alpha = bnum(2);
     const beta = bnum(8);
     let t = bnum(1);

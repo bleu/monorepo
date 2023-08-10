@@ -35,6 +35,7 @@ export function DepthCost() {
         in: pairTokens.map((pairToken) =>
           calculateDepthCost(
             pairToken,
+            analysisToken,
             "in",
             initialData,
             initialAMM,
@@ -44,6 +45,7 @@ export function DepthCost() {
         out: pairTokens.map((pairToken) =>
           calculateDepthCost(
             pairToken,
+            analysisToken,
             "out",
             initialData,
             initialAMM,
@@ -55,6 +57,7 @@ export function DepthCost() {
         in: pairTokens.map((pairToken) =>
           calculateDepthCost(
             pairToken,
+            analysisToken,
             "in",
             customData,
             customAMM,
@@ -64,6 +67,7 @@ export function DepthCost() {
         out: pairTokens.map((pairToken) =>
           calculateDepthCost(
             pairToken,
+            analysisToken,
             "out",
             customData,
             customAMM,
@@ -233,14 +237,12 @@ const createDataObject = (
 
 export function calculateDepthCost(
   pairToken: TokensData,
+  analysisToken: TokensData,
   poolSide: "in" | "out",
   data: AnalysisData,
   amm: AMM<PoolPairData>,
   poolType: PoolTypeEnum,
 ) {
-  const analysisToken = data.tokens.find(
-    (token) => token.symbol !== pairToken.symbol,
-  );
   if (!analysisToken) throw new Error("Analysis token not found");
   const tokenIn = poolSide === "in" ? analysisToken : pairToken;
   const tokenOut = poolSide === "in" ? pairToken : analysisToken;
@@ -258,16 +260,14 @@ export function calculateDepthCost(
           tokenOut.symbol,
         );
 
-  const alphaBeta = {
-    alpha:
-      poolType === PoolTypeEnum.GyroE
-        ? data.poolParams?.alpha
-        : (data.poolParams?.sqrtAlpha as number) ** 2,
-    beta:
-      poolType === PoolTypeEnum.GyroE
-        ? data.poolParams?.beta
-        : (data.poolParams?.sqrtBeta as number) ** 2,
-  };
+  const alpha =
+    poolType === PoolTypeEnum.GyroE
+      ? data.poolParams?.alpha
+      : (data.poolParams?.sqrtAlpha as number) ** 2;
+  const beta =
+    poolType === PoolTypeEnum.GyroE
+      ? data.poolParams?.beta
+      : (data.poolParams?.sqrtBeta as number) ** 2;
 
   switch (poolType) {
     // For metastable pools we'll assume depth cost as 2% of the current spot price
@@ -279,9 +279,8 @@ export function calculateDepthCost(
     // For Gyros' CLP pools we'll assume depth cost as the pool depth == 99% of the liquidity or 2% of the current spot price (if possible)
     case PoolTypeEnum.GyroE:
     case PoolTypeEnum.Gyro2:
-      if (!alphaBeta.alpha || !alphaBeta.beta)
-        throw new Error("Alpha or beta not defined");
-      if (newSpotPrice < alphaBeta.alpha || newSpotPrice > alphaBeta.beta) {
+      if (!alpha || !beta) throw new Error("Alpha or beta not defined");
+      if (newSpotPrice < alpha || newSpotPrice > beta) {
         return poolSide === "in"
           ? {
               amount: amm.tokenInForExactTokenOut(

@@ -5,6 +5,13 @@ import { calculateDepthCost } from "#/app/poolsimulator/(components)/DepthCost";
 import { PoolTypeEnum } from "#/app/poolsimulator/(types)";
 import { convertAnalysisDataToAMM } from "#/app/poolsimulator/(utils)";
 
+const mockAnalysisTokens = {
+  balance: 0.7374307,
+  decimal: 8,
+  rate: 1,
+  symbol: "WBTC",
+};
+
 const mockPairToken = {
   balance: 19.074547373249157,
   decimal: 18,
@@ -44,6 +51,7 @@ describe("calculateDepthCost for Gyro2", () => {
     // so (newSpotPrice < alphaBeta.alpha || newSpotPrice > alphaBeta.beta) is true
     const result = calculateDepthCost(
       mockPairToken,
+      mockAnalysisTokens,
       "in",
       mockAnalysisDataGyro2,
       mockAmm,
@@ -57,6 +65,7 @@ describe("calculateDepthCost for Gyro2", () => {
     // so (newSpotPrice < alphaBeta.alpha || newSpotPrice > alphaBeta.beta) is false
     const result = calculateDepthCost(
       mockPairToken,
+      mockAnalysisTokens,
       "out",
       mockAnalysisDataGyro2,
       mockAmm,
@@ -94,6 +103,7 @@ describe("calculateDepthCost for MetaStable", () => {
   it("should calculate depth cost for MetaStable pool", () => {
     const result = calculateDepthCost(
       mockPairToken,
+      mockAnalysisTokens,
       "in",
       mockAnalysisDataMetaStable,
       mockAmm,

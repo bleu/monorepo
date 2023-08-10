@@ -6,10 +6,10 @@ export class Round {
   value: string;
   activeRound: boolean;
 
-  constructor(endDate: Date, roundNumber: number, active: boolean) {
+  constructor(endDate: Date, roundNumber: number) {
     this.endDate = endDate;
     this.value = String(roundNumber);
-    this.activeRound = active;
+    this.activeRound = endDate.getTime() > Date.now();
   }
 
   get label(): string {
@@ -38,8 +38,13 @@ export class Round {
       const endDate = new Date(
         Round.FIRST_ROUND_END_DATE.getTime() + i * Round.ONE_WEEK_IN_MS,
       );
-      return new Round(endDate, i + 1, i === roundsCount - 1);
+      return new Round(endDate, i + 1);
     }).reverse();
+  }
+
+  static currentRound(): Round {
+    const allRounds = Round.getAllRounds();
+    return allRounds.find((round) => round.activeRound)!;
   }
 
   static getRoundByNumber(roundNumber: number | string): Round {

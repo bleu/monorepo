@@ -20,7 +20,7 @@ export default function Page({
         </div>
       }
     >
-      <PoolsCards data={fetcher(`/apr/rounds/${roundId}`)} />
+      <PoolsCards data={fetcher(`http://localhost:3000/apr/rounds/${roundId}`)} />
     </Suspense>
   );
 }

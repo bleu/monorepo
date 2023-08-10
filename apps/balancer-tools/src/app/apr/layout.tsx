@@ -18,7 +18,7 @@ const LAST_ROUND_ID = ALL_ROUNDS[0].value;
 export default function Layout({ children }: React.PropsWithChildren) {
   const router = useRouter();
 
-  const { roundId, poolId } = useParams();
+  const { roundId, poolId, network } = useParams();
   const form = useForm<PoolAttribute>();
   const { setValue } = form;
 
@@ -26,7 +26,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
   invariant(!Array.isArray(poolId), "poolId cannot be a list");
 
   React.useEffect(() => {
-    if (!roundId || roundId === "current") {
+    if (!poolId && (!roundId || roundId === "current")) {
       router.push(`/apr/round/${LAST_ROUND_ID}`);
     }
   }, [roundId]);
@@ -47,7 +47,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
             defaultValuePool={poolId}
             onSubmit={(value) => {
               router.push(
-                `/apr/pool/${value.network}/${value.poolId}/round/${roundId}`,
+                `/apr/pool/${value.network}/${value.poolId}`,
               );
               setValue("poolId", value.poolId);
             }}
@@ -70,7 +70,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
               <Select
                 value={roundId ?? ""}
                 onValueChange={(value) => {
-                  router.push(!poolId ? `/apr/round/${value}` : `${value}`);
+                  router.push(!poolId ? `/apr/round/${value}` : `/apr/pool/${network}/${poolId}/round/${value}`);
                 }}
                 className="w-full"
               >

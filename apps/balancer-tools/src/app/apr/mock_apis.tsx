@@ -2,6 +2,8 @@ export const voteGaugeByID = [
   {
     pct_votes: 0.24118497395666047,
     symbol: "0x9ab7b0c7b154f626451c9e8a68dc04f58fb6e5ce",
+    // poolID: 0x96646936b91d6b9d7d0c47c496afbf3d6ec7b6f8000200000000000000000019
+    // but that pool can't be found on the search
     votes: 119811.6992448796,
   },
   {

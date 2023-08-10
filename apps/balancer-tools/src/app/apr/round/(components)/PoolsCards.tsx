@@ -1,29 +1,40 @@
 import { ChevronRightIcon } from "@radix-ui/react-icons";
 
-import { DunePoolData } from "#/lib/dune";
+import { DuneGaugeData } from "#/lib/dune";
 import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
+import { Gauge } from "#/lib/balancer/gauges";
+import Link from "next/link";
+import { networkFor } from "@bleu-balancer-tools/utils";
+import { Suspense } from "react";
+import BALPrice from "../../(components)/BALPrice";
 
 function PoolCard({
   data: { symbol, pct_votes: pctVotes, votes },
 }: {
-  data: DunePoolData;
+  data: DuneGaugeData;
 }) {
+  const gauge = new Gauge(symbol)
+  const poolId = gauge.pool.id;
+
   return (
+    <Link href={`/apr/pool/${networkFor(gauge.network)}/${gauge.pool.id}`}>
     <div
-      key={symbol}
       className="flex justify-between border border-gray-400 lg:border-gray-400 bg-blue3 rounded p-4 cursor-pointer"
     >
       <div className="">
         <div className="flex justify-between">
-          <div className="text-white font-bold text-xl mb-2">{symbol}</div>
+          <div className="text-white font-bold text-lg mb-2">{poolId}</div>
         </div>
         <div className="flex items-center">
           <div className="text-sm">
             <p className="text-white leading-none mb-1">
-              {pctVotes.toFixed(2)}% Voted
+              {(pctVotes * 100).toFixed(2)}% Voted
             </p>
             <p className="text-white text-xs">{formatNumber(votes)} Votes</p>
+            <Suspense fallback={"Loading..."}>
+              <BALPrice  />
+            </Suspense>
           </div>
         </div>
       </div>
@@ -31,13 +42,14 @@ function PoolCard({
         <ChevronRightIcon />
       </div>
     </div>
+    </Link>
   );
 }
 
 export default async function PoolsCards({
   data,
 }: {
-  data: ReturnType<typeof fetcher<DunePoolData[] | { error: string }>>;
+  data: ReturnType<typeof fetcher<DuneGaugeData[] | { error: string }>>;
 }) {
   const poolsData = await data;
 
@@ -45,8 +57,8 @@ export default async function PoolsCards({
 
   return (
     <div className="space-y-6 w-full">
-      {poolsData.map((poolData) => (
-        <PoolCard data={poolData} />
+      {poolsData.slice(0,1).map((data) => (
+        <PoolCard data={data} key={data.symbol}/>
       ))}
     </div>
   );

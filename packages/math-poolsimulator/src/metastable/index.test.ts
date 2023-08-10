@@ -1,7 +1,8 @@
 import { bnum, SubgraphPoolBase } from "@balancer-labs/sor";
-import { describe, expect, test } from "@jest/globals";
+import { describe, test } from "@jest/globals";
 
 import { AMM } from "../index";
+import { verifyApproximateEquality } from "../utils";
 import poolsFromFile from "./fixtures/data.json";
 import { ExtendedMetaStableMath } from "./index";
 
@@ -41,16 +42,12 @@ describe("Tests new stable math function based on package other functions", () =
   );
 
   test("_spotPrice", () => {
-    checkResult(
+    verifyApproximateEquality(
       pool._spotPrice(poolPairData).toNumber(),
       spotPriceExpected.toNumber(),
     );
   });
   test("__tokenInForExactSpotPriceAfterSwap", () => {
-    checkResult(tokenInCalculated, amount);
+    verifyApproximateEquality(tokenInCalculated, amount);
   });
 });
-
-function checkResult(calculated: number, result: number) {
-  expect(calculated / result).toBeCloseTo(1);
-}

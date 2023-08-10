@@ -4,11 +4,12 @@ import { Spinner } from "#/components/Spinner";
 import { Tabs } from "#/components/Tabs";
 import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 
-import { DepthCost } from "../(components)/DepthCost";
-import { ImpactCurve } from "../(components)/ImpactCurve";
-import { SwapCurve } from "../(components)/SwapCurve";
-import { SwapSimulator } from "../(components)/SwapSimulator";
-import { TokensDistribution } from "../(components)/TokensDistribution";
+import { PoolTypeEnum } from "../(types)";
+import { DepthCost } from "./DepthCost";
+import { ImpactCurve } from "./ImpactCurve";
+import { SwapCurve } from "./SwapCurve";
+import { SwapSimulator } from "./SwapSimulator";
+import { TokensDistribution } from "./TokensDistribution";
 
 export default function Page() {
   const { initialData, analysisToken, setCurrentTabTokenByIndex } =
@@ -17,12 +18,13 @@ export default function Page() {
   if (!analysisToken.symbol) {
     return <Spinner />;
   }
+
   const indexCurrentTabToken = initialData?.tokens.findIndex(
-    ({ symbol }) => symbol.toLowerCase() !== analysisToken.symbol.toLowerCase(),
+    ({ symbol }) => symbol.toLowerCase() !== analysisToken.symbol.toLowerCase()
   );
   const tokensSymbol = initialData.tokens.map((token) => token.symbol);
   const tabTokens = tokensSymbol.filter(
-    (token) => token !== analysisToken.symbol,
+    (token) => token !== analysisToken.symbol
   );
 
   function handleTabClick(event: React.FormEvent<HTMLButtonElement>) {
@@ -30,6 +32,15 @@ export default function Page() {
 
     setCurrentTabTokenByIndex(tokensSymbol.indexOf(target.innerText));
   }
+
+  if (initialData.poolType === PoolTypeEnum.Fx)
+    return (
+      <div>
+        <h1 className="text-slate12">
+          Analysis page not avaliable to {initialData.poolType}
+        </h1>
+      </div>
+    );
 
   return (
     <>

@@ -26,7 +26,7 @@ export function DepthCost() {
   if (!initialAMM || !customAMM) return <Spinner />;
 
   const pairTokens = initialData?.tokens.filter(
-    (token) => token.symbol !== analysisToken.symbol
+    (token) => token.symbol !== analysisToken.symbol,
   );
 
   try {
@@ -39,8 +39,8 @@ export function DepthCost() {
             "in",
             initialData,
             initialAMM,
-            initialData.poolType
-          )
+            initialData.poolType,
+          ),
         ),
         out: pairTokens.map((pairToken) =>
           calculateDepthCost(
@@ -49,8 +49,8 @@ export function DepthCost() {
             "out",
             initialData,
             initialAMM,
-            initialData.poolType
-          )
+            initialData.poolType,
+          ),
         ),
       },
       custom: {
@@ -61,8 +61,8 @@ export function DepthCost() {
             "in",
             customData,
             customAMM,
-            customData.poolType
-          )
+            customData.poolType,
+          ),
         ),
         out: pairTokens.map((pairToken) =>
           calculateDepthCost(
@@ -71,8 +71,8 @@ export function DepthCost() {
             "out",
             customData,
             customAMM,
-            customData.poolType
-          )
+            customData.poolType,
+          ),
         ),
       },
     };
@@ -81,7 +81,7 @@ export function DepthCost() {
       ...depthCostAmounts.initial.in.map(({ amount }) => amount),
       ...depthCostAmounts.initial.out.map(({ amount }) => amount),
       ...depthCostAmounts.custom.in.map(({ amount }) => amount),
-      ...depthCostAmounts.custom.out.map(({ amount }) => amount)
+      ...depthCostAmounts.custom.out.map(({ amount }) => amount),
     );
 
     if (!maxDepthCostAmount) return <Spinner />;
@@ -97,7 +97,7 @@ export function DepthCost() {
         true,
         "in",
         analysisToken?.symbol,
-        depthCostAmounts.initial.in.map(({ type }) => type)
+        depthCostAmounts.initial.in.map(({ type }) => type),
       ),
       createDataObject(
         dataX,
@@ -107,7 +107,7 @@ export function DepthCost() {
         true,
         "in",
         analysisToken?.symbol,
-        depthCostAmounts.custom.in.map(({ type }) => type)
+        depthCostAmounts.custom.in.map(({ type }) => type),
       ),
       createDataObject(
         dataX,
@@ -119,7 +119,7 @@ export function DepthCost() {
         analysisToken?.symbol,
         depthCostAmounts.initial.out.map(({ type }) => type),
         "y2",
-        "x2"
+        "x2",
       ),
       createDataObject(
         dataX,
@@ -131,7 +131,7 @@ export function DepthCost() {
         analysisToken?.symbol,
         depthCostAmounts.custom.out.map(({ type }) => type),
         "y2",
-        "x2"
+        "x2",
       ),
     ];
 
@@ -185,7 +185,7 @@ const createHoverTemplate = (
   amounts: number[],
   analysisSymbol: string | undefined,
   tokenSymbols: string[],
-  depthCostPointType: string[]
+  depthCostPointType: string[],
 ): string[] => {
   return amounts.map((amount, i) => {
     const displayAmount = `${formatNumber(amount, 2)} ${analysisSymbol}`;
@@ -213,7 +213,7 @@ const createDataObject = (
   analysisSymbol: string | undefined,
   depthCostPointType: string[],
   yAxis = "",
-  xAxis = ""
+  xAxis = "",
 ) => {
   return {
     x,
@@ -230,7 +230,7 @@ const createDataObject = (
       y,
       analysisSymbol,
       x,
-      depthCostPointType
+      depthCostPointType,
     ),
   };
 };
@@ -241,7 +241,7 @@ export function calculateDepthCost(
   poolSide: "in" | "out",
   data: AnalysisData,
   amm: AMM<PoolPairData>,
-  poolType: PoolTypeEnum
+  poolType: PoolTypeEnum,
 ) {
   if (!analysisToken) throw new Error("Analysis token not found");
   const tokenIn = poolSide === "in" ? analysisToken : pairToken;
@@ -251,25 +251,18 @@ export function calculateDepthCost(
       ? amm.tokenInForExactSpotPriceAfterSwap(
           price,
           tokenIn.symbol,
-          tokenOut.symbol
+          tokenOut.symbol,
         )
       : amm.tokenOutForExactSpotPriceAfterSwap(
           price,
           tokenIn.symbol,
-          tokenOut.symbol
+          tokenOut.symbol,
         );
 
   const currentSpotPrice = amm.spotPrice(tokenIn.symbol, tokenOut.symbol);
   const newSpotPrice = currentSpotPrice * 1.02;
-  const spotPricePrecision = currentSpotPrice * 0.0002;
-  const alpha =
-    poolType === PoolTypeEnum.GyroE
-      ? data.poolParams?.alpha
-      : (data.poolParams?.sqrtAlpha as number) ** 2;
-  const beta =
-    poolType === PoolTypeEnum.GyroE
-      ? data.poolParams?.beta
-      : (data.poolParams?.sqrtBeta as number) ** 2;
+
+  const { alpha, beta } = getAlphaAndBeta(poolType, data);
 
   switch (poolType) {
     // For metastable pools we'll assume depth cost as 2% of the current spot price
@@ -278,10 +271,10 @@ export function calculateDepthCost(
         amount: amountCalculator(newSpotPrice),
         type: "2% of price change",
       };
+    case PoolTypeEnum.Gyro3:
     case PoolTypeEnum.Gyro2:
     case PoolTypeEnum.GyroE:
       // For CLP pools we'll assume depth cost as the pool depth == 99% of the liquidity or 2% of the current spot price (if possible)
-
       // The Alpha and Beta values are considering token 0 in units of token 1.
       // This means that token 1 must be the the tokenIn
       // And token 0 must be the tokenOut
@@ -299,7 +292,7 @@ export function calculateDepthCost(
               amount: amm.tokenInForExactTokenOut(
                 tokenOut.balance * 0.99,
                 tokenIn.symbol,
-                tokenOut.symbol
+                tokenOut.symbol,
               ),
               type: "price limit",
             }
@@ -311,5 +304,27 @@ export function calculateDepthCost(
       };
     default:
       return { amount: 0, type: "" };
+  }
+}
+
+function getAlphaAndBeta(poolType: PoolTypeEnum, data: AnalysisData) {
+  switch (poolType) {
+    case PoolTypeEnum.GyroE:
+      return {
+        alpha: data.poolParams?.alpha,
+        beta: data.poolParams?.beta,
+      };
+    case PoolTypeEnum.Gyro2:
+      return {
+        alpha: (data.poolParams?.sqrtAlpha as number) ** 2,
+        beta: (data.poolParams?.sqrtBeta as number) ** 2,
+      };
+    case PoolTypeEnum.Gyro3:
+      return {
+        alpha: (data.poolParams?.root3Alpha as number) ** 3,
+        beta: 1 / (data.poolParams?.root3Alpha as number) ** 3, //source: https://2063019688-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-MU527HCtxlYaQoNazhF%2Fuploads%2FZrQCiZDDe8xrof3ngRG2%2F3-CLP%20Technical%20Specification.pdf?alt=media&token=c4f3b8bd-57fb-48ab-815f-cfa29b748d91,
+      };
+    default:
+      return {};
   }
 }

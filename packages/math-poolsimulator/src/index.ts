@@ -88,8 +88,10 @@ export class AMM<TPoolPairData extends PoolPairData> {
 
     // This is the backtracking line search variation of the Newton-Raphson method
     // that avoids guesses that don't significantly improve the result
-    const alpha = bnum(2);
-    const beta = bnum(8);
+
+    // alpha and beta are the parameters of the backtracking line search
+    const inverseOfAlpha = bnum(2);
+    const inverseOfBeta = bnum(8);
     let t = bnum(1);
 
     for (let i = 0; i < 20; i++) {
@@ -99,16 +101,18 @@ export class AMM<TPoolPairData extends PoolPairData> {
       );
       const newDiffFromSpotPrice = spotPrice.minus(newSpotPrice);
 
-      inGuessDelta = inGuessDelta.div(beta);
+      inGuessDelta = inGuessDelta.div(inverseOfBeta);
       const minimalNewDiffFromSpotPrice = guessedSpotPrice
-        .plus(spotPriceDerivative.times(t).div(alpha).times(inGuessDelta))
+        .plus(
+          spotPriceDerivative.times(t).div(inverseOfAlpha).times(inGuessDelta),
+        )
         .minus(spotPriceDerivative)
         .abs();
 
       if (newDiffFromSpotPrice.abs().lte(minimalNewDiffFromSpotPrice)) {
         break;
       }
-      t = t.div(beta);
+      t = t.div(inverseOfBeta);
       newInGuess = inGuessValue.plus(inGuessDelta.times(t));
     }
 

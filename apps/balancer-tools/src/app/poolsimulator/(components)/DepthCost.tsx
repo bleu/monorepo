@@ -246,21 +246,23 @@ export function calculateDepthCost(
   if (!analysisToken) throw new Error("Analysis token not found");
   const tokenIn = poolSide === "in" ? analysisToken : pairToken;
   const tokenOut = poolSide === "in" ? pairToken : analysisToken;
+  const currentSpotPrice = amm.spotPrice(tokenIn.symbol, tokenOut.symbol);
+  const newSpotPrice = currentSpotPrice * 1.02;
+  const spotPricePrecision = currentSpotPrice * 0.0002;
   const amountCalculator = (price: number) =>
     poolSide === "in"
       ? amm.tokenInForExactSpotPriceAfterSwap(
           price,
           tokenIn.symbol,
           tokenOut.symbol,
+          spotPricePrecision,
         )
       : amm.tokenOutForExactSpotPriceAfterSwap(
           price,
           tokenIn.symbol,
           tokenOut.symbol,
+          spotPricePrecision,
         );
-
-  const currentSpotPrice = amm.spotPrice(tokenIn.symbol, tokenOut.symbol);
-  const newSpotPrice = currentSpotPrice * 1.02;
 
   const { alpha, beta } = getAlphaAndBeta(poolType, data);
 

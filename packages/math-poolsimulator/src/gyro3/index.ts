@@ -56,7 +56,6 @@ export class ExtendedGyro3
     const tI = this.tokens[tokenIndexIn];
     const balanceIn = tI.balance;
     const decimalsIn = tI.decimals;
-
     const tokenIndexOut = this.tokens.findIndex((t) => t.address === tokenOut);
     if (tokenIndexOut < 0) throw "Pool does not contain tokenOut";
     const tO = this.tokens[tokenIndexOut];
@@ -110,6 +109,6 @@ export class ExtendedGyro3
     amountIn: OldBigNumber,
   ): boolean {
     const amountOut = this._exactTokenInForTokenOut(poolPairData, amountIn);
-    return amountOut.toNumber() === 0 && amountIn.toNumber() > 0;
+    return amountOut.toNumber() > 0 && amountIn.toNumber() > 0;
   }
 }

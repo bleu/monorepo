@@ -115,6 +115,6 @@ export class ExtendedGyro2
     amountIn: OldBigNumber,
   ): boolean {
     const amountOut = this._exactTokenInForTokenOut(poolPairData, amountIn);
-    return amountOut.toNumber() === 0 && amountIn.toNumber() > 0;
+    return amountOut.toNumber() > 0 && amountIn.toNumber() > 0;
   }
 }

@@ -1,6 +1,6 @@
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import * as Separator from "@radix-ui/react-separator";
-import { usePathname, useRouter } from "next/navigation";
+// import { usePathname, useRouter } from "next/navigation";
 import { ReactElement, useEffect, useState } from "react";
 
 import { Dialog } from "#/components/Dialog";
@@ -36,7 +36,7 @@ export enum PoolSimulatorFormTabs {
 }
 
 function IndexMenu() {
-  const { push } = useRouter();
+  // const { push } = useRouter();
   const {
     initialData,
     setInitialData,
@@ -44,6 +44,7 @@ function IndexMenu() {
     customData,
     setIsGraphLoading,
     handleImportPoolParametersById,
+    setIsAnalysis,
   } = usePoolSimulator();
   const [tabValue, setTabValue] = useState<PoolSimulatorFormTabs>(
     PoolSimulatorFormTabs.InitialData,
@@ -132,7 +133,8 @@ function IndexMenu() {
               onSubmit={(data) => {
                 setCustomData(data);
                 setIsGraphLoading(true);
-                push("/poolsimulator/analysis");
+                setIsAnalysis(true);
+                // push("/poolsimulator/analysis");
               }}
             />
           </div>
@@ -335,9 +337,10 @@ export function AnalysisMenu() {
 }
 
 export default function Menu() {
-  const pathname = usePathname();
-  const { customData, initialData } = usePoolSimulator();
-  if (pathname.includes("/analysis")) {
+  // const pathname = usePathname();
+  const { customData, initialData, isAnalysis } = usePoolSimulator();
+  // if (pathname.includes("/analysis")) {
+  if (isAnalysis) {
     if (
       !initialData ||
       !initialData.poolParams ||

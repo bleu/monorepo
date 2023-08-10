@@ -3,7 +3,8 @@
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
 import { PoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/types";
 import { NetworkChainId } from "@bleu-balancer-tools/utils";
-import { usePathname, useRouter } from "next/navigation";
+// import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   createContext,
   PropsWithChildren,
@@ -66,6 +67,8 @@ interface PoolSimulatorContextType {
   initialAMM?: AMM<PoolPairData>;
   customAMM?: AMM<PoolPairData>;
   generateURL: () => string;
+  isAnalysis: boolean;
+  setIsAnalysis: (_: boolean) => void;
 }
 
 const defaultPool = {
@@ -79,7 +82,7 @@ export const PoolSimulatorContext = createContext(
 );
 
 export function PoolSimulatorProvider({ children }: PropsWithChildren) {
-  const { push } = useRouter();
+  // const { push } = useRouter();
   const pathname = usePathname();
   const defaultAnalysisData: AnalysisData = {
     poolParams: undefined,
@@ -94,6 +97,7 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     decimal: 0,
   };
 
+  const [isAnalysis, setIsAnalysis] = useState<boolean>(false);
   const [initialData, setInitialData] =
     useState<AnalysisData>(defaultAnalysisData);
   const [customData, setCustomData] =
@@ -155,9 +159,9 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     setData(importedData);
   }
 
-  useEffect(() => {
-    if (pathname === "/poolsimulator/analysis") push(generateURL());
-  }, [pathname]);
+  // useEffect(() => {
+  // if (pathname === "/poolsimulator/analysis") push(generateURL());
+  // }, [pathname]);
 
   useEffect(() => {
     if (window.location.hash) {
@@ -194,10 +198,11 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
         setInitialData,
       );
     }
-    if (pathname === "/poolsimulator/analysis") {
+    if (isAnalysis) {
+      // if (pathname === "/poolsimulator/analysis") {
       setIsGraphLoading(false);
     }
-  }, [pathname]);
+  }, []);
 
   return (
     <PoolSimulatorContext.Provider
@@ -218,6 +223,8 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
         initialAMM,
         customAMM,
         generateURL,
+        isAnalysis,
+        setIsAnalysis,
       }}
     >
       {children}

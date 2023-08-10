@@ -9,12 +9,18 @@ import { Spinner } from "#/components/Spinner";
 import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
-import { TokensData } from "../(types)";
+import { PoolTypeEnum, TokensData } from "../(types)";
 import { calculateCurvePoints, trimTrailingValues } from "../(utils)";
 
 export function SwapCurve() {
-  const { analysisToken, currentTabToken, initialAMM, customAMM } =
-    usePoolSimulator();
+  const {
+    analysisToken,
+    currentTabToken,
+    initialAMM,
+    customAMM,
+    initialData,
+    customData,
+  } = usePoolSimulator();
 
   if (!initialAMM || !customAMM) return <Spinner />;
 
@@ -47,7 +53,6 @@ export function SwapCurve() {
     x: number[],
     y: number[],
     legendGroup: string,
-    name: string,
     showlegend = true,
     hovertemplate: string[],
   ) => {
@@ -56,9 +61,28 @@ export function SwapCurve() {
       y,
       type: "scatter" as PlotType,
       legendgroup: legendGroup,
-      name,
+      legendgrouptitle: { text: legendGroup },
+      name: "Swap",
       showlegend,
       hovertemplate,
+    };
+  };
+
+  const createLimitPointDataObject = (
+    x: number[],
+    y: number[],
+    legendGroup: string,
+  ) => {
+    return {
+      x,
+      y,
+      type: "scatter" as PlotType,
+      mode: "markers" as const,
+      legendgroup: legendGroup,
+      legendgrouptitle: { text: legendGroup },
+      name: "Liquidity limit",
+      showlegend: true,
+      hovertemplate: Array(x.length).fill(`Liquidity limit <extra></extra>`),
     };
   };
 
@@ -66,7 +90,6 @@ export function SwapCurve() {
     createDataObject(
       initialAmountsAnalysisTokenIn,
       initialAmountTabTokenOut,
-      "Initial",
       "Initial",
       true,
       initialAmountsAnalysisTokenIn.map((amount, index) =>
@@ -82,7 +105,6 @@ export function SwapCurve() {
       customAmountsAnalysisTokenIn,
       customAmountTabTokenOut,
       "Custom",
-      "Custom",
       true,
       customAmountsAnalysisTokenIn.map((amount, index) =>
         formatSwap(
@@ -96,7 +118,6 @@ export function SwapCurve() {
     createDataObject(
       initialAmountsAnalysisTokenOut,
       initialAmountTabTokenIn,
-      "Initial",
       "Initial",
       false,
       initialAmountsAnalysisTokenOut.map((amount, index) =>
@@ -112,7 +133,6 @@ export function SwapCurve() {
       customAmountsAnalysisTokenOut,
       customAmountTabTokenIn,
       "Custom",
-      "Custom",
       false,
       customAmountsAnalysisTokenOut.map((amount, index) =>
         formatSwap(
@@ -124,6 +144,45 @@ export function SwapCurve() {
       ),
     ),
   ];
+
+  if (
+    [PoolTypeEnum.Gyro2, PoolTypeEnum.Gyro3, PoolTypeEnum.GyroE].includes(
+      initialData.poolType,
+    )
+  ) {
+    data.push(
+      createLimitPointDataObject(
+        [
+          initialAmountsAnalysisTokenOut.slice(-1)[0],
+          initialAmountsAnalysisTokenIn.slice(-1)[0],
+        ],
+        [
+          initialAmountTabTokenIn.slice(-1)[0],
+          initialAmountTabTokenOut.slice(-1)[0],
+        ],
+        "Initial",
+      ),
+    );
+  }
+  if (
+    [PoolTypeEnum.Gyro2, PoolTypeEnum.Gyro3, PoolTypeEnum.GyroE].includes(
+      customData.poolType,
+    )
+  ) {
+    data.push(
+      createLimitPointDataObject(
+        [
+          customAmountsAnalysisTokenOut.slice(-1)[0],
+          customAmountsAnalysisTokenIn.slice(-1)[0],
+        ],
+        [
+          customAmountTabTokenIn.slice(-1)[0],
+          customAmountTabTokenOut.slice(-1)[0],
+        ],
+        "Custom",
+      ),
+    );
+  }
 
   function getGraphScale({
     initialAmountsIn,
@@ -159,7 +218,7 @@ export function SwapCurve() {
       const indexMin = initialAmountsOut.indexOf(limits.higherOut);
       return [initialAmountsOut[indexMin], initialAmountsIn[indexMax]];
     }
-    if (maxOfIn.initial === limits.lowerIn) {
+    if (maxOfIn.custom === limits.lowerIn) {
       const indexMax = customAmountsIn.indexOf(limits.lowerIn);
       const indexMin = customAmountsOut.indexOf(limits.higherOut);
       return [customAmountsOut[indexMin], customAmountsIn[indexMax]];

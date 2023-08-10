@@ -10,8 +10,8 @@ import {
   useState,
 } from "react";
 
-import { getTokensData } from "#/app/_serverActions";
 import { Notification, TransactionStatus } from "#/hooks/useTransaction";
+import { getTokensData } from "#/utils/getTokensData";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
 import { useNetworks } from "./networks";

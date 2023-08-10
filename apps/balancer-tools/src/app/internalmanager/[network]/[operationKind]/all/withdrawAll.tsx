@@ -24,8 +24,8 @@ import { TransactionStatus } from "#/hooks/useTransaction";
 import { internalBalances } from "#/lib/gql";
 import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
 import { AddressSchema } from "#/lib/schema";
-import { refetchRequest } from "#/utils/fetcher";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
+import { refetchRequest } from "#/utils/refetchRequest";
 
 export function WithdrawAll() {
   const {

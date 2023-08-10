@@ -6,7 +6,7 @@ import { Button } from "#/components";
 import { LinkComponent } from "#/components/Link";
 import { getNetwork } from "#/contexts/networks";
 import { internalBalances } from "#/lib/gql";
-import { refetchRequest } from "#/utils/fetcher";
+import { refetchRequest } from "#/utils/refetchRequest";
 
 export function BatchWithdrawButton() {
   const { address } = useAccount();

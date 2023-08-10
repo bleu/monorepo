@@ -193,8 +193,8 @@ export class ExtendedMetaStableMath
   }
 
   _checkIfInIsOnLimit(
-    poolPairData: MetaStablePoolPairData,
-    amountIn: OldBigNumber,
+    _poolPairData: MetaStablePoolPairData,
+    _amountIn: OldBigNumber,
   ): boolean {
     return true;
   }

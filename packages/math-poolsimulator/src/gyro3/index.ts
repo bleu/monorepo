@@ -1,37 +1,34 @@
 import {
   bnum,
-  Gyro2Pool,
-  GyroHelpersSignedFixedPoint,
+  Gyro3Pool,
   OldBigNumber,
   safeParseFixed,
   SubgraphPoolBase,
   SubgraphToken,
 } from "@balancer-labs/sor";
-import { WeiPerEther as ONE } from "@ethersproject/constants";
 
 import { bigNumberToOldBigNumber } from "../conversions";
 import { IAMMFunctionality } from "../types";
 
-type Gyro2PoolToken = Pick<SubgraphToken, "address" | "balance" | "decimals">;
+type Gyro3PoolToken = Pick<SubgraphToken, "address" | "balance" | "decimals">;
 
-export type Gyro2PoolPairData = ReturnType<
-  typeof Gyro2Pool.prototype.parsePoolPairData
+export type Gyro3PoolPairData = ReturnType<
+  typeof Gyro3Pool.prototype.parsePoolPairData
 >;
 
-export interface IGyro2Maths {
+export interface IGyro3Maths {
   swapFee: string;
   totalShares: string;
-  tokens: Gyro2PoolToken[];
+  tokens: Gyro3PoolToken[];
   tokensList: string[];
-  sqrtAlpha: string;
-  sqrtBeta: string;
+  root3Alpha: string;
 }
 
-export class ExtendedGyro2
-  extends Gyro2Pool
-  implements IAMMFunctionality<Gyro2PoolPairData>
+export class ExtendedGyro3
+  extends Gyro3Pool
+  implements IAMMFunctionality<Gyro3PoolPairData>
 {
-  constructor(poolParams: IGyro2Maths) {
+  constructor(poolParams: IGyro3Maths) {
     super(
       "0x",
       "0x",
@@ -39,26 +36,21 @@ export class ExtendedGyro2
       poolParams.totalShares,
       poolParams.tokens,
       poolParams.tokensList,
-      poolParams.sqrtAlpha,
-      poolParams.sqrtBeta,
+      poolParams.root3Alpha,
     );
   }
-
-  static fromPool(pool: SubgraphPoolBase): ExtendedGyro2 {
-    if (!pool.sqrtAlpha || !pool.sqrtBeta)
-      throw new Error("Gyro2Pool missing sqrtAlpha or sqrtBeta");
-    return new ExtendedGyro2({
+  static fromPool(pool: SubgraphPoolBase): ExtendedGyro3 {
+    if (!pool.root3Alpha) throw new Error("Gyro3Pool missing root3Alpha");
+    return new ExtendedGyro3({
       swapFee: pool.swapFee,
       totalShares: pool.totalShares,
       tokens: pool.tokens,
       tokensList: pool.tokensList,
-      sqrtAlpha: pool.sqrtAlpha,
-      sqrtBeta: pool.sqrtBeta,
+      root3Alpha: pool.root3Alpha,
     });
   }
 
-  parsePoolPairData(tokenIn: string, tokenOut: string): Gyro2PoolPairData {
-    // This function was developed based on @balancer/sor package, but for work as a symbol instead of address
+  parsePoolPairData(tokenIn: string, tokenOut: string): Gyro3PoolPairData {
     const tokenIndexIn = this.tokens.findIndex((t) => t.address === tokenIn);
     if (tokenIndexIn < 0) throw "Pool does not contain tokenIn";
     const tI = this.tokens[tokenIndexIn];
@@ -71,9 +63,17 @@ export class ExtendedGyro2
     const balanceOut = tO.balance;
     const decimalsOut = tO.decimals;
 
-    const tokenInIsToken0 = tokenIndexIn === 0;
+    const tokenTertiary = this.tokens.find(
+      (t) => t.address !== tokenOut && t.address !== tokenIn,
+    );
 
-    const poolPairData: Gyro2PoolPairData = {
+    if (!tokenTertiary)
+      throw new Error("Pool does not contain a valid third token");
+
+    const balanceTertiary = tokenTertiary.balance;
+    const decimalsTertiary = tokenTertiary.decimals;
+
+    const poolPairData: Gyro3PoolPairData = {
       id: this.id,
       address: this.address,
       poolType: this.poolType,
@@ -81,28 +81,24 @@ export class ExtendedGyro2
       tokenOut: tokenOut,
       decimalsIn: Number(decimalsIn),
       decimalsOut: Number(decimalsOut),
+      decimalsTertiary: Number(decimalsTertiary),
       balanceIn: safeParseFixed(balanceIn, decimalsIn),
       balanceOut: safeParseFixed(balanceOut, decimalsOut),
       swapFee: this.swapFee,
-      sqrtAlpha: tokenInIsToken0
-        ? this.sqrtAlpha
-        : GyroHelpersSignedFixedPoint.divDown(ONE, this.sqrtBeta),
-      sqrtBeta: tokenInIsToken0
-        ? this.sqrtBeta
-        : GyroHelpersSignedFixedPoint.divDown(ONE, this.sqrtAlpha),
+      balanceTertiary: safeParseFixed(balanceTertiary, decimalsTertiary),
     };
 
     return poolPairData;
   }
 
-  _spotPrice(poolPairData: Gyro2PoolPairData): OldBigNumber {
+  _spotPrice(poolPairData: Gyro3PoolPairData): OldBigNumber {
     return this._spotPriceAfterSwapExactTokenInForTokenOut(
       poolPairData,
       bnum(0),
     );
   }
   _firstGuessOfTokenInForExactSpotPriceAfterSwap(
-    poolPairData: Gyro2PoolPairData,
+    poolPairData: Gyro3PoolPairData,
   ): OldBigNumber {
     return bigNumberToOldBigNumber(
       poolPairData.balanceIn,

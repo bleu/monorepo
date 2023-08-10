@@ -1,9 +1,6 @@
-"use client";
-
 import { Suspense } from "react";
 
 import Loading from "#/app/metadata/[network]/pool/[poolId]/loading";
-import { fetcher } from "#/utils/fetcher";
 
 import PoolsCards from "../(components)/PoolsCards";
 
@@ -20,7 +17,7 @@ export default function Page({
         </div>
       }
     >
-      <PoolsCards data={fetcher(`http://localhost:3000/apr/rounds/${roundId}`)} />
+      <PoolsCards roundId={roundId} />
     </Suspense>
   );
 }

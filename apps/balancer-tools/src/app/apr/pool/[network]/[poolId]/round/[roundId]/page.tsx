@@ -12,8 +12,7 @@ export default async function Page({
 
   return (
     <div className="flex h-full w-full flex-col justify-center rounded-3xl text-white">
-      hello from pool {poolId} in network {network} for round {roundId}. Pool share in round {roundId} is
-
+      hello from pool {poolId} in network {network} for round {roundId}.
       <Suspense fallback={"Loading..."}>
         <PoolPctVotesInRound poolId={poolId} roundId={roundId} />
       </Suspense>

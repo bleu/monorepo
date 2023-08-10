@@ -1,11 +1,11 @@
 import { ChevronRightIcon } from "@radix-ui/react-icons";
 
+import { Gauge } from "#/lib/balancer/gauges";
 import { DuneGaugeData } from "#/lib/dune";
 import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
-import { Gauge } from "#/lib/balancer/gauges";
-import Link from "next/link";
 import { networkFor } from "@bleu-balancer-tools/utils";
+import Link from "next/link";
 import { Suspense } from "react";
 import BALPrice from "../../(components)/BALPrice";
 
@@ -47,11 +47,11 @@ function PoolCard({
 }
 
 export default async function PoolsCards({
-  data,
+  roundId,
 }: {
-  data: ReturnType<typeof fetcher<DuneGaugeData[] | { error: string }>>;
+  roundId:string
 }) {
-  const poolsData = await data;
+  const poolsData = await fetcher<DuneGaugeData[] | { error: string }>(`http://localhost:3000/apr/rounds/${roundId}`, { cache: "force-cache"});
 
   if ("error" in poolsData) throw new Error(poolsData.error);
 

@@ -23,13 +23,13 @@ export default async function PoolPctVotesInRound({
   const pool = new Pool(poolId);
   const gaugeAddress = pool.gauge?.address;
 
-  const gauge = gaugeData.find((gauge) => gauge.symbol === gaugeAddress);
+  const gauge = gaugeData.find((gauge) => gauge.symbol.toLowerCase() === gaugeAddress?.toLowerCase());
 
   if (!gauge?.pct_votes) {
     return <div>Pool {poolId} (gauge {gaugeAddress}) had no votes in round {roundId}</div>
   }
 
   return <div>
-    {poolId} \(gauge {gaugeAddress}\) had {(gauge?.pct_votes * 100).toFixed(2)}% Voted in round {roundId}
+    {poolId} (gauge {gaugeAddress}) had {(gauge?.pct_votes * 100).toFixed(2)}% Voted in round {roundId}
   </div>
 }

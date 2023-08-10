@@ -23,7 +23,6 @@ export type Gyro2Params = Partial<
   ConvertToNumber<Pick<IGyro2Maths, "swapFee" | "sqrtAlpha" | "sqrtBeta">>
 >;
 
-//TODO substitute with Gyro3ParamsFromSubgraph issue BAL-501
 export type Gyro3Params = Partial<
   ConvertToNumber<Pick<IGyro3Maths, "swapFee" | "root3Alpha">>
 >;

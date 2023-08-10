@@ -1,17 +1,16 @@
 "use client";
 
-import { PoolsWherePoolTypeQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
 import { ReactNode, useEffect, useLayoutEffect, useState } from "react";
-import { useForm, UseFormReturn } from "react-hook-form";
+import { useForm,UseFormReturn } from "react-hook-form";
 
 import Button from "#/components/Button";
 import { Input } from "#/components/Input";
 import { Select, SelectItem } from "#/components/Select";
 import { pools } from "#/lib/gql";
-import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 import { truncateAddress } from "#/utils/truncate";
 
-import { Form, FormField, FormLabel } from "./ui/form";
+import { Form, FormField, FormLabel } from "../ui/form";
+import filterPoolInput from "./filterPoolInput";
 
 export interface PoolAttribute {
   poolId: string;
@@ -24,6 +23,7 @@ const inputTypenames = [
   { value: "42161", label: "Arbitrum" },
   { value: "5", label: "Goerli" },
 ];
+
 
 export function SearchPoolForm({
   close,
@@ -58,7 +58,8 @@ export function SearchPoolForm({
   const gqlVariables = {
     poolId: poolId?.toLowerCase(),
     ...(poolTypeFilter?.length ? { poolTypes: poolTypeFilter } : {}),
-  };
+  }
+
   const { data: poolsData } = pools
     .gql(network || "1")
     .usePoolsWherePoolTypeInAndId(gqlVariables, { revalidateIfStale: true });
@@ -75,20 +76,6 @@ export function SearchPoolForm({
     onSubmit?.(formData);
     close?.();
     closeCombobox();
-  }
-
-  function filterPoolInput({
-    poolSearchQuery,
-    pool,
-  }: {
-    poolSearchQuery: string;
-    pool?: ArrElement<GetDeepProp<PoolsWherePoolTypeQuery, "pools">>;
-  }) {
-    {
-      if (!pool) return false;
-      const regex = new RegExp(poolSearchQuery, "i");
-      return regex.test(Object.values(pool).join(","));
-    }
   }
 
   const filteredPoolList = poolsDataList?.pools
@@ -111,12 +98,12 @@ export function SearchPoolForm({
     } else {
       clearErrors("poolId");
     }
-  }, [poolsData]);
+  }, [poolsData, poolId, setError, clearErrors]);
 
   useLayoutEffect(() => {
     poolsDataListMutate();
     resetField("poolId");
-  }, [network]);
+  }, [network, poolsDataListMutate, resetField]);
 
   function closeCombobox() {
     setTimeout(() => {

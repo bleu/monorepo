@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, useEffect, useLayoutEffect, useState } from "react";
-import { useForm,UseFormReturn } from "react-hook-form";
+import { useForm, UseFormReturn } from "react-hook-form";
 
 import Button from "#/components/Button";
 import { Input } from "#/components/Input";
@@ -23,7 +23,6 @@ const inputTypenames = [
   { value: "42161", label: "Arbitrum" },
   { value: "5", label: "Goerli" },
 ];
-
 
 export function SearchPoolForm({
   close,
@@ -58,7 +57,7 @@ export function SearchPoolForm({
   const gqlVariables = {
     poolId: poolId?.toLowerCase(),
     ...(poolTypeFilter?.length ? { poolTypes: poolTypeFilter } : {}),
-  }
+  };
 
   const { data: poolsData } = pools
     .gql(network || "1")

@@ -10,7 +10,9 @@ export default async function BALPrice({
 }) {
   invariant(!Array.isArray(roundId), "roundId cannot be a list");
 
-  const round = roundId? Round.getRoundByNumber(roundId) : Round.currentRound();
+  const round = roundId
+    ? Round.getRoundByNumber(roundId)
+    : Round.currentRound();
 
   return <Price data={getBALPriceByRound(round)} />;
 }
@@ -25,10 +27,12 @@ export const Price = async ({
   return (
     <div>
       BAL price:{" "}
-      {price ? price.toLocaleString("en-US", {
-        style: "currency",
-        currency: "USD",
-      }) : "error"}
+      {price
+        ? price.toLocaleString("en-US", {
+            style: "currency",
+            currency: "USD",
+          })
+        : "error"}
     </div>
   );
 };

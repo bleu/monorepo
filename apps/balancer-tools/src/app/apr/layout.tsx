@@ -46,9 +46,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
             form={form}
             defaultValuePool={poolId}
             onSubmit={(value) => {
-              router.push(
-                `/apr/pool/${value.network}/${value.poolId}`,
-              );
+              router.push(`/apr/pool/${value.network}/${value.poolId}`);
               setValue("poolId", value.poolId);
             }}
           >
@@ -70,7 +68,11 @@ export default function Layout({ children }: React.PropsWithChildren) {
               <Select
                 value={roundId ?? ""}
                 onValueChange={(value) => {
-                  router.push(!poolId ? `/apr/round/${value}` : `/apr/pool/${network}/${poolId}/round/${value}`);
+                  router.push(
+                    !poolId
+                      ? `/apr/round/${value}`
+                      : `/apr/pool/${network}/${poolId}/round/${value}`,
+                  );
                 }}
                 className="w-full"
               >

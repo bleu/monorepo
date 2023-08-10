@@ -105,4 +105,11 @@ export class ExtendedGyro3
       poolPairData.decimalsIn,
     ).times(bnum(0.01));
   }
+  _checkIfInIsOnLimit(
+    poolPairData: Gyro3PoolPairData,
+    amountIn: OldBigNumber,
+  ): boolean {
+    const amountOut = this._exactTokenInForTokenOut(poolPairData, amountIn);
+    return amountOut.toNumber() === 0 && amountIn.toNumber() > 0;
+  }
 }

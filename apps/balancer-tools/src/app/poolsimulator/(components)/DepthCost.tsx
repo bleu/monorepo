@@ -246,18 +246,22 @@ export function calculateDepthCost(
   if (!analysisToken) throw new Error("Analysis token not found");
   const tokenIn = poolSide === "in" ? analysisToken : pairToken;
   const tokenOut = poolSide === "in" ? pairToken : analysisToken;
-  const newSpotPrice = amm.spotPrice(tokenIn.symbol, tokenOut.symbol) * 1.02;
+  const currentSpotPrice = amm.spotPrice(tokenIn.symbol, tokenOut.symbol);
+  const newSpotPrice = currentSpotPrice * 1.02;
+  const spotPricePrecision = currentSpotPrice * 0.0002;
   const amountCalculator = (price: number) =>
     poolSide === "in"
       ? amm.tokenInForExactSpotPriceAfterSwap(
           price,
           tokenIn.symbol,
           tokenOut.symbol,
+          spotPricePrecision,
         )
       : amm.tokenOutForExactSpotPriceAfterSwap(
           price,
           tokenIn.symbol,
           tokenOut.symbol,
+          spotPricePrecision,
         );
 
   const alpha =
@@ -276,11 +280,22 @@ export function calculateDepthCost(
         amount: amountCalculator(newSpotPrice),
         type: "2% of price change",
       };
-    // For Gyros' CLP pools we'll assume depth cost as the pool depth == 99% of the liquidity or 2% of the current spot price (if possible)
-    case PoolTypeEnum.GyroE:
     case PoolTypeEnum.Gyro2:
+    case PoolTypeEnum.GyroE:
+      // For CLP pools we'll assume depth cost as the pool depth == 99% of the liquidity or 2% of the current spot price (if possible)
+
+      // The Alpha and Beta values are considering token 0 in units of token 1.
+      // This means that token 1 must be the the tokenIn
+      // And token 0 must be the tokenOut
+      const newSpotPriceOnAlphaAndBetaBase =
+        tokenIn.symbol === data.tokens[1].symbol
+          ? newSpotPrice
+          : 1 / newSpotPrice;
       if (!alpha || !beta) throw new Error("Alpha or beta not defined");
-      if (newSpotPrice < alpha || newSpotPrice > beta) {
+      if (
+        newSpotPriceOnAlphaAndBetaBase < alpha ||
+        newSpotPriceOnAlphaAndBetaBase > beta
+      ) {
         return poolSide === "in"
           ? {
               amount: amm.tokenInForExactTokenOut(

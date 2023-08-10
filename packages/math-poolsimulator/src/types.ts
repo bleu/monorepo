@@ -39,4 +39,8 @@ export interface IAMMFunctionality<TPoolPairData extends PoolPairData> {
   _firstGuessOfTokenInForExactSpotPriceAfterSwap(
     poolPairData: TPoolPairData,
   ): OldBigNumber;
+  _checkIfInIsOnLimit(
+    poolPairData: TPoolPairData,
+    amountIn: OldBigNumber,
+  ): boolean;
 }

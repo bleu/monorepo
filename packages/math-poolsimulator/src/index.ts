@@ -90,30 +90,29 @@ export class AMM<TPoolPairData extends PoolPairData> {
     // that avoids guesses that don't significantly improve the result
 
     // alpha and beta are the parameters of the backtracking line search
-    const inverseOfAlpha = bnum(2);
+    const inverseOfAlpha = bnum(4);
     const inverseOfBeta = bnum(8);
     let t = bnum(1);
 
     for (let i = 0; i < 20; i++) {
+      newInGuess = inGuessValue.plus(inGuessDelta.times(t));
       const newSpotPrice = this.math._spotPriceAfterSwapExactTokenInForTokenOut(
         poolPairData,
         newInGuess,
       );
-      const newDiffFromSpotPrice = spotPrice.minus(newSpotPrice);
+      const newDiffFromSpotPrice = spotPrice.minus(newSpotPrice).abs();
 
-      inGuessDelta = inGuessDelta.div(inverseOfBeta);
       const minimalNewDiffFromSpotPrice = guessedSpotPrice
         .plus(
           spotPriceDerivative.times(t).div(inverseOfAlpha).times(inGuessDelta),
         )
-        .minus(spotPriceDerivative)
+        .minus(spotPrice)
         .abs();
 
-      if (newDiffFromSpotPrice.abs().lte(minimalNewDiffFromSpotPrice)) {
+      if (newDiffFromSpotPrice.lt(minimalNewDiffFromSpotPrice)) {
         break;
       }
       t = t.div(inverseOfBeta);
-      newInGuess = inGuessValue.plus(inGuessDelta.times(t));
     }
 
     return this._tokenInForExactSpotPriceAfterSwap({

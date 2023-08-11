@@ -1,15 +1,15 @@
-// @ts-nocheck - TODO: remove this comment once plotly.js types are fixed (legendgrouptitle on PlotParams)
 "use client";
 
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
-import { MetaStablePoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
+import { PoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/types";
+import { PlotType } from "plotly.js";
 
 import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
-import { TokensData, usePoolSimulator } from "#/contexts/PoolSimulatorContext";
+import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
-import { PoolTypeEnum } from "../(types)";
+import { PoolTypeEnum, TokensData } from "../(types)";
 import { calculateCurvePoints, trimTrailingValues } from "../(utils)";
 
 export function ImpactCurve() {
@@ -47,8 +47,8 @@ export function ImpactCurve() {
   });
 
   const {
-    amounts: variantAmountsAnalysisTokenIn,
-    priceImpact: variantImpactAnalysisTokenIn,
+    amounts: customAmountsAnalysisTokenIn,
+    priceImpact: customImpactAnalysisTokenIn,
   } = calculateTokenImpact({
     tokenIn: analysisToken,
     tokenOut: currentTabToken,
@@ -58,8 +58,8 @@ export function ImpactCurve() {
   });
 
   const {
-    amounts: variantAmountsTabTokenIn,
-    priceImpact: variantImpactTabTokenIn,
+    amounts: customAmountsTabTokenIn,
+    priceImpact: customImpactTabTokenIn,
   } = calculateTokenImpact({
     tokenIn: analysisToken,
     tokenOut: currentTabToken,
@@ -114,13 +114,16 @@ export function ImpactCurve() {
     direction: "in" | "out",
     lineStyle: "solid" | "dashdot" = "solid",
   ) => {
-    const line = lineStyle === "dashdot" ? { dash: "dashdot" } : {};
+    const line =
+      lineStyle === "dashdot"
+        ? { dash: "dashdot" as const }
+        : { dash: "solid" as const };
 
     return {
       x: hovertemplateData,
       y: impactData,
-      type: "scatter" as const,
-      mode: "lines",
+      type: "scatter" as PlotType,
+      mode: "lines" as "lines" | "markers",
       legendgroup,
       legendgrouptitle: { text: legendgroup },
       name,
@@ -134,6 +137,25 @@ export function ImpactCurve() {
     };
   };
 
+  const createLimitPointDataObject = (
+    x: number[],
+    y: number[],
+    legendGroup: string,
+  ) => {
+    return {
+      x,
+      y,
+      type: "scatter" as PlotType,
+      mode: "markers" as "lines" | "markers",
+      legendgroup: legendGroup,
+      legendgrouptitle: { text: legendGroup },
+      name: "Liquidity limit",
+      showlegend: true,
+      hovertemplate: Array(x.length).fill(`Liquidity limit <extra></extra>`),
+      line: { dash: "solid" as const },
+    };
+  };
+
   const data = [
     createDataObject(
       initialAmountsAnalysisTokenIn,
@@ -144,8 +166,8 @@ export function ImpactCurve() {
       "in",
     ),
     createDataObject(
-      variantAmountsAnalysisTokenIn,
-      variantImpactAnalysisTokenIn,
+      customAmountsAnalysisTokenIn,
+      customImpactAnalysisTokenIn,
       "Custom",
       analysisToken.symbol,
       true,
@@ -161,8 +183,8 @@ export function ImpactCurve() {
       "dashdot",
     ),
     createDataObject(
-      variantAmountsTabTokenIn,
-      variantImpactTabTokenIn,
+      customAmountsTabTokenIn,
+      customImpactTabTokenIn,
       "Custom",
       currentTabToken.symbol,
       true,
@@ -171,35 +193,74 @@ export function ImpactCurve() {
     ),
   ];
 
+  if (
+    [PoolTypeEnum.Gyro2, PoolTypeEnum.Gyro3, PoolTypeEnum.GyroE].includes(
+      initialData.poolType,
+    )
+  ) {
+    data.push(
+      createLimitPointDataObject(
+        [
+          initialAmountsAnalysisTokenIn.slice(-1)[0],
+          initialAmountsTabTokenIn.slice(-1)[0],
+        ],
+        [
+          initialImpactAnalysisTokenIn.slice(-1)[0],
+          initialImpactTabTokenIn.slice(-1)[0],
+        ],
+        "Initial",
+      ),
+    );
+  }
+  if (
+    [PoolTypeEnum.Gyro2, PoolTypeEnum.Gyro3, PoolTypeEnum.GyroE].includes(
+      customData.poolType,
+    )
+  ) {
+    data.push(
+      createLimitPointDataObject(
+        [
+          customAmountsAnalysisTokenIn.slice(-1)[0],
+          customAmountsTabTokenIn.slice(-1)[0],
+        ],
+        [
+          customImpactAnalysisTokenIn.slice(-1)[0],
+          customImpactTabTokenIn.slice(-1)[0],
+        ],
+        "Custom",
+      ),
+    );
+  }
+
   const maxFromInitialAmounts = Math.max(
     ...initialAmountsAnalysisTokenIn,
     ...initialAmountsTabTokenIn,
   );
   const maxFromCustomAmounts = Math.max(
-    ...variantAmountsAnalysisTokenIn,
-    ...variantAmountsTabTokenIn,
+    ...customAmountsAnalysisTokenIn,
+    ...customAmountsTabTokenIn,
   );
   const xlimit = Math.min(maxFromInitialAmounts, maxFromCustomAmounts);
-  function indexOfXLimit(value, ...arrays) {
+  function indexOfXLimit(value: number, ...arrays: number[][]) {
     return arrays.map((arr) => arr.indexOf(value)).find((idx) => idx !== -1);
   }
 
   const arraysToSearch = [
     initialAmountsAnalysisTokenIn,
     initialAmountsTabTokenIn,
-    variantAmountsAnalysisTokenIn,
-    variantAmountsTabTokenIn,
+    customAmountsAnalysisTokenIn,
+    customAmountsTabTokenIn,
   ];
   const xLimitIndex = maxFromInitialAmounts
     ? indexOfXLimit(xlimit, ...arraysToSearch)
     : undefined;
 
-  const getImpactOnXLimit = (analysis, tab) =>
-    Math.max(analysis[xLimitIndex] || 0, tab[xLimitIndex] || 0);
+  const getImpactOnXLimit = (analysis: number[], tab: number[]) =>
+    xLimitIndex ? Math.max(analysis[xLimitIndex], tab[xLimitIndex]) : 0;
 
   const ylimit = Math.max(
     getImpactOnXLimit(initialImpactAnalysisTokenIn, initialImpactTabTokenIn),
-    getImpactOnXLimit(variantImpactAnalysisTokenIn, variantImpactTabTokenIn),
+    getImpactOnXLimit(customImpactAnalysisTokenIn, customImpactTabTokenIn),
   );
   return (
     <Plot
@@ -209,7 +270,7 @@ export function ImpactCurve() {
       layout={{
         xaxis: {
           title: `Amount in`,
-          range: [0, xlimit],
+          range: [0, xlimit * 1.1],
         },
         yaxis: {
           title: `Price impact (%)`,
@@ -230,7 +291,7 @@ const calculateTokenImpact = ({
 }: {
   tokenIn: TokensData;
   tokenOut: TokensData;
-  amm: AMM<MetaStablePoolPairData>;
+  amm: AMM<PoolPairData>;
   poolType: PoolTypeEnum;
   swapDirection: "in" | "out";
 }) => {

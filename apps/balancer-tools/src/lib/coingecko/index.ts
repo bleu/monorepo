@@ -1,5 +1,3 @@
-import "server-only";
-
 import invariant from "tiny-invariant";
 
 import { fetcher } from "#/utils/fetcher";
@@ -38,6 +36,8 @@ export class DefiLlamaAPI {
       date.getTime() / 1000,
     )}/${coins.join(",")}?searchWidth=${searchWidth}`;
 
-    return await fetcher<HistoricalPriceResponse>(url);
+    return await fetcher<HistoricalPriceResponse>(url, {
+      cache: "force-cache",
+    });
   }
 }

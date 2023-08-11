@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { getBalEmissions } from "#/app/apr/(utils)/getBalEmission";
+import calculateRoundAPR from "#/app/apr/(utils)/calculateRoundAPR";
 import { getBALPriceByRound } from "#/app/apr/(utils)/getBALPriceByRound";
 import { Round } from "#/app/apr/(utils)/rounds";
 import { mockGetTVLByRoundId } from "#/app/apr/mock_apis";
@@ -22,21 +22,14 @@ export async function GET(
   const totalTvl = dune_request[0]["total_tvl"];
   const balPrice = await getBALPriceByRound(currentRound);
 
-  const balEmissions = getBalEmissions(currentRound.endDate.getFullYear())[
-    "weekly"
-  ];
-  // APR = emissions in week * voting share * weeks in year * BAL price / TVL
-  const apr =
-    ((balEmissions *
-      request.nextUrl.searchParams.get("votingShare") *
-      52 *
-      balPrice) /
-      totalTvl) *
-    100;
   return NextResponse.json({
-    apr: apr,
+    apr: calculateRoundAPR(
+      currentRound,
+      Number(request.nextUrl.searchParams.get("votingShare")),
+      totalTvl,
+      balPrice,
+    ),
     balPrice: balPrice,
-    balEmissions: balEmissions,
     totalTvl: totalTvl,
     ASD: currentRound.endDate.toISOString().slice(0, 10),
   });

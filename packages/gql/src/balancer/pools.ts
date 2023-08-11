@@ -29,11 +29,20 @@ export const poolWherePoolTypeInAndId = gql`
       "GyroE"
     ]
   ) {
-    pools(where: { poolType_in: $poolTypes, id: $poolId }) {
+    pools(
+      where: { poolType_in: $poolTypes, id: $poolId, totalLiquidity_gt: 0 }
+      orderBy: totalLiquidity
+      orderDirection: desc
+    ) {
       id
       address
       name
       poolType
+      symbol
+      totalLiquidity
+      tokens {
+        symbol
+      }
     }
   }
 `;
@@ -51,7 +60,12 @@ export const poolWherePoolType = gql`
       "GyroE"
     ]
   ) {
-    pools(where: { poolType_in: $poolTypes }) {
+    pools(
+      where: { poolType_in: $poolTypes, totalLiquidity_gt: 0 }
+      orderBy: totalLiquidity
+      orderDirection: desc
+      first: 1000
+    ) {
       id
       address
       name

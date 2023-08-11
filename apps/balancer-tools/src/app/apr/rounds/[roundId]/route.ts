@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { getBalEmissions } from "#/app/apr/(utils)/getBalEmission";
 import { getBALPriceByRound } from "#/app/apr/(utils)/getBALPriceByRound";
 import { Round } from "#/app/apr/(utils)/rounds";
+import * as balEmissions from "#/lib/balancer/emissions";
+import { Pool } from "#/lib/balancer/gauges";
 
 // import { DuneAPI } from "#/lib/dune";
 import { mockGetTVLByRoundId, voteGaugeByID } from "../../mock_apis";
 
 export async function GET(
-  _: NextRequest,
+  request: NextRequest,
   context: { params: { roundId: number } },
 ) {
   if (!context.params.roundId) return "Missing round_id";
@@ -16,16 +17,24 @@ export async function GET(
 
   // const duneAPI = new DuneAPI();
   // const requestJson = await duneAPI.getPoolsByRoundId(context.params.roundId)
-  const requestJson = voteGaugeByID;
+  const requestJson = voteGaugeByID.filter((gauge) => {
+    const poolIdFilter = request.nextUrl.searchParams.get("poolid");
+    if (!poolIdFilter) return true;
+
+    const filterGaugeAddr = new Pool(poolIdFilter).gauge?.address;
+
+    return gauge["symbol"] === filterGaugeAddr;
+  });
 
   // const totalTVLRequest = await duneAPI.getTVLByRoundId(context.params.roundId)
   const totalTVLRequest = mockGetTVLByRoundId;
   const totalTvl = totalTVLRequest[0]["total_tvl"];
 
   const balPrice = await getBALPriceByRound(selectedRound);
-  const balWeeklyEmissions = getBalEmissions(
-    selectedRound.endDate.getFullYear(),
-  )["weekly"];
+
+  const balWeeklyEmissions = balEmissions.weekly(
+    Math.round(new Date().getTime() / 1000),
+  );
 
   requestJson.forEach((poolData) => {
     // APR = emissions in week * voting share * weeks in year * BAL price / TVL

@@ -1,6 +1,5 @@
 import { networkFor } from "@bleu-balancer-tools/utils";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
-import { headers } from "next/headers";
 import Link from "next/link";
 import { Suspense } from "react";
 
@@ -8,6 +7,7 @@ import { Gauge } from "#/lib/balancer/gauges";
 import { DuneGaugeData } from "#/lib/dune";
 import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
+import getBaseURL from "#/utils/getBaseURL";
 
 import BALPrice from "../../(components)/BALPrice";
 
@@ -47,14 +47,6 @@ function PoolCard({
     </Link>
   );
 }
-
-const getBaseURL = () => {
-  const headersList = headers();
-  const host = headersList.get("host") || "localhost:3000";
-  const protocol = headersList.get("x-forwarded-proto") || "http";
-
-  return `${protocol}://${host}`;
-};
 
 export default async function PoolsCards({ roundId }: { roundId: string }) {
   const poolsData = await fetcher<DuneGaugeData[] | { error: string }>(

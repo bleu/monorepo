@@ -3,6 +3,7 @@ import invariant from "tiny-invariant";
 import { Pool } from "#/lib/balancer/gauges";
 import { DuneGaugeData } from "#/lib/dune";
 import { fetcher } from "#/utils/fetcher";
+import getBaseURL from "#/utils/getBaseURL";
 
 export default async function PoolPctVotesInRound({
   roundId,
@@ -15,7 +16,7 @@ export default async function PoolPctVotesInRound({
   invariant(!Array.isArray(poolId), "poolId cannot be a list");
 
   const gaugeData = await fetcher<DuneGaugeData[] | { error: string }>(
-    `http://localhost:3000/apr/rounds/${roundId}`,
+    `${getBaseURL()}/apr/rounds/${roundId}`,
     { method: "GET" },
   );
 

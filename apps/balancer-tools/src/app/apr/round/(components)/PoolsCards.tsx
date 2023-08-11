@@ -12,8 +12,10 @@ import BALPrice from "../../(components)/BALPrice";
 
 function PoolCard({
   data: { symbol, pct_votes: pctVotes, votes },
+  roundId
 }: {
   data: DuneGaugeData;
+  roundId?: string
 }) {
   const gauge = new Gauge(symbol);
   const poolId = gauge.pool.id;
@@ -32,7 +34,7 @@ function PoolCard({
               </p>
               <p className="text-white text-xs">{formatNumber(votes)} Votes</p>
               <Suspense fallback={"Loading..."}>
-                <BALPrice />
+                <BALPrice roundId={roundId}/>
               </Suspense>
             </div>
           </div>
@@ -56,7 +58,7 @@ export default async function PoolsCards({ roundId }: { roundId: string }) {
   return (
     <div className="space-y-6 w-full">
       {poolsData.slice(0, 1).map((data) => (
-        <PoolCard data={data} key={data.symbol} />
+        <PoolCard data={data} roundId={roundId} key={data.symbol} />
       ))}
     </div>
   );

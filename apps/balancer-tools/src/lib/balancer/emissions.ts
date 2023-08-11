@@ -25,10 +25,10 @@ const RATE_REDUCTION_COEFFICIENT = 2 ** (1 / 4);
  * @returns BAL emitted in a week
  */
 export const weekly = (
-  currentTimestamp: number = Math.round(new Date().getTime() / 1000)
+  currentTimestamp: number = Math.round(new Date().getTime() / 1000),
 ): number => {
   const miningEpoch = Math.floor(
-    (currentTimestamp - START_EPOCH_TIME) / RATE_REDUCTION_TIME
+    (currentTimestamp - START_EPOCH_TIME) / RATE_REDUCTION_TIME,
   );
 
   const rate = INITIAL_RATE * RATE_REDUCTION_COEFFICIENT ** -miningEpoch;
@@ -58,19 +58,19 @@ export const total = (epoch: number): number => {
  */
 export const between = (start: number, end: number): number => {
   if (start < START_EPOCH_TIME) {
-    throw 'start timestamp before emission schedule deployment';
+    throw "start timestamp before emission schedule deployment";
   }
   if (end < start) {
-    throw 'cannot finish before starting';
+    throw "cannot finish before starting";
   }
 
   let totalEmissions = 0;
 
   const startingEpoch = Math.floor(
-    (start - START_EPOCH_TIME) / RATE_REDUCTION_TIME
+    (start - START_EPOCH_TIME) / RATE_REDUCTION_TIME,
   );
   const endingEpoch = Math.floor(
-    (end - START_EPOCH_TIME) / RATE_REDUCTION_TIME
+    (end - START_EPOCH_TIME) / RATE_REDUCTION_TIME,
   );
 
   for (

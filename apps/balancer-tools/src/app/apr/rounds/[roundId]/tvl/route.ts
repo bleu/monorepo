@@ -5,7 +5,7 @@ import { mockGetTVLByRoundId } from "#/app/apr/mock_apis";
 
 export async function GET(
   _: NextRequest,
-  context: { params: { roundId: number } },
+  context: { params: { roundId: number } }
 ) {
   if (!context.params.roundId) return "Missing round_id";
   // const duneAPI = new DuneAPI();

@@ -16,7 +16,7 @@ interface DunePoolData {
 interface TVLData {
   blockchain: string;
   tvl: number;
-};
+}
 
 interface ErrorReturn {
   error: string;
@@ -32,7 +32,7 @@ export class DuneAPI {
   async getPoolsByRoundId(
     roundId: number = 0,
     limitBy: number = 20,
-    offsetBy: number = 0,
+    offsetBy: number = 0
   ): Promise<undefined | DunePoolData[] | ErrorReturn> {
     invariant(roundId > 0, "An valid roundId must be passed");
     // https://dune.com/queries/2834602/4732373
@@ -47,28 +47,31 @@ export class DuneAPI {
       .refresh(queryId, parameters)
       .then(
         (executionResult) =>
-          executionResult.result?.rows as unknown as DunePoolData[],
+          executionResult.result?.rows as unknown as DunePoolData[]
       )
       .catch((error: { message: string }) => ({ error: error.message }));
   }
 
   async getTVLByRoundId(
-    roundId: number = 0,
+    roundId: number = 0
   ): Promise<undefined | TVLData[] | ErrorReturn> {
     invariant(roundId > 0, "An valid roundId must be passed");
     const roundData = Round.getRoundByNumber(roundId);
-    // Ex for Round 1: 
+    // Ex for Round 1:
     // https://dune.com/queries/2842639?2.+Start+date_d83555=2022-04-13+00%3A00%3A00
     const queryId = 2842639;
     const parameters = [
-      QueryParameter.number("End date", roundData.endDate.toISOString().slice(0, 10)),
+      QueryParameter.number(
+        "End date",
+        roundData.endDate.toISOString().slice(0, 10)
+      ),
     ];
 
     return this.client
       .refresh(queryId, parameters)
       .then(
         (executionResult) =>
-          executionResult.result?.rows as unknown as TVLData[],
+          executionResult.result?.rows as unknown as TVLData[]
       )
       .catch((error: { message: string }) => ({ error: error.message }));
   }

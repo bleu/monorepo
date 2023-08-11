@@ -1,8 +1,8 @@
 export const mockGetTVLByRoundId = [
   {
-    "total_tvl": 2128.221644270715
-  }
-]
+    total_tvl: 2128.221644270715,
+  },
+];
 
 export const voteGaugeByID = [
   {

@@ -14,13 +14,15 @@ export const getBalEmissions = (year: number): BalEmissions => {
   for (let i = 1; i <= year - 2022; i++) {
     const currentYear = 2022 + i;
     balPerYear[currentYear] = balPerYear[currentYear - 1] / halvingFactor;
-    balEmissions[currentYear] = balPerYear[currentYear - 1] + balEmissions[currentYear - 1];
-    balWeeklyEmissions[currentYear] = balWeeklyEmissions[currentYear - 1] / halvingFactor;
+    balEmissions[currentYear] =
+      balPerYear[currentYear - 1] + balEmissions[currentYear - 1];
+    balWeeklyEmissions[currentYear] =
+      balWeeklyEmissions[currentYear - 1] / halvingFactor;
   }
 
   return {
     year: balPerYear[year],
     weekly: balWeeklyEmissions[year],
-    total_supply: balEmissions[year]
+    total_supply: balEmissions[year],
   };
 };

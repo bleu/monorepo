@@ -43,8 +43,12 @@ export function PoolCard({
           </div>
           <div className="flex items-center">
             <div className="text-sm">
-              <PoolVotes roundId={roundId} poolId={pool.id} />
-              <PoolAPR roundId={roundId} poolId={pool.id} />
+              <Suspense fallback={"Loading..."}>
+                <PoolVotes roundId={roundId} poolId={pool.id} />
+              </Suspense>
+              <Suspense fallback={"Loading..."}>
+                <PoolAPR roundId={roundId} poolId={pool.id} />
+              </Suspense>
               <Suspense fallback={"Loading..."}>
                 <BALPrice roundId={roundId} />
               </Suspense>
@@ -67,15 +71,6 @@ export async function PoolVotes({
   poolId: string;
 }) {
   if (!roundId) return null;
-
-  // const data = await fetcher<DuneGaugeData[] | { error: string }>(
-  //   `${getBaseURL()}/apr/rounds/${roundId}?poolId=${poolId}`,
-  //   { cache: "force-cache" }
-  // );
-
-  // if ("error" in data) throw new Error(data.error);
-
-  // const [pool] = data
 
   const votingShare = await getPoolRelativeWeight(
     poolId,
@@ -104,29 +99,24 @@ export async function PoolAPR({
 
   const pool = new Pool(poolId);
 
-  // TODO: get TVL and votingShare from Dune or Subgraph
   const [balPriceUSD, tvl, votingShare] = await Promise.all([
     getBALPriceByRound(round),
+    // TODO: must select the correct network
     BalancerAPI.getPoolTotalLiquidityUSD(pool.gauge?.network || 1, pool.id),
     getPoolRelativeWeight(poolId, round.endDate.getTime() / 1000),
   ]);
 
-  // eslint-disable-next-line no-console
-  console.log({ balPriceUSD, tvl, votingShare });
-  console.log(tvl);
-  const apr = calculateRoundAPR(round, votingShare, tvl, balPriceUSD);
+  const apr = calculateRoundAPR(round, votingShare, tvl, balPriceUSD) * 100;
 
   return (
-    <p className="text-white leading-none mb-1">
-      {apr?.toFixed?.(2)}% APR - {poolId}
-    </p>
+    <p className="text-white leading-none mb-1">{apr?.toFixed?.(2)}% APR</p>
   );
 }
 
 export default async function PoolsCards({ roundId }: { roundId: string }) {
   return (
     <div className="space-y-6 w-full">
-      {votingGauges.slice(0, 1).map((gauge) => (
+      {votingGauges.map((gauge) => (
         <PoolCard
           poolId={gauge.pool.id}
           network={gauge.network}

@@ -9,8 +9,8 @@ import { Pool } from "#/lib/balancer/gauges";
 import { mockGetTVLByRoundId, voteGaugeByID } from "../../mock_apis";
 
 export async function GET(
-  _: NextRequest,
-  context: { params: { roundId: number }; query: { poolId: string } },
+  request: NextRequest,
+  context: { params: { roundId: number } },
 ) {
   if (!context.params.roundId) return "Missing round_id";
   const selectedRound = Round.getRoundByNumber(context.params.roundId);
@@ -18,7 +18,7 @@ export async function GET(
   // const duneAPI = new DuneAPI();
   // const requestJson = await duneAPI.getPoolsByRoundId(context.params.roundId)
   const requestJson = voteGaugeByID.filter((gauge) => {
-    const poolIdFilter = context.query.poolId;
+    const poolIdFilter = request.nextUrl.searchParams.get("poolid");
     if (!poolIdFilter) return true;
 
     const filterGaugeAddr = new Pool(poolIdFilter).gauge?.address;

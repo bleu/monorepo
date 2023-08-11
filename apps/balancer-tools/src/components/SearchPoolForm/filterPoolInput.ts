@@ -2,32 +2,13 @@ import { PoolsWherePoolTypeQuery } from "@bleu-balancer-tools/gql/src/balancer/_
 
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
+import { isValuePresent } from "./isValuePresent";
+
 function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-type Pool = ArrElement<GetDeepProp<PoolsWherePoolTypeQuery, "pools">>;
-
-function isValuePresent(
-  value: string | Pool["tokens"],
-  regex: RegExp,
-): boolean {
-  if (typeof value === "string" && regex.test(value)) {
-    return true;
-  }
-
-  if (Array.isArray(value)) {
-    for (const item of value) {
-      for (const subValue of Object.values(item)) {
-        if (typeof subValue === "string" && regex.test(subValue)) {
-          return true;
-        }
-      }
-    }
-  }
-
-  return false;
-}
+export type Pool = ArrElement<GetDeepProp<PoolsWherePoolTypeQuery, "pools">>;
 
 interface FilterPoolInputProps {
   poolSearchQuery: string;

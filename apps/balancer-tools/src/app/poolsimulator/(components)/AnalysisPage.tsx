@@ -33,7 +33,7 @@ export default function Page() {
     setCurrentTabTokenByIndex(tokensSymbol.indexOf(target.innerText));
   }
 
-  if (initialData.poolType === PoolTypeEnum.Gyro3)
+  if (initialData.poolType === PoolTypeEnum.Fx)
     return (
       <div>
         <h1 className="text-slate12">

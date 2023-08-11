@@ -1,6 +1,7 @@
 import { PoolQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
 import { ExtendedGyro2 } from "@bleu-balancer-tools/math-poolsimulator/src/gyro2";
+import { ExtendedGyro3 } from "@bleu-balancer-tools/math-poolsimulator/src/gyro3";
 import { ExtendedGyroEV2 } from "@bleu-balancer-tools/math-poolsimulator/src/gyroE";
 import { ExtendedMetaStableMath } from "@bleu-balancer-tools/math-poolsimulator/src/metastable";
 
@@ -70,22 +71,19 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
         }),
       );
     }
-    // case PoolTypeEnum.Gyro3: {
-    //   console.log({
-    //     swapFee: String(data.poolParams?.swapFee),
-    //     totalShares: String(
-    //       data.tokens.reduce((acc, token) => acc + token.balance, 0)
-    //     ),
-    //     tokens: data.tokens.map((token) => ({
-    //       address: String(token.symbol), // math use address as key, but we will use symbol because custom token will not have address
-    //       balance: String(token.balance),
-    //       decimals: token.decimal,
-    //       priceRate: String(token.rate),
-    //     })),
-    //     tokensList: data.tokens.map((token) => String(token.symbol)),
-    //     root3Alpha: String(data.poolParams?.root3Alpha),
-    //   });
-    // }
+    case PoolTypeEnum.Gyro3: {
+      return new AMM(
+        new ExtendedGyro3({
+          swapFee: String(data.poolParams?.swapFee),
+          totalShares: String(
+            data.tokens.reduce((acc, token) => acc + token.balance, 0),
+          ),
+          tokens: tokensData,
+          tokensList: data.tokens.map((token) => String(token.symbol)),
+          root3Alpha: String(data.poolParams?.root3Alpha),
+        }),
+      );
+    }
     default:
       return;
   }

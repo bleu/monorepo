@@ -1,0 +1,40 @@
+{
+  "pool": {
+    "id": "0x",
+    "address": "0x17f1ef81707811ea15d9ee7c741179bbe2a63887",
+    "poolType": "Gyro3",
+    "symbol": "3CLP-BUSD-USDC-USDT",
+    "swapFee": "0.0003",
+    "root3Alpha": "0.9995",
+    "swapEnabled": true,
+    "tokens": [
+      {
+        "address": "USDC",
+        "symbol": "USDC",
+        "balance": "8892.968252",
+        "decimals": 6,
+        "priceRate": "1",
+        "weight": "1"
+      },
+      {
+        "address": "BUSD",
+        "symbol": "BUSD",
+        "balance": "9104.173564199902713847",
+        "decimals": 18,
+        "priceRate": "1",
+        "weight": "1"
+      },
+      {
+        "address": "USDT",
+        "symbol": "USDT",
+        "balance": "26499.638153",
+        "decimals": 6,
+        "priceRate": "1",
+        "weight": "1"
+      }
+    ],
+    "tokenRates": ["1", "1", "1"],
+    "totalShares": "37496.780969199902713847",
+    "tokensList": ["USDC", "BUSD", "USDT"]
+  }
+}

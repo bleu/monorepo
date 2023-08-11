@@ -6,46 +6,28 @@ import { numberToBigNumber } from "../conversions";
 import { AMM } from "../index";
 import { verifyApproximateEquality } from "../utils";
 import poolsFromFile from "./fixtures/data.json";
-import { ExtendedGyroEV2 } from "./index";
+import { ExtendedGyro3 } from "./index";
 
-describe("Tests new Gyro ECLP math function based on package other functions", () => {
+describe("Tests new Gyro 3CLP math function based on package other functions", () => {
   const poolData = poolsFromFile["pool"];
   const percentages = [25, 50, 75, 95];
 
-  const tokenIn = "wstETH";
-  const tokenOut = "swETH";
+  const tokenIn = "USDC";
+  const tokenOut = "BUSD";
 
   percentages.forEach((percentage) => {
     describe(`Tests for ${percentage}% with ${tokenIn} as tokenIn`, () => {
       const amm = new AMM(
-        new ExtendedGyroEV2({
+        new ExtendedGyro3({
           swapFee: poolData.swapFee,
           totalShares: poolData.totalShares,
           tokens: poolData.tokens,
           tokensList: poolData.tokensList,
-          gyroEParams: {
-            alpha: poolData.alpha,
-            beta: poolData.beta,
-            c: poolData.c,
-            s: poolData.s,
-            lambda: poolData.lambda,
-          },
-          tokenRates: poolData.tokenRates,
-          derivedGyroEParams: {
-            tauAlphaX: poolData.tauAlphaX,
-            tauAlphaY: poolData.tauAlphaY,
-            tauBetaX: poolData.tauBetaX,
-            tauBetaY: poolData.tauBetaY,
-            u: poolData.u,
-            v: poolData.v,
-            w: poolData.w,
-            z: poolData.z,
-            dSq: poolData.dSq,
-          },
+          root3Alpha: poolData.root3Alpha,
         }),
       );
 
-      const pool = ExtendedGyroEV2.fromPool(poolData as SubgraphPoolBase);
+      const pool = ExtendedGyro3.fromPool(poolData as SubgraphPoolBase);
       const poolPairData = pool.parsePoolPairData(tokenIn, tokenOut);
 
       const amount =

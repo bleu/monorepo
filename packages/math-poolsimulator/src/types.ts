@@ -2,14 +2,20 @@
 import { OldBigNumber } from "@balancer-labs/sor";
 
 import { Gyro2PoolPairData, IGyro2Maths } from "./gyro2";
+import { Gyro3PoolPairData, IGyro3Maths } from "./gyro3";
 import { GyroEPoolPairData, IGyroEMaths } from "./gyroE";
 import { IMetaStableMath, MetaStablePoolPairData } from "./metastable";
 
 export type PoolPairData =
   | MetaStablePoolPairData
   | GyroEPoolPairData
-  | Gyro2PoolPairData;
-export type PoolParams = IMetaStableMath | IGyroEMaths | IGyro2Maths;
+  | Gyro2PoolPairData
+  | Gyro3PoolPairData;
+export type PoolParams =
+  | IMetaStableMath
+  | IGyroEMaths
+  | IGyro2Maths
+  | IGyro3Maths;
 
 export interface IAMMFunctionality<TPoolPairData extends PoolPairData> {
   parsePoolPairData(tokenIn: string, tokenOut: string): TPoolPairData;
@@ -33,4 +39,8 @@ export interface IAMMFunctionality<TPoolPairData extends PoolPairData> {
   _firstGuessOfTokenInForExactSpotPriceAfterSwap(
     poolPairData: TPoolPairData,
   ): OldBigNumber;
+  _checkIfInIsOnLimit(
+    poolPairData: TPoolPairData,
+    amountIn: OldBigNumber,
+  ): boolean;
 }

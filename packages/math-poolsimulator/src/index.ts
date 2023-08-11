@@ -75,9 +75,47 @@ export class AMM<TPoolPairData extends PoolPairData> {
         poolPairData,
         inGuessValue,
       );
-    const newInGuess = diffFromSpotPrice
-      .div(spotPriceDerivative)
-      .plus(inGuessValue);
+
+    let inGuessDelta = diffFromSpotPrice.div(spotPriceDerivative);
+    let newInGuess = inGuessValue.plus(inGuessDelta);
+
+    // Some pools are limited, so this iteration is to avoid a guess out of pool range.
+    for (let i = 0; i < 20; i++) {
+      if (this.math._checkIfInIsOnLimit(poolPairData, newInGuess)) break;
+      inGuessDelta = inGuessDelta.div(bnum(2));
+      newInGuess = inGuessValue.plus(inGuessDelta);
+    }
+
+    // This is the backtracking line search variation of the Newton-Raphson method
+    // that avoids guesses that don't significantly improve the result
+
+    // alpha and beta are the parameters of the backtracking line search
+    const inverseOfAlpha = bnum(2);
+    const inverseOfBeta = bnum(8);
+    let t = bnum(1);
+
+    for (let i = 0; i < 20; i++) {
+      const newSpotPrice = this.math._spotPriceAfterSwapExactTokenInForTokenOut(
+        poolPairData,
+        newInGuess,
+      );
+      const newDiffFromSpotPrice = spotPrice.minus(newSpotPrice);
+
+      inGuessDelta = inGuessDelta.div(inverseOfBeta);
+      const minimalNewDiffFromSpotPrice = guessedSpotPrice
+        .plus(
+          spotPriceDerivative.times(t).div(inverseOfAlpha).times(inGuessDelta),
+        )
+        .minus(spotPriceDerivative)
+        .abs();
+
+      if (newDiffFromSpotPrice.abs().lte(minimalNewDiffFromSpotPrice)) {
+        break;
+      }
+      t = t.div(inverseOfBeta);
+      newInGuess = inGuessValue.plus(inGuessDelta.times(t));
+    }
+
     return this._tokenInForExactSpotPriceAfterSwap({
       spotPrice,
       poolPairData,
@@ -91,11 +129,15 @@ export class AMM<TPoolPairData extends PoolPairData> {
     spotPriceAfterSwap: number,
     tokenIn: string,
     tokenOut: string,
+    spotPricePrecision?: number,
   ): number {
     const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
     return this._tokenInForExactSpotPriceAfterSwap({
       spotPrice: bnum(spotPriceAfterSwap),
       poolPairData,
+      spotPricePrecision: spotPricePrecision
+        ? bnum(spotPricePrecision)
+        : undefined,
     }).toNumber();
   }
 
@@ -103,11 +145,15 @@ export class AMM<TPoolPairData extends PoolPairData> {
     spotPriceAfterSwap: number,
     tokenIn: string,
     tokenOut: string,
+    spotPricePrecision?: number,
   ): number {
     const poolPairData = this.math.parsePoolPairData(tokenIn, tokenOut);
     const amountTokenIn = this._tokenInForExactSpotPriceAfterSwap({
       spotPrice: bnum(spotPriceAfterSwap),
       poolPairData,
+      spotPricePrecision: spotPricePrecision
+        ? bnum(spotPricePrecision)
+        : undefined,
     });
     return this.math
       ._exactTokenInForTokenOut(poolPairData, amountTokenIn)

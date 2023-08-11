@@ -35,6 +35,7 @@ export function DepthCost() {
         in: pairTokens.map((pairToken) =>
           calculateDepthCost(
             pairToken,
+            analysisToken,
             "in",
             initialData,
             initialAMM,
@@ -44,6 +45,7 @@ export function DepthCost() {
         out: pairTokens.map((pairToken) =>
           calculateDepthCost(
             pairToken,
+            analysisToken,
             "out",
             initialData,
             initialAMM,
@@ -55,6 +57,7 @@ export function DepthCost() {
         in: pairTokens.map((pairToken) =>
           calculateDepthCost(
             pairToken,
+            analysisToken,
             "in",
             customData,
             customAMM,
@@ -64,6 +67,7 @@ export function DepthCost() {
         out: pairTokens.map((pairToken) =>
           calculateDepthCost(
             pairToken,
+            analysisToken,
             "out",
             customData,
             customAMM,
@@ -231,46 +235,66 @@ const createDataObject = (
   };
 };
 
-function calculateDepthCost(
+export function calculateDepthCost(
   pairToken: TokensData,
+  analysisToken: TokensData,
   poolSide: "in" | "out",
   data: AnalysisData,
   amm: AMM<PoolPairData>,
   poolType: PoolTypeEnum,
 ) {
-  const { analysisToken } = usePoolSimulator();
-
+  if (!analysisToken) throw new Error("Analysis token not found");
   const tokenIn = poolSide === "in" ? analysisToken : pairToken;
   const tokenOut = poolSide === "in" ? pairToken : analysisToken;
-
   const currentSpotPrice = amm.spotPrice(tokenIn.symbol, tokenOut.symbol);
   const newSpotPrice = currentSpotPrice * 1.02;
+  const spotPricePrecision = currentSpotPrice * 0.0002;
+  const amountCalculator = (price: number) =>
+    poolSide === "in"
+      ? amm.tokenInForExactSpotPriceAfterSwap(
+          price,
+          tokenIn.symbol,
+          tokenOut.symbol,
+          spotPricePrecision,
+        )
+      : amm.tokenOutForExactSpotPriceAfterSwap(
+          price,
+          tokenIn.symbol,
+          tokenOut.symbol,
+          spotPricePrecision,
+        );
+
+  const alpha =
+    poolType === PoolTypeEnum.GyroE
+      ? data.poolParams?.alpha
+      : (data.poolParams?.sqrtAlpha as number) ** 2;
+  const beta =
+    poolType === PoolTypeEnum.GyroE
+      ? data.poolParams?.beta
+      : (data.poolParams?.sqrtBeta as number) ** 2;
 
   switch (poolType) {
+    // For metastable pools we'll assume depth cost as 2% of the current spot price
     case PoolTypeEnum.MetaStable:
-      // For metastable pools we'll assume depth cost as 2% of the current spot price
-      return poolSide === "in"
-        ? {
-            amount: amm.tokenInForExactSpotPriceAfterSwap(
-              newSpotPrice,
-              tokenIn.symbol,
-              tokenOut.symbol,
-            ),
-            type: "2% of price change",
-          }
-        : {
-            amount: amm.tokenOutForExactSpotPriceAfterSwap(
-              newSpotPrice,
-              tokenIn.symbol,
-              tokenOut.symbol,
-            ),
-            type: "2% of price change",
-          };
-    case PoolTypeEnum.GyroE: {
+      return {
+        amount: amountCalculator(newSpotPrice),
+        type: "2% of price change",
+      };
+    case PoolTypeEnum.Gyro2:
+    case PoolTypeEnum.GyroE:
       // For CLP pools we'll assume depth cost as the pool depth == 99% of the liquidity or 2% of the current spot price (if possible)
+
+      // The Alpha and Beta values are considering token 0 in units of token 1.
+      // This means that token 1 must be the the tokenIn
+      // And token 0 must be the tokenOut
+      const newSpotPriceOnAlphaAndBetaBase =
+        tokenIn.symbol === data.tokens[1].symbol
+          ? newSpotPrice
+          : 1 / newSpotPrice;
+      if (!alpha || !beta) throw new Error("Alpha or beta not defined");
       if (
-        newSpotPrice < (data.poolParams?.alpha as number) ||
-        newSpotPrice > (data.poolParams?.beta as number)
+        newSpotPriceOnAlphaAndBetaBase < alpha ||
+        newSpotPriceOnAlphaAndBetaBase > beta
       ) {
         return poolSide === "in"
           ? {
@@ -283,24 +307,10 @@ function calculateDepthCost(
             }
           : { amount: tokenOut.balance * 0.99, type: "price limit" };
       }
-      return poolSide === "in"
-        ? {
-            amount: amm.tokenInForExactSpotPriceAfterSwap(
-              newSpotPrice,
-              tokenIn.symbol,
-              tokenOut.symbol,
-            ),
-            type: "2% of price change",
-          }
-        : {
-            amount: amm.tokenOutForExactSpotPriceAfterSwap(
-              newSpotPrice,
-              tokenIn.symbol,
-              tokenOut.symbol,
-            ),
-            type: "2% of price change",
-          };
-    }
+      return {
+        amount: amountCalculator(newSpotPrice),
+        type: "2% of price change",
+      };
     default:
       return { amount: 0, type: "" };
   }

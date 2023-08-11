@@ -123,4 +123,11 @@ export class ExtendedMetaStableMath
       bnum(0.01),
     );
   }
+
+  _checkIfInIsOnLimit(
+    _poolPairData: MetaStablePoolPairData,
+    _amountIn: OldBigNumber,
+  ): boolean {
+    return true;
+  }
 }

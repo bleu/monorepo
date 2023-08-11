@@ -1,4 +1,4 @@
-import { bnum, SubgraphPoolBase, SwapTypes } from "@balancer-labs/sor";
+import { bnum, FxMaths, SubgraphPoolBase } from "@balancer-labs/sor";
 import { formatFixed } from "@ethersproject/bignumber";
 import { describe, test } from "@jest/globals";
 
@@ -45,103 +45,41 @@ describe("Tests new Fx math function based on package other functions", () => {
         if (!pool._checkIfInIsOnLimit(poolPairData, amountOldBigNumber)) {
           return;
         }
-        // const spotPriceExpected =
-        //   pool._spotPriceAfterSwapExactTokenInForTokenOut(
-        //     poolPairData,
-        //     amountOldBigNumber
-        //   );
 
-        test(`_twoSpotPricePoints`, () => {
+        const spotPriceExpected = FxMaths.spotPriceBeforeSwap(
+          numberToBigNumber({
+            number: amount,
+            decimals: poolPairData.decimalsOut,
+          }),
+          poolPairData
+        );
+
+        test(`_spotPrice`, () => {
           const amountOut = amm.exactTokenInForTokenOut(
             amount,
             tokenIn,
             tokenOut
           );
-          const amountIn = amm.tokenInForExactTokenOut(
-            amountOut,
-            tokenIn,
-            tokenOut
+
+          poolPairData.balanceIn = poolPairData.balanceIn.add(
+            numberToBigNumber({
+              number: amount,
+              decimals: poolPairData.decimalsIn,
+            })
           );
-          const amountInAfterSwap =
-            amount +
-            Number(
-              formatFixed(poolPairData.balanceIn, poolPairData.decimalsIn)
-            );
-          const amountOutAfterSwap =
-            Number(
-              formatFixed(poolPairData.balanceOut, poolPairData.decimalsOut)
-            ) - amountOut;
-          console.log({
-            amount,
-            amountIn,
-            amountOut,
-            percentage,
-            tokenIn,
-            tokenOut,
-            proporcion:
-              amountInAfterSwap / (amountInAfterSwap + amountOutAfterSwap),
-          });
 
-          verifyApproximateEquality(amount, amountIn);
-          //   const spotPriceExpectedOnTokenOut =
-          //     pool._spotPriceAfterSwapTokenInForExactTokenOut(
-          //       poolPairData,
-          //       amountOutBigNumber
-          //     );
+          poolPairData.balanceOut = poolPairData.balanceOut.sub(
+            numberToBigNumber({
+              number: amountOut,
+              decimals: poolPairData.decimalsOut,
+            })
+          );
 
-          //   console.log({
-          //     spotPriceTokenOut: spotPriceExpectedOnTokenOut.toNumber(),
-          //     spotPriceTokenIn: spotPriceExpected.toNumber(),
-          //     tokenIn,
-          //     tokenOut,
-          //     amount,
-          //   });
-          //   verifyApproximateEquality(
-          //     spotPriceExpectedOnTokenOut.toNumber(),
-          //     spotPriceExpected.toNumber()
-          //   );
+          verifyApproximateEquality(
+            pool._spotPrice(poolPairData).toNumber(),
+            spotPriceExpected.toNumber()
+          );
         });
-
-        // test(`_spotPrice`, () => {
-        //   const amountOut = amm.exactTokenInForTokenOut(
-        //     amount,
-        //     tokenIn,
-        //     tokenOut
-        //   );
-        //   poolPairData.balanceIn = poolPairData.balanceIn.add(
-        //     numberToBigNumber({
-        //       number: amount,
-        //       decimals: poolPairData.decimalsIn,
-        //     })
-        //   );
-
-        //   poolPairData.balanceOut = poolPairData.balanceOut.sub(
-        //     numberToBigNumber({
-        //       number: amountOut,
-        //       decimals: poolPairData.decimalsOut,
-        //     })
-        //   );
-        //   //   console.log({
-        //   //     spotPrice: pool._spotPrice(poolPairData).toNumber(),
-        //   //     spotPriceExpected: spotPriceExpected.toNumber(),
-        //   //     tokenIn,
-        //   //     tokenOut,
-        //   //     percentage,
-        //   //   });
-        //   verifyApproximateEquality(
-        //     pool._spotPrice(poolPairData).toNumber(),
-        //     spotPriceExpected.toNumber()
-        //   );
-        // });
-
-        // test(`_tokenInForExactSpotPriceAfterSwap`, () => {
-        //   const tokenInCalculated = amm.tokenInForExactSpotPriceAfterSwap(
-        //     spotPriceExpected.toNumber(),
-        //     tokenIn,
-        //     tokenOut
-        //   );
-        //   verifyApproximateEquality(tokenInCalculated, amount);
-        // });
       });
     });
   });

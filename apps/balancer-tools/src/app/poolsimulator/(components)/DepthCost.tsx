@@ -264,7 +264,7 @@ export function calculateDepthCost(
           spotPricePrecision,
         );
 
-  const { alpha, beta } = getAlphaAndBeta(poolType, data);
+  const { alpha, beta } = computeAlphaBetaValues(poolType, data);
 
   switch (poolType) {
     // For metastable pools we'll assume depth cost as 2% of the current spot price
@@ -309,7 +309,7 @@ export function calculateDepthCost(
   }
 }
 
-function getAlphaAndBeta(poolType: PoolTypeEnum, data: AnalysisData) {
+function computeAlphaBetaValues(poolType: PoolTypeEnum, data: AnalysisData) {
   switch (poolType) {
     case PoolTypeEnum.GyroE:
       return {

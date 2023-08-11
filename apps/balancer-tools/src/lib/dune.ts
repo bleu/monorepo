@@ -5,7 +5,7 @@ import invariant from "tiny-invariant";
 
 const duneApiKey = process.env.DUNE_API_KEY;
 
-export interface DunePoolData {
+export interface DuneGaugeData {
   pct_votes: number;
   symbol: string;
   votes: number;
@@ -26,7 +26,7 @@ export class DuneAPI {
     roundId: number = 0,
     limitBy: number = 20,
     offsetBy: number = 0,
-  ): Promise<undefined | DunePoolData[] | ErrorReturn> {
+  ): Promise<undefined | DuneGaugeData[] | ErrorReturn> {
     invariant(roundId > 0, "An valid roundId must be passed");
     // https://dune.com/queries/2834602/4732373
     const queryId = 2834602;
@@ -40,7 +40,7 @@ export class DuneAPI {
       .refresh(queryId, parameters)
       .then(
         (executionResult) =>
-          executionResult.result?.rows as unknown as DunePoolData[],
+          executionResult.result?.rows as unknown as DuneGaugeData[],
       )
       .catch((error: { message: string }) => ({ error: error.message }));
   }

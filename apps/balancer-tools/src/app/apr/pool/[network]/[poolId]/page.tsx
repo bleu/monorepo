@@ -1,3 +1,7 @@
+import { Suspense } from "react";
+
+import BALPrice from "#/app/apr/(components)/BALPrice";
+
 export default function Page({
   params,
 }: {
@@ -6,8 +10,13 @@ export default function Page({
   const { network, poolId } = params;
 
   return (
-    <div className="flex h-full w-full flex-col justify-center rounded-3xl">
-      hello from pool {poolId} in network {network}
-    </div>
+    <>
+      <div className="flex h-full w-full flex-col justify-center rounded-3xl">
+        hello from pool {poolId} in network {network}
+      </div>
+      <Suspense fallback={"Loading..."}>
+        <BALPrice />
+      </Suspense>
+    </>
   );
 }

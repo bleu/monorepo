@@ -31,6 +31,8 @@ export const poolWherePoolTypeInAndId = gql`
   ) {
     pools(
       where: { poolType_in: $poolTypes, id: $poolId, totalLiquidity_gt: 0 }
+      orderBy: totalLiquidity
+      orderDirection: desc
     ) {
       id
       address
@@ -60,6 +62,8 @@ export const poolWherePoolType = gql`
   ) {
     pools(
       where: { poolType_in: $poolTypes, totalLiquidity_gt: 0 }
+      orderBy: totalLiquidity
+      orderDirection: desc
       first: 1000
     ) {
       id

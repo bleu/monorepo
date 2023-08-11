@@ -5943,7 +5943,11 @@ export const PoolsWhereOwnerDocument = gql`
     `;
 export const PoolsWherePoolTypeInAndIdDocument = gql`
     query PoolsWherePoolTypeInAndId($poolId: ID!, $poolTypes: [String!] = ["Weighted", "ComposableStable", "Stable", "MetaStable", "Element", "LiquidityBootstrapping", "Linear", "GyroE"]) {
-  pools(where: {poolType_in: $poolTypes, id: $poolId, totalLiquidity_gt: 0}) {
+  pools(
+    where: {poolType_in: $poolTypes, id: $poolId, totalLiquidity_gt: 0}
+    orderBy: totalLiquidity
+    orderDirection: desc
+  ) {
     id
     address
     name
@@ -5958,7 +5962,12 @@ export const PoolsWherePoolTypeInAndIdDocument = gql`
     `;
 export const PoolsWherePoolTypeDocument = gql`
     query PoolsWherePoolType($poolTypes: [String!] = ["Weighted", "ComposableStable", "Stable", "MetaStable", "Element", "LiquidityBootstrapping", "Linear", "GyroE"]) {
-  pools(where: {poolType_in: $poolTypes, totalLiquidity_gt: 0}, first: 1000) {
+  pools(
+    where: {poolType_in: $poolTypes, totalLiquidity_gt: 0}
+    orderBy: totalLiquidity
+    orderDirection: desc
+    first: 1000
+  ) {
     id
     address
     name

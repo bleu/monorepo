@@ -79,9 +79,6 @@ export function SearchPoolForm({
 
   const filteredPoolList = poolsDataList?.pools
     .filter((pool) => filterPoolInput({ poolSearchQuery: poolId, pool }))
-    .sort((a, b) =>
-      Number(a!.totalLiquidity) < Number(b!.totalLiquidity) ? 1 : -1,
-    );
 
   useEffect(() => {
     if (poolsData && !poolsData.pools && poolId) {

@@ -9,7 +9,7 @@ import { mockGetTVLByRoundId, voteGaugeByID } from "../../mock_apis";
 
 export async function GET(
   _: NextRequest,
-  context: { params: { roundId: number } }
+  context: { params: { roundId: number } },
 ) {
   if (!context.params.roundId) return "Missing round_id";
   const selectedRound = Round.getRoundByNumber(context.params.roundId);
@@ -24,7 +24,7 @@ export async function GET(
 
   const balPrice = await getBALPriceByRound(selectedRound);
   const balWeeklyEmissions = getBalEmissions(
-    selectedRound.endDate.getFullYear()
+    selectedRound.endDate.getFullYear(),
   )["weekly"];
 
   requestJson.forEach((poolData) => {

@@ -8,7 +8,7 @@ import { mockGetTVLByRoundId } from "#/app/apr/mock_apis";
 
 export async function GET(
   request: NextRequest,
-  context: { params: { roundId: number } }
+  context: { params: { roundId: number } },
 ) {
   if (!context.params.roundId)
     return NextResponse.json({ error: "Missing round_id" });

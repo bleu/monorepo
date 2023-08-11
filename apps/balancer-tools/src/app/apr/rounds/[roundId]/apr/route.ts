@@ -4,6 +4,7 @@ import { getBalEmissions } from "#/app/apr/(utils)/getBalEmission";
 import { getBALPriceByRound } from "#/app/apr/(utils)/getBALPriceByRound";
 import { Round } from "#/app/apr/(utils)/rounds";
 import { mockGetTVLByRoundId } from "#/app/apr/mock_apis";
+import * as balEmissions from "#/lib/balancer/emissions"
 // import { DuneAPI } from "#/lib/dune";
 
 export async function GET(
@@ -22,12 +23,11 @@ export async function GET(
   const totalTvl = dune_request[0]["total_tvl"];
   const balPrice = await getBALPriceByRound(currentRound);
 
-  const balEmissions = getBalEmissions(currentRound.endDate.getFullYear())[
-    "weekly"
-  ];
+  const emissions = balEmissions.weekly(currentRound.endDate.getTime() / 1000);
+
   // APR = emissions in week * voting share * weeks in year * BAL price / TVL
   const apr =
-    ((balEmissions *
+    ((emissions *
       request.nextUrl.searchParams.get("votingShare") *
       52 *
       balPrice) /

@@ -4,14 +4,14 @@ interface BalEmissions {
   total_supply: number;
 }
 
-export const getBalEmissions = (year: number, maxYears: number = 10): BalEmissions => {
+export const getBalEmissions = (year: number): BalEmissions => {
   const halvingFactor = Math.pow(2, 1 / 4);
 
   const balPerYear: { [key: number]: number } = { 2022: 7560714 };
   const balEmissions: { [key: number]: number } = { 2022: 48980000 };
   const balWeeklyEmissions: { [key: number]: number } = { 2022: 145000 };
 
-  for (let i = 1; i <= maxYears; i++) {
+  for (let i = 1; i <= year - 2022; i++) {
     const currentYear = 2022 + i;
     balPerYear[currentYear] = balPerYear[currentYear - 1] / halvingFactor;
     balEmissions[currentYear] = balPerYear[currentYear - 1] + balEmissions[currentYear - 1];
@@ -23,4 +23,4 @@ export const getBalEmissions = (year: number, maxYears: number = 10): BalEmissio
     weekly: balWeeklyEmissions[year],
     total_supply: balEmissions[year]
   };
-}
+};

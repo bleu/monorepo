@@ -1,13 +1,19 @@
 import { ChevronRightIcon } from "@radix-ui/react-icons";
 
-import { DunePoolData } from "#/lib/dune";
 import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 
+export interface PoolData {
+  pct_votes: number;
+  symbol: string;
+  votes: number;
+  apr: number;
+}
+
 function PoolCard({
-  data: { symbol, pct_votes: pctVotes, votes },
+  data: { symbol, pct_votes: pctVotes, votes, apr },
 }: {
-  data: DunePoolData;
+  data: PoolData;
 }) {
   return (
     <div
@@ -37,7 +43,7 @@ function PoolCard({
 export default async function PoolsCards({
   data,
 }: {
-  data: ReturnType<typeof fetcher<DunePoolData[] | { error: string }>>;
+  data: ReturnType<typeof fetcher<PoolData[] | { error: string }>>;
 }) {
   const poolsData = await data;
 

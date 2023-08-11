@@ -10,7 +10,7 @@ import { ExtendedGyroEV2 } from "./index";
 
 describe("Tests new Gyro ECLP math function based on package other functions", () => {
   const poolData = poolsFromFile["pool"];
-  const percentages = [25, 50, 75, 80];
+  const percentages = [25, 50, 75, 95];
   const tokens = ["wstETH", "swETH"];
 
   tokens.forEach((tokenIn) => {

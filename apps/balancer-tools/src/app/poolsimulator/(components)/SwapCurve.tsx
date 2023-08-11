@@ -210,18 +210,24 @@ export function SwapCurve() {
     };
 
     if (maxOfIn.initial === maxOfIn.custom) {
-      return [initialAmountsOut[100], initialAmountsIn[100]];
+      return [initialAmountsOut[100] * 1.1, initialAmountsIn[100] * 1.1];
     }
 
     if (maxOfIn.initial === limits.lowerIn) {
       const indexMax = initialAmountsIn.indexOf(limits.lowerIn);
       const indexMin = initialAmountsOut.indexOf(limits.higherOut);
-      return [initialAmountsOut[indexMin], initialAmountsIn[indexMax]];
+      return [
+        initialAmountsOut[indexMin] * 1.1,
+        initialAmountsIn[indexMax] * 1.1,
+      ];
     }
     if (maxOfIn.custom === limits.lowerIn) {
       const indexMax = customAmountsIn.indexOf(limits.lowerIn);
       const indexMin = customAmountsOut.indexOf(limits.higherOut);
-      return [customAmountsOut[indexMin], customAmountsIn[indexMax]];
+      return [
+        customAmountsOut[indexMin] * 1.1,
+        customAmountsIn[indexMax] * 1.1,
+      ];
     }
   }
 

@@ -1,4 +1,4 @@
-import { bnum, SubgraphPoolBase } from "@balancer-labs/sor";
+import { bnum, SubgraphPoolBase, SwapTypes } from "@balancer-labs/sor";
 import { formatFixed } from "@ethersproject/bignumber";
 import { describe, test } from "@jest/globals";
 
@@ -41,6 +41,7 @@ describe("Tests new Fx math function based on package other functions", () => {
           ) *
           (percentage / 100);
         const amountOldBigNumber = bnum(amount);
+
         if (!pool._checkIfInIsOnLimit(poolPairData, amountOldBigNumber)) {
           return;
         }
@@ -51,23 +52,37 @@ describe("Tests new Fx math function based on package other functions", () => {
         //   );
 
         test(`_twoSpotPricePoints`, () => {
-          const amountOutBigNumber = pool._exactTokenInForTokenOut(
-            poolPairData,
-            amountOldBigNumber
+          const amountOut = amm.exactTokenInForTokenOut(
+            amount,
+            tokenIn,
+            tokenOut
           );
-          const amountInBigNumber = pool._tokenInForExactTokenOut(
-            poolPairData,
-            amountOutBigNumber
+          const amountIn = amm.tokenInForExactTokenOut(
+            amountOut,
+            tokenIn,
+            tokenOut
           );
+          const amountInAfterSwap =
+            amount +
+            Number(
+              formatFixed(poolPairData.balanceIn, poolPairData.decimalsIn)
+            );
+          const amountOutAfterSwap =
+            Number(
+              formatFixed(poolPairData.balanceOut, poolPairData.decimalsOut)
+            ) - amountOut;
           console.log({
-            amountInBigNumber: amountInBigNumber.toNumber(),
-            amountOldBigNumber: amountOldBigNumber.toNumber(),
-            amountOutBigNumber: amountOutBigNumber.toNumber(),
+            amount,
+            amountIn,
+            amountOut,
+            percentage,
+            tokenIn,
+            tokenOut,
+            proporcion:
+              amountInAfterSwap / (amountInAfterSwap + amountOutAfterSwap),
           });
-          verifyApproximateEquality(
-            amountInBigNumber.toNumber(),
-            amountOldBigNumber.toNumber()
-          );
+
+          verifyApproximateEquality(amount, amountIn);
           //   const spotPriceExpectedOnTokenOut =
           //     pool._spotPriceAfterSwapTokenInForExactTokenOut(
           //       poolPairData,

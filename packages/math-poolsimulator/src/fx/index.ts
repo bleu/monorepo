@@ -6,7 +6,6 @@ import {
   safeParseFixed,
   SubgraphPoolBase,
   SubgraphToken,
-  SwapTypes,
 } from "@balancer-labs/sor";
 import { parseFixed } from "@ethersproject/bignumber";
 
@@ -152,11 +151,7 @@ export class ExtendedFx
     poolPairData: FxPoolPairData,
     amountIn: OldBigNumber
   ): boolean {
-    const limitSwap = this.getLimitAmountSwap(
-      poolPairData,
-      SwapTypes.SwapExactIn
-    );
-    console.log(limitSwap, amountIn.toString());
-    return amountIn.lt(limitSwap);
+    const amountOut = this._exactTokenInForTokenOut(poolPairData, amountIn);
+    return amountOut.toNumber() > 0 && amountIn.toNumber() > 0;
   }
 }

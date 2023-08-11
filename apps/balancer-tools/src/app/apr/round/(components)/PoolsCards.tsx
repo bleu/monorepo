@@ -1,7 +1,15 @@
+import { networkFor } from "@bleu-balancer-tools/utils";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
+import Link from "next/link";
+import { Suspense } from "react";
 
+import { Gauge } from "#/lib/balancer/gauges";
+import { DuneGaugeData } from "#/lib/dune";
 import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
+import getBaseURL from "#/utils/getBaseURL";
+
+import BALPrice from "../../(components)/BALPrice";
 
 export interface PoolData {
   pct_votes: number;
@@ -12,50 +20,57 @@ export interface PoolData {
 
 function PoolCard({
   data: { symbol, pct_votes: pctVotes, votes, apr },
+  roundId,
 }: {
-  data: PoolData;
+  data: DuneGaugeData;
+  roundId?: string;
 }) {
+  const gauge = new Gauge(symbol);
+
   return (
-    <div
-      key={symbol}
-      className="flex justify-between border border-gray-400 lg:border-gray-400 bg-blue3 rounded p-4 cursor-pointer"
-    >
-      <div className="">
-        <div className="flex justify-between">
-          <div className="text-white font-bold text-xl mb-2">{symbol}</div>
-        </div>
-        <div className="flex items-center">
-          <div className="text-sm">
-            <p className="text-white leading-none mb-1">
-              {pctVotes.toFixed(2)}% Voted
-            </p>
-            <p className="text-white leading-none mb-1">
-              {apr.toFixed(2)}% APR
-            </p>
-            <p className="text-white text-xs">{formatNumber(votes)} Votes</p>
+    <Link href={`/apr/pool/${networkFor(gauge.network)}/${gauge.pool.id}`}>
+      <div className="flex justify-between border border-gray-400 lg:border-gray-400 bg-blue3 rounded p-4 cursor-pointer">
+        <div className="">
+          <div className="flex justify-between">
+            <div className="text-white font-bold text-xl mb-2">
+              {gauge.pool.id}
+            </div>
+          </div>
+          <div className="flex items-center">
+            <div className="text-sm">
+              <p className="text-white leading-none mb-1">
+                {(pctVotes * 100).toFixed(2)}% Voted
+              </p>
+              <p className="text-white leading-none mb-1">
+                {apr.toFixed(2)}% APR
+              </p>
+              <p className="text-white text-xs">{formatNumber(votes)} Votes</p>
+              <Suspense fallback={"Loading..."}>
+                <BALPrice roundId={roundId} />
+              </Suspense>
+            </div>
           </div>
         </div>
+        <div className="text-white flex flex-col justify-center">
+          <ChevronRightIcon />
+        </div>
       </div>
-      <div className="text-white flex flex-col justify-center">
-        <ChevronRightIcon />
-      </div>
-    </div>
+    </Link>
   );
 }
 
-export default async function PoolsCards({
-  data,
-}: {
-  data: ReturnType<typeof fetcher<PoolData[] | { error: string }>>;
-}) {
-  const poolsData = await data;
+export default async function PoolsCards({ roundId }: { roundId: string }) {
+  const poolsData = await fetcher<DuneGaugeData[] | { error: string }>(
+    `${getBaseURL()}/apr/rounds/${roundId}`,
+    { cache: "force-cache" },
+  );
 
   if ("error" in poolsData) throw new Error(poolsData.error);
 
   return (
     <div className="space-y-6 w-full">
-      {poolsData.map((poolData) => (
-        <PoolCard data={poolData} />
+      {poolsData.slice(0, 1).map((data) => (
+        <PoolCard data={data} roundId={roundId} key={data.symbol} />
       ))}
     </div>
   );

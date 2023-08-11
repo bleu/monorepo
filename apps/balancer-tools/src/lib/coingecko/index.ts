@@ -1,5 +1,3 @@
-import "server-only";
-
 import invariant from "tiny-invariant";
 
 import { fetcher } from "#/utils/fetcher";

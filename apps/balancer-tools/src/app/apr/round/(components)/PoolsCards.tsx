@@ -1,5 +1,6 @@
 import { networkFor } from "@bleu-balancer-tools/utils";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
+import { headers } from "next/headers";
 import Link from "next/link";
 import { Suspense } from "react";
 
@@ -12,10 +13,10 @@ import BALPrice from "../../(components)/BALPrice";
 
 function PoolCard({
   data: { symbol, pct_votes: pctVotes, votes },
-  roundId
+  roundId,
 }: {
   data: DuneGaugeData;
-  roundId?: string
+  roundId?: string;
 }) {
   const gauge = new Gauge(symbol);
   const poolId = gauge.pool.id;
@@ -34,7 +35,7 @@ function PoolCard({
               </p>
               <p className="text-white text-xs">{formatNumber(votes)} Votes</p>
               <Suspense fallback={"Loading..."}>
-                <BALPrice roundId={roundId}/>
+                <BALPrice roundId={roundId} />
               </Suspense>
             </div>
           </div>
@@ -47,9 +48,17 @@ function PoolCard({
   );
 }
 
+const getBaseURL = () => {
+  const headersList = headers();
+  const host = headersList.get("host") || "localhost:3000";
+  const protocol = headersList.get("x-forwarded-proto") || "http";
+
+  return `${protocol}://${host}`;
+};
+
 export default async function PoolsCards({ roundId }: { roundId: string }) {
   const poolsData = await fetcher<DuneGaugeData[] | { error: string }>(
-    `http://localhost:3000/apr/rounds/${roundId}`,
+    `${getBaseURL()}/apr/rounds/${roundId}`,
     { cache: "force-cache" },
   );
 

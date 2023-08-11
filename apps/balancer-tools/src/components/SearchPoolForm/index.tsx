@@ -77,8 +77,9 @@ export function SearchPoolForm({
     closeCombobox();
   }
 
-  const filteredPoolList = poolsDataList?.pools
-    .filter((pool) => filterPoolInput({ poolSearchQuery: poolId, pool }))
+  const filteredPoolList = poolsDataList?.pools.filter((pool) =>
+    filterPoolInput({ poolSearchQuery: poolId, pool }),
+  );
 
   useEffect(() => {
     if (poolsData && !poolsData.pools && poolId) {

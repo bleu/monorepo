@@ -14,7 +14,7 @@ const GAUGES_CONTROLLER_MAINNET_ADDRESS =
 export async function getPoolRelativeWeight(
   poolId: string,
   time: number = Date.now() / 1000,
-  // blockNumber?: bigint,
+  // blockNumber: bigint = 17880776n,
 ) {
   const gaugeAddress = new Pool(poolId).gauge?.address;
   if (!gaugeAddress) throw new Error(`No gauge found for pool ${poolId}`);

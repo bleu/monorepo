@@ -11,13 +11,15 @@ export default function Page({
 }) {
   const { poolId } = params;
 
+  const pool = new Pool(poolId);
+
   return (
     <>
       <Suspense fallback={"Loading..."}>
         <BALPrice />
       </Suspense>
       <Suspense fallback={"Loading..."}>
-        <PoolCard data={{ symbol: new Pool(poolId).gauge?.address }} />
+        <PoolCard poolId={pool.id} network={pool.gauge?.network}  />
       </Suspense>
     </>
   );

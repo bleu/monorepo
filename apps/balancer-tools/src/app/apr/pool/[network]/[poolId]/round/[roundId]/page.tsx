@@ -11,6 +11,8 @@ export default async function Page({
 }) {
   const { poolId, roundId } = params;
 
+  const pool = new Pool(poolId);
+
   return (
     <div className="flex h-full w-full flex-col justify-center rounded-3xl text-white">
       <Suspense fallback={"Loading..."}>
@@ -19,7 +21,7 @@ export default async function Page({
       <Suspense fallback={"Loading..."}>
         <PoolCard
           roundId={roundId}
-          data={{ symbol: new Pool(poolId).gauge?.address }}
+          poolId={pool.id} network={pool.gauge?.network}
         />
       </Suspense>
     </div>

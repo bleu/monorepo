@@ -3,16 +3,15 @@ import { ChevronRightIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { Suspense } from "react";
 
-import { Gauge } from "#/lib/balancer/gauges";
-import { DuneGaugeData } from "#/lib/dune";
-import { fetcher } from "#/utils/fetcher";
-import getBaseURL from "#/utils/getBaseURL";
+import votingGauges from "#/data/voting-gauges.json";
+import { Pool } from "#/lib/balancer/gauges";
 
 import BALPrice from "../../(components)/BALPrice";
 import calculateRoundAPR from "../../(utils)/calculateRoundAPR";
 import { getBALPriceByRound } from "../../(utils)/getBALPriceByRound";
 import { getPoolRelativeWeight } from "../../(utils)/getRelativeWeight";
 import { Round } from "../../(utils)/rounds";
+import BalancerAPI from "../../(utils)/balancerAPI";
 
 export interface PoolData {
   pct_votes: number;
@@ -22,37 +21,32 @@ export interface PoolData {
 }
 
 export function PoolCard({
-  data: { symbol },
+  network,
+  poolId,
   roundId,
 }: {
-  data: DuneGaugeData;
+  poolId: string;
+  network?: number;
   roundId?: string;
 }) {
   // TODO: Decision. Some pools are not going to have gauges associated to them.
   // Or the gauges are not whitelisted yet.
   // We should not display them. Ideally not even fetch them.
-  let gauge;
-  try {
-    gauge = new Gauge(symbol);
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
-    return null;
-  }
+  const pool = new Pool(poolId);
 
   return (
-    <Link href={`/apr/pool/${networkFor(gauge.network)}/${gauge.pool.id}`}>
+    <Link href={`/apr/pool/${networkFor(network)}/${pool.id}`}>
       <div className="flex justify-between border border-gray-400 lg:border-gray-400 bg-blue3 rounded p-4 cursor-pointer">
         <div className="">
           <div className="flex justify-between">
             <div className="text-white font-bold text-xl mb-2">
-              {gauge.pool.id}
+              {pool.id}
             </div>
           </div>
           <div className="flex items-center">
             <div className="text-sm">
-              <PoolVotes roundId={roundId} poolId={gauge.pool.id} />
-              <PoolAPR roundId={roundId} poolId={gauge.pool.id} />
+              <PoolVotes roundId={roundId} poolId={pool.id} />
+              <PoolAPR roundId={roundId} poolId={pool.id} />
               <Suspense fallback={"Loading..."}>
                 <BALPrice roundId={roundId} />
               </Suspense>
@@ -113,7 +107,7 @@ export async function PoolAPR({
   // TODO: get TVL and votingShare from Dune or Subgraph
   const [balPriceUSD, tvl, votingShare] = await Promise.all([
     getBALPriceByRound(round),
-    1_100_000,
+    BalancerAPI.getPoolTotalLiquidityUSD(poolId),
     getPoolRelativeWeight(poolId, round.endDate.getTime() / 1000),
   ]);
 
@@ -129,17 +123,10 @@ export async function PoolAPR({
 }
 
 export default async function PoolsCards({ roundId }: { roundId: string }) {
-  const poolsData = await fetcher<DuneGaugeData[] | { error: string }>(
-    `${getBaseURL()}/apr/rounds/${roundId}`,
-    { cache: "force-cache" },
-  );
-
-  if ("error" in poolsData) throw new Error(poolsData.error);
-
   return (
     <div className="space-y-6 w-full">
-      {poolsData.map((data) => (
-        <PoolCard data={data} roundId={roundId} key={data.symbol} />
+      {votingGauges.map((gauge) => (
+        <PoolCard poolId={gauge.pool.id} network={gauge.network} roundId={roundId} key={gauge.address} />
       ))}
     </div>
   );

@@ -10,58 +10,74 @@ import { ExtendedGyro2 } from "./index";
 
 describe("Tests new Gyro 2CLP math function based on package other functions", () => {
   const poolData = poolsFromFile["pool"];
+  const tokens = ["USDC", "DAI"];
   const percentages = [25, 50, 75, 95];
 
-  const tokenIn = "USDC";
-  const tokenOut = "DAI";
+  tokens.forEach((tokenIn) => {
+    const tokenOut = tokenIn === "USDC" ? "DAI" : "USDC";
 
-  percentages.forEach((percentage) => {
-    describe(`Tests for ${percentage}% with ${tokenIn} as tokenIn`, () => {
-      const amm = new AMM(
-        new ExtendedGyro2({
-          swapFee: poolData.swapFee,
-          totalShares: poolData.totalShares,
-          tokens: poolData.tokens,
-          tokensList: poolData.tokensList,
-          sqrtAlpha: poolData.sqrtAlpha,
-          sqrtBeta: poolData.sqrtBeta,
-        }),
-      );
-
-      const pool = ExtendedGyro2.fromPool(poolData as SubgraphPoolBase);
-      const poolPairData = pool.parsePoolPairData(tokenIn, tokenOut);
-
-      const amount =
-        Number(formatFixed(poolPairData.balanceOut, poolPairData.decimalsOut)) *
-        (percentage / 100);
-      const amountOldBigNumber = bnum(amount);
-      const spotPriceExpected = pool._spotPriceAfterSwapExactTokenInForTokenOut(
-        poolPairData,
-        amountOldBigNumber,
-      );
-      const amountOut = amm.exactTokenInForTokenOut(amount, tokenIn, tokenOut);
-
-      poolPairData.balanceIn = poolPairData.balanceIn.add(
-        numberToBigNumber({ number: amount }),
-      );
-
-      poolPairData.balanceOut = poolPairData.balanceOut.sub(
-        numberToBigNumber({ number: amountOut }),
-      );
-      test(`_spotPrice`, () => {
-        verifyApproximateEquality(
-          pool._spotPrice(poolPairData).toNumber(),
-          spotPriceExpected.toNumber(),
+    percentages.forEach((percentage) => {
+      describe(`Tests for ${percentage}% with ${tokenIn} as tokenIn`, () => {
+        const amm = new AMM(
+          new ExtendedGyro2({
+            swapFee: poolData.swapFee,
+            totalShares: poolData.totalShares,
+            tokens: poolData.tokens,
+            tokensList: poolData.tokensList,
+            sqrtAlpha: poolData.sqrtAlpha,
+            sqrtBeta: poolData.sqrtBeta,
+          }),
         );
-      });
 
-      test(`_tokenInForExactSpotPriceAfterSwap`, () => {
-        const tokenInCalculated = amm.tokenInForExactSpotPriceAfterSwap(
-          spotPriceExpected.toNumber(),
+        const pool = ExtendedGyro2.fromPool(poolData as SubgraphPoolBase);
+        const poolPairData = pool.parsePoolPairData(tokenIn, tokenOut);
+
+        const amount =
+          Number(
+            formatFixed(poolPairData.balanceOut, poolPairData.decimalsOut),
+          ) *
+          (percentage / 100);
+        const amountOldBigNumber = bnum(amount);
+        const spotPriceExpected =
+          pool._spotPriceAfterSwapExactTokenInForTokenOut(
+            poolPairData,
+            amountOldBigNumber,
+          );
+        const amountOut = amm.exactTokenInForTokenOut(
+          amount,
           tokenIn,
           tokenOut,
         );
-        verifyApproximateEquality(tokenInCalculated, amount);
+
+        poolPairData.balanceIn = poolPairData.balanceIn.add(
+          numberToBigNumber({
+            number: amount,
+            decimals: poolPairData.decimalsIn,
+          }),
+        );
+
+        poolPairData.balanceOut = poolPairData.balanceOut.sub(
+          numberToBigNumber({
+            number: amountOut,
+            decimals: poolPairData.decimalsOut,
+          }),
+        );
+
+        test(`_spotPrice`, () => {
+          verifyApproximateEquality(
+            pool._spotPrice(poolPairData).toNumber(),
+            spotPriceExpected.toNumber(),
+          );
+        });
+
+        test(`_tokenInForExactSpotPriceAfterSwap`, () => {
+          const tokenInCalculated = amm.tokenInForExactSpotPriceAfterSwap(
+            spotPriceExpected.toNumber(),
+            tokenIn,
+            tokenOut,
+          );
+          verifyApproximateEquality(tokenInCalculated, amount);
+        });
       });
     });
   });

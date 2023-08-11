@@ -5878,7 +5878,7 @@ export type PoolsWherePoolTypeInAndIdQueryVariables = Exact<{
 }>;
 
 
-export type PoolsWherePoolTypeInAndIdQuery = { __typename?: 'Query', pools: Array<{ __typename?: 'Pool', id: string, address: any, name?: string | null, poolType?: string | null }> };
+export type PoolsWherePoolTypeInAndIdQuery = { __typename?: 'Query', pools: Array<{ __typename?: 'Pool', id: string, address: any, name?: string | null, poolType?: string | null, symbol?: string | null, totalLiquidity: any, tokens?: Array<{ __typename?: 'PoolToken', symbol: string }> | null }> };
 
 export type PoolsWherePoolTypeQueryVariables = Exact<{
   poolTypes?: InputMaybe<Array<Scalars['String']> | Scalars['String']>;
@@ -5943,17 +5943,31 @@ export const PoolsWhereOwnerDocument = gql`
     `;
 export const PoolsWherePoolTypeInAndIdDocument = gql`
     query PoolsWherePoolTypeInAndId($poolId: ID!, $poolTypes: [String!] = ["Weighted", "ComposableStable", "Stable", "MetaStable", "Element", "LiquidityBootstrapping", "Linear", "GyroE"]) {
-  pools(where: {poolType_in: $poolTypes, id: $poolId}) {
+  pools(
+    where: {poolType_in: $poolTypes, id: $poolId, totalLiquidity_gt: 0}
+    orderBy: totalLiquidity
+    orderDirection: desc
+  ) {
     id
     address
     name
     poolType
+    symbol
+    totalLiquidity
+    tokens {
+      symbol
+    }
   }
 }
     `;
 export const PoolsWherePoolTypeDocument = gql`
     query PoolsWherePoolType($poolTypes: [String!] = ["Weighted", "ComposableStable", "Stable", "MetaStable", "Element", "LiquidityBootstrapping", "Linear", "GyroE"]) {
-  pools(where: {poolType_in: $poolTypes}) {
+  pools(
+    where: {poolType_in: $poolTypes, totalLiquidity_gt: 0}
+    orderBy: totalLiquidity
+    orderDirection: desc
+    first: 1000
+  ) {
     id
     address
     name

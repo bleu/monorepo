@@ -6,10 +6,13 @@ import { Round } from "../(utils)/rounds";
 export default async function BALPrice({
   roundId,
 }: {
-  roundId: string | string[];
+  roundId?: string | string[];
 }) {
   invariant(!Array.isArray(roundId), "roundId cannot be a list");
-  const round = Round.getRoundByNumber(roundId);
+
+  const round = roundId
+    ? Round.getRoundByNumber(roundId)
+    : Round.currentRound();
 
   return <Price data={getBALPriceByRound(round)} />;
 }
@@ -24,10 +27,12 @@ export const Price = async ({
   return (
     <div>
       BAL price:{" "}
-      {price.toLocaleString("en-US", {
-        style: "currency",
-        currency: "USD",
-      })}
+      {price
+        ? price.toLocaleString("en-US", {
+            style: "currency",
+            currency: "USD",
+          })
+        : "error"}
     </div>
   );
 };

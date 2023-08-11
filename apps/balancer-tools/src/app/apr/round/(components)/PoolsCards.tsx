@@ -29,6 +29,9 @@ function PoolCard({
             <p className="text-white leading-none mb-1">
               {pctVotes.toFixed(2)}% Voted
             </p>
+            <p className="text-white leading-none mb-1">
+              {apr.toFixed(2)}% APR
+            </p>
             <p className="text-white text-xs">{formatNumber(votes)} Votes</p>
           </div>
         </div>

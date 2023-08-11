@@ -8,55 +8,52 @@ const DEFAULT_HEADERS: Record<string, string> = {
 
 export default class BalancerAPI {
   private static readonly POOLS_QUERY: string = `
-    query ($orderDirection: String, $orderBy: String, $chainId: Int!, $first: Int, $poolIds: String[]) {
-      pools(
+    query ($orderDirection: String, $orderBy: String, $chainId: Int!, $poolIds: [String]) {
+        pools(
         chainId: $chainId,
         orderBy: $orderBy,
         orderDirection: $orderDirection,
-        first: $first,
         where: {
-          totalShares: { gt: 0.00001 },
-          id: { in: $poolIds }
-          poolType: {
+            totalShares: { gt: 0.00001 },
+            id: { in: $poolIds },
+            poolType: {
             not_in: [
-              "Element",
-              "AaveLinear",
-              "EulerLinear",
-              "GearboxLinear",
-              "Linear",
-              "ERC4626Linear",
-              "Gyro2",
-              "Gyro3",
-              "GyroE",
-              "HighAmpComposableStable"
+                "Element",
+                "AaveLinear",
+                "EulerLinear",
+                "GearboxLinear",
+                "Linear",
+                "ERC4626Linear",
+                "Gyro2",
+                "Gyro3",
+                "GyroE",
+                "HighAmpComposableStable"
             ],
-          }
+            }
         }
-      ) {
+        ) {
         pools {
-          symbol
-          totalLiquidity
-          volumeSnapshot
-          createTime
-          apr {
+            symbol
+            totalLiquidity
+            volumeSnapshot
+            createTime
+            apr {
             min
             max
-          }
+            }
         }
-      }
+        }
     }`;
 
   public async getPoolsData(
     sortBy: string = "apr",
     chainId: number = 1,
-    lastWeekOnly: boolean = false,
-    poolId: string
+    poolId: string,
   ) {
     const variables = {
       orderBy: sortBy,
       orderDirection: "desc",
       chainId: chainId,
-      first: lastWeekOnly ? null : 20,
       ...(poolId ? { poolId: poolId } : {}),
     };
 
@@ -64,17 +61,24 @@ export default class BalancerAPI {
       BALANCER_GRAPHQL_API_URL,
       BalancerAPI.POOLS_QUERY,
       variables,
-      DEFAULT_HEADERS
+      DEFAULT_HEADERS,
     );
   }
 
-  public static async getPoolTotalLiquidityUSD(poolId: string) {
-    return gql(
+  public static async getPoolTotalLiquidityUSD(chainId = 1, poolId: string) {
+    const data = await gql(
       BALANCER_GRAPHQL_API_URL,
       BalancerAPI.POOLS_QUERY,
-      { pooldIds: [poolId] },
-      DEFAULT_HEADERS
+      {
+        poolIds: [poolId],
+        chainId,
+        sortBy: "totalLiquidity",
+        orderDirection: "desc",
+      },
+      DEFAULT_HEADERS,
     );
+
+    return data?.pools?.pools?.[0]?.totalLiquidity;
   }
 }
 
@@ -82,16 +86,17 @@ export async function gql(
   url: string,
   query: string,
   variables: unknown,
-  headers: Record<string, string>
+  headers: Record<string, string>,
 ) {
   try {
-    return await fetch(url, {
+    const result = await fetch(url, {
       method: "POST",
       body: JSON.stringify({ query, variables }),
       headers,
-    }).then((res) => res.json());
-  } catch (e) {
+    });
+    return await result.json();
+  } catch (error) {
     // eslint-disable-next-line no-console
-    console.error(e);
+    console.error({ error });
   }
 }

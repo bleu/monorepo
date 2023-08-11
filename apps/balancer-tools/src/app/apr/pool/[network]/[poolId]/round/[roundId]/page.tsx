@@ -21,7 +21,8 @@ export default async function Page({
       <Suspense fallback={"Loading..."}>
         <PoolCard
           roundId={roundId}
-          poolId={pool.id} network={pool.gauge?.network}
+          poolId={pool.id}
+          network={pool.gauge?.network}
         />
       </Suspense>
     </div>

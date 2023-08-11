@@ -19,7 +19,7 @@ export default function Page({
         <BALPrice />
       </Suspense>
       <Suspense fallback={"Loading..."}>
-        <PoolCard poolId={pool.id} network={pool.gauge?.network}  />
+        <PoolCard poolId={pool.id} network={pool.gauge?.network} />
       </Suspense>
     </>
   );

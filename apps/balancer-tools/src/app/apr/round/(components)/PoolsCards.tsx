@@ -7,11 +7,11 @@ import votingGauges from "#/data/voting-gauges.json";
 import { Pool } from "#/lib/balancer/gauges";
 
 import BALPrice from "../../(components)/BALPrice";
+import BalancerAPI from "../../(utils)/balancerAPI";
 import calculateRoundAPR from "../../(utils)/calculateRoundAPR";
 import { getBALPriceByRound } from "../../(utils)/getBALPriceByRound";
 import { getPoolRelativeWeight } from "../../(utils)/getRelativeWeight";
 import { Round } from "../../(utils)/rounds";
-import BalancerAPI from "../../(utils)/balancerAPI";
 
 export interface PoolData {
   pct_votes: number;
@@ -39,9 +39,7 @@ export function PoolCard({
       <div className="flex justify-between border border-gray-400 lg:border-gray-400 bg-blue3 rounded p-4 cursor-pointer">
         <div className="">
           <div className="flex justify-between">
-            <div className="text-white font-bold text-xl mb-2">
-              {pool.id}
-            </div>
+            <div className="text-white font-bold text-xl mb-2">{pool.id}</div>
           </div>
           <div className="flex items-center">
             <div className="text-sm">
@@ -104,15 +102,18 @@ export async function PoolAPR({
 
   const round = Round.getRoundByNumber(roundId);
 
+  const pool = new Pool(poolId);
+
   // TODO: get TVL and votingShare from Dune or Subgraph
   const [balPriceUSD, tvl, votingShare] = await Promise.all([
     getBALPriceByRound(round),
-    BalancerAPI.getPoolTotalLiquidityUSD(poolId),
+    BalancerAPI.getPoolTotalLiquidityUSD(pool.gauge?.network || 1, pool.id),
     getPoolRelativeWeight(poolId, round.endDate.getTime() / 1000),
   ]);
 
   // eslint-disable-next-line no-console
   console.log({ balPriceUSD, tvl, votingShare });
+  console.log(tvl);
   const apr = calculateRoundAPR(round, votingShare, tvl, balPriceUSD);
 
   return (
@@ -125,8 +126,13 @@ export async function PoolAPR({
 export default async function PoolsCards({ roundId }: { roundId: string }) {
   return (
     <div className="space-y-6 w-full">
-      {votingGauges.map((gauge) => (
-        <PoolCard poolId={gauge.pool.id} network={gauge.network} roundId={roundId} key={gauge.address} />
+      {votingGauges.slice(0, 1).map((gauge) => (
+        <PoolCard
+          poolId={gauge.pool.id}
+          network={gauge.network}
+          roundId={roundId}
+          key={gauge.address}
+        />
       ))}
     </div>
   );

@@ -116,7 +116,7 @@ export async function PoolAPR({
 export default async function PoolsCards({ roundId }: { roundId: string }) {
   return (
     <div className="space-y-6 w-full">
-      {votingGauges.map((gauge) => (
+      {votingGauges.slice(0, 10).map((gauge) => (
         <PoolCard
           poolId={gauge.pool.id}
           network={gauge.network}

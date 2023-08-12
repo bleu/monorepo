@@ -7,7 +7,6 @@ const moduleExports = {
   experimental: {
     appDir: true,
   },
-  output: "standalone",
   reactStrictMode: true,
   swcMinify: true,
   /**

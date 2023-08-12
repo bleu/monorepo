@@ -31,7 +31,7 @@ export async function gql(
   url: string,
   query: string,
   variables: unknown,
-  headers: Record<string, string>,
+  headers?: Record<string, string>,
 ) {
   try {
     const result = await fetch(url, {

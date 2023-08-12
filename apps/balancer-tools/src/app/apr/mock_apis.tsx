@@ -1,3 +1,9 @@
+export const mockGetTVLByRoundId = [
+  {
+    total_tvl: 2128.221644270715,
+  },
+];
+
 export const voteGaugeByID = [
   {
     pct_votes: 0.24118497395666047,

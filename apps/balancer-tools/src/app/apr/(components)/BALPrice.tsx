@@ -14,15 +14,7 @@ export default async function BALPrice({
     ? Round.getRoundByNumber(roundId)
     : Round.currentRound();
 
-  return <Price data={getBALPriceByRound(round)} />;
-}
-
-export const Price = async ({
-  data,
-}: {
-  data: ReturnType<typeof getBALPriceByRound>;
-}) => {
-  const price = await data;
+  const price = await getBALPriceByRound(round);
 
   return (
     <div>
@@ -35,4 +27,4 @@ export const Price = async ({
         : "error"}
     </div>
   );
-};
+}

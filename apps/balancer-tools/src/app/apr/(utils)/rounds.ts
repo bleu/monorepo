@@ -1,5 +1,5 @@
 export class Round {
-  private static FIRST_ROUND_END_DATE = new Date("2022-04-13T23:59:59.999Z");
+  private static FIRST_ROUND_END_DATE = new Date("2022-04-14T00:00:00.000Z");
   private static ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
 
   endDate: Date;

@@ -41,15 +41,12 @@
     "concurrently": "^8.2.0",
     "ghooks": "^2.0.4",
     "lint-staged": "^13.2.3",
-    "prettier": "^3.0.0",
+    "prettier": "^3.0.1",
     "typescript": "^5.1.6"
   },
   "pnpm": {
     "overrides": {
       "ipfs-http-client": "^60"
-    },
-    "patchedDependencies": {
-      "@netlify/plugin-nextjs@4.39.3": "patches/@netlify__plugin-nextjs@4.39.3.patch"
     }
   }
 }

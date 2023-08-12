@@ -38,6 +38,7 @@ export async function GET(
 
   requestJson.forEach((poolData) => {
     // APR = emissions in week * voting share * weeks in year * BAL price / TVL
+    // @ts-ignore
     poolData["apr"] =
       (balWeeklyEmissions * poolData.pct_votes * 52 * balPrice) /
       totalTvl /

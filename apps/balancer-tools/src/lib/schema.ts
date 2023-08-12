@@ -253,7 +253,7 @@ export const FxSchema = BasePoolSchema.extend({
 // TODO: BAL-518 Rename this to StableSwapSchema when pool simulator is finished
 export const StableSwapSimulatorDataSchema = BasePoolSchema.extend({
   ampFactor: z.coerce.number().positive().min(1).max(5000), //source: https://github.com/balancer/balancer-v2-monorepo/blob/c4cc3d466eaa3c1e5fa62d303208c6c4a10db48a/pkg/pool-stable/contracts/StableMath.sol#L28
-  tokens: z.array(BaseTokenSchema).length(2).min(2).max(5),
+  tokens: z.array(BaseTokenSchema).min(2).max(5),
 });
 
 export const SwapSimulatorDataSchema = z

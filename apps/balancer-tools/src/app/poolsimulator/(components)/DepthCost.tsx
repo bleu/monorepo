@@ -264,14 +264,7 @@ export function calculateDepthCost(
           spotPricePrecision,
         );
 
-  const alpha =
-    poolType === PoolTypeEnum.GyroE
-      ? data.poolParams?.alpha
-      : (data.poolParams?.sqrtAlpha as number) ** 2;
-  const beta =
-    poolType === PoolTypeEnum.GyroE
-      ? data.poolParams?.beta
-      : (data.poolParams?.sqrtBeta as number) ** 2;
+  const { alpha, beta } = computeAlphaBetaValues(poolType, data);
 
   switch (poolType) {
     // For metastable pools we'll assume depth cost as 2% of the current spot price
@@ -280,10 +273,10 @@ export function calculateDepthCost(
         amount: amountCalculator(newSpotPrice),
         type: "2% of price change",
       };
+    case PoolTypeEnum.Gyro3:
     case PoolTypeEnum.Gyro2:
     case PoolTypeEnum.GyroE:
       // For CLP pools we'll assume depth cost as the pool depth == 99% of the liquidity or 2% of the current spot price (if possible)
-
       // The Alpha and Beta values are considering token 0 in units of token 1.
       // This means that token 1 must be the the tokenIn
       // And token 0 must be the tokenOut
@@ -313,5 +306,27 @@ export function calculateDepthCost(
       };
     default:
       return { amount: 0, type: "" };
+  }
+}
+
+function computeAlphaBetaValues(poolType: PoolTypeEnum, data: AnalysisData) {
+  switch (poolType) {
+    case PoolTypeEnum.GyroE:
+      return {
+        alpha: data.poolParams?.alpha,
+        beta: data.poolParams?.beta,
+      };
+    case PoolTypeEnum.Gyro2:
+      return {
+        alpha: (data.poolParams?.sqrtAlpha as number) ** 2,
+        beta: (data.poolParams?.sqrtBeta as number) ** 2,
+      };
+    case PoolTypeEnum.Gyro3:
+      return {
+        alpha: (data.poolParams?.root3Alpha as number) ** 3,
+        beta: 1 / (data.poolParams?.root3Alpha as number) ** 3, //source: https://2063019688-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-MU527HCtxlYaQoNazhF%2Fuploads%2FZrQCiZDDe8xrof3ngRG2%2F3-CLP%20Technical%20Specification.pdf?alt=media&token=c4f3b8bd-57fb-48ab-815f-cfa29b748d91,
+      };
+    default:
+      return {};
   }
 }

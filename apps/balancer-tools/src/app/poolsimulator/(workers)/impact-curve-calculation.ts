@@ -13,7 +13,7 @@ import {
 export interface ImpactWorkerInputData {
   tokenIn: TokensData;
   tokenOut: TokensData;
-  currentTabToken: TokensData;
+  currentTabToken?: TokensData;
   data: AnalysisData;
   poolType: PoolTypeEnum;
   swapDirection: "in" | "out";

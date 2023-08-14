@@ -1,7 +1,7 @@
 "use client";
 
 import { PlotType } from "plotly.js";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
@@ -25,6 +25,31 @@ interface Amounts {
   };
 }
 
+const createAndPostWorker = (
+  messageData: ImpactWorkerInputData,
+  setInitialAmounts: Dispatch<SetStateAction<Amounts>>,
+  setCustomAmounts: Dispatch<SetStateAction<Amounts>>
+) => {
+  const worker = new Worker(
+      new URL("../(workers)/impact-curve-calculation.ts", import.meta.url)
+  );
+
+  worker.onmessage = (event: MessageEvent<ImpactWorkerOutputData>) => {
+      const { result, type, swapDirection } = event.data;
+      const setter =
+          type === "initial" ? setInitialAmounts : setCustomAmounts;
+
+      const key =
+          swapDirection === "in" ? "analysisTokenIn" : "tabTokenIn";
+
+      setter((prev) => ({ ...prev, [key]: result }));
+
+      worker.terminate();
+  };
+
+  worker.postMessage(messageData);
+};
+
 export function ImpactCurve() {
   const { analysisToken, currentTabToken, initialData, customData } =
     usePoolSimulator();
@@ -35,67 +60,43 @@ export function ImpactCurve() {
   if (!initialData || !customData) return <Spinner />;
 
   useEffect(() => {
-    const worker = new Worker(
-      new URL("../(workers)/impact-curve-calculation.ts", import.meta.url),
-    );
+    const messages: ImpactWorkerInputData[] = [
+      {
+          tokenIn: analysisToken,
+          tokenOut: currentTabToken,
+          data: initialData,
+          poolType: initialData.poolType,
+          swapDirection: "in",
+          type: "initial",
+      },
+      {
+          tokenIn: analysisToken,
+          tokenOut: currentTabToken,
+          data: initialData,
+          poolType: initialData.poolType,
+          swapDirection: "out",
+          type: "initial",
+      },
+      {
+          tokenIn: analysisToken,
+          tokenOut: currentTabToken,
+          data: customData,
+          poolType: customData.poolType,
+          swapDirection: "in",
+          type: "custom",
+      },
+      {
+          tokenIn: analysisToken,
+          tokenOut: currentTabToken,
+          data: customData,
+          poolType: customData.poolType,
+          swapDirection: "out",
+          type: "custom",
+      },
+  ];
 
-    worker.onmessage = (event: MessageEvent<ImpactWorkerOutputData>) => {
-      const { result, type, swapDirection } = event.data;
-      const key = `${type}Amounts${
-        swapDirection === "in" ? "AnalysisTokenIn" : "TabTokenIn"
-      }`;
-
-      if (key === "initialAmountsAnalysisTokenIn") {
-        setInitialAmounts((prev) => ({ ...prev, analysisTokenIn: result }));
-      } else if (key === "initialAmountsTabTokenIn") {
-        setInitialAmounts((prev) => ({ ...prev, tabTokenIn: result }));
-      } else if (key === "customAmountsAnalysisTokenIn") {
-        setCustomAmounts((prev) => ({ ...prev, analysisTokenIn: result }));
-      } else if (key === "customAmountsTabTokenIn") {
-        setCustomAmounts((prev) => ({ ...prev, tabTokenIn: result }));
-      }
-    };
-
-    worker.postMessage({
-      tokenIn: analysisToken,
-      tokenOut: currentTabToken,
-      data: initialData,
-      poolType: initialData.poolType,
-      swapDirection: "in",
-      type: "initial",
-    } as ImpactWorkerInputData);
-
-    worker.postMessage({
-      tokenIn: analysisToken,
-      tokenOut: currentTabToken,
-      data: initialData,
-      poolType: initialData.poolType,
-      swapDirection: "out",
-      type: "initial",
-    } as ImpactWorkerInputData);
-
-    worker.postMessage({
-      tokenIn: analysisToken,
-      tokenOut: currentTabToken,
-      data: customData,
-      poolType: customData.poolType,
-      swapDirection: "in",
-      type: "custom",
-    } as ImpactWorkerInputData);
-
-    worker.postMessage({
-      tokenIn: analysisToken,
-      tokenOut: currentTabToken,
-      data: customData,
-      poolType: customData.poolType,
-      swapDirection: "out",
-      type: "custom",
-    } as ImpactWorkerInputData);
-
-    return () => {
-      worker.terminate();
-    };
-  }, [initialData, customData, analysisToken, currentTabToken]);
+    messages.forEach((message) => createAndPostWorker(message, setInitialAmounts, setCustomAmounts));
+}, [initialData, customData, analysisToken, currentTabToken]);
 
   // Helper function to format the swap action string
   const formatAction = (

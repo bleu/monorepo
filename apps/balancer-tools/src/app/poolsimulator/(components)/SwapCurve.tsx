@@ -188,50 +188,59 @@ export function SwapCurve() {
   }
 
   function getGraphScale({
-    initialAmountsIn,
-    customAmountsIn,
-    initialAmountsOut,
-    customAmountsOut,
+    axisBalanceSymbol,
+    oppositeAxisBalanceSymbol,
   }: {
-    initialAmountsIn: number[];
-    customAmountsIn: number[];
-    initialAmountsOut: number[];
-    customAmountsOut: number[];
+    axisBalanceSymbol?: string;
+    oppositeAxisBalanceSymbol?: string;
   }) {
-    const maxOfIn = {
-      initial: Math.max(...initialAmountsIn),
-      custom: Math.max(...customAmountsIn),
-    };
-    const minOfOut = {
-      initial: Math.min(...initialAmountsOut),
-      custom: Math.min(...customAmountsOut),
+    const initialAxisToken = findTokenBySymbol(
+      initialData.tokens,
+      axisBalanceSymbol,
+    );
+    const customAxisToken = findTokenBySymbol(
+      customData.tokens,
+      axisBalanceSymbol,
+    );
+    const initialOppositeAxisToken = findTokenBySymbol(
+      initialData.tokens,
+      oppositeAxisBalanceSymbol,
+    );
+    const customOppositeAxisToken = findTokenBySymbol(
+      customData.tokens,
+      oppositeAxisBalanceSymbol,
+    );
+    const axisBalances = [
+      initialAxisToken?.balance || 0,
+      customAxisToken?.balance || 0,
+    ];
+
+    const convertBalanceScale = (
+      balance?: number,
+      balanceRate?: number,
+      newRate?: number,
+    ) => {
+      if (!balance || !balanceRate || !newRate) return 0;
+      return (balance * balanceRate) / newRate;
     };
 
-    const limits = {
-      lowerIn: Math.min(maxOfIn.initial, maxOfIn.custom),
-      higherOut: Math.max(minOfOut.initial, minOfOut.custom),
-    };
+    const oppositeAxisBalances = [
+      convertBalanceScale(
+        initialOppositeAxisToken?.balance,
+        initialOppositeAxisToken?.rate,
+        initialAxisToken?.rate,
+      ),
+      convertBalanceScale(
+        customOppositeAxisToken?.balance,
+        customOppositeAxisToken?.rate,
+        customAxisToken?.rate,
+      ),
+    ];
 
-    if (maxOfIn.initial === maxOfIn.custom) {
-      return [initialAmountsOut[100] * 1.1, initialAmountsIn[100] * 1.1];
-    }
+    const maxOfAxisBalance = Math.max(...axisBalances);
+    const maxOfOppositeAxisBalance = Math.max(...oppositeAxisBalances);
 
-    if (maxOfIn.initial === limits.lowerIn) {
-      const indexMax = initialAmountsIn.indexOf(limits.lowerIn);
-      const indexMin = initialAmountsOut.indexOf(limits.higherOut);
-      return [
-        initialAmountsOut[indexMin] * 1.1,
-        initialAmountsIn[indexMax] * 1.1,
-      ];
-    }
-    if (maxOfIn.custom === limits.lowerIn) {
-      const indexMax = customAmountsIn.indexOf(limits.lowerIn);
-      const indexMin = customAmountsOut.indexOf(limits.higherOut);
-      return [
-        customAmountsOut[indexMin] * 1.1,
-        customAmountsIn[indexMax] * 1.1,
-      ];
-    }
+    return [-maxOfAxisBalance * 1.1, maxOfOppositeAxisBalance * 1.1];
   }
 
   return (
@@ -243,19 +252,15 @@ export function SwapCurve() {
         xaxis: {
           title: `Amount of ${analysisToken.symbol}`,
           range: getGraphScale({
-            initialAmountsOut: initialAmountsAnalysisTokenOut,
-            customAmountsOut: customAmountsAnalysisTokenOut,
-            initialAmountsIn: initialAmountsAnalysisTokenIn,
-            customAmountsIn: customAmountsAnalysisTokenIn,
+            axisBalanceSymbol: analysisToken.symbol,
+            oppositeAxisBalanceSymbol: currentTabToken.symbol,
           }),
         },
         yaxis: {
           title: `Amount of ${currentTabToken.symbol}`,
           range: getGraphScale({
-            initialAmountsOut: initialAmountTabTokenOut,
-            customAmountsOut: customAmountTabTokenOut,
-            initialAmountsIn: initialAmountTabTokenIn,
-            customAmountsIn: customAmountTabTokenIn,
+            axisBalanceSymbol: currentTabToken.symbol,
+            oppositeAxisBalanceSymbol: analysisToken.symbol,
           }),
         },
       }}

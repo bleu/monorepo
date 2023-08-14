@@ -10,7 +10,18 @@ import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
 import { PoolTypeEnum, TokensData } from "../(types)";
-import { calculateCurvePoints, trimTrailingValues } from "../(utils)";
+import {
+  calculateCurvePoints,
+  findTokenBySymbol,
+  trimTrailingValues,
+} from "../(utils)";
+
+const POOL_TYPES_TO_ADD_LIMIT = [
+  PoolTypeEnum.Gyro2,
+  PoolTypeEnum.Gyro3,
+  PoolTypeEnum.GyroE,
+  PoolTypeEnum.Fx,
+];
 
 export function SwapCurve() {
   const {
@@ -145,11 +156,7 @@ export function SwapCurve() {
     ),
   ];
 
-  if (
-    [PoolTypeEnum.Gyro2, PoolTypeEnum.Gyro3, PoolTypeEnum.GyroE].includes(
-      initialData.poolType,
-    )
-  ) {
+  if (POOL_TYPES_TO_ADD_LIMIT.includes(initialData.poolType)) {
     data.push(
       createLimitPointDataObject(
         [
@@ -164,11 +171,7 @@ export function SwapCurve() {
       ),
     );
   }
-  if (
-    [PoolTypeEnum.Gyro2, PoolTypeEnum.Gyro3, PoolTypeEnum.GyroE].includes(
-      customData.poolType,
-    )
-  ) {
+  if (POOL_TYPES_TO_ADD_LIMIT.includes(customData.poolType)) {
     data.push(
       createLimitPointDataObject(
         [

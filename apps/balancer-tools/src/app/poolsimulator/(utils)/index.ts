@@ -1,5 +1,6 @@
 import { PoolQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
+import { ExtendedFx } from "@bleu-balancer-tools/math-poolsimulator/src/fx";
 import { ExtendedGyro2 } from "@bleu-balancer-tools/math-poolsimulator/src/gyro2";
 import { ExtendedGyro3 } from "@bleu-balancer-tools/math-poolsimulator/src/gyro3";
 import { ExtendedGyroEV2 } from "@bleu-balancer-tools/math-poolsimulator/src/gyroE";
@@ -8,16 +9,20 @@ import { ExtendedMetaStableMath } from "@bleu-balancer-tools/math-poolsimulator/
 import { AnalysisData } from "#/contexts/PoolSimulatorContext";
 import { fetchECLPDerivativeParams } from "#/lib/eclp-derivative";
 
-import { PoolTypeEnum } from "../(types)";
+import { PoolTypeEnum, TokensData } from "../(types)";
 
 export async function convertAnalysisDataToAMM(data: AnalysisData) {
-  if (!data.poolType || !data.poolParams?.swapFee) return;
+  if (!data.poolType || typeof data.poolParams?.swapFee === "undefined") return;
 
   const tokensData = data.tokens.map((token) => ({
     address: token.symbol, // math use address as key, but we will use symbol because custom token will not have address
     balance: String(token.balance),
     decimals: token.decimal,
-    priceRate: String(token.rate),
+    priceRate: data.poolType === PoolTypeEnum.Fx ? "1" : String(token.rate),
+    token: {
+      latestFXPrice: String(token.rate),
+      fxOracleDecimals: 8,
+    },
   }));
 
   switch (data.poolType) {
@@ -81,6 +86,23 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
           tokens: tokensData,
           tokensList: data.tokens.map((token) => String(token.symbol)),
           root3Alpha: String(data.poolParams?.root3Alpha),
+        }),
+      );
+    }
+    case PoolTypeEnum.Fx: {
+      return new AMM(
+        new ExtendedFx({
+          swapFee: String(data.poolParams?.swapFee),
+          totalShares: String(
+            data.tokens.reduce((acc, token) => acc + token.balance, 0),
+          ),
+          tokens: tokensData,
+          tokensList: data.tokens.map((token) => String(token.symbol)),
+          alpha: String(data.poolParams?.alpha),
+          beta: String(data.poolParams?.beta),
+          lambda: String(data.poolParams?.lambda),
+          delta: String(data.poolParams?.delta),
+          epsilon: String(data.poolParams?.epsilon),
         }),
       );
     }
@@ -224,4 +246,8 @@ export function trimTrailingValues(
   const trimmedOut = amountsOut.slice(0, cutIndex);
 
   return { trimmedIn, trimmedOut };
+}
+
+export function findTokenBySymbol(tokens: TokensData[], symbol?: string) {
+  return tokens.find((token) => token.symbol === symbol);
 }

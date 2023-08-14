@@ -29,7 +29,7 @@ describe("Tests new Fx math function based on package other functions", () => {
             delta: poolData.delta,
             lambda: poolData.lambda,
             epsilon: poolData.epsilon,
-          })
+          }),
         );
 
         const pool = ExtendedFx.fromPool(poolData as SubgraphPoolBase);
@@ -37,7 +37,7 @@ describe("Tests new Fx math function based on package other functions", () => {
 
         const amount =
           Number(
-            formatFixed(poolPairData.balanceOut, poolPairData.decimalsOut)
+            formatFixed(poolPairData.balanceOut, poolPairData.decimalsOut),
           ) *
           (percentage / 100);
         const amountOldBigNumber = bnum(amount);
@@ -51,33 +51,33 @@ describe("Tests new Fx math function based on package other functions", () => {
             number: amount,
             decimals: poolPairData.decimalsOut,
           }),
-          poolPairData
+          poolPairData,
         );
 
         test(`_spotPrice`, () => {
           const amountOut = amm.exactTokenInForTokenOut(
             amount,
             tokenIn,
-            tokenOut
+            tokenOut,
           );
 
           poolPairData.balanceIn = poolPairData.balanceIn.add(
             numberToBigNumber({
               number: amount,
               decimals: poolPairData.decimalsIn,
-            })
+            }),
           );
 
           poolPairData.balanceOut = poolPairData.balanceOut.sub(
             numberToBigNumber({
               number: amountOut,
               decimals: poolPairData.decimalsOut,
-            })
+            }),
           );
 
           verifyApproximateEquality(
             pool._spotPrice(poolPairData).toNumber(),
-            spotPriceExpected.toNumber()
+            spotPriceExpected.toNumber(),
           );
         });
       });

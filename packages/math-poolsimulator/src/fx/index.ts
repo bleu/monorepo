@@ -49,7 +49,7 @@ export class ExtendedFx
       poolParams.beta,
       poolParams.lambda,
       poolParams.delta,
-      poolParams.epsilon
+      poolParams.epsilon,
     );
   }
 
@@ -117,11 +117,11 @@ export class ExtendedFx
       epsilon: this.epsilon,
       tokenInLatestFXPrice: parseFixed(
         tI.token.latestFXPrice,
-        tI.token.fxOracleDecimals
+        tI.token.fxOracleDecimals,
       ), // decimals is formatted from subgraph in rate we get from the chainlink oracle
       tokenOutLatestFXPrice: parseFixed(
         tO.token.latestFXPrice,
-        tO.token.fxOracleDecimals
+        tO.token.fxOracleDecimals,
       ), // decimals is formatted from subgraph in rate we get from the chainlink oracle
       tokenInfxOracleDecimals: tI.token.fxOracleDecimals,
       tokenOutfxOracleDecimals: tO.token.fxOracleDecimals,
@@ -134,22 +134,22 @@ export class ExtendedFx
     return this._inHigherPrecision(
       FxMaths.spotPriceBeforeSwap,
       safeParseFixed(bnum(0).toString(), 36),
-      poolPairData
+      poolPairData,
     );
   }
 
   _firstGuessOfTokenInForExactSpotPriceAfterSwap(
-    poolPairData: FxPoolPairData
+    poolPairData: FxPoolPairData,
   ): OldBigNumber {
     return bigNumberToOldBigNumber(
       poolPairData.balanceIn,
-      poolPairData.decimalsIn
+      poolPairData.decimalsIn,
     ).times(bnum(0.01));
   }
 
   _checkIfInIsOnLimit(
     poolPairData: FxPoolPairData,
-    amountIn: OldBigNumber
+    amountIn: OldBigNumber,
   ): boolean {
     const amountOut = this._exactTokenInForTokenOut(poolPairData, amountIn);
     return amountOut.toNumber() > 0 && amountIn.toNumber() > 0;

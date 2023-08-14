@@ -9,6 +9,10 @@ import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
 import { PoolTypeEnum } from "../(types)";
+import {
+  ImpactWorkerInputData,
+  ImpactWorkerOutputData,
+} from "../(workers)/impact-curve-calculation";
 
 interface Amounts {
   analysisTokenIn?: {
@@ -35,7 +39,7 @@ export function ImpactCurve() {
       new URL("../(workers)/impact-curve-calculation.ts", import.meta.url),
     );
 
-    worker.onmessage = (event: MessageEvent) => {
+    worker.onmessage = (event: MessageEvent<ImpactWorkerOutputData>) => {
       const { result, type, swapDirection } = event.data;
       const key = `${type}Amounts${
         swapDirection === "in" ? "AnalysisTokenIn" : "TabTokenIn"
@@ -59,7 +63,7 @@ export function ImpactCurve() {
       poolType: initialData.poolType,
       swapDirection: "in",
       type: "initial",
-    });
+    } as ImpactWorkerInputData);
 
     worker.postMessage({
       tokenIn: analysisToken,
@@ -68,7 +72,7 @@ export function ImpactCurve() {
       poolType: initialData.poolType,
       swapDirection: "out",
       type: "initial",
-    });
+    } as ImpactWorkerInputData);
 
     worker.postMessage({
       tokenIn: analysisToken,
@@ -77,7 +81,7 @@ export function ImpactCurve() {
       poolType: customData.poolType,
       swapDirection: "in",
       type: "custom",
-    });
+    } as ImpactWorkerInputData);
 
     worker.postMessage({
       tokenIn: analysisToken,
@@ -86,7 +90,7 @@ export function ImpactCurve() {
       poolType: customData.poolType,
       swapDirection: "out",
       type: "custom",
-    });
+    } as ImpactWorkerInputData);
 
     return () => {
       worker.terminate();

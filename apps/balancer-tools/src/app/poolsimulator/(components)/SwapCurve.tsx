@@ -9,6 +9,10 @@ import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
 import { PoolTypeEnum } from "../(types)";
+import {
+  SwapCurveWorkerInputData,
+  SwapCurveWorkerOutputData,
+} from "../(workers)/swap-curve-calculation";
 
 interface AmountsData {
   analysisTokenIn: number[];
@@ -33,9 +37,11 @@ export function SwapCurve() {
     const worker = new Worker(
       new URL("../(workers)/swap-curve-calculation.ts", import.meta.url),
     );
-    worker.onmessage = (event: MessageEvent) => {
+    worker.onmessage = (event: MessageEvent<SwapCurveWorkerOutputData>) => {
       const result = event.data.result;
       const type = event.data.type;
+
+      if (!result) return;
 
       if (type === "initial") {
         setInitialAmounts(result);
@@ -48,14 +54,14 @@ export function SwapCurve() {
       currentTabToken,
       data: initialData,
       type: "initial",
-    });
+    } as SwapCurveWorkerInputData);
 
     worker.postMessage({
       analysisToken,
       currentTabToken,
       data: customData,
       type: "custom",
-    });
+    } as SwapCurveWorkerInputData);
   }, [initialData, customData, analysisToken, currentTabToken]);
 
   const formatSwap = (

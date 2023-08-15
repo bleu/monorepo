@@ -1,0 +1,43 @@
+{
+  "pool": {
+    "id": "0xad0e5e0778cac28f1ff459602b31351871b5754a0002000000000000000003ce",
+    "address": "0xad0e5e0778cac28f1ff459602b31351871b5754a",
+    "poolType": "FX",
+    "symbol": "BPT",
+    "swapFee": "0",
+    "alpha": "0.8",
+    "beta": "0.42",
+    "lambda": "0.3",
+    "delta": "0.3",
+    "epsilon": "0.0008",
+    "swapEnabled": true,
+    "tokens": [
+      {
+        "address": "USDC",
+        "symbol": "USDC",
+        "balance": "58398.373699",
+        "decimals": 6,
+        "priceRate": "1",
+        "weight": null,
+        "token": {
+          "fxOracleDecimals": 8,
+          "latestFXPrice": "0.999941"
+        }
+      },
+      {
+        "address": "EURS",
+        "symbol": "EURS",
+        "balance": "128879.65",
+        "decimals": 2,
+        "priceRate": "1",
+        "weight": null,
+        "token": {
+          "fxOracleDecimals": 8,
+          "latestFXPrice": "1.09549"
+        }
+      }
+    ],
+    "totalShares": "188755.616586050695064249",
+    "tokensList": ["USDC", "EURS"]
+  }
+}

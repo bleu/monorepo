@@ -33,76 +33,71 @@ export interface ImpactWorkerOutputData {
 self.addEventListener(
   "message",
   async (event: MessageEvent<ImpactWorkerInputData>) => {
-    try {
-      const { tokenIn, tokenOut, data, poolType, swapDirection, type } =
-        event.data;
+    const { tokenIn, tokenOut, data, poolType, swapDirection, type } =
+      event.data;
 
-      if (!data) return;
+    if (!data) return;
 
-      const amm = await convertAnalysisDataToAMM(data);
+    const amm = await convertAnalysisDataToAMM(data);
 
-      if (!amm) return;
-      const calculateTokenImpact = ({
-        tokenIn,
-        tokenOut,
-        amm,
-        poolType,
-        swapDirection,
-      }: {
-        tokenIn: TokensData;
-        tokenOut: TokensData;
-        amm: AMM<PoolPairData>;
-        poolType: PoolTypeEnum;
-        swapDirection: "in" | "out";
-      }) => {
-        const maxBalance = Math.max(tokenIn.balance, tokenOut.balance);
-        const limitBalance =
-          swapDirection === "in" ? tokenOut.balance : tokenIn.balance;
-        const rawAmounts =
-          poolType === PoolTypeEnum.MetaStable
-            ? calculateCurvePoints({
-                balance: maxBalance,
-                start: 0.001,
-              })
-            : calculateCurvePoints({
-                balance: maxBalance,
-                start: 0.001,
-              }).filter((value) => value <= limitBalance);
+    if (!amm) return;
+    const calculateTokenImpact = ({
+      tokenIn,
+      tokenOut,
+      amm,
+      poolType,
+      swapDirection,
+    }: {
+      tokenIn: TokensData;
+      tokenOut: TokensData;
+      amm: AMM<PoolPairData>;
+      poolType: PoolTypeEnum;
+      swapDirection: "in" | "out";
+    }) => {
+      const maxBalance = Math.max(tokenIn.balance, tokenOut.balance);
+      const limitBalance =
+        swapDirection === "in" ? tokenOut.balance : tokenIn.balance;
+      const rawAmounts =
+        poolType === PoolTypeEnum.MetaStable
+          ? calculateCurvePoints({
+              balance: maxBalance,
+              start: 0.001,
+            })
+          : calculateCurvePoints({
+              balance: maxBalance,
+              start: 0.001,
+            }).filter((value) => value <= limitBalance);
 
-        const rawPriceImpact = rawAmounts.map(
-          (amount) =>
-            amm.priceImpactForExactTokenInSwap(
-              amount,
-              swapDirection === "in" ? tokenIn.symbol : tokenOut.symbol,
-              swapDirection === "in" ? tokenOut.symbol : tokenIn.symbol,
-            ) * 100,
-        );
+      const rawPriceImpact = rawAmounts.map(
+        (amount) =>
+          amm.priceImpactForExactTokenInSwap(
+            amount,
+            swapDirection === "in" ? tokenIn.symbol : tokenOut.symbol,
+            swapDirection === "in" ? tokenOut.symbol : tokenIn.symbol,
+          ) * 100,
+      );
 
-        const { trimmedIn: amounts, trimmedOut: priceImpact } =
-          trimTrailingValues(rawAmounts, rawPriceImpact, 100);
+      const { trimmedIn: amounts, trimmedOut: priceImpact } =
+        trimTrailingValues(rawAmounts, rawPriceImpact, 100);
 
-        return {
-          amounts: amounts,
-          priceImpact: priceImpact,
-        };
+      return {
+        amounts: amounts,
+        priceImpact: priceImpact,
       };
-      const calcResult = calculateTokenImpact({
-        tokenIn,
-        tokenOut,
-        amm,
-        poolType,
-        swapDirection,
-      });
+    };
+    const calcResult = calculateTokenImpact({
+      tokenIn,
+      tokenOut,
+      amm,
+      poolType,
+      swapDirection,
+    });
 
-      const result: ImpactWorkerOutputData = {
-        result: calcResult,
-        type,
-        swapDirection,
-      };
-      self.postMessage(result);
-    } catch (error) {
-      const { type } = event.data;
-      self.postMessage({ error, type } as ImpactWorkerOutputData);
-    }
+    const result: ImpactWorkerOutputData = {
+      result: calcResult,
+      type,
+      swapDirection,
+    };
+    self.postMessage(result);
   },
 );

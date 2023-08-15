@@ -31,83 +31,63 @@ export interface SwapCurveWorkerOutputData {
 self.addEventListener(
   "message",
   async (event: MessageEvent<SwapCurveWorkerInputData>) => {
-    try {
-      const { analysisToken, currentTabToken, data, type } = event.data;
+    const { analysisToken, currentTabToken, data, type } = event.data;
 
-      if (!data) return;
+    if (!data) return;
 
-      const amm = await convertAnalysisDataToAMM(data);
+    const amm = await convertAnalysisDataToAMM(data);
 
-      if (!amm) return;
+    if (!amm) return;
 
-      const calculateTokenAmounts = (
-        tokenIn: TokensData,
-        tokenOut: TokensData,
-        amm: AMM<PoolPairData>,
-      ) => {
-        const rawAmountsAnalysisTokenIn = calculateCurvePoints({
-          balance: tokenIn.balance,
-        });
+    const calculateTokenAmounts = (
+      tokenIn: TokensData,
+      tokenOut: TokensData,
+      amm: AMM<PoolPairData>,
+    ) => {
+      const rawAmountsAnalysisTokenIn = calculateCurvePoints({
+        balance: tokenIn.balance,
+      });
 
-        const rawAmountsTabTokenIn = calculateCurvePoints({
-          balance: tokenOut.balance,
-        });
+      const rawAmountsTabTokenIn = calculateCurvePoints({
+        balance: tokenOut.balance,
+      });
 
-        const rawAmountsTabTokenOut = rawAmountsAnalysisTokenIn.map(
-          (amount) =>
-            amm.exactTokenInForTokenOut(
-              amount,
-              tokenIn.symbol,
-              tokenOut.symbol,
-            ) * -1,
-        );
-
-        const rawAmountsAnalysisTokenOut = rawAmountsTabTokenIn.map(
-          (amount) =>
-            amm.exactTokenInForTokenOut(
-              amount,
-              tokenOut.symbol,
-              tokenIn.symbol,
-            ) * -1,
-        );
-
-        const { trimmedIn: tabTokenIn, trimmedOut: analysisTokenOut } =
-          trimTrailingValues(
-            rawAmountsTabTokenIn,
-            rawAmountsAnalysisTokenOut,
-            0,
-          );
-
-        const { trimmedIn: analysisTokenIn, trimmedOut: tabTokenOut } =
-          trimTrailingValues(
-            rawAmountsAnalysisTokenIn,
-            rawAmountsTabTokenOut,
-            0,
-          );
-
-        return {
-          analysisTokenIn,
-          analysisTokenOut,
-          tabTokenOut,
-          tabTokenIn,
-        };
-      };
-
-      const calcResult = calculateTokenAmounts(
-        analysisToken,
-        currentTabToken,
-        amm,
+      const rawAmountsTabTokenOut = rawAmountsAnalysisTokenIn.map(
+        (amount) =>
+          amm.exactTokenInForTokenOut(amount, tokenIn.symbol, tokenOut.symbol) *
+          -1,
       );
 
-      const result: SwapCurveWorkerOutputData = {
-        result: calcResult,
-        type,
+      const rawAmountsAnalysisTokenOut = rawAmountsTabTokenIn.map(
+        (amount) =>
+          amm.exactTokenInForTokenOut(amount, tokenOut.symbol, tokenIn.symbol) *
+          -1,
+      );
+
+      const { trimmedIn: tabTokenIn, trimmedOut: analysisTokenOut } =
+        trimTrailingValues(rawAmountsTabTokenIn, rawAmountsAnalysisTokenOut, 0);
+
+      const { trimmedIn: analysisTokenIn, trimmedOut: tabTokenOut } =
+        trimTrailingValues(rawAmountsAnalysisTokenIn, rawAmountsTabTokenOut, 0);
+
+      return {
+        analysisTokenIn,
+        analysisTokenOut,
+        tabTokenOut,
+        tabTokenIn,
       };
-      self.postMessage(result);
-    } catch (error) {
-      const { type } = event.data;
-      const errorMessage = new Error("Error while calculating token amounts.");
-      self.postMessage({ errorMessage, type } as SwapCurveWorkerOutputData);
-    }
+    };
+
+    const calcResult = calculateTokenAmounts(
+      analysisToken,
+      currentTabToken,
+      amm,
+    );
+
+    const result: SwapCurveWorkerOutputData = {
+      result: calcResult,
+      type,
+    };
+    self.postMessage(result);
   },
 );

@@ -28,23 +28,21 @@ interface Amounts {
 const createAndPostWorker = (
   messageData: ImpactWorkerInputData,
   setInitialAmounts: Dispatch<SetStateAction<Amounts>>,
-  setCustomAmounts: Dispatch<SetStateAction<Amounts>>
+  setCustomAmounts: Dispatch<SetStateAction<Amounts>>,
 ) => {
   const worker = new Worker(
-      new URL("../(workers)/impact-curve-calculation.ts", import.meta.url)
+    new URL("../(workers)/impact-curve-calculation.ts", import.meta.url),
   );
 
   worker.onmessage = (event: MessageEvent<ImpactWorkerOutputData>) => {
-      const { result, type, swapDirection } = event.data;
-      const setter =
-          type === "initial" ? setInitialAmounts : setCustomAmounts;
+    const { result, type, swapDirection } = event.data;
+    const setter = type === "initial" ? setInitialAmounts : setCustomAmounts;
 
-      const key =
-          swapDirection === "in" ? "analysisTokenIn" : "tabTokenIn";
+    const key = swapDirection === "in" ? "analysisTokenIn" : "tabTokenIn";
 
-      setter((prev) => ({ ...prev, [key]: result }));
+    setter((prev) => ({ ...prev, [key]: result }));
 
-      worker.terminate();
+    worker.terminate();
   };
 
   worker.postMessage(messageData);
@@ -62,41 +60,43 @@ export function ImpactCurve() {
   useEffect(() => {
     const messages: ImpactWorkerInputData[] = [
       {
-          tokenIn: analysisToken,
-          tokenOut: currentTabToken,
-          data: initialData,
-          poolType: initialData.poolType,
-          swapDirection: "in",
-          type: "initial",
+        tokenIn: analysisToken,
+        tokenOut: currentTabToken,
+        data: initialData,
+        poolType: initialData.poolType,
+        swapDirection: "in",
+        type: "initial",
       },
       {
-          tokenIn: analysisToken,
-          tokenOut: currentTabToken,
-          data: initialData,
-          poolType: initialData.poolType,
-          swapDirection: "out",
-          type: "initial",
+        tokenIn: analysisToken,
+        tokenOut: currentTabToken,
+        data: initialData,
+        poolType: initialData.poolType,
+        swapDirection: "out",
+        type: "initial",
       },
       {
-          tokenIn: analysisToken,
-          tokenOut: currentTabToken,
-          data: customData,
-          poolType: customData.poolType,
-          swapDirection: "in",
-          type: "custom",
+        tokenIn: analysisToken,
+        tokenOut: currentTabToken,
+        data: customData,
+        poolType: customData.poolType,
+        swapDirection: "in",
+        type: "custom",
       },
       {
-          tokenIn: analysisToken,
-          tokenOut: currentTabToken,
-          data: customData,
-          poolType: customData.poolType,
-          swapDirection: "out",
-          type: "custom",
+        tokenIn: analysisToken,
+        tokenOut: currentTabToken,
+        data: customData,
+        poolType: customData.poolType,
+        swapDirection: "out",
+        type: "custom",
       },
-  ];
+    ];
 
-    messages.forEach((message) => createAndPostWorker(message, setInitialAmounts, setCustomAmounts));
-}, [initialData, customData, analysisToken, currentTabToken]);
+    messages.forEach((message) =>
+      createAndPostWorker(message, setInitialAmounts, setCustomAmounts),
+    );
+  }, [initialData, customData, analysisToken, currentTabToken]);
 
   // Helper function to format the swap action string
   const formatAction = (

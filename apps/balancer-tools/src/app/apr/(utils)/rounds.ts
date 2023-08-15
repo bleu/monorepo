@@ -3,11 +3,13 @@ export class Round {
   private static ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
 
   endDate: Date;
+  startDate: Date;
   value: string;
   activeRound: boolean;
 
   constructor(endDate: Date, roundNumber: number) {
     this.endDate = endDate;
+    this.startDate = new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000);
     this.value = String(roundNumber);
     this.activeRound = endDate.getTime() > Date.now();
   }

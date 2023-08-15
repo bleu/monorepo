@@ -2,29 +2,29 @@
 
 The Balancer Tools repository serves as a hub for open-source projects aimed at empowering Balancer users with additional functionalities, analytics, and ease of use. Here, you will find a variety of tools and utilities that can be used to augment your experience as a Balancer user, whether you're a liquidity provider, trader, Maxi or developer.
 
-The tools are live at https://tools.balancer.bleu and https://balancer-tools.bleu.studio.
+The tools are live at https://tools.balancer.blue and https://balancer-tools.bleu.studio.
 
 ## Avaliable tools
 
-### Pool Metadata [🔗](https://tools.balancer.bleu/metadata)
+### Pool Metadata [🔗](https://tools.balancer.blue/metadata)
 
 Enhance Balancer pools with metadata like pool name, symbol, description, and more, improving discoverability and user comprehension. The Balancer Pool Metadata tool provides a user-friendly interface for pool owners and a public Subgraph for developers to access this metadata.
 
-### Internal Vault Balances Manager [🔗](https://tools.balancer.bleu/internalbalances)
+### Internal Vault Balances Manager [🔗](https://tools.balancer.blue/internalbalances)
 
 Empower users with a streamlined application to manage their internal balances. Deposit, withdraw, and transfer assets effortlessly, ensuring full control over digital assets.
 
-### Stable Swap Simulator [🔗](https://tools.balancer.bleu/stableswapsimulator)
+### Stable Swap Simulator [🔗](https://tools.balancer.blue/stableswapsimulator)
 
 A comprehensive tool for analyzing stable pool behaviors. Set and modify pool parameters to evaluate key metrics like Swap, Price Impact, and Depth Cost. Simulate swaps and compare results with established data.
 
-### Pools Simulator [🔗](https://tools.balancer.bleu/poolsimulator)
+### Pools Simulator [🔗](https://tools.balancer.blue/poolsimulator)
 
 _👷👷👷 Under development 👷👷👷_
 
 An extension of the Stableswap Simulator for Gyro and FX pools where you can compare different pool types.
 
-### APR [🔗](https://tools.balancer.bleu/stableswapsimulator)
+### APR [🔗](https://tools.balancer.blue/apr)
 
 _👷👷👷 Under development 👷👷👷_
 

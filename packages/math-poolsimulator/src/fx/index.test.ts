@@ -1,5 +1,5 @@
 import { bnum, FxMaths, FxPool, SubgraphPoolBase } from "@balancer-labs/sor";
-import { formatFixed, parseFixed } from "@ethersproject/bignumber";
+import { formatFixed } from "@ethersproject/bignumber";
 import { describe, test } from "@jest/globals";
 
 import { numberToBigNumber } from "../conversions";
@@ -17,43 +17,64 @@ describe("Tests new Fx math function based on package other functions", () => {
     percentages.forEach((percentage) => {
       describe(`Tests for ${percentage}% with ${tokenIn} as tokenIn`, () => {
         const pool = FxPool.fromPool(poolData as SubgraphPoolBase);
-        const poolPairData = pool.parsePoolPairData(tokenIn, tokenOut);
+        const poolPairDataBeforeSwap = pool.parsePoolPairData(
+          tokenIn,
+          tokenOut
+        );
 
         const amount =
           Number(
-            formatFixed(poolPairData.balanceOut, poolPairData.decimalsOut)
+            formatFixed(
+              poolPairDataBeforeSwap.balanceOut,
+              poolPairDataBeforeSwap.decimalsOut
+            )
           ) *
           (percentage / 100);
         const amountOldBigNumber = bnum(amount);
 
         const spotPriceExpected =
           FxMaths._spotPriceAfterSwapExactTokenInForTokenOut(
-            poolPairData,
+            poolPairDataBeforeSwap,
             amountOldBigNumber
           );
 
         test(`_spotPrice`, () => {
           const amountOut = pool._exactTokenInForTokenOut(
-            poolPairData,
+            poolPairDataBeforeSwap,
             bnum(amount)
           );
 
-          poolPairData.balanceIn = poolPairData.balanceIn.add(
-            numberToBigNumber({
-              number: amount,
-              decimals: poolPairData.decimalsIn,
-            })
+          pool.updateTokenBalanceForPool(
+            tokenIn,
+            poolPairDataBeforeSwap.balanceIn.add(
+              numberToBigNumber({
+                number: amount,
+                decimals: poolPairDataBeforeSwap.decimalsIn,
+              })
+            )
           );
 
-          poolPairData.balanceOut = poolPairData.balanceOut.sub(
-            parseFixed(amountOut.toString(), poolPairData.decimalsOut)
+          pool.updateTokenBalanceForPool(
+            tokenOut,
+            poolPairDataBeforeSwap.balanceOut.sub(
+              numberToBigNumber({
+                number: amountOut.toNumber(),
+                decimals: poolPairDataBeforeSwap.decimalsIn,
+              })
+            )
+          );
+
+          const poolPairDataAfterSwap = pool.parsePoolPairData(
+            tokenIn,
+            tokenOut
+          );
+          const spotPrice = FxMaths._spotPriceAfterSwapExactTokenInForTokenOut(
+            poolPairDataAfterSwap,
+            bnum(0)
           );
 
           verifyApproximateEquality(
-            FxMaths._spotPriceAfterSwapExactTokenInForTokenOut(
-              poolPairData,
-              bnum(0)
-            ).toNumber(),
+            spotPrice.toNumber(),
             spotPriceExpected.toNumber()
           );
         });

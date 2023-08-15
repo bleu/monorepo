@@ -13,13 +13,6 @@ import { getBALPriceByRound } from "../../(utils)/getBALPriceByRound";
 import { getPoolRelativeWeight } from "../../(utils)/getRelativeWeight";
 import { Round } from "../../(utils)/rounds";
 
-export interface PoolData {
-  pct_votes: number;
-  symbol: string;
-  votes: number;
-  apr: number;
-}
-
 export function PoolCard({
   network,
   poolId,

@@ -1,79 +1,57 @@
-# <h1 align="center"> Balancer Tools </h1>
+# bleu's Balancer Tools
 
 The Balancer Tools repository serves as a hub for open-source projects aimed at empowering Balancer users with additional functionalities, analytics, and ease of use. Here, you will find a variety of tools and utilities that can be used to augment your experience as a Balancer user, whether you're a liquidity provider, trader, Maxi or developer.
 
+The tools are live at https://tools.balancer.bleu and https://balancer-tools.bleu.studio.
+
 ## Avaliable tools
 
-### [`Pool Metadata`](./packages/balancer-tools/src/app/metadata/)
+### Pool Metadata [🔗](https://tools.balancer.bleu/metadata)
 
-Balancer Pool Metadata is that enables pool owners to add metadata to their pools on the Balancer platform. This metadata can include information such as pool name, symbol, description, link, and much more.
+Enhance Balancer pools with metadata like pool name, symbol, description, and more, improving discoverability and user comprehension. The Balancer Pool Metadata tool provides a user-friendly interface for pool owners and a public Subgraph for developers to access this metadata.
 
-By adding metadata to their pools, pool owners can improve the discoverability of their pools on Balancer and make it easier for users to understand the purpose and characteristics of the pool.
+### Internal Vault Balances Manager [🔗](https://tools.balancer.bleu/internalbalances)
 
-The Balancer Pool Metadata project provides an easy-to-use interface for pool owners to add and update their pool metadata, as well as a public Subgraph for developers to access and use the metadata.
+Empower users with a streamlined application to manage their internal balances. Deposit, withdraw, and transfer assets effortlessly, ensuring full control over digital assets.
 
-### [`Internal Manager`](./packages/balancer-tools/src/app/internalmanager/)
+### Stable Swap Simulator [🔗](https://tools.balancer.bleu/stableswapsimulator)
 
-The Internal Manager is a user-friendly application that empowers individuals to take control of their internal balance by providing essential features to manage their assets efficiently.
+A comprehensive tool for analyzing stable pool behaviors. Set and modify pool parameters to evaluate key metrics like Swap, Price Impact, and Depth Cost. Simulate swaps and compare results with established data.
 
-With this app, users can easily deposit, withdraw, and transfer assets within their internal balance, ensuring seamless control over their digital assets.
+### Pools Simulator [🔗](https://tools.balancer.bleu/poolsimulator)
 
-### [`Stable Swap Simulator`](./packages/balancer-tools/src/app/stableswapsimulator/)
+_👷👷👷 Under development 👷👷👷_
 
-The Stable Swap Simulation is an application designed to provide users with a powerful tool for simulating and analyzing the behavior of stable pools. With this app, users can import pool parameters or create them from scratch to establish reference data.
+An extension of the Stableswap Simulator for Gyro and FX pools where you can compare different pool types.
 
-Then, the parameters can be modifed to compare critical metrics such as Swap, Price Impact, and Depth Cost.
+### APR [🔗](https://tools.balancer.bleu/stableswapsimulator)
 
-Additionally, the app allows users to simulate a single swap and compare the results with both the reference data and the modified parameters.
+_👷👷👷 Under development 👷👷👷_
 
-## Structure
+A visual guide to Balancer pools' historical APR.
 
-The project uses a monorepo structure and git submodules to organize its codebase. All packages can be found in the [`packages`](./packages) directory. The packages directory contains all the packages that make up the project.
+## Repository Structure
 
-## Packages
-
-- [`contracts`](./packages/contracts): smart contract responsible for setting/pointing the pool metadata to an IPFS CID.
-- [`balancer-tools`](./packages/balancer-tools): UI for all the project's. Each project can be found on the [`app`](./packages/balancer-tools/src/app) folder
-- [`subgraph`](./packages/subgraph): a simplified version that indexes the events emitted by the smart contract. This API allows for the mapping of Pools to their respective IPFS CIDs, which can be consumed by both our App and external front end.
-- [`gql`](./packages/gql): for GraphQL-related functionality, facilitating communication between the UI and the Subgraph's GraphQL server.
-- [`math`](./packages/math): implements the mathematical functions for the functionality of pools, including stable pools.
-- [`schema`](./packages/schema): serves as a central repository for managing Zod schemas, ensuring consistency and organization in the project.
-- [`shared`](./packages/utils): contains shared code, utilities, and components for improved code reusability and maintainability.
-- [`tsconfig`](./packages/tsconfig): typeScript configuration package, enforcing type safety and coding standards.
+The project uses a monorepo structure. See the repo's [wiki](https://github.com/bleu-studio/balancer-tools/wiki) to find more detail about each project structure.
 
 ## Pre-requisites
 
-- The project is built using `Node 18.14.0`.
-
-- [Install Foundry](https://book.getfoundry.sh/getting-started/installation) to your system:
+This project required Node. We suggest installing it using [asdf](https://asdf-vm.com/) if you don't use a Node version manager yet.
 
 ```bash
-curl -L https://foundry.paradigm.xyz | bash
-source ~/.bashrc # or open a new terminal
-foundryup
-```
-
-## Clone
-
-This repository uses git submodules; use `--recurse-submodules` option when cloning:
-
-```bash
-git clone --recurse-submodules git@github.com:bleu-studio/balancer-tools.git
-```
-
-## Installation
-
-This project requires node v18.14.0. We suggest installing it using [asdf](https://asdf-vm.com/)
-
-```bash
-git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.11.1
+git clone https://github.com/asdf-vm/asdf.git ~/.asdf
 ```
 
 and add binginds to your shell config file.
 
 ```bash
 asdf plugin add nodejs
-asdf install nodejs 18.14.0
+```
+
+and run install node in the repo. This will pick up the current Node version from the [.tool-versions](/.tool-version) file.
+
+```bash
+asdf install nodejs
 ```
 
 We use pnpm for package management. To install pnpm, run:
@@ -87,3 +65,45 @@ Install dependencies
 ```bash
 pnpm i
 ```
+
+If you need to build the Smart Contracts under the metadata app, you must first [install Foundry](https://book.getfoundry.sh/getting-started/installation) to your system:
+
+```bash
+curl -L https://foundry.paradigm.xyz | bash
+source ~/.bashrc
+foundryup
+```
+
+## Problems?
+
+If you encounter any issues or need assistance:
+
+1. Review our [wiki](https://github.com/bleu-studio/balancer-tools/wiki)
+2. Check [open issues](https://github.com/bleu-studio/balancer-tools/issues) or create a new one.
+3. Reach out to us at [balancer@bleu.studio](mailto:balancer@bleu.studio).
+
+## Contributors
+
+A heartfelt thanks to all who've contributed:
+
+- **Nichollas Rennah** and **Marcos Tullyo**: Initial designs and development of for the metadata app.
+
+Wish to be listed? Make a contribution and [open an issue](https://github.com/bleu-studio/balancer-tools/issues/new) or send a pull request.
+
+## Contributing
+
+Contributions are warmly welcomed. Raise issues, propose PRs, or reach out directly to balancer@bleu.studio for discussions.
+
+## License
+
+The predominant license is the GNU General Public License Version 3 (GPL v3), referenced in [`LICENSE`](./LICENSE), barring explicit exceptions listed in this README or within the source files.
+
+### Exceptions
+
+<!-- TODO: Remember to identify and include the MIT licensed projects integrated into this repository. Note: Only projects where source code has been directly adopted require attribution. Look for MIT licensed projects that we copied to here and must be mentioned. This includes licenses from the math packages and Balancer/Gyro/FX, but excludes dependencies' own licenses unless we copied their source code. MIT licenses require to show attribution.-->
+
+## Authors
+
+@ribeirojose, @mendesfabio, @devjoaov, @luizakp, @yvesfracari
+
+Heartily crafted by Bleu, with immense gratitude to the Balancer Grants committee for their financial endorsement.

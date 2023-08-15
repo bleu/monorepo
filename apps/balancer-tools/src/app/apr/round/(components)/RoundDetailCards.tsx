@@ -28,9 +28,9 @@ export default async function RoundOverviewCards({
   const round = Round.getRoundByNumber(roundId);
   const cardsDetails = [
     { title: "Total votes", content: "8.751k" }, // TODO: get this data from the subgraph
-    { title: "Bal Price", content: await BALPrice({ roundId }) },
+    { title: "BAL Price", content: await BALPrice({ roundId }) },
     {
-      title: "Bal Emissions",
+      title: "BAL Emissions",
       content: formatNumber(
         balEmissions.weekly(round.endDate.getTime() / 1000),
       ),

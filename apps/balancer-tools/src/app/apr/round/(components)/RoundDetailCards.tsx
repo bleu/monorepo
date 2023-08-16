@@ -40,6 +40,7 @@ export default async function RoundOverviewCards({
         balEmissions.weekly(round.endDate.getTime() / 1000),
       ),
     },
+    { title: "Round Number", content: roundId },
     { title: "Round Started", content: formatDate(round.startDate) },
     { title: "Round Ended", content: formatDate(round.endDate) },
   ];

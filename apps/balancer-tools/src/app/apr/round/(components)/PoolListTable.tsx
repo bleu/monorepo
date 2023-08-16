@@ -1,6 +1,4 @@
-import { networkFor } from "@bleu-balancer-tools/utils";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
-import Link from "next/link";
 import { Suspense } from "react";
 
 import Table from "#/components/TableServerSide";
@@ -13,6 +11,7 @@ import calculateRoundAPR from "../../(utils)/calculateRoundAPR";
 import { getBALPriceByRound } from "../../(utils)/getBALPriceByRound";
 import { getPoolRelativeWeight } from "../../(utils)/getRelativeWeight";
 import { Round } from "../../(utils)/rounds";
+import ClientSideBodyRow from "./ClientSideBodyRow";
 
 export default async function PoolListTable({ roundId }: { roundId: string }) {
   return (
@@ -104,21 +103,18 @@ function TableRow({
   roundId,
 }: {
   poolId: string;
-  network?: number;
-  roundId?: string;
+  network: number;
+  roundId: string;
 }) {
   const pool = new Pool(poolId);
-  const poolRedirectURL = roundId
-    ? `/apr/pool/${networkFor(network)}/${poolId}/round/${roundId}`
-    : `/apr/pool/${networkFor(network)}/${poolId}`;
-
   return (
-    <Table.BodyRow key={pool.id}>
-      <Table.BodyCell>
-        <Link className="py-4 px-1" href={poolRedirectURL}>
-          {pool.id}
-        </Link>
-      </Table.BodyCell>
+    <ClientSideBodyRow
+      poolId={pool.id}
+      poolNetwork={network}
+      roundId={roundId}
+      key={pool.id}
+    >
+      <Table.BodyCell>{pool.id}</Table.BodyCell>
       <Table.BodyCell padding="py-4 px-1">
         <Suspense fallback={<TableLoadingIcon />}>
           <PoolTVL pool={pool} />
@@ -134,7 +130,7 @@ function TableRow({
           <PoolVotes roundId={roundId} pool={pool} />
         </Suspense>
       </Table.BodyCell>
-    </Table.BodyRow>
+    </ClientSideBodyRow>
   );
 }
 

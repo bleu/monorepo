@@ -70,7 +70,7 @@ interface PoolSimulatorContextType {
   setIsAnalysis: (_: boolean) => void;
 }
 
-const defaultPool = {
+export const defaultPool = {
   //wstETH - WETH on Mainnet/Ethereum
   id: "0x32296969ef14eb0c6d29669c550d4a0449130230000200000000000000000080",
   network: NetworkChainId.ETHEREUM.toString(),
@@ -80,20 +80,21 @@ export const PoolSimulatorContext = createContext(
   {} as PoolSimulatorContextType,
 );
 
+export const defaultAnalysisData: AnalysisData = {
+  poolParams: undefined,
+  tokens: [],
+  poolType: PoolTypeEnum.MetaStable,
+};
+
+export const defaultTokensData: TokensData = {
+  symbol: "",
+  balance: 0,
+  rate: 0,
+  decimal: 0,
+};
+
 export function PoolSimulatorProvider({ children }: PropsWithChildren) {
   const { push } = useRouter();
-  const defaultAnalysisData: AnalysisData = {
-    poolParams: undefined,
-    tokens: [],
-    poolType: PoolTypeEnum.MetaStable,
-  };
-
-  const defaultTokensData: TokensData = {
-    symbol: "",
-    balance: 0,
-    rate: 0,
-    decimal: 0,
-  };
 
   const [isAnalysis, setIsAnalysis] = useState<boolean>(false);
   const [initialData, setInitialData] =

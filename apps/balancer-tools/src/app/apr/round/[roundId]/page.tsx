@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import Loading from "#/app/metadata/[network]/pool/[poolId]/loading";
 
 import PoolsCards from "../(components)/PoolsCards";
-import RoundOverviewCards from "../(components)/RoundDetailCards";
+import RoundOverviewCards from "../(components)/RoundOverviewCards";
 
 export default function Page({
   params: { roundId },

@@ -17,7 +17,7 @@ export default async function PoolOverviewCards({
   const round = Round.getRoundByNumber(roundId);
   const cardsDetails = [
     { title: "TVL", content: formatNumber(tvl) },
-    { title: "APR", content: formatNumber(apr) },
+    { title: "APR", content: formatNumber(apr).concat("%") },
     { title: "Round Number", content: roundId },
     { title: "Round Deadline", content: formatDate(round.endDate) },
   ];

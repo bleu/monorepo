@@ -3,7 +3,7 @@ import { formatDate } from "@bleu-balancer-tools/utils";
 import * as balEmissions from "#/lib/balancer/emissions";
 import { formatNumber } from "#/utils/formatNumber";
 
-import BALPrice from "../../(components)/BALPrice";
+import { getBALPriceByRound } from "../../(utils)/getBALPriceByRound";
 import { Round } from "../../(utils)/rounds";
 
 function RoundOverviewCard({
@@ -27,9 +27,13 @@ export default async function RoundOverviewCards({
   roundId: string;
 }) {
   const round = Round.getRoundByNumber(roundId);
+  const balInUSD = (await getBALPriceByRound(round)).toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
   const cardsDetails = [
     { title: "Total votes", content: "8.751k" }, // TODO: get this data from the subgraph
-    { title: "BAL Price", content: await BALPrice({ roundId }) },
+    { title: "BAL Price", content: balInUSD },
     {
       title: "BAL Emissions",
       content: formatNumber(

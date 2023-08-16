@@ -9,7 +9,7 @@ export class Round {
 
   constructor(endDate: Date, roundNumber: number) {
     this.endDate = endDate;
-    this.startDate = new Date(endDate.getTime() - ONE_WEEK_IN_MS);
+    this.startDate = new Date(endDate.getTime() - Round.ONE_WEEK_IN_MS);
     this.value = String(roundNumber);
     this.activeRound = endDate.getTime() > Date.now();
   }

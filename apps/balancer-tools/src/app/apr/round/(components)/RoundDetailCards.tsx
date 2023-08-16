@@ -32,7 +32,8 @@ export default async function RoundOverviewCards({
     currency: "USD",
   });
   const cardsDetails = [
-    { title: "Total votes", content: "8.751k" }, // TODO: get this data from the subgraph
+    // TODO: [BAL-640] Total votes -> get this data from the subgraph
+    { title: "Total votes", content: "8.751k" },
     { title: "BAL Price", content: balInUSD },
     {
       title: "BAL Emissions",

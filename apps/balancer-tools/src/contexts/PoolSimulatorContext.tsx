@@ -178,12 +178,10 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
   }, []);
 
   useEffect(() => {
-    if (!customData.poolType || !customData.poolParams?.swapFee) return;
     asyncSetAMM(initialData, setInitialAMM);
   }, [initialData]);
 
   useEffect(() => {
-    if (!customData.poolType || !customData.poolParams?.swapFee) return;
     asyncSetAMM(customData, setCustomAMM);
   }, [customData]);
 

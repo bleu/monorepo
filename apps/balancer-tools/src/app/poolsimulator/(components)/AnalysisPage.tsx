@@ -1,6 +1,5 @@
 "use client";
 
-import { Spinner } from "#/components/Spinner";
 import { Tabs } from "#/components/Tabs";
 import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 
@@ -13,10 +12,6 @@ import { TokensDistribution } from "./TokensDistribution";
 export default function Page() {
   const { initialData, analysisToken, setCurrentTabTokenByIndex } =
     usePoolSimulator();
-
-  if (!analysisToken.symbol) {
-    return <Spinner />;
-  }
 
   const indexCurrentTabToken = initialData?.tokens.findIndex(
     ({ symbol }) => symbol.toLowerCase() !== analysisToken.symbol.toLowerCase(),

@@ -12,7 +12,15 @@ export default function Page({
 }) {
   return (
     <>
-      <RoundOverviewCards roundId={roundId} />
+      <Suspense
+        fallback={
+          <div className="flex h-full w-full flex-col justify-center rounded-3xl">
+            Loading overview...
+          </div>
+        }
+      >
+        <RoundOverviewCards roundId={roundId} />
+      </Suspense>
       <Suspense
         fallback={
           <div className="flex h-full w-full flex-col justify-center rounded-3xl">

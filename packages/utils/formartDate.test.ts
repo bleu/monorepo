@@ -10,9 +10,9 @@ describe("formatDate", () => {
   });
 
   test("should throw for invalid input", () => {
-    expect(() => formatDate("invalid" as any)).toThrow();
-    expect(() => formatDate(null as any)).toThrow();
-    expect(() => formatDate(undefined as any)).toThrow();
+    expect(() => formatDate("invalid" as never)).toThrow();
+    expect(() => formatDate(null as never)).toThrow();
+    expect(() => formatDate(undefined as never)).toThrow();
   });
 
   test("should format different dates correctly", () => {

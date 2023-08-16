@@ -1,5 +1,6 @@
+import { formatDate } from "@bleu-balancer-tools/utils";
+
 import * as balEmissions from "#/lib/balancer/emissions";
-import { formatDateToAmerican } from "#/utils/formatDate";
 import { formatNumber } from "#/utils/formatNumber";
 
 import BALPrice from "../../(components)/BALPrice";
@@ -35,8 +36,8 @@ export default async function RoundOverviewCards({
         balEmissions.weekly(round.endDate.getTime() / 1000),
       ),
     },
-    { title: "Round Started", content: formatDateToAmerican(round.startDate) },
-    { title: "Round Ended", content: formatDateToAmerican(round.endDate) },
+    { title: "Round Started", content: formatDate(round.startDate) },
+    { title: "Round Ended", content: formatDate(round.endDate) },
   ];
   return (
     <div className="flex justify-between border border-blue6 bg-blue3 rounded p-4">

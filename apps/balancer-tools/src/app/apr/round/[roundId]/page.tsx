@@ -2,7 +2,7 @@ import { Suspense } from "react";
 
 import Loading from "#/app/metadata/[network]/pool/[poolId]/loading";
 
-import PoolsCards from "../(components)/PoolsCards";
+import PoolListTable from "../(components)/PoolListTable";
 
 export default function Page({
   params: { roundId },
@@ -17,7 +17,7 @@ export default function Page({
         </div>
       }
     >
-      <PoolsCards roundId={roundId} />
+      <PoolListTable roundId={roundId} />
     </Suspense>
   );
 }

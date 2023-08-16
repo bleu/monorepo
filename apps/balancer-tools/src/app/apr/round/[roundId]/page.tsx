@@ -2,8 +2,8 @@ import { Suspense } from "react";
 
 import Loading from "#/app/metadata/[network]/pool/[poolId]/loading";
 
-import TopPoolsChart from "../(components)/TopPoolsChart";
 import PoolsCards from "../(components)/PoolsCards";
+import TopPoolsChart from "../(components)/TopPoolsChart";
 
 export default function Page({
   params: { roundId },

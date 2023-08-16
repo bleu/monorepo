@@ -3,8 +3,7 @@
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
 import { PoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/types";
 import { NetworkChainId } from "@bleu-balancer-tools/utils";
-// import { usePathname, useRouter } from "next/navigation";
-import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   createContext,
   PropsWithChildren,
@@ -82,8 +81,7 @@ export const PoolSimulatorContext = createContext(
 );
 
 export function PoolSimulatorProvider({ children }: PropsWithChildren) {
-  // const { push } = useRouter();
-  const pathname = usePathname();
+  const { push } = useRouter();
   const defaultAnalysisData: AnalysisData = {
     poolParams: undefined,
     tokens: [],
@@ -159,9 +157,9 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     setData(importedData);
   }
 
-  // useEffect(() => {
-  // if (pathname === "/poolsimulator/analysis") push(generateURL());
-  // }, [pathname]);
+  useEffect(() => {
+    if (isAnalysis) push(generateURL());
+  }, [customData, initialData]);
 
   useEffect(() => {
     if (window.location.hash) {
@@ -171,10 +169,19 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
         const state = JSON.parse(decodedState);
         setInitialData(state.initialData);
         setCustomData(state.customData);
+        setIsAnalysis(true);
+        return;
       } catch (error) {
         throw new Error("Invalid state");
       }
     }
+    handleImportPoolParametersById(
+      {
+        poolId: defaultPool.id,
+        network: defaultPool.network,
+      },
+      setInitialData,
+    );
   }, []);
 
   useEffect(() => {
@@ -184,19 +191,6 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     asyncSetAMM(customData, setCustomAMM);
   }, [customData]);
-
-  useEffect(() => {
-    if (pathname === "/poolsimulator") {
-      setIsGraphLoading(false);
-      handleImportPoolParametersById(
-        {
-          poolId: defaultPool.id,
-          network: defaultPool.network,
-        },
-        setInitialData,
-      );
-    }
-  }, []);
 
   return (
     <PoolSimulatorContext.Provider

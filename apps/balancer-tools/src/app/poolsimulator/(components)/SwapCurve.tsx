@@ -1,42 +1,90 @@
 "use client";
 
-import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
-import { PoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/types";
 import { PlotType } from "plotly.js";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
 import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
-import { PoolTypeEnum, TokensData } from "../(types)";
-import { calculateCurvePoints, trimTrailingValues } from "../(utils)";
+import {
+  SwapCurveWorkerInputData,
+  SwapCurveWorkerOutputData,
+} from "../(workers)/swap-curve-calculation";
+
+interface AmountsData {
+  analysisTokenIn: number[];
+  analysisTokenOut: number[];
+  tabTokenIn: number[];
+  tabTokenOut: number[];
+}
+
+const createAndPostSwapWorker = (
+  messageData: SwapCurveWorkerInputData,
+  setInitialAmounts: Dispatch<SetStateAction<AmountsData>>,
+  setCustomAmounts: Dispatch<SetStateAction<AmountsData>>,
+) => {
+  const worker = new Worker(
+    new URL("../(workers)/swap-curve-calculation.ts", import.meta.url),
+  );
+
+  worker.onmessage = (event: MessageEvent<SwapCurveWorkerOutputData>) => {
+    const result = event.data.result;
+    const type = event.data.type;
+
+    if (!result) return;
+
+    const setter = type === "initial" ? setInitialAmounts : setCustomAmounts;
+
+    setter(result);
+  };
+
+  worker.postMessage(messageData);
+};
+import { PoolTypeEnum } from "../(types)";
+import { findTokenBySymbol } from "../(utils)";
+
+const POOL_TYPES_TO_ADD_LIMIT = [
+  PoolTypeEnum.Gyro2,
+  PoolTypeEnum.Gyro3,
+  PoolTypeEnum.GyroE,
+  PoolTypeEnum.Fx,
+];
 
 export function SwapCurve() {
-  const {
-    analysisToken,
-    currentTabToken,
-    initialAMM,
-    customAMM,
-    initialData,
-    customData,
-  } = usePoolSimulator();
+  const { analysisToken, currentTabToken, initialData, customData } =
+    usePoolSimulator();
 
-  if (!initialAMM || !customAMM) return <Spinner />;
+  if (!initialData || !customData) return <Spinner />;
 
-  const {
-    amountsAnalysisTokenIn: initialAmountsAnalysisTokenIn,
-    amountsAnalysisTokenOut: initialAmountsAnalysisTokenOut,
-    amountsTabTokenOut: initialAmountTabTokenOut,
-    amountsTabTokenIn: initialAmountTabTokenIn,
-  } = calculateTokenAmounts(analysisToken, currentTabToken, initialAMM);
+  const [initialAmounts, setInitialAmounts] = useState<AmountsData>(
+    {} as AmountsData,
+  );
+  const [customAmounts, setCustomAmounts] = useState<AmountsData>(
+    {} as AmountsData,
+  );
 
-  const {
-    amountsAnalysisTokenIn: customAmountsAnalysisTokenIn,
-    amountsAnalysisTokenOut: customAmountsAnalysisTokenOut,
-    amountsTabTokenOut: customAmountTabTokenOut,
-    amountsTabTokenIn: customAmountTabTokenIn,
-  } = calculateTokenAmounts(analysisToken, currentTabToken, customAMM);
+  useEffect(() => {
+    const messages: SwapCurveWorkerInputData[] = [
+      {
+        analysisToken,
+        currentTabToken,
+        data: initialData,
+        type: "initial",
+      },
+      {
+        analysisToken,
+        currentTabToken,
+        data: customData,
+        type: "custom",
+      },
+    ];
+
+    messages.forEach((message) =>
+      createAndPostSwapWorker(message, setInitialAmounts, setCustomAmounts),
+    );
+  }, [initialData, customData, analysisToken, currentTabToken]);
 
   const formatSwap = (
     amountIn: number,
@@ -86,43 +134,55 @@ export function SwapCurve() {
     };
   };
 
+  if (
+    !initialAmounts.analysisTokenIn ||
+    !initialAmounts.analysisTokenOut ||
+    !initialAmounts.tabTokenIn ||
+    !initialAmounts.tabTokenOut ||
+    !customAmounts.analysisTokenIn ||
+    !customAmounts.analysisTokenOut ||
+    !customAmounts.tabTokenIn ||
+    !customAmounts.tabTokenOut
+  )
+    return <Spinner />;
+
   const data = [
     createDataObject(
-      initialAmountsAnalysisTokenIn,
-      initialAmountTabTokenOut,
+      initialAmounts.analysisTokenIn,
+      initialAmounts.tabTokenOut,
       "Initial",
       true,
-      initialAmountsAnalysisTokenIn.map((amount, index) =>
+      initialAmounts.analysisTokenIn.map((amount, index) =>
         formatSwap(
           amount,
           analysisToken.symbol,
-          -initialAmountTabTokenOut[index],
+          -initialAmounts.tabTokenOut[index],
           currentTabToken.symbol,
         ),
       ),
     ),
     createDataObject(
-      customAmountsAnalysisTokenIn,
-      customAmountTabTokenOut,
+      customAmounts.analysisTokenIn,
+      customAmounts.tabTokenOut,
       "Custom",
       true,
-      customAmountsAnalysisTokenIn.map((amount, index) =>
+      customAmounts.analysisTokenIn.map((amount, index) =>
         formatSwap(
           amount,
           analysisToken.symbol,
-          -customAmountTabTokenOut[index],
+          -customAmounts.tabTokenOut[index],
           currentTabToken.symbol,
         ),
       ),
     ),
     createDataObject(
-      initialAmountsAnalysisTokenOut,
-      initialAmountTabTokenIn,
+      initialAmounts.analysisTokenOut,
+      initialAmounts.tabTokenIn,
       "Initial",
       false,
-      initialAmountsAnalysisTokenOut.map((amount, index) =>
+      initialAmounts.analysisTokenOut.map((amount, index) =>
         formatSwap(
-          initialAmountTabTokenIn[index],
+          initialAmounts.tabTokenIn[index],
           currentTabToken.symbol,
           -amount,
           analysisToken.symbol,
@@ -130,13 +190,13 @@ export function SwapCurve() {
       ),
     ),
     createDataObject(
-      customAmountsAnalysisTokenOut,
-      customAmountTabTokenIn,
+      customAmounts.analysisTokenOut,
+      customAmounts.tabTokenIn,
       "Custom",
       false,
-      customAmountsAnalysisTokenOut.map((amount, index) =>
+      customAmounts.analysisTokenOut.map((amount, index) =>
         formatSwap(
-          customAmountTabTokenIn[index],
+          customAmounts.tabTokenIn[index],
           currentTabToken.symbol,
           -amount,
           analysisToken.symbol,
@@ -145,39 +205,31 @@ export function SwapCurve() {
     ),
   ];
 
-  if (
-    [PoolTypeEnum.Gyro2, PoolTypeEnum.Gyro3, PoolTypeEnum.GyroE].includes(
-      initialData.poolType,
-    )
-  ) {
+  if (POOL_TYPES_TO_ADD_LIMIT.includes(initialData.poolType)) {
     data.push(
       createLimitPointDataObject(
         [
-          initialAmountsAnalysisTokenOut.slice(-1)[0],
-          initialAmountsAnalysisTokenIn.slice(-1)[0],
+          initialAmounts.analysisTokenOut.slice(-1)[0],
+          initialAmounts.analysisTokenIn.slice(-1)[0],
         ],
         [
-          initialAmountTabTokenIn.slice(-1)[0],
-          initialAmountTabTokenOut.slice(-1)[0],
+          initialAmounts.tabTokenIn.slice(-1)[0],
+          initialAmounts.tabTokenOut.slice(-1)[0],
         ],
         "Initial",
       ),
     );
   }
-  if (
-    [PoolTypeEnum.Gyro2, PoolTypeEnum.Gyro3, PoolTypeEnum.GyroE].includes(
-      customData.poolType,
-    )
-  ) {
+  if (POOL_TYPES_TO_ADD_LIMIT.includes(customData.poolType)) {
     data.push(
       createLimitPointDataObject(
         [
-          customAmountsAnalysisTokenOut.slice(-1)[0],
-          customAmountsAnalysisTokenIn.slice(-1)[0],
+          customAmounts.analysisTokenOut.slice(-1)[0],
+          customAmounts.analysisTokenIn.slice(-1)[0],
         ],
         [
-          customAmountTabTokenIn.slice(-1)[0],
-          customAmountTabTokenOut.slice(-1)[0],
+          customAmounts.tabTokenIn.slice(-1)[0],
+          customAmounts.tabTokenOut.slice(-1)[0],
         ],
         "Custom",
       ),
@@ -185,50 +237,59 @@ export function SwapCurve() {
   }
 
   function getGraphScale({
-    initialAmountsIn,
-    customAmountsIn,
-    initialAmountsOut,
-    customAmountsOut,
+    axisBalanceSymbol,
+    oppositeAxisBalanceSymbol,
   }: {
-    initialAmountsIn: number[];
-    customAmountsIn: number[];
-    initialAmountsOut: number[];
-    customAmountsOut: number[];
+    axisBalanceSymbol?: string;
+    oppositeAxisBalanceSymbol?: string;
   }) {
-    const maxOfIn = {
-      initial: Math.max(...initialAmountsIn),
-      custom: Math.max(...customAmountsIn),
-    };
-    const minOfOut = {
-      initial: Math.min(...initialAmountsOut),
-      custom: Math.min(...customAmountsOut),
+    const initialAxisToken = findTokenBySymbol(
+      initialData.tokens,
+      axisBalanceSymbol,
+    );
+    const customAxisToken = findTokenBySymbol(
+      customData.tokens,
+      axisBalanceSymbol,
+    );
+    const initialOppositeAxisToken = findTokenBySymbol(
+      initialData.tokens,
+      oppositeAxisBalanceSymbol,
+    );
+    const customOppositeAxisToken = findTokenBySymbol(
+      customData.tokens,
+      oppositeAxisBalanceSymbol,
+    );
+    const axisBalances = [
+      initialAxisToken?.balance || 0,
+      customAxisToken?.balance || 0,
+    ];
+
+    const convertBalanceScale = (
+      balance?: number,
+      balanceRate?: number,
+      newRate?: number,
+    ) => {
+      if (!balance || !balanceRate || !newRate) return 0;
+      return (balance * balanceRate) / newRate;
     };
 
-    const limits = {
-      lowerIn: Math.min(maxOfIn.initial, maxOfIn.custom),
-      higherOut: Math.max(minOfOut.initial, minOfOut.custom),
-    };
+    const oppositeAxisBalances = [
+      convertBalanceScale(
+        initialOppositeAxisToken?.balance,
+        initialOppositeAxisToken?.rate,
+        initialAxisToken?.rate,
+      ),
+      convertBalanceScale(
+        customOppositeAxisToken?.balance,
+        customOppositeAxisToken?.rate,
+        customAxisToken?.rate,
+      ),
+    ];
 
-    if (maxOfIn.initial === maxOfIn.custom) {
-      return [initialAmountsOut[100] * 1.1, initialAmountsIn[100] * 1.1];
-    }
+    const maxOfAxisBalance = Math.max(...axisBalances);
+    const maxOfOppositeAxisBalance = Math.max(...oppositeAxisBalances);
 
-    if (maxOfIn.initial === limits.lowerIn) {
-      const indexMax = initialAmountsIn.indexOf(limits.lowerIn);
-      const indexMin = initialAmountsOut.indexOf(limits.higherOut);
-      return [
-        initialAmountsOut[indexMin] * 1.1,
-        initialAmountsIn[indexMax] * 1.1,
-      ];
-    }
-    if (maxOfIn.custom === limits.lowerIn) {
-      const indexMax = customAmountsIn.indexOf(limits.lowerIn);
-      const indexMin = customAmountsOut.indexOf(limits.higherOut);
-      return [
-        customAmountsOut[indexMin] * 1.1,
-        customAmountsIn[indexMax] * 1.1,
-      ];
-    }
+    return [-maxOfAxisBalance * 1.1, maxOfOppositeAxisBalance * 1.1];
   }
 
   return (
@@ -240,19 +301,15 @@ export function SwapCurve() {
         xaxis: {
           title: `Amount of ${analysisToken.symbol}`,
           range: getGraphScale({
-            initialAmountsOut: initialAmountsAnalysisTokenOut,
-            customAmountsOut: customAmountsAnalysisTokenOut,
-            initialAmountsIn: initialAmountsAnalysisTokenIn,
-            customAmountsIn: customAmountsAnalysisTokenIn,
+            axisBalanceSymbol: analysisToken.symbol,
+            oppositeAxisBalanceSymbol: currentTabToken.symbol,
           }),
         },
         yaxis: {
           title: `Amount of ${currentTabToken.symbol}`,
           range: getGraphScale({
-            initialAmountsOut: initialAmountTabTokenOut,
-            customAmountsOut: customAmountTabTokenOut,
-            initialAmountsIn: initialAmountTabTokenIn,
-            customAmountsIn: customAmountTabTokenIn,
+            axisBalanceSymbol: currentTabToken.symbol,
+            oppositeAxisBalanceSymbol: analysisToken.symbol,
           }),
         },
       }}
@@ -260,40 +317,3 @@ export function SwapCurve() {
     />
   );
 }
-
-const calculateTokenAmounts = (
-  tokenIn: TokensData,
-  tokenOut: TokensData,
-  amm: AMM<PoolPairData>,
-) => {
-  const rawAmountsAnalysisTokenIn = calculateCurvePoints({
-    balance: tokenIn.balance,
-  });
-
-  const rawAmountsTabTokenIn = calculateCurvePoints({
-    balance: tokenOut.balance,
-  });
-
-  const rawAmountsTabTokenOut = rawAmountsAnalysisTokenIn.map(
-    (amount) =>
-      amm.exactTokenInForTokenOut(amount, tokenIn.symbol, tokenOut.symbol) * -1,
-  );
-
-  const rawAmountsAnalysisTokenOut = rawAmountsTabTokenIn.map(
-    (amount) =>
-      amm.exactTokenInForTokenOut(amount, tokenOut.symbol, tokenIn.symbol) * -1,
-  );
-
-  const { trimmedIn: amountsTabTokenIn, trimmedOut: amountsAnalysisTokenOut } =
-    trimTrailingValues(rawAmountsTabTokenIn, rawAmountsAnalysisTokenOut, 0);
-
-  const { trimmedIn: amountsAnalysisTokenIn, trimmedOut: amountsTabTokenOut } =
-    trimTrailingValues(rawAmountsAnalysisTokenIn, rawAmountsTabTokenOut, 0);
-
-  return {
-    amountsAnalysisTokenIn,
-    amountsAnalysisTokenOut,
-    amountsTabTokenOut,
-    amountsTabTokenIn,
-  };
-};

@@ -11,7 +11,7 @@ export default function Page({
   params: { roundId: string };
 }) {
   return (
-    <>
+    <div className="flex flex-col gap-y-4">
       <Suspense
         fallback={
           <div className="flex h-full w-full flex-col justify-center rounded-3xl">
@@ -30,6 +30,6 @@ export default function Page({
       >
         <PoolsCards roundId={roundId} />
       </Suspense>
-    </>
+    </div>
   );
 }

@@ -1,15 +1,19 @@
 "use client";
 
+import { slateDarkA } from "@radix-ui/colors";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
 import cn from "clsx";
 import React, { HTMLProps } from "react";
 import { FieldError, RegisterOptions, useFormContext } from "react-hook-form";
 
+import { Tooltip } from "./Tooltip";
 import { FormControl, FormLabel, FormMessage } from "./ui/form";
 
 interface IInput extends Omit<HTMLProps<HTMLInputElement>, "name"> {
   name: string;
-  extraLabel?: string;
   validation?: RegisterOptions;
+  tooltipText?: string;
+  tooltipLink?: string;
 }
 
 export const BaseInput = React.forwardRef<
@@ -27,7 +31,7 @@ export const BaseInput = React.forwardRef<
 ));
 
 export const Input = React.forwardRef<HTMLInputElement, IInput>(
-  ({ name, label, extraLabel, validation, ...props }: IInput) => {
+  ({ name, label, validation, tooltipText, tooltipLink, ...props }: IInput) => {
     const {
       register,
       formState: { errors },
@@ -46,9 +50,13 @@ export const Input = React.forwardRef<HTMLInputElement, IInput>(
           <FormLabel className="mb-2 block text-sm text-slate12">
             {label}
           </FormLabel>
-          <FormLabel className="mb-2 block text-sm text-slate12">
-            {extraLabel}
-          </FormLabel>
+          {tooltipText && tooltipLink && (
+            <Tooltip content={tooltipText}>
+              <a href={tooltipLink} target="_blank">
+                <InfoCircledIcon color={slateDarkA.slateA11} />
+              </a>
+            </Tooltip>
+          )}
         </div>
         <FormControl>
           <BaseInput

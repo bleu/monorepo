@@ -1,7 +1,7 @@
 "use client";
 
 import { PlotType } from "plotly.js";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
@@ -21,6 +21,29 @@ interface AmountsData {
   tabTokenOut: number[];
 }
 
+const createAndPostSwapWorker = (
+  messageData: SwapCurveWorkerInputData,
+  setInitialAmounts: Dispatch<SetStateAction<AmountsData>>,
+  setCustomAmounts: Dispatch<SetStateAction<AmountsData>>,
+) => {
+  const worker = new Worker(
+    new URL("../(workers)/swap-curve-calculation.ts", import.meta.url),
+  );
+
+  worker.onmessage = (event: MessageEvent<SwapCurveWorkerOutputData>) => {
+    const result = event.data.result;
+    const type = event.data.type;
+
+    if (!result) return;
+
+    const setter = type === "initial" ? setInitialAmounts : setCustomAmounts;
+
+    setter(result);
+  };
+
+  worker.postMessage(messageData);
+};
+
 export function SwapCurve() {
   const { analysisToken, currentTabToken, initialData, customData } =
     usePoolSimulator();
@@ -33,35 +56,26 @@ export function SwapCurve() {
   const [customAmounts, setCustomAmounts] = useState<AmountsData>(
     {} as AmountsData,
   );
+
   useEffect(() => {
-    const worker = new Worker(
-      new URL("../(workers)/swap-curve-calculation.ts", import.meta.url),
+    const messages: SwapCurveWorkerInputData[] = [
+      {
+        analysisToken,
+        currentTabToken,
+        data: initialData,
+        type: "initial",
+      },
+      {
+        analysisToken,
+        currentTabToken,
+        data: customData,
+        type: "custom",
+      },
+    ];
+
+    messages.forEach((message) =>
+      createAndPostSwapWorker(message, setInitialAmounts, setCustomAmounts),
     );
-    worker.onmessage = (event: MessageEvent<SwapCurveWorkerOutputData>) => {
-      const result = event.data.result;
-      const type = event.data.type;
-
-      if (!result) return;
-
-      if (type === "initial") {
-        setInitialAmounts(result);
-      } else if (type === "custom") {
-        setCustomAmounts(result);
-      }
-    };
-    worker.postMessage({
-      analysisToken,
-      currentTabToken,
-      data: initialData,
-      type: "initial",
-    } as SwapCurveWorkerInputData);
-
-    worker.postMessage({
-      analysisToken,
-      currentTabToken,
-      data: customData,
-      type: "custom",
-    } as SwapCurveWorkerInputData);
   }, [initialData, customData, analysisToken, currentTabToken]);
 
   const formatSwap = (

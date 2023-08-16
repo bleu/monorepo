@@ -65,7 +65,7 @@ export async function PoolVotes({
 
   const votingShare = await getPoolRelativeWeight(
     poolId,
-    Round.getRoundByNumber(roundId).endDate.getTime() / 1000
+    Round.getRoundByNumber(roundId).endDate.getTime() / 1000,
   );
 
   return (

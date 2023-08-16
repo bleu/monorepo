@@ -1,4 +1,5 @@
 import { networkFor } from "@bleu-balancer-tools/utils";
+import { ChevronDownIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { Suspense } from "react";
 
@@ -36,6 +37,13 @@ export default async function PoolListTable({ roundId }: { roundId: string }) {
               key={gauge.address}
             />
           ))}
+          <Table.BodyRow>
+            <Table.BodyCell colspan={4}>
+              <div className="flex content-center justify-center gap-3">
+                Load More <ChevronDownIcon />
+              </div>
+            </Table.BodyCell>
+          </Table.BodyRow>
         </Table.Body>
       </Table>
     </div>

@@ -97,13 +97,19 @@ function BodyCell({
   children,
   customWidth,
   padding = "p-4",
-}: React.PropsWithChildren<{ customWidth?: string; padding?: string }>) {
+  colspan = 1,
+}: React.PropsWithChildren<{
+  customWidth?: string;
+  padding?: string;
+  colspan?: number;
+}>) {
   return (
     <td
       className={cn(
         "whitespace-nowrap text-sm text-slate10",
         customWidth ? cn(customWidth, "pl-4") : padding,
       )}
+      colSpan={colspan}
     >
       {children}
     </td>

@@ -14,7 +14,7 @@ function RoundOverviewCard({
   content: string;
 }) {
   return (
-    <div className="flex flex-col bg-blue6 rounded py-6 px-8 items-center">
+    <div className="flex w-5/12 xl:w-max flex-col bg-blue6 rounded py-3 px-4 2xl:py-6 2xl:px-8 items-center">
       <div className="">{title}</div>
       <div className="pt-2">{content}</div>
     </div>
@@ -47,7 +47,7 @@ export default async function RoundOverviewCards({
   ];
   return (
     <div className="flex justify-between border border-blue6 bg-blue3 rounded p-4">
-      <div className="flex justify-evenly w-full">
+      <div className="flex flex-row flex-wrap	xl:flex-nowrap gap-6 xl:gap-0 justify-evenly w-full">
         {cardsDetails.map((cardsDetail) => (
           <RoundOverviewCard
             title={cardsDetail.title}

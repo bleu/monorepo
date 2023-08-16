@@ -3,23 +3,9 @@ import { formatDate } from "@bleu-balancer-tools/utils";
 import * as balEmissions from "#/lib/balancer/emissions";
 import { formatNumber } from "#/utils/formatNumber";
 
+import OverviewCards from "../../(components)/OverviewCards";
 import { getBALPriceByRound } from "../../(utils)/getBALPriceByRound";
 import { Round } from "../../(utils)/rounds";
-
-function RoundOverviewCard({
-  title,
-  content,
-}: {
-  title: string;
-  content: string;
-}) {
-  return (
-    <div className="flex w-5/12 xl:w-max flex-col bg-blue6 rounded py-3 px-4 2xl:py-6 2xl:px-8 items-center">
-      <div className="">{title}</div>
-      <div className="pt-2">{content}</div>
-    </div>
-  );
-}
 
 export default async function RoundOverviewCards({
   roundId,
@@ -42,19 +28,7 @@ export default async function RoundOverviewCards({
       ),
     },
     { title: "Round Number", content: roundId },
-    { title: "Round Started", content: formatDate(round.startDate) },
-    { title: "Round Ended", content: formatDate(round.endDate) },
+    { title: "Round Deadline", content: formatDate(round.endDate) },
   ];
-  return (
-    <div className="flex justify-between border border-blue6 bg-blue3 rounded p-4">
-      <div className="flex flex-row flex-wrap	xl:flex-nowrap gap-6 xl:gap-0 justify-evenly w-full">
-        {cardsDetails.map((cardsDetail) => (
-          <RoundOverviewCard
-            title={cardsDetail.title}
-            content={cardsDetail.content}
-          />
-        ))}
-      </div>
-    </div>
-  );
+  return <OverviewCards cardsDetails={cardsDetails} />;
 }

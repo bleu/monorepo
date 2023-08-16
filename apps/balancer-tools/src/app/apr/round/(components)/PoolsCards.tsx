@@ -11,13 +11,6 @@ import { calculateAPRForPool } from "../../(utils)/calculateRoundAPR";
 import { getPoolRelativeWeight } from "../../(utils)/getRelativeWeight";
 import { Round } from "../../(utils)/rounds";
 
-export interface PoolData {
-  pct_votes: number;
-  symbol: string;
-  votes: number;
-  apr: number;
-}
-
 export function PoolCard({
   network,
   poolId,
@@ -72,7 +65,7 @@ export async function PoolVotes({
 
   const votingShare = await getPoolRelativeWeight(
     poolId,
-    Round.getRoundByNumber(roundId).endDate.getTime() / 1000,
+    Round.getRoundByNumber(roundId).endDate.getTime() / 1000
   );
 
   return (

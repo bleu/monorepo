@@ -58,7 +58,7 @@ const inputMapper = {
       transformFromDataToForm: (n?: number) => n,
       transformFromFormToData: (n?: number) => n,
       tooltip:
-        "Balance the constant sum and product AMMs. The higher the value, the closer the AMM is to constant sum",
+        "Balance the constant-sum and constant-product AMMs. The higher the value, the closer the AMM behavior is to constant-sum",
     },
   ],
   [PoolTypeEnum.GyroE]: [

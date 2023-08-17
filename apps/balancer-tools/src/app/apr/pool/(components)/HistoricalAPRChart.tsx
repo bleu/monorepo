@@ -27,6 +27,7 @@ export default async function HistoricalAPRChart({
     0,
   );
   const APRPerRoundData = {
+    name: "APR %",
     hovertemplate: HOVERTEMPLATE,
     x: trimmedArray.trimmedIn,
     y: trimmedArray.trimmedOut,
@@ -40,8 +41,8 @@ export default async function HistoricalAPRChart({
     x: [APRPerRoundData.x[chosenRoundMarkerIDX]],
     y: [APRPerRoundData.y[chosenRoundMarkerIDX]],
     mode: "markers",
+    name: "Selected Round",
     marker: {
-      symbol: "Selected Round",
       color: blueDark.blue7,
       size: 15,
       line: {

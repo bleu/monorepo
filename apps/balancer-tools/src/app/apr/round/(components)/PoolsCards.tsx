@@ -3,92 +3,52 @@ import { ChevronRightIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { Suspense } from "react";
 
+import { Spinner } from "#/components/Spinner";
 import votingGauges from "#/data/voting-gauges.json";
 import { Pool } from "#/lib/balancer/gauges";
+import { formatNumber } from "#/utils/formatNumber";
 
 import BALPrice from "../../(components)/BALPrice";
-import { calculateAPRForPool } from "../../(utils)/calculateRoundAPR";
-import { getPoolRelativeWeight } from "../../(utils)/getRelativeWeight";
-import { Round } from "../../(utils)/rounds";
+import { calculatePoolStats } from "../../(utils)/calculateRoundAPR";
 
-export function PoolCard({
+export async function PoolCard({
   network,
   poolId,
   roundId,
 }: {
   poolId: string;
   network?: number;
-  roundId?: string;
+  roundId: string;
 }) {
   // TODO: Decision. Some pools are not going to have gauges associated to them.
   // Or the gauges are not whitelisted yet.
   // We should not display them. Ideally not even fetch them.
   const pool = new Pool(poolId);
 
+  const { apr, votingShare } = await calculatePoolStats({ poolId, roundId });
+
   return (
     <Link href={`/apr/pool/${networkFor(network)}/${pool.id}`}>
-      <div className="flex justify-between border border-gray-400 lg:border-gray-400 bg-blue3 rounded p-4 cursor-pointer">
+      <div className="flex justify-between border border-blue6 bg-blue3 rounded p-4 cursor-pointer">
         <div className="">
           <div className="flex justify-between">
             <div className="text-white font-bold text-xl mb-2">{pool.id}</div>
           </div>
-          <div className="flex items-center">
-            <div className="text-sm">
-              <Suspense fallback={"Loading..."}>
-                <PoolVotes roundId={roundId} poolId={pool.id} />
-              </Suspense>
-              <Suspense fallback={"Loading..."}>
-                <PoolAPR roundId={roundId} poolId={pool.id} />
-              </Suspense>
-              <Suspense fallback={"Loading..."}>
-                <BALPrice roundId={roundId} />
-              </Suspense>
+          <Suspense fallback={<Spinner size="sm" />}>
+            <div className="flex items-start text-sm flex-col gap-y-[1px]">
+              <span>
+                {formatNumber(votingShare * 100).concat("%") + " Voted"}
+              </span>
+              <span>{formatNumber(apr).concat("%") + " APR"}</span>
+              <BALPrice roundId={roundId} />
             </div>
-          </div>
+          </Suspense>
         </div>
         <div className="text-white flex flex-col justify-center">
           <ChevronRightIcon />
         </div>
       </div>
     </Link>
-  );
-}
-
-export async function PoolVotes({
-  roundId,
-  poolId,
-}: {
-  roundId?: string;
-  poolId: string;
-}) {
-  if (!roundId) return null;
-
-  const votingShare = await getPoolRelativeWeight(
-    poolId,
-    Round.getRoundByNumber(roundId).endDate.getTime() / 1000,
-  );
-
-  return (
-    <p className="text-white leading-none mb-1">
-      {(votingShare * 100).toFixed(2)}% Voted
-    </p>
-  );
-}
-
-export async function PoolAPR({
-  roundId,
-  poolId,
-}: {
-  roundId?: string;
-  poolId: string;
-}) {
-  // TODO BAL-646: aggregate historical pool APR when roundId is not provided
-  if (!roundId) return null;
-
-  const { apr } = await calculateAPRForPool({ poolId, roundId });
-
-  return (
-    <p className="text-white leading-none mb-1">{apr?.toFixed?.(2)}% APR</p>
   );
 }
 

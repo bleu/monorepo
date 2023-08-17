@@ -58,7 +58,7 @@ export function TokenTable() {
         </div>
       )}
       {tokensWithBalance && tokensWithBalance?.length > 0 && (
-        <Table>
+        <Table shade={"darkWithBorder"}>
           <Table.HeaderRow>
             <Table.HeaderCell>
               <span className="sr-only">Token Logo</span>

@@ -8,21 +8,20 @@ import { Round } from "./rounds";
 
 const WEEKS_IN_YEAR = 52;
 
-export async function calculateAPRForPool({
+export async function calculatePoolStats({
   roundId,
   poolId,
 }: {
   roundId: string;
   poolId: string;
 }) {
+  // TODO:  BAL-646 aggregate historical pool APR when roundId is not provided
   const round = Round.getRoundByNumber(roundId);
 
   const pool = new Pool(poolId);
-
   const [balPriceUSD, tvl, votingShare] = await Promise.all([
     getBALPriceByRound(round),
-    // TODO: must select the correct network
-    //TODO: BAL-648 TVL from the selected round
+    // TODO: BAL-648 TVL from the selected round
     BalancerAPI.getPoolTotalLiquidityUSD(pool.gauge?.network || 1, pool.id),
     getPoolRelativeWeight(poolId, round.endDate.getTime() / 1000),
   ]);

@@ -1,4 +1,4 @@
-import { KPI } from "#/components/KPI";
+import { KPI } from "./KPI";
 
 interface CardDetail {
   title: string;

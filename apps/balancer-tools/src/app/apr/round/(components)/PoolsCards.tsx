@@ -94,7 +94,7 @@ export async function PoolAPR({
 
 export default async function PoolsCards({ roundId }: { roundId: string }) {
   return (
-    <div className="space-y-6 w-full">
+    <div className="w-full gap-3 flex flex-col">
       {votingGauges.slice(0, 10).map((gauge) => (
         <PoolCard
           poolId={gauge.pool.id}

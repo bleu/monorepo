@@ -1,4 +1,7 @@
 import cn from "clsx";
+import { createContext, useContext } from "react";
+
+const TableContext = createContext({});
 
 const predefinedClasses = {
   gray: {
@@ -25,6 +28,18 @@ type TableColor = keyof typeof predefinedClasses;
 type TableVariant = keyof typeof predefinedClasses.blue;
 type TableShade = keyof typeof predefinedClasses.blue.solid;
 
+function useTableContext() {
+  const context = useContext(TableContext);
+
+  if (!context) {
+    throw new Error(
+      "Child components of Table cannot be rendered outside the Table component!",
+    );
+  }
+
+  return context;
+}
+
 export default function Table({
   children,
   color = "gray",
@@ -38,26 +53,29 @@ export default function Table({
   classNames?: string;
 }>) {
   return (
-    <div
-      className={cn(
-        "min-w-full",
-        predefinedClasses[color][variant][shade].border,
-        classNames ?? classNames,
-      )}
-    >
-      <table
+    <TableContext.Provider value={{}}>
+      <div
         className={cn(
-          "divide-y divide-slate7 min-w-full rounded",
-          predefinedClasses[color][variant][shade].style,
+          "min-w-full",
+          predefinedClasses[color][variant][shade].border,
+          classNames ?? classNames,
         )}
       >
-        {children}
-      </table>
-    </div>
+        <table
+          className={cn(
+            "divide-y divide-slate7 min-w-full rounded",
+            predefinedClasses[color][variant][shade].style,
+          )}
+        >
+          {children}
+        </table>
+      </div>
+    </TableContext.Provider>
   );
 }
 
 function HeaderRow({ children }: React.PropsWithChildren) {
+  useTableContext();
   return (
     <thead>
       <tr>{children}</tr>
@@ -69,6 +87,7 @@ function HeaderCell({
   children,
   padding = "p-4",
 }: React.PropsWithChildren<{ padding?: string }>) {
+  useTableContext();
   return (
     <th
       scope="col"
@@ -80,6 +99,7 @@ function HeaderCell({
 }
 
 function Body({ children }: React.PropsWithChildren) {
+  useTableContext();
   return <tbody>{children}</tbody>;
 }
 
@@ -88,6 +108,7 @@ function BodyRow({
   classNames,
   onClick,
 }: React.PropsWithChildren<{ classNames?: string; onClick?: () => void }>) {
+  useTableContext();
   return (
     <>
       {onClick ? (
@@ -111,6 +132,7 @@ function BodyCell({
   padding?: string;
   colSpan?: number;
 }>) {
+  useTableContext();
   return (
     <td
       className={cn(

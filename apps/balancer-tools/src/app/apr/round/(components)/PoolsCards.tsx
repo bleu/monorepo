@@ -7,18 +7,9 @@ import votingGauges from "#/data/voting-gauges.json";
 import { Pool } from "#/lib/balancer/gauges";
 
 import BALPrice from "../../(components)/BALPrice";
-import BalancerAPI from "../../(utils)/balancerAPI";
-import calculateRoundAPR from "../../(utils)/calculateRoundAPR";
-import { getBALPriceByRound } from "../../(utils)/getBALPriceByRound";
+import { calculateAPRForPool } from "../../(utils)/calculateRoundAPR";
 import { getPoolRelativeWeight } from "../../(utils)/getRelativeWeight";
 import { Round } from "../../(utils)/rounds";
-
-export interface PoolData {
-  pct_votes: number;
-  symbol: string;
-  votes: number;
-  apr: number;
-}
 
 export function PoolCard({
   network,
@@ -79,7 +70,6 @@ export async function PoolVotes({
 
   return (
     <p className="text-white leading-none mb-1">
-      {/* {(pool.votes).toFixed(2)} votes */}
       {(votingShare * 100).toFixed(2)}% Voted
     </p>
   );
@@ -92,21 +82,10 @@ export async function PoolAPR({
   roundId?: string;
   poolId: string;
 }) {
-  // TODO: aggregate historical pool APR when roundId is not provided
+  // TODO BAL-646: aggregate historical pool APR when roundId is not provided
   if (!roundId) return null;
 
-  const round = Round.getRoundByNumber(roundId);
-
-  const pool = new Pool(poolId);
-
-  const [balPriceUSD, tvl, votingShare] = await Promise.all([
-    getBALPriceByRound(round),
-    // TODO: must select the correct network
-    BalancerAPI.getPoolTotalLiquidityUSD(pool.gauge?.network || 1, pool.id),
-    getPoolRelativeWeight(poolId, round.endDate.getTime() / 1000),
-  ]);
-
-  const apr = calculateRoundAPR(round, votingShare, tvl, balPriceUSD) * 100;
+  const { apr } = await calculateAPRForPool({ poolId, roundId });
 
   return (
     <p className="text-white leading-none mb-1">{apr?.toFixed?.(2)}% APR</p>

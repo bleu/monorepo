@@ -1,26 +1,15 @@
-import { Suspense } from "react";
+import { redirect } from "next/navigation";
 
-import BALPrice from "#/app/apr/(components)/BALPrice";
-import { PoolCard } from "#/app/apr/round/(components)/PoolsCards";
-import { Pool } from "#/lib/balancer/gauges";
+import { Round } from "#/app/apr/(utils)/rounds";
 
 export default function Page({
   params,
 }: {
-  params: { poolId: string; network: string };
+  params: { network: string; poolId: string };
 }) {
-  const { poolId } = params;
-
-  const pool = new Pool(poolId);
-
-  return (
-    <>
-      <Suspense fallback={"Loading..."}>
-        <BALPrice />
-      </Suspense>
-      <Suspense fallback={"Loading..."}>
-        <PoolCard poolId={pool.id} network={pool.gauge?.network} />
-      </Suspense>
-    </>
+  redirect(
+    `/apr/pool/${params.network}/${params.poolId}/round/${
+      Round.getAllRounds()[0].value
+    }`,
   );
 }

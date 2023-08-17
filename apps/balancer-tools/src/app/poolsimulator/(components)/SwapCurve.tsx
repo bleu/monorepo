@@ -134,6 +134,27 @@ export function SwapCurve() {
     };
   };
 
+  const createBetaRegionDataObject = (
+    x_points: number[],
+    y_points: number[],
+    legendGroup: string,
+  ) => {
+    const x = [x_points[0], x_points[1], x_points[1], x_points[0], x_points[0]];
+    const y = [y_points[0], y_points[0], y_points[1], y_points[1], y_points[0]];
+    return {
+      x,
+      y,
+      type: "scatter" as PlotType,
+      mode: "lines" as const,
+      line: { dash: "dashdot" } as const,
+      legendgroup: legendGroup,
+      legendgrouptitle: { text: legendGroup },
+      name: "Beta region",
+      showlegend: true,
+      hovertemplate: Array(x.length).fill(`Beta region <extra></extra>`),
+    };
+  };
+
   if (
     !initialAmounts.analysisTokenIn ||
     !initialAmounts.analysisTokenOut ||
@@ -236,6 +257,32 @@ export function SwapCurve() {
     );
   }
 
+  if (initialData.poolType && initialData.poolParams?.beta) {
+    const betaLimits = getBetaLimitIndexes({
+      ...initialAmounts,
+      analysisTokenInitialBalance: analysisToken.balance,
+      tabTokenInitialBalance: currentTabToken.balance,
+      beta: initialData.poolParams.beta,
+    });
+
+    data.push(
+      createBetaRegionDataObject(betaLimits[0], betaLimits[1], "Initial"),
+    );
+  }
+
+  if (customData.poolType && customData.poolParams?.beta) {
+    const betaLimits = getBetaLimitIndexes({
+      ...customAmounts,
+      analysisTokenInitialBalance: analysisToken.balance,
+      tabTokenInitialBalance: currentTabToken.balance,
+      beta: customData.poolParams.beta,
+    });
+
+    data.push(
+      createBetaRegionDataObject(betaLimits[0], betaLimits[1], "Initial"),
+    );
+  }
+
   function getGraphScale({
     axisBalanceSymbol,
     oppositeAxisBalanceSymbol,
@@ -316,4 +363,61 @@ export function SwapCurve() {
       className="h-1/2 w-full"
     />
   );
+}
+
+function getBetaLimitIndexes({
+  analysisTokenOut,
+  analysisTokenIn,
+  tabTokenIn,
+  tabTokenOut,
+  analysisTokenInitialBalance,
+  tabTokenInitialBalance,
+  beta,
+}: {
+  analysisTokenOut: number[];
+  analysisTokenIn: number[];
+  tabTokenIn: number[];
+  tabTokenOut: number[];
+  analysisTokenInitialBalance: number;
+  tabTokenInitialBalance: number;
+  beta: number;
+}) {
+  const analysisTokenSwapAmounts = [...analysisTokenOut]
+    .reverse()
+    .concat(analysisTokenIn);
+
+  const tabTokenSwapAmounts = [...tabTokenIn].reverse().concat(tabTokenOut);
+
+  const analysisTokenBalanceAfterSwap = analysisTokenSwapAmounts.map(
+    (amount) => amount + analysisTokenInitialBalance,
+  );
+  const tabTokenBalanceAfterSwap = tabTokenSwapAmounts.map(
+    (amount) => amount + tabTokenInitialBalance,
+  );
+
+  const isBalancesInBetaRegion = analysisTokenBalanceAfterSwap.map(
+    (balanceX, index) => {
+      const balanceY = tabTokenBalanceAfterSwap[index];
+      return Math.abs(balanceX - balanceY) / balanceX + balanceY < beta;
+    },
+  );
+
+  const betaLimitIndexes = [];
+  for (let i = 1; i < isBalancesInBetaRegion.length; i++) {
+    if (isBalancesInBetaRegion[i] !== isBalancesInBetaRegion[i - 1]) {
+      betaLimitIndexes.push(i);
+    }
+    if (betaLimitIndexes.length === 2) break;
+  }
+
+  return [
+    [
+      analysisTokenSwapAmounts[betaLimitIndexes[0]],
+      analysisTokenSwapAmounts[betaLimitIndexes[1]],
+    ],
+    [
+      tabTokenSwapAmounts[betaLimitIndexes[0]],
+      tabTokenSwapAmounts[betaLimitIndexes[1]],
+    ],
+  ];
 }

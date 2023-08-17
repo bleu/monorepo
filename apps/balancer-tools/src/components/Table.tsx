@@ -3,12 +3,20 @@ import cn from "clsx";
 const predefinedClasses = {
   gray: {
     solid: {
-      dark: { style: "bg-slate3", border: "border border-slate7 rounded" },
+      dark: { style: "bg-slate3", border: "border-0" },
+      darkWithBorder: {
+        style: "bg-slate3",
+        border: "border border-slate7 rounded",
+      },
     },
   },
   blue: {
     solid: {
       dark: { style: "bg-blue3", border: "border-0" },
+      darkWithBorder: {
+        style: "bg-blue3",
+        border: "border border-blue6 rounded",
+      },
     },
   },
 } as const;

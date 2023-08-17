@@ -5,10 +5,7 @@ import { AnalysisData } from "#/contexts/PoolSimulatorContext";
 import { trimTrailingValues } from "#/lib/utils";
 
 import { TokensData } from "../(types)";
-import {
-  calculateCurvePoints,
-  convertAnalysisDataToAMM,
-} from "../(utils)";
+import { calculateCurvePoints, convertAnalysisDataToAMM } from "../(utils)";
 
 export interface SwapCurveWorkerInputData {
   analysisToken: TokensData;

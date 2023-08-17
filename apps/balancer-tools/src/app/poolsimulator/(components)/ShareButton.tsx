@@ -1,5 +1,4 @@
 import { Share1Icon } from "@radix-ui/react-icons";
-import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import Button from "#/components/Button";
@@ -8,23 +7,22 @@ import { Tooltip } from "#/components/Tooltip";
 import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 
 export function ShareButton() {
-  const { generateURL } = usePoolSimulator();
-  const onInitialPage = usePathname() === "/poolsimulator";
+  const { generateURL, isAnalysis } = usePoolSimulator();
   const [isNotifierOpen, setIsNotifierOpen] = useState<boolean>(false);
 
   return (
     <>
       <Tooltip
         content={
-          onInitialPage
-            ? "You can only share the analysis page"
-            : "Copy a link with the current simulation parameters"
+          isAnalysis
+            ? "Copy a link with the current simulation parameters"
+            : "You can only share when you had a simulation done"
         }
       >
-        <Button shade="dark" disabled={onInitialPage}>
+        <Button shade="dark" disabled={!isAnalysis}>
           <div
             onClick={() => {
-              if (onInitialPage) return;
+              if (!isAnalysis) return;
               navigator.clipboard.writeText(generateURL());
               setIsNotifierOpen(true);
             }}

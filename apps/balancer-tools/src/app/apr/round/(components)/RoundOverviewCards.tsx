@@ -24,7 +24,7 @@ export default async function RoundOverviewCards({
     {
       title: "BAL Emissions",
       content: formatNumber(
-        balEmissions.weekly(round.endDate.getTime() / 1000)
+        balEmissions.weekly(round.endDate.getTime() / 1000),
       ),
     },
     { title: "Round Number", content: roundId },

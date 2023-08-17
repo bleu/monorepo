@@ -8,7 +8,7 @@ import { Round } from "./rounds";
 
 const WEEKS_IN_YEAR = 52;
 
-export async function calculateAPRForPool({
+export async function calculatePoolStats({
   roundId,
   poolId,
 }: {

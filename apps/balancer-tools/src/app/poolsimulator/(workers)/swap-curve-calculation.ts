@@ -2,12 +2,12 @@ import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
 import { PoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/types";
 
 import { AnalysisData } from "#/contexts/PoolSimulatorContext";
+import { trimTrailingValues } from "#/lib/utils";
 
 import { TokensData } from "../(types)";
 import {
   calculateCurvePoints,
   convertAnalysisDataToAMM,
-  trimTrailingValues,
 } from "../(utils)";
 
 export interface SwapCurveWorkerInputData {

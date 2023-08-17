@@ -1,6 +1,6 @@
 import { blueDark } from "@radix-ui/colors";
 
-import { trimTrailingValues } from "#/app/poolsimulator/(utils)";
+import { trimTrailingValues } from "#/lib/utils";
 
 import { calculateAPRForPool } from "../../(utils)/calculateRoundAPR";
 import { Round } from "../../(utils)/rounds";

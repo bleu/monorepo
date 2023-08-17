@@ -12,7 +12,7 @@ export async function calculateAPRForPool({
   roundId,
   poolId,
 }: {
-  roundId: string;
+  roundId: string | number;
   poolId: string;
 }) {
   const round = Round.getRoundByNumber(roundId);

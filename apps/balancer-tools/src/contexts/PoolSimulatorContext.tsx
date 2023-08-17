@@ -159,10 +159,6 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
   }
 
   useEffect(() => {
-    if (isAnalysis) push(generateURL());
-  }, [customData, initialData]);
-
-  useEffect(() => {
     if (window.location.hash) {
       const encodedState = window.location.hash.substring(1);
       const decodedState = decodeURIComponent(encodedState);
@@ -171,6 +167,7 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
         setInitialData(state.initialData);
         setCustomData(state.customData);
         setIsAnalysis(true);
+        push("/poolsimulator");
         return;
       } catch (error) {
         throw new Error("Invalid state");

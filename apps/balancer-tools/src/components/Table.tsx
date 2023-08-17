@@ -41,8 +41,8 @@ export default function Table({
     <div
       className={cn(
         "min-w-full",
-        classNames ?? classNames,
         predefinedClasses[color][variant][shade].border,
+        classNames ?? classNames,
       )}
     >
       <table

@@ -1,7 +1,7 @@
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { Suspense } from "react";
 
-import Table from "#/components/TableServerSide";
+import Table from "#/components/Table";
 import votingGauges from "#/data/voting-gauges.json";
 import { Pool } from "#/lib/balancer/gauges";
 import { formatNumber } from "#/utils/formatNumber";
@@ -16,18 +16,14 @@ import ClientSideBodyRow from "./ClientSideBodyRow";
 export default async function PoolListTable({ roundId }: { roundId: string }) {
   return (
     <div className="overflow-hidden rounded-lg w-full text-white">
-      <Table
-        wrapperClassNames="overflow-y-auto"
-        tableClassNames="bg-transparent"
-        defaultStyles={false}
-      >
-        <Table.HeaderRow classNames="[&>:first-child]:pl-8 [&>:last-child]:pr-8">
-          <Table.HeaderCell padding="py-4 px-1">Name</Table.HeaderCell>
-          <Table.HeaderCell padding="py-4 px-1">TVL</Table.HeaderCell>
-          <Table.HeaderCell padding="py-4 px-1"> Votes % </Table.HeaderCell>
-          <Table.HeaderCell padding="py-4 px-1">APR</Table.HeaderCell>
+      <Table color="blue" variant="solid" shade="dark">
+        <Table.HeaderRow>
+          <Table.HeaderCell>Name</Table.HeaderCell>
+          <Table.HeaderCell>TVL</Table.HeaderCell>
+          <Table.HeaderCell> Votes % </Table.HeaderCell>
+          <Table.HeaderCell>APR</Table.HeaderCell>
         </Table.HeaderRow>
-        <Table.Body classNames="bg-white">
+        <Table.Body>
           {votingGauges.slice(0, 10).map((gauge) => (
             <TableRow
               poolId={gauge.pool.id}
@@ -37,10 +33,13 @@ export default async function PoolListTable({ roundId }: { roundId: string }) {
             />
           ))}
           <Table.BodyRow>
-            <Table.BodyCell colspan={4}>
-              <div className="flex content-center justify-center gap-3">
+            <Table.BodyCell colSpan={4}>
+              <button
+                className="w-full flex content-center justify-center gap-x-3 bg-blue4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer hover:bg-blue5 hover:text-white"
+                disabled={true}
+              >
                 Load More <ChevronDownIcon />
-              </div>
+              </button>
             </Table.BodyCell>
           </Table.BodyRow>
         </Table.Body>

@@ -16,7 +16,7 @@ export function ShareButton() {
         content={
           isAnalysis
             ? "Copy a link with the current simulation parameters"
-            : "You can only share the analysis page"
+            : "You can only share when you had a simulation done"
         }
       >
         <Button shade="dark" disabled={!isAnalysis}>

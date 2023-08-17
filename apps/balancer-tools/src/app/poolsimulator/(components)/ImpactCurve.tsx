@@ -1,72 +1,102 @@
 "use client";
 
-import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
-import { PoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/types";
 import { PlotType } from "plotly.js";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
 import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
-import { PoolTypeEnum, TokensData } from "../(types)";
-import { calculateCurvePoints, trimTrailingValues } from "../(utils)";
+import { PoolTypeEnum } from "../(types)";
+import {
+  ImpactWorkerInputData,
+  ImpactWorkerOutputData,
+} from "../(workers)/impact-curve-calculation";
+
+interface Amounts {
+  analysisTokenIn?: {
+    amounts: number[];
+    priceImpact: number[];
+  };
+  tabTokenIn?: {
+    amounts: number[];
+    priceImpact: number[];
+  };
+}
+
+const createAndPostWorker = (
+  messageData: ImpactWorkerInputData,
+  setInitialAmounts: Dispatch<SetStateAction<Amounts>>,
+  setCustomAmounts: Dispatch<SetStateAction<Amounts>>,
+) => {
+  const worker = new Worker(
+    new URL("../(workers)/impact-curve-calculation.ts", import.meta.url),
+  );
+
+  worker.onmessage = (event: MessageEvent<ImpactWorkerOutputData>) => {
+    const { result, type, swapDirection } = event.data;
+    const setter = type === "initial" ? setInitialAmounts : setCustomAmounts;
+
+    const key = swapDirection === "in" ? "analysisTokenIn" : "tabTokenIn";
+
+    setter((prev) => ({ ...prev, [key]: result }));
+
+    worker.terminate();
+  };
+
+  worker.postMessage(messageData);
+};
 
 export function ImpactCurve() {
-  const {
-    analysisToken,
-    currentTabToken,
-    initialAMM,
-    customAMM,
-    initialData,
-    customData,
-  } = usePoolSimulator();
+  const { analysisToken, currentTabToken, initialData, customData } =
+    usePoolSimulator();
 
-  if (!initialAMM || !customAMM) return <Spinner />;
+  const [initialAmounts, setInitialAmounts] = useState<Amounts>({});
+  const [customAmounts, setCustomAmounts] = useState<Amounts>({});
 
-  const {
-    amounts: initialAmountsAnalysisTokenIn,
-    priceImpact: initialImpactAnalysisTokenIn,
-  } = calculateTokenImpact({
-    tokenIn: analysisToken,
-    tokenOut: currentTabToken,
-    amm: initialAMM,
-    poolType: initialData.poolType,
-    swapDirection: "in",
-  });
+  if (!initialData || !customData) return <Spinner />;
 
-  const {
-    amounts: initialAmountsTabTokenIn,
-    priceImpact: initialImpactTabTokenIn,
-  } = calculateTokenImpact({
-    tokenIn: analysisToken,
-    tokenOut: currentTabToken,
-    amm: initialAMM,
-    poolType: initialData.poolType,
-    swapDirection: "out",
-  });
+  useEffect(() => {
+    const messages: ImpactWorkerInputData[] = [
+      {
+        tokenIn: analysisToken,
+        tokenOut: currentTabToken,
+        data: initialData,
+        poolType: initialData.poolType,
+        swapDirection: "in",
+        type: "initial",
+      },
+      {
+        tokenIn: analysisToken,
+        tokenOut: currentTabToken,
+        data: initialData,
+        poolType: initialData.poolType,
+        swapDirection: "out",
+        type: "initial",
+      },
+      {
+        tokenIn: analysisToken,
+        tokenOut: currentTabToken,
+        data: customData,
+        poolType: customData.poolType,
+        swapDirection: "in",
+        type: "custom",
+      },
+      {
+        tokenIn: analysisToken,
+        tokenOut: currentTabToken,
+        data: customData,
+        poolType: customData.poolType,
+        swapDirection: "out",
+        type: "custom",
+      },
+    ];
 
-  const {
-    amounts: customAmountsAnalysisTokenIn,
-    priceImpact: customImpactAnalysisTokenIn,
-  } = calculateTokenImpact({
-    tokenIn: analysisToken,
-    tokenOut: currentTabToken,
-    amm: customAMM,
-    poolType: customData.poolType,
-    swapDirection: "in",
-  });
-
-  const {
-    amounts: customAmountsTabTokenIn,
-    priceImpact: customImpactTabTokenIn,
-  } = calculateTokenImpact({
-    tokenIn: analysisToken,
-    tokenOut: currentTabToken,
-    amm: customAMM,
-    poolType: customData.poolType,
-    swapDirection: "out",
-  });
+    messages.forEach((message) =>
+      createAndPostWorker(message, setInitialAmounts, setCustomAmounts),
+    );
+  }, [initialData, customData, analysisToken, currentTabToken]);
 
   // Helper function to format the swap action string
   const formatAction = (
@@ -156,26 +186,34 @@ export function ImpactCurve() {
     };
   };
 
+  if (
+    !initialAmounts.analysisTokenIn ||
+    !initialAmounts.tabTokenIn ||
+    !customAmounts.analysisTokenIn ||
+    !customAmounts.tabTokenIn
+  )
+    return <Spinner />;
+
   const data = [
     createDataObject(
-      initialAmountsAnalysisTokenIn,
-      initialImpactAnalysisTokenIn,
+      initialAmounts.analysisTokenIn.amounts,
+      initialAmounts.analysisTokenIn.priceImpact,
       "Initial",
       analysisToken.symbol,
       true,
       "in",
     ),
     createDataObject(
-      customAmountsAnalysisTokenIn,
-      customImpactAnalysisTokenIn,
+      customAmounts.analysisTokenIn.amounts,
+      customAmounts.analysisTokenIn.priceImpact,
       "Custom",
       analysisToken.symbol,
       true,
       "in",
     ),
     createDataObject(
-      initialAmountsTabTokenIn,
-      initialImpactTabTokenIn,
+      initialAmounts.tabTokenIn.amounts,
+      initialAmounts.tabTokenIn.priceImpact,
       "Initial",
       currentTabToken.symbol,
       true,
@@ -183,8 +221,8 @@ export function ImpactCurve() {
       "dashdot",
     ),
     createDataObject(
-      customAmountsTabTokenIn,
-      customImpactTabTokenIn,
+      customAmounts.tabTokenIn.amounts,
+      customAmounts.tabTokenIn.priceImpact,
       "Custom",
       currentTabToken.symbol,
       true,
@@ -201,12 +239,12 @@ export function ImpactCurve() {
     data.push(
       createLimitPointDataObject(
         [
-          initialAmountsAnalysisTokenIn.slice(-1)[0],
-          initialAmountsTabTokenIn.slice(-1)[0],
+          initialAmounts.analysisTokenIn.amounts.slice(-1)[0],
+          initialAmounts.tabTokenIn.amounts.slice(-1)[0],
         ],
         [
-          initialImpactAnalysisTokenIn.slice(-1)[0],
-          initialImpactTabTokenIn.slice(-1)[0],
+          initialAmounts.analysisTokenIn.priceImpact.slice(-1)[0],
+          initialAmounts.tabTokenIn.priceImpact.slice(-1)[0],
         ],
         "Initial",
       ),
@@ -220,12 +258,12 @@ export function ImpactCurve() {
     data.push(
       createLimitPointDataObject(
         [
-          customAmountsAnalysisTokenIn.slice(-1)[0],
-          customAmountsTabTokenIn.slice(-1)[0],
+          customAmounts.analysisTokenIn.amounts.slice(-1)[0],
+          customAmounts.tabTokenIn.amounts.slice(-1)[0],
         ],
         [
-          customImpactAnalysisTokenIn.slice(-1)[0],
-          customImpactTabTokenIn.slice(-1)[0],
+          customAmounts.analysisTokenIn.priceImpact.slice(-1)[0],
+          customAmounts.tabTokenIn.priceImpact.slice(-1)[0],
         ],
         "Custom",
       ),
@@ -233,12 +271,12 @@ export function ImpactCurve() {
   }
 
   const maxFromInitialAmounts = Math.max(
-    ...initialAmountsAnalysisTokenIn,
-    ...initialAmountsTabTokenIn,
+    ...initialAmounts.analysisTokenIn.amounts,
+    ...initialAmounts.tabTokenIn.amounts,
   );
   const maxFromCustomAmounts = Math.max(
-    ...customAmountsAnalysisTokenIn,
-    ...customAmountsTabTokenIn,
+    ...customAmounts.analysisTokenIn.amounts,
+    ...customAmounts.tabTokenIn.amounts,
   );
   const xlimit = Math.min(maxFromInitialAmounts, maxFromCustomAmounts);
   function indexOfXLimit(value: number, ...arrays: number[][]) {
@@ -246,10 +284,10 @@ export function ImpactCurve() {
   }
 
   const arraysToSearch = [
-    initialAmountsAnalysisTokenIn,
-    initialAmountsTabTokenIn,
-    customAmountsAnalysisTokenIn,
-    customAmountsTabTokenIn,
+    initialAmounts.analysisTokenIn.amounts,
+    initialAmounts.tabTokenIn.amounts,
+    customAmounts.analysisTokenIn.amounts,
+    customAmounts.tabTokenIn.amounts,
   ];
   const xLimitIndex = maxFromInitialAmounts
     ? indexOfXLimit(xlimit, ...arraysToSearch)
@@ -259,8 +297,14 @@ export function ImpactCurve() {
     xLimitIndex ? Math.max(analysis[xLimitIndex], tab[xLimitIndex]) : 0;
 
   const ylimit = Math.max(
-    getImpactOnXLimit(initialImpactAnalysisTokenIn, initialImpactTabTokenIn),
-    getImpactOnXLimit(customImpactAnalysisTokenIn, customImpactTabTokenIn),
+    getImpactOnXLimit(
+      initialAmounts.analysisTokenIn.priceImpact,
+      initialAmounts.tabTokenIn.priceImpact,
+    ),
+    getImpactOnXLimit(
+      customAmounts.analysisTokenIn.priceImpact,
+      customAmounts.tabTokenIn.priceImpact,
+    ),
   );
   return (
     <Plot
@@ -281,51 +325,3 @@ export function ImpactCurve() {
     />
   );
 }
-
-const calculateTokenImpact = ({
-  tokenIn,
-  tokenOut,
-  amm,
-  poolType,
-  swapDirection,
-}: {
-  tokenIn: TokensData;
-  tokenOut: TokensData;
-  amm: AMM<PoolPairData>;
-  poolType: PoolTypeEnum;
-  swapDirection: "in" | "out";
-}) => {
-  const maxBalance = Math.max(tokenIn.balance, tokenOut.balance);
-  const limitBalance =
-    swapDirection === "in" ? tokenOut.balance : tokenIn.balance;
-  const rawAmounts =
-    poolType === PoolTypeEnum.MetaStable
-      ? calculateCurvePoints({
-          balance: maxBalance,
-          start: 0.001,
-        })
-      : calculateCurvePoints({
-          balance: maxBalance,
-          start: 0.001,
-        }).filter((value) => value <= limitBalance);
-
-  const rawPriceImpact = rawAmounts.map(
-    (amount) =>
-      amm.priceImpactForExactTokenInSwap(
-        amount,
-        swapDirection === "in" ? tokenIn.symbol : tokenOut.symbol,
-        swapDirection === "in" ? tokenOut.symbol : tokenIn.symbol,
-      ) * 100,
-  );
-
-  const { trimmedIn: amounts, trimmedOut: priceImpact } = trimTrailingValues(
-    rawAmounts,
-    rawPriceImpact,
-    100,
-  );
-
-  return {
-    amounts: amounts,
-    priceImpact: priceImpact,
-  };
-};

@@ -1,6 +1,5 @@
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import * as Separator from "@radix-ui/react-separator";
-// import { usePathname, useRouter } from "next/navigation";
 import { ReactElement, useEffect, useState } from "react";
 
 import { Dialog } from "#/components/Dialog";
@@ -36,7 +35,6 @@ export enum PoolSimulatorFormTabs {
 }
 
 function IndexMenu() {
-  // const { push } = useRouter();
   const {
     initialData,
     setInitialData,
@@ -92,13 +90,13 @@ function IndexMenu() {
               }
               defaultValue={initialData}
               onTabChanged={(data) => {
-                if (!customData.poolParams?.swapFee) {
+                if (typeof customData.poolParams?.swapFee === "undefined") {
                   setCustomData(data);
                 }
                 setInitialData(data);
               }}
               onSubmit={(data) => {
-                if (!customData.poolParams?.swapFee) {
+                if (typeof customData.poolParams?.swapFee === "undefined") {
                   setCustomData(data);
                 }
                 setInitialData(data);
@@ -134,7 +132,6 @@ function IndexMenu() {
                 setCustomData(data);
                 setIsGraphLoading(true);
                 setIsAnalysis(true);
-                // push("/poolsimulator/analysis");
               }}
             />
           </div>

@@ -36,7 +36,7 @@ export function PoolCard({
 
   return (
     <Link href={`/apr/pool/${networkFor(network)}/${pool.id}`}>
-      <div className="flex justify-between border border-gray-400 lg:border-gray-400 bg-blue3 rounded p-4 cursor-pointer">
+      <div className="flex justify-between border border-blue6 bg-blue3 rounded p-4 cursor-pointer">
         <div className="">
           <div className="flex justify-between">
             <div className="text-white font-bold text-xl mb-2">{pool.id}</div>

@@ -53,7 +53,7 @@ export default function TopPoolsChart({ roundId }: { roundId: string }) {
   };
 
   return (
-    <div className="flex justify-between border border-gray-400 lg:border-gray-400 bg-blue3 rounded p-4 cursor-pointer">
+    <div className="flex justify-between border border-blue6 bg-blue3 rounded p-4 cursor-pointer">
       <Plot
         title={`Top APR Pools of Round ${roundId}`}
         toolTip="Top pools with highest APR."

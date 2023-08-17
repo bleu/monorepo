@@ -1,8 +1,8 @@
 import { Suspense } from "react";
 
-import Loading from "#/app/metadata/[network]/pool/[poolId]/loading";
+import { Spinner } from "#/components/Spinner";
 
-import PoolListTable from "../(components)/PoolListTable";
+import { PoolListTable } from "../(components)/PoolListTable";
 import PoolsCards from "../(components)/PoolsCards";
 import RoundOverviewCards from "../(components)/RoundOverviewCards";
 import TopPoolsChart from "../(components)/TopPoolsChart";
@@ -14,40 +14,14 @@ export default function Page({
 }) {
   return (
     <div className="flex flex-col gap-y-3">
-      <Suspense
-        fallback={
-          <div className="flex h-full w-full flex-col justify-center rounded-3xl">
-            Loading overview...
-          </div>
-        }
-      >
+      <Suspense fallback={<Spinner />}>
         <RoundOverviewCards roundId={roundId} />
       </Suspense>
-      <Suspense
-        fallback={
-          <div className="flex h-full w-full flex-col justify-center rounded-3xl">
-            <Loading />
-          </div>
-        }
-      >
+      <Suspense fallback={<Spinner />}>
         <TopPoolsChart roundId={roundId} />
       </Suspense>
-      <Suspense
-        fallback={
-          <div className="flex h-full w-full flex-col justify-center rounded-3xl">
-            <Loading />
-          </div>
-        }
-      >
-        <PoolListTable roundId={roundId} />
-      </Suspense>
-      <Suspense
-        fallback={
-          <div className="flex h-full w-full flex-col justify-center rounded-3xl">
-            <Loading />
-          </div>
-        }
-      >
+      <PoolListTable roundId={roundId} />
+      <Suspense fallback={<Spinner />}>
         <PoolsCards roundId={roundId} />
       </Suspense>
     </div>

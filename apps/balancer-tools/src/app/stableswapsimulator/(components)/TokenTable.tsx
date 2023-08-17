@@ -50,7 +50,10 @@ export function TokenTable({
   const aboveOrEqualLimit = tableData?.tokens?.length >= MAX_POOL_TOKENS;
   return (
     <div className="flex w-full flex-1 justify-center text-white">
-      <Table classNames="max-h-[220px] overflow-y-auto">
+      <Table
+        classNames="max-h-[220px] overflow-y-auto"
+        shade={"darkWithBorder"}
+      >
         <TokenTableContext.Provider value={{ variant }}>
           <Table.HeaderRow>
             <Table.HeaderCell padding={customPadding}>

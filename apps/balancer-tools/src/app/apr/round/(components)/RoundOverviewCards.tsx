@@ -28,7 +28,7 @@ export default async function RoundOverviewCards({
       ),
     },
     { title: "Round Number", content: roundId },
-    { title: "Round Deadline", content: formatDate(round.endDate) },
+    { title: "Round Ended", content: formatDate(round.endDate) },
   ];
   return <OverviewCards cardsDetails={cardsDetails} />;
 }

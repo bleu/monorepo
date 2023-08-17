@@ -5,44 +5,56 @@ export const PREDEFINED_CLASSES = {
   blue: {
     solid: {
       light: "bg-blue9 text-slate12 hover:bg-blue10 border-blue9",
+      medium: "bg-blue4 hover:bg-blue5 hover:text-white border-transparent",
       dark: "bg-blue3 text-slate12 hover:bg-blue4 border-blue3",
     },
     outline: {
       light:
         "bg-transparent text-blue9 border-blue9 hover:bg-blue2 hover:border-blue2",
+      medium:
+        "bg-transparent text-blue4 border-blue4 hover:bg-blue2 hover:border-blue2",
       dark: "bg-transparent text-blue3 border-blue3 hover:bg-blue2 hover:border-blue2",
     },
   },
   cyan: {
     solid: {
       light: "bg-cyan9 text-slate12 hover:bg-cyan10 border-cyan9",
+      medium: "bg-cyan4 text-slate12 hover:bg-cyan5 border-cyan4",
       dark: "bg-cyan3 text-slate12 hover:bg-cyan4 border-cyan3",
     },
     outline: {
       light:
         "bg-transparent text-cyan9 border-cyan9 hover:bg-cyan2 hover:border-cyan2",
+      medium:
+        "bg-transparent text-cyan4 border-cyan4 hover:bg-cyan2 hover:border-cyan2",
       dark: "bg-transparent text-cyan3 border-cyan3 hover:bg-cyan2 hover:border-cyan2",
     },
   },
   amber: {
     solid: {
       light: "bg-amber9 text-slate12 hover:bg-amber10 border-amber9",
+      medium: "bg-amber4 text-slate12 hover:bg-amber5 border-amber4",
       dark: "bg-amber3 text-slate12 hover:bg-amber4 border-amber3",
     },
     outline: {
       light:
         "bg-transparent text-amber10 border-amber9 hover:bg-amber2 hover:border-amber2",
+      medium:
+        "bg-transparent text-amber5 border-amber4 hover:bg-amber2 hover:border-amber2",
       dark: "bg-transparent text-amber10 border-amber3 hover:bg-amber2 hover:border-amber2",
     },
   },
   slate: {
     solid: {
       light: "bg-slate9 text-slate12 hover:bg-slate10 border-slate9",
+      medium: "bg-slate4 text-slate12 hover:bg-slate5 border-slate4",
       dark: "bg-slate3 text-slate12 hover:bg-slate4 border-slate3",
     },
     outline: {
       light:
         "bg-transparent text-slate9 border-slate9 hover:bg-slate2 hover:border-slate2",
+      medium:
+        "bg-transparent text-slate4 border-slate4 hover:bg-slate2 hover:border-slate2",
       dark: "bg-transparent text-slate3 border-slate3 hover:bg-slate2 hover:border-slate2",
     },
   },

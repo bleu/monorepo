@@ -196,10 +196,6 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
         setInitialData,
       );
     }
-    if (isAnalysis) {
-      // if (pathname === "/poolsimulator/analysis") {
-      setIsGraphLoading(false);
-    }
   }, []);
 
   return (

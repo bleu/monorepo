@@ -1,7 +1,7 @@
 import * as balEmissions from "#/lib/balancer/emissions";
 import { Pool } from "#/lib/balancer/gauges";
+import { pools } from "#/lib/gql/server";
 
-import BalancerAPI from "./balancerAPI";
 import { getBALPriceByRound } from "./getBALPriceByRound";
 import getBlockNumberByTimestamp from "./getBlockNumberForTime";
 import { getPoolRelativeWeight } from "./getRelativeWeight";
@@ -16,27 +16,52 @@ export async function calculatePoolStats({
   roundId: string;
   poolId: string;
 }) {
-  // TODO:  BAL-646 aggregate historical pool APR when roundId is not provided
   const round = Round.getRoundByNumber(roundId);
   const pool = new Pool(poolId);
 
   const endRoundBlockNumber = await getBlockNumberByTimestamp(
-    pool.gauge?.network,
-    round.endDate,
+    pool.gauge?.network ?? 1,
+    round.activeRound ? round.startDate : round.endDate,
   );
 
-  const [balPriceUSD, tvl, votingShare] = await Promise.all([
-    getBALPriceByRound(round),
-    // TODO: BAL-648 TVL from the selected round
-    BalancerAPI.getPoolTotalLiquidityUSD(
-      pool.gauge?.network || 1,
-      pool.id,
-      endRoundBlockNumber,
-    ),
-    getPoolRelativeWeight(poolId, round.endDate.getTime() / 1000),
-  ]);
+  let balPriceUSD, tvl, votingShare;
 
-  const apr = calculateRoundAPR(round, votingShare, tvl, balPriceUSD) * 100;
+  try {
+    balPriceUSD = await getBALPriceByRound(round);
+  } catch (error) {
+    balPriceUSD = 0;
+  }
+
+  try {
+    tvl = await pools
+      .gql(String(pool.gauge?.network) ?? 1)
+      .PoolWhereBlockNumber({
+        blockNumber: endRoundBlockNumber,
+        poolId,
+      })
+      .then((res) => {
+        if (!res.pool?.totalLiquidity) {
+          throw new Error("Failed to fetch totalLiquidity.");
+        }
+        return res.pool?.totalLiquidity;
+      });
+  } catch (error) {
+    tvl = 0;
+  }
+
+  try {
+    votingShare = await getPoolRelativeWeight(
+      poolId,
+      round.endDate.getTime() / 1000,
+    );
+  } catch (error) {
+    votingShare = 0;
+  }
+
+  let apr = 0;
+  if (balPriceUSD !== null && tvl !== null && votingShare !== null) {
+    apr = calculateRoundAPR(round, votingShare, tvl, balPriceUSD) * 100;
+  }
 
   return { apr, balPriceUSD, tvl, votingShare };
 }

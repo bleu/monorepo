@@ -8,10 +8,13 @@ import { Spinner } from "#/components/Spinner";
 import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
+import { PoolTypeEnum } from "../../(types)";
+import { findTokenBySymbol } from "../../(utils)";
 import {
   SwapCurveWorkerInputData,
   SwapCurveWorkerOutputData,
-} from "../(workers)/swap-curve-calculation";
+} from "../../(workers)/swap-curve-calculation";
+import getBetaLimitIndexes from "./getBetaLimitIndexes";
 
 interface AmountsData {
   analysisTokenIn: number[];
@@ -42,8 +45,6 @@ const createAndPostSwapWorker = (
 
   worker.postMessage(messageData);
 };
-import { PoolTypeEnum } from "../(types)";
-import { findTokenBySymbol } from "../(utils)";
 
 const POOL_TYPES_TO_ADD_LIMIT = [
   PoolTypeEnum.Gyro2,
@@ -363,61 +364,4 @@ export function SwapCurve() {
       className="h-1/2 w-full"
     />
   );
-}
-
-function getBetaLimitIndexes({
-  analysisTokenOut,
-  analysisTokenIn,
-  tabTokenIn,
-  tabTokenOut,
-  analysisTokenInitialBalance,
-  tabTokenInitialBalance,
-  beta,
-}: {
-  analysisTokenOut: number[];
-  analysisTokenIn: number[];
-  tabTokenIn: number[];
-  tabTokenOut: number[];
-  analysisTokenInitialBalance: number;
-  tabTokenInitialBalance: number;
-  beta: number;
-}) {
-  const analysisTokenSwapAmounts = [...analysisTokenOut]
-    .reverse()
-    .concat(analysisTokenIn);
-
-  const tabTokenSwapAmounts = [...tabTokenIn].reverse().concat(tabTokenOut);
-
-  const analysisTokenBalanceAfterSwap = analysisTokenSwapAmounts.map(
-    (amount) => amount + analysisTokenInitialBalance,
-  );
-  const tabTokenBalanceAfterSwap = tabTokenSwapAmounts.map(
-    (amount) => amount + tabTokenInitialBalance,
-  );
-
-  const isBalancesInBetaRegion = analysisTokenBalanceAfterSwap.map(
-    (balanceX, index) => {
-      const balanceY = tabTokenBalanceAfterSwap[index];
-      return Math.abs(balanceX - balanceY) / balanceX + balanceY < beta;
-    },
-  );
-
-  const betaLimitIndexes = [];
-  for (let i = 1; i < isBalancesInBetaRegion.length; i++) {
-    if (isBalancesInBetaRegion[i] !== isBalancesInBetaRegion[i - 1]) {
-      betaLimitIndexes.push(i);
-    }
-    if (betaLimitIndexes.length === 2) break;
-  }
-
-  return [
-    [
-      analysisTokenSwapAmounts[betaLimitIndexes[0]],
-      analysisTokenSwapAmounts[betaLimitIndexes[1]],
-    ],
-    [
-      tabTokenSwapAmounts[betaLimitIndexes[0]],
-      tabTokenSwapAmounts[betaLimitIndexes[1]],
-    ],
-  ];
 }

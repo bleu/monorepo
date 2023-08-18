@@ -1,12 +1,25 @@
 "use client";
 
-import { ChevronDownIcon, InfoCircledIcon } from "@radix-ui/react-icons";
-import { useEffect, useState } from "react";
+import { networkFor } from "@bleu-balancer-tools/utils";
+import {
+  ChevronDownIcon,
+  DashIcon,
+  InfoCircledIcon,
+  TriangleDownIcon,
+  TriangleUpIcon,
+} from "@radix-ui/react-icons";
+import { useRouter } from "next/navigation";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
+import { Button } from "#/components";
 import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
+import { Tooltip } from "#/components/Tooltip";
 import votingGauges from "#/data/voting-gauges.json";
 import { Pool } from "#/lib/balancer/gauges";
+import { formatNumber } from "#/utils/formatNumber";
+
+import { calculatePoolStats } from "../../(utils)/calculateRoundAPR";
 
 interface PoolStats {
   apr: number;
@@ -14,23 +27,60 @@ interface PoolStats {
   tvl: number;
   votingShare: number;
 }
-
-import { networkFor } from "@bleu-balancer-tools/utils";
-import { useRouter } from "next/navigation";
-
-import { Button } from "#/components";
-import { Tooltip } from "#/components/Tooltip";
-import { formatNumber } from "#/utils/formatNumber";
-
-import { calculatePoolStats } from "../../(utils)/calculateRoundAPR";
+interface PoolTableData extends PoolStats {
+  id: string;
+  network: number;
+}
 
 export function PoolListTable({ roundId }: { roundId: string }) {
+  const initialTableValues: PoolTableData[] = votingGauges
+    .slice(0, 10)
+    .map((gauge) => ({
+      id: gauge.pool.id,
+      apr: 0,
+      balPriceUSD: 0,
+      tvl: 0,
+      votingShare: 0,
+      network: gauge.network,
+    }));
+  const [tableData, setTableData] = useState(initialTableValues);
+  const [sortField, setSortField] = useState("");
+  const [order, setOrder] = useState<"asc" | "desc">("asc");
+  const handleSorting = (sortField: keyof PoolTableData, sortOrder: string) => {
+    if (sortField) {
+      setTableData((prevTableData) => {
+        const sortedArray = prevTableData.slice().sort((a, b) => {
+          const aValue = a[sortField] as number;
+          const bValue = b[sortField] as number;
+
+          if (isNaN(aValue)) return 1;
+          if (isNaN(bValue)) return -1;
+
+          if (sortOrder === "asc") {
+            return aValue - bValue;
+          } else {
+            return bValue - aValue;
+          }
+        });
+
+        return sortedArray;
+      });
+    }
+  };
+
+  const handleSortingChange = (accessor: keyof PoolTableData) => {
+    const sortOrder =
+      accessor === sortField && order === "asc" ? "desc" : "asc";
+    setSortField(accessor);
+    setOrder(sortOrder);
+    handleSorting(accessor, sortOrder);
+  };
   return (
     <div className="flex w-full flex-1 justify-center text-white">
       <Table color="blue" shade={"darkWithBorder"}>
         <Table.HeaderRow>
           <Table.HeaderCell>Symbol</Table.HeaderCell>
-          <Table.HeaderCell>
+          <Table.HeaderCell onClick={() => handleSortingChange("tvl")}>
             <div className="flex gap-x-1 items-center">
               <span>TVL</span>
               <Tooltip
@@ -38,10 +88,18 @@ export function PoolListTable({ roundId }: { roundId: string }) {
               >
                 <InfoCircledIcon />
               </Tooltip>
+              {sortField == "tvl" ? OrderIcon(order) : OrderIcon("neutral")}
             </div>
           </Table.HeaderCell>
-          <Table.HeaderCell>Voting %</Table.HeaderCell>
-          <Table.HeaderCell>
+          <Table.HeaderCell onClick={() => handleSortingChange("votingShare")}>
+            <div className="flex gap-x-1 items-center">
+              <span>Voting %</span>
+              {sortField == "votingShare"
+                ? OrderIcon(order)
+                : OrderIcon("neutral")}
+            </div>
+          </Table.HeaderCell>
+          <Table.HeaderCell onClick={() => handleSortingChange("apr")}>
             <div className="flex gap-x-1 items-center">
               <span> APR</span>
               <Tooltip
@@ -49,14 +107,17 @@ export function PoolListTable({ roundId }: { roundId: string }) {
               >
                 <InfoCircledIcon />
               </Tooltip>
+              {sortField == "apr" ? OrderIcon(order) : OrderIcon("neutral")}
             </div>
           </Table.HeaderCell>
         </Table.HeaderRow>
         <Table.Body>
-          {votingGauges.slice(0, 10).map((gauge) => (
+          {tableData.map((gauge) => (
             <TableRow
-              key={gauge.pool.id}
-              poolId={gauge.pool.id}
+              tableData={tableData}
+              setTableData={setTableData}
+              key={gauge.id}
+              poolId={gauge.id}
               network={gauge.network}
               roundId={roundId}
             />
@@ -82,20 +143,35 @@ function TableRow({
   poolId,
   roundId,
   network,
+  tableData,
+  setTableData,
 }: {
   poolId: string;
   roundId: string;
   network: number;
+  tableData: PoolTableData[];
+  setTableData: Dispatch<SetStateAction<PoolTableData[]>>;
 }) {
   const pool = new Pool(poolId);
   const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState<PoolStats>({} as PoolStats);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const result = await calculatePoolStats({ poolId, roundId });
-        setData(result);
+        setTableData((prevTableData) => {
+          const updatedTableData = prevTableData.map((pool) => {
+            if (pool.id === poolId) {
+              return {
+                ...pool,
+                ...result,
+              };
+            }
+            return pool;
+          });
+          return updatedTableData;
+        });
+
         setIsLoading(false);
       } catch (error) {
         setIsLoading(false);
@@ -105,6 +181,9 @@ function TableRow({
     fetchData();
   }, [poolId, roundId]);
 
+  const selectedPoolData: PoolTableData | undefined = tableData.find(
+    (data) => data.id === poolId,
+  );
   const poolRedirectURL = `/apr/pool/${networkFor(
     network,
   )}/${poolId}/round/${roundId}`;
@@ -124,16 +203,26 @@ function TableRow({
       ) : (
         <>
           <Table.BodyCell padding="py-4 px-1">
-            {formatNumber(data.tvl)}
+            {formatNumber(selectedPoolData?.tvl || NaN)}
           </Table.BodyCell>
           <Table.BodyCell padding="py-4 px-1">
-            {formatNumber(data.votingShare).concat("%")}
+            {formatNumber(selectedPoolData?.votingShare || NaN).concat("%")}
           </Table.BodyCell>
           <Table.BodyCell padding="py-4 px-1">
-            {formatNumber(data.apr).concat("%")}
+            {formatNumber(selectedPoolData?.apr || NaN).concat("%")}
           </Table.BodyCell>
         </>
       )}
     </Table.BodyRow>
   );
+}
+
+function OrderIcon(order: "asc" | "desc" | "neutral") {
+  if (order === "asc") {
+    return <TriangleUpIcon />;
+  } else if (order === "desc") {
+    return <TriangleDownIcon />;
+  } else {
+    return <DashIcon />;
+  }
 }

@@ -29,7 +29,7 @@ const createAndPostSwapWorker = (
   setCustomAmounts: Dispatch<SetStateAction<AmountsData>>,
 ) => {
   const worker = new Worker(
-    new URL("../(workers)/swap-curve-calculation.ts", import.meta.url),
+    new URL("../../(workers)/swap-curve-calculation.ts", import.meta.url),
   );
 
   worker.onmessage = (event: MessageEvent<SwapCurveWorkerOutputData>) => {
@@ -259,6 +259,7 @@ export function SwapCurve() {
   }
 
   if (initialData.poolType && initialData.poolParams?.beta) {
+    // https://docs.xave.co/product-overview-1/fxpools/amm-faqs
     const betaLimits = getBetaLimitIndexes({
       ...initialAmounts,
       analysisTokenInitialBalance: analysisToken.balance,

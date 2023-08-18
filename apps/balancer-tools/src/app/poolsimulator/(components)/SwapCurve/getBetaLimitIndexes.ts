@@ -1,12 +1,11 @@
-export const computeSwapAmounts = (
-  tokenOut: number[],
-  tokenIn: number[],
-  initialBalance: number,
-) =>
-  [...tokenOut]
-    .reverse()
-    .concat(tokenIn)
-    .map((amount) => amount + initialBalance);
+export const computeSwapAmounts = (tokenOut: number[], tokenIn: number[]) =>
+  // Join token In and Out amounts and order then.
+  // Token Out is negative and In is positive
+  // Both are ordered from the smallest absolute value to the biggest
+  [...tokenOut].reverse().concat(tokenIn);
+
+export const computeBalances = (swaps: number[], initialBalance: number) =>
+  swaps.map((swap) => initialBalance + swap);
 
 export const isInBetaRegion = (
   balanceX: number,
@@ -61,18 +60,16 @@ export default function getBetaLimitIndexes(params: {
     beta,
   } = params;
 
-  const analysisAmounts = computeSwapAmounts(
-    analysisTokenOut,
-    analysisTokenIn,
+  const analysisAmounts = computeSwapAmounts(analysisTokenOut, analysisTokenIn);
+  const tabAmounts = computeSwapAmounts(tabTokenIn, tabTokenOut);
+
+  const analysisBalances = computeBalances(
+    analysisAmounts,
     analysisTokenInitialBalance,
   );
-  const tabAmounts = computeSwapAmounts(
-    tabTokenIn,
-    tabTokenOut,
-    tabTokenInitialBalance,
-  );
+  const tabBalances = computeBalances(tabAmounts, tabTokenInitialBalance);
 
-  const [start, end] = findTransitions(analysisAmounts, tabAmounts, beta);
+  const [start, end] = findTransitions(analysisBalances, tabBalances, beta);
 
   return [
     [analysisAmounts[start], analysisAmounts[end]],

@@ -23,7 +23,7 @@ export function DepthCost() {
   const { analysisToken, initialData, customData, initialAMM, customAMM } =
     usePoolSimulator();
 
-  if (!initialAMM || !customAMM) return <Spinner />;
+  if (!initialAMM || !customAMM || !analysisToken.balance) return <Spinner />;
 
   const pairTokens = initialData?.tokens.filter(
     (token) => token.symbol !== analysisToken.symbol,

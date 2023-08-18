@@ -3,7 +3,6 @@
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
 import { PoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/types";
 import { NetworkChainId } from "@bleu-balancer-tools/utils";
-import { useRouter } from "next/navigation";
 import {
   createContext,
   PropsWithChildren,
@@ -94,8 +93,6 @@ export const defaultTokensData: TokensData = {
 };
 
 export function PoolSimulatorProvider({ children }: PropsWithChildren) {
-  const { push } = useRouter();
-
   const [isAnalysis, setIsAnalysis] = useState<boolean>(false);
   const [initialData, setInitialData] =
     useState<AnalysisData>(defaultAnalysisData);
@@ -167,7 +164,12 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
         setInitialData(state.initialData);
         setCustomData(state.customData);
         setIsAnalysis(true);
-        push("/poolsimulator");
+        const uri = window.location.toString();
+        window.history.replaceState(
+          {},
+          document.title,
+          uri.substring(0, uri.indexOf("#")),
+        );
         return;
       } catch (error) {
         throw new Error("Invalid state");

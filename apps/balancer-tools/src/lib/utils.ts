@@ -6,10 +6,10 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function trimTrailingValues(
-  amountsIn: number[] | string[],
-  amountsOut: number[] | string[],
-  valueToTrim: number = 100,
-): { trimmedIn: number[] | string[]; trimmedOut: number[] | string[] } {
+  amountsIn: (number | string)[],
+  amountsOut: (number | string)[],
+  valueToTrim: number | string = 100,
+): { trimmedIn: (number | string)[]; trimmedOut: (number | string)[] } {
   const lastIndexNonValue = amountsOut
     .slice()
     .reverse()

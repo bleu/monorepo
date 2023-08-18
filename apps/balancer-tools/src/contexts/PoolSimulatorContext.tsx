@@ -3,8 +3,6 @@
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
 import { PoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/types";
 import { NetworkChainId } from "@bleu-balancer-tools/utils";
-// import { usePathname, useRouter } from "next/navigation";
-import { usePathname } from "next/navigation";
 import {
   createContext,
   PropsWithChildren,
@@ -71,7 +69,7 @@ interface PoolSimulatorContextType {
   setIsAnalysis: (_: boolean) => void;
 }
 
-const defaultPool = {
+export const defaultPool = {
   //wstETH - WETH on Mainnet/Ethereum
   id: "0x32296969ef14eb0c6d29669c550d4a0449130230000200000000000000000080",
   network: NetworkChainId.ETHEREUM.toString(),
@@ -81,22 +79,20 @@ export const PoolSimulatorContext = createContext(
   {} as PoolSimulatorContextType,
 );
 
+export const defaultAnalysisData: AnalysisData = {
+  poolParams: undefined,
+  tokens: [],
+  poolType: PoolTypeEnum.MetaStable,
+};
+
+export const defaultTokensData: TokensData = {
+  symbol: "",
+  balance: 0,
+  rate: 0,
+  decimal: 0,
+};
+
 export function PoolSimulatorProvider({ children }: PropsWithChildren) {
-  // const { push } = useRouter();
-  const pathname = usePathname();
-  const defaultAnalysisData: AnalysisData = {
-    poolParams: undefined,
-    tokens: [],
-    poolType: PoolTypeEnum.MetaStable,
-  };
-
-  const defaultTokensData: TokensData = {
-    symbol: "",
-    balance: 0,
-    rate: 0,
-    decimal: 0,
-  };
-
   const [isAnalysis, setIsAnalysis] = useState<boolean>(false);
   const [initialData, setInitialData] =
     useState<AnalysisData>(defaultAnalysisData);
@@ -159,10 +155,6 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     setData(importedData);
   }
 
-  // useEffect(() => {
-  // if (pathname === "/poolsimulator/analysis") push(generateURL());
-  // }, [pathname]);
-
   useEffect(() => {
     if (window.location.hash) {
       const encodedState = window.location.hash.substring(1);
@@ -171,10 +163,19 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
         const state = JSON.parse(decodedState);
         setInitialData(state.initialData);
         setCustomData(state.customData);
+        setIsAnalysis(true);
+        return;
       } catch (error) {
         throw new Error("Invalid state");
       }
     }
+    handleImportPoolParametersById(
+      {
+        poolId: defaultPool.id,
+        network: defaultPool.network,
+      },
+      setInitialData,
+    );
   }, []);
 
   useEffect(() => {
@@ -184,19 +185,6 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     asyncSetAMM(customData, setCustomAMM);
   }, [customData]);
-
-  useEffect(() => {
-    if (pathname === "/poolsimulator") {
-      setIsGraphLoading(false);
-      handleImportPoolParametersById(
-        {
-          poolId: defaultPool.id,
-          network: defaultPool.network,
-        },
-        setInitialData,
-      );
-    }
-  }, []);
 
   return (
     <PoolSimulatorContext.Provider

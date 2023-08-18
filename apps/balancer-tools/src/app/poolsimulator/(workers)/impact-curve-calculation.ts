@@ -78,8 +78,8 @@ self.addEventListener(
         trimTrailingValues(rawAmounts, rawPriceImpact, 100);
 
       return {
-        amounts: amounts,
-        priceImpact: priceImpact,
+        amounts: amounts as number[],
+        priceImpact: priceImpact as number[],
       };
     };
     const calcResult = calculateTokenImpact({

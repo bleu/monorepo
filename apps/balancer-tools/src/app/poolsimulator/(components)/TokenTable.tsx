@@ -35,7 +35,10 @@ export function TokenTable({ data }: { data: AnalysisData }) {
   const aboveOrEqualLimit = data?.tokens?.length >= MAX_POOL_TOKENS;
   return (
     <div className="flex w-full flex-1 justify-center text-white">
-      <Table classNames="max-h-[220px] overflow-y-auto">
+      <Table
+        classNames="max-h-[220px] overflow-y-auto"
+        shade={"darkWithBorder"}
+      >
         <Table.HeaderRow>
           <Table.HeaderCell padding={customPadding}>
             <span className="sr-only">Edit</span>

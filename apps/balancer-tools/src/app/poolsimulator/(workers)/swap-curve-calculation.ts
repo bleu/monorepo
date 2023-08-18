@@ -68,10 +68,10 @@ self.addEventListener(
         trimTrailingValues(rawAmountsAnalysisTokenIn, rawAmountsTabTokenOut, 0);
 
       return {
-        analysisTokenIn,
-        analysisTokenOut,
-        tabTokenOut,
-        tabTokenIn,
+        analysisTokenIn: analysisTokenIn as number[],
+        analysisTokenOut: analysisTokenOut as number[],
+        tabTokenOut: tabTokenOut as number[],
+        tabTokenIn: tabTokenIn as number[],
       };
     };
 

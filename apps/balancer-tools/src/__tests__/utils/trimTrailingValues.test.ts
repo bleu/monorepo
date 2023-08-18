@@ -1,4 +1,4 @@
-import { trimTrailingValues } from "./utils";
+import { trimTrailingValues } from "../../lib/utils";
 
 describe("trimTrailingValues function", () => {
   it("should trim trailing values from number arrays", () => {

@@ -6,12 +6,20 @@ const TableContext = createContext({});
 const predefinedClasses = {
   gray: {
     solid: {
-      dark: { style: "bg-slate3", border: "border border-slate7 rounded" },
+      dark: { style: "bg-slate3", border: "border-0" },
+      darkWithBorder: {
+        style: "bg-slate3",
+        border: "border border-slate7 rounded",
+      },
     },
   },
   blue: {
     solid: {
       dark: { style: "bg-blue3", border: "border-0" },
+      darkWithBorder: {
+        style: "bg-blue3",
+        border: "border border-blue6 rounded",
+      },
     },
   },
 } as const;
@@ -49,8 +57,8 @@ export default function Table({
       <div
         className={cn(
           "min-w-full",
-          classNames ?? classNames,
           predefinedClasses[color][variant][shade].border,
+          classNames ?? classNames,
         )}
       >
         <table
@@ -78,12 +86,18 @@ function HeaderRow({ children }: React.PropsWithChildren) {
 function HeaderCell({
   children,
   padding = "p-4",
-}: React.PropsWithChildren<{ padding?: string }>) {
+  onClick,
+}: React.PropsWithChildren<{ padding?: string; onClick?: () => void }>) {
   useTableContext();
   return (
     <th
+      onClick={onClick}
       scope="col"
-      className={cn("text-slate12 text-left text-sm font-semibold", padding)}
+      className={cn(
+        "text-slate12 text-left text-sm font-semibold",
+        padding,
+        onClick ? "cursor-pointer" : "",
+      )}
     >
       {children}
     </th>
@@ -118,14 +132,20 @@ function BodyCell({
   children,
   customWidth,
   padding = "p-4",
-}: React.PropsWithChildren<{ customWidth?: string; padding?: string }>) {
+  colSpan = 1,
+}: React.PropsWithChildren<{
+  customWidth?: string;
+  padding?: string;
+  colSpan?: number;
+}>) {
   useTableContext();
   return (
     <td
       className={cn(
         "whitespace-nowrap text-sm text-slate10",
-        customWidth ? cn(customWidth, "pl-4") : padding,
+        customWidth ? cn(customWidth, "pl-4") : colSpan === 1 ? padding : "p-0",
       )}
+      colSpan={colSpan}
     >
       {children}
     </td>

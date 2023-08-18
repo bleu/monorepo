@@ -1,8 +1,9 @@
 import { blueDark } from "@radix-ui/colors";
+import { PlotType } from "plotly.js";
 
 import { trimTrailingValues } from "#/lib/utils";
 
-import { calculateAPRForPool } from "../../(utils)/calculateRoundAPR";
+import { calculatePoolStats } from "../../(utils)/calculateRoundAPR";
 import { Round } from "../../(utils)/rounds";
 import HistoricalAPRPlot from "./HistoricalAPRPlot";
 
@@ -17,7 +18,7 @@ export default async function HistoricalAPRChart({
   const LAST_ROUND_ID = parseInt(Round.getAllRounds()[0].value);
   const APRPerRoundCords: { x: string[]; y: number[] } = { x: [], y: [] };
   for (let index = 1; index < LAST_ROUND_ID; index++) {
-    const { apr } = await calculateAPRForPool({ poolId, roundId: index });
+    const { apr } = await calculatePoolStats({ poolId, roundId: index });
     APRPerRoundCords.y.push(apr);
     APRPerRoundCords.x.push(`Round ${index}`);
   }
@@ -31,11 +32,13 @@ export default async function HistoricalAPRChart({
     hovertemplate: HOVERTEMPLATE,
     x: trimmedArray.trimmedIn,
     y: trimmedArray.trimmedOut,
-    line: { shape: "spline" },
-    type: "scatter",
+    line: { shape: "spline" } as const,
+    type: "scatter" as PlotType,
   };
 
-  const chosenRoundMarkerIDX = APRPerRoundData.x.indexOf(`Round ${roundId}`);
+  const chosenRoundMarkerIDX = APRPerRoundData.x.findIndex(
+    (item) => item === `Round ${roundId}`,
+  );
   const chosenRoundData = {
     hovertemplate: HOVERTEMPLATE,
     x: [APRPerRoundData.x[chosenRoundMarkerIDX]],

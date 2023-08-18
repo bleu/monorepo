@@ -12,20 +12,12 @@ export default async function Page({
   return (
     <div className="flex h-full w-full flex-col justify-start rounded-3xl text-white gap-y-3">
       <Suspense
-        fallback={
-          <div className="flex h-full w-full flex-col justify-center rounded-3xl">
-            Loading overview...
-          </div>
-        }
+        fallback={<Spinner />}
       >
         <PoolOverviewCards roundId={roundId} poolId={poolId} />
       </Suspense>
       <Suspense
-        fallback={
-          <div className="flex h-full w-full flex-col justify-center rounded-3xl">
-            Loading Chart...
-          </div>
-        }
+        fallback={<Spinner />}
       >
         <HistoricalAPRChart roundId={roundId} poolId={poolId} />
       </Suspense>

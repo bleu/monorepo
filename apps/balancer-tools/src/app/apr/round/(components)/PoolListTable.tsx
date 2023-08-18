@@ -49,22 +49,25 @@ export function PoolListTable({ roundId }: { roundId: string }) {
   const handleSorting = (sortField: keyof PoolTableData, sortOrder: string) => {
     if (sortField) {
       setTableData((prevTableData) => {
-        const sortedArray = prevTableData
-          .slice() // Create a shallow copy to avoid modifying the original array
-          .sort((a, b) => {
-            return (
-              a[sortField]
-                .toString()
-                .localeCompare(b[sortField].toString(), "en", {
-                  numeric: true,
-                }) * (sortOrder === "asc" ? 1 : -1)
-            );
-          });
+        const sortedArray = prevTableData.slice().sort((a, b) => {
+          const aValue = a[sortField] as number;
+          const bValue = b[sortField] as number;
+
+          if (isNaN(aValue)) return 1;
+          if (isNaN(bValue)) return -1;
+
+          if (sortOrder === "asc") {
+            return aValue - bValue;
+          } else {
+            return bValue - aValue;
+          }
+        });
 
         return sortedArray;
       });
     }
   };
+
   const handleSortingChange = (accessor: keyof PoolTableData) => {
     const sortOrder =
       accessor === sortField && order === "asc" ? "desc" : "asc";
@@ -200,13 +203,13 @@ function TableRow({
       ) : (
         <>
           <Table.BodyCell padding="py-4 px-1">
-            {formatNumber(selectedPoolData?.tvl || 0)}
+            {formatNumber(selectedPoolData?.tvl || NaN)}
           </Table.BodyCell>
           <Table.BodyCell padding="py-4 px-1">
-            {formatNumber(selectedPoolData?.votingShare || 0).concat("%")}
+            {formatNumber(selectedPoolData?.votingShare || NaN).concat("%")}
           </Table.BodyCell>
           <Table.BodyCell padding="py-4 px-1">
-            {formatNumber(selectedPoolData?.apr || 0).concat("%")}
+            {formatNumber(selectedPoolData?.apr || NaN).concat("%")}
           </Table.BodyCell>
         </>
       )}

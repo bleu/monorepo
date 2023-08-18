@@ -7,7 +7,7 @@ import getBetaLimitIndexes, {
 
 describe("Token Functions", () => {
   test("computeSwapAmounts", () => {
-    const result = computeSwapAmounts([10, 20], [30, 40], 5);
+    const result = computeSwapAmounts([10, 20], [30, 40]);
     expect(result).toEqual([25, 15, 35, 45]);
   });
 

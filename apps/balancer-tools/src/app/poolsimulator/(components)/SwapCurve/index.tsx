@@ -280,7 +280,7 @@ export function SwapCurve() {
     });
 
     data.push(
-      createBetaRegionDataObject(betaLimits[0], betaLimits[1], "Initial"),
+      createBetaRegionDataObject(betaLimits[0], betaLimits[1], "Custom"),
     );
   }
 

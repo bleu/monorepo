@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronDownIcon, InfoCircledIcon } from "@radix-ui/react-icons";
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 
 import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
@@ -30,12 +30,47 @@ export function PoolListTable({ roundId }: { roundId: string }) {
     return accumulator;
   }, {});
   const [tableData, setTableData] = useState(initialTableValues);
+  const [sortField, setSortField] = useState("");
+  const [order, setOrder] = useState("asc");
+  const handleSorting = (sortField, sortOrder) => {
+    if (sortField) {
+      setTableData(prevTableData => {
+        const sortedArray = Object.entries(prevTableData).map(([key, value]) => ({
+          key,
+          ...value
+        })).sort((a, b) => {
+          return (
+            a[sortField].toString().localeCompare(b[sortField].toString(), "en", {
+              numeric: true,
+            }) * (sortOrder === "asc" ? 1 : -1)
+          );
+        });
+  
+        const sortedTableData = sortedArray.reduce((accumulator, item) => {
+          accumulator[item.key] = { ...item };
+          return accumulator;
+        }, {});
+  
+        return sortedTableData;
+      });
+    }
+  };
+
+  const handleSortingChange = (accessor) => {
+    const sortOrder =
+      accessor === sortField && order === "asc" ? "desc" : "asc";
+    setSortField(accessor);
+    setOrder(sortOrder);
+    handleSorting(accessor, sortOrder);
+  };
   return (
     <div className="flex w-full flex-1 justify-center text-white">
       <Table color="blue" shade={"darkWithBorder"}>
         <Table.HeaderRow>
-          <Table.HeaderCell>Symbol</Table.HeaderCell>
           <Table.HeaderCell>
+            Symbol
+          </Table.HeaderCell>
+          <Table.HeaderCell onClick={() => handleSortingChange("tvl")}>
             <div className="flex gap-x-1 items-center">
               <span>TVL</span>
               <Tooltip
@@ -45,8 +80,10 @@ export function PoolListTable({ roundId }: { roundId: string }) {
               </Tooltip>
             </div>
           </Table.HeaderCell>
-          <Table.HeaderCell>Voting %</Table.HeaderCell>
-          <Table.HeaderCell>
+          <Table.HeaderCell onClick={() => handleSortingChange("votingShare")}>
+            Voting %
+          </Table.HeaderCell>
+          <Table.HeaderCell onClick={() => handleSortingChange("apr")}>
             <div className="flex gap-x-1 items-center">
               <span> APR</span>
               <Tooltip
@@ -58,19 +95,12 @@ export function PoolListTable({ roundId }: { roundId: string }) {
           </Table.HeaderCell>
         </Table.HeaderRow>
         <Table.Body>
-          {votingGauges.slice(0, 10).map((gauge) => (
-            <TableRow
-              key={gauge.pool.id}
-              poolId={gauge.pool.id}
-              network={gauge.network}
           {Object.keys(tableData).map(poolId => (<TableRow
               setTableData={setTableData}
               key={poolId}
               poolId={poolId}
               network={tableData[poolId].network}
               roundId={roundId}
-            />
-          ))}
             />))}
           <Table.BodyRow>
             <Table.BodyCell colSpan={4}>
@@ -121,7 +151,7 @@ function TableRow({
   }, [poolId, roundId]);
 
   const poolRedirectURL = `/apr/pool/${networkFor(
-    network,
+    network
   )}/${poolId}/round/${roundId}`;
   const router = useRouter();
   return (

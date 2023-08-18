@@ -7,18 +7,32 @@ const DEFAULT_HEADERS: Record<string, string> = {
 
 export default class BalancerAPI {
   private static readonly POOLS_QUERY: string = `
+    query ($id: String, $blockNumber: Int) {
+      pool(id: $id, block:{number:$blockNumber}) {
+          totalLiquidity
+        }
+    }`;
+
+  private static readonly POOLS_QUERY_LATEST: string = `
     query ($id: String) {
       pool(id: $id) {
           totalLiquidity
         }
     }`;
 
-  public static async getPoolTotalLiquidityUSD(_chainId = 1, poolId: string) {
+  public static async getPoolTotalLiquidityUSD(
+    _chainId = 1,
+    poolId: string,
+    blockNumber: number,
+  ) {
     const { data } = await gql(
       BALANCER_GRAPHQL_API_URL,
-      BalancerAPI.POOLS_QUERY,
+      blockNumber > 0
+        ? BalancerAPI.POOLS_QUERY
+        : BalancerAPI.POOLS_QUERY_LATEST,
       {
         id: poolId,
+        blockNumber: blockNumber,
       },
       DEFAULT_HEADERS,
     );

@@ -25,6 +25,11 @@ import { formatNumber } from "#/utils/formatNumber";
 import { calculatePoolStats } from "../../(utils)/calculateRoundAPR";
 
 export function PoolListTable({ roundId }: { roundId: string }) {
+  const initialTableValues = votingGauges.slice(0, 10).reduce((accumulator, gauge) => {
+    accumulator[gauge.pool.id] = { apr: 0, balPriceUSD: 0, tvl: 0, votingShare: 0, network: gauge.network };
+    return accumulator;
+  }, {});
+  const [tableData, setTableData] = useState(initialTableValues);
   return (
     <div className="flex w-full flex-1 justify-center text-white">
       <Table color="blue" shade={"darkWithBorder"}>
@@ -58,9 +63,15 @@ export function PoolListTable({ roundId }: { roundId: string }) {
               key={gauge.pool.id}
               poolId={gauge.pool.id}
               network={gauge.network}
+          {Object.keys(tableData).map(poolId => (<TableRow
+              setTableData={setTableData}
+              key={poolId}
+              poolId={poolId}
+              network={tableData[poolId].network}
               roundId={roundId}
             />
           ))}
+            />))}
           <Table.BodyRow>
             <Table.BodyCell colSpan={4}>
               <Button
@@ -82,10 +93,12 @@ function TableRow({
   poolId,
   roundId,
   network,
+  setTableData,
 }: {
   poolId: string;
   roundId: string;
   network: number;
+  tableData: SetStateAction<PoolStats[]>;
 }) {
   const pool = new Pool(poolId);
   const [isLoading, setIsLoading] = useState(true);
@@ -96,6 +109,8 @@ function TableRow({
       try {
         const result = await calculatePoolStats({ poolId, roundId });
         setData(result);
+        setTableData(prevState => ({ ...prevState, [poolId]: { ...result, network } }));
+        
         setIsLoading(false);
       } catch (error) {
         setIsLoading(false);

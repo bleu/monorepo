@@ -35,7 +35,9 @@ export default async function HistoricalAPRChart({
     type: "scatter" as PlotType,
   };
 
-  const chosenRoundMarkerIDX = APRPerRoundData.x.findIndex(item => item === `Round ${roundId}`);
+  const chosenRoundMarkerIDX = APRPerRoundData.x.findIndex(
+    (item) => item === `Round ${roundId}`,
+  );
   const chosenRoundData = {
     hovertemplate: HOVERTEMPLATE,
     x: [APRPerRoundData.x[chosenRoundMarkerIDX]],

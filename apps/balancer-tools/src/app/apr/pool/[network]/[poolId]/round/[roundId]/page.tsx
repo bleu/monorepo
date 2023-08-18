@@ -11,14 +11,10 @@ export default async function Page({
   const { roundId, poolId } = params;
   return (
     <div className="flex h-full w-full flex-col justify-start rounded-3xl text-white gap-y-3">
-      <Suspense
-        fallback={<Spinner />}
-      >
+      <Suspense fallback={<Spinner />}>
         <PoolOverviewCards roundId={roundId} poolId={poolId} />
       </Suspense>
-      <Suspense
-        fallback={<Spinner />}
-      >
+      <Suspense fallback={<Spinner />}>
         <HistoricalAPRChart roundId={roundId} poolId={poolId} />
       </Suspense>
     </div>

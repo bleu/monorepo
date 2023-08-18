@@ -111,6 +111,7 @@ export function PoolListTable({ roundId }: { roundId: string }) {
         <Table.Body>
           {tableData.map((gauge) => (
             <TableRow
+              tableData={tableData}
               setTableData={setTableData}
               key={gauge.id}
               poolId={gauge.id}
@@ -139,22 +140,22 @@ function TableRow({
   poolId,
   roundId,
   network,
+  tableData,
   setTableData,
 }: {
   poolId: string;
   roundId: string;
   network: number;
+  tableData: PoolTableData[];
   setTableData: Dispatch<SetStateAction<PoolTableData[]>>;
 }) {
   const pool = new Pool(poolId);
   const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState<PoolStats>({} as PoolStats);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const result = await calculatePoolStats({ poolId, roundId });
-        setData(result);
         setTableData((prevTableData) => {
           const updatedTableData = prevTableData.map((pool) => {
             if (pool.id === poolId) {
@@ -177,6 +178,9 @@ function TableRow({
     fetchData();
   }, [poolId, roundId]);
 
+  const selectedPoolData: PoolTableData | undefined = tableData.find(
+    (data) => data.id === poolId,
+  );
   const poolRedirectURL = `/apr/pool/${networkFor(
     network,
   )}/${poolId}/round/${roundId}`;
@@ -196,13 +200,13 @@ function TableRow({
       ) : (
         <>
           <Table.BodyCell padding="py-4 px-1">
-            {formatNumber(data.tvl)}
+            {formatNumber(selectedPoolData?.tvl || 0)}
           </Table.BodyCell>
           <Table.BodyCell padding="py-4 px-1">
-            {formatNumber(data.votingShare).concat("%")}
+            {formatNumber(selectedPoolData?.votingShare || 0).concat("%")}
           </Table.BodyCell>
           <Table.BodyCell padding="py-4 px-1">
-            {formatNumber(data.apr).concat("%")}
+            {formatNumber(selectedPoolData?.apr || 0).concat("%")}
           </Table.BodyCell>
         </>
       )}

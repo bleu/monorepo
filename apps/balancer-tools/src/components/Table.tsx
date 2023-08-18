@@ -87,13 +87,17 @@ function HeaderCell({
   children,
   padding = "p-4",
   onClick,
-}: React.PropsWithChildren<{ padding?: string, onClick?: () => void }>) {
+}: React.PropsWithChildren<{ padding?: string; onClick?: () => void }>) {
   useTableContext();
   return (
     <th
       onClick={onClick}
       scope="col"
-      className={cn("text-slate12 text-left text-sm font-semibold", padding, onClick ? "cursor-pointer" : "")}
+      className={cn(
+        "text-slate12 text-left text-sm font-semibold",
+        padding,
+        onClick ? "cursor-pointer" : "",
+      )}
     >
       {children}
     </th>

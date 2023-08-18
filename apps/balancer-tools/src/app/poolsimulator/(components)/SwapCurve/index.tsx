@@ -8,10 +8,13 @@ import { Spinner } from "#/components/Spinner";
 import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
+import { PoolTypeEnum } from "../../(types)";
+import { findTokenBySymbol } from "../../(utils)";
 import {
   SwapCurveWorkerInputData,
   SwapCurveWorkerOutputData,
-} from "../(workers)/swap-curve-calculation";
+} from "../../(workers)/swap-curve-calculation";
+import getBetaLimitIndexes from "./getBetaLimitIndexes";
 
 interface AmountsData {
   analysisTokenIn: number[];
@@ -26,7 +29,7 @@ const createAndPostSwapWorker = (
   setCustomAmounts: Dispatch<SetStateAction<AmountsData>>,
 ) => {
   const worker = new Worker(
-    new URL("../(workers)/swap-curve-calculation.ts", import.meta.url),
+    new URL("../../(workers)/swap-curve-calculation.ts", import.meta.url),
   );
 
   worker.onmessage = (event: MessageEvent<SwapCurveWorkerOutputData>) => {
@@ -42,8 +45,6 @@ const createAndPostSwapWorker = (
 
   worker.postMessage(messageData);
 };
-import { PoolTypeEnum } from "../(types)";
-import { findTokenBySymbol } from "../(utils)";
 
 const POOL_TYPES_TO_ADD_LIMIT = [
   PoolTypeEnum.Gyro2,
@@ -131,6 +132,27 @@ export function SwapCurve() {
       name: "Liquidity limit",
       showlegend: true,
       hovertemplate: Array(x.length).fill(`Liquidity limit <extra></extra>`),
+    };
+  };
+
+  const createBetaRegionDataObject = (
+    x_points: number[],
+    y_points: number[],
+    legendGroup: string,
+  ) => {
+    const x = [x_points[0], x_points[1], x_points[1], x_points[0], x_points[0]];
+    const y = [y_points[0], y_points[0], y_points[1], y_points[1], y_points[0]];
+    return {
+      x,
+      y,
+      type: "scatter" as PlotType,
+      mode: "lines" as const,
+      line: { dash: "dashdot" } as const,
+      legendgroup: legendGroup,
+      legendgrouptitle: { text: legendGroup },
+      name: "Beta region",
+      showlegend: true,
+      hovertemplate: Array(x.length).fill(`Beta region <extra></extra>`),
     };
   };
 
@@ -233,6 +255,33 @@ export function SwapCurve() {
         ],
         "Custom",
       ),
+    );
+  }
+
+  if (initialData.poolType && initialData.poolParams?.beta) {
+    // https://docs.xave.co/product-overview-1/fxpools/amm-faqs
+    const betaLimits = getBetaLimitIndexes({
+      ...initialAmounts,
+      analysisTokenInitialBalance: analysisToken.balance,
+      tabTokenInitialBalance: currentTabToken.balance,
+      beta: initialData.poolParams.beta,
+    });
+
+    data.push(
+      createBetaRegionDataObject(betaLimits[0], betaLimits[1], "Initial"),
+    );
+  }
+
+  if (customData.poolType && customData.poolParams?.beta) {
+    const betaLimits = getBetaLimitIndexes({
+      ...customAmounts,
+      analysisTokenInitialBalance: analysisToken.balance,
+      tabTokenInitialBalance: currentTabToken.balance,
+      beta: customData.poolParams.beta,
+    });
+
+    data.push(
+      createBetaRegionDataObject(betaLimits[0], betaLimits[1], "Custom"),
     );
   }
 

@@ -398,7 +398,7 @@ function getBetaLimitIndexes({
   const isBalancesInBetaRegion = analysisTokenBalanceAfterSwap.map(
     (balanceX, index) => {
       const balanceY = tabTokenBalanceAfterSwap[index];
-      return Math.abs(balanceX - balanceY) / balanceX + balanceY < beta;
+      return Math.abs(balanceX - balanceY) / (balanceX + balanceY) <= beta;
     },
   );
 

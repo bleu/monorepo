@@ -3,6 +3,7 @@ import { Pool } from "#/lib/balancer/gauges";
 
 import BalancerAPI from "./balancerAPI";
 import { getBALPriceByRound } from "./getBALPriceByRound";
+import getBlockNumberByTimestamp from "./getBlockNumberForTime";
 import { getPoolRelativeWeight } from "./getRelativeWeight";
 import { Round } from "./rounds";
 
@@ -17,8 +18,13 @@ export async function calculatePoolStats({
 }) {
   // TODO:  BAL-646 aggregate historical pool APR when roundId is not provided
   const round = Round.getRoundByNumber(roundId);
-
   const pool = new Pool(poolId);
+
+  const endRoundBlockNumber = await getBlockNumberByTimestamp(
+    pool.gauge?.network,
+    round.endDate,
+  );
+
   const [balPriceUSD, tvl, votingShare] = await Promise.all([
     getBALPriceByRound(round),
     // TODO: BAL-648 TVL from the selected round

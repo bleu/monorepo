@@ -67,9 +67,7 @@ export function PoolListTable({ roundId }: { roundId: string }) {
     <div className="flex w-full flex-1 justify-center text-white">
       <Table color="blue" shade={"darkWithBorder"}>
         <Table.HeaderRow>
-          <Table.HeaderCell>
-            Symbol
-          </Table.HeaderCell>
+          <Table.HeaderCell>Symbol</Table.HeaderCell>
           <Table.HeaderCell onClick={() => handleSortingChange("tvl")}>
             <div className="flex gap-x-1 items-center">
               <span>TVL</span>
@@ -78,10 +76,16 @@ export function PoolListTable({ roundId }: { roundId: string }) {
               >
                 <InfoCircledIcon />
               </Tooltip>
+              {sortField == "tvl" ? OrderIcon(order) : OrderIcon("neutral")}
             </div>
           </Table.HeaderCell>
           <Table.HeaderCell onClick={() => handleSortingChange("votingShare")}>
-            Voting %
+            <div className="flex gap-x-1 items-center">
+              <span>Voting %</span>
+              {sortField == "votingShare"
+                ? OrderIcon(order)
+                : OrderIcon("neutral")}
+            </div>
           </Table.HeaderCell>
           <Table.HeaderCell onClick={() => handleSortingChange("apr")}>
             <div className="flex gap-x-1 items-center">
@@ -91,17 +95,20 @@ export function PoolListTable({ roundId }: { roundId: string }) {
               >
                 <InfoCircledIcon />
               </Tooltip>
+              {sortField == "apr" ? OrderIcon(order) : OrderIcon("neutral")}
             </div>
           </Table.HeaderCell>
         </Table.HeaderRow>
         <Table.Body>
-          {Object.keys(tableData).map(poolId => (<TableRow
+          {Object.keys(tableData).map((poolId) => (
+            <TableRow
               setTableData={setTableData}
               key={poolId}
               poolId={poolId}
               network={tableData[poolId].network}
               roundId={roundId}
-            />))}
+            />
+          ))}
           <Table.BodyRow>
             <Table.BodyCell colSpan={4}>
               <Button
@@ -128,7 +135,7 @@ function TableRow({
   poolId: string;
   roundId: string;
   network: number;
-  tableData: SetStateAction<PoolStats[]>;
+  setTableData: Dispatch<SetStateAction<PoolTableData>>;
 }) {
   const pool = new Pool(poolId);
   const [isLoading, setIsLoading] = useState(true);
@@ -139,8 +146,11 @@ function TableRow({
       try {
         const result = await calculatePoolStats({ poolId, roundId });
         setData(result);
-        setTableData(prevState => ({ ...prevState, [poolId]: { ...result, network } }));
-        
+        setTableData((prevState) => ({
+          ...prevState,
+          [poolId]: { ...result, network },
+        }));
+
         setIsLoading(false);
       } catch (error) {
         setIsLoading(false);
@@ -181,4 +191,14 @@ function TableRow({
       )}
     </Table.BodyRow>
   );
+}
+
+function OrderIcon(order: "asc" | "desc" | "neutral") {
+  if (order === "asc") {
+    return <TriangleUpIcon />;
+  } else if (order === "desc") {
+    return <TriangleDownIcon />;
+  } else {
+    return <DashIcon />;
+  }
 }

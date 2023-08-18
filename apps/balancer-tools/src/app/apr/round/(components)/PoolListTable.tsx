@@ -1,12 +1,25 @@
 "use client";
 
-import { ChevronDownIcon, InfoCircledIcon } from "@radix-ui/react-icons";
-import { SetStateAction, useEffect, useState } from "react";
+import { networkFor } from "@bleu-balancer-tools/utils";
+import {
+  ChevronDownIcon,
+  DashIcon,
+  InfoCircledIcon,
+  TriangleDownIcon,
+  TriangleUpIcon,
+} from "@radix-ui/react-icons";
+import { useRouter } from "next/navigation";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
+import { Button } from "#/components";
 import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
+import { Tooltip } from "#/components/Tooltip";
 import votingGauges from "#/data/voting-gauges.json";
 import { Pool } from "#/lib/balancer/gauges";
+import { formatNumber } from "#/utils/formatNumber";
+
+import { calculatePoolStats } from "../../(utils)/calculateRoundAPR";
 
 interface PoolStats {
   apr: number;
@@ -14,49 +27,56 @@ interface PoolStats {
   tvl: number;
   votingShare: number;
 }
-
-import { networkFor } from "@bleu-balancer-tools/utils";
-import { useRouter } from "next/navigation";
-
-import { Button } from "#/components";
-import { Tooltip } from "#/components/Tooltip";
-import { formatNumber } from "#/utils/formatNumber";
-
-import { calculatePoolStats } from "../../(utils)/calculateRoundAPR";
+interface PoolTableData extends PoolStats {
+  network: number;
+}
 
 export function PoolListTable({ roundId }: { roundId: string }) {
-  const initialTableValues = votingGauges.slice(0, 10).reduce((accumulator, gauge) => {
-    accumulator[gauge.pool.id] = { apr: 0, balPriceUSD: 0, tvl: 0, votingShare: 0, network: gauge.network };
-    return accumulator;
-  }, {});
+  const initialTableValues = votingGauges.slice(0, 10).reduce(
+    (accumulator, gauge) => {
+      accumulator[gauge.pool.id] = {
+        apr: 0,
+        balPriceUSD: 0,
+        tvl: 0,
+        votingShare: 0,
+        network: gauge.network,
+      };
+      return accumulator;
+    },
+    {} as { [key: string]: PoolTableData },
+  );
   const [tableData, setTableData] = useState(initialTableValues);
   const [sortField, setSortField] = useState("");
-  const [order, setOrder] = useState("asc");
-  const handleSorting = (sortField, sortOrder) => {
+  const [order, setOrder] = useState<"asc" | "desc">("asc");
+  const handleSorting = (sortField: keyof PoolTableData, sortOrder: string) => {
     if (sortField) {
-      setTableData(prevTableData => {
-        const sortedArray = Object.entries(prevTableData).map(([key, value]) => ({
-          key,
-          ...value
-        })).sort((a, b) => {
-          return (
-            a[sortField].toString().localeCompare(b[sortField].toString(), "en", {
-              numeric: true,
-            }) * (sortOrder === "asc" ? 1 : -1)
-          );
-        });
-  
-        const sortedTableData = sortedArray.reduce((accumulator, item) => {
-          accumulator[item.key] = { ...item };
-          return accumulator;
-        }, {});
-  
+      setTableData((prevTableData) => {
+        const sortedArray = Object.entries(prevTableData)
+          .map(([key, value]) => ({
+            key,
+            ...value,
+          }))
+          .sort((a, b) => {
+            return (
+              a[sortField]
+                .toString()
+                .localeCompare(b[sortField].toString(), "en", {
+                  numeric: true,
+                }) * (sortOrder === "asc" ? 1 : -1)
+            );
+          });
+
+        const sortedTableData: { [key: string]: PoolTableData } =
+          sortedArray.reduce((accumulator, item) => {
+            accumulator[item.key] = { ...item };
+            return accumulator;
+          }, {});
+
         return sortedTableData;
       });
     }
   };
-
-  const handleSortingChange = (accessor) => {
+  const handleSortingChange = (accessor: string) => {
     const sortOrder =
       accessor === sortField && order === "asc" ? "desc" : "asc";
     setSortField(accessor);
@@ -161,7 +181,7 @@ function TableRow({
   }, [poolId, roundId]);
 
   const poolRedirectURL = `/apr/pool/${networkFor(
-    network
+    network,
   )}/${poolId}/round/${roundId}`;
   const router = useRouter();
   return (

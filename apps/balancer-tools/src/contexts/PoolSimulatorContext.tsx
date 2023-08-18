@@ -164,12 +164,6 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
         setInitialData(state.initialData);
         setCustomData(state.customData);
         setIsAnalysis(true);
-        const uri = window.location.toString();
-        window.history.replaceState(
-          {},
-          document.title,
-          uri.substring(0, uri.indexOf("#")),
-        );
         return;
       } catch (error) {
         throw new Error("Invalid state");

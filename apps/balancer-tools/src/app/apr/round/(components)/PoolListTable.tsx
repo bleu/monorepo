@@ -28,34 +28,29 @@ interface PoolStats {
   votingShare: number;
 }
 interface PoolTableData extends PoolStats {
+  id: string;
   network: number;
 }
 
 export function PoolListTable({ roundId }: { roundId: string }) {
-  const initialTableValues = votingGauges.slice(0, 10).reduce(
-    (accumulator, gauge) => {
-      accumulator[gauge.pool.id] = {
-        apr: 0,
-        balPriceUSD: 0,
-        tvl: 0,
-        votingShare: 0,
-        network: gauge.network,
-      };
-      return accumulator;
-    },
-    {} as { [key: string]: PoolTableData },
-  );
+  const initialTableValues: PoolTableData[] = votingGauges
+    .slice(0, 10)
+    .map((gauge) => ({
+      id: gauge.pool.id,
+      apr: 0,
+      balPriceUSD: 0,
+      tvl: 0,
+      votingShare: 0,
+      network: gauge.network,
+    }));
   const [tableData, setTableData] = useState(initialTableValues);
   const [sortField, setSortField] = useState("");
   const [order, setOrder] = useState<"asc" | "desc">("asc");
   const handleSorting = (sortField: keyof PoolTableData, sortOrder: string) => {
     if (sortField) {
       setTableData((prevTableData) => {
-        const sortedArray = Object.entries(prevTableData)
-          .map(([key, value]) => ({
-            key,
-            ...value,
-          }))
+        const sortedArray = prevTableData
+          .slice() // Create a shallow copy to avoid modifying the original array
           .sort((a, b) => {
             return (
               a[sortField]
@@ -66,17 +61,11 @@ export function PoolListTable({ roundId }: { roundId: string }) {
             );
           });
 
-        const sortedTableData: { [key: string]: PoolTableData } =
-          sortedArray.reduce((accumulator, item) => {
-            accumulator[item.key] = { ...item };
-            return accumulator;
-          }, {});
-
-        return sortedTableData;
+        return sortedArray;
       });
     }
   };
-  const handleSortingChange = (accessor: string) => {
+  const handleSortingChange = (accessor: keyof PoolTableData) => {
     const sortOrder =
       accessor === sortField && order === "asc" ? "desc" : "asc";
     setSortField(accessor);
@@ -120,12 +109,12 @@ export function PoolListTable({ roundId }: { roundId: string }) {
           </Table.HeaderCell>
         </Table.HeaderRow>
         <Table.Body>
-          {Object.keys(tableData).map((poolId) => (
+          {tableData.map((gauge) => (
             <TableRow
               setTableData={setTableData}
-              key={poolId}
-              poolId={poolId}
-              network={tableData[poolId].network}
+              key={gauge.id}
+              poolId={gauge.id}
+              network={gauge.network}
               roundId={roundId}
             />
           ))}
@@ -155,7 +144,7 @@ function TableRow({
   poolId: string;
   roundId: string;
   network: number;
-  setTableData: Dispatch<SetStateAction<PoolTableData>>;
+  setTableData: Dispatch<SetStateAction<PoolTableData[]>>;
 }) {
   const pool = new Pool(poolId);
   const [isLoading, setIsLoading] = useState(true);
@@ -166,10 +155,18 @@ function TableRow({
       try {
         const result = await calculatePoolStats({ poolId, roundId });
         setData(result);
-        setTableData((prevState) => ({
-          ...prevState,
-          [poolId]: { ...result, network },
-        }));
+        setTableData((prevTableData) => {
+          const updatedTableData = prevTableData.map((pool) => {
+            if (pool.id === poolId) {
+              return {
+                ...pool,
+                ...result,
+              };
+            }
+            return pool;
+          });
+          return updatedTableData;
+        });
 
         setIsLoading(false);
       } catch (error) {

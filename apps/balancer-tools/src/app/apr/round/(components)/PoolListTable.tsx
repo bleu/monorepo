@@ -9,6 +9,7 @@ import {
   TriangleUpIcon,
 } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
+import pThrottle, { ThrottledFunction } from "p-throttle";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 import { Button } from "#/components";

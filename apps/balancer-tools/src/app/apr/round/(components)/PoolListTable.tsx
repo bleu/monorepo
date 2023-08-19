@@ -15,11 +15,10 @@ import { Button } from "#/components";
 import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
-import votingGauges from "#/data/voting-gauges.json";
-import { Pool } from "#/lib/balancer/gauges";
 import { formatNumber } from "#/utils/formatNumber";
 
 import { calculatePoolStats } from "../../(utils)/calculateRoundAPR";
+import { getPoolList } from "../../(utils)/getPoolList";
 
 interface PoolStats {
   apr: number;
@@ -30,22 +29,48 @@ interface PoolStats {
 interface PoolTableData extends PoolStats {
   id: string;
   network: number;
+  symbol: string;
 }
 
 export function PoolListTable({ roundId }: { roundId: string }) {
-  const initialTableValues: PoolTableData[] = votingGauges
-    .slice(0, 10)
-    .map((gauge) => ({
-      id: gauge.pool.id,
-      apr: 0,
-      balPriceUSD: 0,
-      tvl: 0,
-      votingShare: 0,
-      network: gauge.network,
-    }));
-  const [tableData, setTableData] = useState(initialTableValues);
+  const [isLoadingFetchPoolList, setIsLoadingFetchPoolList] = useState(true);
+  const [tableData, setTableData] = useState([] as PoolTableData[]);
   const [sortField, setSortField] = useState("");
   const [order, setOrder] = useState<"asc" | "desc">("asc");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const poolList = await getPoolList();
+
+        //maybe round can be passed to getPoolList and calculatePoolStats can be done there
+        const poolListWithStats = await Promise.all(
+          poolList.map(async (pool) => {
+            const poolStats = await calculatePoolStats({
+              roundId,
+              poolId: pool.id,
+            });
+
+            return {
+              id: pool.id,
+              network: Number(pool.networkId),
+              symbol: pool.symbol as string,
+              ...poolStats,
+            };
+          }),
+        );
+
+        setTableData(poolListWithStats);
+
+        setIsLoadingFetchPoolList(false);
+      } catch (error) {
+        setIsLoadingFetchPoolList(false);
+      }
+    };
+
+    fetchData();
+  }, [roundId]);
+
   const handleSorting = (sortField: keyof PoolTableData, sortOrder: string) => {
     if (sortField) {
       setTableData((prevTableData) => {
@@ -112,16 +137,26 @@ export function PoolListTable({ roundId }: { roundId: string }) {
           </Table.HeaderCell>
         </Table.HeaderRow>
         <Table.Body>
-          {tableData.map((gauge) => (
-            <TableRow
-              tableData={tableData}
-              setTableData={setTableData}
-              key={gauge.id}
-              poolId={gauge.id}
-              network={gauge.network}
-              roundId={roundId}
-            />
-          ))}
+          {isLoadingFetchPoolList ? (
+            <Table.BodyRow>
+              <Table.BodyCell colSpan={4}>
+                <div className="flex justify-center">
+                  <Spinner />
+                </div>
+              </Table.BodyCell>
+            </Table.BodyRow>
+          ) : (
+            tableData.map((gauge) => (
+              <TableRow
+                tableData={tableData}
+                setTableData={setTableData}
+                key={gauge.id}
+                poolId={gauge.id}
+                network={gauge.network}
+                roundId={roundId}
+              />
+            ))
+          )}
           <Table.BodyRow>
             <Table.BodyCell colSpan={4}>
               <Button
@@ -152,7 +187,6 @@ function TableRow({
   tableData: PoolTableData[];
   setTableData: Dispatch<SetStateAction<PoolTableData[]>>;
 }) {
-  const pool = new Pool(poolId);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -195,7 +229,7 @@ function TableRow({
         router.push(poolRedirectURL);
       }}
     >
-      <Table.BodyCell>{pool.symbol}</Table.BodyCell>
+      <Table.BodyCell>{selectedPoolData?.symbol}</Table.BodyCell>
       {isLoading ? (
         <Table.BodyCell padding="py-4 px-1" colSpan={3}>
           <Spinner size="sm" />

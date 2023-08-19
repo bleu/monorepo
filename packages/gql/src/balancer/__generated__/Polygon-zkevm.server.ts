@@ -5774,6 +5774,14 @@ export type PoolsWherePoolTypeQueryVariables = Exact<{
 
 export type PoolsWherePoolTypeQuery = { __typename?: 'Query', pools: Array<{ __typename?: 'Pool', id: string, address: any, name?: string | null, poolType?: string | null, symbol?: string | null, totalLiquidity: any, tokens?: Array<{ __typename?: 'PoolToken', symbol: string }> | null }> };
 
+export type PoolsByTotalLiquidityQueryVariables = Exact<{
+  first?: InputMaybe<Scalars['Int']>;
+  poolIdList?: InputMaybe<Array<Scalars['ID']> | Scalars['ID']>;
+}>;
+
+
+export type PoolsByTotalLiquidityQuery = { __typename?: 'Query', pools: Array<{ __typename?: 'Pool', id: string, address: any, name?: string | null, poolType?: string | null, symbol?: string | null, totalLiquidity: any }> };
+
 export type PoolQueryVariables = Exact<{
   poolId: Scalars['ID'];
 }>;
@@ -5867,6 +5875,23 @@ export const PoolsWherePoolTypeDocument = gql`
   }
 }
     `;
+export const PoolsByTotalLiquidityDocument = gql`
+    query PoolsByTotalLiquidity($first: Int = 10, $poolIdList: [ID!]) {
+  pools(
+    where: {totalLiquidity_gt: 0, id_in: $poolIdList}
+    orderBy: totalLiquidity
+    orderDirection: desc
+    first: $first
+  ) {
+    id
+    address
+    name
+    poolType
+    symbol
+    totalLiquidity
+  }
+}
+    `;
 export const PoolDocument = gql`
     query Pool($poolId: ID!) {
   pool(id: $poolId) {
@@ -5931,6 +5956,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     PoolsWherePoolType(variables?: PoolsWherePoolTypeQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<PoolsWherePoolTypeQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<PoolsWherePoolTypeQuery>(PoolsWherePoolTypeDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PoolsWherePoolType', 'query');
+    },
+    PoolsByTotalLiquidity(variables?: PoolsByTotalLiquidityQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<PoolsByTotalLiquidityQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<PoolsByTotalLiquidityQuery>(PoolsByTotalLiquidityDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PoolsByTotalLiquidity', 'query');
     },
     Pool(variables: PoolQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<PoolQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<PoolQuery>(PoolDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Pool', 'query');

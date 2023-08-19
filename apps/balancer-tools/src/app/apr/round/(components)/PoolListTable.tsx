@@ -76,6 +76,12 @@ export function PoolListTable({ roundId }: { roundId: string }) {
     setOrder(sortOrder);
     handleSorting(accessor, sortOrder);
   };
+
+  const throttle = pThrottle({
+    limit: 3,
+    interval: 1500,
+  });
+
   return (
     <div className="flex w-full flex-1 justify-center text-white">
       <Table color="blue" shade={"darkWithBorder"}>
@@ -121,6 +127,7 @@ export function PoolListTable({ roundId }: { roundId: string }) {
               poolId={gauge.id}
               network={gauge.network}
               roundId={roundId}
+              throttleHandler={throttle}
             />
           ))}
           <Table.BodyRow>
@@ -146,20 +153,25 @@ function TableRow({
   network,
   tableData,
   setTableData,
+  throttleHandler,
 }: {
   poolId: string;
   roundId: string;
   network: number;
   tableData: PoolTableData[];
   setTableData: Dispatch<SetStateAction<PoolTableData[]>>;
+  throttleHandler: ThrottledFunction<Argument, ReturnValue>;
 }) {
   const pool = new Pool(poolId);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
+      const throttledFn = throttleHandler(async (poolId: string, roundId: string) => {
+        return await calculatePoolStats({ poolId, roundId });
+      });
       try {
-        const result = await calculatePoolStats({ poolId, roundId });
+        const result = await throttledFn(poolId, roundId);
         setTableData((prevTableData) => {
           const updatedTableData = prevTableData.map((pool) => {
             if (pool.id === poolId) {

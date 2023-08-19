@@ -16,6 +16,7 @@ export async function calculatePoolStats({
   roundId: string;
   poolId: string;
 }) {
+  // TODO: BAL-646 aggregate historical pool APR when roundId is not provided
   const round = Round.getRoundByNumber(roundId);
   const pool = new Pool(poolId);
 

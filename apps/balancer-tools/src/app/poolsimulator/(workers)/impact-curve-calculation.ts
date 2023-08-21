@@ -71,8 +71,8 @@ self.addEventListener(
           amm.priceImpactForExactTokenInSwap(
             amount,
             swapDirection === "in" ? tokenIn.symbol : tokenOut.symbol,
-            swapDirection === "in" ? tokenOut.symbol : tokenIn.symbol
-          ) * 100
+            swapDirection === "in" ? tokenOut.symbol : tokenIn.symbol,
+          ) * 100,
       );
 
       const { trimmedIn: amounts, trimmedOut: priceImpact } =
@@ -83,8 +83,8 @@ self.addEventListener(
           amm.exactTokenInForTokenOut(
             amount,
             swapDirection === "in" ? tokenIn.symbol : tokenOut.symbol,
-            swapDirection === "in" ? tokenOut.symbol : tokenIn.symbol
-          ) * -1
+            swapDirection === "in" ? tokenOut.symbol : tokenIn.symbol,
+          ) * -1,
       );
 
       return {
@@ -107,5 +107,5 @@ self.addEventListener(
       swapDirection,
     };
     self.postMessage(result);
-  }
+  },
 );

@@ -26,10 +26,10 @@ interface AmountsData {
 const createAndPostSwapWorker = (
   messageData: SwapCurveWorkerInputData,
   setInitialAmounts: Dispatch<SetStateAction<AmountsData>>,
-  setCustomAmounts: Dispatch<SetStateAction<AmountsData>>
+  setCustomAmounts: Dispatch<SetStateAction<AmountsData>>,
 ) => {
   const worker = new Worker(
-    new URL("../../(workers)/swap-curve-calculation.ts", import.meta.url)
+    new URL("../../(workers)/swap-curve-calculation.ts", import.meta.url),
   );
 
   worker.onmessage = (event: MessageEvent<SwapCurveWorkerOutputData>) => {
@@ -53,10 +53,10 @@ export function SwapCurve() {
   if (!initialData || !customData) return <Spinner />;
 
   const [initialAmounts, setInitialAmounts] = useState<AmountsData>(
-    {} as AmountsData
+    {} as AmountsData,
   );
   const [customAmounts, setCustomAmounts] = useState<AmountsData>(
-    {} as AmountsData
+    {} as AmountsData,
   );
 
   useEffect(() => {
@@ -76,7 +76,7 @@ export function SwapCurve() {
     ];
 
     messages.forEach((message) =>
-      createAndPostSwapWorker(message, setInitialAmounts, setCustomAmounts)
+      createAndPostSwapWorker(message, setInitialAmounts, setCustomAmounts),
     );
   }, [initialData, customData, analysisToken, currentTabToken]);
 
@@ -84,7 +84,7 @@ export function SwapCurve() {
     amountIn: number,
     tokenIn: string,
     amountOut: number,
-    tokenOut: string
+    tokenOut: string,
   ) => {
     const formattedAmountIn = formatNumber(amountIn, 2);
     const formattedAmountOut = formatNumber(amountOut, 2);
@@ -96,7 +96,7 @@ export function SwapCurve() {
     y: number[],
     legendGroup: string,
     showlegend = true,
-    hovertemplate: string[]
+    hovertemplate: string[],
   ) => {
     return {
       x,
@@ -113,7 +113,7 @@ export function SwapCurve() {
   const createLimitPointDataObject = (
     x: number[],
     y: number[],
-    legendGroup: string
+    legendGroup: string,
   ) => {
     return {
       x,
@@ -132,7 +132,7 @@ export function SwapCurve() {
     // https://docs.xave.co/product-overview-1/fxpools/amm-faqs
     x_points: number[],
     y_points: number[],
-    legendGroup: string
+    legendGroup: string,
   ) => {
     const x = [x_points[0], x_points[1], x_points[1], x_points[0], x_points[0]];
     const y = [y_points[0], y_points[0], y_points[1], y_points[1], y_points[0]];
@@ -173,9 +173,9 @@ export function SwapCurve() {
           amount,
           analysisToken.symbol,
           -initialAmounts.tabTokenOut[index],
-          currentTabToken.symbol
-        )
-      )
+          currentTabToken.symbol,
+        ),
+      ),
     ),
     createDataObject(
       customAmounts.analysisTokenIn,
@@ -187,9 +187,9 @@ export function SwapCurve() {
           amount,
           analysisToken.symbol,
           -customAmounts.tabTokenOut[index],
-          currentTabToken.symbol
-        )
-      )
+          currentTabToken.symbol,
+        ),
+      ),
     ),
     createDataObject(
       initialAmounts.analysisTokenOut,
@@ -201,9 +201,9 @@ export function SwapCurve() {
           initialAmounts.tabTokenIn[index],
           currentTabToken.symbol,
           -amount,
-          analysisToken.symbol
-        )
-      )
+          analysisToken.symbol,
+        ),
+      ),
     ),
     createDataObject(
       customAmounts.analysisTokenOut,
@@ -215,9 +215,9 @@ export function SwapCurve() {
           customAmounts.tabTokenIn[index],
           currentTabToken.symbol,
           -amount,
-          analysisToken.symbol
-        )
-      )
+          analysisToken.symbol,
+        ),
+      ),
     ),
   ];
 
@@ -232,8 +232,8 @@ export function SwapCurve() {
           initialAmounts.tabTokenIn.slice(-1)[0],
           initialAmounts.tabTokenOut.slice(-1)[0],
         ],
-        "Initial"
-      )
+        "Initial",
+      ),
     );
   }
   if (POOL_TYPES_TO_ADD_LIMIT.includes(customData.poolType)) {
@@ -247,8 +247,8 @@ export function SwapCurve() {
           customAmounts.tabTokenIn.slice(-1)[0],
           customAmounts.tabTokenOut.slice(-1)[0],
         ],
-        "Custom"
-      )
+        "Custom",
+      ),
     );
   }
   const poolData = [initialData, customData];
@@ -259,7 +259,7 @@ export function SwapCurve() {
     if (pool.poolType == PoolTypeEnum.Fx && pool.poolParams?.beta) {
       const analysisBalance = findTokenBySymbol(
         pool.tokens,
-        analysisToken.symbol
+        analysisToken.symbol,
       )?.balance;
       const tabBalance = findTokenBySymbol(pool.tokens, currentTabToken.symbol)
         ?.balance;
@@ -270,7 +270,11 @@ export function SwapCurve() {
         beta: pool.poolParams.beta,
       });
       data.push(
-        createBetaRegionDataObject(betaLimits[0], betaLimits[1], legends[index])
+        createBetaRegionDataObject(
+          betaLimits[0],
+          betaLimits[1],
+          legends[index],
+        ),
       );
     }
   });
@@ -284,19 +288,19 @@ export function SwapCurve() {
   }) {
     const initialAxisToken = findTokenBySymbol(
       initialData.tokens,
-      axisBalanceSymbol
+      axisBalanceSymbol,
     );
     const customAxisToken = findTokenBySymbol(
       customData.tokens,
-      axisBalanceSymbol
+      axisBalanceSymbol,
     );
     const initialOppositeAxisToken = findTokenBySymbol(
       initialData.tokens,
-      oppositeAxisBalanceSymbol
+      oppositeAxisBalanceSymbol,
     );
     const customOppositeAxisToken = findTokenBySymbol(
       customData.tokens,
-      oppositeAxisBalanceSymbol
+      oppositeAxisBalanceSymbol,
     );
     const axisBalances = [
       initialAxisToken?.balance || 0,
@@ -306,7 +310,7 @@ export function SwapCurve() {
     const convertBalanceScale = (
       balance?: number,
       balanceRate?: number,
-      newRate?: number
+      newRate?: number,
     ) => {
       if (!balance || !balanceRate || !newRate) return 0;
       return (balance * balanceRate) / newRate;
@@ -316,12 +320,12 @@ export function SwapCurve() {
       convertBalanceScale(
         initialOppositeAxisToken?.balance,
         initialOppositeAxisToken?.rate,
-        initialAxisToken?.rate
+        initialAxisToken?.rate,
       ),
       convertBalanceScale(
         customOppositeAxisToken?.balance,
         customOppositeAxisToken?.rate,
-        customAxisToken?.rate
+        customAxisToken?.rate,
       ),
     ];
 

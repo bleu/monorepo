@@ -19,13 +19,13 @@ describe("Token Functions", () => {
   describe("getTransitionIndices", () => {
     test("Should return indices of continuous true values", () => {
       expect(
-        getTransitionIndices([false, false, true, true, true, false])
+        getTransitionIndices([false, false, true, true, true, false]),
       ).toEqual([2, 4]);
     });
 
     test("Should throw an error for non-continuous true values", () => {
       expect(() =>
-        getTransitionIndices([false, false, true, false, true, true])
+        getTransitionIndices([false, false, true, false, true, true]),
       ).toThrow("The true values are not continuous.");
     });
 

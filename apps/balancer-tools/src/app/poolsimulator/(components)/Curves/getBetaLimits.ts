@@ -10,16 +10,16 @@ export const computeBalances = (swaps: number[], initialBalance: number) =>
 export const isInBetaRegion = (
   balanceX: number,
   balanceY: number,
-  beta: number
+  beta: number,
 ) => Math.abs(balanceX - balanceY) / (balanceX + balanceY) < beta;
 
 export const findTransitions = (
   analysisAmounts: number[],
   tabAmounts: number[],
-  beta: number
+  beta: number,
 ) => {
   const inBetaRegion = analysisAmounts.map((analysisValue, idx) =>
-    isInBetaRegion(analysisValue, tabAmounts[idx], beta)
+    isInBetaRegion(analysisValue, tabAmounts[idx], beta),
   );
   return getTransitionIndices(inBetaRegion);
 };

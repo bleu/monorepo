@@ -22,48 +22,43 @@ export async function calculatePoolStats({
 
   const endRoundBlockNumber = await getBlockNumberByTimestamp(
     pool.gauge?.network ?? 1,
-    round.activeRound ? round.startDate : round.endDate,
+    round.endDate,
   );
 
-  let balPriceUSD, tvl, votingShare;
-
-  try {
-    balPriceUSD = await getBALPriceByRound(round);
-  } catch (error) {
-    balPriceUSD = 0;
-  }
-
-  try {
-    tvl = await pools
-      .gql(String(pool.gauge?.network) ?? 1)
-      .PoolWhereBlockNumber({
-        blockNumber: endRoundBlockNumber,
-        poolId,
-      })
-      .then((res) => {
-        if (!res.pool?.totalLiquidity) {
-          throw new Error("Failed to fetch totalLiquidity.");
-        }
-        return res.pool?.totalLiquidity;
-      });
-  } catch (error) {
-    tvl = 0;
-  }
-
-  try {
-    votingShare = await getPoolRelativeWeight(
-      poolId,
-      round.endDate.getTime() / 1000,
-    );
-  } catch (error) {
-    votingShare = 0;
-  }
-
+  let balPriceUSD = 0;
+  let tvl = 0;
+  let votingShare = 0;
   let apr = 0;
-  if (balPriceUSD !== null && tvl !== null && votingShare !== null) {
+
+  balPriceUSD = await getBALPriceByRound(round);
+
+  tvl = round.activeRound
+    ? await pools
+        .gql(String(pool.gauge?.network) ?? 1)
+        .Pool({
+          poolId,
+        })
+        .then((res) => {
+          return res.pool?.totalLiquidity ?? 0;
+        })
+    : await pools
+        .gql(String(pool.gauge?.network) ?? 1)
+        .PoolWhereBlockNumber({
+          blockNumber: endRoundBlockNumber,
+          poolId,
+        })
+        .then((res) => {
+          return res.pool?.totalLiquidity ?? 0;
+        });
+
+  votingShare = await getPoolRelativeWeight(
+    poolId,
+    round.endDate.getTime() / 1000,
+  );
+
+  if (balPriceUSD !== 0 && tvl !== 0 && votingShare !== 0) {
     apr = calculateRoundAPR(round, votingShare, tvl, balPriceUSD) * 100;
   }
-
   return { apr, balPriceUSD, tvl, votingShare };
 }
 

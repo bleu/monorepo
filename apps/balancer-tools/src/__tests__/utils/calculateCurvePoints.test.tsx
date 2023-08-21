@@ -4,7 +4,10 @@ describe("calculateCurvePoints", () => {
   it("should return an array of calculated points with a given balance and start", () => {
     const balance = 1000;
     const start = 10;
-    const result = calculateCurvePoints({ balance, start });
+    const result = calculateCurvePoints({
+      balance,
+      startPercentage: start / balance,
+    });
 
     expect(result.length).toBe(121);
 
@@ -21,19 +24,13 @@ describe("calculateCurvePoints", () => {
     expect(result[0]).toBe(0);
   });
 
-  it("should handle negative start value", () => {
-    const balance = 1000;
-    const start = -10;
-    const result = calculateCurvePoints({ balance, start });
-
-    expect(result.length).toBe(121);
-    expect(result[0]).toBe(start);
-  });
-
   it("should generate points that follow the expected curve", () => {
     const balance = 1000;
     const start = 10;
-    const result = calculateCurvePoints({ balance, start });
+    const result = calculateCurvePoints({
+      balance,
+      startPercentage: start / balance,
+    });
     const initialValue = balance * 0.001;
     const stepRatio = Math.pow(balance / initialValue, 1 / 99);
 

@@ -59,11 +59,11 @@ self.addEventListener(
         poolType === PoolTypeEnum.MetaStable
           ? calculateCurvePoints({
               balance: maxBalance,
-              startPercentage: 0.01,
+              startPercentage: 0.001,
             })
           : calculateCurvePoints({
               balance: maxBalance,
-              startPercentage: 0.01,
+              startPercentage: 0.001,
             }).filter((value) => value <= limitBalance);
 
       const rawPriceImpact = rawAmounts.map(

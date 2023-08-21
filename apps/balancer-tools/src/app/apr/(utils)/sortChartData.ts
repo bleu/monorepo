@@ -22,8 +22,8 @@ export default function sortDataByX(data: iData) {
       return xValueA - xValueB;
     });
 
-  const sortedX: number[] | string[] = [];
-  const sortedY: number[] | string[] = [];
+  const sortedX: (number | string)[] = [];
+  const sortedY: (number | string)[] = [];
 
   for (const index of sortedIndices) {
     sortedX.push(data.x[index]);

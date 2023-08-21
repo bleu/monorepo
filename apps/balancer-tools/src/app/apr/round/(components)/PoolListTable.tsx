@@ -9,7 +9,7 @@ import {
   TriangleUpIcon,
 } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
-import pThrottle, { ThrottledFunction } from "p-throttle";
+import pThrottle from "p-throttle";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 import { Button } from "#/components";
@@ -32,6 +32,11 @@ interface PoolTableData extends PoolStats {
   id: string;
   network: number;
 }
+
+export const throttle = pThrottle({
+  limit: 3,
+  interval: 1500,
+});
 
 export function PoolListTable({ roundId }: { roundId: string }) {
   const initialTableValues: PoolTableData[] = votingGauges
@@ -76,11 +81,6 @@ export function PoolListTable({ roundId }: { roundId: string }) {
     setOrder(sortOrder);
     handleSorting(accessor, sortOrder);
   };
-
-  const throttle = pThrottle({
-    limit: 3,
-    interval: 1500,
-  });
 
   return (
     <div className="flex w-full flex-1 justify-center text-white">
@@ -160,16 +160,18 @@ function TableRow({
   network: number;
   tableData: PoolTableData[];
   setTableData: Dispatch<SetStateAction<PoolTableData[]>>;
-  throttleHandler: ThrottledFunction<Argument, ReturnValue>;
+  throttleHandler: typeof throttle;
 }) {
   const pool = new Pool(poolId);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      const throttledFn = throttleHandler(async (poolId: string, roundId: string) => {
-        return await calculatePoolStats({ poolId, roundId });
-      });
+      const throttledFn = throttleHandler(
+        async (poolId: string, roundId: string) => {
+          return await calculatePoolStats({ poolId, roundId });
+        },
+      );
       try {
         const result = await throttledFn(poolId, roundId);
         setTableData((prevTableData) => {

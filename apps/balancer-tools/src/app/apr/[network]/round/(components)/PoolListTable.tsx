@@ -1,6 +1,6 @@
 "use client";
 
-import { NetworkChainId, networkFor } from "@bleu-balancer-tools/utils";
+import { Network, networkFor, networkIdFor } from "@bleu-balancer-tools/utils";
 import {
   ChevronDownIcon,
   DashIcon,
@@ -32,7 +32,13 @@ interface PoolTableData extends PoolStats {
   symbol: string;
 }
 
-export function PoolListTable({ roundId }: { roundId: string }) {
+export function PoolListTable({
+  roundId,
+  network,
+}: {
+  roundId: string;
+  network: Network;
+}) {
   const [isLoadingFetchPoolList, setIsLoadingFetchPoolList] = useState(true);
   const [tableData, setTableData] = useState([] as PoolTableData[]);
   const [sortField, setSortField] = useState("");
@@ -42,7 +48,7 @@ export function PoolListTable({ roundId }: { roundId: string }) {
     const fetchData = async () => {
       try {
         const poolList = await getPoolList({
-          network: NetworkChainId.ETHEREUM,
+          network: Number(networkIdFor(network)),
         });
 
         //maybe round can be passed to getPoolList and calculatePoolStats can be done there
@@ -55,7 +61,7 @@ export function PoolListTable({ roundId }: { roundId: string }) {
 
             return {
               id: pool.id,
-              network: NetworkChainId.ETHEREUM,
+              network: Number(networkIdFor(network)),
               symbol: pool.symbol as string,
               ...poolStats,
             };

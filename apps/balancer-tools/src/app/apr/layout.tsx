@@ -10,6 +10,7 @@ import { Header } from "#/components/Header";
 import { PoolAttribute, SearchPoolForm } from "#/components/SearchPoolForm";
 import { Select, SelectItem } from "#/components/Select";
 
+import { NetworkSelector } from "./(components)/NetworkSelector";
 import { Round } from "./(utils)/rounds";
 
 const ALL_ROUNDS = Round.getAllRounds();
@@ -27,7 +28,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
 
   React.useEffect(() => {
     if (!poolId && (!roundId || roundId === "current")) {
-      router.push(`/apr/round/${LAST_ROUND_ID}`);
+      router.push(`/apr/${network}/round/${LAST_ROUND_ID}`);
     }
   }, [roundId]);
 
@@ -37,7 +38,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
         linkUrl={"/apr"}
         title={"APR"}
         imageSrc={"/assets/balancer-symbol.svg"}
-        endButton={<></>}
+        endButton={<NetworkSelector />}
       />
       <div className="flex flex-1 gap-x-8">
         <div className="h-full w-72 lg:w-80 max-w-sm">

@@ -1,7 +1,13 @@
-import { redirect } from "next/navigation";
+"use client";
+
+import { isArray } from "lodash";
+import { redirect, useParams } from "next/navigation";
 
 import { Round } from "#/app/apr/(utils)/rounds";
 
 export default function Page() {
-  redirect(`/apr/ethereum/round/${Round.getAllRounds()[0].value}`);
+  const { network } = useParams();
+  const chain = isArray(network) ? network[0] : network;
+
+  redirect(`/apr/${chain}/round/${Round.getAllRounds()[0].value}`);
 }

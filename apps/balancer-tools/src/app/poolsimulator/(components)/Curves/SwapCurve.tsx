@@ -129,7 +129,6 @@ export function SwapCurve() {
   };
 
   const createBetaRegionDataObject = (
-    // https://docs.xave.co/product-overview-1/fxpools/amm-faqs
     x_points: number[],
     y_points: number[],
     legendGroup: string,

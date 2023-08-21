@@ -195,7 +195,6 @@ export function ImpactCurve() {
     y: number[],
     legendGroup: string,
   ) => {
-    // https://docs.xave.co/product-overview-1/fxpools/amm-faqs
     return {
       x,
       y,

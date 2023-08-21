@@ -78,6 +78,7 @@ export default function getBetaLimits({
   tabTokenInitialBalance: number;
   beta: number;
 }) {
+  // https://docs.xave.co/product-overview-1/fxpools/amm-faqs
   const analysisAmounts = computeSwapAmounts(analysisTokenOut, analysisTokenIn);
   const tabAmounts = computeSwapAmounts(tabTokenIn, tabTokenOut);
 

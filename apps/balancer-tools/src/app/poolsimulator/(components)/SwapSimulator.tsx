@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 
 import { Button } from "#/components";
-import { ErrorCard } from "#/components/ErrorCard";
+import { AlertCard } from "#/components/AlertCard";
 import { BaseInput, Input } from "#/components/Input";
 import { PlotTitle } from "#/components/Plot";
 import { Select, SelectItem } from "#/components/Select";
@@ -356,7 +356,8 @@ function SimulationResult({
   };
   if (!amountOut || amountOut > getTokenBalance(tokenOutSymbol)) {
     return (
-      <ErrorCard
+      <AlertCard
+        alertType="error"
         title="Liquidity limit"
         message="The swap is greater than the pool limit. Please, change the amount to a lower value."
       />

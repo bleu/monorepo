@@ -208,18 +208,18 @@ export function convertGqlToAnalysisData(poolData: PoolQuery): AnalysisData {
 
 export function calculateCurvePoints({
   balance,
-  start = 0,
+  startPercentage = 0,
 }: {
   balance?: number;
-  start?: number;
+  startPercentage?: number;
 }) {
-  if (!balance || start === undefined) return [];
+  if (!balance || startPercentage === undefined) return [];
   const numberOfPoints = 100;
   const initialValue = balance * 0.001;
   const stepRatio = Math.pow(balance / initialValue, 1 / (numberOfPoints - 1));
 
   return [
-    start,
+    startPercentage * balance,
     ...Array.from(
       { length: numberOfPoints + 20 },
       (_, index) => initialValue * stepRatio ** index,
@@ -230,3 +230,10 @@ export function calculateCurvePoints({
 export function findTokenBySymbol(tokens: TokensData[], symbol?: string) {
   return tokens.find((token) => token.symbol === symbol);
 }
+
+export const POOL_TYPES_TO_ADD_LIMIT = [
+  PoolTypeEnum.Gyro2,
+  PoolTypeEnum.Gyro3,
+  PoolTypeEnum.GyroE,
+  PoolTypeEnum.Fx,
+];

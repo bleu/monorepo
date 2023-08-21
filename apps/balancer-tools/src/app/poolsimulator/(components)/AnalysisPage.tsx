@@ -3,9 +3,9 @@
 import { Tabs } from "#/components/Tabs";
 import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 
+import { ImpactCurve } from "./Curves/ImpactCurve";
+import { SwapCurve } from "./Curves/SwapCurve";
 import { DepthCost } from "./DepthCost";
-import { ImpactCurve } from "./ImpactCurve";
-import { SwapCurve } from "./SwapCurve";
 import { SwapSimulator } from "./SwapSimulator";
 import { TokensDistribution } from "./TokensDistribution";
 

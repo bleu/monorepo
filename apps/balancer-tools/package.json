@@ -21,7 +21,6 @@
     "@balancer-labs/sor": "4.1.1-beta.14",
     "@bleu-balancer-tools/gql": "workspace:*",
     "@bleu-balancer-tools/math-poolsimulator": "workspace:*",
-    "@bleu-balancer-tools/math-stableswapsimulator": "workspace:*",
     "@bleu-balancer-tools/tsconfig": "workspace:*",
     "@cowprotocol/ts-dune-client": "^0.0.2",
     "@hookform/resolvers": "3.1.0",
@@ -66,7 +65,6 @@
   },
   "devDependencies": {
     "@bleu-balancer-tools/eslint-config": "workspace:^",
-    "@bleu-balancer-tools/math-stableswapsimulator": "workspace:^",
     "@bleu-balancer-tools/utils": "workspace:^",
     "@ethersproject/bignumber": "^5.7.0",
     "@netlify/plugin-nextjs": "^4.39.4",

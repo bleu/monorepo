@@ -5898,7 +5898,7 @@ export type PoolQueryVariables = Exact<{
 }>;
 
 
-export type PoolQuery = { __typename?: 'Query', pool?: { __typename?: 'Pool', address: any, owner?: any | null, poolType?: string | null, symbol?: string | null, swapFee: any, amp?: any | null, c?: any | null, s?: any | null, alpha?: any | null, beta?: any | null, sqrtAlpha?: any | null, sqrtBeta?: any | null, root3Alpha?: any | null, lambda?: any | null, tauAlphaX?: any | null, tauAlphaY?: any | null, tauBetaX?: any | null, tauBetaY?: any | null, delta?: any | null, epsilon?: any | null, u?: any | null, v?: any | null, w?: any | null, z?: any | null, dSq?: any | null, tokens?: Array<{ __typename?: 'PoolToken', address: string, symbol: string, balance: any, decimals: number, priceRate: any, token: { __typename?: 'Token', fxOracleDecimals?: number | null, latestFXPrice?: any | null } }> | null } | null };
+export type PoolQuery = { __typename?: 'Query', pool?: { __typename?: 'Pool', address: any, owner?: any | null, poolType?: string | null, symbol?: string | null, swapFee: any, totalLiquidity: any, amp?: any | null, c?: any | null, s?: any | null, alpha?: any | null, beta?: any | null, sqrtAlpha?: any | null, sqrtBeta?: any | null, root3Alpha?: any | null, lambda?: any | null, tauAlphaX?: any | null, tauAlphaY?: any | null, tauBetaX?: any | null, tauBetaY?: any | null, delta?: any | null, epsilon?: any | null, u?: any | null, v?: any | null, w?: any | null, z?: any | null, dSq?: any | null, tokens?: Array<{ __typename?: 'PoolToken', address: string, symbol: string, balance: any, decimals: number, priceRate: any, token: { __typename?: 'Token', fxOracleDecimals?: number | null, latestFXPrice?: any | null } }> | null } | null };
 
 
 export const InternalBalanceDocument = gql`
@@ -6009,6 +6009,7 @@ export const PoolDocument = gql`
     poolType
     symbol
     swapFee
+    totalLiquidity
     amp
     c
     s

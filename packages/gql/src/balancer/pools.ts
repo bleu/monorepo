@@ -103,6 +103,7 @@ export const poolById = gql`
       poolType
       symbol
       swapFee
+      totalLiquidity
       amp
       c
       s

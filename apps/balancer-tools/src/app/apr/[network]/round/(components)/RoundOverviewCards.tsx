@@ -3,9 +3,9 @@ import { formatDate } from "@bleu-balancer-tools/utils";
 import * as balEmissions from "#/lib/balancer/emissions";
 import { formatNumber } from "#/utils/formatNumber";
 
-import OverviewCards from "../../(components)/OverviewCards";
-import { getBALPriceByRound } from "../../(utils)/getBALPriceByRound";
-import { Round } from "../../(utils)/rounds";
+import OverviewCards from "../../../(components)/OverviewCards";
+import { getBALPriceByRound } from "../../../(utils)/getBALPriceByRound";
+import { Round } from "../../../(utils)/rounds";
 
 export default async function RoundOverviewCards({
   roundId,

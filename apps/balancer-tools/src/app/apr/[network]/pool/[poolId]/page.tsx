@@ -8,7 +8,7 @@ export default function Page({
   params: { network: string; poolId: string };
 }) {
   redirect(
-    `/apr/pool/${params.network}/${params.poolId}/round/${
+    `/apr/${params.network}/pool/${params.poolId}/round/${
       Round.getAllRounds()[0].value
     }`,
   );

@@ -1,8 +1,9 @@
 import { Suspense } from "react";
 
-import HistoricalAPRChart from "#/app/apr/pool/(components)/HistoricalAPRChart";
-import PoolOverviewCards from "#/app/apr/pool/(components)/PoolOverviewCards";
 import { Spinner } from "#/components/Spinner";
+
+import HistoricalAPRChart from "../../../(components)/HistoricalAPRChart";
+import PoolOverviewCards from "../../../(components)/PoolOverviewCards";
 
 export default async function Page({
   params,

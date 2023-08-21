@@ -1,6 +1,6 @@
 "use client";
 
-import { networkFor } from "@bleu-balancer-tools/utils";
+import { NetworkChainId, networkFor } from "@bleu-balancer-tools/utils";
 import {
   ChevronDownIcon,
   DashIcon,
@@ -17,8 +17,8 @@ import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
 import { formatNumber } from "#/utils/formatNumber";
 
-import { calculatePoolStats } from "../../(utils)/calculatePoolStats";
-import { getPoolList } from "../../(utils)/getPoolList";
+import { calculatePoolStats } from "../../../(utils)/calculatePoolStats";
+import { getPoolList } from "../../../(utils)/getPoolList";
 
 interface PoolStats {
   apr: number;
@@ -41,7 +41,9 @@ export function PoolListTable({ roundId }: { roundId: string }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const poolList = await getPoolList();
+        const poolList = await getPoolList({
+          network: NetworkChainId.ETHEREUM,
+        });
 
         //maybe round can be passed to getPoolList and calculatePoolStats can be done there
         const poolListWithStats = await Promise.all(
@@ -53,11 +55,11 @@ export function PoolListTable({ roundId }: { roundId: string }) {
 
             return {
               id: pool.id,
-              network: Number(pool.networkId),
+              network: NetworkChainId.ETHEREUM,
               symbol: pool.symbol as string,
               ...poolStats,
             };
-          })
+          }),
         );
 
         setTableData(poolListWithStats);
@@ -216,11 +218,11 @@ function TableRow({
   }, [poolId, roundId]);
 
   const selectedPoolData: PoolTableData | undefined = tableData.find(
-    (data) => data.id === poolId
+    (data) => data.id === poolId,
   );
-  const poolRedirectURL = `/apr/pool/${networkFor(
-    network
-  )}/${poolId}/round/${roundId}`;
+  const poolRedirectURL = `/apr/${networkFor(
+    network,
+  )}/pool/${poolId}/round/${roundId}`;
   const router = useRouter();
   return (
     <Table.BodyRow

@@ -3,7 +3,6 @@ import { Suspense } from "react";
 import { Spinner } from "#/components/Spinner";
 
 import { PoolListTable } from "../(components)/PoolListTable";
-import PoolsCards from "../(components)/PoolsCards";
 import RoundOverviewCards from "../(components)/RoundOverviewCards";
 import TopPoolsChart from "../(components)/TopPoolsChart";
 
@@ -21,9 +20,6 @@ export default function Page({
         <TopPoolsChart roundId={roundId} />
       </Suspense>
       <PoolListTable roundId={roundId} />
-      <Suspense fallback={<Spinner />}>
-        <PoolsCards roundId={roundId} />
-      </Suspense>
     </div>
   );
 }

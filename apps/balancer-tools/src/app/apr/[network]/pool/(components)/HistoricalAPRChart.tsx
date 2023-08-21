@@ -1,10 +1,10 @@
 import { blueDark } from "@radix-ui/colors";
 import { PlotType } from "plotly.js";
 
+import { calculatePoolStats } from "#/app/apr/(utils)/calculatePoolStats";
+import { Round } from "#/app/apr/(utils)/rounds";
 import { trimTrailingValues } from "#/lib/utils";
 
-import { calculatePoolStats } from "../../(utils)/calculatePoolStats";
-import { Round } from "../../(utils)/rounds";
 import HistoricalAPRPlot from "./HistoricalAPRPlot";
 
 export default async function HistoricalAPRChart({

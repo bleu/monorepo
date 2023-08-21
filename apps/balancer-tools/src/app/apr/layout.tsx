@@ -35,7 +35,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
     <div className="flex h-full flex-col">
       <Header
         linkUrl={"/apr"}
-        title={"Pool Simulator"}
+        title={"APR"}
         imageSrc={"/assets/balancer-symbol.svg"}
         endButton={<></>}
       />
@@ -46,7 +46,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
             form={form}
             defaultValuePool={poolId}
             onSubmit={(value) => {
-              router.push(`/apr/pool/${value.network}/${value.poolId}`);
+              router.push(`/apr/${value.network}/pool/${value.poolId}`);
               setValue("poolId", value.poolId);
             }}
           >
@@ -70,8 +70,8 @@ export default function Layout({ children }: React.PropsWithChildren) {
                 onValueChange={(value) => {
                   router.push(
                     !poolId
-                      ? `/apr/round/${value}`
-                      : `/apr/pool/${network}/${poolId}/round/${value}`,
+                      ? `/apr/${network}/round/${value}`
+                      : `/apr/${network}/pool/${poolId}/round/${value}`,
                   );
                 }}
                 className="w-full"

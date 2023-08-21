@@ -1,10 +1,9 @@
 import { formatDate } from "@bleu-balancer-tools/utils";
 
+import OverviewCards from "#/app/apr/(components)/OverviewCards";
+import { calculatePoolStats } from "#/app/apr/(utils)/calculatePoolStats";
+import { Round } from "#/app/apr/(utils)/rounds";
 import { formatNumber } from "#/utils/formatNumber";
-
-import OverviewCards from "../../(components)/OverviewCards";
-import { calculatePoolStats } from "../../(utils)/calculatePoolStats";
-import { Round } from "../../(utils)/rounds";
 
 export default async function PoolOverviewCards({
   roundId,

@@ -12,14 +12,14 @@ import {
   Gyro2Schema,
   Gyro3Schema,
   GyroESchema,
-  StableSwapSimulatorDataSchema,
+  MetaStableSchema,
 } from "#/lib/schema";
 
 import { PoolTypeEnum } from "../(types)";
 import { TokenTable } from "./TokenTable";
 
 const schemaMapper = {
-  [PoolTypeEnum.MetaStable]: StableSwapSimulatorDataSchema,
+  [PoolTypeEnum.MetaStable]: MetaStableSchema,
   [PoolTypeEnum.GyroE]: GyroESchema,
   [PoolTypeEnum.Gyro2]: Gyro2Schema,
   [PoolTypeEnum.Gyro3]: Gyro3Schema,

@@ -357,7 +357,7 @@ function SimulationResult({
   if (!amountOut || amountOut > getTokenBalance(tokenOutSymbol)) {
     return (
       <AlertCard
-        alertType="error"
+        style="error"
         title="Liquidity limit"
         message="The swap is greater than the pool limit. Please, change the amount to a lower value."
       />

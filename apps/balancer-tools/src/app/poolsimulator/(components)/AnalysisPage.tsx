@@ -37,7 +37,7 @@ export default function Page() {
 
   const poolTypes = [initialData?.poolType, customData?.poolType];
   const poolsHaveDifferentPurpose =
-    poolTypes.filter((type) => stablePoolTypes.includes(type)).length == 1;
+    poolTypes.filter((type) => stablePoolTypes.includes(type)).length == 1; // length equal one means that
 
   return (
     <>
@@ -45,7 +45,7 @@ export default function Page() {
         {/* (h-screen - (header's height + footer's height)) = graph's height space */}
         {poolsHaveDifferentPurpose && (
           <AlertCard
-            alertType="warning"
+            style="warning"
             title="Pools with purposes"
             message="One of the pools was made for stable assets, while the other for non-stable. This may lead to results with different scale ranges."
           />

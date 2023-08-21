@@ -172,7 +172,7 @@ export function DepthCost() {
       <div className="flex w-full flex-col">
         <PlotTitle title={PLOT_TITLE} tooltip={PLOT_TOOLTIP} />
         <AlertCard
-          alertType="error"
+          style="error"
           message="The depth cost chart runs using numerical calculus. Usually this happens because at least one pool parameter value is not defined properly, so the simulation does not converge. Please review the initial and custom pool parameters used."
           title="Depth Cost didn't converge"
         />

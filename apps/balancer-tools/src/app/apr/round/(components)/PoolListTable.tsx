@@ -22,7 +22,7 @@ import { Button } from "#/components";
 import { Tooltip } from "#/components/Tooltip";
 import { formatNumber } from "#/utils/formatNumber";
 
-import { calculatePoolStats } from "../../(utils)/calculateRoundAPR";
+import { calculatePoolStats } from "../../(utils)/calculatePoolStats";
 
 export function PoolListTable({ roundId }: { roundId: string }) {
   return (

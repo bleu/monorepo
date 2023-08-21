@@ -1,32 +1,11 @@
-import { gql } from "./balancerAPI";
+import { NetworkChainId } from "@bleu-balancer-tools/utils";
+
+import { blocks } from "#/lib/gql/server";
 
 const MINUTE_IN_SECONDS = 60;
 
-const BLOCKS_SUBGRAPH_URL_MAP: Record<string, string> = {
-  1: "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
-  137: "https://api.thegraph.com/subgraphs/name/ianlapham/polygon-blocks",
-  42161:
-    "https://api.thegraph.com/subgraphs/name/ianlapham/arbitrum-one-blocks",
-};
-
 const GNOSIS_API_EXPLORER = (timestamp: number): string =>
   `https://api.gnosisscan.io/api?module=block&action=getblocknobytime&timestamp=${timestamp}&closest=before&apikey=${process.env.GNOSIS_API_KEY}`;
-
-const BLOCKS_QUERY = `
-  query($timestamp_gte: BigInt, $timestamp_lt: BigInt) {
-    blocks(
-      first: 1,
-      orderBy: number,
-      orderDirection: asc,
-      where: {
-        timestamp_gte: $timestamp_gte,
-        timestamp_lt: $timestamp_lt
-      }
-    ) {
-      number
-    }
-  }
-`;
 
 async function bestGuess(chain: number, timestamp: number): Promise<number> {
   if (chain !== 100) {
@@ -56,13 +35,15 @@ export default async function getBlockNumberByTimestamp(
   }
 
   const timestamps = getTimestamps(poolEndTime);
-  const url = BLOCKS_SUBGRAPH_URL_MAP[chain];
 
-  if (!url) {
+  if (chain === NetworkChainId.GNOSIS) {
     return bestGuess(chain, parseInt(timestamps.timestamp_gte));
   }
 
-  const { data } = await gql(url, BLOCKS_QUERY, timestamps);
+  const data = await blocks.gql(String(chain)).Blocks({
+    timestamp_gte: timestamps.timestamp_gte,
+    timestamp_lt: timestamps.timestamp_lt,
+  });
 
   if (data.blocks.length > 0) {
     return parseInt(data.blocks[0].number);

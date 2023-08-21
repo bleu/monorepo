@@ -3,7 +3,7 @@ import { formatDate } from "@bleu-balancer-tools/utils";
 import { formatNumber } from "#/utils/formatNumber";
 
 import OverviewCards from "../../(components)/OverviewCards";
-import { calculatePoolStats } from "../../(utils)/calculateRoundAPR";
+import { calculatePoolStats } from "../../(utils)/calculatePoolStats";
 import { Round } from "../../(utils)/rounds";
 
 export default async function PoolOverviewCards({

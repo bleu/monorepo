@@ -227,27 +227,6 @@ export function calculateCurvePoints({
   ];
 }
 
-export function trimTrailingValues(
-  amountsIn: number[],
-  amountsOut: number[],
-  valueToTrim: number = 100,
-): { trimmedIn: number[]; trimmedOut: number[] } {
-  const lastIndexNonValue = amountsOut
-    .slice()
-    .reverse()
-    .findIndex((value) => value !== valueToTrim);
-
-  const cutIndex =
-    lastIndexNonValue !== -1
-      ? amountsOut.length - lastIndexNonValue
-      : amountsOut.length;
-
-  const trimmedIn = amountsIn.slice(0, cutIndex);
-  const trimmedOut = amountsOut.slice(0, cutIndex);
-
-  return { trimmedIn, trimmedOut };
-}
-
 export function findTokenBySymbol(tokens: TokensData[], symbol?: string) {
   return tokens.find((token) => token.symbol === symbol);
 }

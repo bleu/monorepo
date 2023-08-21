@@ -11,7 +11,7 @@ import { Tooltip } from "./Tooltip";
 
 interface PlotProps extends PlotParams {
   title: string;
-  toolTip: string;
+  toolTip?: string;
 }
 
 const PlotRoot = dynamic(() => import("react-plotly.js"), {
@@ -71,7 +71,7 @@ export function PlotTitle({
   justifyCenter = true,
 }: {
   title: string;
-  tooltip: string;
+  tooltip?: string;
   justifyCenter?: boolean;
 }) {
   return (
@@ -82,9 +82,13 @@ export function PlotTitle({
       )}
     >
       <h2 className="text-lg font-semibold text-white">{title}</h2>
-      <Tooltip content={tooltip}>
-        <InfoCircledIcon color={slateDarkA.slateA11} />
-      </Tooltip>
+      {tooltip ? (
+        <Tooltip content={tooltip}>
+          <InfoCircledIcon color={slateDarkA.slateA11} />
+        </Tooltip>
+      ) : (
+        <></>
+      )}
     </div>
   );
 }

@@ -2,13 +2,10 @@ import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
 import { PoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/types";
 
 import { AnalysisData } from "#/contexts/PoolSimulatorContext";
+import { trimTrailingValues } from "#/lib/utils";
 
 import { PoolTypeEnum, TokensData } from "../(types)";
-import {
-  calculateCurvePoints,
-  convertAnalysisDataToAMM,
-  trimTrailingValues,
-} from "../(utils)";
+import { calculateCurvePoints, convertAnalysisDataToAMM } from "../(utils)";
 
 export interface ImpactWorkerInputData {
   tokenIn: TokensData;
@@ -81,8 +78,8 @@ self.addEventListener(
         trimTrailingValues(rawAmounts, rawPriceImpact, 100);
 
       return {
-        amounts: amounts,
-        priceImpact: priceImpact,
+        amounts: amounts as number[],
+        priceImpact: priceImpact as number[],
       };
     };
     const calcResult = calculateTokenImpact({

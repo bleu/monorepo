@@ -2,13 +2,10 @@ import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
 import { PoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/types";
 
 import { AnalysisData } from "#/contexts/PoolSimulatorContext";
+import { trimTrailingValues } from "#/lib/utils";
 
 import { TokensData } from "../(types)";
-import {
-  calculateCurvePoints,
-  convertAnalysisDataToAMM,
-  trimTrailingValues,
-} from "../(utils)";
+import { calculateCurvePoints, convertAnalysisDataToAMM } from "../(utils)";
 
 export interface SwapCurveWorkerInputData {
   analysisToken: TokensData;
@@ -71,10 +68,10 @@ self.addEventListener(
         trimTrailingValues(rawAmountsAnalysisTokenIn, rawAmountsTabTokenOut, 0);
 
       return {
-        analysisTokenIn,
-        analysisTokenOut,
-        tabTokenOut,
-        tabTokenIn,
+        analysisTokenIn: analysisTokenIn as number[],
+        analysisTokenOut: analysisTokenOut as number[],
+        tabTokenOut: tabTokenOut as number[],
+        tabTokenIn: tabTokenIn as number[],
       };
     };
 

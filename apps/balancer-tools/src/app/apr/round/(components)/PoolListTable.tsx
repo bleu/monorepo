@@ -19,7 +19,7 @@ import votingGauges from "#/data/voting-gauges.json";
 import { Pool } from "#/lib/balancer/gauges";
 import { formatNumber } from "#/utils/formatNumber";
 
-import { calculatePoolStats } from "../../(utils)/calculateRoundAPR";
+import { calculatePoolStats } from "../../(utils)/calculatePoolStats";
 
 interface PoolStats {
   apr: number;

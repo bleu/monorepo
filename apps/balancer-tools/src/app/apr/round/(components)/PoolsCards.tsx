@@ -9,7 +9,7 @@ import { Pool } from "#/lib/balancer/gauges";
 import { formatNumber } from "#/utils/formatNumber";
 
 import BALPrice from "../../(components)/BALPrice";
-import { calculatePoolStats } from "../../(utils)/calculateRoundAPR";
+import { calculatePoolStats } from "../../(utils)/calculatePoolStats";
 
 export async function PoolCard({
   network,

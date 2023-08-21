@@ -19,8 +19,6 @@ import {
 import { SwapSimulatorDataSchema } from "#/lib/schema";
 import { formatNumber } from "#/utils/formatNumber";
 
-import { PoolTypeEnum } from "../(types)";
-
 interface IResult {
   swapType: string;
   tokenInSymbol: string;
@@ -351,20 +349,15 @@ function SimulationResult({
   if (!data.poolType) {
     return <Spinner />;
   }
-  // When CLP is out of bounds in an exactIn swap it returns 0
-  const isGyroType = (type: PoolTypeEnum) =>
-    [PoolTypeEnum.Gyro2, PoolTypeEnum.Gyro3, PoolTypeEnum.GyroE].includes(type);
+  // When a pool is out of bounds in an exactIn swap it returns 0
   const getTokenBalance = (tokenSymbol: string) => {
     const token = data.tokens.find((t) => t.symbol === tokenSymbol);
     return token?.balance || 0;
   };
-  if (
-    isGyroType(data.poolType) &&
-    (!amountOut || amountOut > getTokenBalance(tokenOutSymbol))
-  ) {
+  if (!amountOut || amountOut > getTokenBalance(tokenOutSymbol)) {
     return (
       <ErrorCard
-        title="CLP limit"
+        title="Liquidity limit"
         message="The swap is greater than the pool limit. Please, change the amount to a lower value."
       />
     );

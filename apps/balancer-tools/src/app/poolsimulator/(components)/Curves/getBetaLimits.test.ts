@@ -1,14 +1,14 @@
-import getBetaLimitIndexes, {
+import getBetaLimits, {
   computeSwapAmounts,
   findTransitions,
   getTransitionIndices,
   isInBetaRegion,
-} from "./getBetaLimitIndexes";
+} from "./getBetaLimits";
 
 describe("Token Functions", () => {
   test("computeSwapAmounts", () => {
-    const result = computeSwapAmounts([10, 20], [30, 40]);
-    expect(result).toEqual([25, 15, 35, 45]);
+    const result = computeSwapAmounts([-5, -10], [10, 20]);
+    expect(result).toEqual([-10, -5, 10, 20]);
   });
 
   test("isInBetaRegion", () => {
@@ -55,22 +55,22 @@ describe("Token Functions", () => {
     });
   });
 
-  describe("getBetaLimitIndexes", () => {
+  describe("getBetaLimits", () => {
     test("Should return correct swap amounts for beta region", () => {
       const params = {
-        analysisTokenOut: [5, 10, 15],
-        analysisTokenIn: [20, 25, 30],
-        tabTokenIn: [7, 12, 17],
-        tabTokenOut: [22, 27, 32],
-        analysisTokenInitialBalance: 100,
-        tabTokenInitialBalance: 105,
+        analysisTokenOut: [0, -5, -10, -15],
+        analysisTokenIn: [0, 5, 10, 15],
+        tabTokenIn: [0, 5, 10, 15],
+        tabTokenOut: [0, -5, -10, -15],
+        analysisTokenInitialBalance: 120,
+        tabTokenInitialBalance: 120,
         beta: 0.05,
       };
 
-      const result = getBetaLimitIndexes(params);
+      const result = getBetaLimits(params);
       expect(result).toEqual([
-        [115, 130],
-        [122, 137],
+        [-5, 5],
+        [5, -5],
       ]);
     });
   });

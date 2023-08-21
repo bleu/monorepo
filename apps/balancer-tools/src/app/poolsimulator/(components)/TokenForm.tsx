@@ -10,7 +10,7 @@ import {
   AnalysisData,
   usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
-import { getStableSwapSimulatorTokensSchema } from "#/lib/schema";
+import { getPoolSimulatorTokenSchema } from "#/lib/schema";
 
 import { TokensData } from "../(types)";
 import { PoolSimulatorFormTabs } from "./Menu";
@@ -27,14 +27,14 @@ export default function TokenForm({
   const { value: selectedTab } = useTabContext();
   const isCustomData = selectedTab === PoolSimulatorFormTabs.CustomData;
 
-  const stableSwapTokensSchema = getStableSwapSimulatorTokensSchema({
+  const poolSimulatorTokensSchema = getPoolSimulatorTokenSchema({
     symbolToEdit,
     existentSymbols: initialData?.tokens?.map((token: TokensData) => {
       return token.symbol;
     }),
   });
-  const form = useForm<typeof stableSwapTokensSchema._type>({
-    resolver: zodResolver(stableSwapTokensSchema),
+  const form = useForm<typeof poolSimulatorTokensSchema._type>({
+    resolver: zodResolver(poolSimulatorTokensSchema),
   });
 
   const { register } = form;

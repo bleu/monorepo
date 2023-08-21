@@ -32,16 +32,28 @@ export default async function PoolOverviewCards({
   roundId,
   poolId,
 }: {
-  roundId: string;
+  roundId?: string;
   poolId: string;
 }) {
-  const { apr, tvl } = await calculatePoolStats({ poolId, roundId });
-  const round = Round.getRoundByNumber(roundId);
-  const cardsDetails = [
-    { title: "TVL", content: formatNumber(tvl) },
-    { title: "APR", content: formatNumber(apr).concat("%") },
-    { title: "Round Number", content: roundId },
-    { title: "Round Ended", content: formatDate(round.endDate) },
-  ];
+  const cardsDetails: { title: string; content: JSX.Element | string }[] = [];
+  if (roundId) {
+    const { apr, tvl } = await calculatePoolStats({ poolId, roundId });
+    const round = Round.getRoundByNumber(roundId);
+    cardsDetails.push(
+      ...[
+        { title: "TVL", content: formatNumber(tvl) },
+        { title: "APR", content: formatNumber(apr).concat("%") },
+        { title: "Round Number", content: roundId },
+        { title: "Round Ended", content: formatDate(round.endDate) },
+      ],
+    );
+  } else {
+    cardsDetails.push(
+      ...[
+        { title: "Avg. TVL", content: <AverageTVLCard poolId={poolId} /> },
+        { title: "Avg. APR", content: <AverageAPRCard poolId={poolId} /> },
+      ],
+    );
+  }
   return <OverviewCards cardsDetails={cardsDetails} />;
 }

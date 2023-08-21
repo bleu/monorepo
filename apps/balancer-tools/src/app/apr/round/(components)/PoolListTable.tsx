@@ -17,7 +17,7 @@ import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
 import { formatNumber } from "#/utils/formatNumber";
 
-import { calculatePoolStats } from "../../(utils)/calculateRoundAPR";
+import { calculatePoolStats } from "../../(utils)/calculatePoolStats";
 import { getPoolList } from "../../(utils)/getPoolList";
 
 interface PoolStats {
@@ -57,7 +57,7 @@ export function PoolListTable({ roundId }: { roundId: string }) {
               symbol: pool.symbol as string,
               ...poolStats,
             };
-          }),
+          })
         );
 
         setTableData(poolListWithStats);
@@ -216,10 +216,10 @@ function TableRow({
   }, [poolId, roundId]);
 
   const selectedPoolData: PoolTableData | undefined = tableData.find(
-    (data) => data.id === poolId,
+    (data) => data.id === poolId
   );
   const poolRedirectURL = `/apr/pool/${networkFor(
-    network,
+    network
   )}/${poolId}/round/${roundId}`;
   const router = useRouter();
   return (

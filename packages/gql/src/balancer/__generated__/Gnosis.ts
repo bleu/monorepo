@@ -5887,6 +5887,14 @@ export type PoolsWherePoolTypeQueryVariables = Exact<{
 
 export type PoolsWherePoolTypeQuery = { __typename?: 'Query', pools: Array<{ __typename?: 'Pool', id: string, address: any, name?: string | null, poolType?: string | null, symbol?: string | null, totalLiquidity: any, tokens?: Array<{ __typename?: 'PoolToken', symbol: string }> | null }> };
 
+export type PoolWhereBlockNumberQueryVariables = Exact<{
+  blockNumber: Scalars['Int'];
+  poolId: Scalars['ID'];
+}>;
+
+
+export type PoolWhereBlockNumberQuery = { __typename?: 'Query', pool?: { __typename?: 'Pool', id: string, address: any, name?: string | null, poolType?: string | null, symbol?: string | null, totalLiquidity: any, tokens?: Array<{ __typename?: 'PoolToken', symbol: string }> | null } | null };
+
 export type PoolsByTotalLiquidityQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']>;
   poolIdList?: InputMaybe<Array<Scalars['ID']> | Scalars['ID']>;
@@ -5900,7 +5908,7 @@ export type PoolQueryVariables = Exact<{
 }>;
 
 
-export type PoolQuery = { __typename?: 'Query', pool?: { __typename?: 'Pool', address: any, owner?: any | null, poolType?: string | null, symbol?: string | null, swapFee: any, amp?: any | null, c?: any | null, s?: any | null, alpha?: any | null, beta?: any | null, sqrtAlpha?: any | null, sqrtBeta?: any | null, root3Alpha?: any | null, lambda?: any | null, tauAlphaX?: any | null, tauAlphaY?: any | null, tauBetaX?: any | null, tauBetaY?: any | null, delta?: any | null, epsilon?: any | null, u?: any | null, v?: any | null, w?: any | null, z?: any | null, dSq?: any | null, tokens?: Array<{ __typename?: 'PoolToken', address: string, symbol: string, balance: any, decimals: number, priceRate: any, token: { __typename?: 'Token', fxOracleDecimals?: number | null, latestFXPrice?: any | null } }> | null } | null };
+export type PoolQuery = { __typename?: 'Query', pool?: { __typename?: 'Pool', address: any, owner?: any | null, poolType?: string | null, symbol?: string | null, swapFee: any, totalLiquidity: any, amp?: any | null, c?: any | null, s?: any | null, alpha?: any | null, beta?: any | null, sqrtAlpha?: any | null, sqrtBeta?: any | null, root3Alpha?: any | null, lambda?: any | null, tauAlphaX?: any | null, tauAlphaY?: any | null, tauBetaX?: any | null, tauBetaY?: any | null, delta?: any | null, epsilon?: any | null, u?: any | null, v?: any | null, w?: any | null, z?: any | null, dSq?: any | null, tokens?: Array<{ __typename?: 'PoolToken', address: string, symbol: string, balance: any, decimals: number, priceRate: any, token: { __typename?: 'Token', fxOracleDecimals?: number | null, latestFXPrice?: any | null } }> | null } | null };
 
 
 export const InternalBalanceDocument = gql`
@@ -5988,6 +5996,21 @@ export const PoolsWherePoolTypeDocument = gql`
   }
 }
     `;
+export const PoolWhereBlockNumberDocument = gql`
+    query PoolWhereBlockNumber($blockNumber: Int!, $poolId: ID!) {
+  pool(id: $poolId, block: {number: $blockNumber}) {
+    id
+    address
+    name
+    poolType
+    symbol
+    totalLiquidity
+    tokens {
+      symbol
+    }
+  }
+}
+    `;
 export const PoolsByTotalLiquidityDocument = gql`
     query PoolsByTotalLiquidity($first: Int = 10, $poolIdList: [ID!]) {
   pools(
@@ -6013,6 +6036,7 @@ export const PoolDocument = gql`
     poolType
     symbol
     swapFee
+    totalLiquidity
     amp
     c
     s
@@ -6070,6 +6094,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     PoolsWherePoolType(variables?: PoolsWherePoolTypeQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<PoolsWherePoolTypeQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<PoolsWherePoolTypeQuery>(PoolsWherePoolTypeDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PoolsWherePoolType', 'query');
     },
+    PoolWhereBlockNumber(variables: PoolWhereBlockNumberQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<PoolWhereBlockNumberQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<PoolWhereBlockNumberQuery>(PoolWhereBlockNumberDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PoolWhereBlockNumber', 'query');
+    },
     PoolsByTotalLiquidity(variables?: PoolsByTotalLiquidityQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<PoolsByTotalLiquidityQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<PoolsByTotalLiquidityQuery>(PoolsByTotalLiquidityDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PoolsByTotalLiquidity', 'query');
     },
@@ -6098,6 +6125,9 @@ export function getSdkWithHooks(client: GraphQLClient, withWrapper: SdkFunctionW
     },
     usePoolsWherePoolType(variables?: PoolsWherePoolTypeQueryVariables, config?: SWRConfigInterface<PoolsWherePoolTypeQuery, ClientError>) {
       return useSWR<PoolsWherePoolTypeQuery, ClientError>(genKey<PoolsWherePoolTypeQueryVariables>('PoolsWherePoolType', variables), () => sdk.PoolsWherePoolType(variables), config);
+    },
+    usePoolWhereBlockNumber(variables: PoolWhereBlockNumberQueryVariables, config?: SWRConfigInterface<PoolWhereBlockNumberQuery, ClientError>) {
+      return useSWR<PoolWhereBlockNumberQuery, ClientError>(genKey<PoolWhereBlockNumberQueryVariables>('PoolWhereBlockNumber', variables), () => sdk.PoolWhereBlockNumber(variables), config);
     },
     usePoolsByTotalLiquidity(variables?: PoolsByTotalLiquidityQueryVariables, config?: SWRConfigInterface<PoolsByTotalLiquidityQuery, ClientError>) {
       return useSWR<PoolsByTotalLiquidityQuery, ClientError>(genKey<PoolsByTotalLiquidityQueryVariables>('PoolsByTotalLiquidity', variables), () => sdk.PoolsByTotalLiquidity(variables), config);

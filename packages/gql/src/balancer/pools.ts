@@ -79,6 +79,22 @@ export const poolWherePoolType = gql`
   }
 `;
 
+export const poolWhereBlockNumber = gql`
+  query PoolWhereBlockNumber($blockNumber: Int!, $poolId: ID!) {
+    pool(id: $poolId, block: { number: $blockNumber }) {
+      id
+      address
+      name
+      poolType
+      symbol
+      totalLiquidity
+      tokens {
+        symbol
+      }
+    }
+  }
+`;
+
 export const poolsByTotalLiquidity = gql`
   query PoolsByTotalLiquidity($first: Int = 10, $poolIdList: [ID!]) {
     pools(
@@ -105,6 +121,7 @@ export const poolById = gql`
       poolType
       symbol
       swapFee
+      totalLiquidity
       amp
       c
       s

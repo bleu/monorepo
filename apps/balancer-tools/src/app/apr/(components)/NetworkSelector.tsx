@@ -16,13 +16,17 @@ export function NetworkSelector() {
       onValueChange={(value) => {
         router.push(`/apr/${value}/round/current`);
       }}
-      className="w-full"
+      className="w-1/3"
     >
-      {ALL_NETWORKS.map((network) => (
-        <SelectItem key={network} value={network}>
-          {network}
-        </SelectItem>
-      ))}
+      <div className="p-1">
+        <span className="text-sm">Network selection:</span>
+        <hr className="my-2" />
+        {ALL_NETWORKS.map((network) => (
+          <SelectItem key={network} value={network}>
+            {network}
+          </SelectItem>
+        ))}
+      </div>
     </Select>
   );
 }

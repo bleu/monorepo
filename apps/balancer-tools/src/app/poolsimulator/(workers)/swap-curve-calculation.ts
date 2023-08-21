@@ -5,7 +5,11 @@ import { AnalysisData } from "#/contexts/PoolSimulatorContext";
 import { trimTrailingValues } from "#/lib/utils";
 
 import { TokensData } from "../(types)";
-import { calculateCurvePoints, convertAnalysisDataToAMM } from "../(utils)";
+import {
+  calculateCurvePoints,
+  convertAnalysisDataToAMM,
+  findTokenBySymbol,
+} from "../(utils)";
 
 export interface SwapCurveWorkerInputData {
   analysisToken: TokensData;
@@ -42,11 +46,11 @@ self.addEventListener(
       amm: AMM<PoolPairData>,
     ) => {
       const rawAmountsAnalysisTokenIn = calculateCurvePoints({
-        balance: tokenIn.balance,
+        balance: tokenOut.balance,
       });
 
       const rawAmountsTabTokenIn = calculateCurvePoints({
-        balance: tokenOut.balance,
+        balance: tokenIn.balance,
       });
 
       const rawAmountsTabTokenOut = rawAmountsAnalysisTokenIn.map(
@@ -76,8 +80,8 @@ self.addEventListener(
     };
 
     const calcResult = calculateTokenAmounts(
-      analysisToken,
-      currentTabToken,
+      findTokenBySymbol(data?.tokens, analysisToken.symbol) as TokensData,
+      findTokenBySymbol(data?.tokens, currentTabToken.symbol) as TokensData,
       amm,
     );
 

@@ -32,11 +32,11 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
           amp: String(data.poolParams?.ampFactor),
           swapFee: String(data.poolParams?.swapFee),
           totalShares: String(
-            data.tokens.reduce((acc, token) => acc + token.balance, 0),
+            data.tokens.reduce((acc, token) => acc + token.balance, 0)
           ),
           tokens: tokensData,
           tokensList: data.tokens.map((token) => String(token.symbol)),
-        }),
+        })
       );
     }
     case PoolTypeEnum.GyroE: {
@@ -45,7 +45,7 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
         new ExtendedGyroEV2({
           swapFee: String(data.poolParams?.swapFee),
           totalShares: String(
-            data.tokens.reduce((acc, token) => acc + token.balance, 0),
+            data.tokens.reduce((acc, token) => acc + token.balance, 0)
           ),
           tokens: tokensData,
           tokensList: data.tokens.map((token) => String(token.symbol)),
@@ -59,7 +59,7 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
           },
           derivedGyroEParams: derivedParams,
           tokenRates: data.tokens.map((token) => String(token.rate)),
-        }),
+        })
       );
     }
     case PoolTypeEnum.Gyro2: {
@@ -67,13 +67,13 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
         new ExtendedGyro2({
           swapFee: String(data.poolParams?.swapFee),
           totalShares: String(
-            data.tokens.reduce((acc, token) => acc + token.balance, 0),
+            data.tokens.reduce((acc, token) => acc + token.balance, 0)
           ),
           tokens: tokensData,
           tokensList: data.tokens.map((token) => String(token.symbol)),
           sqrtAlpha: String(data.poolParams?.sqrtAlpha),
           sqrtBeta: String(data.poolParams?.sqrtBeta),
-        }),
+        })
       );
     }
     case PoolTypeEnum.Gyro3: {
@@ -81,12 +81,12 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
         new ExtendedGyro3({
           swapFee: String(data.poolParams?.swapFee),
           totalShares: String(
-            data.tokens.reduce((acc, token) => acc + token.balance, 0),
+            data.tokens.reduce((acc, token) => acc + token.balance, 0)
           ),
           tokens: tokensData,
           tokensList: data.tokens.map((token) => String(token.symbol)),
           root3Alpha: String(data.poolParams?.root3Alpha),
-        }),
+        })
       );
     }
     case PoolTypeEnum.Fx: {
@@ -94,7 +94,7 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
         new ExtendedFx({
           swapFee: String(data.poolParams?.swapFee),
           totalShares: String(
-            data.tokens.reduce((acc, token) => acc + token.balance, 0),
+            data.tokens.reduce((acc, token) => acc + token.balance, 0)
           ),
           tokens: tokensData,
           tokensList: data.tokens.map((token) => String(token.symbol)),
@@ -103,7 +103,7 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
           lambda: String(data.poolParams?.lambda),
           delta: String(data.poolParams?.delta),
           epsilon: String(data.poolParams?.epsilon),
-        }),
+        })
       );
     }
     default:
@@ -208,21 +208,21 @@ export function convertGqlToAnalysisData(poolData: PoolQuery): AnalysisData {
 
 export function calculateCurvePoints({
   balance,
-  start = 0,
+  startPercentage = 0,
 }: {
   balance?: number;
-  start?: number;
+  startPercentage?: number;
 }) {
-  if (!balance || start === undefined) return [];
+  if (!balance || startPercentage === undefined) return [];
   const numberOfPoints = 100;
   const initialValue = balance * 0.001;
   const stepRatio = Math.pow(balance / initialValue, 1 / (numberOfPoints - 1));
 
   return [
-    start,
+    startPercentage * balance,
     ...Array.from(
       { length: numberOfPoints + 20 },
-      (_, index) => initialValue * stepRatio ** index,
+      (_, index) => initialValue * stepRatio ** index
     ),
   ];
 }
@@ -230,7 +230,7 @@ export function calculateCurvePoints({
 export function trimTrailingValues(
   amountsIn: number[],
   amountsOut: number[],
-  valueToTrim: number = 100,
+  valueToTrim: number = 100
 ): { trimmedIn: number[]; trimmedOut: number[] } {
   const lastIndexNonValue = amountsOut
     .slice()
@@ -251,3 +251,10 @@ export function trimTrailingValues(
 export function findTokenBySymbol(tokens: TokensData[], symbol?: string) {
   return tokens.find((token) => token.symbol === symbol);
 }
+
+export const POOL_TYPES_TO_ADD_LIMIT = [
+  PoolTypeEnum.Gyro2,
+  PoolTypeEnum.Gyro3,
+  PoolTypeEnum.GyroE,
+  PoolTypeEnum.Fx,
+];

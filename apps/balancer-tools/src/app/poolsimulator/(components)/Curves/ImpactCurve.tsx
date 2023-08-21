@@ -8,30 +8,34 @@ import { Spinner } from "#/components/Spinner";
 import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
-import { PoolTypeEnum } from "../(types)";
+import { PoolTypeEnum } from "../../(types)";
+import { findTokenBySymbol, POOL_TYPES_TO_ADD_LIMIT } from "../../(utils)";
 import {
   ImpactWorkerInputData,
   ImpactWorkerOutputData,
-} from "../(workers)/impact-curve-calculation";
+} from "../../(workers)/impact-curve-calculation";
+import { getBetaLimitsIndexes } from "./getBetaLimits";
 
 interface Amounts {
   analysisTokenIn?: {
     amounts: number[];
     priceImpact: number[];
+    amountsOut: number[];
   };
   tabTokenIn?: {
     amounts: number[];
     priceImpact: number[];
+    amountsOut: number[];
   };
 }
 
 const createAndPostWorker = (
   messageData: ImpactWorkerInputData,
   setInitialAmounts: Dispatch<SetStateAction<Amounts>>,
-  setCustomAmounts: Dispatch<SetStateAction<Amounts>>,
+  setCustomAmounts: Dispatch<SetStateAction<Amounts>>
 ) => {
   const worker = new Worker(
-    new URL("../(workers)/impact-curve-calculation.ts", import.meta.url),
+    new URL("../../(workers)/impact-curve-calculation.ts", import.meta.url)
   );
 
   worker.onmessage = (event: MessageEvent<ImpactWorkerOutputData>) => {
@@ -94,7 +98,7 @@ export function ImpactCurve() {
     ];
 
     messages.forEach((message) =>
-      createAndPostWorker(message, setInitialAmounts, setCustomAmounts),
+      createAndPostWorker(message, setInitialAmounts, setCustomAmounts)
     );
   }, [initialData, customData, analysisToken, currentTabToken]);
 
@@ -103,7 +107,7 @@ export function ImpactCurve() {
     direction: "in" | "out",
     amount: number,
     tokenFrom: string,
-    tokenTo: string,
+    tokenTo: string
   ) => {
     const formattedAmount = formatNumber(amount, 2);
     return direction === "in"
@@ -114,7 +118,7 @@ export function ImpactCurve() {
   const createHoverTemplate = (
     amounts: number[],
     direction: "in" | "out",
-    impactData: number[],
+    impactData: number[]
   ): string[] => {
     return amounts.map((amount, i) => {
       const swapFromSymbol =
@@ -126,7 +130,7 @@ export function ImpactCurve() {
         direction,
         amount,
         swapFromSymbol,
-        swapToSymbol,
+        swapToSymbol
       );
 
       const impact = formatNumber(impactData[i] / 100, 2, "percent");
@@ -142,7 +146,7 @@ export function ImpactCurve() {
     name: string,
     isLegendShown: boolean,
     direction: "in" | "out",
-    lineStyle: "solid" | "dashdot" = "solid",
+    lineStyle: "solid" | "dashdot" = "solid"
   ) => {
     const line =
       lineStyle === "dashdot"
@@ -161,7 +165,7 @@ export function ImpactCurve() {
       hovertemplate: createHoverTemplate(
         hovertemplateData,
         direction,
-        impactData,
+        impactData
       ),
       line,
     };
@@ -170,7 +174,7 @@ export function ImpactCurve() {
   const createLimitPointDataObject = (
     x: number[],
     y: number[],
-    legendGroup: string,
+    legendGroup: string
   ) => {
     return {
       x,
@@ -182,6 +186,27 @@ export function ImpactCurve() {
       name: "Liquidity limit",
       showlegend: true,
       hovertemplate: Array(x.length).fill(`Liquidity limit <extra></extra>`),
+      line: { dash: "solid" as const },
+    };
+  };
+
+  const createBetaLimitsDataObject = (
+    x: number[],
+    y: number[],
+    legendGroup: string
+  ) => {
+    // https://docs.xave.co/product-overview-1/fxpools/amm-faqs
+    return {
+      x,
+      y,
+      type: "scatter" as PlotType,
+      mode: "markers" as const,
+      marker: { symbol: "x" as const, size: 10 },
+      legendgroup: legendGroup,
+      legendgrouptitle: { text: legendGroup },
+      name: "Beta region limit",
+      showlegend: true,
+      hovertemplate: Array(x.length).fill(`Beta region <extra></extra>`),
       line: { dash: "solid" as const },
     };
   };
@@ -201,7 +226,7 @@ export function ImpactCurve() {
       "Initial",
       analysisToken.symbol,
       true,
-      "in",
+      "in"
     ),
     createDataObject(
       customAmounts.analysisTokenIn.amounts,
@@ -209,7 +234,7 @@ export function ImpactCurve() {
       "Custom",
       analysisToken.symbol,
       true,
-      "in",
+      "in"
     ),
     createDataObject(
       initialAmounts.tabTokenIn.amounts,
@@ -218,7 +243,7 @@ export function ImpactCurve() {
       currentTabToken.symbol,
       true,
       "out",
-      "dashdot",
+      "dashdot"
     ),
     createDataObject(
       customAmounts.tabTokenIn.amounts,
@@ -227,15 +252,11 @@ export function ImpactCurve() {
       currentTabToken.symbol,
       true,
       "out",
-      "dashdot",
+      "dashdot"
     ),
   ];
 
-  if (
-    [PoolTypeEnum.Gyro2, PoolTypeEnum.Gyro3, PoolTypeEnum.GyroE].includes(
-      initialData.poolType,
-    )
-  ) {
+  if (POOL_TYPES_TO_ADD_LIMIT.includes(initialData.poolType)) {
     data.push(
       createLimitPointDataObject(
         [
@@ -246,15 +267,11 @@ export function ImpactCurve() {
           initialAmounts.analysisTokenIn.priceImpact.slice(-1)[0],
           initialAmounts.tabTokenIn.priceImpact.slice(-1)[0],
         ],
-        "Initial",
-      ),
+        "Initial"
+      )
     );
   }
-  if (
-    [PoolTypeEnum.Gyro2, PoolTypeEnum.Gyro3, PoolTypeEnum.GyroE].includes(
-      customData.poolType,
-    )
-  ) {
+  if (POOL_TYPES_TO_ADD_LIMIT.includes(customData.poolType)) {
     data.push(
       createLimitPointDataObject(
         [
@@ -265,18 +282,64 @@ export function ImpactCurve() {
           customAmounts.analysisTokenIn.priceImpact.slice(-1)[0],
           customAmounts.tabTokenIn.priceImpact.slice(-1)[0],
         ],
-        "Custom",
-      ),
+        "Custom"
+      )
     );
   }
 
+  const poolData = [initialData, customData];
+  const amounts = [initialAmounts, customAmounts];
+  const legends = ["Initial", "Custom"];
+  poolData.forEach((pool, index) => {
+    if (pool.poolType == PoolTypeEnum.Fx && pool.poolParams?.beta) {
+      const amountsList = [
+        amounts[index].analysisTokenIn,
+        amounts[index].tabTokenIn,
+      ];
+      const balanceAnalysisToken = findTokenBySymbol(
+        pool.tokens,
+        analysisToken.symbol
+      )?.balance;
+      const balanceCurrentTabToken = findTokenBySymbol(
+        pool.tokens,
+        currentTabToken.symbol
+      )?.balance;
+      const balancesList = [
+        { in: balanceAnalysisToken, out: balanceCurrentTabToken },
+        { in: balanceCurrentTabToken, out: balanceAnalysisToken },
+      ];
+      const amountLimits = [] as number[];
+      const priceImpactLimits = [] as number[];
+      amountsList.forEach((amount, index) => {
+        const betaLimitsIndexes = getBetaLimitsIndexes({
+          amountsA: amount?.amounts || [],
+          amountsB: amount?.amountsOut || [],
+          initialBalanceA: balancesList[index].in || 0,
+          initialBalanceB: balancesList[index].out || 0,
+          beta: pool.poolParams?.beta || 0,
+        });
+        betaLimitsIndexes.forEach((i) => {
+          amountLimits.push(amount?.amounts[i] || 0);
+          priceImpactLimits.push(amount?.priceImpact[i] || 0);
+        });
+      });
+      data.push(
+        createBetaLimitsDataObject(
+          amountLimits,
+          priceImpactLimits,
+          legends[index]
+        )
+      );
+    }
+  });
+
   const maxFromInitialAmounts = Math.max(
     ...initialAmounts.analysisTokenIn.amounts,
-    ...initialAmounts.tabTokenIn.amounts,
+    ...initialAmounts.tabTokenIn.amounts
   );
   const maxFromCustomAmounts = Math.max(
     ...customAmounts.analysisTokenIn.amounts,
-    ...customAmounts.tabTokenIn.amounts,
+    ...customAmounts.tabTokenIn.amounts
   );
   const xlimit = Math.min(maxFromInitialAmounts, maxFromCustomAmounts);
   function indexOfXLimit(value: number, ...arrays: number[][]) {
@@ -299,12 +362,12 @@ export function ImpactCurve() {
   const ylimit = Math.max(
     getImpactOnXLimit(
       initialAmounts.analysisTokenIn.priceImpact,
-      initialAmounts.tabTokenIn.priceImpact,
+      initialAmounts.tabTokenIn.priceImpact
     ),
     getImpactOnXLimit(
       customAmounts.analysisTokenIn.priceImpact,
-      customAmounts.tabTokenIn.priceImpact,
-    ),
+      customAmounts.tabTokenIn.priceImpact
+    )
   );
   return (
     <Plot

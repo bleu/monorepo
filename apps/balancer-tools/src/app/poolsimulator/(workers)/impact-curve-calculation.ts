@@ -61,11 +61,11 @@ self.addEventListener(
         poolType === PoolTypeEnum.MetaStable
           ? calculateCurvePoints({
               balance: maxBalance,
-              start: 0.001,
+              startPercentage: 0.01,
             })
           : calculateCurvePoints({
               balance: maxBalance,
-              start: 0.001,
+              startPercentage: 0.01,
             }).filter((value) => value <= limitBalance);
 
       const rawPriceImpact = rawAmounts.map(
@@ -73,16 +73,26 @@ self.addEventListener(
           amm.priceImpactForExactTokenInSwap(
             amount,
             swapDirection === "in" ? tokenIn.symbol : tokenOut.symbol,
-            swapDirection === "in" ? tokenOut.symbol : tokenIn.symbol,
-          ) * 100,
+            swapDirection === "in" ? tokenOut.symbol : tokenIn.symbol
+          ) * 100
       );
 
       const { trimmedIn: amounts, trimmedOut: priceImpact } =
         trimTrailingValues(rawAmounts, rawPriceImpact, 100);
 
+      const amountsOut = rawAmounts.map(
+        (amount) =>
+          amm.exactTokenInForTokenOut(
+            amount,
+            swapDirection === "in" ? tokenIn.symbol : tokenOut.symbol,
+            swapDirection === "in" ? tokenOut.symbol : tokenIn.symbol
+          ) * -1
+      );
+
       return {
-        amounts: amounts,
-        priceImpact: priceImpact,
+        amounts,
+        priceImpact,
+        amountsOut,
       };
     };
     const calcResult = calculateTokenImpact({
@@ -99,5 +109,5 @@ self.addEventListener(
       swapDirection,
     };
     self.postMessage(result);
-  },
+  }
 );

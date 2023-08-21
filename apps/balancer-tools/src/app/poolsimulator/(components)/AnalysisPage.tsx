@@ -3,9 +3,9 @@
 import { Tabs } from "#/components/Tabs";
 import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 
+import { ImpactCurve } from "./Curves/ImpactCurve";
+import { SwapCurve } from "./Curves/SwapCurve";
 import { DepthCost } from "./DepthCost";
-import { ImpactCurve } from "./ImpactCurve";
-import { SwapCurve } from "./SwapCurve";
 import { SwapSimulator } from "./SwapSimulator";
 import { TokensDistribution } from "./TokensDistribution";
 
@@ -14,11 +14,11 @@ export default function Page() {
     usePoolSimulator();
 
   const indexCurrentTabToken = initialData?.tokens.findIndex(
-    ({ symbol }) => symbol.toLowerCase() !== analysisToken.symbol.toLowerCase(),
+    ({ symbol }) => symbol.toLowerCase() !== analysisToken.symbol.toLowerCase()
   );
   const tokensSymbol = initialData.tokens.map((token) => token.symbol);
   const tabTokens = tokensSymbol.filter(
-    (token) => token !== analysisToken.symbol,
+    (token) => token !== analysisToken.symbol
   );
 
   function handleTabClick(event: React.FormEvent<HTMLButtonElement>) {

@@ -3,12 +3,13 @@ import pThrottle from "p-throttle";
 import { calculatePoolStats } from "./calculatePoolStats";
 import { Round } from "./rounds";
 
-export interface HistoricalDataEntry {
+export interface PoolStatsData {
   apr: number;
   balPriceUSD: number;
   tvl: number;
   votingShare: number;
   roundId: number;
+  symbol: string;
 }
 
 const throttle = pThrottle({
@@ -19,13 +20,13 @@ const throttle = pThrottle({
 async function calculateAndPushStats(
   poolId: string,
   roundId: number,
-): Promise<HistoricalDataEntry> {
+): Promise<PoolStatsData> {
   const throttledFn = throttle(async () => {
     return await calculatePoolStats({ poolId, roundId });
   });
 
-  const { apr, balPriceUSD, tvl, votingShare } = await throttledFn();
-  return { apr, balPriceUSD, tvl, votingShare, roundId: roundId };
+  const resultPoolStats = await throttledFn();
+  return { roundId, ...resultPoolStats };
 }
 
 export async function generatePromisesForHistoricalPoolData(

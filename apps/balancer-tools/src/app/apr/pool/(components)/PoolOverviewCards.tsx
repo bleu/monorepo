@@ -6,14 +6,14 @@ import OverviewCards from "../../(components)/OverviewCards";
 import { calculatePoolStats } from "../../(utils)/calculatePoolStats";
 import {
   generatePromisesForHistoricalPoolData,
-  HistoricalDataEntry,
+  PoolStatsData,
 } from "../../(utils)/getHistoricalDataForPool";
 import { Round } from "../../(utils)/rounds";
 
 async function AverageTVLCard({ poolId }: { poolId: string }) {
   const data = await generatePromisesForHistoricalPoolData(poolId);
   const totalTvl = data.reduce(
-    (sum: number, entry: HistoricalDataEntry) => sum + entry.tvl,
+    (sum: number, entry: PoolStatsData) => sum + entry.tvl,
     0,
   );
   return <div>{formatNumber(totalTvl / data.length)}</div>;
@@ -22,7 +22,7 @@ async function AverageTVLCard({ poolId }: { poolId: string }) {
 async function AverageAPRCard({ poolId }: { poolId: string }) {
   const data = await generatePromisesForHistoricalPoolData(poolId);
   const totalAPR = data.reduce(
-    (sum: number, entry: HistoricalDataEntry) => sum + entry.apr,
+    (sum: number, entry: PoolStatsData) => sum + entry.apr,
     0,
   );
   return <div>{formatNumber(totalAPR / data.length).concat("%")}</div>;

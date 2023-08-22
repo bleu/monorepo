@@ -10,8 +10,26 @@ import { PlotType } from "plotly.js";
 import Plot from "#/components/Plot";
 import votingGauges from "#/data/voting-gauges.json";
 
-import sortDataByX from "../../(utils)/sortChartData";
 import { generatePromisesForPoolList } from "../../(utils)/getHistoricalDataForPool";
+
+const sortDataByX = (data: {
+  x: number[] | string[];
+  y: number[] | string[];
+}) =>
+  data.x
+    .map((_, index) => index)
+    .sort(
+      (a, b) =>
+        parseFloat(data.x[b] as string) - parseFloat(data.x[a] as string),
+    )
+    .reduce(
+      (sortedArrays, index) => {
+        sortedArrays[0].push(data.x[index]);
+        sortedArrays[1].push(data.y[index]);
+        return sortedArrays;
+      },
+      [[], []] as [(number | string)[], (number | string)[]],
+    );
 
 export default async function TopPoolsChart({ roundId }: { roundId: string }) {
   const POOL_QUANTITY_LIMIT = 10;

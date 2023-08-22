@@ -9,12 +9,12 @@ import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
 import { PoolTypeEnum } from "../../(types)";
-import { findTokenBySymbol } from "../../(utils)";
+import { findTokenBySymbol, POOL_TYPES_TO_ADD_LIMIT } from "../../(utils)";
 import {
   SwapCurveWorkerInputData,
   SwapCurveWorkerOutputData,
 } from "../../(workers)/swap-curve-calculation";
-import getBetaLimitIndexes from "./getBetaLimitIndexes";
+import getBetaLimitIndexes from "./getBetaLimits";
 
 interface AmountsData {
   analysisTokenIn: number[];
@@ -45,13 +45,6 @@ const createAndPostSwapWorker = (
 
   worker.postMessage(messageData);
 };
-
-const POOL_TYPES_TO_ADD_LIMIT = [
-  PoolTypeEnum.Gyro2,
-  PoolTypeEnum.Gyro3,
-  PoolTypeEnum.GyroE,
-  PoolTypeEnum.Fx,
-];
 
 export function SwapCurve() {
   const { analysisToken, currentTabToken, initialData, customData } =
@@ -257,33 +250,31 @@ export function SwapCurve() {
       ),
     );
   }
+  const poolData = [initialData, customData];
+  const amounts = [initialAmounts, customAmounts];
+  const legends = ["Initial", "Custom"];
 
-  if (initialData.poolType && initialData.poolParams?.beta) {
-    // https://docs.xave.co/product-overview-1/fxpools/amm-faqs
-    const betaLimits = getBetaLimitIndexes({
-      ...initialAmounts,
-      analysisTokenInitialBalance: analysisToken.balance,
-      tabTokenInitialBalance: currentTabToken.balance,
-      beta: initialData.poolParams.beta,
-    });
-
-    data.push(
-      createBetaRegionDataObject(betaLimits[0], betaLimits[1], "Initial"),
-    );
-  }
-
-  if (customData.poolType && customData.poolParams?.beta) {
-    const betaLimits = getBetaLimitIndexes({
-      ...customAmounts,
-      analysisTokenInitialBalance: analysisToken.balance,
-      tabTokenInitialBalance: currentTabToken.balance,
-      beta: customData.poolParams.beta,
-    });
-
-    data.push(
-      createBetaRegionDataObject(betaLimits[0], betaLimits[1], "Custom"),
-    );
-  }
+  poolData.forEach((pool, index) => {
+    if (pool.poolType == PoolTypeEnum.Fx && pool.poolParams?.beta) {
+      const analysisData = findTokenBySymbol(pool.tokens, analysisToken.symbol);
+      const tabData = findTokenBySymbol(pool.tokens, currentTabToken.symbol);
+      const betaLimits = getBetaLimitIndexes({
+        ...amounts[index],
+        analysisTokenInitialBalance: analysisData?.balance || 0,
+        tabTokenInitialBalance: tabData?.balance || 0,
+        analysisTokenRate: analysisData?.rate || 0,
+        tabTokenRate: tabData?.rate || 0,
+        beta: pool.poolParams.beta,
+      });
+      data.push(
+        createBetaRegionDataObject(
+          betaLimits[0],
+          betaLimits[1],
+          legends[index],
+        ),
+      );
+    }
+  });
 
   function getGraphScale({
     axisBalanceSymbol,

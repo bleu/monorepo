@@ -14,15 +14,11 @@ Enhance Balancer pools with metadata like pool name, symbol, description, and mo
 
 Empower users with a streamlined application to manage their internal balances. Deposit, withdraw, and transfer assets effortlessly, ensuring full control over digital assets.
 
-### Stable Swap Simulator [🔗](https://tools.balancer.blue/stableswapsimulator)
-
-A comprehensive tool for analyzing stable pool behaviors. Set and modify pool parameters to evaluate key metrics like Swap, Price Impact, and Depth Cost. Simulate swaps and compare results with established data.
-
-### Pools Simulator [🔗](https://tools.balancer.blue/poolsimulator)
+### Pool Simulator (former Stable Swap Simulator) [🔗](https://tools.balancer.blue/poolsimulator)
 
 _👷👷👷 Under development 👷👷👷_
 
-An extension of the Stableswap Simulator for Gyro and FX pools where you can compare different pool types.
+A comprehensive tool for analyzing pool behaviors where you can compare different pool types. Set and modify pool parameters to evaluate key metrics like Swap, Price Impact, and Depth Cost. Simulate swaps and compare results with established data for Stable, Gyro and FX pools.
 
 ### APR [🔗](https://tools.balancer.blue/apr)
 

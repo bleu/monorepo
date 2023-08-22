@@ -8,20 +8,24 @@ import { Spinner } from "#/components/Spinner";
 import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
-import { PoolTypeEnum } from "../(types)";
+import { PoolTypeEnum } from "../../(types)";
+import { findTokenBySymbol, POOL_TYPES_TO_ADD_LIMIT } from "../../(utils)";
 import {
   ImpactWorkerInputData,
   ImpactWorkerOutputData,
-} from "../(workers)/impact-curve-calculation";
+} from "../../(workers)/impact-curve-calculation";
+import { getBetaLimitsIndexes } from "./getBetaLimits";
 
 interface Amounts {
   analysisTokenIn?: {
     amounts: number[];
     priceImpact: number[];
+    amountsOut: number[];
   };
   tabTokenIn?: {
     amounts: number[];
     priceImpact: number[];
+    amountsOut: number[];
   };
 }
 
@@ -31,7 +35,7 @@ const createAndPostWorker = (
   setCustomAmounts: Dispatch<SetStateAction<Amounts>>,
 ) => {
   const worker = new Worker(
-    new URL("../(workers)/impact-curve-calculation.ts", import.meta.url),
+    new URL("../../(workers)/impact-curve-calculation.ts", import.meta.url),
   );
 
   worker.onmessage = (event: MessageEvent<ImpactWorkerOutputData>) => {
@@ -186,6 +190,26 @@ export function ImpactCurve() {
     };
   };
 
+  const createBetaLimitsDataObject = (
+    x: number[],
+    y: number[],
+    legendGroup: string,
+  ) => {
+    return {
+      x,
+      y,
+      type: "scatter" as PlotType,
+      mode: "markers" as const,
+      marker: { symbol: "x" as const, size: 10 },
+      legendgroup: legendGroup,
+      legendgrouptitle: { text: legendGroup },
+      name: "Beta region limit",
+      showlegend: true,
+      hovertemplate: Array(x.length).fill(`Beta region <extra></extra>`),
+      line: { dash: "solid" as const },
+    };
+  };
+
   if (
     !initialAmounts.analysisTokenIn ||
     !initialAmounts.tabTokenIn ||
@@ -231,11 +255,7 @@ export function ImpactCurve() {
     ),
   ];
 
-  if (
-    [PoolTypeEnum.Gyro2, PoolTypeEnum.Gyro3, PoolTypeEnum.GyroE].includes(
-      initialData.poolType,
-    )
-  ) {
+  if (POOL_TYPES_TO_ADD_LIMIT.includes(initialData.poolType)) {
     data.push(
       createLimitPointDataObject(
         [
@@ -250,11 +270,7 @@ export function ImpactCurve() {
       ),
     );
   }
-  if (
-    [PoolTypeEnum.Gyro2, PoolTypeEnum.Gyro3, PoolTypeEnum.GyroE].includes(
-      customData.poolType,
-    )
-  ) {
+  if (POOL_TYPES_TO_ADD_LIMIT.includes(customData.poolType)) {
     data.push(
       createLimitPointDataObject(
         [
@@ -269,6 +285,54 @@ export function ImpactCurve() {
       ),
     );
   }
+
+  const poolData = [initialData, customData];
+  const amounts = [initialAmounts, customAmounts];
+  const legends = ["Initial", "Custom"];
+  poolData.forEach((pool, index) => {
+    if (pool.poolType == PoolTypeEnum.Fx && pool.poolParams?.beta) {
+      const amountsList = [
+        amounts[index].analysisTokenIn,
+        amounts[index].tabTokenIn,
+      ];
+      const analysisTokenData = findTokenBySymbol(
+        pool.tokens,
+        analysisToken.symbol,
+      );
+      const currentTabTokenData = findTokenBySymbol(
+        pool.tokens,
+        currentTabToken.symbol,
+      );
+      const tokensList = [
+        { in: analysisTokenData, out: currentTabTokenData },
+        { in: currentTabTokenData, out: analysisTokenData },
+      ];
+      const amountLimits = [] as number[];
+      const priceImpactLimits = [] as number[];
+      amountsList.forEach((amount, index) => {
+        const betaLimitsIndexes = getBetaLimitsIndexes({
+          amountsA: amount?.amounts || [],
+          amountsB: amount?.amountsOut || [],
+          rateA: tokensList[index].in?.rate || 1,
+          rateB: tokensList[index].out?.rate || 1,
+          initialBalanceA: tokensList[index].in?.balance || 0,
+          initialBalanceB: tokensList[index].out?.balance || 0,
+          beta: pool.poolParams?.beta || 0,
+        });
+        betaLimitsIndexes.forEach((i) => {
+          amountLimits.push(amount?.amounts[i] || 0);
+          priceImpactLimits.push(amount?.priceImpact[i] || 0);
+        });
+      });
+      data.push(
+        createBetaLimitsDataObject(
+          amountLimits,
+          priceImpactLimits,
+          legends[index],
+        ),
+      );
+    }
+  });
 
   const maxFromInitialAmounts = Math.max(
     ...initialAmounts.analysisTokenIn.amounts,

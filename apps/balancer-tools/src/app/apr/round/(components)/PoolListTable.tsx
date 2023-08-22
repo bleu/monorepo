@@ -169,7 +169,7 @@ function TableRow({
     const fetchData = async () => {
       const throttledFn = throttleHandler(
         async (poolId: string, roundId: string) => {
-          return await calculatePoolStats({ poolId, roundId });
+          return (await fetcher(`/apr/api?poolid=${pool.id}&roundid=${roundId}`))[roundId]
         },
       );
       try {

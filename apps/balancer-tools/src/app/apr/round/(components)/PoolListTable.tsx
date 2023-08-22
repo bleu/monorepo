@@ -168,7 +168,7 @@ function TableRow({
     const fetchData = async () => {
       const throttledFn = throttleHandler(
         async (poolId: string, roundId: string) => {
-          return await fetcher(`/apr/api?poolid=${poolId}&roundid=${roundId}`)
+          return await fetcher(`/apr/api?poolid=${poolId}&roundid=${roundId}`);
         },
       );
       try {
@@ -209,7 +209,9 @@ function TableRow({
         router.push(poolRedirectURL);
       }}
     >
-      <Table.BodyCell>{selectedPoolData?.symbol} ({pool.gauge?.network})</Table.BodyCell>
+      <Table.BodyCell>
+        {selectedPoolData?.symbol} ({pool.gauge?.network})
+      </Table.BodyCell>
       {isLoading ? (
         <Table.BodyCell padding="py-4 px-1" colSpan={3}>
           <Spinner size="sm" />

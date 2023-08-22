@@ -40,7 +40,10 @@ export async function calculatePoolStats({
           poolId,
         })
         .then((res) => {
-          return [res.pool?.totalLiquidity ?? 0, res.pool?.symbol ?? pool.symbol];
+          return [
+            res.pool?.totalLiquidity ?? 0,
+            res.pool?.symbol ?? pool.symbol,
+          ];
         })
     : await pools
         .gql(String(pool.gauge?.network) ?? 1)
@@ -49,7 +52,10 @@ export async function calculatePoolStats({
           poolId,
         })
         .then((res) => {
-          return [res.pool?.totalLiquidity ?? 0, res.pool?.symbol ?? pool.symbol];
+          return [
+            res.pool?.totalLiquidity ?? 0,
+            res.pool?.symbol ?? pool.symbol,
+          ];
         });
 
   votingShare = await getPoolRelativeWeight(

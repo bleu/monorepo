@@ -99,6 +99,7 @@ export function PoolListTable({ roundId }: { roundId: string }) {
         }));
       return [...prevTableData, ...newData];
     });
+    setSortField("");
   }
 
   return (

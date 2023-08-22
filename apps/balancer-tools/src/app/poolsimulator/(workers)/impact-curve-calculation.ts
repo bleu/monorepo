@@ -21,6 +21,7 @@ export interface ImpactWorkerOutputData {
   result?: {
     amounts: number[];
     priceImpact: number[];
+    amountsOut: number[];
   };
   swapDirection?: "in" | "out";
   error?: Error;
@@ -58,11 +59,11 @@ self.addEventListener(
         poolType === PoolTypeEnum.MetaStable
           ? calculateCurvePoints({
               balance: maxBalance,
-              start: 0.001,
+              startPercentage: 0.001,
             })
           : calculateCurvePoints({
               balance: maxBalance,
-              start: 0.001,
+              startPercentage: 0.001,
             }).filter((value) => value <= limitBalance);
 
       const rawPriceImpact = rawAmounts.map(
@@ -77,9 +78,19 @@ self.addEventListener(
       const { trimmedIn: amounts, trimmedOut: priceImpact } =
         trimTrailingValues(rawAmounts, rawPriceImpact, 100);
 
+      const amountsOut = rawAmounts.map(
+        (amount) =>
+          amm.exactTokenInForTokenOut(
+            amount,
+            swapDirection === "in" ? tokenIn.symbol : tokenOut.symbol,
+            swapDirection === "in" ? tokenOut.symbol : tokenIn.symbol,
+          ) * -1,
+      );
+
       return {
         amounts: amounts as number[],
         priceImpact: priceImpact as number[],
+        amountsOut,
       };
     };
     const calcResult = calculateTokenImpact({

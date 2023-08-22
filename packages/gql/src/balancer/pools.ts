@@ -79,6 +79,40 @@ export const poolWherePoolType = gql`
   }
 `;
 
+export const poolWhereBlockNumber = gql`
+  query PoolWhereBlockNumber($blockNumber: Int!, $poolId: ID!) {
+    pool(id: $poolId, block: { number: $blockNumber }) {
+      id
+      address
+      name
+      poolType
+      symbol
+      totalLiquidity
+      tokens {
+        symbol
+      }
+    }
+  }
+`;
+
+export const poolsByTotalLiquidity = gql`
+  query PoolsByTotalLiquidity($first: Int = 10, $poolIdList: [ID!]) {
+    pools(
+      where: { totalLiquidity_gt: 0, id_in: $poolIdList }
+      orderBy: totalLiquidity
+      orderDirection: desc
+      first: $first
+    ) {
+      id
+      address
+      name
+      poolType
+      symbol
+      totalLiquidity
+    }
+  }
+`;
+
 export const poolById = gql`
   query Pool($poolId: ID!) {
     pool(id: $poolId) {
@@ -87,6 +121,7 @@ export const poolById = gql`
       poolType
       symbol
       swapFee
+      totalLiquidity
       amp
       c
       s

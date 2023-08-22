@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 
 import { Button } from "#/components";
-import { ErrorCard } from "#/components/ErrorCard";
+import { AlertCard } from "#/components/AlertCard";
 import { BaseInput, Input } from "#/components/Input";
 import { PlotTitle } from "#/components/Plot";
 import { Select, SelectItem } from "#/components/Select";
@@ -18,8 +18,6 @@ import {
 } from "#/contexts/PoolSimulatorContext";
 import { SwapSimulatorDataSchema } from "#/lib/schema";
 import { formatNumber } from "#/utils/formatNumber";
-
-import { PoolTypeEnum } from "../(types)";
 
 interface IResult {
   swapType: string;
@@ -351,20 +349,16 @@ function SimulationResult({
   if (!data.poolType) {
     return <Spinner />;
   }
-  // When CLP is out of bounds in an exactIn swap it returns 0
-  const isGyroType = (type: PoolTypeEnum) =>
-    [PoolTypeEnum.Gyro2, PoolTypeEnum.Gyro3, PoolTypeEnum.GyroE].includes(type);
+  // When a pool is out of bounds in an exactIn swap it returns 0
   const getTokenBalance = (tokenSymbol: string) => {
     const token = data.tokens.find((t) => t.symbol === tokenSymbol);
     return token?.balance || 0;
   };
-  if (
-    isGyroType(data.poolType) &&
-    (!amountOut || amountOut > getTokenBalance(tokenOutSymbol))
-  ) {
+  if (!amountOut || amountOut > getTokenBalance(tokenOutSymbol)) {
     return (
-      <ErrorCard
-        title="CLP limit"
+      <AlertCard
+        style="error"
+        title="Liquidity limit"
         message="The swap is greater than the pool limit. Please, change the amount to a lower value."
       />
     );

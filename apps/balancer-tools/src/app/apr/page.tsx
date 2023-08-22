@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function Page() {
-  redirect("/apr/round/current");
+  redirect("/apr/ethereum/round/current");
 }

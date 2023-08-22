@@ -10,6 +10,7 @@ import { Header } from "#/components/Header";
 import { PoolAttribute, SearchPoolForm } from "#/components/SearchPoolForm";
 import { Select, SelectItem } from "#/components/Select";
 
+import { NetworkSelector } from "./(components)/NetworkSelector";
 import { Round } from "./(utils)/rounds";
 
 const ALL_ROUNDS = Round.getAllRounds();
@@ -27,7 +28,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
 
   React.useEffect(() => {
     if (!poolId && (!roundId || roundId === "current")) {
-      router.push(`/apr/round/${LAST_ROUND_ID}`);
+      router.push(`/apr/${network}/round/${LAST_ROUND_ID}`);
     }
   }, [roundId]);
 
@@ -35,9 +36,9 @@ export default function Layout({ children }: React.PropsWithChildren) {
     <div className="flex h-full flex-col">
       <Header
         linkUrl={"/apr"}
-        title={"Pool Simulator"}
+        title={"APR"}
         imageSrc={"/assets/balancer-symbol.svg"}
-        endButton={<></>}
+        endButton={<NetworkSelector />}
       />
       <div className="flex flex-1 gap-x-8">
         <div className="h-full w-72 lg:w-80 max-w-sm">
@@ -46,7 +47,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
             form={form}
             defaultValuePool={poolId}
             onSubmit={(value) => {
-              router.push(`/apr/pool/${value.network}/${value.poolId}`);
+              router.push(`/apr/${value.network}/pool/${value.poolId}`);
               setValue("poolId", value.poolId);
             }}
           >
@@ -70,8 +71,8 @@ export default function Layout({ children }: React.PropsWithChildren) {
                 onValueChange={(value) => {
                   router.push(
                     !poolId
-                      ? `/apr/round/${value}`
-                      : `/apr/pool/${network}/${poolId}/round/${value}`,
+                      ? `/apr/${network}/round/${value}`
+                      : `/apr/${network}/pool/${poolId}/round/${value}`,
                   );
                 }}
                 className="w-full"

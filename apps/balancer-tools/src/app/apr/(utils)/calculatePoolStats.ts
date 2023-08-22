@@ -26,20 +26,21 @@ export async function calculatePoolStats({
   );
 
   let balPriceUSD = 0;
+  let symbol = pool.symbol;
   let tvl = 0;
   let votingShare = 0;
   let apr = 0;
 
   balPriceUSD = await getBALPriceByRound(round);
 
-  tvl = round.activeRound
+  [tvl, symbol] = round.activeRound
     ? await pools
         .gql(String(pool.gauge?.network) ?? 1)
         .Pool({
           poolId,
         })
         .then((res) => {
-          return res.pool?.totalLiquidity ?? 0;
+          return [res.pool?.totalLiquidity ?? 0, res.pool?.symbol ?? pool.symbol];
         })
     : await pools
         .gql(String(pool.gauge?.network) ?? 1)
@@ -48,7 +49,7 @@ export async function calculatePoolStats({
           poolId,
         })
         .then((res) => {
-          return res.pool?.totalLiquidity ?? 0;
+          return [res.pool?.totalLiquidity ?? 0, res.pool?.symbol ?? pool.symbol];
         });
 
   votingShare = await getPoolRelativeWeight(
@@ -59,7 +60,7 @@ export async function calculatePoolStats({
   if (balPriceUSD !== 0 && tvl !== 0 && votingShare !== 0) {
     apr = calculateRoundAPR(round, votingShare, tvl, balPriceUSD) * 100;
   }
-  return { apr, balPriceUSD, tvl, votingShare };
+  return { apr, balPriceUSD, tvl, votingShare, symbol };
 }
 
 function calculateRoundAPR(

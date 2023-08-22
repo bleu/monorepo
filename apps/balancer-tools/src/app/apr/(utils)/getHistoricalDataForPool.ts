@@ -1,6 +1,6 @@
 import pThrottle from "p-throttle";
 
-import { calculatePoolStats } from "./calculateRoundAPR";
+import { calculatePoolStats } from "./calculatePoolStats";
 import { Round } from "./rounds";
 
 export interface HistoricalDataEntry {

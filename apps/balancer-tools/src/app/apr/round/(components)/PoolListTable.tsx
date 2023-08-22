@@ -173,7 +173,6 @@ function TableRow({
       );
       try {
         const result = await throttledFn(poolId, roundId);
-        console.log(result)
         setTableData((prevTableData) => {
           const updatedTableData = prevTableData.map((pool) => {
             if (pool.id === poolId) {
@@ -210,7 +209,7 @@ function TableRow({
         router.push(poolRedirectURL);
       }}
     >
-      <Table.BodyCell>{pool.symbol}</Table.BodyCell>
+      <Table.BodyCell>{selectedPoolData?.symbol} ({pool.gauge?.network})</Table.BodyCell>
       {isLoading ? (
         <Table.BodyCell padding="py-4 px-1" colSpan={3}>
           <Spinner size="sm" />

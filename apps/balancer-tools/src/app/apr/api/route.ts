@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import votingGauges from "#/data/voting-gauges.json";
 
-import { calculatePoolStats } from "../(utils)/calculateRoundAPR";
+import { calculatePoolStats } from "../(utils)/calculatePoolStats";
 import { Round } from "../(utils)/rounds";
 
 export async function GET(request: NextRequest) {

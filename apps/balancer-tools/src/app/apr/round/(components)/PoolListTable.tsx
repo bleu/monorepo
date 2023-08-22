@@ -83,6 +83,24 @@ export function PoolListTable({ roundId }: { roundId: string }) {
     handleSorting(accessor, sortOrder);
   };
 
+  function addMorePools() {
+    setTableData((prevTableData) => {
+      const newData = votingGauges
+        .filter((gauge) => gauge.isKilled === false)
+        .slice(tableData.length, tableData.length + 10)
+        .map((gauge) => ({
+          id: gauge.pool.id,
+          symbol: gauge.pool.symbol,
+          apr: 0,
+          balPriceUSD: 0,
+          tvl: 0,
+          votingShare: 0,
+          network: gauge.network,
+        }));
+      return [...prevTableData, ...newData];
+    });
+  }
+
   return (
     <div className="flex w-full flex-1 justify-center text-white">
       <Table color="blue" shade={"darkWithBorder"}>
@@ -136,7 +154,7 @@ export function PoolListTable({ roundId }: { roundId: string }) {
               <Button
                 className="w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
                 shade="medium"
-                disabled={true}
+                onClick={addMorePools}
               >
                 Load More <ChevronDownIcon />
               </Button>

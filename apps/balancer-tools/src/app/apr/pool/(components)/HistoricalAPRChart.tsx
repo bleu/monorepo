@@ -40,21 +40,23 @@ export default async function HistoricalAPRChart({
   const chosenRoundMarkerIDX = APRPerRoundData.x.findIndex(
     (item) => item === `Round ${roundId}`,
   );
-  const chosenRoundData = roundId ? {
-    hovertemplate: HOVERTEMPLATE,
-    x: [APRPerRoundData.x[chosenRoundMarkerIDX]],
-    y: [APRPerRoundData.y[chosenRoundMarkerIDX]],
-    mode: "markers",
-    name: "Selected Round",
-    marker: {
-      color: blueDark.blue7,
-      size: 15,
-      line: {
-        color: "white",
-        width: 2,
-      },
-    },
-  } : {};
+  const chosenRoundData = roundId
+    ? {
+        hovertemplate: HOVERTEMPLATE,
+        x: [APRPerRoundData.x[chosenRoundMarkerIDX]],
+        y: [APRPerRoundData.y[chosenRoundMarkerIDX]],
+        mode: "markers",
+        name: "Selected Round",
+        marker: {
+          color: blueDark.blue7,
+          size: 15,
+          line: {
+            color: "white",
+            width: 2,
+          },
+        },
+      }
+    : {};
 
   return <HistoricalAPRPlot data={[APRPerRoundData, chosenRoundData]} />;
 }

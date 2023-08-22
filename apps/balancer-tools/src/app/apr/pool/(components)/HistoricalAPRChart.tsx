@@ -3,7 +3,7 @@ import { PlotType } from "plotly.js";
 
 import { trimTrailingValues } from "#/lib/utils";
 
-import { calculatePoolStats } from "../../(utils)/calculateRoundAPR";
+import { calculatePoolStats } from "../../(utils)/calculatePoolStats";
 import { Round } from "../../(utils)/rounds";
 import HistoricalAPRPlot from "./HistoricalAPRPlot";
 

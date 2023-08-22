@@ -10,7 +10,7 @@ import { PlotType } from "plotly.js";
 import Plot from "#/components/Plot";
 import votingGauges from "#/data/voting-gauges.json";
 
-import { calculatePoolStats } from "../../(utils)/calculateRoundAPR";
+import { calculatePoolStats } from "../../(utils)/calculatePoolStats";
 import sortDataByX from "../../(utils)/sortChartData";
 
 export default async function TopPoolsChart({ roundId }: { roundId: string }) {

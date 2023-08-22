@@ -256,16 +256,14 @@ export function SwapCurve() {
 
   poolData.forEach((pool, index) => {
     if (pool.poolType == PoolTypeEnum.Fx && pool.poolParams?.beta) {
-      const analysisBalance = findTokenBySymbol(
-        pool.tokens,
-        analysisToken.symbol,
-      )?.balance;
-      const tabBalance = findTokenBySymbol(pool.tokens, currentTabToken.symbol)
-        ?.balance;
+      const analysisData = findTokenBySymbol(pool.tokens, analysisToken.symbol);
+      const tabData = findTokenBySymbol(pool.tokens, currentTabToken.symbol);
       const betaLimits = getBetaLimitIndexes({
         ...amounts[index],
-        analysisTokenInitialBalance: analysisBalance || 0,
-        tabTokenInitialBalance: tabBalance || 0,
+        analysisTokenInitialBalance: analysisData?.balance || 0,
+        tabTokenInitialBalance: tabData?.balance || 0,
+        analysisTokenRate: analysisData?.rate || 0,
+        tabTokenRate: tabData?.rate || 0,
         beta: pool.poolParams.beta,
       });
       data.push(

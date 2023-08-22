@@ -7,11 +7,11 @@ import {
 } from "@radix-ui/colors";
 import { PlotType } from "plotly.js";
 
+import { calculatePoolStats } from "#/app/apr/(utils)/calculatePoolStats";
 import Plot from "#/components/Plot";
 import votingGauges from "#/data/voting-gauges.json";
+import sortDataByX from "#/app/apr/(utils)/sortChartData";
 
-import { calculatePoolStats } from "../../(utils)/calculateRoundAPR";
-import sortDataByX from "../../(utils)/sortChartData";
 
 export default async function TopPoolsChart({ roundId }: { roundId: string }) {
   const POOL_QUANTITY_LIMIT = 16;

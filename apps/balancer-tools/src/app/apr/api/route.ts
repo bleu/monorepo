@@ -15,11 +15,7 @@ export async function GET(request: NextRequest) {
   if (roundId && poolId) {
     const poolStats = await calculatePoolStats({ roundId, poolId });
 
-    return NextResponse.json({
-      [roundId]: {
-        [poolId]: poolStats,
-      },
-    });
+    return NextResponse.json(poolStats);
   }
 
   if (poolId) {

@@ -18,9 +18,8 @@ import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
 import votingGauges from "#/data/voting-gauges.json";
 import { Pool } from "#/lib/balancer/gauges";
+import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
-
-import { calculatePoolStats } from "../../(utils)/calculatePoolStats";
 
 interface PoolStats {
   apr: number;
@@ -169,11 +168,12 @@ function TableRow({
     const fetchData = async () => {
       const throttledFn = throttleHandler(
         async (poolId: string, roundId: string) => {
-          return (await fetcher(`/apr/api?poolid=${pool.id}&roundid=${roundId}`))[roundId]
+          return await fetcher(`/apr/api?poolid=${poolId}&roundid=${roundId}`)
         },
       );
       try {
         const result = await throttledFn(poolId, roundId);
+        console.log(result)
         setTableData((prevTableData) => {
           const updatedTableData = prevTableData.map((pool) => {
             if (pool.id === poolId) {

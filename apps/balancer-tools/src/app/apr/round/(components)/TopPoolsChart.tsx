@@ -41,7 +41,9 @@ export default async function TopPoolsChart({ roundId }: { roundId: string }) {
     amberDark.amber9,
   ];
 
-  const poolList = votingGauges.map((gauge) => gauge.pool.id);
+  const poolList = votingGauges
+    .filter((gauge) => gauge.isKilled === false)
+    .map((gauge) => gauge.pool.id);
   const results = await generatePromisesForPoolList(poolList);
   const barCords: {
     x: string[];

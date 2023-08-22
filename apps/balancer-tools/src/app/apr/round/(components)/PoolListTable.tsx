@@ -40,6 +40,7 @@ export const throttle = pThrottle({
 export function PoolListTable({ roundId }: { roundId: string }) {
   const initialTableValues: PoolTableData[] = votingGauges
     .slice(0, 10)
+    .filter((gauge) => gauge.isKilled === false)
     .map((gauge) => ({
       id: gauge.pool.id,
       symbol: gauge.pool.symbol,

@@ -10,8 +10,8 @@ import { PlotType } from "plotly.js";
 import Plot from "#/components/Plot";
 import votingGauges from "#/data/voting-gauges.json";
 
-import { calculatePoolStats } from "../../(utils)/calculatePoolStats";
 import sortDataByX from "../../(utils)/sortChartData";
+import { generatePromisesForPoolList } from "../../(utils)/getHistoricalDataForPool";
 
 export default async function TopPoolsChart({ roundId }: { roundId: string }) {
   const POOL_QUANTITY_LIMIT = 16;
@@ -23,28 +23,17 @@ export default async function TopPoolsChart({ roundId }: { roundId: string }) {
     amberDark.amber9,
   ];
 
+  const poolList = votingGauges.map((gauge) => gauge.pool.id);
+  const results = await generatePromisesForPoolList(poolList);
   const barCords: {
     x: string[];
     y: string[];
     colors: string[];
-  } = { x: [], y: [], colors: [] };
-  for (let index = 0; index < votingGauges.length; index++) {
-    if (barCords.x.length >= POOL_QUANTITY_LIMIT) {
-      break;
-    }
-
-    const gauge = votingGauges[index];
-    const { apr } = await calculatePoolStats({
-      roundId,
-      poolId: gauge.pool.id,
-    });
-
-    if (apr && apr > 0.01) {
-      barCords.x.push(apr.toFixed(2));
-      barCords.y.push(gauge.pool.symbol);
-      barCords.colors.push(colors[index % colors.length]);
-    }
-  }
+  } = {
+    x: results.map((result) => result.apr.toFixed(2)),
+    y: results.map((result) => result.symbol),
+    colors: results.map((_, index) => colors[index % colors.length]),
+  };
 
   const [sortedX, sortedY] = sortDataByX(barCords);
   const chartData = {
@@ -52,8 +41,8 @@ export default async function TopPoolsChart({ roundId }: { roundId: string }) {
     marker: { color: barCords.colors },
     orientation: "h" as const,
     type: "bar" as PlotType,
-    x: sortedX,
-    y: sortedY,
+    x: sortedX.slice(0, POOL_QUANTITY_LIMIT),
+    y: sortedY.slice(0, POOL_QUANTITY_LIMIT),
   };
 
   return (
@@ -70,7 +59,7 @@ export default async function TopPoolsChart({ roundId }: { roundId: string }) {
             title: `APR %`,
             fixedrange: true,
           },
-          yaxis: { fixedrange: true },
+          yaxis: { fixedrange: true, autorange: "reversed" },
         }}
       />
     </div>

@@ -4,8 +4,11 @@ export const computeSwapAmounts = (tokenOut: number[], tokenIn: number[]) =>
   // Both are ordered from the smallest absolute value to the biggest
   [...tokenOut].reverse().concat(tokenIn);
 
-export const computeBalances = (swaps: number[], initialBalance: number) =>
-  swaps.map((swap) => initialBalance + swap);
+export const computeBalances = (
+  swaps: number[],
+  tokenRate: number,
+  initialBalance: number,
+) => swaps.map((swap) => (initialBalance + swap) * tokenRate);
 
 export const isInBetaRegion = (
   balanceX: number,
@@ -44,18 +47,22 @@ export function getTransitionIndices(booleans: boolean[]): number[] {
 export function getBetaLimitsIndexes({
   amountsA,
   amountsB,
+  rateA,
+  rateB,
   initialBalanceA,
   initialBalanceB,
   beta,
 }: {
   amountsA: number[];
   amountsB: number[];
+  rateA: number;
+  rateB: number;
   initialBalanceA: number;
   initialBalanceB: number;
   beta: number;
 }) {
-  const balancesA = computeBalances(amountsA, initialBalanceA);
-  const balancesB = computeBalances(amountsB, initialBalanceB);
+  const balancesA = computeBalances(amountsA, rateA, initialBalanceA);
+  const balancesB = computeBalances(amountsB, rateB, initialBalanceB);
 
   const [start, end] = findTransitions(balancesA, balancesB, beta);
   return [start, end].filter((i) => i !== 0);
@@ -64,6 +71,8 @@ export function getBetaLimitsIndexes({
 export default function getBetaLimits({
   analysisTokenOut,
   analysisTokenIn,
+  tokenInRate,
+  tokenOutRate,
   tabTokenIn,
   tabTokenOut,
   analysisTokenInitialBalance,
@@ -73,6 +82,8 @@ export default function getBetaLimits({
   analysisTokenOut: number[];
   analysisTokenIn: number[];
   tabTokenIn: number[];
+  tokenInRate: number;
+  tokenOutRate: number;
   tabTokenOut: number[];
   analysisTokenInitialBalance: number;
   tabTokenInitialBalance: number;
@@ -85,6 +96,8 @@ export default function getBetaLimits({
   const [start, end] = getBetaLimitsIndexes({
     amountsA: analysisAmounts,
     amountsB: tabAmounts,
+    rateA: tokenOutRate,
+    rateB: tokenInRate,
     initialBalanceA: analysisTokenInitialBalance,
     initialBalanceB: tabTokenInitialBalance,
     beta,

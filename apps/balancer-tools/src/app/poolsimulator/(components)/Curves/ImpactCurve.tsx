@@ -295,17 +295,17 @@ export function ImpactCurve() {
         amounts[index].analysisTokenIn,
         amounts[index].tabTokenIn,
       ];
-      const balanceAnalysisToken = findTokenBySymbol(
+      const analysisTokenData = findTokenBySymbol(
         pool.tokens,
         analysisToken.symbol,
-      )?.balance;
-      const balanceCurrentTabToken = findTokenBySymbol(
+      );
+      const currentTabTokenData = findTokenBySymbol(
         pool.tokens,
         currentTabToken.symbol,
-      )?.balance;
-      const balancesList = [
-        { in: balanceAnalysisToken, out: balanceCurrentTabToken },
-        { in: balanceCurrentTabToken, out: balanceAnalysisToken },
+      );
+      const tokensList = [
+        { in: analysisTokenData, out: currentTabTokenData },
+        { in: currentTabTokenData, out: analysisTokenData },
       ];
       const amountLimits = [] as number[];
       const priceImpactLimits = [] as number[];
@@ -313,8 +313,10 @@ export function ImpactCurve() {
         const betaLimitsIndexes = getBetaLimitsIndexes({
           amountsA: amount?.amounts || [],
           amountsB: amount?.amountsOut || [],
-          initialBalanceA: balancesList[index].in || 0,
-          initialBalanceB: balancesList[index].out || 0,
+          rateA: tokensList[index].in?.rate || 1,
+          rateB: tokensList[index].out?.rate || 1,
+          initialBalanceA: tokensList[index].in?.balance || 0,
+          initialBalanceB: tokensList[index].out?.balance || 0,
           beta: pool.poolParams?.beta || 0,
         });
         betaLimitsIndexes.forEach((i) => {

@@ -40,3 +40,8 @@ export const generatePromisesForHistoricalPoolData = async (
     ),
   );
 
+export const generatePromisesForPoolList = async (
+  poolList: string[],
+  roundId: number = parseInt(Round.getAllRounds()[0].value),
+): Promise<Array<PoolStatsData>> =>
+  Promise.all(poolList.map((poolId) => calculateAndPushStats(poolId, roundId)));

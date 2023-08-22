@@ -33,15 +33,15 @@ export async function calculatePoolStats({
   balPriceUSD = await getBALPriceByRound(round);
 
   tvl = round.activeRound
-    ? await pools
+    ? parseFloat(await pools
         .gql(String(pool.gauge?.network) ?? 1)
         .Pool({
           poolId,
         })
         .then((res) => {
           return res.pool?.totalLiquidity ?? 0;
-        })
-    : await pools
+        }))
+    : parseFloat(await pools
         .gql(String(pool.gauge?.network) ?? 1)
         .PoolWhereBlockNumber({
           blockNumber: endRoundBlockNumber,
@@ -49,7 +49,7 @@ export async function calculatePoolStats({
         })
         .then((res) => {
           return res.pool?.totalLiquidity ?? 0;
-        });
+        }));
 
   votingShare = await getPoolRelativeWeight(
     poolId,

@@ -5,7 +5,11 @@ import { AnalysisData } from "#/contexts/PoolSimulatorContext";
 import { trimTrailingValues } from "#/lib/utils";
 
 import { PoolTypeEnum, TokensData } from "../(types)";
-import { calculateCurvePoints, convertAnalysisDataToAMM } from "../(utils)";
+import {
+  calculateCurvePoints,
+  convertAnalysisDataToAMM,
+  findTokenBySymbol,
+} from "../(utils)";
 
 export interface ImpactWorkerInputData {
   tokenIn: TokensData;
@@ -94,8 +98,8 @@ self.addEventListener(
       };
     };
     const calcResult = calculateTokenImpact({
-      tokenIn,
-      tokenOut,
+      tokenIn: findTokenBySymbol(data?.tokens, tokenIn.symbol) as TokensData,
+      tokenOut: findTokenBySymbol(data?.tokens, tokenOut.symbol) as TokensData,
       amm,
       poolType,
       swapDirection,

@@ -26,11 +26,11 @@ export async function GET(request: NextRequest) {
 
     const results = await Promise.all(
       Array.from(
-        { length: Round.currentRound().value - roundGaugeAdded.value },
+        { length: parseInt(Round.currentRound().value) - parseInt(roundGaugeAdded.value) },
         (_, index) =>
           calculatePoolStats({
             poolId: poolId,
-            roundId: parseInt(index) + parseInt(roundGaugeAdded.value),
+            roundId: String(index + parseInt(roundGaugeAdded.value)),
           }),
       ),
     );

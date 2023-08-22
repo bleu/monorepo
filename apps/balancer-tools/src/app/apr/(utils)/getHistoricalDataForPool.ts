@@ -22,7 +22,7 @@ async function calculateAndPushStats(
   roundId: number,
 ): Promise<PoolStatsData> {
   const throttledFn = throttle(async () => {
-    return await calculatePoolStats({ poolId, roundId });
+    return await calculatePoolStats({ poolId, roundId: String(roundId) });
   });
 
   const resultPoolStats = await throttledFn();

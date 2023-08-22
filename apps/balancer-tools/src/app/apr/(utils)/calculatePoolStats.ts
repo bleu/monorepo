@@ -41,7 +41,7 @@ export async function calculatePoolStats({
         })
         .then((res) => {
           return [
-            res.pool?.totalLiquidity ?? 0,
+            parseFloat(res.pool?.totalLiquidity) ?? 0,
             res.pool?.symbol ?? pool.symbol,
           ];
         })
@@ -53,7 +53,7 @@ export async function calculatePoolStats({
         })
         .then((res) => {
           return [
-            res.pool?.totalLiquidity ?? 0,
+            parseFloat(res.pool?.totalLiquidity) ?? 0,
             res.pool?.symbol ?? pool.symbol,
           ];
         });

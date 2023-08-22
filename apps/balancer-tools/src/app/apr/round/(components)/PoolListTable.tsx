@@ -17,7 +17,6 @@ import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
 import votingGauges from "#/data/voting-gauges.json";
-import { Pool } from "#/lib/balancer/gauges";
 import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 
@@ -26,6 +25,7 @@ interface PoolStats {
   balPriceUSD: number;
   tvl: number;
   votingShare: number;
+  symbol: string;
 }
 interface PoolTableData extends PoolStats {
   id: string;
@@ -42,6 +42,7 @@ export function PoolListTable({ roundId }: { roundId: string }) {
     .slice(0, 10)
     .map((gauge) => ({
       id: gauge.pool.id,
+      symbol: gauge.pool.symbol,
       apr: 0,
       balPriceUSD: 0,
       tvl: 0,
@@ -161,13 +162,12 @@ function TableRow({
   setTableData: Dispatch<SetStateAction<PoolTableData[]>>;
   throttleHandler: typeof throttle;
 }) {
-  const pool = new Pool(poolId);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       const throttledFn = throttleHandler(
-        async (poolId: string, roundId: string) => {
+        async (poolId: string, roundId: string): Promise<PoolStats> => {
           return await fetcher(`/apr/api?poolid=${poolId}&roundid=${roundId}`);
         },
       );

@@ -35,9 +35,9 @@ export function getTransitionIndices(booleans: boolean[]): number[] {
   if (trueIndices.length === 0) return [];
 
   const start = trueIndices[0];
-  const end = trueIndices[trueIndices.length - 1];
+  const end = trueIndices[trueIndices.length - 1] + 1;
 
-  if (end - start + 1 !== trueIndices.length) {
+  if (end - start !== trueIndices.length) {
     throw new Error("The true values are not continuous.");
   }
 

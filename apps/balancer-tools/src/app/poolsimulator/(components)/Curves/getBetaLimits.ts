@@ -71,8 +71,8 @@ export function getBetaLimitsIndexes({
 export default function getBetaLimits({
   analysisTokenOut,
   analysisTokenIn,
-  tokenInRate,
-  tokenOutRate,
+  analysisTokenRate,
+  tabTokenRate,
   tabTokenIn,
   tabTokenOut,
   analysisTokenInitialBalance,
@@ -82,8 +82,8 @@ export default function getBetaLimits({
   analysisTokenOut: number[];
   analysisTokenIn: number[];
   tabTokenIn: number[];
-  tokenInRate: number;
-  tokenOutRate: number;
+  analysisTokenRate: number;
+  tabTokenRate: number;
   tabTokenOut: number[];
   analysisTokenInitialBalance: number;
   tabTokenInitialBalance: number;
@@ -96,12 +96,13 @@ export default function getBetaLimits({
   const [start, end] = getBetaLimitsIndexes({
     amountsA: analysisAmounts,
     amountsB: tabAmounts,
-    rateA: tokenOutRate,
-    rateB: tokenInRate,
+    rateA: analysisTokenRate,
+    rateB: tabTokenRate,
     initialBalanceA: analysisTokenInitialBalance,
     initialBalanceB: tabTokenInitialBalance,
     beta,
   });
+
   return [
     [analysisAmounts[start], analysisAmounts[end]],
     [tabAmounts[start], tabAmounts[end]],

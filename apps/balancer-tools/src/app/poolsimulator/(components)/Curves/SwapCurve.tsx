@@ -262,8 +262,8 @@ export function SwapCurve() {
         ...amounts[index],
         analysisTokenInitialBalance: analysisData?.balance || 0,
         tabTokenInitialBalance: tabData?.balance || 0,
-        tokenInRate: analysisData?.rate || 0,
-        tokenOutRate: tabData?.rate || 0,
+        analysisTokenRate: analysisData?.rate || 0,
+        tabTokenRate: tabData?.rate || 0,
         beta: pool.poolParams.beta,
       });
       data.push(

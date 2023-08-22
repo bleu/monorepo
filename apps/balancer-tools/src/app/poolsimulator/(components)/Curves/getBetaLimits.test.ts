@@ -57,17 +57,17 @@ describe("Token Functions", () => {
 
   describe("getBetaLimits", () => {
     test("Should return correct swap amounts for beta region", () => {
-      const params = {
+      const result = getBetaLimits({
         analysisTokenOut: [0, -5, -10, -15],
         analysisTokenIn: [0, 5, 10, 15],
+        analysisTokenRate: 1,
+        tabTokenRate: 1,
         tabTokenIn: [0, 5, 10, 15],
         tabTokenOut: [0, -5, -10, -15],
         analysisTokenInitialBalance: 120,
         tabTokenInitialBalance: 120,
         beta: 0.05,
-      };
-
-      const result = getBetaLimits(params);
+      });
       expect(result).toEqual([
         [-5, 5],
         [5, -5],

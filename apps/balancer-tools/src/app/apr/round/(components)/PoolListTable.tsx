@@ -210,7 +210,7 @@ function TableRow({
       }}
     >
       <Table.BodyCell>
-        {selectedPoolData?.symbol} ({pool.gauge?.network})
+        {selectedPoolData?.symbol} ({networkFor(network)})
       </Table.BodyCell>
       {isLoading ? (
         <Table.BodyCell padding="py-4 px-1" colSpan={3}>

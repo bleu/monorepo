@@ -29,17 +29,14 @@ async function calculateAndPushStats(
   return { roundId, ...resultPoolStats };
 }
 
-export async function generatePromisesForHistoricalPoolData(
+export const generatePromisesForHistoricalPoolData = async (
   poolId: string,
   startRoundId: number = 1,
   endRoundId: number = parseInt(Round.getAllRounds()[0].value),
-): Promise<Array<HistoricalDataEntry>> {
-  const promises: Promise<HistoricalDataEntry>[] = [];
+): Promise<Array<PoolStatsData>> =>
+  Promise.all(
+    Array.from({ length: endRoundId - startRoundId }, (_, index) =>
+      calculateAndPushStats(poolId, index + startRoundId),
+    ),
+  );
 
-  for (let index = startRoundId; index < endRoundId; index++) {
-    promises.push(calculateAndPushStats(poolId, index));
-  }
-
-  const results = await Promise.all(promises);
-  return results;
-}

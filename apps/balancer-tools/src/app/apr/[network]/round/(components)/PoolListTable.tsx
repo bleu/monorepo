@@ -15,6 +15,7 @@ import { Button } from "#/components";
 import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
+import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 
 import { calculatePoolStats } from "../../../(utils)/calculatePoolStats";
@@ -54,16 +55,13 @@ export function PoolListTable({
         //maybe round can be passed to getPoolList and calculatePoolStats can be done there
         const poolListWithStats = await Promise.all(
           poolList.map(async (pool) => {
-            const poolStats = await calculatePoolStats({
-              roundId,
-              poolId: pool.id,
-            });
+            const poolStats = await fetcher(`/apr/api?poolid=${pool.id}&roundid=${roundId}`)
 
             return {
               id: pool.id,
               network: Number(networkIdFor(network)),
               symbol: pool.symbol as string,
-              ...poolStats,
+              ...poolStats[roundId],
             };
           }),
         );

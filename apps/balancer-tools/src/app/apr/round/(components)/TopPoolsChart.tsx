@@ -14,7 +14,7 @@ import sortDataByX from "../../(utils)/sortChartData";
 import { generatePromisesForPoolList } from "../../(utils)/getHistoricalDataForPool";
 
 export default async function TopPoolsChart({ roundId }: { roundId: string }) {
-  const POOL_QUANTITY_LIMIT = 16;
+  const POOL_QUANTITY_LIMIT = 10;
   const colors = [
     greenDark.green9,
     violetDark.violet9,

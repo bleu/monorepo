@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import fetch from "node-fetch";
 
 import votingGauges from "#/data/voting-gauges.json";
 

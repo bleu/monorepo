@@ -20,7 +20,7 @@ export default async function HistoricalAPRChart({
     `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?poolid=${poolId}`,
   );
 
-  const APRPerRoundCords = Object.entries(results.perRound).reduce(
+  const aprPerRoundCords = Object.entries(results.perRound).reduce(
     (cords, [roundId, result]) => {
       cords.x.push(`Round ${roundId}`);
       cords.y.push(result.apr);
@@ -30,8 +30,8 @@ export default async function HistoricalAPRChart({
   );
 
   const trimmedAPRData = trimTrailingValues(
-    APRPerRoundCords.x.reverse(),
-    APRPerRoundCords.y.reverse(),
+    aprPerRoundCords.x.reverse(),
+    aprPerRoundCords.y.reverse(),
     0,
   );
 

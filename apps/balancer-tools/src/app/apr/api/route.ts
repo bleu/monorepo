@@ -14,6 +14,13 @@ export interface PoolStatsData {
   symbol: string;
 }
 
+export interface PoolStatsResults {
+  perRound: {
+    [roundId: string]: PoolStatsData;
+  },
+  average: PoolStatsData;
+}
+
 function sortingPoolStats(PoolStatsResults: {[key: string]: PoolStatsData}, sortProperty: string, orderArg: string  = 'desc', limit: number = Infinity) {
   const sortedEntries = Object.entries(PoolStatsResults).sort((a, b) => {
     if(!a[1] || !b[1]) return 0;

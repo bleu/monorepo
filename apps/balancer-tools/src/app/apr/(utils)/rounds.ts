@@ -57,11 +57,15 @@ export class Round {
   static getRoundByDate(date: Date): Round {
     if (date < Round.FIRST_ROUND_END_DATE) {
       // eslint-disable-next-line no-console
-      console.debug("getRoundByDate recieved a date that is before first round")
+      console.debug(
+        "getRoundByDate recieved a date that is before first round",
+      );
       return Round.getRoundByNumber(1);
     } else if (date > Round.currentRound().endDate) {
       // eslint-disable-next-line no-console
-      console.debug("getRoundByDate recieved a date that is after current round")
+      console.debug(
+        "getRoundByDate recieved a date that is after current round",
+      );
       return Round.currentRound();
     }
 

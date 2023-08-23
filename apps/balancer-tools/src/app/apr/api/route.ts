@@ -39,11 +39,7 @@ function sortingPoolStats(
       // Handle Numbers
       if (typeof valueA === "number" && typeof valueB === "number") {
         // Handle null values
-        if (
-          (valueB === null) ||
-          (isNaN(valueA) && isNaN(valueB))
-        )
-          return 0;
+        if (valueB === null || (isNaN(valueA) && isNaN(valueB))) return 0;
         if (isNaN(valueA)) return 1;
         if (isNaN(valueB)) return -1;
 
@@ -134,7 +130,7 @@ export async function GET(request: NextRequest) {
     const validGaugesList = votingGauges
       .filter((gauge) => !gauge.gauge.isKilled)
       .map((gauge) => gauge.id);
-      
+
     const gaguesData = await Promise.allSettled(
       validGaugesList.map((poolId) => calculatePoolStats({ poolId, roundId })),
     );

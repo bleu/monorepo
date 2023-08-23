@@ -199,6 +199,7 @@ function sortAndLimit(
   offset: number = 0,
   limit: number = Infinity
 ): { [key: string]: PoolStatsData } {
+  if (Object.entries(PoolStatsResults).length != 1) return PoolStatsResults;
   const sortedEntries = Object.entries(PoolStatsResults)
     .sort(([_, aValue], [__, bValue]) => {
       const valueA = aValue[sortProperty];

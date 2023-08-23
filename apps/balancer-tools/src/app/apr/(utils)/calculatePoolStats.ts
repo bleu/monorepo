@@ -4,6 +4,7 @@ import * as balEmissions from "#/lib/balancer/emissions";
 import { Pool } from "#/lib/balancer/gauges";
 import { pools } from "#/lib/gql/server";
 
+import { PoolStatsData } from "../api/route";
 import { getBALPriceByRound } from "./getBALPriceByRound";
 import getBlockNumberByTimestamp from "./getBlockNumberForTime";
 import { getPoolRelativeWeight } from "./getRelativeWeight";
@@ -25,7 +26,7 @@ export async function calculatePoolStats({
 }: {
   roundId: string;
   poolId: string;
-}) {
+}): Promise<PoolStatsData> {
   // TODO: BAL-646 aggregate historical pool APR when roundId is not provided
   const round = Round.getRoundByNumber(roundId);
   const pool = new Pool(poolId);
@@ -45,7 +46,7 @@ export async function calculatePoolStats({
     throw new Error("Couldn't fetch block number");
   }
 
-  const network = pool.network ?? 1;
+  const network = String(pool.network ?? 1);
   let balPriceUSD = 0;
   let symbol = pool.symbol;
   let tvl = 0;
@@ -56,7 +57,7 @@ export async function calculatePoolStats({
 
   [tvl, symbol] = round.activeRound
     ? await pools
-        .gql(String(network))
+        .gql(network)
         .Pool({
           poolId,
         })
@@ -67,7 +68,7 @@ export async function calculatePoolStats({
           ];
         })
     : await pools
-        .gql(String(network))
+        .gql(network)
         .PoolWhereBlockNumber({
           blockNumber: endRoundBlockNumber,
           poolId,

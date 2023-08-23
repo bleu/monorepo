@@ -22,14 +22,19 @@ export interface RoundStatsResults {
 
 export interface PoolStatsResults {
   perRound: RoundStatsResults;
-  average: PoolStatsData;
+  average: {
+    apr: number;
+    balPriceUSD: number;
+    tvl: number;
+    votingShare: number;
+  };
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL;
+const memoryCache: { [key: string]: PoolStatsData } = {};
 
-const memoryCache: { [key: string]: any } = {};
-
-const fetchDataForRoundId = async (roundId: string) => {
+const fetchDataForRoundId = async (
+  roundId: string,
+): Promise<RoundStatsResults> => {
   const validGaugesList = votingGauges
     .filter((gauge) => !gauge.gauge.isKilled)
     .map((gauge) => gauge.id);
@@ -37,28 +42,38 @@ const fetchDataForRoundId = async (roundId: string) => {
   const gaugesData = await Promise.allSettled(
     validGaugesList.map(async (poolId) => {
       return await handleBothPoolAndRoundId(poolId, roundId);
-    })
+    }),
   );
 
   const resolvedGaugesData = gaugesData
-    .filter((result) => result.status === "fulfilled")
-    .map((result) => result?.value);
+    .filter(
+      (result): result is PromiseFulfilledResult<PoolStatsData> =>
+        result.status === "fulfilled",
+    )
+    .map((result) => result.value);
 
-  const parsedResult = validGaugesList.reduce((acc, poolId, index) => {
-    acc[poolId] = resolvedGaugesData[index];
-    return acc;
-  }, {});
+  const parsedResult = validGaugesList.reduce(
+    (acc, poolId, index) => {
+      acc[poolId] = resolvedGaugesData[index];
+      return acc;
+    },
+    {} as { [key: string]: PoolStatsData },
+  );
 
   return parsedResult;
 };
 
-const fetchDataForPoolId = async (poolId: string) => {
+const fetchDataForPoolId = async (
+  poolId: string,
+): Promise<PoolStatsResults> => {
   const gauge = votingGauges.filter((gauge) => gauge.id === poolId)[0];
   // Multiplying by 1000 because unix timestamp is in seconds
-  const gaugeAddedDate = new Date(gauge.gauge.addedTimestamp * 1000);
+  const gaugeAddedDate = new Date(
+    gauge.gauge.addedTimestamp ?? Date.now() * 1000,
+  );
   const roundGaugeAdded = Round.getRoundByDate(gaugeAddedDate);
 
-  const results: PoolStatsData[] = await Promise.all(
+  const results: (PoolStatsData | null)[] = await Promise.all(
     Array.from(
       {
         length:
@@ -66,13 +81,17 @@ const fetchDataForPoolId = async (poolId: string) => {
           parseInt(roundGaugeAdded.value),
       },
       async (_, index) => {
-        return await handleBothPoolAndRoundId(poolId, String(index + parseInt(roundGaugeAdded.value)));
-      }
-    )
+        return await handleBothPoolAndRoundId(
+          poolId,
+          String(index + parseInt(roundGaugeAdded.value)),
+        );
+      },
+    ),
   );
 
   const averagedValues = results.reduce(
     (acc, result) => {
+      if (result === null) return acc;
       return {
         apr: acc.apr + result.apr,
         balPriceUSD: acc.balPriceUSD + result.balPriceUSD,
@@ -80,7 +99,7 @@ const fetchDataForPoolId = async (poolId: string) => {
         votingShare: acc.votingShare + result.votingShare,
       };
     },
-    { apr: 0, balPriceUSD: 0, tvl: 0, votingShare: 0 }
+    { apr: 0, balPriceUSD: 0, tvl: 0, votingShare: 0 },
   );
   const numResults = results.length;
   const averageResult = {
@@ -91,10 +110,11 @@ const fetchDataForPoolId = async (poolId: string) => {
   };
   const perRound = results.reduce(
     (acc, obj, index) => {
+      if (obj === null) return acc;
       acc[index + 1 + parseInt(roundGaugeAdded.value)] = obj;
       return acc;
     },
-    {} as { [key: number]: PoolStatsData }
+    {} as { [key: number]: PoolStatsData },
   );
 
   return { perRound, average: averageResult };
@@ -102,12 +122,14 @@ const fetchDataForPoolId = async (poolId: string) => {
 
 const getDataFromCacheOrCompute = async (
   cacheKey: string,
-  computeFn: () => Promise<any>
+  computeFn: () => Promise<PoolStatsData>,
 ) => {
   if (!memoryCache[cacheKey]) {
+    // eslint-disable-next-line no-console
     console.debug(`Cache miss for ${cacheKey}`);
     memoryCache[cacheKey] = await computeFn();
   }
+  // eslint-disable-next-line no-console
   console.debug(`Cache hit for ${cacheKey}`);
   return memoryCache[cacheKey];
 };
@@ -117,7 +139,7 @@ const handlePoolIdOnly = async (poolId: string): Promise<PoolStatsResults> => {
 };
 
 const handleRoundIdOnly = async (
-  roundId: string
+  roundId: string,
 ): Promise<{ [key: string]: PoolStatsData }> => {
   return fetchDataForRoundId(roundId);
 };
@@ -125,31 +147,32 @@ const handleRoundIdOnly = async (
 const handleBothPoolAndRoundId = async (
   poolId: string,
   roundId: string,
-  isRetry: boolean = false
-): Promise<PoolStatsData> => {
+  isRetry: boolean = false,
+): Promise<PoolStatsData | null> => {
   const cacheKey = `pool_${poolId}_round_${roundId}`;
   try {
-    return await getDataFromCacheOrCompute(cacheKey, async () => {
-      return calculatePoolStats({ roundId, poolId });
-    });
+    return await getDataFromCacheOrCompute(
+      cacheKey,
+      async (): Promise<PoolStatsData> => {
+        return calculatePoolStats({ roundId, poolId });
+      },
+    );
   } catch (e) {
     if (!isRetry) {
       // eslint-disable-next-line no-console
-      console.debug(`Exception on for ${poolId}, retrying... ${e}`)
-      await Promise((resolve) => setTimeout(resolve, 300));
+      console.debug(`Exception on for ${poolId}, retrying... ${e}`);
+      await new Promise((resolve) => setTimeout(resolve, 300));
       return handleBothPoolAndRoundId(poolId, roundId, true);
     } else {
       // eslint-disable-next-line no-console
-      console.error("error", e)
+      console.error("error", e);
+      return null;
     }
   }
-
 };
 
 export async function GET(request: NextRequest) {
-  const {
-    searchParams,
-  } = request.nextUrl;
+  const { searchParams } = request.nextUrl;
 
   const poolId = searchParams.get("poolid");
   const roundId = searchParams.get("roundid");
@@ -170,8 +193,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "no roundId or poolId provided" });
   }
 
+  if (responseData === null) {
+    return NextResponse.json({ error: "error fetching data" });
+  }
+
   return NextResponse.json(
-    sortAndLimit(responseData, sortArg, orderArg, offsetArg, limitArg)
+    sortAndLimit(responseData, sortArg, orderArg, offsetArg, limitArg),
   );
 }
 
@@ -189,12 +216,12 @@ function compareStrings(a: string, b: string, order: Order): number {
 }
 
 function sortAndLimit(
-  PoolStatsResults: { [key: string]: PoolStatsData },
+  PoolStatsResults: RoundStatsResults | PoolStatsResults | PoolStatsData,
   sortProperty: keyof PoolStatsData = "apr",
   orderArg: Order = "desc",
   offset: number = 0,
-  limit: number = Infinity
-): { [key: string]: PoolStatsData } {
+  limit: number = Infinity,
+) {
   if (Object.entries(PoolStatsResults).length != 1) return PoolStatsResults;
   const sortedEntries = Object.entries(PoolStatsResults)
     .sort(([_, aValue], [__, bValue]) => {

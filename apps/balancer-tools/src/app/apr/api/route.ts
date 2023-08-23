@@ -73,6 +73,10 @@ export async function GET(request: NextRequest) {
 
   if (roundId && poolId) {
     const poolStats = await calculatePoolStats({ roundId, poolId });
+  const sortArg = request.nextUrl.searchParams.get("sort");
+  const orderArg = request.nextUrl.searchParams.get("order") || undefined;
+  const limitArg =
+    parseInt(request.nextUrl.searchParams.get("limit")) || Infinity;
 
     return NextResponse.json(poolStats);
   }
@@ -124,5 +128,50 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json({ perRound, average: averageResult });
+  }
+  if (roundId && !poolId) {
+    const validGaugesList = votingGauges
+      .filter((gauge) => !gauge.isKilled)
+      .map((gauge) => gauge.pool.id);
+    const gaguesData = await Promise.allSettled(
+      validGaugesList.map((poolId) => calculatePoolStats({ poolId, roundId })),
+    );
+
+    const resolvedGaugesData = gaguesData
+      .filter((result) => result.status === "fulfilled")
+      .map((result) => {
+        if (result.status === "fulfilled") {
+          // This if is here because TS can't infer only fufilled results are in the array
+          return result.value;
+        }
+      });
+
+    const parsedResult = validGaugesList.reduce((acc, poolId, index) => {
+      acc[poolId] = resolvedGaugesData[index];
+      return acc;
+    }, {});
+
+    if (sortArg) {
+      return NextResponse.json(
+        sortingPoolStats(parsedResult, sortArg, orderArg, limitArg),
+      );
+    }
+    if (limitArg) {
+      const limitedData = Object.keys(parsedResult)
+        .slice(0, parseInt(limitArg))
+        .reduce((acc, key) => {
+          acc[key] = parsedResult[key];
+          return acc;
+        }, {});
+      return NextResponse.json(limitedData);
+    }
+
+    return NextResponse.json(parsedResult);
+  }
+
+  // If it has a poolId and a roundId, return the stats for that pool and round
+  if (roundId && poolId) {
+    const poolStats = await calculatePoolStats({ roundId, poolId });
+    return NextResponse.json(poolStats);
   }
 }

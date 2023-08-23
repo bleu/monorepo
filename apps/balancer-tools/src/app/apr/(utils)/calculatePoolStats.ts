@@ -21,7 +21,7 @@ export async function calculatePoolStats({
   const pool = new Pool(poolId);
 
   const endRoundBlockNumber = await getBlockNumberByTimestamp(
-    pool.gauge?.network ?? 1,
+    pool.network ?? 1,
     round.endDate,
   );
 
@@ -34,7 +34,7 @@ export async function calculatePoolStats({
 
   tvl = round.activeRound
     ? await pools
-        .gql(String(pool.gauge?.network) ?? 1)
+        .gql(pool.network ?? 1)
         .Pool({
           poolId,
         })
@@ -42,7 +42,7 @@ export async function calculatePoolStats({
           return res.pool?.totalLiquidity ?? 0;
         })
     : await pools
-        .gql(String(pool.gauge?.network) ?? 1)
+        .gql(pool.network ?? 1)
         .PoolWhereBlockNumber({
           blockNumber: endRoundBlockNumber,
           poolId,

@@ -83,12 +83,7 @@ export async function GET(request: NextRequest) {
     const gauge = votingGauges.filter((gauge) => gauge.id === poolId)[0];
     // Multiplying by 1000 because unix timestamp is in seconds
     const gaugeAddedDate = new Date(gauge["addedTimestamp"] * 1000);
-    let roundGaugeAdded = Round.getRoundByDate(gaugeAddedDate);
-    if (Round.getRoundByNumber(1).endDate > gaugeAddedDate) {
-      // There are pools that were added before the first round, so we need to handle that
-      // Ex: 0x5c6ee304399dbdb9c8ef030ab642b10820db8f56000200000000000000000014
-      roundGaugeAdded = Round.getRoundByNumber(1);
-    }
+    const roundGaugeAdded = Round.getRoundByDate(gaugeAddedDate);
 
     const results: PoolStatsData[] = await Promise.all(
       Array.from(

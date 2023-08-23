@@ -1,6 +1,6 @@
 import { NetworkChainId } from "@bleu-balancer-tools/utils";
 
-import GAUGE_DATA from "#/data/voting-gauges.json";
+import POOLS_WITH_GAUGES from "#/data/voting-gauges.json";
 
 const GAUGE_CACHE: { [address: string]: Gauge } = {};
 const POOL_CACHE: { [id: string]: Pool } = {};
@@ -10,7 +10,7 @@ class Token {
   weight: string | null;
   symbol: string;
 
-  constructor(data: (typeof GAUGE_DATA)[0]["tokens"][0]) {
+  constructor(data: (typeof POOLS_WITH_GAUGES)[0]["tokens"][0]) {
     this.address = data.address;
     this.weight = data.weight;
     this.symbol = data.symbol;
@@ -41,7 +41,9 @@ export class Pool {
       return POOL_CACHE[id];
     }
 
-    const data = GAUGE_DATA.find((g) => g.id === id);
+    const data = POOLS_WITH_GAUGES.find(
+      (g) => g.id.toLowerCase() === id.toLowerCase(),
+    );
 
     if (!data) {
       throw new Error(`Pool with ID ${id} not found`);
@@ -54,14 +56,16 @@ export class Pool {
     this.poolType = data.type;
     this.symbol = data.symbol;
     this.tokens = data.tokens.map(
-      (t: (typeof GAUGE_DATA)[0]["tokens"][0]) => new Token(t),
+      (t: (typeof POOLS_WITH_GAUGES)[0]["tokens"][0]) => new Token(t),
     );
     this.gauge = associatedGauge;
 
     if (!this.gauge) {
-      const gaugeData = GAUGE_DATA.find((g) => g.id === this.id);
-      if (gaugeData) {
-        this.gauge = new Gauge(gaugeData.address);
+      const pool = POOLS_WITH_GAUGES.find(
+        (g) => g.id.toLowerCase() === this.id.toLowerCase(),
+      );
+      if (pool) {
+        this.gauge = new Gauge(pool.gauge.address);
         this.gauge.pool = this;
       }
     }
@@ -83,9 +87,10 @@ export class Gauge {
       return GAUGE_CACHE[address];
     }
 
-    const data = GAUGE_DATA.find(
+    const data = POOLS_WITH_GAUGES.find(
       (g) => g.gauge.address.toLowerCase() === address.toLowerCase(),
     );
+
     if (!data) {
       throw new Error("Gauge not found for the provided address.");
     }

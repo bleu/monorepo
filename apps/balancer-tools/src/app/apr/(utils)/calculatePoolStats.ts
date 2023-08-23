@@ -1,3 +1,5 @@
+import pThrottle from "p-throttle";
+
 import * as balEmissions from "#/lib/balancer/emissions";
 import { Pool } from "#/lib/balancer/gauges";
 import { pools } from "#/lib/gql/server";
@@ -9,6 +11,14 @@ import { Round } from "./rounds";
 
 const WEEKS_IN_YEAR = 52;
 
+// Whenever we exceed the subgraph rate limit, it would just stop returning data
+// p-throttle is used to limit the number of requests to the subgraph at once
+// I got to these numbers by testing and adjusting manually
+const throttle = pThrottle({
+  limit: 1,
+  interval: 350,
+});
+
 export async function calculatePoolStats({
   roundId,
   poolId,
@@ -19,11 +29,29 @@ export async function calculatePoolStats({
   // TODO: BAL-646 aggregate historical pool APR when roundId is not provided
   const round = Round.getRoundByNumber(roundId);
   const pool = new Pool(poolId);
-
-  const endRoundBlockNumber = await getBlockNumberByTimestamp(
+  const throttledFn = throttle(async (network: number, endDate: Date) => {
+    return await getBlockNumberByTimestamp(network, endDate);
+  });
+  const endRoundBlockNumber = await throttledFn(
     pool.gauge?.network ?? 1,
     round.endDate,
   );
+  if (!endRoundBlockNumber) {
+    // Normally this shouldn't happen, but if it does, we'd rather return an error than crash
+    // eslint-disable-next-line no-console
+    console.error(
+      `Couldn't fetch block number for pool ${poolId} on round ${roundId}`,
+    );
+    // TODO: BAL-655/BAL-662 - handle this error better
+    return {
+      apr: -1,
+      balPriceUSD: -1,
+      tvl: -1,
+      votingShare: -1,
+      symbol: -1,
+      network: -1,
+    };
+  }
 
   const network = pool.gauge?.network ?? 1;
   let balPriceUSD = 0;

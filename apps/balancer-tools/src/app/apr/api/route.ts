@@ -5,6 +5,56 @@ import votingGauges from "#/data/voting-gauges.json";
 import { calculatePoolStats } from "../(utils)/calculatePoolStats";
 import { Round } from "../(utils)/rounds";
 
+function sortingPoolStats(PoolStatsResults: {[key: string]: PoolStatsData}, sortProperty: string, orderArg: string  = 'desc', limit: number = Infinity) {
+  const sortedEntries = Object.entries(PoolStatsResults).sort((a, b) => {
+    if(!a[1] || !b[1]) return 0;
+    const valueA = a[1][sortProperty];
+    const valueB = b[1][sortProperty];
+
+export interface PoolStatsData {
+  apr: number;
+  balPriceUSD: number;
+  tvl: number;
+  votingShare: number;
+  roundId: number;
+  symbol: string;
+}
+
+function sortingPoolStats(
+  PoolStatsResults: { [key: string]: PoolStatsData },
+  sortProperty: string,
+  orderArg: string = "desc",
+  limit: number = Infinity,
+) {
+  const sortedEntries = Object.entries(PoolStatsResults)
+    .sort((a, b) => {
+      if (!a[1] || !b[1]) return 0;
+      const valueA = a[1][sortProperty];
+      const valueB = b[1][sortProperty];
+
+      // Handle null values
+      if (
+        (valueA === null && valueB === null) ||
+        (isNaN(valueA) && isNaN(valueB))
+      )
+        return 0;
+      if (valueA === null || isNaN(valueA)) return 1;
+      if (valueB === null || isNaN(valueB)) return -1;
+
+      // Handle Numbers
+      if (typeof valueA === "number" && typeof valueB === "number") {
+        return orderArg === "asc" ? valueA - valueB : valueB - valueA;
+      }
+
+      // Handle Strings
+      return orderArg === "asc"
+        ? valueA.toString().localeCompare(valueB.toString())
+        : valueB.toString().localeCompare(valueA.toString());
+    })
+    .slice(0, limit);
+  return Object.fromEntries(sortedEntries);
+}
+
 export async function GET(request: NextRequest) {
   const poolId = request.nextUrl.searchParams.get("poolid");
   const roundId = request.nextUrl.searchParams.get("roundid");

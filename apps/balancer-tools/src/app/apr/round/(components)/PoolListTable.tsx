@@ -44,34 +44,44 @@ export function PoolListTable({
   initialData: RoundStatsResults;
 }) {
   const [tableData, setTableData] = useState(initialData);
+  const [sortField, setSortField] = useState("apr");
+  const [order, setOrder] = useState<"asc" | "desc">("desc");
 
-  const [sortField, setSortField] = useState("");
-  const [order, setOrder] = useState<"asc" | "desc">("asc");
-  const handleSorting = (sortField: keyof PoolTableData, sortOrder: string) => {
+  const handleSorting = (sortField: keyof PoolStatsData, sortOrder: string) => {
     if (sortField) {
       setTableData((prevTableData) => {
-        const sortedArray = prevTableData.slice().sort((a, b) => {
-          const aValue = a[sortField] as number;
-          const bValue = b[sortField] as number;
+        const sortedArray = Object.entries(prevTableData).sort(
+          ([, a], [, b]) => {
+            const aValue = a[sortField];
+            const bValue = b[sortField];
 
-          if (isNaN(aValue)) return 1;
-          if (isNaN(bValue)) return -1;
+            if (typeof aValue !== "number") return 1;
+            if (typeof bValue !== "number") return -1;
 
-          if (sortOrder === "asc") {
-            return aValue - bValue;
-          } else {
-            return bValue - aValue;
-          }
+            if (isNaN(aValue)) return 1;
+            if (isNaN(bValue)) return -1;
+
+            if (sortOrder === "asc") {
+              return aValue - bValue;
+            } else {
+              return bValue - aValue;
+            }
+          },
+        );
+
+        const sortedData: RoundStatsResults = {};
+        sortedArray.forEach(([key, value]) => {
+          sortedData[key] = value;
         });
 
-        return sortedArray;
+        return sortedData;
       });
     }
   };
 
-  const handleSortingChange = (accessor: keyof PoolTableData) => {
+  const handleSortingChange = (accessor: keyof PoolStatsData) => {
     const sortOrder =
-      accessor === sortField && order === "asc" ? "desc" : "asc";
+      accessor === sortField && order === "desc" ? "asc" : "desc";
     setSortField(accessor);
     setOrder(sortOrder);
     handleSorting(accessor, sortOrder);
@@ -114,15 +124,16 @@ export function PoolListTable({
           </Table.HeaderCell>
         </Table.HeaderRow>
         <Table.Body>
-          {tableData.map((gauge) => (
+          {Object.entries(tableData).map(([key, gauge]) => (
             <TableRow
-              tableData={tableData}
-              setTableData={setTableData}
-              key={gauge.id}
-              poolId={gauge.id}
+              key={key}
+              poolId={key}
               network={gauge.network}
               roundId={roundId}
-              throttleHandler={throttle}
+              symbol={gauge.symbol}
+              tvl={gauge.tvl}
+              votingShare={gauge.votingShare}
+              apr={gauge.apr}
             />
           ))}
           <Table.BodyRow>

@@ -12,13 +12,13 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Button } from "#/components";
+import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
+import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 
 import { PoolStatsData, RoundStatsResults } from "../../api/route";
-import { fetcher } from "#/utils/fetcher";
-import { Spinner } from "#/components/Spinner";
 
 export function PoolListTable({
   roundId,

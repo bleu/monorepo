@@ -9,7 +9,7 @@ import poolsFromFile from "./fixtures/data.json";
 describe("Tests new Fx math function based on package other functions", () => {
   const poolData = poolsFromFile["pool"];
   const tokens = poolData.tokens.map((token) => token.address);
-  const percentages = [25];
+  const percentages = [10];
 
   tokens.forEach((tokenIn) => {
     const tokenOut = tokenIn === tokens[0] ? tokens[1] : tokens[0];
@@ -19,15 +19,15 @@ describe("Tests new Fx math function based on package other functions", () => {
         const pool = FxPool.fromPool(poolData as SubgraphPoolBase);
         const poolPairDataBeforeSwap = pool.parsePoolPairData(
           tokenIn,
-          tokenOut
+          tokenOut,
         );
 
         const amount =
           Number(
             formatFixed(
-              poolPairDataBeforeSwap.balanceOut,
-              poolPairDataBeforeSwap.decimalsOut
-            )
+              poolPairDataBeforeSwap.balanceIn,
+              poolPairDataBeforeSwap.decimalsIn,
+            ),
           ) *
           (percentage / 100);
         const amountOldBigNumber = bnum(amount);
@@ -35,13 +35,13 @@ describe("Tests new Fx math function based on package other functions", () => {
         const spotPriceExpected =
           FxMaths._spotPriceAfterSwapExactTokenInForTokenOut(
             poolPairDataBeforeSwap,
-            amountOldBigNumber
+            amountOldBigNumber,
           );
 
         test(`_spotPrice`, () => {
           const amountOut = pool._exactTokenInForTokenOut(
             poolPairDataBeforeSwap,
-            bnum(amount)
+            bnum(amount),
           );
 
           pool.updateTokenBalanceForPool(
@@ -50,8 +50,8 @@ describe("Tests new Fx math function based on package other functions", () => {
               numberToBigNumber({
                 number: amount,
                 decimals: poolPairDataBeforeSwap.decimalsIn,
-              })
-            )
+              }),
+            ),
           );
 
           pool.updateTokenBalanceForPool(
@@ -60,22 +60,22 @@ describe("Tests new Fx math function based on package other functions", () => {
               numberToBigNumber({
                 number: amountOut.toNumber(),
                 decimals: poolPairDataBeforeSwap.decimalsIn,
-              })
-            )
+              }),
+            ),
           );
 
           const poolPairDataAfterSwap = pool.parsePoolPairData(
             tokenIn,
-            tokenOut
+            tokenOut,
           );
           const spotPrice = FxMaths._spotPriceAfterSwapExactTokenInForTokenOut(
             poolPairDataAfterSwap,
-            bnum(0)
+            bnum(0),
           );
 
           verifyApproximateEquality(
             spotPrice.toNumber(),
-            spotPriceExpected.toNumber()
+            spotPriceExpected.toNumber(),
           );
         });
       });

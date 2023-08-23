@@ -13,7 +13,7 @@
     "swapEnabled": true,
     "tokens": [
       {
-        "address": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+        "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "symbol": "USDC",
         "balance": "58398.373699",
         "decimals": 6,
@@ -25,7 +25,7 @@
         }
       },
       {
-        "address": "0xe111178a87a3bff0c8d18decba5798827539ae99",
+        "address": "0xdb25f211ab05b1c97d595516f45794528a807ad8",
         "symbol": "EURS",
         "balance": "128879.65",
         "decimals": 2,

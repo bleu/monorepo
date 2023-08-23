@@ -2,8 +2,9 @@ import { blueDark } from "@radix-ui/colors";
 import { PlotType } from "plotly.js";
 
 import { trimTrailingValues } from "#/lib/utils";
+import { fetcher } from "#/utils/fetcher";
 
-import { generatePromisesForHistoricalPoolData } from "../../(utils)/getHistoricalDataForPool";
+import { PoolStatsResults } from "../../api/route";
 import HistoricalAPRPlot from "./HistoricalAPRPlot";
 
 export default async function HistoricalAPRChart({
@@ -14,13 +15,20 @@ export default async function HistoricalAPRChart({
   poolId: string;
 }) {
   const HOVERTEMPLATE = "%{x}<br />%{y:.2f}% APR<extra></extra>";
-  const APRPerRoundCords: { x: string[]; y: number[] } = { x: [], y: [] };
 
-  const results = await generatePromisesForHistoricalPoolData(poolId);
-  results.map((result) => {
-    APRPerRoundCords.x.push(`Round ${result.roundId}`);
-    APRPerRoundCords.y.push(result.apr);
-  });
+  const results: PoolStatsResults = await fetcher(
+    `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?poolid=${poolId}`,
+  );
+
+  const APRPerRoundCords = Object.entries(results.perRound).reduce(
+    (cords, [roundId, result]) => {
+      cords.x.push(`Round ${roundId}`);
+      cords.y.push(result.apr);
+      return cords;
+    },
+    { x: [], y: [] } as { x: string[]; y: number[] }
+  );
+  
 
   const trimmedAPRData = trimTrailingValues(
     APRPerRoundCords.x.reverse(),

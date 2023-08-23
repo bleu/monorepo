@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
 
   // If it has a poolId but no roundId, return the average of all rounds and per round
   if (poolId) {
-    const gauge = votingGauges.filter((gauge) => gauge.pool.id === poolId)[0];
+    const gauge = votingGauges.filter((gauge) => gauge.id === poolId)[0];
     // Multiplying by 1000 because unix timestamp is in seconds
     const gaugeAddedDate = new Date(gauge["addedTimestamp"] * 1000);
     let roundGaugeAdded = Round.getRoundByDate(gaugeAddedDate);
@@ -137,8 +137,9 @@ export async function GET(request: NextRequest) {
   // If it has a roundId but no poolId, return all pools for that round
   if (roundId && !poolId) {
     const validGaugesList = votingGauges
-      .filter((gauge) => !gauge.isKilled)
-      .map((gauge) => gauge.pool.id);
+      .filter((gauge) => !gauge.gauge.isKilled)
+      .map((gauge) => gauge.id);
+      
     const gaguesData = await Promise.allSettled(
       validGaugesList.map((poolId) => calculatePoolStats({ poolId, roundId })),
     );

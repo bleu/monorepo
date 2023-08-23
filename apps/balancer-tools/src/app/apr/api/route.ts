@@ -191,7 +191,7 @@ export async function GET(request: NextRequest) {
   let responseData;
 
   if (poolId && roundId) {
-    responseData = await handleBothPoolAndRoundId(poolId, roundId);
+    return NextResponse.json(await handleBothPoolAndRoundId(poolId, roundId));
   } else if (poolId) {
     responseData = await handlePoolIdOnly(poolId);
   } else if (roundId) {
@@ -229,7 +229,6 @@ function sortAndLimit(
   offset: number = 0,
   limit: number = Infinity,
 ) {
-  if (Object.entries(PoolStatsResults).length != 1) return PoolStatsResults;
   const sortedEntries = Object.entries(PoolStatsResults)
     .sort(([_, aValue], [__, bValue]) => {
       const valueA = aValue[sortProperty];

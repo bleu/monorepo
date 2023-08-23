@@ -67,25 +67,27 @@ function sortingPoolStats(
 export async function GET(request: NextRequest) {
   const poolId = request.nextUrl.searchParams.get("poolid");
   const roundId = request.nextUrl.searchParams.get("roundid");
-  if (!roundId && !poolId) {
-    return NextResponse.json({ error: "no round or poolId provided" });
-  }
-
-  if (roundId && poolId) {
-    const poolStats = await calculatePoolStats({ roundId, poolId });
   const sortArg = request.nextUrl.searchParams.get("sort");
   const orderArg = request.nextUrl.searchParams.get("order") || undefined;
   const limitArg =
-    parseInt(request.nextUrl.searchParams.get("limit")) || Infinity;
+    parseInt(request.nextUrl.searchParams.get("limit") ?? "0") || Infinity;
 
-    return NextResponse.json(poolStats);
+  // If it has no poolId or roundId, return an error
+  if (!roundId && !poolId) {
+    return NextResponse.json({ error: "no roundId or poolId provided" });
   }
 
+  // If it has a poolId but no roundId, return the average of all rounds and per round
   if (poolId) {
     const gauge = votingGauges.filter((gauge) => gauge.pool.id === poolId)[0];
     // Multiplying by 1000 because unix timestamp is in seconds
     const gaugeAddedDate = new Date(gauge["addedTimestamp"] * 1000);
-    const roundGaugeAdded = Round.getRoundByDate(gaugeAddedDate);
+    let roundGaugeAdded = Round.getRoundByDate(gaugeAddedDate);
+    if (Round.getRoundByNumber(1).endDate > gaugeAddedDate) {
+      // There are pools that were added before the first round, so we need to handle that
+      // Ex: 0x5c6ee304399dbdb9c8ef030ab642b10820db8f56000200000000000000000014
+      roundGaugeAdded = Round.getRoundByNumber(1);
+    }
 
     const results = await Promise.all(
       Array.from(
@@ -129,6 +131,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ perRound, average: averageResult });
   }
+
+  // If it has a roundId but no poolId, return all pools for that round
   if (roundId && !poolId) {
     const validGaugesList = votingGauges
       .filter((gauge) => !gauge.isKilled)
@@ -137,6 +141,7 @@ export async function GET(request: NextRequest) {
       validGaugesList.map((poolId) => calculatePoolStats({ poolId, roundId })),
     );
 
+    // This should handle case where a pool returns nothing for that round
     const resolvedGaugesData = gaguesData
       .filter((result) => result.status === "fulfilled")
       .map((result) => {

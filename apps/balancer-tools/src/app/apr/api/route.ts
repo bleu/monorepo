@@ -154,15 +154,15 @@ const handleBothPoolAndRoundId = async (
 
 export async function GET(request: NextRequest) {
   const {
-    searchParams: { get },
+    searchParams,
   } = request.nextUrl;
 
-  const poolId = get("poolid");
-  const roundId = get("roundid");
-  const sortArg = (get("sort") as keyof PoolStatsData) || "apr";
-  const orderArg = (get("order") as Order) || "desc";
-  const limitArg = parseInt(get("limit") ?? "0") || Infinity;
-  const offsetArg = parseInt(get("offset") ?? "0");
+  const poolId = searchParams.get("poolid");
+  const roundId = searchParams.get("roundid");
+  const sortArg = (searchParams.get("sort") as keyof PoolStatsData) || "apr";
+  const orderArg = (searchParams.get("order") as Order) || "desc";
+  const limitArg = parseInt(searchParams.get("limit") ?? "0") || Infinity;
+  const offsetArg = parseInt(searchParams.get("offset") ?? "0");
 
   let responseData;
 

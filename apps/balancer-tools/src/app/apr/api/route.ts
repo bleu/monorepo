@@ -13,12 +13,16 @@ export interface PoolStatsData {
   symbol: string;
 }
 
+export interface RoundStatsResults {
+  [roundId: string]: PoolStatsData;
+}
+
+
 export interface PoolStatsResults {
-  perRound: {
-    [roundId: string]: PoolStatsData;
-  };
+  perRound: RoundStatsResults
   average: PoolStatsData;
 }
+
 
 function sortingPoolStats(
   PoolStatsResults: { [key: string]: PoolStatsData },

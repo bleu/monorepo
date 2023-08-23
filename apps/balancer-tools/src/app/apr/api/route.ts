@@ -36,10 +36,7 @@ const fetchDataForRoundId = async (roundId: string) => {
 
   const gaugesData = await Promise.allSettled(
     validGaugesList.map(async (poolId) => {
-      const res = await fetch(
-        `${BASE_URL}?roundid=${roundId}&poolid=${poolId}`
-      );
-      return await res.json();
+      return await handleBothPoolAndRoundId(poolId, roundId);
     })
   );
 
@@ -74,12 +71,7 @@ const fetchDataForPoolId = async (poolId: string) => {
           parseInt(roundGaugeAdded.value),
       },
       async (_, index) => {
-        const res = await fetch(
-          `${BASE_URL}?roundid=${String(
-            index + parseInt(roundGaugeAdded.value)
-          )}&poolid=${poolId}`
-        );
-        return await res.json();
+        return await handleBothPoolAndRoundId(poolId, String(index + parseInt(roundGaugeAdded.value)));
       }
     )
   );

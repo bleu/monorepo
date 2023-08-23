@@ -113,19 +113,13 @@ const getDataFromCacheOrCompute = async (
 };
 
 const handlePoolIdOnly = async (poolId: string): Promise<PoolStatsResults> => {
-  const cacheKey = `pool_${poolId}`;
-  return await getDataFromCacheOrCompute(cacheKey, async () => {
-    return fetchDataForPoolId(poolId);
-  });
+  return fetchDataForPoolId(poolId);
 };
 
 const handleRoundIdOnly = async (
   roundId: string
 ): Promise<{ [key: string]: PoolStatsData }> => {
-  const cacheKey = `round_${roundId}`;
-  return await getDataFromCacheOrCompute(cacheKey, async () => {
-    return fetchDataForRoundId(roundId);
-  });
+  return fetchDataForRoundId(roundId);
 };
 
 const handleBothPoolAndRoundId = async (

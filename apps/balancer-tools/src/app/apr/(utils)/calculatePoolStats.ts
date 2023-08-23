@@ -25,6 +25,7 @@ export async function calculatePoolStats({
     round.endDate,
   );
 
+  const network = pool.gauge?.network ?? 1;
   let balPriceUSD = 0;
   let symbol = pool.symbol;
   let tvl = 0;
@@ -35,7 +36,7 @@ export async function calculatePoolStats({
 
   [tvl, symbol] = round.activeRound
     ? await pools
-        .gql(String(pool.gauge?.network) ?? 1)
+        .gql(String(network))
         .Pool({
           poolId,
         })
@@ -46,7 +47,7 @@ export async function calculatePoolStats({
           ];
         })
     : await pools
-        .gql(String(pool.gauge?.network) ?? 1)
+        .gql(String(network))
         .PoolWhereBlockNumber({
           blockNumber: endRoundBlockNumber,
           poolId,
@@ -66,7 +67,7 @@ export async function calculatePoolStats({
   if (balPriceUSD !== 0 && tvl !== 0 && votingShare !== 0) {
     apr = calculateRoundAPR(round, votingShare, tvl, balPriceUSD) * 100;
   }
-  return { apr, balPriceUSD, tvl, votingShare, symbol };
+  return { apr, balPriceUSD, tvl, votingShare, symbol, network };
 }
 
 function calculateRoundAPR(

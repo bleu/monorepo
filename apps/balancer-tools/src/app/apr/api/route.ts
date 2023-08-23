@@ -11,6 +11,7 @@ export interface PoolStatsData {
   tvl: number;
   votingShare: number;
   symbol: string;
+  network: string;
 }
 
 export interface RoundStatsResults {

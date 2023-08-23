@@ -25,7 +25,7 @@ export interface PoolStatsResults {
 
 function sortingPoolStats(
   PoolStatsResults: { [key: string]: PoolStatsData },
-  sortProperty: string,
+  sortProperty: keyof PoolStatsData,
   orderArg: string = "desc",
   offset: number = 0,
   limit: number = Infinity,
@@ -36,19 +36,24 @@ function sortingPoolStats(
       const valueA = a[1][sortProperty];
       const valueB = b[1][sortProperty];
 
-      // Handle null values
-      if (
-        (valueA === null && valueB === null) ||
-        (isNaN(valueA) && isNaN(valueB))
-      )
-        return 0;
-      if (valueA === null || isNaN(valueA)) return 1;
-      if (valueB === null || isNaN(valueB)) return -1;
-
       // Handle Numbers
       if (typeof valueA === "number" && typeof valueB === "number") {
+        // Handle null values
+        if (
+          (valueB === null) ||
+          (isNaN(valueA) && isNaN(valueB))
+        )
+          return 0;
+        if (isNaN(valueA)) return 1;
+        if (isNaN(valueB)) return -1;
+
         return orderArg === "asc" ? valueA - valueB : valueB - valueA;
       }
+
+      // Handle null values
+      if (valueA === null && valueB === null) return 0;
+      if (valueA === null) return 1;
+      if (valueB === null) return -1;
 
       // Handle Strings
       return orderArg === "asc"
@@ -62,7 +67,7 @@ function sortingPoolStats(
 export async function GET(request: NextRequest) {
   const poolId = request.nextUrl.searchParams.get("poolid");
   const roundId = request.nextUrl.searchParams.get("roundid");
-  const sortArg = request.nextUrl.searchParams.get("sort");
+  const sortArg: keyof PoolStatsData = request.nextUrl.searchParams.get("sort");
   const orderArg = request.nextUrl.searchParams.get("order") || undefined;
   const limitArg =
     parseInt(request.nextUrl.searchParams.get("limit") ?? "0") || Infinity;

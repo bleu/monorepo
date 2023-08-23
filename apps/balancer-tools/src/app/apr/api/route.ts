@@ -128,12 +128,28 @@ const handleRoundIdOnly = async (
 
 const handleBothPoolAndRoundId = async (
   poolId: string,
-  roundId: string
+  roundId: string,
+  isRetry: boolean = false
 ): Promise<PoolStatsData> => {
   const cacheKey = `pool_${poolId}_round_${roundId}`;
-  return await getDataFromCacheOrCompute(cacheKey, async () => {
     return calculatePoolStats({ roundId, poolId });
   });
+  try {
+    return await getDataFromCacheOrCompute(cacheKey, async () => {
+      return calculatePoolStats({ roundId, poolId });
+    });
+  } catch (e) {
+    if (!isRetry) {
+      // eslint-disable-next-line no-console
+      console.debug(`Exception on for ${poolId}, retrying... ${e}`)
+      await Promise((resolve) => setTimeout(resolve, 300));
+      return handleBothPoolAndRoundId(poolId, roundId, true);
+    } else {
+      // eslint-disable-next-line no-console
+      console.error("error", e)
+    }
+  }
+
 };
 
 export async function GET(request: NextRequest) {

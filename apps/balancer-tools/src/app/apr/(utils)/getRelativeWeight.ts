@@ -30,7 +30,6 @@ export async function getPoolRelativeWeight(
 
     return Number(data) / 1e18;
   } catch (error) {
-    // If the gauge returns 0, it means it was not active at the time or does not have any votes
-    return 0;
+    throw new Error(`Error fetching relative weight for pool ${poolId}`);
   }
 }

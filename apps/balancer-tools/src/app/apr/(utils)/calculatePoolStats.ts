@@ -16,7 +16,7 @@ const WEEKS_IN_YEAR = 52;
 // I got to these numbers by testing and adjusting manually
 const throttle = pThrottle({
   limit: 1,
-  interval: 350,
+  interval: 400,
 });
 
 export async function calculatePoolStats({
@@ -42,15 +42,7 @@ export async function calculatePoolStats({
     console.error(
       `Couldn't fetch block number for pool ${poolId} on round ${roundId}`,
     );
-    // TODO: BAL-655/BAL-662 - handle this error better
-    return {
-      apr: -1,
-      balPriceUSD: -1,
-      tvl: -1,
-      votingShare: -1,
-      symbol: -1,
-      network: -1,
-    };
+    throw new Error("Couldn't fetch block number");
   }
 
   const network = pool.network ?? 1;

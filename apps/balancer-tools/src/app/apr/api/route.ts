@@ -5,6 +5,15 @@ import votingGauges from "#/data/voting-gauges.json";
 import { calculatePoolStats } from "../(utils)/calculatePoolStats";
 import { Round } from "../(utils)/rounds";
 
+export interface PoolStatsData {
+  apr: number;
+  balPriceUSD: number;
+  tvl: number;
+  votingShare: number;
+  roundId: number;
+  symbol: string;
+}
+
 function sortingPoolStats(PoolStatsResults: {[key: string]: PoolStatsData}, sortProperty: string, orderArg: string  = 'desc', limit: number = Infinity) {
   const sortedEntries = Object.entries(PoolStatsResults).sort((a, b) => {
     if(!a[1] || !b[1]) return 0;

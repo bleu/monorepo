@@ -55,12 +55,12 @@ export async function PoolCard({
 export default async function PoolsCards({ roundId }: { roundId: string }) {
   return (
     <div className="w-full gap-3 flex flex-col">
-      {votingGauges.slice(0, 10).map((gauge) => (
+      {votingGauges.slice(0, 10).map((pool) => (
         <PoolCard
-          poolId={gauge.pool.id}
-          network={gauge.network}
+          poolId={pool.id}
+          network={new Pool(pool.id).network}
           roundId={roundId}
-          key={gauge.address}
+          key={pool.address}
         />
       ))}
     </div>

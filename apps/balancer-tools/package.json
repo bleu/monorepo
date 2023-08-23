@@ -3,11 +3,11 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "build": "next build",
+    "build": "node pre-build.js && next build",
     "build:prepare:gql": "cd ../../ && pnpm run -C=packages/gql graphql:update-types",
     "build:prepare:wagmi": "pnpm run wagmi",
     "build:prepare": "pnpm npm-run-all -l --parallel 'build:prepare:gql'",
-    "dev": "pnpm npm-run-all -l --parallel dev:**",
+    "dev": "node pre-build.js && pnpm npm-run-all -l --parallel dev:**",
     "dev:next": "next dev",
     "dev:gyro-eclp-api": "cd ../gyro-eclp-api && poetry run dev",
     "start": "next start",

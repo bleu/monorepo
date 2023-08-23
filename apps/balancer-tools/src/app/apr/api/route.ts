@@ -31,8 +31,8 @@ const memoryCache: { [key: string]: any } = {};
 
 const fetchDataForRoundId = async (roundId: string) => {
   const validGaugesList = votingGauges
-    .filter((gauge) => !gauge.isKilled)
-    .map((gauge) => gauge.pool.id);
+    .filter((gauge) => !gauge.gauge.isKilled)
+    .map((gauge) => gauge.id);
 
   const gaugesData = await Promise.allSettled(
     validGaugesList.map(async (poolId) => {
@@ -56,15 +56,15 @@ const fetchDataForRoundId = async (roundId: string) => {
 };
 
 const fetchDataForPoolId = async (poolId: string) => {
-  const gauge = votingGauges.filter((gauge) => gauge.pool.id === poolId)[0];
+  const gauge = votingGauges.filter((gauge) => gauge.id === poolId)[0];
   // Multiplying by 1000 because unix timestamp is in seconds
-  const gaugeAddedDate = new Date(gauge["addedTimestamp"] * 1000);
   let roundGaugeAdded = Round.getRoundByDate(gaugeAddedDate);
   if (Round.getRoundByNumber(1).endDate > gaugeAddedDate) {
     // There are pools that were added before the first round, so we need to handle that
     // Ex: 0x5c6ee304399dbdb9c8ef030ab642b10820db8f56000200000000000000000014
     roundGaugeAdded = Round.getRoundByNumber(1);
   }
+  const gaugeAddedDate = new Date(gauge.gauge.addedTimestamp * 1000);
 
   const results: PoolStatsData[] = await Promise.all(
     Array.from(

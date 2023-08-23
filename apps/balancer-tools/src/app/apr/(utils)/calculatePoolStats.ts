@@ -33,7 +33,7 @@ export async function calculatePoolStats({
     return await getBlockNumberByTimestamp(network, endDate);
   });
   const endRoundBlockNumber = await throttledFn(
-    pool.gauge?.network ?? 1,
+    pool.network ?? 1,
     round.endDate,
   );
   if (!endRoundBlockNumber) {
@@ -53,7 +53,7 @@ export async function calculatePoolStats({
     };
   }
 
-  const network = pool.gauge?.network ?? 1;
+  const network = pool.network ?? 1;
   let balPriceUSD = 0;
   let symbol = pool.symbol;
   let tvl = 0;

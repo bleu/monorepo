@@ -10,7 +10,6 @@ export interface PoolStatsData {
   balPriceUSD: number;
   tvl: number;
   votingShare: number;
-  roundId: number;
   symbol: string;
 }
 
@@ -81,7 +80,7 @@ export async function GET(request: NextRequest) {
       roundGaugeAdded = Round.getRoundByNumber(1);
     }
 
-    const results = await Promise.all(
+    const results: PoolStatsData[] = await Promise.all(
       Array.from(
         {
           length:
@@ -114,14 +113,12 @@ export async function GET(request: NextRequest) {
       tvl: averagedValues.tvl / numResults,
       votingShare: averagedValues.votingShare / numResults,
     };
+    const perRound = results.reduce((acc, obj, index) => {
+      acc[(index + 1) + parseInt(roundGaugeAdded.value)] = obj;
+      return acc;
+    }, {} as { [key: number]: PoolStatsData });
 
-    const perRound = results.map((result, index) => {
-      return {
-        [parseInt(roundGaugeAdded.value) + index]: result,
-      };
-    });
-
-    return NextResponse.json({ perRound, average: averageResult });
+  return NextResponse.json({ perRound, average: averageResult });
   }
 
   // If it has a roundId but no poolId, return all pools for that round

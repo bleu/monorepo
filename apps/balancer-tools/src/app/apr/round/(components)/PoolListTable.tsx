@@ -17,6 +17,8 @@ import { Tooltip } from "#/components/Tooltip";
 import { formatNumber } from "#/utils/formatNumber";
 
 import { PoolStatsData, RoundStatsResults } from "../../api/route";
+import { fetcher } from "#/utils/fetcher";
+import { Spinner } from "#/components/Spinner";
 
 export function PoolListTable({
   roundId,
@@ -26,6 +28,7 @@ export function PoolListTable({
   initialData: RoundStatsResults;
 }) {
   const [tableData, setTableData] = useState(initialData);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [sortField, setSortField] = useState("apr");
   const [order, setOrder] = useState<"asc" | "desc">("desc");
 
@@ -67,6 +70,21 @@ export function PoolListTable({
     setSortField(accessor);
     setOrder(sortOrder);
     handleSorting(accessor, sortOrder);
+  };
+
+  const loadMorePools = async () => {
+    setIsLoadingMore(true);
+    const aditionalPoolsData: RoundStatsResults = await fetcher(
+      `${
+        process.env.NEXT_PUBLIC_SITE_URL
+      }/apr/api/?roundid=${roundId}&sort=${sortField}&limit=10&offset=${
+        Object.keys(tableData).length
+      }`,
+    );
+    setTableData((prevTableData) => {
+      return { ...prevTableData, ...aditionalPoolsData };
+    });
+    setIsLoadingMore(false);
   };
 
   return (
@@ -120,13 +138,23 @@ export function PoolListTable({
           ))}
           <Table.BodyRow>
             <Table.BodyCell colSpan={4}>
-              <Button
-                className="w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
-                shade="medium"
-                disabled={true}
-              >
-                Load More <ChevronDownIcon />
-              </Button>
+              {isLoadingMore ? (
+                <Button
+                  className="w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
+                  shade="medium"
+                  disabled={true}
+                >
+                  <Spinner size="sm" />
+                </Button>
+              ) : (
+                <Button
+                  className="w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
+                  shade="medium"
+                  onClick={loadMorePools}
+                >
+                  Load More <ChevronDownIcon />
+                </Button>
+              )}
             </Table.BodyCell>
           </Table.BodyRow>
         </Table.Body>

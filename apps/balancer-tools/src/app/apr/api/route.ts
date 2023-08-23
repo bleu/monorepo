@@ -5,6 +5,8 @@ import votingGauges from "#/data/voting-gauges.json";
 import { calculatePoolStats } from "../(utils)/calculatePoolStats";
 import { Round } from "../(utils)/rounds";
 
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL;
+
 type Order = "asc" | "desc";
 
 export interface PoolStatsData {
@@ -41,7 +43,10 @@ const fetchDataForRoundId = async (
 
   const gaugesData = await Promise.allSettled(
     validGaugesList.map(async (poolId) => {
-      return await handleBothPoolAndRoundId(poolId, roundId);
+      const res = await fetch(
+        `${BASE_URL}/apr/api?roundid=${roundId}&poolid=${poolId}`,
+      );
+      return await res.json();
     }),
   );
 
@@ -81,10 +86,12 @@ const fetchDataForPoolId = async (
           parseInt(roundGaugeAdded.value),
       },
       async (_, index) => {
-        return await handleBothPoolAndRoundId(
-          poolId,
-          String(index + parseInt(roundGaugeAdded.value)),
+        const res = await fetch(
+          `${BASE_URL}/apr/api?roundid=${String(
+            index + parseInt(roundGaugeAdded.value),
+          )}&poolid=${poolId}`,
         );
+        return await res.json();
       },
     ),
   );

@@ -132,8 +132,6 @@ const handleBothPoolAndRoundId = async (
   isRetry: boolean = false
 ): Promise<PoolStatsData> => {
   const cacheKey = `pool_${poolId}_round_${roundId}`;
-    return calculatePoolStats({ roundId, poolId });
-  });
   try {
     return await getDataFromCacheOrCompute(cacheKey, async () => {
       return calculatePoolStats({ roundId, poolId });
@@ -167,7 +165,7 @@ export async function GET(request: NextRequest) {
   let responseData;
 
   if (poolId && roundId) {
-    responseData = await handleBothPoolAndRoundId(roundId, poolId);
+    responseData = await handleBothPoolAndRoundId(poolId, roundId);
   } else if (poolId) {
     responseData = await handlePoolIdOnly(poolId);
   } else if (roundId) {

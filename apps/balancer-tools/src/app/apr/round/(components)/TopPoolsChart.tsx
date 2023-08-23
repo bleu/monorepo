@@ -23,7 +23,7 @@ export default async function TopPoolsChart({ roundId }: { roundId: string }) {
 
   const topAprApi: PoolStatsData[] = Object.values(
     await fetcher(
-      `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?roundid=${roundId}&sort=apr&limit=10`,
+      `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?roundid=${roundId}&sort=apr&limit=10&order=desc`,
     ),
   );
 

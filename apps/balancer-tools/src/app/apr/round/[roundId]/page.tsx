@@ -2,7 +2,7 @@ import { Suspense } from "react";
 
 import { Spinner } from "#/components/Spinner";
 
-import { PoolListTable } from "../(components)/PoolListTable";
+import PoolTableWrapper from "../(components)/PoolTableWrapper";
 import RoundOverviewCards from "../(components)/RoundOverviewCards";
 import TopPoolsChart from "../(components)/TopPoolsChart";
 
@@ -15,11 +15,13 @@ export default function Page({
     <div className="flex flex-col gap-y-3">
       <Suspense fallback={<Spinner />}>
         <RoundOverviewCards roundId={roundId} />
-      </Suspense>
+      </Suspense> 
       <Suspense fallback={<Spinner />}>
         <TopPoolsChart roundId={roundId} />
       </Suspense>
-      <PoolListTable roundId={roundId} />
+      <Suspense fallback={<Spinner />}>
+        <PoolTableWrapper roundId={roundId} />
+      </Suspense>
     </div>
   );
 }

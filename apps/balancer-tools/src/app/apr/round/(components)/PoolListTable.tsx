@@ -146,53 +146,19 @@ function TableRow({
   poolId,
   roundId,
   network,
-  tableData,
-  setTableData,
-  throttleHandler,
+  symbol,
+  tvl,
+  votingShare,
+  apr,
 }: {
   poolId: string;
   roundId: string;
-  network: number;
-  tableData: PoolTableData[];
-  setTableData: Dispatch<SetStateAction<PoolTableData[]>>;
-  throttleHandler: typeof throttle;
+  network: string;
+  symbol: string;
+  tvl: number;
+  votingShare: number;
+  apr: number;
 }) {
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const throttledFn = throttleHandler(
-        async (poolId: string, roundId: string): Promise<PoolStats> => {
-          return await fetcher(`/apr/api?poolid=${poolId}&roundid=${roundId}`);
-        },
-      );
-      try {
-        const result = await throttledFn(poolId, roundId);
-        setTableData((prevTableData) => {
-          const updatedTableData = prevTableData.map((pool) => {
-            if (pool.id === poolId) {
-              return {
-                ...pool,
-                ...result,
-              };
-            }
-            return pool;
-          });
-          return updatedTableData;
-        });
-
-        setIsLoading(false);
-      } catch (error) {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [poolId, roundId]);
-
-  const selectedPoolData: PoolTableData | undefined = tableData.find(
-    (data) => data.id === poolId,
-  );
   const poolRedirectURL = `/apr/pool/${networkFor(
     network,
   )}/${poolId}/round/${roundId}`;
@@ -205,25 +171,15 @@ function TableRow({
       }}
     >
       <Table.BodyCell>
-        {selectedPoolData?.symbol} ({networkFor(network)})
+        {symbol} ({networkFor(network)})
       </Table.BodyCell>
-      {isLoading ? (
-        <Table.BodyCell padding="py-4 px-1" colSpan={3}>
-          <Spinner size="sm" />
-        </Table.BodyCell>
-      ) : (
-        <>
-          <Table.BodyCell padding="py-4 px-1">
-            {formatNumber(selectedPoolData?.tvl || NaN)}
-          </Table.BodyCell>
-          <Table.BodyCell padding="py-4 px-1">
-            {formatNumber(selectedPoolData?.votingShare || NaN).concat("%")}
-          </Table.BodyCell>
-          <Table.BodyCell padding="py-4 px-1">
-            {formatNumber(selectedPoolData?.apr || NaN).concat("%")}
-          </Table.BodyCell>
-        </>
-      )}
+      <Table.BodyCell padding="py-4 px-1">{formatNumber(tvl)}</Table.BodyCell>
+      <Table.BodyCell padding="py-4 px-1">
+        {formatNumber(votingShare).concat("%")}
+      </Table.BodyCell>
+      <Table.BodyCell padding="py-4 px-1">
+        {formatNumber(apr).concat("%")}
+      </Table.BodyCell>
     </Table.BodyRow>
   );
 }

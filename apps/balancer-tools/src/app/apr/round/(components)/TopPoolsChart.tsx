@@ -29,7 +29,9 @@ export default async function TopPoolsChart({ roundId }: { roundId: string }) {
 
   const chartData = {
     hovertemplate: "%{x:.2f}% APR<extra></extra>",
-    marker: { color: topAprApi.map((_, index) => colors[index % colors.length]) },
+    marker: {
+      color: topAprApi.map((_, index) => colors[index % colors.length]),
+    },
     orientation: "h" as const,
     type: "bar" as PlotType,
     x: topAprApi.map((result) => result.apr.toFixed(2)),

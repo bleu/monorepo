@@ -17,23 +17,8 @@ export interface PoolStatsData {
 export interface PoolStatsResults {
   perRound: {
     [roundId: string]: PoolStatsData;
-  },
+  };
   average: PoolStatsData;
-}
-
-function sortingPoolStats(PoolStatsResults: {[key: string]: PoolStatsData}, sortProperty: string, orderArg: string  = 'desc', limit: number = Infinity) {
-  const sortedEntries = Object.entries(PoolStatsResults).sort((a, b) => {
-    if(!a[1] || !b[1]) return 0;
-    const valueA = a[1][sortProperty];
-    const valueB = b[1][sortProperty];
-
-export interface PoolStatsData {
-  apr: number;
-  balPriceUSD: number;
-  tvl: number;
-  votingShare: number;
-  roundId: number;
-  symbol: string;
 }
 
 function sortingPoolStats(

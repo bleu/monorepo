@@ -18,17 +18,11 @@ export function KPI({
   content: React.ReactNode;
 }) {
   return (
-    <Suspense
-      fallback={
-        <KPICardWrapper>
-          <Spinner size="sm" />
-        </KPICardWrapper>
-      }
-    >
-      <KPICardWrapper>
+    <KPICardWrapper>
+      <Suspense fallback={<Spinner size="sm" />}>
         <div className="font-semibold">{title}</div>
         <div className="pt-2">{content}</div>
-      </KPICardWrapper>
-    </Suspense>
+      </Suspense>
+    </KPICardWrapper>
   );
 }

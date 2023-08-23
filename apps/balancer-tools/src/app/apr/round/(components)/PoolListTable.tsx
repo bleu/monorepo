@@ -9,33 +9,15 @@ import {
   TriangleUpIcon,
 } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
-import pThrottle from "p-throttle";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "#/components";
-import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
-import votingGauges from "#/data/voting-gauges.json";
-import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 
-interface PoolStats {
-  apr: number;
-  balPriceUSD: number;
-  tvl: number;
-  votingShare: number;
-  symbol: string;
-}
-interface PoolTableData extends PoolStats {
-  id: string;
-  network: number;
-}
+import { PoolStatsData, RoundStatsResults } from "../../api/route";
 
-export const throttle = pThrottle({
-  limit: 3,
-  interval: 1500,
-});
 export function PoolListTable({
   roundId,
   initialData,

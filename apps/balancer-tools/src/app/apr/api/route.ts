@@ -18,12 +18,10 @@ export interface RoundStatsResults {
   [roundId: string]: PoolStatsData;
 }
 
-
 export interface PoolStatsResults {
-  perRound: RoundStatsResults
+  perRound: RoundStatsResults;
   average: PoolStatsData;
 }
-
 
 function sortingPoolStats(
   PoolStatsResults: { [key: string]: PoolStatsData },
@@ -118,12 +116,15 @@ export async function GET(request: NextRequest) {
       tvl: averagedValues.tvl / numResults,
       votingShare: averagedValues.votingShare / numResults,
     };
-    const perRound = results.reduce((acc, obj, index) => {
-      acc[(index + 1) + parseInt(roundGaugeAdded.value)] = obj;
-      return acc;
-    }, {} as { [key: number]: PoolStatsData });
+    const perRound = results.reduce(
+      (acc, obj, index) => {
+        acc[index + 1 + parseInt(roundGaugeAdded.value)] = obj;
+        return acc;
+      },
+      {} as { [key: number]: PoolStatsData },
+    );
 
-  return NextResponse.json({ perRound, average: averageResult });
+    return NextResponse.json({ perRound, average: averageResult });
   }
 
   // If it has a roundId but no poolId, return all pools for that round

@@ -15,7 +15,7 @@ export default function Page({
     <div className="flex flex-col gap-y-3">
       <Suspense fallback={<Spinner />}>
         <RoundOverviewCards roundId={roundId} />
-      </Suspense> 
+      </Suspense>
       <Suspense fallback={<Spinner />}>
         <TopPoolsChart roundId={roundId} />
       </Suspense>

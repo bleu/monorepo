@@ -26,9 +26,8 @@ export default async function HistoricalAPRChart({
       cords.y.push(result.apr);
       return cords;
     },
-    { x: [], y: [] } as { x: string[]; y: number[] }
+    { x: [], y: [] } as { x: string[]; y: number[] },
   );
-  
 
   const trimmedAPRData = trimTrailingValues(
     APRPerRoundCords.x.reverse(),

@@ -27,6 +27,7 @@ function sortingPoolStats(
   PoolStatsResults: { [key: string]: PoolStatsData },
   sortProperty: string,
   orderArg: string = "desc",
+  offset: number = 0,
   limit: number = Infinity,
 ) {
   const sortedEntries = Object.entries(PoolStatsResults)
@@ -54,7 +55,7 @@ function sortingPoolStats(
         ? valueA.toString().localeCompare(valueB.toString())
         : valueB.toString().localeCompare(valueA.toString());
     })
-    .slice(0, limit);
+    .slice(offset, offset + limit);
   return Object.fromEntries(sortedEntries);
 }
 
@@ -65,6 +66,7 @@ export async function GET(request: NextRequest) {
   const orderArg = request.nextUrl.searchParams.get("order") || undefined;
   const limitArg =
     parseInt(request.nextUrl.searchParams.get("limit") ?? "0") || Infinity;
+  const offsetArg = parseInt(request.nextUrl.searchParams.get("offset") ?? "0");
 
   // If it has no poolId or roundId, return an error
   if (!roundId && !poolId) {
@@ -153,12 +155,12 @@ export async function GET(request: NextRequest) {
 
     if (sortArg) {
       return NextResponse.json(
-        sortingPoolStats(parsedResult, sortArg, orderArg, limitArg),
+        sortingPoolStats(parsedResult, sortArg, orderArg, offsetArg, limitArg),
       );
     }
     if (limitArg) {
       const limitedData = Object.keys(parsedResult)
-        .slice(0, parseInt(limitArg))
+        .slice(offsetArg, offsetArg + limitArg)
         .reduce((acc, key) => {
           acc[key] = parsedResult[key];
           return acc;

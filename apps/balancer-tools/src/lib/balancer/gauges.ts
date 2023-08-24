@@ -2,6 +2,10 @@ import { NetworkChainId } from "@bleu-balancer-tools/utils";
 
 import POOLS_WITH_GAUGES from "#/data/voting-gauges.json";
 
+export const POOLS_WITH_LIVE_GAUGES = POOLS_WITH_GAUGES.filter(
+  (pool) => !pool.gauge.isKilled && pool.gauge.addedTimestamp,
+);
+
 const GAUGE_CACHE: { [address: string]: Gauge } = {};
 const POOL_CACHE: { [id: string]: Pool } = {};
 
@@ -10,7 +14,7 @@ class Token {
   weight: string | null;
   symbol: string;
 
-  constructor(data: (typeof POOLS_WITH_GAUGES)[0]["tokens"][0]) {
+  constructor(data: (typeof POOLS_WITH_LIVE_GAUGES)[0]["tokens"][0]) {
     this.address = data.address;
     this.weight = data.weight;
     this.symbol = data.symbol;
@@ -33,7 +37,7 @@ export class Pool {
   poolType!: string;
   symbol!: string;
   tokens!: Token[];
-  gauge?: Gauge;
+  gauge!: Gauge;
 
   constructor(id: string, associatedGauge?: Gauge) {
     // Return cached instance if it exists
@@ -41,7 +45,7 @@ export class Pool {
       return POOL_CACHE[id];
     }
 
-    const data = POOLS_WITH_GAUGES.find(
+    const data = POOLS_WITH_LIVE_GAUGES.find(
       (g) => g.id.toLowerCase() === id.toLowerCase(),
     );
 
@@ -56,19 +60,9 @@ export class Pool {
     this.poolType = data.type;
     this.symbol = data.symbol;
     this.tokens = data.tokens.map(
-      (t: (typeof POOLS_WITH_GAUGES)[0]["tokens"][0]) => new Token(t),
+      (t: (typeof POOLS_WITH_LIVE_GAUGES)[0]["tokens"][0]) => new Token(t),
     );
-    this.gauge = associatedGauge;
-
-    if (!this.gauge) {
-      const pool = POOLS_WITH_GAUGES.find(
-        (g) => g.id.toLowerCase() === this.id.toLowerCase(),
-      );
-      if (pool) {
-        this.gauge = new Gauge(pool.gauge.address);
-        this.gauge.pool = this;
-      }
-    }
+    this.gauge = associatedGauge || new Gauge(data.gauge.address);
 
     POOL_CACHE[this.id] = this;
   }
@@ -77,7 +71,7 @@ export class Pool {
 export class Gauge {
   address!: string;
   isKilled?: boolean;
-  addedTimestamp!: number | null;
+  addedTimestamp!: number;
   relativeWeightCap!: string | null;
   pool!: Pool;
 
@@ -87,7 +81,7 @@ export class Gauge {
       return GAUGE_CACHE[address];
     }
 
-    const data = POOLS_WITH_GAUGES.find(
+    const data = POOLS_WITH_LIVE_GAUGES.find(
       (g) => g.gauge.address.toLowerCase() === address.toLowerCase(),
     );
 

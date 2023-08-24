@@ -10,7 +10,7 @@ import { PlotType } from "plotly.js";
 import Plot from "#/components/Plot";
 import { fetcher } from "#/utils/fetcher";
 
-import { PoolStatsData } from "../../api/route";
+import { PoolStatsResults } from "../../api/route";
 
 export default async function TopPoolsChart({ roundId }: { roundId: string }) {
   const colors = [
@@ -21,21 +21,21 @@ export default async function TopPoolsChart({ roundId }: { roundId: string }) {
     amberDark.amber9,
   ];
 
-  const topAprApi: PoolStatsData[] = Object.values(
-    await fetcher(
-      `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?roundid=${roundId}&sort=apr&limit=10&order=desc`,
-    ),
+  const topAprApi = await fetcher<PoolStatsResults>(
+    `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?roundid=${roundId}&sort=apr&limit=10&order=desc`,
   );
 
   const chartData = {
     hovertemplate: "%{x:.2f}% APR<extra></extra>",
     marker: {
-      color: topAprApi.map((_, index) => colors[index % colors.length]),
+      color: topAprApi.perRound.map(
+        (_, index) => colors[index % colors.length],
+      ),
     },
     orientation: "h" as const,
     type: "bar" as PlotType,
-    x: topAprApi.map((result) => result.apr.toFixed(2)),
-    y: topAprApi.map((result) => result.symbol),
+    x: topAprApi.perRound.map((result) => result.apr.toFixed(2)),
+    y: topAprApi.perRound.map((result) => result.symbol),
   };
 
   return (

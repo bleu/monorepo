@@ -1,5 +1,4 @@
-import pThrottle from "p-throttle";
-
+/* eslint-disable no-console */
 import * as balEmissions from "#/lib/balancer/emissions";
 import { Pool } from "#/lib/balancer/gauges";
 import { pools } from "#/lib/gql/server";
@@ -12,13 +11,35 @@ import { Round } from "./rounds";
 
 const WEEKS_IN_YEAR = 52;
 
-// Whenever we exceed the subgraph rate limit, it would just stop returning data
-// p-throttle is used to limit the number of requests to the subgraph at once
-// I got to these numbers by testing and adjusting manually
-const throttle = pThrottle({
-  limit: 1,
-  interval: 400,
-});
+const memoryCache: { [key: string]: unknown } = {};
+
+const getDataFromCacheOrCompute = async <T>(
+  cacheKey: string,
+  computeFn: () => Promise<T>,
+): Promise<T> => {
+  if (memoryCache[cacheKey]) {
+    console.debug(`Cache hit for ${cacheKey}`);
+    return memoryCache[cacheKey] as T;
+  }
+
+  console.debug(`Cache miss for ${cacheKey}`);
+  const computedData = await computeFn();
+  memoryCache[cacheKey] = computedData;
+  return computedData;
+};
+
+const fetchPoolData = async (
+  poolId: string,
+  network: string,
+  blockNumber: number | null,
+): Promise<[number, string]> => {
+  const gqlFn = blockNumber
+    ? pools.gql(network).PoolWhereBlockNumber({ blockNumber, poolId })
+    : pools.gql(network).Pool({ poolId });
+
+  const res = await gqlFn;
+  return [parseFloat(res.pool?.totalLiquidity) ?? 0, res.pool?.symbol ?? ""];
+};
 
 export async function calculatePoolStats({
   roundId,
@@ -27,68 +48,52 @@ export async function calculatePoolStats({
   roundId: string;
   poolId: string;
 }): Promise<PoolStatsData> {
-  // TODO: BAL-646 aggregate historical pool APR when roundId is not provided
   const round = Round.getRoundByNumber(roundId);
   const pool = new Pool(poolId);
-  const throttledFn = throttle(async (network: number, endDate: Date) => {
-    return await getBlockNumberByTimestamp(network, endDate);
-  });
-  const endRoundBlockNumber = await throttledFn(
-    pool.network ?? 1,
-    round.endDate,
-  );
-  if (!endRoundBlockNumber) {
-    // Normally this shouldn't happen, but if it does, we'd rather return an error than crash
-    // eslint-disable-next-line no-console
-    console.error(
-      `Couldn't fetch block number for pool ${poolId} on round ${roundId}`,
-    );
-    throw new Error("Couldn't fetch block number");
-  }
-
   const network = String(pool.network ?? 1);
-  let balPriceUSD = 0;
-  let symbol = pool.symbol;
-  let tvl = 0;
-  let votingShare = 0;
-  let apr = 0;
 
-  balPriceUSD = await getBALPriceByRound(round);
-
-  [tvl, symbol] = round.activeRound
-    ? await pools
-        .gql(network)
-        .Pool({
-          poolId,
-        })
-        .then((res) => {
-          return [
-            parseFloat(res.pool?.totalLiquidity) ?? 0,
-            res.pool?.symbol ?? pool.symbol,
-          ];
-        })
-    : await pools
-        .gql(network)
-        .PoolWhereBlockNumber({
-          blockNumber: endRoundBlockNumber,
-          poolId,
-        })
-        .then((res) => {
-          return [
-            parseFloat(res.pool?.totalLiquidity) ?? 0,
-            res.pool?.symbol ?? pool.symbol,
-          ];
-        });
-
-  votingShare = await getPoolRelativeWeight(
-    poolId,
-    round.endDate.getTime() / 1000,
+  const endRoundBlockNumber = await getDataFromCacheOrCompute(
+    `block_from_${round.endDate}`,
+    () => getBlockNumberByTimestamp(pool.network ?? 1, round.endDate),
   );
 
-  if (balPriceUSD !== 0 && tvl !== 0 && votingShare !== 0) {
-    apr = calculateRoundAPR(round, votingShare, tvl, balPriceUSD) * 100;
-  }
-  return { apr, balPriceUSD, tvl, votingShare, symbol, network };
+  const [balPriceUSD, [tvl, symbol], votingShare] = await Promise.all([
+    getDataFromCacheOrCompute(`bal_price_${round.value}`, () =>
+      getBALPriceByRound(round),
+    ),
+    getDataFromCacheOrCompute(`pool_data_${round.value}_${network}`, () =>
+      fetchPoolData(
+        poolId,
+        network,
+        round.activeRound ? null : endRoundBlockNumber,
+      ),
+    ),
+    getDataFromCacheOrCompute(
+      `pool_weight_${poolId}_${round.value}_${network}`,
+      () =>
+        getPoolRelativeWeight(
+          poolId,
+          round.endDate.getTime() / 1000,
+          round.activeRound ? undefined : BigInt(endRoundBlockNumber),
+        ),
+    ),
+  ]);
+
+  const apr =
+    balPriceUSD && tvl && votingShare
+      ? calculateRoundAPR(round, votingShare, tvl, balPriceUSD) * 100
+      : -1;
+
+  return {
+    roundId,
+    poolId,
+    apr,
+    balPriceUSD,
+    tvl,
+    votingShare,
+    symbol,
+    network,
+  };
 }
 
 function calculateRoundAPR(
@@ -96,8 +101,7 @@ function calculateRoundAPR(
   votingShare: number,
   tvl: number,
   balPriceUSD: number,
-) {
+): number {
   const emissions = balEmissions.weekly(round.endDate.getTime() / 1000);
-
   return (WEEKS_IN_YEAR * (emissions * votingShare * balPriceUSD)) / tvl;
 }

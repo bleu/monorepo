@@ -18,14 +18,14 @@ import { Tooltip } from "#/components/Tooltip";
 import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 
-import { PoolStatsData, RoundStatsResults } from "../../api/route";
+import { PoolStatsData, PoolStatsResults } from "../../api/route";
 
 export function PoolListTable({
   roundId,
   initialData,
 }: {
   roundId: string;
-  initialData: RoundStatsResults;
+  initialData: PoolStatsResults;
 }) {
   const [tableData, setTableData] = useState(initialData);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -54,7 +54,7 @@ export function PoolListTable({
           },
         );
 
-        const sortedData: RoundStatsResults = {};
+        const sortedData = {};
         sortedArray.forEach(([key, value]) => {
           sortedData[key] = value;
         });
@@ -74,7 +74,7 @@ export function PoolListTable({
 
   const loadMorePools = async () => {
     setIsLoadingMore(true);
-    const aditionalPoolsData: RoundStatsResults = await fetcher(
+    const aditionalPoolsData = await fetcher<PoolStatsResults>(
       `${
         process.env.NEXT_PUBLIC_SITE_URL
       }/apr/api/?roundid=${roundId}&sort=${sortField}&order=${order}&limit=10&offset=${

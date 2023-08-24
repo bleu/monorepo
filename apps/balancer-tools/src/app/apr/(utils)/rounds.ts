@@ -1,5 +1,5 @@
 export class Round {
-  private static FIRST_ROUND_END_DATE = new Date("2022-04-14T00:00:00.000Z");
+  public static FIRST_ROUND_END_DATE = new Date("2022-04-14T00:00:00.000Z");
   private static ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
 
   endDate: Date;
@@ -58,13 +58,13 @@ export class Round {
     if (date < Round.FIRST_ROUND_END_DATE) {
       // eslint-disable-next-line no-console
       console.debug(
-        "getRoundByDate recieved a date that is before first round",
+        "getRoundByDate received a date that is before first round",
       );
       return Round.getRoundByNumber(1);
     } else if (date > Round.currentRound().endDate) {
       // eslint-disable-next-line no-console
       console.debug(
-        "getRoundByDate recieved a date that is after current round",
+        "getRoundByDate received a date that is after current round",
       );
       return Round.currentRound();
     }

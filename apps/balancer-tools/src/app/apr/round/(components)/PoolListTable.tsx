@@ -41,14 +41,16 @@ export const throttle = pThrottle({
 export function PoolListTable({ roundId }: { roundId: string }) {
   const initialTableValues: PoolTableData[] = votingGauges
     .slice(0, 10)
-    .map((gauge) => ({
-      id: gauge.pool.id,
-      apr: 0,
-      balPriceUSD: 0,
-      tvl: 0,
-      votingShare: 0,
-      network: gauge.network,
-    }));
+    .map((pool) => {
+      return {
+        id: pool.id,
+        apr: 0,
+        balPriceUSD: 0,
+        tvl: 0,
+        votingShare: 0,
+        network: new Pool(pool.id).network,
+      };
+    });
   const [tableData, setTableData] = useState(initialTableValues);
   const [sortField, setSortField] = useState("");
   const [order, setOrder] = useState<"asc" | "desc">("asc");

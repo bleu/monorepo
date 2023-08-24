@@ -33,15 +33,15 @@ export default async function TopPoolsChart({ roundId }: { roundId: string }) {
       break;
     }
 
-    const gauge = votingGauges[index];
+    const pool = votingGauges[index];
     const { apr } = await calculatePoolStats({
       roundId,
-      poolId: gauge.pool.id,
+      poolId: pool.id,
     });
 
     if (apr && apr > 0.01) {
       barCords.x.push(apr.toFixed(2));
-      barCords.y.push(gauge.pool.symbol);
+      barCords.y.push(pool.symbol);
       barCords.colors.push(colors[index % colors.length]);
     }
   }

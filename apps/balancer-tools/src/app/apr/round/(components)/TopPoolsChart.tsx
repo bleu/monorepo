@@ -8,31 +8,11 @@ import {
 import { PlotType } from "plotly.js";
 
 import Plot from "#/components/Plot";
-import votingGauges from "#/data/voting-gauges.json";
+import { fetcher } from "#/utils/fetcher";
 
-import { generatePromisesForPoolList } from "../../(utils)/getHistoricalDataForPool";
-
-const sortDataByX = (data: {
-  x: number[] | string[];
-  y: number[] | string[];
-}) =>
-  data.x
-    .map((_, index) => index)
-    .sort(
-      (a, b) =>
-        parseFloat(data.x[b] as string) - parseFloat(data.x[a] as string),
-    )
-    .reduce(
-      (sortedArrays, index) => {
-        sortedArrays[0].push(data.x[index]);
-        sortedArrays[1].push(data.y[index]);
-        return sortedArrays;
-      },
-      [[], []] as [(number | string)[], (number | string)[]],
-    );
+import { PoolStatsData } from "../../api/route";
 
 export default async function TopPoolsChart({ roundId }: { roundId: string }) {
-  const POOL_QUANTITY_LIMIT = 10;
   const colors = [
     greenDark.green9,
     violetDark.violet9,
@@ -41,26 +21,21 @@ export default async function TopPoolsChart({ roundId }: { roundId: string }) {
     amberDark.amber9,
   ];
 
-  const poolList = votingGauges.map((gauge) => gauge.pool.id);
-  const results = await generatePromisesForPoolList(poolList);
-  const barCords: {
-    x: string[];
-    y: string[];
-    colors: string[];
-  } = {
-    x: results.map((result) => result.apr.toFixed(2)),
-    y: results.map((result) => result.symbol),
-    colors: results.map((_, index) => colors[index % colors.length]),
-  };
+  const topAprApi: PoolStatsData[] = Object.values(
+    await fetcher(
+      `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?roundid=${roundId}&sort=apr&limit=10&order=desc`,
+    ),
+  );
 
-  const [sortedX, sortedY] = sortDataByX(barCords);
   const chartData = {
     hovertemplate: "%{x:.2f}% APR<extra></extra>",
-    marker: { color: barCords.colors },
+    marker: {
+      color: topAprApi.map((_, index) => colors[index % colors.length]),
+    },
     orientation: "h" as const,
     type: "bar" as PlotType,
-    x: sortedX.slice(0, POOL_QUANTITY_LIMIT),
-    y: sortedY.slice(0, POOL_QUANTITY_LIMIT),
+    x: topAprApi.map((result) => result.apr.toFixed(2)),
+    y: topAprApi.map((result) => result.symbol),
   };
 
   return (

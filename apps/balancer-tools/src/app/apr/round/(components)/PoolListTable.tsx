@@ -9,77 +9,82 @@ import {
   TriangleUpIcon,
 } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
-import pThrottle from "p-throttle";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "#/components";
 import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
-import votingGauges from "#/data/voting-gauges.json";
 import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 
-interface PoolStats {
-  apr: number;
-  balPriceUSD: number;
-  tvl: number;
-  votingShare: number;
-  symbol: string;
-}
-interface PoolTableData extends PoolStats {
-  id: string;
-  network: number;
-}
+import { PoolStatsData, RoundStatsResults } from "../../api/route";
 
-export const throttle = pThrottle({
-  limit: 3,
-  interval: 1500,
-});
+export function PoolListTable({
+  roundId,
+  initialData,
+}: {
+  roundId: string;
+  initialData: RoundStatsResults;
+}) {
+  const [tableData, setTableData] = useState(initialData);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [sortField, setSortField] = useState("apr");
+  const [order, setOrder] = useState<"asc" | "desc">("desc");
 
-export function PoolListTable({ roundId }: { roundId: string }) {
-  const initialTableValues: PoolTableData[] = votingGauges
-    .slice(0, 10)
-    .map((gauge) => ({
-      id: gauge.pool.id,
-      symbol: gauge.pool.symbol,
-      apr: 0,
-      balPriceUSD: 0,
-      tvl: 0,
-      votingShare: 0,
-      network: gauge.network,
-    }));
-  const [tableData, setTableData] = useState(initialTableValues);
-  const [sortField, setSortField] = useState("");
-  const [order, setOrder] = useState<"asc" | "desc">("asc");
-  const handleSorting = (sortField: keyof PoolTableData, sortOrder: string) => {
+  const handleSorting = (sortField: keyof PoolStatsData, sortOrder: string) => {
     if (sortField) {
       setTableData((prevTableData) => {
-        const sortedArray = prevTableData.slice().sort((a, b) => {
-          const aValue = a[sortField] as number;
-          const bValue = b[sortField] as number;
+        const sortedArray = Object.entries(prevTableData).sort(
+          ([, a], [, b]) => {
+            const aValue = a[sortField];
+            const bValue = b[sortField];
 
-          if (isNaN(aValue)) return 1;
-          if (isNaN(bValue)) return -1;
+            if (typeof aValue !== "number") return 1;
+            if (typeof bValue !== "number") return -1;
 
-          if (sortOrder === "asc") {
-            return aValue - bValue;
-          } else {
-            return bValue - aValue;
-          }
+            if (isNaN(aValue)) return 1;
+            if (isNaN(bValue)) return -1;
+
+            if (sortOrder === "asc") {
+              return aValue - bValue;
+            } else {
+              return bValue - aValue;
+            }
+          },
+        );
+
+        const sortedData: RoundStatsResults = {};
+        sortedArray.forEach(([key, value]) => {
+          sortedData[key] = value;
         });
 
-        return sortedArray;
+        return sortedData;
       });
     }
   };
 
-  const handleSortingChange = (accessor: keyof PoolTableData) => {
+  const handleSortingChange = (accessor: keyof PoolStatsData) => {
     const sortOrder =
-      accessor === sortField && order === "asc" ? "desc" : "asc";
+      accessor === sortField && order === "desc" ? "asc" : "desc";
     setSortField(accessor);
     setOrder(sortOrder);
     handleSorting(accessor, sortOrder);
+  };
+
+  const loadMorePools = async () => {
+    setIsLoadingMore(true);
+    const aditionalPoolsData: RoundStatsResults = await fetcher(
+      `${
+        process.env.NEXT_PUBLIC_SITE_URL
+      }/apr/api/?roundid=${roundId}&sort=${sortField}&order=${order}&limit=10&offset=${
+        Object.keys(tableData).length
+      }`,
+    );
+    setTableData((prevTableData) => {
+      return { ...prevTableData, ...aditionalPoolsData };
+    });
+    setIsLoadingMore(false);
   };
 
   return (
@@ -119,26 +124,37 @@ export function PoolListTable({ roundId }: { roundId: string }) {
           </Table.HeaderCell>
         </Table.HeaderRow>
         <Table.Body>
-          {tableData.map((gauge) => (
+          {Object.entries(tableData).map(([key, gauge]) => (
             <TableRow
-              tableData={tableData}
-              setTableData={setTableData}
-              key={gauge.id}
-              poolId={gauge.id}
+              key={key}
+              poolId={key}
               network={gauge.network}
               roundId={roundId}
-              throttleHandler={throttle}
+              symbol={gauge.symbol}
+              tvl={gauge.tvl}
+              votingShare={gauge.votingShare}
+              apr={gauge.apr}
             />
           ))}
           <Table.BodyRow>
             <Table.BodyCell colSpan={4}>
-              <Button
-                className="w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
-                shade="medium"
-                disabled={true}
-              >
-                Load More <ChevronDownIcon />
-              </Button>
+              {isLoadingMore ? (
+                <Button
+                  className="w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
+                  shade="medium"
+                  disabled={true}
+                >
+                  <Spinner size="sm" />
+                </Button>
+              ) : (
+                <Button
+                  className="w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
+                  shade="medium"
+                  onClick={loadMorePools}
+                >
+                  Load More <ChevronDownIcon />
+                </Button>
+              )}
             </Table.BodyCell>
           </Table.BodyRow>
         </Table.Body>
@@ -151,53 +167,19 @@ function TableRow({
   poolId,
   roundId,
   network,
-  tableData,
-  setTableData,
-  throttleHandler,
+  symbol,
+  tvl,
+  votingShare,
+  apr,
 }: {
   poolId: string;
   roundId: string;
-  network: number;
-  tableData: PoolTableData[];
-  setTableData: Dispatch<SetStateAction<PoolTableData[]>>;
-  throttleHandler: typeof throttle;
+  network: string;
+  symbol: string;
+  tvl: number;
+  votingShare: number;
+  apr: number;
 }) {
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const throttledFn = throttleHandler(
-        async (poolId: string, roundId: string): Promise<PoolStats> => {
-          return await fetcher(`/apr/api?poolid=${poolId}&roundid=${roundId}`);
-        },
-      );
-      try {
-        const result = await throttledFn(poolId, roundId);
-        setTableData((prevTableData) => {
-          const updatedTableData = prevTableData.map((pool) => {
-            if (pool.id === poolId) {
-              return {
-                ...pool,
-                ...result,
-              };
-            }
-            return pool;
-          });
-          return updatedTableData;
-        });
-
-        setIsLoading(false);
-      } catch (error) {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [poolId, roundId]);
-
-  const selectedPoolData: PoolTableData | undefined = tableData.find(
-    (data) => data.id === poolId,
-  );
   const poolRedirectURL = `/apr/pool/${networkFor(
     network,
   )}/${poolId}/round/${roundId}`;
@@ -210,25 +192,15 @@ function TableRow({
       }}
     >
       <Table.BodyCell>
-        {selectedPoolData?.symbol} ({networkFor(network)})
+        {symbol} ({networkFor(network)})
       </Table.BodyCell>
-      {isLoading ? (
-        <Table.BodyCell padding="py-4 px-1" colSpan={3}>
-          <Spinner size="sm" />
-        </Table.BodyCell>
-      ) : (
-        <>
-          <Table.BodyCell padding="py-4 px-1">
-            {formatNumber(selectedPoolData?.tvl || NaN)}
-          </Table.BodyCell>
-          <Table.BodyCell padding="py-4 px-1">
-            {formatNumber(selectedPoolData?.votingShare || NaN).concat("%")}
-          </Table.BodyCell>
-          <Table.BodyCell padding="py-4 px-1">
-            {formatNumber(selectedPoolData?.apr || NaN).concat("%")}
-          </Table.BodyCell>
-        </>
-      )}
+      <Table.BodyCell padding="py-4 px-1">{formatNumber(tvl)}</Table.BodyCell>
+      <Table.BodyCell padding="py-4 px-1">
+        {formatNumber(votingShare).concat("%")}
+      </Table.BodyCell>
+      <Table.BodyCell padding="py-4 px-1">
+        {formatNumber(apr).concat("%")}
+      </Table.BodyCell>
     </Table.BodyRow>
   );
 }

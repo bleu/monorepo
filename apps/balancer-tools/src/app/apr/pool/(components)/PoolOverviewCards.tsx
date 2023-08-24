@@ -1,31 +1,25 @@
 import { formatDate } from "@bleu-balancer-tools/utils";
 
+import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 
 import OverviewCards from "../../(components)/OverviewCards";
 import { calculatePoolStats } from "../../(utils)/calculatePoolStats";
-import {
-  generatePromisesForHistoricalPoolData,
-  PoolStatsData,
-} from "../../(utils)/getHistoricalDataForPool";
 import { Round } from "../../(utils)/rounds";
+import { PoolStatsResults } from "../../api/route";
 
 async function AverageTVLCard({ poolId }: { poolId: string }) {
-  const data = await generatePromisesForHistoricalPoolData(poolId);
-  const totalTvl = data.reduce(
-    (sum: number, entry: PoolStatsData) => sum + entry.tvl,
-    0,
+  const data: PoolStatsResults = await fetcher(
+    `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?poolid=${poolId}`,
   );
-  return <div>{formatNumber(totalTvl / data.length)}</div>;
+  return <div>{formatNumber(data.average.tvl)}</div>;
 }
 
 async function AverageAPRCard({ poolId }: { poolId: string }) {
-  const data = await generatePromisesForHistoricalPoolData(poolId);
-  const totalAPR = data.reduce(
-    (sum: number, entry: PoolStatsData) => sum + entry.apr,
-    0,
+  const data: PoolStatsResults = await fetcher(
+    `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?poolid=${poolId}`,
   );
-  return <div>{formatNumber(totalAPR / data.length).concat("%")}</div>;
+  return <div>{formatNumber(data.average.apr).concat("%")}</div>;
 }
 
 export default async function PoolOverviewCards({

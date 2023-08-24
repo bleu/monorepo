@@ -1,5 +1,3 @@
-"use client";
-
 import {
   amberDark,
   blueDark,
@@ -10,8 +8,13 @@ import {
 import { PlotType } from "plotly.js";
 
 import Plot from "#/components/Plot";
+import votingGauges from "#/data/voting-gauges.json";
 
-export default function TopPoolsChart({ roundId }: { roundId: string }) {
+import { calculatePoolStats } from "../../(utils)/calculatePoolStats";
+import sortDataByX from "../../(utils)/sortChartData";
+
+export default async function TopPoolsChart({ roundId }: { roundId: string }) {
+  const POOL_QUANTITY_LIMIT = 16;
   const colors = [
     greenDark.green9,
     violetDark.violet9,
@@ -19,37 +22,38 @@ export default function TopPoolsChart({ roundId }: { roundId: string }) {
     blueDark.blue9,
     amberDark.amber9,
   ];
-  const bars = [
-    { x: "0.00", y: "sNOTE-BPT" },
-    { x: "0.01", y: "B-50USDC-50WETH" },
-    { x: "0.35", y: "B-stETH-STABLE" },
-    { x: "0.50", y: "B-50VITA-50WETH" },
-    { x: "0.99", y: "80D2D-20USDC" },
-    { x: "1.10", y: "B-80GNO-20WETH" },
-    { x: "1.92", y: "50WETH-50AURA" },
-    { x: "3.48", y: "20WBTC-80BADGER" },
-    { x: "3.53", y: "50COW-50GNO" },
-    { x: "5.60", y: "50COW-50WETH" },
-    { x: "9.60", y: "VBPT" },
-    { x: "18.19", y: "20WETH-80WNCG" },
-    { x: "18.62", y: "B-sdBAL-STABLE" },
-    { x: "26.18", y: "50DFX-50WETH" },
-    { x: "39.03", y: "USDC-PAL" },
-  ];
-  const colorArray = Array.from(
-    { length: bars.length },
-    (_, index) => colors[index % colors.length],
-  );
 
-  const data = {
+  const barCords: {
+    x: string[];
+    y: string[];
+    colors: string[];
+  } = { x: [], y: [], colors: [] };
+  for (let index = 0; index < votingGauges.length; index++) {
+    if (barCords.x.length >= POOL_QUANTITY_LIMIT) {
+      break;
+    }
+
+    const pool = votingGauges[index];
+    const { apr } = await calculatePoolStats({
+      roundId,
+      poolId: pool.id,
+    });
+
+    if (apr && apr > 0.01) {
+      barCords.x.push(apr.toFixed(2));
+      barCords.y.push(pool.symbol);
+      barCords.colors.push(colors[index % colors.length]);
+    }
+  }
+
+  const [sortedX, sortedY] = sortDataByX(barCords);
+  const chartData = {
     hovertemplate: "%{x:.2f}% APR<extra></extra>",
-    marker: {
-      color: colorArray,
-    },
+    marker: { color: barCords.colors },
     orientation: "h" as const,
     type: "bar" as PlotType,
-    x: bars.map((bar) => bar.x),
-    y: bars.map((bar) => bar.y),
+    x: sortedX,
+    y: sortedY,
   };
 
   return (
@@ -57,7 +61,7 @@ export default function TopPoolsChart({ roundId }: { roundId: string }) {
       <Plot
         title={`Top APR Pools of Round ${roundId}`}
         toolTip="Top pools with highest APR."
-        data={[data]}
+        data={[chartData]}
         layout={{
           barmode: "overlay",
           autosize: true,

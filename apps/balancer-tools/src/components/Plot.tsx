@@ -1,3 +1,4 @@
+"use client";
 import { amberDarkA, blueDarkA, grayDarkA, slateDarkA } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import cn from "clsx";

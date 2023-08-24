@@ -4,6 +4,7 @@ import * as balEmissions from "#/lib/balancer/emissions";
 import { Pool } from "#/lib/balancer/gauges";
 import { pools } from "#/lib/gql/server";
 
+import { PoolStatsData } from "../api/route";
 import { getBALPriceByRound } from "./getBALPriceByRound";
 import getBlockNumberByTimestamp from "./getBlockNumberForTime";
 import { getPoolRelativeWeight } from "./getRelativeWeight";
@@ -16,7 +17,7 @@ const WEEKS_IN_YEAR = 52;
 // I got to these numbers by testing and adjusting manually
 const throttle = pThrottle({
   limit: 1,
-  interval: 350,
+  interval: 400,
 });
 
 export async function calculatePoolStats({
@@ -25,7 +26,7 @@ export async function calculatePoolStats({
 }: {
   roundId: string;
   poolId: string;
-}) {
+}): Promise<PoolStatsData> {
   // TODO: BAL-646 aggregate historical pool APR when roundId is not provided
   const round = Round.getRoundByNumber(roundId);
   const pool = new Pool(poolId);
@@ -42,18 +43,10 @@ export async function calculatePoolStats({
     console.error(
       `Couldn't fetch block number for pool ${poolId} on round ${roundId}`,
     );
-    // TODO: BAL-655/BAL-662 - handle this error better
-    return {
-      apr: -1,
-      balPriceUSD: -1,
-      tvl: -1,
-      votingShare: -1,
-      symbol: -1,
-      network: -1,
-    };
+    throw new Error("Couldn't fetch block number");
   }
 
-  const network = pool.network ?? 1;
+  const network = String(pool.network ?? 1);
   let balPriceUSD = 0;
   let symbol = pool.symbol;
   let tvl = 0;
@@ -64,7 +57,7 @@ export async function calculatePoolStats({
 
   [tvl, symbol] = round.activeRound
     ? await pools
-        .gql(String(network))
+        .gql(network)
         .Pool({
           poolId,
         })
@@ -75,7 +68,7 @@ export async function calculatePoolStats({
           ];
         })
     : await pools
-        .gql(String(network))
+        .gql(network)
         .PoolWhereBlockNumber({
           blockNumber: endRoundBlockNumber,
           poolId,

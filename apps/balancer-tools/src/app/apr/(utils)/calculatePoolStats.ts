@@ -53,7 +53,7 @@ export async function calculatePoolStats({
   const network = String(pool.network ?? 1);
 
   const endRoundBlockNumber = await getDataFromCacheOrCompute(
-    `block_from_${round.endDate}`,
+    `block_${pool.network}_from_${round.endDate}`,
     () => getBlockNumberByTimestamp(pool.network ?? 1, round.endDate),
   );
 

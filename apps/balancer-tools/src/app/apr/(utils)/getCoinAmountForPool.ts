@@ -8,7 +8,7 @@ export default async function getTokenAmountByPoolTimestamp(
   timestamp: number = Date.now() / 1000,
 ) {
   const pool = new Pool(poolId);
-  const data = await poolSnapshots.gql(String(pool.network)).PoolSnaphot({
+  const data = await poolSnapshots.gql(String(pool.network)).PoolSnapshot({
     pool: poolId,
     timestamp: timestamp - DAY_IN_SECONDS,
   });

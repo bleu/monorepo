@@ -5848,18 +5848,18 @@ export type _SubgraphErrorPolicy_ =
   | 'deny'
   | '%future added value';
 
-export type PoolSnaphotQueryVariables = Exact<{
+export type PoolSnapshotQueryVariables = Exact<{
   pool?: InputMaybe<Scalars['String']>;
   timestamp?: InputMaybe<Scalars['Int']>;
 }>;
 
 
-export type PoolSnaphotQuery = { __typename?: 'Query', poolSnapshots: Array<{ __typename?: 'PoolSnapshot', amounts: Array<any>, pool: { __typename?: 'Pool', id: string } }> };
+export type PoolSnapshotQuery = { __typename?: 'Query', poolSnapshots: Array<{ __typename?: 'PoolSnapshot', amounts: Array<any>, pool: { __typename?: 'Pool', id: string } }> };
 
 
-export const PoolSnaphotDocument = gql`
-    query PoolSnaphot($pool: String, $timestamp: Int) {
-  poolSnapshots(where: {pool: $pool, timestamp: $timestamp}) {
+export const PoolSnapshotDocument = gql`
+    query PoolSnapshot($pool: String, $timestamp: Int) {
+  poolSnapshots(where: {pool: $pool, timestamp_gte: $timestamp}) {
     pool {
       id
     }
@@ -5875,8 +5875,8 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationTy
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
-    PoolSnaphot(variables?: PoolSnaphotQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<PoolSnaphotQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<PoolSnaphotQuery>(PoolSnaphotDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PoolSnaphot', 'query');
+    PoolSnapshot(variables?: PoolSnapshotQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<PoolSnapshotQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<PoolSnapshotQuery>(PoolSnapshotDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PoolSnapshot', 'query');
     }
   };
 }

@@ -6,6 +6,8 @@ import { pools } from "#/lib/gql/server";
 import { PoolStatsData } from "../api/route";
 import { getBALPriceByRound } from "./getBALPriceByRound";
 import getBlockNumberByTimestamp from "./getBlockNumberForTime";
+import getTokenAmountByPoolTimestamp from "./getCoinAmoutForPool";
+import { getPoolTokenPriceByRound } from "./getPoolTokenPriceByRound";
 import { getPoolRelativeWeight } from "./getRelativeWeight";
 import { Round } from "./rounds";
 
@@ -26,6 +28,21 @@ const getDataFromCacheOrCompute = async <T>(
   const computedData = await computeFn();
   memoryCache[cacheKey] = computedData;
   return computedData;
+};
+
+const getTVLData = async (poolId: string, round: Round) => {
+  const tokenAmount = await getTokenAmountByPoolTimestamp(
+    poolId,
+    round.endDate.getTime() / 1000,
+  );
+
+  const coinPrice = await getPoolTokenPriceByRound(poolId, round);
+
+  return tokenAmount.reduce(
+    (sum, value1, index) =>
+      sum + parseFloat(value1) * parseFloat(coinPrice[index]),
+    0,
+  );
 };
 
 const fetchPoolData = async (
@@ -50,6 +67,7 @@ export async function calculatePoolStats({
 }): Promise<PoolStatsData> {
   const round = Round.getRoundByNumber(roundId);
   const pool = new Pool(poolId);
+  const symbol = pool.symbol;
   const network = String(pool.network ?? 1);
 
   const endRoundBlockNumber = await getDataFromCacheOrCompute(
@@ -57,16 +75,13 @@ export async function calculatePoolStats({
     () => getBlockNumberByTimestamp(pool.network ?? 1, round.endDate),
   );
 
-  const [balPriceUSD, [tvl, symbol], votingShare] = await Promise.all([
+  const [balPriceUSD, tvl, votingShare] = await Promise.all([
     getDataFromCacheOrCompute(`bal_price_${round.value}`, () =>
       getBALPriceByRound(round),
     ),
-    getDataFromCacheOrCompute(`pool_data_${round.value}_${network}`, () =>
-      fetchPoolData(
-        poolId,
-        network,
-        round.activeRound ? null : endRoundBlockNumber,
-      ),
+    getDataFromCacheOrCompute(
+      `pool_tvl_${poolId}_${round.value}_${network}`,
+      () => getTVLData(poolId, round),
     ),
     getDataFromCacheOrCompute(
       `pool_weight_${poolId}_${round.value}_${network}`,

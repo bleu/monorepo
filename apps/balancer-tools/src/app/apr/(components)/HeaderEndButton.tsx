@@ -24,11 +24,16 @@ export default function HeaderEndButton({
   network?: string | undefined;
 }) {
   const router = useRouter();
+  const [selectedRound, setSelectedRound] = React.useState(roundId)
 
   React.useEffect(() => {
     if (!poolId && (!roundId || roundId === "current")) {
       router.push(`/apr/round/${LAST_ROUND_ID}`);
+      setSelectedRound(LAST_ROUND_ID)
+    } else {
+      setSelectedRound(undefined)
     }
+    setSelectedRound(roundId)
   }, [roundId]);
 
   const handlePoolClick = ({
@@ -57,10 +62,9 @@ export default function HeaderEndButton({
           <span className="font-medium">Search for especific pool</span>
         </div>
       </Dialog>
-
       <Select
         placeholder="Select a round"
-        value={roundId}
+        value={selectedRound}
         onValueChange={(value) => {
           router.push(
             !poolId

@@ -29,6 +29,7 @@ export function SearchPoolForm({
   poolTypeFilter,
   onSubmit,
   showPools = false,
+  defaultValueNetwork = "1",
   defaultValuePool,
   form = useForm<PoolAttribute>(),
   children,
@@ -37,6 +38,7 @@ export function SearchPoolForm({
   close?: () => void;
   poolTypeFilter?: string[];
   showPools?: boolean;
+  defaultValueNetwork?: string;
   defaultValuePool?: string;
   form?: UseFormReturn<PoolAttribute>;
   children?: ReactNode | undefined;
@@ -118,7 +120,7 @@ export function SearchPoolForm({
 
           <FormField
             name="network"
-            defaultValue="1"
+            defaultValue={defaultValueNetwork}
             render={({ field: { onChange, value, ref } }) => (
               <Select onValueChange={onChange} value={value} ref={ref}>
                 {inputTypenames.map(({ value, label }) => (

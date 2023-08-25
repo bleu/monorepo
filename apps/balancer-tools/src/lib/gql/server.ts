@@ -3,6 +3,7 @@ import gaugesSdks from "@bleu-balancer-tools/gql/src/balancer-gauges/index.serve
 import poolMetadataSdks from "@bleu-balancer-tools/gql/src/balancer-pools-metadata/index.server";
 import balancerSdks from "@bleu-balancer-tools/gql/src/balancer/index.server";
 import blocksSdks from "@bleu-balancer-tools/gql/src/chains-blocks/index.server";
+import poolSnapshotsSdks from "@bleu-balancer-tools/gql/src/pool-snapshots/index.server";
 import {
   Address,
   DELEGATE_OWNER,
@@ -68,4 +69,10 @@ export const blocks = {
   client: clientFor(Subgraph.ChainsBlocks),
   gql: (chainId: number | string) =>
     blocksSdks[networkFor(chainId)](blocks.client(String(chainId))),
+};
+
+export const poolSnapshots = {
+  client: clientFor(Subgraph.PoolSnapshots),
+  gql: (chainId: number | string) =>
+    poolSnapshotsSdks[networkFor(chainId)](poolSnapshots.client(String(chainId))),
 };

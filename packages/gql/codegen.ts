@@ -6,6 +6,7 @@ export enum Subgraph {
   BalancerGauges = "balancer-gauges",
   Balancer = "balancer",
   ChainsBlocks = "chains-blocks",
+  PoolSnapshots = "pool-snapshots",
 }
 
 // IMPORTANT NOTE:
@@ -105,6 +106,27 @@ export const SUBGRAPHS = {
           "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
         [Network.Optimism]:
           "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
+      };
+    },
+    endpointFor(network: Network) {
+      return this.endpoints()[network];
+    },
+  },
+  [Subgraph.PoolSnapshots]: {
+    name: Subgraph.PoolSnapshots,
+    endpoints() {
+      const baseEndpoint =
+        "https://api.thegraph.com/subgraphs/name/balancer-labs";
+
+      return {
+        [Network.Ethereum]: `${baseEndpoint}/balancer-v2`,
+        [Network.Sepolia]: `https://api.studio.thegraph.com/query/24660/balancer-sepolia-v2/version/latest`,
+        [Network.Goerli]: `${baseEndpoint}/balancer-goerli-v2`,
+        [Network.Polygon]: `${baseEndpoint}/balancer-polygon-v2`,
+        [Network.PolygonZKEVM]: `https://api.studio.thegraph.com/query/24660/balancer-polygon-zk-v2/version/latest`,
+        [Network.Arbitrum]: `${baseEndpoint}/balancer-arbitrum-v2`,
+        [Network.Gnosis]: `${baseEndpoint}/balancer-gnosis-chain-v2-beta`,
+        [Network.Optimism]: `${baseEndpoint}/balancer-optimism-v2`,
       };
     },
     endpointFor(network: Network) {

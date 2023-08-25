@@ -1,9 +1,9 @@
 import { networkFor } from "@bleu-balancer-tools/utils";
 
+import { Pool } from "#/lib/balancer/gauges";
 import { DefiLlamaAPI } from "#/lib/coingecko";
 
 import { Round } from "./rounds";
-import { Pool } from "#/lib/balancer/gauges";
 
 export const getPoolTokenPriceByRound = async (
   poolId: string,

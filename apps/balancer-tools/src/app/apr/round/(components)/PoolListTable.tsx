@@ -9,7 +9,7 @@ import {
   TriangleUpIcon,
 } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "#/components";
 import { Spinner } from "#/components/Spinner";
@@ -35,31 +35,23 @@ export function PoolListTable({
   const handleSorting = (sortField: keyof PoolStatsData, sortOrder: string) => {
     if (sortField) {
       setTableData((prevTableData) => {
-        const sortedArray = Object.entries(prevTableData).sort(
-          ([, a], [, b]) => {
-            const aValue = a[sortField];
-            const bValue = b[sortField];
+        const sortedArray = prevTableData.slice().sort((a, b) => {
+          const aValue = a[sortField] as number | string;
+          const bValue = b[sortField] as number | string;
 
-            if (typeof aValue !== "number") return 1;
-            if (typeof bValue !== "number") return -1;
+          // Handle NaN values
+          if (typeof aValue === "number" && isNaN(aValue)) return 1;
+          if (typeof bValue === "number" && isNaN(bValue)) return -1;
 
-            if (isNaN(aValue)) return 1;
-            if (isNaN(bValue)) return -1;
-
-            if (sortOrder === "asc") {
-              return aValue - bValue;
-            } else {
-              return bValue - aValue;
-            }
-          },
-        );
-
-        const sortedData = {};
-        sortedArray.forEach(([key, value]) => {
-          sortedData[key] = value;
+          if (aValue < bValue) {
+            return sortOrder === "asc" ? -1 : 1;
+          } else if (aValue > bValue) {
+            return sortOrder === "asc" ? 1 : -1;
+          }
+          return 0;
         });
 
-        return sortedData;
+        return sortedArray;
       });
     }
   };

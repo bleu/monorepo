@@ -17,12 +17,12 @@ export default async function HistoricalAPRChart({
   const HOVERTEMPLATE = "%{x}<br />%{y:.2f}% APR<extra></extra>";
 
   const results: PoolStatsResults = await fetcher(
-    `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?poolid=${poolId}`,
+    `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?poolid=${poolId}&sort=roundId`,
   );
 
   const aprPerRoundCords = Object.entries(results.perRound).reduce(
-    (cords, [roundId, result]) => {
-      cords.x.push(`Round ${roundId}`);
+    (cords, [_, result]) => {
+      cords.x.push(`Round ${result.roundId}`);
       cords.y.push(result.apr);
       return cords;
     },

@@ -188,7 +188,7 @@ function TableRow({
       </Table.BodyCell>
       <Table.BodyCell padding="py-4 px-1">{formatNumber(tvl)}</Table.BodyCell>
       <Table.BodyCell padding="py-4 px-1">
-        {formatNumber(votingShare).concat("%")}
+        {formatNumber(votingShare * 100).concat("%")}
       </Table.BodyCell>
       <Table.BodyCell padding="py-4 px-1">
         {formatNumber(apr).concat("%")}

@@ -88,6 +88,9 @@ export class Gauge {
     if (!data) {
       throw new Error("Gauge not found for the provided address.");
     }
+    if (data.gauge.addedTimestamp === null) {
+      throw new Error("AddedTimestamp is null for the provided address.");
+    }
     this.address = data.gauge.address;
     this.isKilled = data.gauge.isKilled;
     this.addedTimestamp = data.gauge.addedTimestamp;

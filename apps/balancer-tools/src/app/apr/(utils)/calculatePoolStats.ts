@@ -61,7 +61,7 @@ export async function calculatePoolStats({
     getDataFromCacheOrCompute(`bal_price_${round.value}`, () =>
       getBALPriceByRound(round),
     ),
-    getDataFromCacheOrCompute(`pool_data_${round.value}_${network}`, () =>
+    getDataFromCacheOrCompute(`pool_data_${poolId}_${round.value}_${network}`, () =>
       fetchPoolData(
         poolId,
         network,
@@ -73,8 +73,7 @@ export async function calculatePoolStats({
       () =>
         getPoolRelativeWeight(
           poolId,
-          round.endDate.getTime() / 1000,
-          round.activeRound ? undefined : BigInt(endRoundBlockNumber),
+          round.endDate.getTime() / 1000
         ),
     ),
   ]);

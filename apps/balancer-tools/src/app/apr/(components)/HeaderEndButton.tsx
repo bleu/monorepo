@@ -24,16 +24,16 @@ export default function HeaderEndButton({
   network?: string | undefined;
 }) {
   const router = useRouter();
-  const [selectedRound, setSelectedRound] = React.useState(roundId)
+  const [selectedRound, setSelectedRound] = React.useState(roundId);
 
   React.useEffect(() => {
     if (!poolId && (!roundId || roundId === "current")) {
       router.push(`/apr/round/${LAST_ROUND_ID}`);
-      setSelectedRound(LAST_ROUND_ID)
+      setSelectedRound(LAST_ROUND_ID);
     } else {
-      setSelectedRound(undefined)
+      setSelectedRound(undefined);
     }
-    setSelectedRound(roundId)
+    setSelectedRound(roundId);
   }, [roundId]);
 
   const handlePoolClick = ({

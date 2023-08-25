@@ -9,7 +9,7 @@ import {
   TriangleUpIcon,
 } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "#/components";
 import { Spinner } from "#/components/Spinner";
@@ -27,7 +27,7 @@ export function PoolListTable({
   roundId: string;
   initialData: PoolStatsResults;
 }) {
-  const [tableData, setTableData] = useState(initialData);
+  const [tableData, setTableData] = useState(initialData.perRound);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [sortField, setSortField] = useState("apr");
   const [order, setOrder] = useState<"asc" | "desc">("desc");
@@ -82,7 +82,7 @@ export function PoolListTable({
       }`,
     );
     setTableData((prevTableData) => {
-      return { ...prevTableData, ...aditionalPoolsData };
+      return prevTableData.concat(aditionalPoolsData.perRound);
     });
     setIsLoadingMore(false);
   };
@@ -124,10 +124,10 @@ export function PoolListTable({
           </Table.HeaderCell>
         </Table.HeaderRow>
         <Table.Body>
-          {Object.entries(tableData).map(([key, gauge]) => (
+          {tableData.map((gauge) => (
             <TableRow
-              key={key}
-              poolId={key}
+              key={gauge.poolId}
+              poolId={gauge.poolId}
               network={gauge.network}
               roundId={roundId}
               symbol={gauge.symbol}

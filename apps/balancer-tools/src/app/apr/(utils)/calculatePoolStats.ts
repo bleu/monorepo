@@ -17,10 +17,10 @@ const getDataFromCacheOrCompute = async <T>(
   cacheKey: string,
   computeFn: () => Promise<T>,
 ): Promise<T> => {
-  // if (memoryCache[cacheKey]) {
-  //   console.debug(`Cache hit for ${cacheKey}`);
-  //   return memoryCache[cacheKey] as T;
-  // }
+  if (memoryCache[cacheKey]) {
+    console.debug(`Cache hit for ${cacheKey}`);
+    return memoryCache[cacheKey] as T;
+  }
 
   console.debug(`Cache miss for ${cacheKey}`);
   const computedData = await computeFn();

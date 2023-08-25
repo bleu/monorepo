@@ -61,20 +61,18 @@ export async function calculatePoolStats({
     getDataFromCacheOrCompute(`bal_price_${round.value}`, () =>
       getBALPriceByRound(round),
     ),
-    getDataFromCacheOrCompute(`pool_data_${poolId}_${round.value}_${network}`, () =>
-      fetchPoolData(
-        poolId,
-        network,
-        round.activeRound ? null : endRoundBlockNumber,
-      ),
+    getDataFromCacheOrCompute(
+      `pool_data_${poolId}_${round.value}_${network}`,
+      () =>
+        fetchPoolData(
+          poolId,
+          network,
+          round.activeRound ? null : endRoundBlockNumber,
+        ),
     ),
     getDataFromCacheOrCompute(
       `pool_weight_${poolId}_${round.value}_${network}`,
-      () =>
-        getPoolRelativeWeight(
-          poolId,
-          round.endDate.getTime() / 1000
-        ),
+      () => getPoolRelativeWeight(poolId, round.endDate.getTime() / 1000),
     ),
   ]);
 

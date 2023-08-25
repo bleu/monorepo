@@ -11,11 +11,14 @@ const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL;
 
 type Order = "asc" | "desc";
 
-export interface PoolStatsData {
+export interface PoolStats {
   apr: number;
   balPriceUSD: number;
   tvl: number;
   votingShare: number;
+}
+
+export interface PoolStatsData extends PoolStats {
   symbol: string;
   network: string;
   poolId: string;
@@ -49,12 +52,13 @@ const getDataFromCacheOrCompute = async <T>(
   return computedData;
 };
 
-const computeAverages = (poolData: PoolStatsData[]): PoolStatsData => {
+const computeAverages = (poolData: PoolStatsData[]): PoolStats => {
   const total = poolData.reduce(
     (acc, data) => ({
       apr: acc.apr + data.apr,
       balPriceUSD: acc.balPriceUSD + data.balPriceUSD,
       tvl: acc.tvl + data.tvl,
+      votingShare: acc.votingShare + data.votingShare,
     }),
     { apr: 0, balPriceUSD: 0, tvl: 0, votingShare: 0 },
   );
@@ -63,6 +67,7 @@ const computeAverages = (poolData: PoolStatsData[]): PoolStatsData => {
     apr: total.apr / count,
     balPriceUSD: total.balPriceUSD / count,
     tvl: total.tvl / count,
+    votingShare: total.votingShare / count,
   };
 };
 const fetchDataForPoolId = async (
@@ -79,7 +84,7 @@ const fetchDataForPoolId = async (
         1,
     },
     (_, index) =>
-      fetcher<PoolStatsData>(
+      fetcher<PoolStatsResults>(
         `${BASE_URL}/apr/api?roundid=${
           index + parseInt(roundGaugeAdded.value)
         }&poolid=${poolId}`,

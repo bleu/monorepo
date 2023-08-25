@@ -6,7 +6,7 @@ import { pools } from "#/lib/gql/server";
 import { PoolStatsData } from "../api/route";
 import { getBALPriceByRound } from "./getBALPriceByRound";
 import getBlockNumberByTimestamp from "./getBlockNumberForTime";
-import getTokenAmountByPoolTimestamp from "./getCoinAmoutForPool";
+import getTokenAmountByPoolTimestamp from "./getCoinAmountForPool";
 import { getPoolTokenPriceByRound } from "./getPoolTokenPriceByRound";
 import { getPoolRelativeWeight } from "./getRelativeWeight";
 import { Round } from "./rounds";

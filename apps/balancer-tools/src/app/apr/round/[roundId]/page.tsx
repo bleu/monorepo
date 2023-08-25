@@ -12,7 +12,7 @@ export default function Page({
   params: { roundId: string };
 }) {
   return (
-    <div className="flex flex-col gap-y-3">
+    <div className="flex flex-1 flex-col gap-y-3">
       <Suspense fallback={<Spinner />}>
         <RoundOverviewCards roundId={roundId} />
       </Suspense>

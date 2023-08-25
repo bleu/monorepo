@@ -35,31 +35,25 @@ export function PoolListTable({
   const handleSorting = (sortField: keyof PoolStatsData, sortOrder: string) => {
     if (sortField) {
       setTableData((prevTableData) => {
-        const sortedArray = Object.entries(prevTableData).sort(
-          ([, a], [, b]) => {
-            const aValue = a[sortField];
-            const bValue = b[sortField];
-
-            if (typeof aValue !== "number") return 1;
-            if (typeof bValue !== "number") return -1;
-
-            if (isNaN(aValue)) return 1;
-            if (isNaN(bValue)) return -1;
-
-            if (sortOrder === "asc") {
-              return aValue - bValue;
-            } else {
-              return bValue - aValue;
+        const sortedArray = prevTableData
+          .slice()
+          .sort((a, b) => {
+            const aValue = a[sortField] as number | string;
+            const bValue = b[sortField] as number | string;
+  
+            // Handle NaN values
+            if (typeof aValue === "number" && isNaN(aValue)) return 1;
+            if (typeof bValue === "number" && isNaN(bValue)) return -1;
+  
+            if (aValue < bValue) {
+              return sortOrder === "asc" ? -1 : 1;
+            } else if (aValue > bValue) {
+              return sortOrder === "asc" ? 1 : -1;
             }
-          },
-        );
-
-        const sortedData = {};
-        sortedArray.forEach(([key, value]) => {
-          sortedData[key] = value;
-        });
-
-        return sortedData;
+            return 0;
+          });
+  
+        return sortedArray;
       });
     }
   };

@@ -76,5 +76,7 @@ export const blocks = {
 export const poolSnapshots = {
   client: clientFor(Subgraph.PoolSnapshots),
   gql: (chainId: number | string) =>
-    poolSnapshotsSdks[networkFor(chainId)](poolSnapshots.client(String(chainId))),
+    poolSnapshotsSdks[networkFor(chainId)](
+      poolSnapshots.client(String(chainId)),
+    ),
 };

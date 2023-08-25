@@ -71,7 +71,7 @@ export function PoolListTable({
         process.env.NEXT_PUBLIC_SITE_URL
       }/apr/api/?roundid=${roundId}&sort=${sortField}&order=${order}&limit=10&offset=${
         Object.keys(tableData).length
-      }`,
+      }&minTvl=1000`,
     );
     setTableData((prevTableData) => {
       return prevTableData.concat(aditionalPoolsData.perRound);

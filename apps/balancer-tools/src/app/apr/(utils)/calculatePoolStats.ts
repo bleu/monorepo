@@ -1,7 +1,9 @@
+/* eslint-disable no-console */
 import * as balEmissions from "#/lib/balancer/emissions";
 import { Pool } from "#/lib/balancer/gauges";
 import { pools } from "#/lib/gql/server";
 
+import { PoolStatsData } from "../api/route";
 import { getBALPriceByRound } from "./getBALPriceByRound";
 import getBlockNumberByTimestamp from "./getBlockNumberForTime";
 import { getPoolRelativeWeight } from "./getRelativeWeight";
@@ -9,57 +11,86 @@ import { Round } from "./rounds";
 
 const WEEKS_IN_YEAR = 52;
 
+const memoryCache: { [key: string]: unknown } = {};
+
+const getDataFromCacheOrCompute = async <T>(
+  cacheKey: string,
+  computeFn: () => Promise<T>,
+): Promise<T> => {
+  if (memoryCache[cacheKey]) {
+    console.debug(`Cache hit for ${cacheKey}`);
+    return memoryCache[cacheKey] as T;
+  }
+
+  console.debug(`Cache miss for ${cacheKey}`);
+  const computedData = await computeFn();
+  memoryCache[cacheKey] = computedData;
+  return computedData;
+};
+
+const fetchPoolData = async (
+  poolId: string,
+  network: string,
+  blockNumber: number | null,
+): Promise<[number, string]> => {
+  const gqlFn = blockNumber
+    ? pools.gql(network).PoolWhereBlockNumber({ blockNumber, poolId })
+    : pools.gql(network).Pool({ poolId });
+
+  const res = await gqlFn;
+  return [parseFloat(res.pool?.totalLiquidity) ?? 0, res.pool?.symbol ?? ""];
+};
+
 export async function calculatePoolStats({
   roundId,
   poolId,
 }: {
   roundId: string;
   poolId: string;
-}) {
-  // TODO: BAL-646 aggregate historical pool APR when roundId is not provided
+}): Promise<PoolStatsData> {
   const round = Round.getRoundByNumber(roundId);
   const pool = new Pool(poolId);
+  const network = String(pool.network ?? 1);
 
-  const endRoundBlockNumber = await getBlockNumberByTimestamp(
-    pool.network ?? 1,
-    round.endDate,
+  const endRoundBlockNumber = await getDataFromCacheOrCompute(
+    `block_${pool.network}_from_${round.endDate}`,
+    () => getBlockNumberByTimestamp(pool.network ?? 1, round.endDate),
   );
 
-  let balPriceUSD = 0;
-  let tvl = 0;
-  let votingShare = 0;
-  let apr = 0;
-
-  balPriceUSD = await getBALPriceByRound(round);
-
-  tvl = round.activeRound
-    ? await pools
-        .gql(pool.network ?? 1)
-        .Pool({
+  const [balPriceUSD, [tvl, symbol], votingShare] = await Promise.all([
+    getDataFromCacheOrCompute(`bal_price_${round.value}`, () =>
+      getBALPriceByRound(round),
+    ),
+    getDataFromCacheOrCompute(
+      `pool_data_${poolId}_${round.value}_${network}`,
+      () =>
+        fetchPoolData(
           poolId,
-        })
-        .then((res) => {
-          return res.pool?.totalLiquidity ?? 0;
-        })
-    : await pools
-        .gql(pool.network ?? 1)
-        .PoolWhereBlockNumber({
-          blockNumber: endRoundBlockNumber,
-          poolId,
-        })
-        .then((res) => {
-          return res.pool?.totalLiquidity ?? 0;
-        });
+          network,
+          round.activeRound ? null : endRoundBlockNumber,
+        ),
+    ),
+    getDataFromCacheOrCompute(
+      `pool_weight_${poolId}_${round.value}_${network}`,
+      () => getPoolRelativeWeight(poolId, round.endDate.getTime() / 1000),
+    ),
+  ]);
 
-  votingShare = await getPoolRelativeWeight(
+  const apr =
+    balPriceUSD && tvl && votingShare
+      ? calculateRoundAPR(round, votingShare, tvl, balPriceUSD) * 100
+      : -1;
+
+  return {
+    roundId,
     poolId,
-    round.endDate.getTime() / 1000,
-  );
-
-  if (balPriceUSD !== 0 && tvl !== 0 && votingShare !== 0) {
-    apr = calculateRoundAPR(round, votingShare, tvl, balPriceUSD) * 100;
-  }
-  return { apr, balPriceUSD, tvl, votingShare };
+    apr,
+    balPriceUSD,
+    tvl,
+    votingShare,
+    symbol,
+    network,
+  };
 }
 
 function calculateRoundAPR(
@@ -67,8 +98,7 @@ function calculateRoundAPR(
   votingShare: number,
   tvl: number,
   balPriceUSD: number,
-) {
+): number {
   const emissions = balEmissions.weekly(round.endDate.getTime() / 1000);
-
   return (WEEKS_IN_YEAR * (emissions * votingShare * balPriceUSD)) / tvl;
 }

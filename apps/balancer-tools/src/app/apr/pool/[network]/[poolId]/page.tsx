@@ -1,15 +1,19 @@
-import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
-import { Round } from "#/app/apr/(utils)/rounds";
+import HistoricalAPRChart from "#/app/apr/pool/(components)/HistoricalAPRChart";
+import PoolOverviewCards from "#/app/apr/pool/(components)/PoolOverviewCards";
+import { Spinner } from "#/components/Spinner";
 
-export default function Page({
-  params,
-}: {
-  params: { network: string; poolId: string };
-}) {
-  redirect(
-    `/apr/pool/${params.network}/${params.poolId}/round/${
-      Round.getAllRounds()[0].value
-    }`,
+export default async function Page({ params }: { params: { poolId: string } }) {
+  const { poolId } = params;
+  return (
+    <div className="flex h-full w-full flex-col justify-start rounded-3xl text-white gap-y-3">
+      <Suspense fallback={<Spinner />}>
+        <PoolOverviewCards poolId={poolId} />
+      </Suspense>
+      <Suspense fallback={<Spinner />}>
+        <HistoricalAPRChart poolId={poolId} />
+      </Suspense>
+    </div>
   );
 }

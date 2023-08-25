@@ -8,13 +8,11 @@ import {
 import { PlotType } from "plotly.js";
 
 import Plot from "#/components/Plot";
-import votingGauges from "#/data/voting-gauges.json";
+import { fetcher } from "#/utils/fetcher";
 
-import { calculatePoolStats } from "../../(utils)/calculatePoolStats";
-import sortDataByX from "../../(utils)/sortChartData";
+import { PoolStatsResults } from "../../api/route";
 
 export default async function TopPoolsChart({ roundId }: { roundId: string }) {
-  const POOL_QUANTITY_LIMIT = 16;
   const colors = [
     greenDark.green9,
     violetDark.violet9,
@@ -23,37 +21,21 @@ export default async function TopPoolsChart({ roundId }: { roundId: string }) {
     amberDark.amber9,
   ];
 
-  const barCords: {
-    x: string[];
-    y: string[];
-    colors: string[];
-  } = { x: [], y: [], colors: [] };
-  for (let index = 0; index < votingGauges.length; index++) {
-    if (barCords.x.length >= POOL_QUANTITY_LIMIT) {
-      break;
-    }
+  const topAprApi = await fetcher<PoolStatsResults>(
+    `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?roundid=${roundId}&sort=apr&limit=10&order=desc&minTvl=1000`,
+  );
 
-    const pool = votingGauges[index];
-    const { apr } = await calculatePoolStats({
-      roundId,
-      poolId: pool.id,
-    });
-
-    if (apr && apr > 0.01) {
-      barCords.x.push(apr.toFixed(2));
-      barCords.y.push(pool.symbol);
-      barCords.colors.push(colors[index % colors.length]);
-    }
-  }
-
-  const [sortedX, sortedY] = sortDataByX(barCords);
   const chartData = {
     hovertemplate: "%{x:.2f}% APR<extra></extra>",
-    marker: { color: barCords.colors },
+    marker: {
+      color: topAprApi.perRound.map(
+        (_, index) => colors[index % colors.length],
+      ),
+    },
     orientation: "h" as const,
     type: "bar" as PlotType,
-    x: sortedX,
-    y: sortedY,
+    x: topAprApi.perRound.map((result) => result.apr.toFixed(2)),
+    y: topAprApi.perRound.map((result) => result.symbol),
   };
 
   return (
@@ -70,7 +52,7 @@ export default async function TopPoolsChart({ roundId }: { roundId: string }) {
             title: `APR %`,
             fixedrange: true,
           },
-          yaxis: { fixedrange: true },
+          yaxis: { fixedrange: true, autorange: "reversed" },
         }}
       />
     </div>

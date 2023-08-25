@@ -13,7 +13,6 @@ export default function HistoricalAPRPlot({ data }: { data: Plotly.Data[] }) {
         layout={{
           autosize: true,
           xaxis: {
-            autorange: "reversed",
             title: "Round Number",
           },
           yaxis: {

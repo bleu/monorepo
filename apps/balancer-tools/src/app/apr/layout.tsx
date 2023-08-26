@@ -22,7 +22,7 @@ export default function Layout({
     <div className="flex h-full flex-col">
       <Header
         linkUrl={"/apr"}
-        title={"Pool Simulator"}
+        title={"APR Enhancement Calculator"}
         imageSrc={"/assets/balancer-symbol.svg"}
         endButton={
           <HeaderEndButton

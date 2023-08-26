@@ -79,18 +79,30 @@ export const poolWherePoolType = gql`
   }
 `;
 
-export const poolWhereBlockNumber = gql`
-  query PoolWhereBlockNumber($blockNumber: Int!, $poolId: ID!) {
-    pool(id: $poolId, block: { number: $blockNumber }) {
-      id
-      address
-      name
-      poolType
-      symbol
-      totalLiquidity
-      tokens {
+export const poolSnapshotInRange = gql`
+  query poolSnapshotInRange($poolId: String!, $from: Int!, $to: Int!) {
+    poolSnapshots(
+      where: { pool_in: [$poolId], timestamp_gte: $from, timestamp_lt: $to }
+    ) {
+      pool {
+        id
+        address
+        name
+        poolType
         symbol
+        tokens {
+          symbol
+        }
       }
+      amounts
+      totalShares
+      swapVolume
+      protocolFee
+      swapFees
+      liquidity
+      swapsCount
+      holdersCount
+      timestamp
     }
   }
 `;

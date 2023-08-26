@@ -5,7 +5,6 @@ import { pools } from "#/lib/gql/server";
 
 import { PoolStatsData } from "../api/route";
 import { getBALPriceByRound } from "./getBALPriceByRound";
-import getBlockNumberByTimestamp from "./getBlockNumberForTime";
 import { getPoolRelativeWeight } from "./getRelativeWeight";
 import { Round } from "./rounds";
 
@@ -28,17 +27,29 @@ const getDataFromCacheOrCompute = async <T>(
   return computedData;
 };
 
-const fetchPoolData = async (
+const fetchPoolTVLFromSnapshotAverageFromRange = async (
   poolId: string,
   network: string,
-  blockNumber: number | null,
+  from: number,
+  to: number,
 ): Promise<[number, string]> => {
-  const gqlFn = blockNumber
-    ? pools.gql(network).PoolWhereBlockNumber({ blockNumber, poolId })
-    : pools.gql(network).Pool({ poolId });
+  const res = await pools.gql(network).poolSnapshotInRange({
+    poolId,
+    from,
+    to,
+  });
 
-  const res = await gqlFn;
-  return [parseFloat(res.pool?.totalLiquidity) ?? 0, res.pool?.symbol ?? ""];
+  const avgLiquidity =
+    res.poolSnapshots.reduce(
+      (acc, snapshot) => acc + parseFloat(snapshot.liquidity),
+      0,
+    ) / res.poolSnapshots.length;
+
+  if (res.poolSnapshots.length === 0) {
+    return [0, ""];
+  }
+
+  return [avgLiquidity, res.poolSnapshots[0].pool.symbol ?? ""];
 };
 
 export async function calculatePoolStats({
@@ -52,16 +63,6 @@ export async function calculatePoolStats({
   const pool = new Pool(poolId);
   const network = String(pool.network ?? 1);
 
-  console.log({
-    roundId,
-    poolId,
-    network,
-  });
-  const endRoundBlockNumber = await getDataFromCacheOrCompute(
-    `block_${pool.network}_from_${round.endDate}`,
-    () => getBlockNumberByTimestamp(pool.network ?? 1, round.endDate),
-  );
-
   const [balPriceUSD, [tvl, symbol], votingShare] = await Promise.all([
     getDataFromCacheOrCompute(`bal_price_${round.value}`, () =>
       getBALPriceByRound(round),
@@ -69,10 +70,11 @@ export async function calculatePoolStats({
     getDataFromCacheOrCompute(
       `pool_data_${poolId}_${round.value}_${network}`,
       () =>
-        fetchPoolData(
+        fetchPoolTVLFromSnapshotAverageFromRange(
           poolId,
           network,
-          round.activeRound ? null : endRoundBlockNumber,
+          round.startDate.getTime() / 1000,
+          round.endDate.getTime() / 1000,
         ),
     ),
     getDataFromCacheOrCompute(

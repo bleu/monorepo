@@ -1,12 +1,22 @@
+import { Metadata } from "next";
 import * as React from "react";
-import invariant from "tiny-invariant";
 
 import { Header } from "#/components/Header";
 
 import HeaderEndButton from "./(components)/HeaderEndButton";
 
+export const metadata: Metadata = {
+  title: "Balancer - APR Enhancement Calculator",
+  description: "APR Enhancement Calculator for Balancer pools through rounds",
+};
 
-export default function Layout({ children, params }: { children: React.ReactNode; params: {roundId: string, poolId: string, network: string} }) {
+export default function Layout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: { roundId: string; poolId: string; network: string };
+}) {
   const { roundId, poolId, network } = params;
   return (
     <div className="flex h-full flex-col">

@@ -7,6 +7,8 @@ import { fetcher } from "#/utils/fetcher";
 import { PoolStatsResults } from "../../api/route";
 import HistoricalAPRPlot from "./HistoricalAPRPlot";
 
+const getRoundName = (roundId?: string) => roundId ? `#${roundId}` : "#";
+
 export default async function HistoricalAPRChart({
   roundId,
   poolId,
@@ -22,7 +24,7 @@ export default async function HistoricalAPRChart({
 
   const aprPerRoundCords = Object.entries(results.perRound).reduce(
     (cords, [_, result]) => {
-      cords.x.push(`Round ${result.roundId}`);
+      cords.x.push(getRoundName(result.roundId));
       cords.y.push(result.apr);
       return cords;
     },
@@ -45,7 +47,7 @@ export default async function HistoricalAPRChart({
   };
 
   const chosenRoundMarkerIDX = APRPerRoundData.x.findIndex(
-    (item) => item === `Round ${roundId}`,
+    (item) => item === getRoundName(roundId),
   );
   const chosenRoundData = roundId
     ? {

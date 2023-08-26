@@ -30,10 +30,9 @@ export default function HeaderEndButton({
     if (!poolId && (!roundId || roundId === "current")) {
       router.push(`/apr/round/${LAST_ROUND_ID}`);
       setSelectedRound(LAST_ROUND_ID);
-    } else {
-      setSelectedRound(undefined);
+    } else if (typeof roundId === "undefined") {
+      setSelectedRound("");
     }
-    setSelectedRound(roundId);
   }, [roundId]);
 
   const handlePoolClick = ({
@@ -74,6 +73,11 @@ export default function HeaderEndButton({
         }}
         className=""
       >
+        {typeof roundId === "undefined" ? (
+          <SelectItem value="">Select a round</SelectItem>
+        ) : (
+          ""
+        )}
         {ALL_ROUNDS.map((round) => (
           <SelectItem key={round.value} value={round.value}>
             {round.label}

@@ -5,8 +5,10 @@ import { Header } from "#/components/Header";
 
 import HeaderEndButton from "./(components)/HeaderEndButton";
 
+const APP_DISPLAY_NAME = "Historical APR";
+
 export const metadata: Metadata = {
-  title: "Balancer - APR Enhancement Calculator",
+  title: `Balancer - ${APP_DISPLAY_NAME}`,
   description: "APR Enhancement Calculator for Balancer pools through rounds",
 };
 
@@ -22,7 +24,7 @@ export default function Layout({
     <div className="flex h-full flex-col">
       <Header
         linkUrl={"/apr"}
-        title={"APR Enhancement Calculator"}
+        title={APP_DISPLAY_NAME}
         imageSrc={"/assets/balancer-symbol.svg"}
         endButton={
           <HeaderEndButton

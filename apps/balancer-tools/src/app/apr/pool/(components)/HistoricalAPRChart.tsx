@@ -1,4 +1,4 @@
-import { blueDark } from "@radix-ui/colors";
+import { amberDarkA } from "@radix-ui/colors";
 import { PlotType } from "plotly.js";
 
 import { trimTrailingValues } from "#/lib/utils";
@@ -58,7 +58,7 @@ export default async function HistoricalAPRChart({
         mode: "markers",
         name: "Selected Round",
         marker: {
-          color: blueDark.blue7,
+          color: amberDarkA.amberA9,
           size: 15,
           line: {
             color: "white",

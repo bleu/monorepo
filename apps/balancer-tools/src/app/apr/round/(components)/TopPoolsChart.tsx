@@ -1,10 +1,4 @@
-import {
-  amberDark,
-  blueDark,
-  crimsonDark,
-  greenDark,
-  violetDark,
-} from "@radix-ui/colors";
+import { greenDarkA } from "@radix-ui/colors";
 import { PlotType } from "plotly.js";
 
 import Plot from "#/components/Plot";
@@ -13,13 +7,8 @@ import { fetcher } from "#/utils/fetcher";
 import { PoolStatsResults } from "../../api/route";
 
 export default async function TopPoolsChart({ roundId }: { roundId: string }) {
-  const colors = [
-    greenDark.green9,
-    violetDark.violet9,
-    crimsonDark.crimson8,
-    blueDark.blue9,
-    amberDark.amber9,
-  ];
+  const shades = Object.values(greenDarkA).map((color) => color.toString());
+  const colors = [...shades.slice(4, 10).reverse(), ...shades.slice(4, 10)];
 
   const topAprApi = await fetcher<PoolStatsResults>(
     `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?roundId=${roundId}&sort=apr&limit=10&order=desc&minTvl=1000`,

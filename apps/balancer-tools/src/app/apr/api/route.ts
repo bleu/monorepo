@@ -22,17 +22,12 @@ export interface PoolStatsData extends PoolStats {
   symbol: string;
   network: string;
   poolId: string;
-  roundId: string;
+  roundId: number;
 }
 
 export interface PoolStatsResults {
   perRound: PoolStatsData[];
-  average: {
-    apr: number;
-    balPriceUSD: number;
-    tvl: number;
-    votingShare: number;
-  };
+  average: PoolStats;
 }
 
 const memoryCache: { [key: string]: unknown } = {};
@@ -70,6 +65,7 @@ const computeAverages = (poolData: PoolStatsData[]): PoolStats => {
     votingShare: total.votingShare / count,
   };
 };
+
 const fetchDataForPoolId = async (
   poolId: string,
 ): Promise<PoolStatsResults> => {
@@ -85,9 +81,9 @@ const fetchDataForPoolId = async (
     },
     (_, index) =>
       fetcher<PoolStatsResults>(
-        `${BASE_URL}/apr/api?roundid=${
+        `${BASE_URL}/apr/api?roundId=${
           index + parseInt(roundGaugeAdded.value)
-        }&poolid=${poolId}`,
+        }&poolId=${poolId}`,
       ),
   );
 
@@ -166,7 +162,7 @@ const fetchDataForRoundId = async (
   const gaugesData = await Promise.allSettled(
     existingPoolsInRound.map(({ id: poolId }) =>
       fetcher<PoolStatsResults>(
-        `${BASE_URL}/apr/api?roundid=${roundId}&poolid=${poolId}`,
+        `${BASE_URL}/apr/api?roundId=${roundId}&poolId=${poolId}`,
       ),
     ),
   );
@@ -190,8 +186,8 @@ const fetchDataForRoundId = async (
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
 
-  const poolId = searchParams.get("poolid");
-  const roundId = searchParams.get("roundid");
+  const poolId = searchParams.get("poolId");
+  const roundId = searchParams.get("roundId");
   const sort = (searchParams.get("sort") as keyof PoolStatsData) || "apr";
   const order = (searchParams.get("order") as Order) || "desc";
   const limit = parseInt(searchParams.get("limit") ?? "0") || Infinity;

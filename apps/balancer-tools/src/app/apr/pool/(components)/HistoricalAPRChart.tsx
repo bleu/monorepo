@@ -7,7 +7,8 @@ import { fetcher } from "#/utils/fetcher";
 import { PoolStatsResults } from "../../api/route";
 import HistoricalAPRPlot from "./HistoricalAPRPlot";
 
-const getRoundName = (roundId?: string) => roundId ? `#${roundId}` : "#";
+const getRoundName = (roundId?: string | number) =>
+  roundId !== undefined ? `#${roundId}` : "#";
 
 export default async function HistoricalAPRChart({
   roundId,
@@ -19,7 +20,7 @@ export default async function HistoricalAPRChart({
   const HOVERTEMPLATE = "%{x}<br />%{y:.2f}% APR<extra></extra>";
 
   const results: PoolStatsResults = await fetcher(
-    `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?poolid=${poolId}&sort=roundId`,
+    `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?poolId=${poolId}&sort=roundId`,
   );
 
   const aprPerRoundCords = Object.entries(results.perRound).reduce(

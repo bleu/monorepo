@@ -10,14 +10,14 @@ import { PoolStatsResults } from "../../api/route";
 
 async function AverageTVLCard({ poolId }: { poolId: string }) {
   const data: PoolStatsResults = await fetcher(
-    `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?poolid=${poolId}`,
+    `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?poolId=${poolId}`,
   );
   return <div>{formatNumber(data.average.tvl)}</div>;
 }
 
 async function AverageAPRCard({ poolId }: { poolId: string }) {
   const data: PoolStatsResults = await fetcher(
-    `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?poolid=${poolId}`,
+    `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?poolId=${poolId}`,
   );
   return <div>{formatNumber(data.average.apr).concat("%")}</div>;
 }

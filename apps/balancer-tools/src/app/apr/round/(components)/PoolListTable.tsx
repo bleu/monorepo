@@ -69,7 +69,7 @@ export function PoolListTable({
     const aditionalPoolsData = await fetcher<PoolStatsResults>(
       `${
         process.env.NEXT_PUBLIC_SITE_URL
-      }/apr/api/?roundid=${roundId}&sort=${sortField}&order=${order}&limit=10&offset=${
+      }/apr/api/?roundId=${roundId}&sort=${sortField}&order=${order}&limit=10&offset=${
         Object.keys(tableData).length
       }&minTvl=1000`,
     );

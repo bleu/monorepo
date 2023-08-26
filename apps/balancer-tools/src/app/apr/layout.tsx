@@ -1,6 +1,3 @@
-"use client";
-
-import { useParams } from "next/navigation";
 import * as React from "react";
 import invariant from "tiny-invariant";
 
@@ -8,12 +5,9 @@ import { Header } from "#/components/Header";
 
 import HeaderEndButton from "./(components)/HeaderEndButton";
 
-export default function Layout({ children }: React.PropsWithChildren) {
-  const { roundId, poolId, network } = useParams();
-  invariant(!Array.isArray(roundId), "roundId cannot be a list");
-  invariant(!Array.isArray(poolId), "poolId cannot be a list");
-  invariant(!Array.isArray(network), "network cannot be a list");
 
+export default function Layout({ children, params }: { children: React.ReactNode; params: {roundId: string, poolId: string, network: string} }) {
+  const { roundId, poolId, network } = params;
   return (
     <div className="flex h-full flex-col">
       <Header

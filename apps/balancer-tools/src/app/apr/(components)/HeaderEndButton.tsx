@@ -59,7 +59,7 @@ export default function HeaderEndButton({
       >
         <div className="flex items-center space-x-2 text-sm font-normal text-slate12 bg-blue3 border border-blue6 p-2 rounded-[4px] cursor-pointer">
           <MagnifyingGlassIcon width="20" height="20" strokeWidth={1} />
-          <span className="font-medium">Search for especific pool</span>
+          <span className="font-medium">Search for specific pool</span>
         </div>
       </Dialog>
       <Select

@@ -2,7 +2,6 @@ import { Subgraph, SUBGRAPHS } from "@bleu-balancer-tools/gql/codegen";
 import gaugesSdks from "@bleu-balancer-tools/gql/src/balancer-gauges/index.server";
 import poolMetadataSdks from "@bleu-balancer-tools/gql/src/balancer-pools-metadata/index.server";
 import balancerSdks from "@bleu-balancer-tools/gql/src/balancer/index.server";
-import blocksSdks from "@bleu-balancer-tools/gql/src/chains-blocks/index.server";
 import {
   Address,
   DELEGATE_OWNER,
@@ -62,10 +61,4 @@ export const internalBalances = {
   client: clientFor(Subgraph.Balancer),
   gql: (chainId: number | string) =>
     balancerSdks[networkFor(chainId)](internalBalances.client(String(chainId))),
-};
-
-export const blocks = {
-  client: clientFor(Subgraph.ChainsBlocks),
-  gql: (chainId: number | string) =>
-    blocksSdks[networkFor(chainId)](blocks.client(String(chainId))),
 };

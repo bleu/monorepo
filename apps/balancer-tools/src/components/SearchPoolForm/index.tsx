@@ -158,7 +158,7 @@ export function SearchPoolForm({
                 {filteredPoolList?.length > 0 && onlyVotingGauges && (
                   <div className="text-slate12 bg-amber8 w-full rounded py-1 border border-amber9 sticky top-0">
                     <span className="text-sm px-4">
-                      Only pools with voting gauges displayed
+                      Only pools with voting gauge displayed
                     </span>
                   </div>
                 )}

@@ -11,6 +11,7 @@ import { truncateAddress } from "#/utils/truncate";
 
 import { Form, FormField, FormLabel } from "../ui/form";
 import filterPoolInput from "./filterPoolInput";
+import { filterPoolWithLiveGauge } from "./filterPoolWithLiveGauge";
 
 export interface PoolAttribute {
   poolId: string;
@@ -29,6 +30,7 @@ export function SearchPoolForm({
   poolTypeFilter,
   onSubmit,
   showPools = false,
+  onlyVotingGauges = false,
   defaultValueNetwork = "1",
   defaultValuePool,
   form = useForm<PoolAttribute>(),
@@ -38,6 +40,7 @@ export function SearchPoolForm({
   close?: () => void;
   poolTypeFilter?: string[];
   showPools?: boolean;
+  onlyVotingGauges?: boolean;
   defaultValueNetwork?: string;
   defaultValuePool?: string;
   form?: UseFormReturn<PoolAttribute>;
@@ -71,7 +74,6 @@ export function SearchPoolForm({
       poolTypeFilter?.length ? { poolTypes: poolTypeFilter } : {},
       { revalidateIfStale: true },
     );
-  const isPool = !!poolsData?.pools?.length;
 
   function handleSubmitForm(formData: PoolAttribute) {
     onSubmit?.(formData);
@@ -79,9 +81,12 @@ export function SearchPoolForm({
     closeCombobox();
   }
 
-  const filteredPoolList = poolsDataList?.pools.filter((pool) =>
-    filterPoolInput({ poolSearchQuery: poolId, pool }),
-  );
+  const filteredPoolList = poolsDataList?.pools
+    .filter((pool) => filterPoolInput({ poolSearchQuery: poolId, pool }))
+    .filter((pool) => filterPoolWithLiveGauge({ pool, onlyVotingGauges }));
+
+  const isPool = !!poolsData?.pools?.length;
+  const hasLiveGauge = !!filteredPoolList?.length;
 
   useEffect(() => {
     if (poolsData && !poolsData.pools && poolId) {
@@ -150,6 +155,13 @@ export function SearchPoolForm({
           {comboBoxIsOpen && filteredPoolList && (
             <div className="absolute z-50 my-2 flex max-h-52 flex-col gap-y-2 overflow-y-scroll rounded border-[1px] border-blue6 bg-blue3 scrollbar-thin scrollbar-track-blue2 scrollbar-thumb-slate12 w-full">
               <div className="p-2">
+                {filteredPoolList?.length > 0 && onlyVotingGauges && (
+                  <div className="text-slate12 bg-amber8 w-full rounded py-1 border border-amber9 sticky top-0">
+                    <span className="text-sm px-4">
+                      Only pools with voting gauges displayed
+                    </span>
+                  </div>
+                )}
                 {filteredPoolList?.length > 0 ? (
                   filteredPoolList?.map((pool) => (
                     <Button
@@ -197,7 +209,12 @@ export function SearchPoolForm({
         {children}
 
         <div className="mt-4 flex items-center justify-end">
-          <Button type="submit" disabled={!isPool || poolId === ""}>
+          <Button
+            type="submit"
+            disabled={
+              !isPool || poolId === "" || (onlyVotingGauges && !hasLiveGauge)
+            }
+          >
             Go
           </Button>
         </div>

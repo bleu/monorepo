@@ -1,8 +1,8 @@
 "use client";
 
-import { networkIdFor } from "@bleu-balancer-tools/utils";
+import { networkFor, networkIdFor } from "@bleu-balancer-tools/utils";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import * as React from "react";
 
 import { Dialog } from "#/components/Dialog";
@@ -14,17 +14,11 @@ import { Round } from "../(utils)/rounds";
 const ALL_ROUNDS = Round.getAllRounds();
 const LAST_ROUND_ID = ALL_ROUNDS[0].value;
 
-export default function HeaderEndButton({
-  roundId,
-  poolId,
-  network,
-}: {
-  roundId?: string | undefined;
-  poolId?: string | undefined;
-  network?: string | undefined;
-}) {
+export default function HeaderEndButton() {
+  const { poolId, roundId, network } = useParams();
+
   const router = useRouter();
-  const [selectedRound, setSelectedRound] = React.useState(roundId);
+  const [selectedRound, setSelectedRound] = React.useState(roundId as string);
 
   React.useEffect(() => {
     if (!poolId && (!roundId || roundId === "current")) {
@@ -42,23 +36,25 @@ export default function HeaderEndButton({
     network: string;
     poolId: string;
   }) => {
-    router.push(`/apr/pool/${network}/${poolId}`);
+    router.push(`/apr/pool/${networkFor(network)}/${poolId}`);
   };
 
   return (
     <div className="flex gap-6">
       <Dialog
-        title="Import pool parameters"
+        title="Go to pool"
         content={
           <SearchPoolForm
-            defaultValueNetwork={networkIdFor(network)}
+            defaultValueNetwork={networkIdFor(network as string)}
             onSubmit={handlePoolClick}
+            showPools
+            onlyVotingGauges
           />
         }
       >
-        <div className="flex items-center space-x-2 text-sm font-normal text-slate12 bg-blue3 border border-blue6 p-2 rounded-[4px] cursor-pointer">
+        <div className="flex items-center gap-x-2 text-sm font-normal text-slate12 bg-blue3 border border-blue6 p-2 rounded-[4px] cursor-pointer">
           <MagnifyingGlassIcon width="20" height="20" strokeWidth={1} />
-          <span className="font-medium">Search for specific pool</span>
+          <span className="font-medium pr-1">Go to pool</span>
         </div>
       </Dialog>
       <Select

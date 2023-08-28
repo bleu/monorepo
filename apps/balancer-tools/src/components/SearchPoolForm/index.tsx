@@ -6,12 +6,12 @@ import { useForm, UseFormReturn } from "react-hook-form";
 import Button from "#/components/Button";
 import { Input } from "#/components/Input";
 import { Select, SelectItem } from "#/components/Select";
+import { POOLS_WITH_LIVE_GAUGES } from "#/lib/balancer/gauges";
 import { pools } from "#/lib/gql";
 import { truncateAddress } from "#/utils/truncate";
 
 import { Form, FormField, FormLabel } from "../ui/form";
 import filterPoolInput from "./filterPoolInput";
-import { filterPoolWithLiveGauge } from "./filterPoolWithLiveGauge";
 
 export interface PoolAttribute {
   poolId: string;
@@ -83,7 +83,14 @@ export function SearchPoolForm({
 
   const filteredPoolList = poolsDataList?.pools
     .filter((pool) => filterPoolInput({ poolSearchQuery: poolId, pool }))
-    .filter((pool) => filterPoolWithLiveGauge({ pool, onlyVotingGauges }));
+    .filter(
+      (pool) =>
+        !onlyVotingGauges ||
+        (onlyVotingGauges &&
+          POOLS_WITH_LIVE_GAUGES.some(
+            (liveGaugePool) => liveGaugePool.id === pool.id,
+          )),
+    );
 
   const isPool = !!poolsData?.pools?.length;
   const hasLiveGauge = !!filteredPoolList?.length;

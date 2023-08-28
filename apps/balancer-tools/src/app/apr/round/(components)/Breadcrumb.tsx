@@ -5,11 +5,56 @@ import {
   ExternalLinkIcon,
 } from "@radix-ui/react-icons";
 import Link from "next/link";
-import React from "react";
+import React, { ReactNode } from "react";
 
 import { Pool } from "#/lib/balancer/gauges";
 
 import { Round } from "../../(utils)/rounds";
+
+function BreadcrumbItem({
+  content,
+  link,
+  children,
+}: {
+  content: string;
+  link?: string;
+  children?: ReactNode;
+}) {
+  return (
+    <li aria-current="page">
+      <div className="flex items-center">
+        <ChevronRightIcon />
+        {link ? (
+          <a
+            href={link}
+            className="flex ml-1 text-sm font-medium text-white hover:text-blue-600 md:ml-2"
+          >
+            {content}
+            {children}
+          </a>
+        ) : (
+          <div className="flex ml-1 text-sm font-medium text-white md:ml-2">
+            {content}
+            {children}
+          </div>
+        )}
+      </div>
+    </li>
+  );
+}
+
+function displaySelectedRound(roundId: string | undefined, poolId: string | undefined) {
+  if (!roundId) return <BreadcrumbItem content={`No Round selected`} />;
+  return (
+    <BreadcrumbItem content={`Round ${roundId}`} link={`/apr/round/${roundId}`}>
+      {!poolId && Round.currentRound().value == roundId && (
+        <span className="bg-blue6 border border-blue9 text-white text-xs font-semibold mr-2 px-2 py-0.5 ml-4 rounded flex">
+          Current
+        </span>
+      )}{" "}
+    </BreadcrumbItem>
+  );
+}
 
 export default function Breadcrumb({
   roundId,
@@ -38,49 +83,17 @@ export default function Breadcrumb({
             </div>
           </div>
         </li>
-        <li aria-current="page">
-          <div className="flex items-center">
-            <ChevronRightIcon />
-            <a
-              href={`/apr/round/${roundId}`}
-              className="ml-1 text-sm font-medium text-white hover:text-blue-600 md:ml-2"
-            >
-              Round {roundId}
-            </a>
-            {!poolId && Round.currentRound().value == roundId && (
-              <span className="bg-blue6 border border-blue9 text-white text-xs font-semibold mr-2 px-2 py-0.5 ml-4 rounded flex">
-                Current
-              </span>
-            )}
-          </div>
-        </li>
+        {displaySelectedRound(roundId, poolId)}
         {/* 
-        TODO: BAL-654 - Add a per chain page
+        TODO: BAL-654 - Add a per chain page */}
         {network && (
-          <li aria-current="page">
-            <div className="flex items-center">
-              <ChevronRightIcon />
-              <a
-                href={`/apr/pool/${network}/`}
-                className="ml-1 text-sm font-medium text-white hover:text-blue-600 md:ml-2"
-              >
-                {capitalize(network)}
-              </a>
-            </div>
-          </li>
-        )} */}
+          <BreadcrumbItem link={`/apr/pool/${network}/`} content={network} />
+        )}
         {poolId && (
-          <li aria-current="page">
-            <div className="flex items-center">
-              <ChevronRightIcon />
-              <a
-                href={`/apr/pool/${network}/${poolId}`}
-                className="ml-1 text-sm font-medium text-white hover:text-blue-600 md:ml-2"
-              >
-                {selectedPool?.symbol ?? poolId}
-              </a>
-            </div>
-          </li>
+          <BreadcrumbItem
+            content={selectedPool?.symbol ?? poolId}
+            link={`/apr/pool/${network}/${poolId}`}
+          />
         )}
       </ol>
       {poolId && (

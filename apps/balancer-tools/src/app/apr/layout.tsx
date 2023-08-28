@@ -1,24 +1,30 @@
-"use client";
-
-import { useParams } from "next/navigation";
+import { Metadata } from "next";
 import * as React from "react";
-import invariant from "tiny-invariant";
 
 import { Header } from "#/components/Header";
 
 import HeaderEndButton from "./(components)/HeaderEndButton";
 
-export default function Layout({ children }: React.PropsWithChildren) {
-  const { roundId, poolId, network } = useParams();
-  invariant(!Array.isArray(roundId), "roundId cannot be a list");
-  invariant(!Array.isArray(poolId), "poolId cannot be a list");
-  invariant(!Array.isArray(network), "network cannot be a list");
+const APP_DISPLAY_NAME = "Historical APR";
 
+export const metadata: Metadata = {
+  title: `Balancer - ${APP_DISPLAY_NAME}`,
+  description: "APR Enhancement Calculator for Balancer pools through rounds",
+};
+
+export default function Layout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: { roundId: string; poolId: string; network: string };
+}) {
+  const { roundId, poolId, network } = params;
   return (
     <div className="flex h-full flex-col">
       <Header
         linkUrl={"/apr"}
-        title={"Pool Simulator"}
+        title={APP_DISPLAY_NAME}
         imageSrc={"/assets/balancer-symbol.svg"}
         endButton={
           <HeaderEndButton

@@ -98,17 +98,18 @@ export function PoolListTable({
               onClick={() => handleSortingChange("tvl")}
             >
               <div className="flex gap-x-1 items-center">
-                <span>TVL</span>
                 <Tooltip
                   content={`This is the TVL calculate at the end of the round`}
                 >
                   <InfoCircledIcon />
                 </Tooltip>
+                <span>TVL</span>
                 {sortField == "tvl" ? OrderIcon(order) : OrderIcon("neutral")}
               </div>
             </Table.HeaderCell>
             <Table.HeaderCell
               onClick={() => handleSortingChange("votingShare")}
+              classNames="whitespace-nowrap"
             >
               <div className="flex gap-x-1 items-center">
                 <span>Voting %</span>
@@ -119,12 +120,12 @@ export function PoolListTable({
             </Table.HeaderCell>
             <Table.HeaderCell onClick={() => handleSortingChange("apr")}>
               <div className="flex gap-x-1 items-center">
-                <span> APR</span>
                 <Tooltip
                   content={`This is the APR calculate at the end of the round`}
                 >
                   <InfoCircledIcon />
                 </Tooltip>
+                <span> APR</span>
                 {sortField == "apr" ? OrderIcon(order) : OrderIcon("neutral")}
               </div>
             </Table.HeaderCell>

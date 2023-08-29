@@ -86,8 +86,13 @@ function HeaderRow({ children }: React.PropsWithChildren) {
 function HeaderCell({
   children,
   padding = "p-4",
+  classNames,
   onClick,
-}: React.PropsWithChildren<{ padding?: string; onClick?: () => void }>) {
+}: React.PropsWithChildren<{
+  padding?: string;
+  classNames?: string;
+  onClick?: () => void;
+}>) {
   useTableContext();
   return (
     <th
@@ -97,6 +102,7 @@ function HeaderCell({
         "text-slate12 text-left text-sm font-semibold",
         padding,
         onClick ? "cursor-pointer" : "",
+        classNames ?? classNames,
       )}
     >
       {children}

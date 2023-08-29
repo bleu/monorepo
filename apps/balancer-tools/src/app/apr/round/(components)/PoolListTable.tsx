@@ -108,7 +108,6 @@ export function PoolListTable({
             <Table.HeaderCell
               classNames="text-end whitespace-nowrap hover:text-amber9"
               onClick={() => handleSortingChange("votingShare")}
-              classNames="whitespace-nowrap"
             >
               <div className="flex gap-x-1 items-center">
                 <span>Voting %</span>

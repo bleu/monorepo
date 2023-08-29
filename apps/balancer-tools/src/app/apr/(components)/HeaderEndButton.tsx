@@ -52,7 +52,8 @@ export default function HeaderEndButton() {
           />
         }
       >
-        <div className="flex items-center gap-x-2 text-sm font-normal text-slate12 bg-blue3 border border-blue6 p-2 rounded-[4px] cursor-pointer">
+        {/* 35px is the select height */}
+        <div className="flex items-center gap-x-2 text-sm font-normal text-slate12 bg-blue4 border border-blue6 px-2 rounded-[4px] cursor-pointer h-[35px]">
           <MagnifyingGlassIcon width="20" height="20" strokeWidth={1} />
           <span className="font-medium pr-1">Go to pool</span>
         </div>
@@ -61,24 +62,33 @@ export default function HeaderEndButton() {
         placeholder="Select a round"
         value={selectedRound}
         onValueChange={(value) => {
+          setSelectedRound(value);
           router.push(
             !poolId
               ? `/apr/round/${value}`
               : `/apr/pool/${network}/${poolId}/round/${value}`,
           );
         }}
-        className=""
       >
         {typeof roundId === "undefined" ? (
           <SelectItem value="">Select a round</SelectItem>
         ) : (
           ""
         )}
-        {ALL_ROUNDS.map((round) => (
-          <SelectItem key={round.value} value={round.value}>
-            {round.label}
-          </SelectItem>
-        ))}
+        <div className="flex flex-col gap-y-1">
+          {ALL_ROUNDS.map((round) => (
+            <SelectItem key={round.value} value={round.value}>
+              <div className="flex gap-x-2 items-center">
+                {/* TODO: create a variation of the badge component to attend this design */}
+                <span className="text-xs bg-blue2 rounded p-1">
+                  Round {round.value}
+                </span>
+                {/* TODO: fix round label, it's returning wed date instead of thursday */}
+                <span>{round.label}</span>
+              </div>
+            </SelectItem>
+          ))}
+        </div>
       </Select>
     </div>
   );

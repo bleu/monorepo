@@ -43,7 +43,10 @@ function BreadcrumbItem({
   );
 }
 
-function displaySelectedRound(roundId: string | undefined, poolId: string | undefined) {
+function displaySelectedRound(
+  roundId: string | undefined,
+  poolId: string | undefined,
+) {
   if (!roundId) return <BreadcrumbItem content={`No Round selected`} />;
   return (
     <BreadcrumbItem content={`Round ${roundId}`} link={`/apr/round/${roundId}`}>

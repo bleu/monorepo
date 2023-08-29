@@ -15,11 +15,9 @@ import { Pool } from "#/lib/balancer/gauges";
 import { Round } from "../../(utils)/rounds";
 
 function BreadcrumbItem({
-  content,
   link,
   children,
 }: {
-  content: string;
   link?: string;
   children?: ReactNode;
 }) {
@@ -50,9 +48,10 @@ function displaySelectedRound(
   roundId: string | undefined,
   poolId: string | undefined,
 ) {
-  if (!roundId) return <BreadcrumbItem content={`No Round selected`} />;
+  if (!roundId) return <BreadcrumbItem >No Round selected</BreadcrumbItem>;
   return (
-    <BreadcrumbItem content={`Round ${roundId}`} link={`/apr/round/${roundId}`}>
+    <BreadcrumbItem link={`/apr/round/${roundId}`}>
+      Round {roundId}{" "}
       {!poolId && Round.currentRound().value == roundId && (
         <span className="bg-blue6 border border-blue9 text-white text-xs font-semibold mr-2 px-2 py-0.5 ml-4 rounded flex">
           Current
@@ -90,14 +89,17 @@ export default function Breadcrumb() {
         {/* 
         TODO: BAL-710 - Should be re-enabled when we have a way to filter by network
         {network && (
-          <BreadcrumbItem link={`/apr/pool/${network}/`} content={network} />
+          <BreadcrumbItem link={`/apr/pool/${network}/`}>
+            {network}
+          </BreadcrumbItem>
         )}
         */}
         {poolId && (
           <BreadcrumbItem
-            content={selectedPool?.symbol ?? poolId}
             link={`/apr/pool/${network}/${poolId}`}
-          />
+          >
+            {selectedPool?.symbol ?? poolId}
+          </BreadcrumbItem>
         )}
 
       </ol>

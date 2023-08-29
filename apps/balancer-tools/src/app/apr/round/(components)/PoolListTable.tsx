@@ -1,5 +1,4 @@
 "use client";
-
 import { networkFor } from "@bleu-balancer-tools/utils";
 import {
   ChevronDownIcon,
@@ -8,6 +7,8 @@ import {
   TriangleDownIcon,
   TriangleUpIcon,
 } from "@radix-ui/react-icons";
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -15,10 +16,11 @@ import { Button } from "#/components";
 import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
+import { cn } from "#/lib/utils";
 import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 
-import { PoolStatsData, PoolStatsResults } from "../../api/route";
+import { PoolStatsData, PoolStatsResults, PoolTokens } from "../../api/route";
 
 export function PoolListTable({
   roundId,
@@ -83,8 +85,9 @@ export function PoolListTable({
     <div className="flex w-full flex-1 justify-center text-white">
       <Table color="blue" shade={"darkWithBorder"}>
         <Table.HeaderRow>
-          <Table.HeaderCell>Symbol</Table.HeaderCell>
-          <Table.HeaderCell onClick={() => handleSortingChange("tvl")}>
+          <Table.HeaderCell>Network</Table.HeaderCell>
+          <Table.HeaderCell>Composition</Table.HeaderCell>
+          <Table.HeaderCell classNames="whitespace-nowrap" onClick={() => handleSortingChange("tvl")}>
             <div className="flex gap-x-1 items-center">
               <span>TVL</span>
               <Tooltip
@@ -95,7 +98,7 @@ export function PoolListTable({
               {sortField == "tvl" ? OrderIcon(order) : OrderIcon("neutral")}
             </div>
           </Table.HeaderCell>
-          <Table.HeaderCell onClick={() => handleSortingChange("votingShare")}>
+          <Table.HeaderCell classNames="whitespace-nowrap" onClick={() => handleSortingChange("votingShare")}>
             <div className="flex gap-x-1 items-center">
               <span>Voting %</span>
               {sortField == "votingShare"
@@ -103,7 +106,7 @@ export function PoolListTable({
                 : OrderIcon("neutral")}
             </div>
           </Table.HeaderCell>
-          <Table.HeaderCell onClick={() => handleSortingChange("apr")}>
+          <Table.HeaderCell classNames="whitespace-nowrap" onClick={() => handleSortingChange("apr")}>
             <div className="flex gap-x-1 items-center">
               <span> APR</span>
               <Tooltip
@@ -120,6 +123,7 @@ export function PoolListTable({
             <TableRow
               key={gauge.poolId}
               poolId={gauge.poolId}
+              tokens={gauge.tokens}
               network={gauge.network}
               roundId={roundId}
               symbol={gauge.symbol}
@@ -155,10 +159,21 @@ export function PoolListTable({
   );
 }
 
+function LinkBodyCell({href, tdClass, linkClass, children}: React.PropsWithChildren<{href: string; tdClass?: string; linkClass?: string}>) {
+  return (<td className={tdClass}>
+    <div>
+      <Link href={href} className={cn(["whitespace-nowrap text-sm text-slate10 p-4 flex text-white",linkClass])} >
+        {children}
+      </Link>
+    </div>
+  </td>)
+}
+
 function TableRow({
   poolId,
   roundId,
   network,
+  tokens,
   symbol,
   tvl,
   votingShare,
@@ -167,6 +182,7 @@ function TableRow({
   poolId: string;
   roundId: string;
   network: string;
+  tokens: PoolTokens[];
   symbol: string;
   tvl: number;
   votingShare: number;
@@ -183,16 +199,32 @@ function TableRow({
         router.push(poolRedirectURL);
       }}
     >
-      <Table.BodyCell>
-        {symbol} ({networkFor(network)})
-      </Table.BodyCell>
-      <Table.BodyCell padding="py-4 px-1">{formatNumber(tvl)}</Table.BodyCell>
-      <Table.BodyCell padding="py-4 px-1">
+      <LinkBodyCell href={poolRedirectURL} tdClass="w-6">
+      <Image
+          src={`/assets/network/${networkFor(network)}.svg`}
+          height={25}
+          width={25}
+          alt={`Logo for ${networkFor(network)}`}
+          />
+      </LinkBodyCell>
+      <LinkBodyCell href={poolRedirectURL} linkClass="gap-2" tdClass="w-11/12">
+        {tokens.map(token => (
+        <div className="relative mx-1 flex max-h-10 items-center rounded-md px-2 py-1 bg-blue6">{token.symbol}
+        {token.weight ? <span className="text-xs ml-1 text-slate-400">{token.weight * 100}%</span> : ""}
+        </div>))}
+      </LinkBodyCell>
+
+      <LinkBodyCell href={poolRedirectURL}>
+        {formatNumber(tvl)}
+      </LinkBodyCell>
+
+      <LinkBodyCell href={poolRedirectURL}>
         {formatNumber(votingShare * 100).concat("%")}
-      </Table.BodyCell>
-      <Table.BodyCell padding="py-4 px-1">
+      </LinkBodyCell>
+
+      <LinkBodyCell href={poolRedirectURL}>
         {formatNumber(apr).concat("%")}
-      </Table.BodyCell>
+      </LinkBodyCell>
     </Table.BodyRow>
   );
 }

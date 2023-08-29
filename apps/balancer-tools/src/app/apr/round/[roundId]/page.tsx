@@ -13,12 +13,12 @@ export default function Page({
 }) {
   return (
     <div className="flex flex-1 flex-col gap-y-3">
-      <Suspense fallback={<Spinner />}>
+      {/* <Suspense fallback={<Spinner />}>
         <RoundOverviewCards roundId={roundId} />
       </Suspense>
       <Suspense fallback={<Spinner />}>
         <TopPoolsChart roundId={roundId} />
-      </Suspense>
+      </Suspense> */}
       <Suspense fallback={<Spinner />}>
         <PoolTableWrapper roundId={roundId} />
       </Suspense>

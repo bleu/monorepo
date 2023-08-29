@@ -13,11 +13,13 @@ class Token {
   address: string;
   weight: string | null;
   symbol: string;
+  logoURI: string;
 
   constructor(data: (typeof POOLS_WITH_LIVE_GAUGES)[0]["tokens"][0]) {
     this.address = data.address;
     this.weight = data.weight;
     this.symbol = data.symbol;
+    this.logoURI = data.logoURI;
   }
 }
 

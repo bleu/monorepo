@@ -92,9 +92,11 @@ export function PoolListTable({
           <Table.HeaderRow>
             <Table.HeaderCell>Network</Table.HeaderCell>
             <Table.HeaderCell>Composition</Table.HeaderCell>
-            <Table.HeaderCell>Type</Table.HeaderCell>
+            <Table.HeaderCell classNames="text-end whitespace-nowrap">
+              Type
+            </Table.HeaderCell>
             <Table.HeaderCell
-              classNames="whitespace-nowrap"
+              classNames="text-end whitespace-nowrap"
               onClick={() => handleSortingChange("tvl")}
             >
               <div className="flex gap-x-1 items-center">
@@ -108,8 +110,8 @@ export function PoolListTable({
               </div>
             </Table.HeaderCell>
             <Table.HeaderCell
+              classNames="text-end whitespace-nowrap"
               onClick={() => handleSortingChange("votingShare")}
-              classNames="whitespace-nowrap"
             >
               <div className="flex gap-x-1 items-center">
                 <span>Voting %</span>
@@ -118,7 +120,10 @@ export function PoolListTable({
                   : OrderIcon("neutral")}
               </div>
             </Table.HeaderCell>
-            <Table.HeaderCell onClick={() => handleSortingChange("apr")}>
+            <Table.HeaderCell
+              classNames="text-end whitespace-nowrap"
+              onClick={() => handleSortingChange("apr")}
+            >
               <div className="flex gap-x-1 items-center">
                 <Tooltip
                   content={`This is the APR calculate at the end of the round`}

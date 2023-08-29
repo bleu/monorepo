@@ -1,28 +1,52 @@
 import cn from "clsx";
+import React from "react";
+
+enum BadgeSize {
+  sm = "sm",
+  md = "md",
+  lg = "lg",
+}
+
+export enum BadgeColor {
+  darkBlue = "blue2",
+  midBlue = "blue4",
+  blue = "blue6",
+}
+
+interface BadgeProps {
+  children: React.ReactNode;
+  size?: keyof typeof BadgeSize;
+  color?: keyof typeof BadgeColor;
+  isSelected?: boolean;
+  isTrackingTighter?: boolean;
+}
 
 export function Badge({
   children,
-  variant = "default",
+  size = "md",
+  color = "midBlue",
   isSelected = false,
   isTrackingTighter = false,
-}: React.PropsWithChildren<{
-  isSelected?: boolean;
-  variant?: string;
-  isTrackingTighter?: boolean;
-}>) {
-  const outline = variant === "outlined";
+}: BadgeProps) {
+  const BadgeColorString = BadgeColor[color];
+  const BadgeSizeString = BadgeSize[size];
+
+  const baseClasses = "rounded text-sm font-bold p-1 text-slate12";
+
+  const colorClasses = cn({
+    "bg-blue4": BadgeColorString === BadgeColor.midBlue,
+    "bg-blue2": BadgeColorString === BadgeColor.darkBlue,
+    "bg-blue6 border border-blue9": BadgeColorString === BadgeColor.blue,
+  });
+
+  const additionalClasses = cn({
+    "bg-blue8": isSelected && BadgeColorString === BadgeColor.midBlue,
+    "tracking-tighter": isTrackingTighter,
+    "text-xs font-normal": BadgeSizeString === BadgeSize.sm,
+  });
 
   return (
-    <span
-      className={cn("rounded text-sm font-bold break-words", {
-        "bg-transparent border border-slate6 text-slate12 group-hover:text-slate12 uppercase p-1 leading-4":
-          outline,
-        "text-slate12 px-1": !outline,
-        "bg-blue4 text-slate12": !isSelected && !outline,
-        "bg-blue8": isSelected && !outline,
-        "tracking-tighter": isTrackingTighter,
-      })}
-    >
+    <span className={cn(baseClasses, colorClasses, additionalClasses)}>
       {children}
     </span>
   );

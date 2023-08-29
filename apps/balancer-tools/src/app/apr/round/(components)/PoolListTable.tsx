@@ -218,7 +218,7 @@ function TableRow({
             {token.symbol}
             {token.weight ? (
               <span className="text-xs ml-1 text-slate-400">
-                {(parseFloat(token.weight) * 100).toFixed(2)}%
+                {(parseFloat(token.weight) * 100).toFixed()}%
               </span>
             ) : (
               ""

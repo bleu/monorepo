@@ -8,6 +8,7 @@ import {
   TriangleDownIcon,
   TriangleUpIcon,
 } from "@radix-ui/react-icons";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -83,7 +84,7 @@ export function PoolListTable({
     <div className="flex w-full flex-1 justify-center text-white">
       <Table color="blue" shade={"darkWithBorder"}>
         <Table.HeaderRow>
-          <Table.HeaderCell>Symbol</Table.HeaderCell>
+          <Table.HeaderCell>Network</Table.HeaderCell>
           <Table.HeaderCell onClick={() => handleSortingChange("tvl")}>
             <div className="flex gap-x-1 items-center">
               <span>TVL</span>
@@ -183,6 +184,14 @@ function TableRow({
         router.push(poolRedirectURL);
       }}
     >
+      <Table.BodyCellLink href={poolRedirectURL} tdClassNames="w-6">
+        <Image
+          src={`/assets/network/${networkFor(network)}.svg`}
+          height={25}
+          width={25}
+          alt={`Logo for ${networkFor(network)}`}
+        />
+      </Table.BodyCellLink>
       <Table.BodyCellLink
         href={poolRedirectURL}
         linkClassNames="gap-2"

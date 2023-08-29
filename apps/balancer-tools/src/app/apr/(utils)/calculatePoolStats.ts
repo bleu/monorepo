@@ -8,6 +8,7 @@ import { getBALPriceByRound } from "./getBALPriceByRound";
 import { getPoolRelativeWeight } from "./getRelativeWeight";
 import { Round } from "./rounds";
 
+// The enum namings should be human-readable and are based on what Balancer shows on their FE
 export enum PoolTypeEnum {
   PHANTOM_STABLE = "ComposableStable",
   WEIGHTED = "Weighted",

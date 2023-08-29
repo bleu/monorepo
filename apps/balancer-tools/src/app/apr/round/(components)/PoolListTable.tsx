@@ -19,12 +19,8 @@ import { Tooltip } from "#/components/Tooltip";
 import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 
-import {
-  PoolStatsData,
-  PoolStatsResults,
-  PoolTokens,
-  PoolTypeEnum,
-} from "../../api/route";
+import { PoolTypeEnum } from "../../(utils)/calculatePoolStats";
+import { PoolStatsData, PoolStatsResults, PoolTokens } from "../../api/route";
 
 export function PoolListTable({
   roundId,

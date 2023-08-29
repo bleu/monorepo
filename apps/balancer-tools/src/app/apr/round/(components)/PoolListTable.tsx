@@ -232,7 +232,11 @@ function TableRow({
       </Table.BodyCellLink>
 
       <Table.BodyCellLink linkClassNames="float-right" href={poolRedirectURL}>
-        ${tvl.toLocaleString("en-US", {minimumFractionDigits: 0, maximumFractionDigits: 0,})}
+        $
+        {tvl.toLocaleString("en-US", {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
+        })}
       </Table.BodyCellLink>
 
       <Table.BodyCellLink linkClassNames="float-right" href={poolRedirectURL}>

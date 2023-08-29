@@ -5,6 +5,7 @@ import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { useParams, useRouter } from "next/navigation";
 import * as React from "react";
 
+import { Badge } from "#/components/Badge";
 import { Dialog } from "#/components/Dialog";
 import { SearchPoolForm } from "#/components/SearchPoolForm";
 import { Select, SelectItem } from "#/components/Select";
@@ -79,10 +80,9 @@ export default function HeaderEndButton() {
           {ALL_ROUNDS.map((round) => (
             <SelectItem key={round.value} value={round.value}>
               <div className="flex gap-x-2 items-center">
-                {/* TODO: create a variation of the badge component to attend this design */}
-                <span className="text-xs bg-blue2 rounded p-1">
+                <Badge color="darkBlue" size="sm">
                   Round {round.value}
-                </span>
+                </Badge>
                 <span>{round.label}</span>
               </div>
             </SelectItem>

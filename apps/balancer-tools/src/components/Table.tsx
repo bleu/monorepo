@@ -86,8 +86,7 @@ function HeaderRow({ children }: React.PropsWithChildren) {
 
 function HeaderCell({
   children,
-  padding = "p-4",
-  classNames,
+  classNames = "p-4",
   onClick,
 }: React.PropsWithChildren<{
   padding?: string;
@@ -101,9 +100,8 @@ function HeaderCell({
       scope="col"
       className={cn(
         "text-slate12 text-left text-sm font-semibold",
-        padding,
         onClick ? "cursor-pointer" : "",
-        classNames ?? classNames,
+        classNames,
       )}
     >
       {children}

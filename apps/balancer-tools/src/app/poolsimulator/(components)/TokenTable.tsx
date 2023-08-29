@@ -40,13 +40,15 @@ export function TokenTable({ data }: { data: AnalysisData }) {
         shade={"darkWithBorder"}
       >
         <Table.HeaderRow>
-          <Table.HeaderCell padding={customPadding}>
+          <Table.HeaderCell classNames={customPadding}>
             <span className="sr-only">Edit</span>
           </Table.HeaderCell>
-          <Table.HeaderCell padding={customPadding}>Symbol</Table.HeaderCell>
-          <Table.HeaderCell padding={customPadding}>Balance</Table.HeaderCell>
-          <Table.HeaderCell padding={customPadding}>Rate</Table.HeaderCell>
-          <Table.HeaderCell padding={customPadding}>
+          <Table.HeaderCell classNames={customPadding}>Symbol</Table.HeaderCell>
+          <Table.HeaderCell classNames={customPadding}>
+            Balance
+          </Table.HeaderCell>
+          <Table.HeaderCell classNames={customPadding}>Rate</Table.HeaderCell>
+          <Table.HeaderCell classNames={customPadding}>
             {aboveOrEqualLimit && (
               <Tooltip
                 content={`This pool type can't have more than ${MAX_POOL_TOKENS} tokens.`}

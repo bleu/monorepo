@@ -132,17 +132,17 @@ export function PoolListTable({
             </Table.HeaderCell>
           </Table.HeaderRow>
           <Table.Body>
-            {tableData.map((gauge) => (
+            {tableData.map((pool) => (
               <TableRow
-                key={gauge.poolId}
-                poolId={gauge.poolId}
-                network={gauge.network}
+                key={pool.poolId}
+                poolId={pool.poolId}
+                network={pool.network}
                 roundId={roundId}
-                tokens={gauge.tokens}
-                poolType={gauge.type}
-                tvl={gauge.tvl}
-                votingShare={gauge.votingShare}
-                apr={gauge.apr}
+                tokens={pool.tokens}
+                poolType={pool.type}
+                tvl={pool.tvl}
+                votingShare={pool.votingShare}
+                apr={pool.apr}
               />
             ))}
             <Table.BodyRow>

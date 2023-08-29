@@ -25,12 +25,22 @@ export interface PoolStats {
   votingShare: number;
 }
 
+export enum PoolTypeEnum {
+  PHANTOM_STABLE = "ComposableStable",
+  WEIGHTED = "Weighted",
+  GYROE = "GyroE",
+  STABLE = "Stable",
+  MetaStable = "MetaStable",
+  UNKNOWN = "FX",
+}
+
 export interface PoolStatsData extends PoolStats {
   symbol: string;
   network: string;
   poolId: string;
   roundId: number;
   tokens: PoolTokens[];
+  type: PoolTypeEnum;
 }
 
 export interface PoolStatsResults {

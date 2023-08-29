@@ -113,6 +113,7 @@ export async function calculatePoolStats({
     votingShare,
     symbol,
     network,
+    tokens: pool.tokens,
   };
 }
 

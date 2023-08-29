@@ -39,6 +39,7 @@ export interface PoolStatsData extends PoolStats {
   network: string;
   poolId: string;
   roundId: number;
+  tokens: PoolTokens[];
 }
 
 export interface PoolStatsResults {

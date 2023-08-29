@@ -3,10 +3,20 @@ import * as balEmissions from "#/lib/balancer/emissions";
 import { Pool } from "#/lib/balancer/gauges";
 import { pools } from "#/lib/gql/server";
 
-import { PoolStatsData } from "../api/route";
+import { PoolStatsData, PoolTokens } from "../api/route";
 import { getBALPriceByRound } from "./getBALPriceByRound";
 import { getPoolRelativeWeight } from "./getRelativeWeight";
 import { Round } from "./rounds";
+
+// The enum namings should be human-readable and are based on what Balancer shows on their FE
+export enum PoolTypeEnum {
+  PHANTOM_STABLE = "ComposableStable",
+  WEIGHTED = "Weighted",
+  GYROE = "GyroE",
+  STABLE = "Stable",
+  MetaStable = "MetaStable",
+  UNKNOWN = "FX",
+}
 
 const WEEKS_IN_YEAR = 52;
 
@@ -97,6 +107,8 @@ export async function calculatePoolStats({
     votingShare,
     symbol,
     network,
+    tokens: pool.tokens as PoolTokens[],
+    type: pool.poolType as keyof typeof PoolTypeEnum,
   };
 }
 

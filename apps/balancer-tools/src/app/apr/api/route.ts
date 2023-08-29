@@ -4,12 +4,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { Pool, POOLS_WITH_LIVE_GAUGES } from "#/lib/balancer/gauges";
 import { fetcher } from "#/utils/fetcher";
 
-import { calculatePoolStats } from "../(utils)/calculatePoolStats";
+import {
+  calculatePoolStats,
+  PoolTypeEnum,
+} from "../(utils)/calculatePoolStats";
 import { Round } from "../(utils)/rounds";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL;
 
 type Order = "asc" | "desc";
+
+export interface PoolTokens {
+  address: string;
+  logoURI: string;
+  symbol: string;
+  weight: string | null;
+}
 
 export interface PoolStats {
   apr: number;
@@ -23,6 +33,8 @@ export interface PoolStatsData extends PoolStats {
   network: string;
   poolId: string;
   roundId: number;
+  tokens: PoolTokens[];
+  type: keyof typeof PoolTypeEnum;
 }
 
 export interface PoolStatsResults {

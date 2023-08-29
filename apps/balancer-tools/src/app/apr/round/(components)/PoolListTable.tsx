@@ -19,7 +19,7 @@ import { Tooltip } from "#/components/Tooltip";
 import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 
-import { PoolStatsData, PoolStatsResults } from "../../api/route";
+import { PoolStatsData, PoolStatsResults, PoolTokens } from "../../api/route";
 
 export function PoolListTable({
   roundId,
@@ -85,6 +85,7 @@ export function PoolListTable({
       <Table color="blue" shade={"darkWithBorder"}>
         <Table.HeaderRow>
           <Table.HeaderCell>Network</Table.HeaderCell>
+          <Table.HeaderCell>Composition</Table.HeaderCell>
           <Table.HeaderCell onClick={() => handleSortingChange("tvl")}>
             <div className="flex gap-x-1 items-center">
               <span>TVL</span>
@@ -123,7 +124,7 @@ export function PoolListTable({
               poolId={gauge.poolId}
               network={gauge.network}
               roundId={roundId}
-              symbol={gauge.symbol}
+              tokens={gauge.tokens}
               tvl={gauge.tvl}
               votingShare={gauge.votingShare}
               apr={gauge.apr}
@@ -160,7 +161,7 @@ function TableRow({
   poolId,
   roundId,
   network,
-  symbol,
+  tokens,
   tvl,
   votingShare,
   apr,
@@ -168,7 +169,7 @@ function TableRow({
   poolId: string;
   roundId: string;
   network: string;
-  symbol: string;
+  tokens: PoolTokens[];
   tvl: number;
   votingShare: number;
   apr: number;
@@ -197,7 +198,18 @@ function TableRow({
         linkClassNames="gap-2"
         tdClassNames="w-11/12"
       >
-        {symbol} ({networkFor(network)})
+        {tokens.map((token) => (
+          <div className="relative mx-1 flex max-h-10 items-center rounded-md px-2 py-1 bg-blue6">
+            {token.symbol}
+            {token.weight ? (
+              <span className="text-xs ml-1 text-slate-400">
+                {parseFloat(token.weight) * 100}%
+              </span>
+            ) : (
+              ""
+            )}
+          </div>
+        ))}
       </Table.BodyCellLink>
 
       <Table.BodyCellLink href={poolRedirectURL}>

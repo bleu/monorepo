@@ -31,7 +31,7 @@ export function Badge({
   const BadgeColorString = BadgeColor[color];
   const BadgeSizeString = BadgeSize[size];
 
-  const baseClasses = "rounded text-sm font-bold p-1 text-slate12";
+  const baseClasses = "rounded text-sm font-bold px-1 text-slate12";
 
   const colorClasses = cn({
     "bg-blue4": BadgeColorString === BadgeColor.midBlue,
@@ -42,7 +42,8 @@ export function Badge({
   const additionalClasses = cn({
     "bg-blue8": isSelected && BadgeColorString === BadgeColor.midBlue,
     "tracking-tighter": isTrackingTighter,
-    "text-xs font-normal": BadgeSizeString === BadgeSize.sm,
+    "text-xs font-semibold py-[2px]": BadgeSizeString === BadgeSize.sm,
+    "py-1": BadgeSizeString === BadgeSize.md,
   });
 
   return (

@@ -10,6 +10,7 @@ import { useParams } from "next/navigation";
 import { ReactNode, useState } from "react";
 import invariant from "tiny-invariant";
 
+import { Badge } from "#/components/Badge";
 import { Toast } from "#/components/Toast";
 import { Pool } from "#/lib/balancer/gauges";
 
@@ -51,12 +52,14 @@ function displaySelectedRound(
 
   return (
     <BreadcrumbItem link={`/apr/round/${roundId}`}>
-      Round {roundId}{" "}
-      {!poolId && Round.currentRound().value == roundId && (
-        <span className="bg-blue6 border border-blue9 text-white text-xs font-semibold mr-2 px-2 py-0.5 ml-4 rounded flex">
-          Current
-        </span>
-      )}{" "}
+      <div className="flex items-center gap-x-2">
+        Round {roundId}{" "}
+        {!poolId && Round.currentRound().value == roundId && (
+          <Badge color="blue" size="sm">
+            Current
+          </Badge>
+        )}
+      </div>
     </BreadcrumbItem>
   );
 }

@@ -11,6 +11,13 @@ const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL;
 
 type Order = "asc" | "desc";
 
+export interface PoolTokens {
+  address: string;
+  logoURI: string;
+  symbol: string;
+  weight: string | null;
+}
+
 export interface PoolStats {
   apr: number;
   balPriceUSD: number;
@@ -23,6 +30,7 @@ export interface PoolStatsData extends PoolStats {
   network: string;
   poolId: string;
   roundId: number;
+  tokens: PoolTokens[];
 }
 
 export interface PoolStatsResults {

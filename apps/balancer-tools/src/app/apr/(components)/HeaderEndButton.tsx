@@ -83,7 +83,6 @@ export default function HeaderEndButton() {
                 <span className="text-xs bg-blue2 rounded p-1">
                   Round {round.value}
                 </span>
-                {/* TODO: fix round label, it's returning wed date instead of thursday */}
                 <span>{round.label}</span>
               </div>
             </SelectItem>

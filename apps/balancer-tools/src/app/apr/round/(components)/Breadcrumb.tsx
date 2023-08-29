@@ -47,7 +47,7 @@ function displaySelectedRound(
   roundId: string | undefined,
   poolId: string | undefined,
 ) {
-  if (!roundId) return <BreadcrumbItem >No Round selected</BreadcrumbItem>;
+  if (!roundId) return <BreadcrumbItem>No Round selected</BreadcrumbItem>;
   return (
     <BreadcrumbItem link={`/apr/round/${roundId}`}>
       Round {roundId}{" "}
@@ -75,20 +75,20 @@ export default function Breadcrumb() {
 
   return (
     <>
-    <nav
-      className="border border-blue6 bg-blue3 text-white justify-between px-4 py-3 rounded-lg sm:flex sm:px-5 h-16"
-      aria-label="Breadcrumb"
-    >
-      <ol className="inline-flex items-center mb-3 space-x-1 md:space-x-3 sm:mb-0">
-        <li>
-          <div className="flex items-center">
-            <div className="ml-1 text-sm font-medium text-slate-300 md:ml-2">
-              Historical APR
+      <nav
+        className="border border-blue6 bg-blue3 text-white justify-between px-4 py-3 rounded-lg sm:flex sm:px-5 h-16"
+        aria-label="Breadcrumb"
+      >
+        <ol className="inline-flex items-center mb-3 space-x-1 md:space-x-3 sm:mb-0">
+          <li>
+            <div className="flex items-center">
+              <div className="ml-1 text-sm font-medium text-slate-300 md:ml-2">
+                Historical APR
+              </div>
             </div>
-          </div>
-        </li>
-        {displaySelectedRound(roundId, poolId)}
-        {/* 
+          </li>
+          {displaySelectedRound(roundId, poolId)}
+          {/* 
         TODO: BAL-710 - Should be re-enabled when we have a way to filter by network
         {network && (
           <BreadcrumbItem link={`/apr/pool/${network}/`}>
@@ -96,51 +96,47 @@ export default function Breadcrumb() {
           </BreadcrumbItem>
         )}
         */}
+          {poolId && (
+            <BreadcrumbItem link={`/apr/pool/${network}/${poolId}`}>
+              {selectedPool?.symbol ?? poolId}
+            </BreadcrumbItem>
+          )}
+        </ol>
         {poolId && (
-          <BreadcrumbItem
-            link={`/apr/pool/${network}/${poolId}`}
-          >
-            {selectedPool?.symbol ?? poolId}
-          </BreadcrumbItem>
+          <div>
+            <Link
+              href={`https://app.balancer.fi/#/${
+                network == "gnosis" ? network + "-chain" : network
+              }/pool/${poolId}`}
+              target="_blank"
+              className="inline-flex items-center px-3 py-2 text-sm font-normal text-center text-white bg-blue6 border border-blue9 rounded-lg hover:bg-blue7 mr-3"
+            >
+              <span>Show on Balancer&nbsp;</span>
+              <ExternalLinkIcon />
+            </Link>
+            &nbsp;
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                setIsNotifierOpen(true);
+              }}
+              className="inline-flex items-center px-3 py-2 text-sm font-normal text-center text-white bg-blue6 border border-blue9 rounded-lg hover:bg-blue7"
+            >
+              <span>Copy Link&nbsp;</span>
+              <ClipboardIcon />
+            </button>
+          </div>
         )}
-
-      </ol>
-      {poolId && (
-        <div>
-          <Link
-            href={`https://app.balancer.fi/#/${
-              network == "gnosis" ? network + "-chain" : network
-            }/pool/${poolId}`}
-            target="_blank"
-            className="inline-flex items-center px-3 py-2 text-sm font-normal text-center text-white bg-blue6 border border-blue9 rounded-lg hover:bg-blue7 mr-3"
-          >
-            <span>Show on Balancer&nbsp;</span>
-            <ExternalLinkIcon />
-          </Link>
-          &nbsp;
-          <button
-            onClick={() => {
-              navigator.clipboard.writeText(window.location.href);
-              setIsNotifierOpen(true);
-            }}
-            className="inline-flex items-center px-3 py-2 text-sm font-normal text-center text-white bg-blue6 border border-blue9 rounded-lg hover:bg-blue7"
-          >
-            <span>Copy Link&nbsp;</span>
-            <ClipboardIcon />
-          </button>
-        </div>
-      )}
-    </nav>
-          <Toast
-          content={<ToastContent />}
-          isOpen={isNotifierOpen}
-          setIsOpen={setIsNotifierOpen}
-          duration={5000}
-        />
-        </>
+      </nav>
+      <Toast
+        content={<ToastContent />}
+        isOpen={isNotifierOpen}
+        setIsOpen={setIsNotifierOpen}
+        duration={5000}
+      />
+    </>
   );
 }
-
 
 function ToastContent() {
   return (

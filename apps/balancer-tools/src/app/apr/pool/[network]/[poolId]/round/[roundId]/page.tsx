@@ -8,7 +8,7 @@ import { Spinner } from "#/components/Spinner";
 export default async function Page({
   params: { roundId, poolId },
 }: {
-  params: { roundId: string; poolId: string; };
+  params: { roundId: string; poolId: string };
 }) {
   return (
     <div className="flex flex-1 h-full w-full flex-col justify-start rounded-3xl text-white gap-y-3">

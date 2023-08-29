@@ -10,7 +10,7 @@ import TopPoolsChart from "../(components)/TopPoolsChart";
 export default function Page({
   params: { roundId },
 }: {
-  params: { roundId: string; };
+  params: { roundId: string };
 }) {
   return (
     <div className="flex flex-1 flex-col gap-y-3">

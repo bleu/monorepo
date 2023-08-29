@@ -95,7 +95,7 @@ export function PoolListTable({
               classNames="text-end whitespace-nowrap"
               onClick={() => handleSortingChange("tvl")}
             >
-              <div className="flex gap-x-1 items-center">
+              <div className="flex gap-x-1 items-center justify-end">
                 <Tooltip
                   content={`This is the TVL calculated at the end of the round`}
                 >
@@ -227,19 +227,19 @@ function TableRow({
         ))}
       </Table.BodyCellLink>
 
-      <Table.BodyCellLink href={poolRedirectURL}>
+      <Table.BodyCellLink linkClassNames="float-right" href={poolRedirectURL}>
         {PoolTypeEnum[poolType]}
       </Table.BodyCellLink>
 
-      <Table.BodyCellLink href={poolRedirectURL}>
-        {formatNumber(tvl)}
+      <Table.BodyCellLink linkClassNames="float-right" href={poolRedirectURL}>
+        ${tvl.toLocaleString("en-US", {minimumFractionDigits: 0, maximumFractionDigits: 0,})}
       </Table.BodyCellLink>
 
-      <Table.BodyCellLink href={poolRedirectURL}>
+      <Table.BodyCellLink linkClassNames="float-right" href={poolRedirectURL}>
         {formatNumber(votingShare * 100).concat("%")}
       </Table.BodyCellLink>
 
-      <Table.BodyCellLink href={poolRedirectURL}>
+      <Table.BodyCellLink linkClassNames="float-right" href={poolRedirectURL}>
         {formatNumber(apr).concat("%")}
       </Table.BodyCellLink>
     </Table.BodyRow>

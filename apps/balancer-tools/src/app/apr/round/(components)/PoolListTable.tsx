@@ -19,7 +19,12 @@ import { Tooltip } from "#/components/Tooltip";
 import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 
-import { PoolStatsData, PoolStatsResults, PoolTokens } from "../../api/route";
+import {
+  PoolStatsData,
+  PoolStatsResults,
+  PoolTokens,
+  PoolTypeEnum,
+} from "../../api/route";
 
 export function PoolListTable({
   roundId,
@@ -81,78 +86,87 @@ export function PoolListTable({
   };
 
   return (
-    <div className="flex w-full flex-1 justify-center text-white">
-      <Table color="blue" shade={"darkWithBorder"}>
-        <Table.HeaderRow>
-          <Table.HeaderCell>Network</Table.HeaderCell>
-          <Table.HeaderCell>Composition</Table.HeaderCell>
-          <Table.HeaderCell onClick={() => handleSortingChange("tvl")}>
-            <div className="flex gap-x-1 items-center">
-              <span>TVL</span>
-              <Tooltip
-                content={`This is the TVL calculate at the end of the round`}
-              >
-                <InfoCircledIcon />
-              </Tooltip>
-              {sortField == "tvl" ? OrderIcon(order) : OrderIcon("neutral")}
-            </div>
-          </Table.HeaderCell>
-          <Table.HeaderCell onClick={() => handleSortingChange("votingShare")}>
-            <div className="flex gap-x-1 items-center">
-              <span>Voting %</span>
-              {sortField == "votingShare"
-                ? OrderIcon(order)
-                : OrderIcon("neutral")}
-            </div>
-          </Table.HeaderCell>
-          <Table.HeaderCell onClick={() => handleSortingChange("apr")}>
-            <div className="flex gap-x-1 items-center">
-              <span> APR</span>
-              <Tooltip
-                content={`This is the APR calculate at the end of the round`}
-              >
-                <InfoCircledIcon />
-              </Tooltip>
-              {sortField == "apr" ? OrderIcon(order) : OrderIcon("neutral")}
-            </div>
-          </Table.HeaderCell>
-        </Table.HeaderRow>
-        <Table.Body>
-          {tableData.map((gauge) => (
-            <TableRow
-              key={gauge.poolId}
-              poolId={gauge.poolId}
-              network={gauge.network}
-              roundId={roundId}
-              tokens={gauge.tokens}
-              tvl={gauge.tvl}
-              votingShare={gauge.votingShare}
-              apr={gauge.apr}
-            />
-          ))}
-          <Table.BodyRow>
-            <Table.BodyCell colSpan={4}>
-              {isLoadingMore ? (
-                <Button
-                  className="w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
-                  shade="medium"
-                  disabled={true}
+    <div className="flex flex-col justify-center text-white">
+      <div className="flex justify-center text-white shadow-lg mb-5">
+        <Table color="blue" shade={"darkWithBorder"}>
+          <Table.HeaderRow>
+            <Table.HeaderCell>Network</Table.HeaderCell>
+            <Table.HeaderCell>Composition</Table.HeaderCell>
+            <Table.HeaderCell>Type</Table.HeaderCell>
+            <Table.HeaderCell
+              classNames="whitespace-nowrap"
+              onClick={() => handleSortingChange("tvl")}
+            >
+              <div className="flex gap-x-1 items-center">
+                <span>TVL</span>
+                <Tooltip
+                  content={`This is the TVL calculate at the end of the round`}
                 >
-                  <Spinner size="sm" />
-                </Button>
-              ) : (
-                <Button
-                  className="w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
-                  shade="medium"
-                  onClick={loadMorePools}
+                  <InfoCircledIcon />
+                </Tooltip>
+                {sortField == "tvl" ? OrderIcon(order) : OrderIcon("neutral")}
+              </div>
+            </Table.HeaderCell>
+            <Table.HeaderCell
+              onClick={() => handleSortingChange("votingShare")}
+            >
+              <div className="flex gap-x-1 items-center">
+                <span>Voting %</span>
+                {sortField == "votingShare"
+                  ? OrderIcon(order)
+                  : OrderIcon("neutral")}
+              </div>
+            </Table.HeaderCell>
+            <Table.HeaderCell onClick={() => handleSortingChange("apr")}>
+              <div className="flex gap-x-1 items-center">
+                <span> APR</span>
+                <Tooltip
+                  content={`This is the APR calculate at the end of the round`}
                 >
-                  Load More <ChevronDownIcon />
-                </Button>
-              )}
-            </Table.BodyCell>
-          </Table.BodyRow>
-        </Table.Body>
-      </Table>
+                  <InfoCircledIcon />
+                </Tooltip>
+                {sortField == "apr" ? OrderIcon(order) : OrderIcon("neutral")}
+              </div>
+            </Table.HeaderCell>
+          </Table.HeaderRow>
+          <Table.Body>
+            {tableData.map((gauge) => (
+              <TableRow
+                key={gauge.poolId}
+                poolId={gauge.poolId}
+                network={gauge.network}
+                roundId={roundId}
+                tokens={gauge.tokens}
+                poolType={gauge.type}
+                tvl={gauge.tvl}
+                votingShare={gauge.votingShare}
+                apr={gauge.apr}
+              />
+            ))}
+            <Table.BodyRow>
+              <Table.BodyCell colSpan={6}>
+                {isLoadingMore ? (
+                  <Button
+                    className="w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
+                    shade="medium"
+                    disabled={true}
+                  >
+                    <Spinner size="sm" />
+                  </Button>
+                ) : (
+                  <Button
+                    className="w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
+                    shade="medium"
+                    onClick={loadMorePools}
+                  >
+                    Load More <ChevronDownIcon />
+                  </Button>
+                )}
+              </Table.BodyCell>
+            </Table.BodyRow>
+          </Table.Body>
+        </Table>
+      </div>
     </div>
   );
 }
@@ -162,6 +176,7 @@ function TableRow({
   roundId,
   network,
   tokens,
+  poolType,
   tvl,
   votingShare,
   apr,
@@ -170,6 +185,7 @@ function TableRow({
   roundId: string;
   network: string;
   tokens: PoolTokens[];
+  poolType: keyof typeof PoolTypeEnum;
   tvl: number;
   votingShare: number;
   apr: number;
@@ -180,7 +196,7 @@ function TableRow({
   const router = useRouter();
   return (
     <Table.BodyRow
-      classNames="hover:bg-blue4 hover:cursor-pointer"
+      classNames="hover:bg-blue4 hover:cursor-pointer duration-500"
       onClick={() => {
         router.push(poolRedirectURL);
       }}
@@ -210,6 +226,10 @@ function TableRow({
             )}
           </div>
         ))}
+      </Table.BodyCellLink>
+
+      <Table.BodyCellLink href={poolRedirectURL}>
+        {PoolTypeEnum[poolType]}
       </Table.BodyCellLink>
 
       <Table.BodyCellLink href={poolRedirectURL}>

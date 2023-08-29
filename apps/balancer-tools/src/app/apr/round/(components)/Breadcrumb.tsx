@@ -88,16 +88,18 @@ export default function Breadcrumb() {
         </li>
         {displaySelectedRound(roundId, poolId)}
         {/* 
-        TODO: BAL-654 - Add a per chain page */}
+        TODO: BAL-710 - Should be re-enabled when we have a way to filter by network
         {network && (
           <BreadcrumbItem link={`/apr/pool/${network}/`} content={network} />
         )}
+        */}
         {poolId && (
           <BreadcrumbItem
             content={selectedPool?.symbol ?? poolId}
             link={`/apr/pool/${network}/${poolId}`}
           />
         )}
+
       </ol>
       {poolId && (
         <div>

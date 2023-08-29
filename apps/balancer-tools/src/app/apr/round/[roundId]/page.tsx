@@ -2,6 +2,7 @@ import { Suspense } from "react";
 
 import { Spinner } from "#/components/Spinner";
 
+import Breadcrumb from "../(components)/Breadcrumb";
 import PoolTableWrapper from "../(components)/PoolTableWrapper";
 import RoundOverviewCards from "../(components)/RoundOverviewCards";
 import TopPoolsChart from "../(components)/TopPoolsChart";
@@ -13,6 +14,7 @@ export default function Page({
 }) {
   return (
     <div className="flex flex-1 flex-col gap-y-3">
+      <Breadcrumb />
       <Suspense fallback={<Spinner />}>
         <RoundOverviewCards roundId={roundId} />
       </Suspense>

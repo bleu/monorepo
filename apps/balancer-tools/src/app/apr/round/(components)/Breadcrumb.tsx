@@ -76,7 +76,7 @@ export default function Breadcrumb() {
   return (
     <>
     <nav
-      className="border border-blue6 bg-blue3 text-white justify-between px-4 py-3 rounded-lg sm:flex sm:px-5"
+      className="border border-blue6 bg-blue3 text-white justify-between px-4 py-3 rounded-lg sm:flex sm:px-5 h-16"
       aria-label="Breadcrumb"
     >
       <ol className="inline-flex items-center mb-3 space-x-1 md:space-x-3 sm:mb-0">

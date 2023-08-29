@@ -40,7 +40,7 @@ export interface PoolStatsData extends PoolStats {
   poolId: string;
   roundId: number;
   tokens: PoolTokens[];
-  type: PoolTypeEnum;
+  type: keyof typeof PoolTypeEnum;
 }
 
 export interface PoolStatsResults {

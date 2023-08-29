@@ -147,23 +147,20 @@ export function PoolListTable({
             ))}
             <Table.BodyRow>
               <Table.BodyCell colSpan={6}>
-                {isLoadingMore ? (
-                  <Button
-                    className="w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
-                    shade="medium"
-                    disabled={true}
-                  >
+                <Button
+                  className="w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
+                  shade="medium"
+                  disabled={isLoadingMore}
+                  onClick={loadMorePools}
+                >
+                  {isLoadingMore ? (
                     <Spinner size="sm" />
-                  </Button>
-                ) : (
-                  <Button
-                    className="w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
-                    shade="medium"
-                    onClick={loadMorePools}
-                  >
-                    Load More <ChevronDownIcon />
-                  </Button>
-                )}
+                  ) : (
+                    <>
+                      Load More <ChevronDownIcon />
+                    </>
+                  )}
+                </Button>
               </Table.BodyCell>
             </Table.BodyRow>
           </Table.Body>

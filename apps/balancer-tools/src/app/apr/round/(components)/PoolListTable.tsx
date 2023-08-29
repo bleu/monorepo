@@ -97,7 +97,7 @@ export function PoolListTable({
             >
               <div className="flex gap-x-1 items-center">
                 <Tooltip
-                  content={`This is the TVL calculate at the end of the round`}
+                  content={`This is the TVL calculated at the end of the round`}
                 >
                   <InfoCircledIcon />
                 </Tooltip>

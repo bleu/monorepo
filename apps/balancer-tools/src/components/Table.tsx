@@ -1,4 +1,5 @@
 import cn from "clsx";
+import Link from "next/link";
 import { createContext, useContext } from "react";
 
 const TableContext = createContext({});
@@ -115,6 +116,43 @@ function Body({ children }: React.PropsWithChildren) {
   return <tbody>{children}</tbody>;
 }
 
+function BodyCellLink({
+  children,
+  href,
+  linkClassNames,
+  tdClassNames,
+  padding,
+  ...props
+}: React.PropsWithChildren<{
+  href: string;
+  linkClassNames?: string;
+  tdClassNames?: string;
+  customWidth?: string;
+  padding?: string;
+  colSpan?: number;
+}>) {
+  useTableContext();
+  return (
+    <BodyCell
+      classNames={tdClassNames}
+      padding={padding ? padding : "p-0"}
+      {...props}
+    >
+      <div>
+        <Link
+          href={href}
+          className={cn([
+            "whitespace-nowrap text-sm text-slate10 p-4 flex text-white",
+            linkClassNames,
+          ])}
+        >
+          {children}
+        </Link>
+      </div>
+    </BodyCell>
+  );
+}
+
 function BodyRow({
   children,
   classNames,
@@ -139,10 +177,12 @@ function BodyCell({
   customWidth,
   padding = "p-4",
   colSpan = 1,
+  classNames,
 }: React.PropsWithChildren<{
   customWidth?: string;
   padding?: string;
   colSpan?: number;
+  classNames?: string;
 }>) {
   useTableContext();
   return (
@@ -150,6 +190,7 @@ function BodyCell({
       className={cn(
         "whitespace-nowrap text-sm text-slate10",
         customWidth ? cn(customWidth, "pl-4") : colSpan === 1 ? padding : "p-0",
+        classNames,
       )}
       colSpan={colSpan}
     >
@@ -163,3 +204,4 @@ Table.HeaderCell = HeaderCell;
 Table.Body = Body;
 Table.BodyRow = BodyRow;
 Table.BodyCell = BodyCell;
+Table.BodyCellLink = BodyCellLink;

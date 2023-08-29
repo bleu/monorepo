@@ -183,16 +183,25 @@ function TableRow({
         router.push(poolRedirectURL);
       }}
     >
-      <Table.BodyCell>
+      <Table.BodyCellLink
+        href={poolRedirectURL}
+        linkClassNames="gap-2"
+        tdClassNames="w-11/12"
+      >
         {symbol} ({networkFor(network)})
-      </Table.BodyCell>
-      <Table.BodyCell padding="py-4 px-1">{formatNumber(tvl)}</Table.BodyCell>
-      <Table.BodyCell padding="py-4 px-1">
+      </Table.BodyCellLink>
+
+      <Table.BodyCellLink href={poolRedirectURL}>
+        {formatNumber(tvl)}
+      </Table.BodyCellLink>
+
+      <Table.BodyCellLink href={poolRedirectURL}>
         {formatNumber(votingShare * 100).concat("%")}
-      </Table.BodyCell>
-      <Table.BodyCell padding="py-4 px-1">
+      </Table.BodyCellLink>
+
+      <Table.BodyCellLink href={poolRedirectURL}>
         {formatNumber(apr).concat("%")}
-      </Table.BodyCell>
+      </Table.BodyCellLink>
     </Table.BodyRow>
   );
 }

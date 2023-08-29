@@ -4,7 +4,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { Pool, POOLS_WITH_LIVE_GAUGES } from "#/lib/balancer/gauges";
 import { fetcher } from "#/utils/fetcher";
 
-import { calculatePoolStats } from "../(utils)/calculatePoolStats";
+import {
+  calculatePoolStats,
+  PoolTypeEnum,
+} from "../(utils)/calculatePoolStats";
 import { Round } from "../(utils)/rounds";
 
 export const BASE_URL =
@@ -34,14 +37,6 @@ export interface PoolStats {
 
 type PoolStatsWithoutVotingShare = Omit<PoolStats, "votingShare">;
 
-export enum PoolTypeEnum {
-  PHANTOM_STABLE = "ComposableStable",
-  WEIGHTED = "Weighted",
-  GYROE = "GyroE",
-  STABLE = "Stable",
-  MetaStable = "MetaStable",
-  UNKNOWN = "FX",
-}
 
 export interface PoolStatsData extends PoolStats {
   symbol: string;

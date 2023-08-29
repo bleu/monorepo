@@ -5,7 +5,7 @@ import * as balEmissions from "#/lib/balancer/emissions";
 import { Pool } from "#/lib/balancer/gauges";
 import { pools } from "#/lib/gql/server";
 
-import { PoolStatsData, PoolTokens, PoolTypeEnum } from "../api/route";
+import { PoolStatsData, PoolTokens } from "../api/route";
 import { getBALPriceByRound } from "./getBALPriceByRound";
 import { getPoolRelativeWeight } from "./getRelativeWeight";
 import { Round } from "./rounds";

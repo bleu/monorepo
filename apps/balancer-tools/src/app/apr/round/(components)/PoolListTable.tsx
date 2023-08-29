@@ -92,7 +92,7 @@ export function PoolListTable({
               Type
             </Table.HeaderCell>
             <Table.HeaderCell
-              classNames="text-end whitespace-nowrap"
+              classNames="text-end whitespace-nowrap hover:text-amber9"
               onClick={() => handleSortingChange("tvl")}
             >
               <div className="flex gap-x-1 items-center justify-end">
@@ -106,7 +106,7 @@ export function PoolListTable({
               </div>
             </Table.HeaderCell>
             <Table.HeaderCell
-              classNames="text-end whitespace-nowrap"
+              classNames="text-end whitespace-nowrap hover:text-amber9"
               onClick={() => handleSortingChange("votingShare")}
             >
               <div className="flex gap-x-1 items-center">
@@ -117,7 +117,7 @@ export function PoolListTable({
               </div>
             </Table.HeaderCell>
             <Table.HeaderCell
-              classNames="text-end whitespace-nowrap"
+              classNames="text-end whitespace-nowrap hover:text-amber9"
               onClick={() => handleSortingChange("apr")}
             >
               <div className="flex gap-x-1 items-center">

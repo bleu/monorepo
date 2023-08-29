@@ -9,7 +9,6 @@ import {
   TriangleUpIcon,
 } from "@radix-ui/react-icons";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Button } from "#/components";
@@ -192,14 +191,8 @@ function TableRow({
   const poolRedirectURL = `/apr/pool/${networkFor(
     network,
   )}/${poolId}/round/${roundId}`;
-  const router = useRouter();
   return (
-    <Table.BodyRow
-      classNames="hover:bg-blue4 hover:cursor-pointer duration-500"
-      onClick={() => {
-        router.push(poolRedirectURL);
-      }}
-    >
+    <Table.BodyRow classNames="hover:bg-blue4 hover:cursor-pointer duration-500">
       <Table.BodyCellLink href={poolRedirectURL} tdClassNames="w-6">
         <Image
           src={`/assets/network/${networkFor(network)}.svg`}

@@ -7,7 +7,7 @@ import {
 } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import React, { ReactNode, useState } from "react";
+import { ReactNode, useState } from "react";
 import invariant from "tiny-invariant";
 
 import { Toast } from "#/components/Toast";
@@ -48,6 +48,7 @@ function displaySelectedRound(
   poolId: string | undefined,
 ) {
   if (!roundId) return <BreadcrumbItem>No Round selected</BreadcrumbItem>;
+
   return (
     <BreadcrumbItem link={`/apr/round/${roundId}`}>
       Round {roundId}{" "}
@@ -83,24 +84,22 @@ export default function Breadcrumb() {
           <li>
             <div className="flex items-center">
               <div className="ml-1 text-sm font-medium text-slate-300 md:ml-2">
-                Historical APR
+                <Link href="/apr/">Historical APR</Link>
               </div>
             </div>
           </li>
-          {displaySelectedRound(roundId, poolId)}
-          {/* 
-        TODO: BAL-710 - Should be re-enabled when we have a way to filter by network
-        {network && (
-          <BreadcrumbItem link={`/apr/pool/${network}/`}>
-            {network}
-          </BreadcrumbItem>
-        )}
-        */}
+          {/* TODO: BAL-710 - Should be re-enabled when we have a way to filter by network */}
+          {network && (
+            <BreadcrumbItem link={`/apr/pool/${network}/`}>
+              {network}
+            </BreadcrumbItem>
+          )}
           {poolId && (
             <BreadcrumbItem link={`/apr/pool/${network}/${poolId}`}>
               {selectedPool?.symbol ?? poolId}
             </BreadcrumbItem>
           )}
+          {displaySelectedRound(roundId, poolId)}
         </ol>
         {poolId && (
           <div>

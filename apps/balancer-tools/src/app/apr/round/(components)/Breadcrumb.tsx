@@ -1,11 +1,14 @@
 "use client";
+
 import {
   ChevronRightIcon,
   ClipboardIcon,
   ExternalLinkIcon,
 } from "@radix-ui/react-icons";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import React, { ReactNode } from "react";
+import invariant from "tiny-invariant";
 
 import { Pool } from "#/lib/balancer/gauges";
 
@@ -59,15 +62,12 @@ function displaySelectedRound(
   );
 }
 
-export default function Breadcrumb({
-  roundId,
-  poolId,
-  network,
-}: {
-  roundId?: string | undefined;
-  poolId?: string | undefined;
-  network?: string | undefined;
-}) {
+export default function Breadcrumb() {
+  const { poolId, roundId, network } = useParams();
+  invariant(!Array.isArray(poolId), "poolId cannot be a list");
+  invariant(!Array.isArray(roundId), "roundId cannot be a list");
+  invariant(!Array.isArray(network), "network should not be an array");
+
   let selectedPool;
   if (poolId) {
     selectedPool = new Pool(poolId);

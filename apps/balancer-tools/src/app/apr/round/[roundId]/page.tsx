@@ -8,13 +8,13 @@ import RoundOverviewCards from "../(components)/RoundOverviewCards";
 import TopPoolsChart from "../(components)/TopPoolsChart";
 
 export default function Page({
-  params: { roundId, network, poolId },
+  params: { roundId },
 }: {
-  params: { roundId: string; poolId: string; network: string };
+  params: { roundId: string; };
 }) {
   return (
     <div className="flex flex-1 flex-col gap-y-3">
-      <Breadcrumb network={network} poolId={poolId} roundId={roundId} />
+      <Breadcrumb />
       <Suspense fallback={<Spinner />}>
         <RoundOverviewCards roundId={roundId} />
       </Suspense>

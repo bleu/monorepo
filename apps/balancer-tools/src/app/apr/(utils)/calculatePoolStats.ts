@@ -114,6 +114,7 @@ export async function calculatePoolStats({
     symbol,
     network,
     tokens: pool.tokens,
+    type: pool.poolType,
   };
 }
 

@@ -32,17 +32,17 @@ export default async function HistoricalAPRChart({
     { x: [], y: [] } as { x: string[]; y: number[] },
   );
 
-  const trimmedAPRData = trimTrailingValues(
+  const trimmedVebalAprData = trimTrailingValues(
     aprPerRoundCords.x.reverse(),
     aprPerRoundCords.y.reverse(),
     0,
   );
 
   const APRPerRoundData = {
-    name: "APR %",
+    name: "veBAL APR %",
     hovertemplate: HOVERTEMPLATE,
-    x: trimmedAPRData.trimmedIn,
-    y: trimmedAPRData.trimmedOut,
+    x: trimmedVebalAprData.trimmedIn,
+    y: trimmedVebalAprData.trimmedOut,
     line: { shape: "spline" } as const,
     type: "scatter" as PlotType,
   };

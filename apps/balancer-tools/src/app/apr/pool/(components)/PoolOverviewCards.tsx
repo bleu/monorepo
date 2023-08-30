@@ -1,11 +1,10 @@
-import { formatDate } from "@bleu-balancer-tools/utils";
-
 import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 
-import OverviewCards from "../../(components)/OverviewCards";
+import OverviewCards, {
+  getRoundDetails,
+} from "../../(components)/OverviewCards";
 import { calculatePoolStats } from "../../(utils)/calculatePoolStats";
-import { Round } from "../../(utils)/rounds";
 import { PoolStatsResults } from "../../api/route";
 
 async function AverageTVLCard({ poolId }: { poolId: string }) {
@@ -36,17 +35,12 @@ export default async function PoolOverviewCards({
   }[] = [];
   if (roundId) {
     const { apr, tvl } = await calculatePoolStats({ poolId, roundId });
-    const round = Round.getRoundByNumber(roundId);
+
     cardsDetails.push(
       ...[
         { title: "TVL", content: formatNumber(tvl) },
         { title: "APR", content: formatNumber(apr).concat("%") },
-        { title: "Round Number", content: roundId },
-        {
-          title: "Round Ended",
-          content: formatDate(round.endDate),
-          tooltip: "Every round ends on a Thursday at 00:00 UTC",
-        },
+        ...getRoundDetails(roundId),
       ],
     );
   } else {

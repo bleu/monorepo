@@ -1,7 +1,5 @@
 "use client";
 
-import { amberDarkA } from "@radix-ui/colors";
-
 import Plot from "#/components/Plot";
 
 export default function HistoricalAPRPlot({ data }: { data: Plotly.Data[] }) {
@@ -18,7 +16,6 @@ export default function HistoricalAPRPlot({ data }: { data: Plotly.Data[] }) {
           yaxis: {
             title: "APR %",
           },
-          colorway: [amberDarkA.amberA11],
         }}
       />
     </div>

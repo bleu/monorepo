@@ -1,4 +1,4 @@
-import { amberDarkA } from "@radix-ui/colors";
+import { amberDarkA, blueDarkA } from "@radix-ui/colors";
 import { PlotType } from "plotly.js";
 
 import { trimTrailingValues } from "#/lib/utils";
@@ -38,7 +38,7 @@ export default async function HistoricalAPRChart({
     0,
   );
 
-  const APRPerRoundData = {
+  const vebalAprPerRoundData = {
     name: "veBAL APR %",
     hovertemplate: HOVERTEMPLATE,
     x: trimmedVebalAprData.trimmedIn,
@@ -47,14 +47,25 @@ export default async function HistoricalAPRChart({
     type: "scatter" as PlotType,
   };
 
-  const chosenRoundMarkerIDX = APRPerRoundData.x.findIndex(
+  const totalAprPerRoundData = {
+    name: "Total APR %",
+    hovertemplate: HOVERTEMPLATE,
+    x: trimmedVebalAprData.trimmedIn,
+    y: trimmedVebalAprData.trimmedOut,
+    line: { shape: "spline", color: blueDarkA.blueA9 } as const,
+    type: "scatter" as PlotType,
+  };
+
+  const aprPerRoundData = [totalAprPerRoundData, vebalAprPerRoundData];
+
+  const chosenRoundMarkerIDX = vebalAprPerRoundData.x.findIndex(
     (item) => item === getRoundName(roundId),
   );
   const chosenRoundData = roundId
     ? {
         hovertemplate: HOVERTEMPLATE,
-        x: [APRPerRoundData.x[chosenRoundMarkerIDX]],
-        y: [APRPerRoundData.y[chosenRoundMarkerIDX]],
+        x: [vebalAprPerRoundData.x[chosenRoundMarkerIDX]],
+        y: [vebalAprPerRoundData.y[chosenRoundMarkerIDX]],
         mode: "markers",
         name: "Selected Round",
         marker: {
@@ -68,5 +79,5 @@ export default async function HistoricalAPRChart({
       }
     : {};
 
-  return <HistoricalAPRPlot data={[APRPerRoundData, chosenRoundData]} />;
+  return <HistoricalAPRPlot data={[...aprPerRoundData, chosenRoundData]} />;
 }

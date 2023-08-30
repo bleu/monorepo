@@ -190,7 +190,7 @@ const fetchDataForPoolIdRoundId = async (poolId: string, roundId: string) => {
 const fetchDataForRoundId = async (
   roundId: string,
 ): Promise<PoolStatsResults> => {
-  const existingPoolsInRound = POOLS_WITH_LIVE_GAUGES.slice(POOLS_WITH_LIVE_GAUGES.length-50,POOLS_WITH_LIVE_GAUGES.length-1).filter(
+  const existingPoolsInRound = POOLS_WITH_LIVE_GAUGES.filter(
     ({ gauge: { addedTimestamp } }) =>
       addedTimestamp &&
       Round.getRoundByDate(new Date(addedTimestamp * 1000)).value <= roundId,
@@ -303,11 +303,15 @@ function filterPoolStats(
   }
   if (tokenSymbol) {
     const decodedSymbols = tokenSymbol.split(",").map(decodeURIComponent);
-    filteredData = filteredData.filter(pool => pool.tokens.some(token => decodedSymbols.includes(token.symbol)));
+    filteredData = filteredData.filter((pool) =>
+      pool.tokens.some((token) => decodedSymbols.includes(token.symbol)),
+    );
   }
   if (poolTypes) {
     const decodedSymbols = poolTypes.split(",").map(decodeURIComponent);
-    filteredData = filteredData.filter(pool => decodedSymbols.includes(pool.type));
+    filteredData = filteredData.filter((pool) =>
+      decodedSymbols.includes(pool.type),
+    );
   }
   if (minTvl || maxTvl) {
     filteredData = filteredData.filter(

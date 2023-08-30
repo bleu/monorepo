@@ -1,4 +1,6 @@
 /* eslint-disable no-console */
+import * as Sentry from "@sentry/nextjs";
+
 import * as balEmissions from "#/lib/balancer/emissions";
 import { Pool } from "#/lib/balancer/gauges";
 import { pools } from "#/lib/gql/server";
@@ -94,6 +96,13 @@ export async function calculatePoolStats({
   ]);
 
   const apr = calculateRoundAPR(round, votingShare, tvl, balPriceUSD);
+
+  if (apr.total === -1 || apr.breakdown.veBAL === -1) {
+    Sentry.captureMessage("vebalAPR resulted in -1", {
+      level: "warning",
+      extra: { balPriceUSD, tvl, votingShare, roundId, poolId, apr },
+    });
+  }
 
   return {
     roundId: Number(roundId),

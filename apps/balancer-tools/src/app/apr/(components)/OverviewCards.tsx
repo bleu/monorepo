@@ -12,9 +12,8 @@ interface CardDetail {
 export function getRoundDetails(roundId: string) {
   const round = Round.getRoundByNumber(roundId);
   return [
-    { title: "Round Number", content: roundId },
     {
-      title: "Round Ended",
+      title: "veBAL Round End Date",
       content: formatDate(round.endDate),
       tooltip: "Every round ends on a Thursday at 00:00 UTC",
     },

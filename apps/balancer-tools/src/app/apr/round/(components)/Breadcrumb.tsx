@@ -55,7 +55,7 @@ function displaySelectedRound(
       <div className="flex items-center gap-x-2">
         Round {roundId}{" "}
         {!poolId && Round.currentRound().value == roundId && (
-          <Badge color="blue" size="sm">
+          <Badge color="blue" size="sm" outline>
             Current
           </Badge>
         )}

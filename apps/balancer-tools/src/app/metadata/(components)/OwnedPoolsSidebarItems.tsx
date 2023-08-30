@@ -160,7 +160,7 @@ function PoolCard({ isSelected, pool }: { isSelected: boolean; pool: Pool }) {
         )}
       </div>
       <div className="flex w-full items-center space-x-3">
-        <Badge variant="outline">{poolType}</Badge>
+        <Badge>{poolType}</Badge>
         <p className="text-sm leading-tight text-slate12 group-hover:text-slate12">
           {truncateAddress(id)}
         </p>

@@ -140,7 +140,7 @@ export function PoolListTable({
                 roundId={roundId}
                 tvl={pool.tvl}
                 votingShare={pool.votingShare}
-                apr={pool.apr}
+                apr={pool.apr.total}
               />
             ))}
             <Table.BodyRow>

@@ -1,4 +1,6 @@
 /* eslint-disable no-console */
+import * as Sentry from "@sentry/nextjs";
+
 import * as balEmissions from "#/lib/balancer/emissions";
 import { Pool } from "#/lib/balancer/gauges";
 import { pools } from "#/lib/gql/server";
@@ -93,10 +95,14 @@ export async function calculatePoolStats({
     ),
   ]);
 
-  const apr =
-    balPriceUSD && tvl && votingShare
-      ? calculateRoundAPR(round, votingShare, tvl, balPriceUSD) * 100
-      : -1;
+  const apr = calculateRoundAPR(round, votingShare, tvl, balPriceUSD);
+
+  if (apr.total === -1 || apr.breakdown.veBAL === -1) {
+    Sentry.captureMessage("vebalAPR resulted in -1", {
+      level: "warning",
+      extra: { balPriceUSD, tvl, votingShare, roundId, poolId, apr },
+    });
+  }
 
   return {
     roundId: Number(roundId),
@@ -115,7 +121,17 @@ function calculateRoundAPR(
   votingShare: number,
   tvl: number,
   balPriceUSD: number,
-): number {
+) {
   const emissions = balEmissions.weekly(round.endDate.getTime() / 1000);
-  return (WEEKS_IN_YEAR * (emissions * votingShare * balPriceUSD)) / tvl;
+  const vebalAPR =
+    balPriceUSD && tvl && votingShare
+      ? ((WEEKS_IN_YEAR * (emissions * votingShare * balPriceUSD)) / tvl) * 100
+      : -1;
+
+  return {
+    total: vebalAPR,
+    breakdown: {
+      veBAL: vebalAPR,
+    },
+  };
 }

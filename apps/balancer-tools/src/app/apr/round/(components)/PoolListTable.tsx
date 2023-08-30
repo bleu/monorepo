@@ -21,6 +21,7 @@ import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 
 import { PoolTypeEnum } from "../../(utils)/calculatePoolStats";
+import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
 import { PoolStatsData, PoolStatsResults } from "../../api/route";
 
 export function PoolListTable({
@@ -225,11 +226,7 @@ function TableRow({
       </Table.BodyCellLink>
 
       <Table.BodyCellLink linkClassNames="float-right" href={poolRedirectURL}>
-        $
-        {tvl.toLocaleString("en-US", {
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0,
-        })}
+        {formatTVL(tvl)}
       </Table.BodyCellLink>
 
       <Table.BodyCellLink linkClassNames="float-right" href={poolRedirectURL}>
@@ -237,7 +234,7 @@ function TableRow({
       </Table.BodyCellLink>
 
       <Table.BodyCellLink linkClassNames="float-right" href={poolRedirectURL}>
-        {formatNumber(apr).concat("%")}
+        {formatAPR(apr)}
       </Table.BodyCellLink>
     </Table.BodyRow>
   );

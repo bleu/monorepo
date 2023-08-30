@@ -1,24 +1,24 @@
 import { fetcher } from "#/utils/fetcher";
-import { formatNumber } from "#/utils/formatNumber";
 
 import OverviewCards, {
   getRoundDetails,
 } from "../../(components)/OverviewCards";
 import { calculatePoolStats } from "../../(utils)/calculatePoolStats";
+import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
 import { PoolStatsResults } from "../../api/route";
 
 async function AverageTVLCard({ poolId }: { poolId: string }) {
   const data: PoolStatsResults = await fetcher(
     `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?poolId=${poolId}`,
   );
-  return <div>{formatNumber(data.average.tvl)}</div>;
+  return <div>{formatTVL(data.average.tvl)}</div>;
 }
 
 async function AverageAPRCard({ poolId }: { poolId: string }) {
   const data: PoolStatsResults = await fetcher(
     `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?poolId=${poolId}`,
   );
-  return <div>{formatNumber(data.average.apr).concat("%")}</div>;
+  return <div>{formatAPR(data.average.apr)}</div>;
 }
 
 export default async function PoolOverviewCards({
@@ -38,8 +38,8 @@ export default async function PoolOverviewCards({
 
     cardsDetails.push(
       ...[
-        { title: "TVL", content: formatNumber(tvl) },
-        { title: "APR", content: formatNumber(apr).concat("%") },
+        { title: "TVL", content: formatTVL(tvl) },
+        { title: "veBAL APR", content: formatAPR(apr) },
         ...getRoundDetails(roundId),
       ],
     );
@@ -47,7 +47,10 @@ export default async function PoolOverviewCards({
     cardsDetails.push(
       ...[
         { title: "Avg. TVL", content: <AverageTVLCard poolId={poolId} /> },
-        { title: "Avg. APR", content: <AverageAPRCard poolId={poolId} /> },
+        {
+          title: "Avg. veBAL APR",
+          content: <AverageAPRCard poolId={poolId} />,
+        },
       ],
     );
   }

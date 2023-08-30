@@ -81,7 +81,10 @@ export default function HeaderEndButton() {
             <SelectItem key={round.value} value={round.value}>
               <div className="flex gap-x-2 items-center">
                 <Badge color="darkBlue" size="sm">
-                  Round {round.value}
+                  <div className="flex items-center gap-x-1">
+                    <span className="hidden sm:block">Round</span>
+                    {round.value}
+                  </div>
                 </Badge>
                 <span>{round.label}</span>
               </div>

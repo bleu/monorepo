@@ -16,13 +16,12 @@ import { Badge } from "#/components/Badge";
 import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
-import { Pool } from "#/lib/balancer/gauges";
 import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 
 import { PoolTypeEnum } from "../../(utils)/calculatePoolStats";
 import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
-import { BASE_URL, PoolStatsData, PoolStatsResults } from "../../api/route";
+import { BASE_URL, PoolStatsData, PoolStatsResults, PoolTokens } from "../../api/route";
 import { TokenFilterInput } from "./TokenFilterInput";
 
 export function PoolListTable({
@@ -142,6 +141,8 @@ export function PoolListTable({
                 poolId={pool.poolId}
                 network={pool.network}
                 roundId={roundId}
+                tokens={pool.tokens}
+                poolType={pool.type}
                 tvl={pool.tvl}
                 votingShare={pool.votingShare}
                 apr={pool.apr.total}
@@ -176,6 +177,8 @@ function TableRow({
   poolId,
   roundId,
   network,
+  tokens,
+  poolType,
   tvl,
   votingShare,
   apr,
@@ -183,6 +186,8 @@ function TableRow({
   poolId: string;
   roundId: string;
   network: string;
+  tokens: PoolTokens[];
+  poolType: keyof typeof PoolTypeEnum;
   tvl: number;
   votingShare: number;
   apr: number;
@@ -190,10 +195,6 @@ function TableRow({
   const poolRedirectURL = `/apr/pool/${networkFor(
     network,
   )}/${poolId}/round/${roundId}`;
-  const pool = new Pool(poolId);
-  const tokens = pool.tokens;
-  const poolType = pool.poolType as keyof typeof PoolTypeEnum;
-
   return (
     <Table.BodyRow classNames="hover:bg-blue4 hover:cursor-pointer duration-500">
       <Table.BodyCellLink href={poolRedirectURL} tdClassNames="w-6">

@@ -29,7 +29,11 @@ export default async function PoolOverviewCards({
   roundId?: string;
   poolId: string;
 }) {
-  const cardsDetails: { title: string; content: JSX.Element | string }[] = [];
+  const cardsDetails: {
+    title: string;
+    content: JSX.Element | string;
+    tooltip?: string;
+  }[] = [];
   if (roundId) {
     const { apr, tvl } = await calculatePoolStats({ poolId, roundId });
     const round = Round.getRoundByNumber(roundId);
@@ -38,7 +42,11 @@ export default async function PoolOverviewCards({
         { title: "TVL", content: formatNumber(tvl) },
         { title: "APR", content: formatNumber(apr).concat("%") },
         { title: "Round Number", content: roundId },
-        { title: "Round Ended", content: formatDate(round.endDate) },
+        {
+          title: "Round Ended",
+          content: formatDate(round.endDate),
+          tooltip: "Every round ends on a Thursday at 00:00 UTC",
+        },
       ],
     );
   } else {

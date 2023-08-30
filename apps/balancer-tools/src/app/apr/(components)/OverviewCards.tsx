@@ -3,6 +3,7 @@ import { KPI } from "./KPI";
 interface CardDetail {
   title: string;
   content: JSX.Element | string;
+  tooltip?: string;
 }
 
 function OverviewCards({ cardsDetails }: { cardsDetails: CardDetail[] }) {
@@ -13,6 +14,7 @@ function OverviewCards({ cardsDetails }: { cardsDetails: CardDetail[] }) {
           title={cardDetail.title}
           content={cardDetail.content}
           key={cardDetail.title}
+          tooltip={cardDetail.tooltip}
         />
       ))}
     </div>

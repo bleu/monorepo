@@ -26,7 +26,11 @@ export default async function RoundOverviewCards({
       ),
     },
     { title: "Round Number", content: roundId },
-    { title: "Round Ended", content: formatDate(round.endDate) },
+    {
+      title: "Round Ended",
+      content: formatDate(round.endDate),
+      tooltip: "Every round ends on a Thursday at 00:00 UTC",
+    },
   ];
   return <OverviewCards cardsDetails={cardsDetails} />;
 }

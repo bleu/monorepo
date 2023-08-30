@@ -4,8 +4,33 @@ import { PlotType } from "plotly.js";
 import { trimTrailingValues } from "#/lib/utils";
 import { fetcher } from "#/utils/fetcher";
 
-import { PoolStatsResults } from "../../api/route";
+import { PoolStatsData, PoolStatsResults } from "../../api/route";
 import HistoricalAPRPlot from "./HistoricalAPRPlot";
+
+function generateAndTrimAprCords(
+  data: PoolStatsData[],
+  getValue: (result: PoolStatsData) => number,
+  valueToTrim: number,
+): { x: (string | number)[]; y: (string | number)[] } {
+  const cords = Object.entries(data).reduce(
+    (cords, [_, result]) => {
+      cords.x.push(getRoundName(result.roundId));
+      cords.y.push(getValue(result));
+      return cords;
+    },
+    { x: [], y: [] } as { x: string[]; y: number[] },
+  );
+
+  const trimmedData = trimTrailingValues(
+    cords.x.reverse(),
+    cords.y.reverse(),
+    valueToTrim,
+  );
+  return {
+    x: trimmedData.trimmedIn,
+    y: trimmedData.trimmedOut,
+  };
+}
 
 const getRoundName = (roundId?: string | number) =>
   roundId !== undefined ? `#${roundId}` : "#";
@@ -23,26 +48,22 @@ export default async function HistoricalAPRChart({
     `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?poolId=${poolId}&sort=roundId`,
   );
 
-  const aprPerRoundCords = Object.entries(results.perRound).reduce(
-    (cords, [_, result]) => {
-      cords.x.push(getRoundName(result.roundId));
-      cords.y.push(result.apr.breakdown.veBAL);
-      return cords;
-    },
-    { x: [], y: [] } as { x: string[]; y: number[] },
-  );
-
-  const trimmedVebalAprData = trimTrailingValues(
-    aprPerRoundCords.x.reverse(),
-    aprPerRoundCords.y.reverse(),
+  const trimmedVebalAprData = generateAndTrimAprCords(
+    results.perRound,
+    (result) => result.apr.breakdown.veBAL,
     0,
   );
 
+  const trimmedTotalAprData = generateAndTrimAprCords(
+    results.perRound,
+    (result) => result.apr.total,
+    0,
+  );
   const vebalAprPerRoundData = {
     name: "veBAL APR %",
     hovertemplate: HOVERTEMPLATE,
-    x: trimmedVebalAprData.trimmedIn,
-    y: trimmedVebalAprData.trimmedOut,
+    x: trimmedVebalAprData.x,
+    y: trimmedVebalAprData.y,
     line: { shape: "spline" } as const,
     type: "scatter" as PlotType,
   };
@@ -50,8 +71,8 @@ export default async function HistoricalAPRChart({
   const totalAprPerRoundData = {
     name: "Total APR %",
     hovertemplate: HOVERTEMPLATE,
-    x: trimmedVebalAprData.trimmedIn,
-    y: trimmedVebalAprData.trimmedOut,
+    x: trimmedTotalAprData.x,
+    y: trimmedTotalAprData.y,
     line: { shape: "spline", color: blueDarkA.blueA9 } as const,
     type: "scatter" as PlotType,
   };

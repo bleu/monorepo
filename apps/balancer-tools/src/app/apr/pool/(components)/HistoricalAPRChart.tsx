@@ -4,7 +4,7 @@ import { PlotType } from "plotly.js";
 import { trimTrailingValues } from "#/lib/utils";
 import { fetcher } from "#/utils/fetcher";
 
-import { PoolStatsData, PoolStatsResults } from "../../api/route";
+import { BASE_URL, PoolStatsData, PoolStatsResults } from "../../api/route";
 import HistoricalAPRPlot from "./HistoricalAPRPlot";
 
 function generateAndTrimAprCords(
@@ -45,7 +45,7 @@ export default async function HistoricalAPRChart({
   const HOVERTEMPLATE = "%{x}<br />%{y:.2f}% APR<extra></extra>";
 
   const results: PoolStatsResults = await fetcher(
-    `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?poolId=${poolId}&sort=roundId`,
+    `${BASE_URL}/apr/api/?poolId=${poolId}&sort=roundId`,
   );
 
   const trimmedVebalAprData = generateAndTrimAprCords(

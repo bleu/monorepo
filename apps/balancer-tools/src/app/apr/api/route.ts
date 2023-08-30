@@ -7,7 +7,8 @@ import { fetcher } from "#/utils/fetcher";
 import { calculatePoolStats } from "../(utils)/calculatePoolStats";
 import { Round } from "../(utils)/rounds";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL;
+export const BASE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? process.env.NEXT_PUBLIC_VERCEL_URL;
 
 type Order = "asc" | "desc";
 

@@ -22,7 +22,7 @@ import { formatNumber } from "#/utils/formatNumber";
 
 import { PoolTypeEnum } from "../../(utils)/calculatePoolStats";
 import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
-import { PoolStatsData, PoolStatsResults } from "../../api/route";
+import { BASE_URL, PoolStatsData, PoolStatsResults } from "../../api/route";
 
 export function PoolListTable({
   roundId,
@@ -71,9 +71,7 @@ export function PoolListTable({
   const loadMorePools = async () => {
     setIsLoadingMore(true);
     const aditionalPoolsData = await fetcher<PoolStatsResults>(
-      `${
-        process.env.NEXT_PUBLIC_SITE_URL
-      }/apr/api/?roundId=${roundId}&sort=${sortField}&order=${order}&limit=10&offset=${
+      `${BASE_URL}/apr/api/?roundId=${roundId}&sort=${sortField}&order=${order}&limit=10&offset=${
         Object.keys(tableData).length
       }&minTvl=1000`,
     );

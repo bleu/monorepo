@@ -23,7 +23,7 @@ export function TokenFilterInput() {
     if (!selectedItems.length) {
       current.delete("tokens");
     } else {
-      current.set("tokens", selectedItems.join("_"));
+      current.set("tokens", selectedItems.join(","));
     }
 
     const search = current.toString();
@@ -41,7 +41,7 @@ export function TokenFilterInput() {
         labelText="Filter by token"
         initialSelectedItems={
           searchParams.get("tokens") !== null
-            ? (searchParams.get("tokens")?.split("_") as string[])
+            ? (searchParams.get("tokens")?.split(",") as string[])
             : []
         }
         onSelectionItemsChange={handleTokenSelect}

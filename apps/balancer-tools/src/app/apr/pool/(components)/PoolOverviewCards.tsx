@@ -5,18 +5,18 @@ import OverviewCards, {
 } from "../../(components)/OverviewCards";
 import { calculatePoolStats } from "../../(utils)/calculatePoolStats";
 import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
-import { PoolStatsResults } from "../../api/route";
+import { BASE_URL, PoolStatsResults } from "../../api/route";
 
 async function AverageTVLCard({ poolId }: { poolId: string }) {
   const data: PoolStatsResults = await fetcher(
-    `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?poolId=${poolId}`,
+    `${BASE_URL}/apr/api/?poolId=${poolId}`,
   );
   return <div>{formatTVL(data.average.tvl)}</div>;
 }
 
 async function AverageAPRCard({ poolId }: { poolId: string }) {
   const data: PoolStatsResults = await fetcher(
-    `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?poolId=${poolId}`,
+    `${BASE_URL}/apr/api/?poolId=${poolId}`,
   );
   return <div>{formatAPR(data.average.apr)}</div>;
 }

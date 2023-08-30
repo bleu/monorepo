@@ -19,11 +19,18 @@ export interface PoolTokens {
 }
 
 export interface PoolStats {
-  apr: number;
+  apr: {
+    total: number;
+    breakdown: {
+      veBAL: number;
+    };
+  };
   balPriceUSD: number;
   tvl: number;
   votingShare: number;
 }
+
+type PoolStatsWithoutVotingShare = Omit<PoolStats, "votingShare">;
 
 export interface PoolStatsData extends PoolStats {
   symbol: string;
@@ -34,7 +41,7 @@ export interface PoolStatsData extends PoolStats {
 
 export interface PoolStatsResults {
   perRound: PoolStatsData[];
-  average: PoolStats;
+  average: PoolStatsWithoutVotingShare;
 }
 
 const memoryCache: { [key: string]: unknown } = {};
@@ -54,22 +61,37 @@ const getDataFromCacheOrCompute = async <T>(
   return computedData;
 };
 
-const computeAverages = (poolData: PoolStatsData[]): PoolStats => {
+const computeAverages = (
+  poolData: PoolStatsData[],
+): PoolStatsWithoutVotingShare => {
   const total = poolData.reduce(
     (acc, data) => ({
-      apr: acc.apr + data.apr,
+      apr: {
+        total: acc.apr.total + data.apr.total,
+        breakdown: {
+          veBAL: acc.apr.breakdown.veBAL + data.apr.breakdown.veBAL,
+        },
+      },
       balPriceUSD: acc.balPriceUSD + data.balPriceUSD,
       tvl: acc.tvl + data.tvl,
-      votingShare: acc.votingShare + data.votingShare,
     }),
-    { apr: 0, balPriceUSD: 0, tvl: 0, votingShare: 0 },
+    {
+      apr: { total: 0, breakdown: { veBAL: 0 } },
+      balPriceUSD: 0,
+      tvl: 0,
+    },
   );
+
   const count = poolData.length;
   return {
-    apr: total.apr / count,
+    apr: {
+      total: total.apr.total / count,
+      breakdown: {
+        veBAL: total.apr.breakdown.veBAL / count,
+      },
+    },
     balPriceUSD: total.balPriceUSD / count,
     tvl: total.tvl / count,
-    votingShare: total.votingShare / count,
   };
 };
 
@@ -260,7 +282,7 @@ function filterPoolStats(
   }
   if (minApr || maxApr) {
     filteredData = filteredData.filter(
-      (pool) => pool.apr >= minApr && pool.apr <= maxApr,
+      (pool) => pool.apr.total >= minApr && pool.apr.total <= maxApr,
     );
   }
   if (minVotingShare || maxVotingShare) {
@@ -307,8 +329,14 @@ function sortAndLimit(
 ) {
   const sortedEntries = poolStatsResults.perRound
     .sort((aValue, bValue) => {
-      const valueA = aValue[sortProperty];
-      const valueB = bValue[sortProperty];
+      let valueA = aValue[sortProperty];
+      let valueB = bValue[sortProperty];
+
+      // Special handling for 'apr' as it is an object
+      if (sortProperty === "apr") {
+        valueA = (valueA as (typeof aValue)["apr"]).total;
+        valueB = (valueB as (typeof bValue)["apr"]).total;
+      }
 
       // Handle null, undefined, and NaN values
       if (valueA == null || Number.isNaN(valueA)) return 1;

@@ -93,10 +93,13 @@ export async function calculatePoolStats({
     ),
   ]);
 
-  const apr =
+  const apr = calculateRoundAPR(round, votingShare, tvl, balPriceUSD);
+  const aprBefore =
     balPriceUSD && tvl && votingShare
-      ? calculateRoundAPR(round, votingShare, tvl, balPriceUSD) * 100
+      ? calculateRoundAPRBefore(round, votingShare, tvl, balPriceUSD) * 100
       : -1;
+
+  console.log({ apr, aprBefore });
 
   return {
     roundId: Number(roundId),
@@ -111,6 +114,26 @@ export async function calculatePoolStats({
 }
 
 function calculateRoundAPR(
+  round: Round,
+  votingShare: number,
+  tvl: number,
+  balPriceUSD: number,
+) {
+  const emissions = balEmissions.weekly(round.endDate.getTime() / 1000);
+  const vebalAPR =
+    balPriceUSD && tvl && votingShare
+      ? ((WEEKS_IN_YEAR * (emissions * votingShare * balPriceUSD)) / tvl) * 100
+      : -1;
+
+  return {
+    total: vebalAPR,
+    breakdown: {
+      veBAL: vebalAPR,
+    },
+  };
+}
+
+function calculateRoundAPRBefore(
   round: Round,
   votingShare: number,
   tvl: number,

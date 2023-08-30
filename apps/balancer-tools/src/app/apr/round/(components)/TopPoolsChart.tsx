@@ -23,7 +23,9 @@ export default async function TopPoolsChart({ roundId }: { roundId: string }) {
     },
     orientation: "h" as const,
     type: "bar" as PlotType,
-    x: topAprApi.perRound.map((result) => result.apr.toFixed(2)),
+    x: topAprApi.perRound.map((result) =>
+      result.apr.breakdown.veBAL.toFixed(2),
+    ),
     y: topAprApi.perRound.map((result) => result.symbol),
   };
 

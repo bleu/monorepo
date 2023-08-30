@@ -18,7 +18,7 @@ async function AverageAPRCard({ poolId }: { poolId: string }) {
   const data: PoolStatsResults = await fetcher(
     `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?poolId=${poolId}`,
   );
-  return <div>{formatAPR(data.average.apr)}</div>;
+  return <div>{formatAPR(data.average.apr.total)}</div>;
 }
 
 export default async function PoolOverviewCards({
@@ -39,7 +39,7 @@ export default async function PoolOverviewCards({
     cardsDetails.push(
       ...[
         { title: "TVL", content: formatTVL(tvl) },
-        { title: "veBAL APR", content: formatAPR(apr) },
+        { title: "veBAL APR", content: formatAPR(apr.breakdown.veBAL) },
         ...getRoundDetails(roundId),
       ],
     );

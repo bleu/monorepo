@@ -26,7 +26,7 @@ export default async function HistoricalAPRChart({
   const aprPerRoundCords = Object.entries(results.perRound).reduce(
     (cords, [_, result]) => {
       cords.x.push(getRoundName(result.roundId));
-      cords.y.push(result.apr);
+      cords.y.push(result.apr.breakdown.veBAL);
       return cords;
     },
     { x: [], y: [] } as { x: string[]; y: number[] },

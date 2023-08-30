@@ -332,13 +332,11 @@ function sortAndLimit(
       let valueA = aValue[sortProperty];
       let valueB = bValue[sortProperty];
 
-      // Special handling for 'apr' as it is an object
       if (sortProperty === "apr") {
         valueA = (valueA as (typeof aValue)["apr"]).total;
         valueB = (valueB as (typeof bValue)["apr"]).total;
       }
 
-      // Handle null, undefined, and NaN values
       if (valueA == null || Number.isNaN(valueA)) return 1;
       if (valueB == null || Number.isNaN(valueB)) return -1;
 

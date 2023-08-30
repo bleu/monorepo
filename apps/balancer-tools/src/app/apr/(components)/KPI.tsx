@@ -1,6 +1,8 @@
+import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { Suspense } from "react";
 
 import { Spinner } from "#/components/Spinner";
+import { Tooltip } from "#/components/Tooltip";
 
 function KPICardWrapper({ children }: { children: React.ReactNode }) {
   return (
@@ -13,14 +15,23 @@ function KPICardWrapper({ children }: { children: React.ReactNode }) {
 export function KPI({
   title,
   content,
+  tooltip,
 }: {
   title: string;
   content: React.ReactNode;
+  tooltip?: string;
 }) {
   return (
     <KPICardWrapper>
       <Suspense fallback={<Spinner size="sm" />}>
-        <div className="font-semibold">{title}</div>
+        <div className="font-semibold flex items-center gap-x-1">
+          {title}
+          {tooltip && (
+            <Tooltip content={tooltip}>
+              <InfoCircledIcon />
+            </Tooltip>
+          )}
+        </div>
         <div className="pt-2">{content}</div>
       </Suspense>
     </KPICardWrapper>

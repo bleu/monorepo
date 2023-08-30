@@ -5,6 +5,7 @@ import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { useParams, useRouter } from "next/navigation";
 import * as React from "react";
 
+import { Badge } from "#/components/Badge";
 import { Dialog } from "#/components/Dialog";
 import { SearchPoolForm } from "#/components/SearchPoolForm";
 import { Select, SelectItem } from "#/components/Select";
@@ -52,7 +53,8 @@ export default function HeaderEndButton() {
           />
         }
       >
-        <div className="flex items-center gap-x-2 text-sm font-normal text-slate12 bg-blue3 border border-blue6 p-2 rounded-[4px] cursor-pointer">
+        {/* 35px is the select height */}
+        <div className="flex items-center gap-x-2 text-sm font-normal text-slate12 bg-blue4 border border-blue6 px-2 rounded-[4px] cursor-pointer h-[35px]">
           <MagnifyingGlassIcon width="20" height="20" strokeWidth={1} />
           <span className="font-medium pr-1">Go to pool</span>
         </div>
@@ -61,24 +63,34 @@ export default function HeaderEndButton() {
         placeholder="Select a round"
         value={selectedRound}
         onValueChange={(value) => {
+          setSelectedRound(value);
           router.push(
             !poolId
               ? `/apr/round/${value}`
               : `/apr/pool/${network}/${poolId}/round/${value}`,
           );
         }}
-        className=""
       >
         {typeof roundId === "undefined" ? (
           <SelectItem value="">Select a round</SelectItem>
         ) : (
           ""
         )}
-        {ALL_ROUNDS.map((round) => (
-          <SelectItem key={round.value} value={round.value}>
-            {round.label}
-          </SelectItem>
-        ))}
+        <div className="flex flex-col gap-y-1">
+          {ALL_ROUNDS.map((round) => (
+            <SelectItem key={round.value} value={round.value}>
+              <div className="flex gap-x-2 items-center">
+                <Badge color="darkBlue" size="sm">
+                  <div className="flex items-center gap-x-1">
+                    <span className="hidden sm:block">Round</span>
+                    {round.value}
+                  </div>
+                </Badge>
+                <span>{round.label}</span>
+              </div>
+            </SelectItem>
+          ))}
+        </div>
       </Select>
     </div>
   );

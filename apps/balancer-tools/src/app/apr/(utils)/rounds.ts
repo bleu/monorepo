@@ -1,3 +1,5 @@
+import { formatDate } from "@bleu-balancer-tools/utils";
+
 export class Round {
   public static FIRST_ROUND_END_DATE = new Date("2022-04-14T00:00:00.000Z");
   private static ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
@@ -15,11 +17,7 @@ export class Round {
   }
 
   get label(): string {
-    return this.endDate.toLocaleDateString("en-US", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
+    return formatDate(this.endDate);
   }
 
   static getRoundTimestamp(roundNumber: number | string): number {

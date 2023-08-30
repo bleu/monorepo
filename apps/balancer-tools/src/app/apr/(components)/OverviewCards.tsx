@@ -1,8 +1,23 @@
+import { formatDate } from "@bleu-balancer-tools/utils";
+
+import { Round } from "../(utils)/rounds";
 import { KPI } from "./KPI";
 
 interface CardDetail {
   title: string;
   content: JSX.Element | string;
+  tooltip?: string;
+}
+
+export function getRoundDetails(roundId: string) {
+  const round = Round.getRoundByNumber(roundId);
+  return [
+    {
+      title: "veBAL Round End Date",
+      content: formatDate(round.endDate),
+      tooltip: "Every round ends on a Thursday at 00:00 UTC",
+    },
+  ];
 }
 
 function OverviewCards({ cardsDetails }: { cardsDetails: CardDetail[] }) {
@@ -13,6 +28,7 @@ function OverviewCards({ cardsDetails }: { cardsDetails: CardDetail[] }) {
           title={cardDetail.title}
           content={cardDetail.content}
           key={cardDetail.title}
+          tooltip={cardDetail.tooltip}
         />
       ))}
     </div>

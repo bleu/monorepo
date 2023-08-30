@@ -12,6 +12,7 @@ import Image from "next/image";
 import { useState } from "react";
 
 import { Button } from "#/components";
+import { Badge } from "#/components/Badge";
 import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
@@ -20,6 +21,7 @@ import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 
 import { PoolTypeEnum } from "../../(utils)/calculatePoolStats";
+import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
 import { PoolStatsData, PoolStatsResults } from "../../api/route";
 
 export function PoolListTable({
@@ -206,7 +208,7 @@ function TableRow({
         tdClassNames="w-11/12"
       >
         {tokens.map((token) => (
-          <div className="relative mx-1 flex max-h-10 items-center rounded-md px-2 py-1 bg-blue6">
+          <Badge color="blue">
             {token.symbol}
             {token.weight ? (
               <span className="text-xs ml-1 text-slate-400">
@@ -215,7 +217,7 @@ function TableRow({
             ) : (
               ""
             )}
-          </div>
+          </Badge>
         ))}
       </Table.BodyCellLink>
 
@@ -224,11 +226,7 @@ function TableRow({
       </Table.BodyCellLink>
 
       <Table.BodyCellLink linkClassNames="float-right" href={poolRedirectURL}>
-        $
-        {tvl.toLocaleString("en-US", {
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0,
-        })}
+        {formatTVL(tvl)}
       </Table.BodyCellLink>
 
       <Table.BodyCellLink linkClassNames="float-right" href={poolRedirectURL}>
@@ -236,7 +234,7 @@ function TableRow({
       </Table.BodyCellLink>
 
       <Table.BodyCellLink linkClassNames="float-right" href={poolRedirectURL}>
-        {formatNumber(apr).concat("%")}
+        {formatAPR(apr)}
       </Table.BodyCellLink>
     </Table.BodyRow>
   );

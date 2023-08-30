@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { POOLS_WITH_LIVE_GAUGES } from "#/lib/balancer/gauges";
 
@@ -15,6 +15,7 @@ const AVALIABLE_TOKENS = [
 ];
 
 export function TokenFilterInput() {
+  const router = useRouter();
   const searchParams = useSearchParams();
 
   const handleTokenSelect = (selectedItems: string[]) => {
@@ -31,7 +32,8 @@ export function TokenFilterInput() {
 
     // Workaround while Next.js doesn't support shallow routing
     // https://github.com/vercel/next.js/discussions/48110
-    window.history.pushState({}, "", window.location.pathname + query);
+    // window.history.pushState({}, "", window.location.pathname + query);
+    router.push(window.location.pathname + query);
   };
 
   return (

@@ -2,7 +2,7 @@ import { Suspense } from "react";
 
 import { Spinner } from "#/components/Spinner";
 
-import getFilteredApiUrl from "../../(utils)/getFilteredApiUrl";
+import getFilteredRoundApiUrl from "../../(utils)/getFilteredApiUrl";
 import Breadcrumb from "../(components)/Breadcrumb";
 import PoolTableWrapper from "../(components)/PoolTableWrapper";
 import RoundOverviewCards from "../(components)/RoundOverviewCards";
@@ -25,7 +25,7 @@ export default function Page({
   params: { roundId: string };
   searchParams: SearchParams;
 }) {
-  const filteredApiUrl = getFilteredApiUrl(searchParams);
+  const filteredApiUrl = getFilteredRoundApiUrl(searchParams, roundId);
   return (
     <div className="flex flex-1 flex-col gap-y-3">
       <Breadcrumb />

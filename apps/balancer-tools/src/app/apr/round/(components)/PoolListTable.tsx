@@ -135,19 +135,6 @@ export function PoolListTable({
             </Table.HeaderCell>
           </Table.HeaderRow>
           <Table.Body>
-            {tableData.map((pool) => (
-              <TableRow
-                key={pool.poolId}
-                poolId={pool.poolId}
-                network={pool.network}
-                roundId={roundId}
-                tokens={pool.tokens}
-                poolType={pool.type}
-                tvl={pool.tvl}
-                votingShare={pool.votingShare}
-                apr={pool.apr.total}
-              />
-            ))}
             <Table.BodyRow>
               <Table.BodyCell colSpan={6}>
                 <Button
@@ -155,6 +142,22 @@ export function PoolListTable({
                   shade="medium"
                   disabled={isLoadingMore}
                   onClick={loadMorePools}
+            {tableData.length > 0 ? (
+              <>
+                {tableData.map((pool) => (
+                  <TableRow
+                    key={pool.poolId}
+                    poolId={pool.poolId}
+                    network={pool.network}
+                    roundId={roundId}
+                    tokens={pool.tokens}
+                    poolType={pool.type}
+                    tvl={pool.tvl}
+                    votingShare={pool.votingShare}
+                    apr={pool.apr.total}
+                  />
+                ))}
+
                 >
                   {isLoadingMore ? (
                     <Spinner size="sm" />

@@ -36,7 +36,7 @@ export function TokenFilterInput() {
     <>
       <MultiSelectDropdown
         items={AVALIABLE_TOKENS}
-        labelText="Filter by token"
+        placeholderText="Filter by token"
         initialSelectedItems={
           searchParams.get("tokens") !== null
             ? (searchParams.get("tokens")?.split(",") as string[])

@@ -6,13 +6,13 @@ import React, { useState } from "react";
 
 export const MultiSelectDropdown = ({
   items,
-  labelText,
+  placeholderText,
   onSelectionItemsChange,
   initialSelectedItems,
   ...rest
 }: {
   items: string[];
-  labelText: string;
+  placeholderText: string;
   onSelectionItemsChange: (items: string[]) => void;
   initialSelectedItems: string[];
 }) => {
@@ -80,7 +80,7 @@ export const MultiSelectDropdown = ({
                   })}
 
                   <input
-                    placeholder={labelText}
+                    placeholder={placeholderText}
                     {...getInputProps()}
                     onFocus={() => {
                       toggleMenu();

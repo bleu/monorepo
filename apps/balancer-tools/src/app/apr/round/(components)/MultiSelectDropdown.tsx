@@ -4,6 +4,9 @@ import { Cross1Icon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import Downshift, { ControllerStateAndHelpers } from "downshift";
 import React, { useCallback, useState } from "react";
 
+import { Badge } from "#/components/Badge";
+import { BaseInput } from "#/components/Input";
+
 export const MultiSelectDropdown = ({
   items,
   placeholderText,
@@ -103,37 +106,39 @@ export const MultiSelectDropdown = ({
                   <label {...getLabelProps()} className="flex-1 mx-1">
                     <MagnifyingGlassIcon />
                   </label>
-                      <button
-                        key={value + idx}
-                        className="relative mx-1 flex gap-2 h-fit items-center rounded-md px-2 py-1 bg-blue7 whitespace-nowrap"
-                        onClick={() =>
-                          removeSelectedItemByIndex(
-                            idx,
-                            selectedItems,
-                            setSelectedItems,
-                            onSelectionItemsChange,
-                          )
-                        }
-                      >
-                        <span>{value}</span>
-                        <span>
-                          <Cross1Icon />
-                        </span>
-                      </button>
-                    );
-                  })}
+                  <div className="flex gap-2">
+                    {selectedItems.map((value, idx) => {
+                      return (
+                        <Badge key={value + idx} color="blue">
+                          <div
+                            className="flex gap-2 items-center w-max"
+                            onClick={() =>
+                              removeSelectedItemByIndex(
+                                idx,
+                                selectedItems,
+                                setSelectedItems,
+                                onSelectionItemsChange,
+                              )
+                            }
+                          >
+                            <span>{value}</span>
+                            <span className="cursor-pointer">
+                              <Cross1Icon />
+                            </span>
+                          </div>
+                        </Badge>
+                      );
+                    })}
+                  </div>
 
-                  <input
+                  <BaseInput
                     placeholder={placeholderText}
                     {...getInputProps()}
                     onFocus={() => {
                       toggleMenu();
                     }}
-                    onKeyDown={(e) => {
-                      handleOnKeyDown(e);
-                    }}
-                    className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 outline-none text-white bg-transparent"
-                    type="text"
+                    onKeyDown={handleOnKeyDown}
+                    className="hover:shadow-[0] focus:shadow-[0] shadow-[0]"
                   />
                 </div>
               </div>
@@ -150,6 +155,7 @@ export const MultiSelectDropdown = ({
                               : "bg-transparent"
                           }`}
                           {...getItemProps({ item, key: item + idx })}
+                        >
                           <span>{item}</span>
                         </div>
                       );
@@ -161,7 +167,6 @@ export const MultiSelectDropdown = ({
                   )}
                 </div>
               )}
-
               <div></div>
             </div>
           );

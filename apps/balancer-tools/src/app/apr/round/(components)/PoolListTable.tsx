@@ -86,7 +86,7 @@ export function PoolListTable({
         <Table color="blue" shade={"darkWithBorder"}>
           <Table.HeaderRow>
             <Table.HeaderCell>Network</Table.HeaderCell>
-            <Table.HeaderCell>Composition</Table.HeaderCell>
+            <Table.HeaderCell classNames="w-full">Composition</Table.HeaderCell>
             <Table.HeaderCell classNames="text-end whitespace-nowrap">
               Type
             </Table.HeaderCell>

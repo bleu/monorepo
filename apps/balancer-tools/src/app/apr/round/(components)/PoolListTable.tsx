@@ -9,12 +9,14 @@ import {
   TriangleUpIcon,
 } from "@radix-ui/react-icons";
 import Image from "next/image";
+import Link from "next/link";
 import {
   ReadonlyURLSearchParams,
+  usePathname,
   useRouter,
   useSearchParams,
 } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { Button } from "#/components";
 import { Badge } from "#/components/Badge";
@@ -36,6 +38,7 @@ export function PoolListTable({
   roundId: string;
   initialData: PoolStatsData[];
 }) {
+  const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [tableData, setTableData] = useState(initialData);
@@ -45,20 +48,19 @@ export function PoolListTable({
     setTableData(initialData);
   }, [initialData]);
 
-  const handleSortingChange = (accessor: keyof PoolStatsData) => {
-    const sortOrder =
-      accessor === searchParams.get("sort") &&
-      searchParams.get("order") === "desc"
-        ? "asc"
-        : "desc";
-    const current = new URLSearchParams(Array.from(searchParams.entries()));
-    current.set("sort", accessor);
-    current.set("order", sortOrder);
-
-    const search = current.toString();
-    const query = search ? `?${search}` : "";
-    router.push(window.location.pathname + query, { scroll: false });
-  };
+  const createQueryString = useCallback(
+    (accessor: string) => {
+      const params = new URLSearchParams(searchParams);
+      const sortOrder =
+        accessor === params.get("sort") && params.get("order") === "desc"
+          ? "asc"
+          : "desc";
+      params.set("order", sortOrder);
+      params.set("sort", accessor);
+      return params.toString();
+    },
+    [searchParams],
+  );
 
   const loadMorePools = async () => {
     setIsLoadingMore(true);
@@ -90,41 +92,47 @@ export function PoolListTable({
             <Table.HeaderCell classNames="text-end whitespace-nowrap">
               Type
             </Table.HeaderCell>
-            <Table.HeaderCell
-              classNames="text-end whitespace-nowrap hover:text-amber9"
-              onClick={() => handleSortingChange("tvl")}
-            >
-              <div className="flex gap-x-1 items-center justify-end">
-                <Tooltip
-                  content={`This is the TVL calculated at the end of the round`}
+            <Table.HeaderCell classNames="text-end whitespace-nowrap hover:text-amber9">
+              <div>
+                <Link
+                  className="flex gap-x-1 items-center float-right justify-end"
+                  href={pathname + "?" + createQueryString("tvl")}
                 >
-                  <InfoCircledIcon />
-                </Tooltip>
-                <span>TVL</span>
-                {OrderIcon(searchParams, "tvl")}
+                  <Tooltip
+                    content={`This is the TVL calculated at the end of the round`}
+                  >
+                    <InfoCircledIcon />
+                  </Tooltip>
+                  <span>TVL</span>
+                  {OrderIcon(searchParams, "tvl")}
+                </Link>
               </div>
             </Table.HeaderCell>
-            <Table.HeaderCell
-              classNames="text-end whitespace-nowrap hover:text-amber9"
-              onClick={() => handleSortingChange("votingShare")}
-            >
-              <div className="flex gap-x-1 items-center">
-                <span>Voting %</span>
-                {OrderIcon(searchParams, "votingShare")}
+            <Table.HeaderCell classNames="text-end whitespace-nowrap hover:text-amber9">
+              <div>
+                <Link
+                  className="flex gap-x-1 items-center float-right justify-end"
+                  href={pathname + "?" + createQueryString("votingShare")}
+                >
+                  <span>Voting %</span>
+                  {OrderIcon(searchParams, "votingShare")}
+                </Link>
               </div>
             </Table.HeaderCell>
-            <Table.HeaderCell
-              classNames="text-end whitespace-nowrap hover:text-amber9"
-              onClick={() => handleSortingChange("apr")}
-            >
-              <div className="flex gap-x-1 items-center">
-                <Tooltip
-                  content={`This is the APR calculate at the end of the round`}
+            <Table.HeaderCell classNames="text-end whitespace-nowrap hover:text-amber9">
+              <div>
+                <Link
+                  className="flex gap-x-1 items-center float-right justify-end"
+                  href={pathname + "?" + createQueryString("apr")}
                 >
-                  <InfoCircledIcon />
-                </Tooltip>
-                <span> APR</span>
-                {OrderIcon(searchParams, "apr")}
+                  <Tooltip
+                    content={`This is the APR calculate at the end of the round`}
+                  >
+                    <InfoCircledIcon />
+                  </Tooltip>
+                  <span> APR</span>
+                  {OrderIcon(searchParams, "apr")}
+                </Link>
               </div>
             </Table.HeaderCell>
           </Table.HeaderRow>

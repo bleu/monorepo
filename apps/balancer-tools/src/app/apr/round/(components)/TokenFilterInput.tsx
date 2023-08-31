@@ -6,7 +6,6 @@ import { POOLS_WITH_LIVE_GAUGES } from "#/lib/balancer/gauges";
 
 import { MultiSelectDropdown } from "../../(components)/MultiSelectDropdown";
 
-
 const AVALIABLE_TOKENS = [
   ...new Set(
     POOLS_WITH_LIVE_GAUGES.flatMap((pool) =>

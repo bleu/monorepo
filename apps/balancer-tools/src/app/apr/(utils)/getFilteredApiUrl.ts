@@ -3,6 +3,7 @@ import { SearchParams } from "../round/[roundId]/page";
 export const MIN_TVL = 1000;
 
 const convert = (key: string, value: string) => {
+  if (["sort", "order"].includes(key)) return value || undefined;
   if (["minTVL", "maxTVL", "minAPR", "maxAPR"].includes(key))
     return Number(value) || undefined;
   if (["tokens", "type", "network"].includes(key))
@@ -22,5 +23,5 @@ export default function getFilteredApiUrl(searchParams: SearchParams) {
   const params = Object.entries(filteredData)
     .map(([key, value]) => (value !== undefined ? `&${key}=${value}` : ""))
     .join("");
-  return `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?sort=apr&limit=10&order=desc${params}`;
+  return `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?&limit=10${params}`;
 }

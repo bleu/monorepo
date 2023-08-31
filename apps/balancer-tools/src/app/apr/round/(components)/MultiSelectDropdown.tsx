@@ -31,6 +31,25 @@ export const MultiSelectDropdown = ({
     }
   }
 
+  const changeHandler = useCallback((
+    selectedItems: string[],
+    setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>,
+    onSelectionItemsChange: (items: string[]) => void,
+  ) => {
+    return (
+      selectedItem: string | null,
+      downshift: ControllerStateAndHelpers<string>,
+    ) => {
+      if (!selectedItem) return;
+      const i = selectedItems.findIndex((item) => item === selectedItem);
+      if (i === -1) setSelectedItems([...selectedItems, selectedItem]);
+      onSelectionItemsChange([...selectedItems, selectedItem]);
+      downshift.clearSelection();
+    };
+  },
+  [selectedItems],
+  );
+
   return (
     <div className="relative">
       <Downshift
@@ -141,23 +160,6 @@ export const MultiSelectDropdown = ({
   );
 };
 
-/* Helper functions */
-function changeHandler(
-  selectedItems: string[],
-  setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>,
-  onSelectionItemsChange: (items: string[]) => void,
-) {
-  return (
-    selectedItem: string | null,
-    downshift: ControllerStateAndHelpers<string>,
-  ) => {
-    if (!selectedItem) return;
-    const i = selectedItems.findIndex((item) => item === selectedItem);
-    if (i === -1) setSelectedItems([...selectedItems, selectedItem]);
-    onSelectionItemsChange([...selectedItems, selectedItem]);
-    downshift.clearSelection();
-  };
-}
 
 function removeSelectedItemByIndex(
   i: number,

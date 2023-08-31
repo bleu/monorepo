@@ -19,7 +19,7 @@ export function TokenFilterInput() {
   const searchParams = useSearchParams();
 
   const handleTokenSelect = (selectedItems: string[]) => {
-    const current = new URLSearchParams(Array.from(searchParams.entries())); // -> has to use this form
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
 
     if (!selectedItems.length) {
       current.delete("tokens");
@@ -29,11 +29,7 @@ export function TokenFilterInput() {
 
     const search = current.toString();
     const query = search ? `?${search}` : "";
-
-    // Workaround while Next.js doesn't support shallow routing
-    // https://github.com/vercel/next.js/discussions/48110
-    // window.history.pushState({}, "", window.location.pathname + query);
-    router.push(window.location.pathname + query);
+    router.push(window.location.pathname + query, { scroll: false });
   };
 
   return (

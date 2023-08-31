@@ -19,7 +19,7 @@ export const MultiSelectDropdown = ({
   const [selectedItems, setSelectedItems] =
     useState<string[]>(initialSelectedItems);
 
-  function handleOKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+  function handleOnKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
     const inputElement = event.target as HTMLInputElement;
     if (!inputElement.value.length) {
       if (event.key === "Backspace") {
@@ -86,7 +86,7 @@ export const MultiSelectDropdown = ({
                       toggleMenu();
                     }}
                     onKeyDown={(e) => {
-                      handleOKeyDown(e);
+                      handleOnKeyDown(e);
                     }}
                     className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 outline-none text-white bg-transparent"
                     type="text"

@@ -123,7 +123,7 @@ export const MultiSelectDropdown = ({
                     getFilteredItems(inputValue).map((item, idx) => {
                       return (
                         <div
-                          className={`flex w-full flex-col items-start cursor-pointer p-2 ${
+                          className={`flex w-full flex-col items-start text-sm cursor-pointer p-2 pl-3 ${
                             idx == highlightedIndex
                               ? "bg-blue6"
                               : "bg-transparent"

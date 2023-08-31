@@ -83,16 +83,16 @@ export const MultiSelectDropdown = ({
           return (
             <div>
               <div className="relative mt-1">
-                <div className="flex items-center bg-blue4 relative w-full cursor-default overflow-hidden rounded-lg text-left shadow-md focus:outline-none focus-within:ring-2 focus-within:ring-blue6 focus-within:ring-opacity/75 focus-within:ring-offset-2 focus-within:ring-offset-blue3 sm:text-sm">
-                  <label {...getLabelProps()} className="flex-1 mx-1">
+                <div className="flex items-center p-1 bg-blue4 max-w-sm relative w-full cursor-default overflow-hidden rounded-lg text-left shadow-md focus:outline-none focus-within:ring-2 focus-within:ring-blue6 focus-within:ring-opacity/75 focus-within:ring-offset-2 focus-within:ring-offset-blue3 sm:text-sm">
+                  <label {...getLabelProps()} className="mt-3 mr-2 self-start">
                     <MagnifyingGlassIcon />
                   </label>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2 items-center">
                     {selectedItems.map((value, idx) => {
                       return (
                         <Badge key={value + idx} color="blue">
                           <div
-                            className="flex gap-2 items-center w-max"
+                            className="flex gap-1 items-center w-max"
                             onClick={() => removeSelectedItemByIndex(idx)}
                           >
                             <span>{value}</span>
@@ -103,17 +103,17 @@ export const MultiSelectDropdown = ({
                         </Badge>
                       );
                     })}
-                  </div>
 
-                  <BaseInput
-                    placeholder={placeholderText}
-                    {...getInputProps()}
-                    onFocus={() => {
-                      toggleMenu();
-                    }}
-                    onKeyDown={handleOnKeyDown}
-                    className="hover:shadow-[0] focus:shadow-[0] shadow-none"
-                  />
+                    <BaseInput
+                      placeholder={!selectedItems.length ? placeholderText : ""}
+                      {...getInputProps()}
+                      onFocus={() => {
+                        toggleMenu();
+                      }}
+                      onKeyDown={handleOnKeyDown}
+                      className="hover:shadow-[0] focus:shadow-[0] shadow-none flex-1"
+                    />
+                  </div>
                 </div>
               </div>
 

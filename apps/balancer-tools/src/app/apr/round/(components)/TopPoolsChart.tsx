@@ -4,15 +4,19 @@ import { PlotType } from "plotly.js";
 import Plot from "#/components/Plot";
 import { fetcher } from "#/utils/fetcher";
 
-import { BASE_URL, PoolStatsResults } from "../../api/route";
+import { PoolStatsResults } from "../../api/route";
 
-export default async function TopPoolsChart({ roundId }: { roundId: string }) {
+export default async function TopPoolsChart({
+  roundId,
+  filteredApiUrl,
+}: {
+  roundId: string;
+  filteredApiUrl: string;
+}) {
   const shades = Object.values(greenDarkA).map((color) => color.toString());
   const colors = [...shades.slice(4, 10).reverse(), ...shades.slice(4, 10)];
 
-  const topAprApi = await fetcher<PoolStatsResults>(
-    `${BASE_URL}/apr/api/?roundId=${roundId}&sort=apr&limit=10&order=desc&minTvl=1000`,
-  );
+  const topAprApi = await fetcher<PoolStatsResults>(filteredApiUrl);
 
   const chartData = {
     hovertemplate: "%{x:.2f}% APR<extra></extra>",

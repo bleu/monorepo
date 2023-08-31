@@ -9,73 +9,71 @@ import {
   TriangleUpIcon,
 } from "@radix-ui/react-icons";
 import Image from "next/image";
-import { useState } from "react";
+import Link from "next/link";
+import {
+  ReadonlyURLSearchParams,
+  usePathname,
+  useSearchParams,
+} from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 import { Button } from "#/components";
 import { Badge } from "#/components/Badge";
 import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
-import { Pool } from "#/lib/balancer/gauges";
 import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 
 import { PoolTypeEnum } from "../../(utils)/calculatePoolStats";
 import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
-import { BASE_URL, PoolStatsData, PoolStatsResults } from "../../api/route";
+import { PoolStatsData, PoolStatsResults, PoolTokens } from "../../api/route";
+import { TokenFilterInput } from "./TokenFilterInput";
 
 export function PoolListTable({
   roundId,
   initialData,
 }: {
   roundId: string;
-  initialData: PoolStatsResults;
+  initialData: PoolStatsData[];
 }) {
-  const [tableData, setTableData] = useState(initialData.perRound);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [tableData, setTableData] = useState(initialData);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [sortField, setSortField] = useState("apr");
-  const [order, setOrder] = useState<"asc" | "desc">("desc");
+  const [hasMorePools, setHasMorePools] = useState(true);
 
-  const handleSorting = (sortField: keyof PoolStatsData, sortOrder: string) => {
-    if (sortField) {
-      setTableData((prevTableData) => {
-        const sortedArray = prevTableData.slice().sort((a, b) => {
-          const aValue = a[sortField] as number | string;
-          const bValue = b[sortField] as number | string;
+  useEffect(() => {
+    setTableData(initialData);
+  }, [initialData]);
 
-          // Handle NaN values
-          if (typeof aValue === "number" && isNaN(aValue)) return 1;
-          if (typeof bValue === "number" && isNaN(bValue)) return -1;
-
-          if (aValue < bValue) {
-            return sortOrder === "asc" ? -1 : 1;
-          } else if (aValue > bValue) {
-            return sortOrder === "asc" ? 1 : -1;
-          }
-          return 0;
-        });
-
-        return sortedArray;
-      });
-    }
-  };
-
-  const handleSortingChange = (accessor: keyof PoolStatsData) => {
-    const sortOrder =
-      accessor === sortField && order === "desc" ? "asc" : "desc";
-    setSortField(accessor);
-    setOrder(sortOrder);
-    handleSorting(accessor, sortOrder);
-  };
+  const createQueryString = useCallback(
+    (accessor: string) => {
+      const params = new URLSearchParams(searchParams);
+      const sortOrder =
+        accessor === params.get("sort") && params.get("order") === "desc"
+          ? "asc"
+          : "desc";
+      params.set("order", sortOrder);
+      params.set("sort", accessor);
+      return params.toString();
+    },
+    [searchParams],
+  );
 
   const loadMorePools = async () => {
     setIsLoadingMore(true);
     const aditionalPoolsData = await fetcher<PoolStatsResults>(
-      `${BASE_URL}/apr/api/?roundId=${roundId}&sort=${sortField}&order=${order}&limit=10&offset=${
+      `${
+        process.env.NEXT_PUBLIC_SITE_URL
+      }/apr/api/?roundId=${roundId}&sort=${searchParams.get(
+        "sort",
+      )}&order=${searchParams.get("order")}&limit=10&offset=${
         Object.keys(tableData).length
       }&minTvl=1000`,
     );
     setTableData((prevTableData) => {
+      if (aditionalPoolsData.perRound.length === 0) setHasMorePools(false);
       return prevTableData.concat(aditionalPoolsData.perRound);
     });
     setIsLoadingMore(false);
@@ -83,84 +81,109 @@ export function PoolListTable({
 
   return (
     <div className="flex flex-col justify-center text-white">
+      <div className="flex text-white mb-5">
+        <TokenFilterInput />
+      </div>
       <div className="flex justify-center text-white shadow-lg mb-5">
         <Table color="blue" shade={"darkWithBorder"}>
           <Table.HeaderRow>
             <Table.HeaderCell>Network</Table.HeaderCell>
-            <Table.HeaderCell>Composition</Table.HeaderCell>
+            <Table.HeaderCell classNames="w-full">Composition</Table.HeaderCell>
             <Table.HeaderCell classNames="text-end whitespace-nowrap">
               Type
             </Table.HeaderCell>
-            <Table.HeaderCell
-              classNames="text-end whitespace-nowrap hover:text-amber9"
-              onClick={() => handleSortingChange("tvl")}
-            >
-              <div className="flex gap-x-1 items-center justify-end">
-                <Tooltip
-                  content={`This is the TVL calculated at the end of the round`}
+            <Table.HeaderCell classNames="text-end whitespace-nowrap hover:text-amber9">
+              <div>
+                <Link
+                  className="flex gap-x-1 items-center float-right justify-end"
+                  href={pathname + "?" + createQueryString("tvl")}
                 >
-                  <InfoCircledIcon />
-                </Tooltip>
-                <span>TVL</span>
-                {sortField == "tvl" ? OrderIcon(order) : OrderIcon("neutral")}
+                  <Tooltip
+                    content={`This is the TVL calculated at the end of the round`}
+                  >
+                    <InfoCircledIcon />
+                  </Tooltip>
+                  <span>TVL</span>
+                  {OrderIcon(searchParams, "tvl")}
+                </Link>
               </div>
             </Table.HeaderCell>
-            <Table.HeaderCell
-              classNames="text-end whitespace-nowrap hover:text-amber9"
-              onClick={() => handleSortingChange("votingShare")}
-            >
-              <div className="flex gap-x-1 items-center">
-                <span>Voting %</span>
-                {sortField == "votingShare"
-                  ? OrderIcon(order)
-                  : OrderIcon("neutral")}
+            <Table.HeaderCell classNames="text-end whitespace-nowrap hover:text-amber9">
+              <div>
+                <Link
+                  className="flex gap-x-1 items-center float-right justify-end"
+                  href={pathname + "?" + createQueryString("votingShare")}
+                >
+                  <span>Voting %</span>
+                  {OrderIcon(searchParams, "votingShare")}
+                </Link>
               </div>
             </Table.HeaderCell>
-            <Table.HeaderCell
-              classNames="text-end whitespace-nowrap hover:text-amber9"
-              onClick={() => handleSortingChange("apr")}
-            >
-              <div className="flex gap-x-1 items-center">
-                <Tooltip
-                  content={`This is the APR calculate at the end of the round`}
+            <Table.HeaderCell classNames="text-end whitespace-nowrap hover:text-amber9">
+              <div>
+                <Link
+                  className="flex gap-x-1 items-center float-right justify-end"
+                  href={pathname + "?" + createQueryString("apr")}
                 >
-                  <InfoCircledIcon />
-                </Tooltip>
-                <span> APR</span>
-                {sortField == "apr" ? OrderIcon(order) : OrderIcon("neutral")}
+                  <Tooltip
+                    content={`This is the APR calculate at the end of the round`}
+                  >
+                    <InfoCircledIcon />
+                  </Tooltip>
+                  <span> APR</span>
+                  {OrderIcon(searchParams, "apr")}
+                </Link>
               </div>
             </Table.HeaderCell>
           </Table.HeaderRow>
           <Table.Body>
-            {tableData.map((pool) => (
-              <TableRow
-                key={pool.poolId}
-                poolId={pool.poolId}
-                network={pool.network}
-                roundId={roundId}
-                tvl={pool.tvl}
-                votingShare={pool.votingShare}
-                apr={pool.apr.total}
-              />
-            ))}
-            <Table.BodyRow>
-              <Table.BodyCell colSpan={6}>
-                <Button
-                  className="w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
-                  shade="medium"
-                  disabled={isLoadingMore}
-                  onClick={loadMorePools}
+            {tableData.length > 0 ? (
+              <>
+                {tableData.map((pool) => (
+                  <TableRow
+                    key={pool.poolId}
+                    poolId={pool.poolId}
+                    network={pool.network}
+                    roundId={roundId}
+                    tokens={pool.tokens}
+                    poolType={pool.type}
+                    tvl={pool.tvl}
+                    votingShare={pool.votingShare}
+                    apr={pool.apr.total}
+                  />
+                ))}
+
+                <Table.BodyRow>
+                  <Table.BodyCell colSpan={6}>
+                    <Button
+                      className="w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
+                      shade="medium"
+                      disabled={isLoadingMore || !hasMorePools}
+                      onClick={loadMorePools}
+                    >
+                      {isLoadingMore ? (
+                        <Spinner size="sm" />
+                      ) : hasMorePools ? (
+                        <>
+                          Load More <ChevronDownIcon />
+                        </>
+                      ) : (
+                        <>All pools have been loaded</>
+                      )}
+                    </Button>
+                  </Table.BodyCell>
+                </Table.BodyRow>
+              </>
+            ) : (
+              <Table.BodyRow>
+                <Table.BodyCell
+                  classNames="whitespace-nowrap text-sm text-white py-3 px-5 text-center text-sm font-semibold"
+                  colSpan={6}
                 >
-                  {isLoadingMore ? (
-                    <Spinner size="sm" />
-                  ) : (
-                    <>
-                      Load More <ChevronDownIcon />
-                    </>
-                  )}
-                </Button>
-              </Table.BodyCell>
-            </Table.BodyRow>
+                  No pools found
+                </Table.BodyCell>
+              </Table.BodyRow>
+            )}
           </Table.Body>
         </Table>
       </div>
@@ -172,6 +195,8 @@ function TableRow({
   poolId,
   roundId,
   network,
+  tokens,
+  poolType,
   tvl,
   votingShare,
   apr,
@@ -179,6 +204,8 @@ function TableRow({
   poolId: string;
   roundId: string;
   network: string;
+  tokens: PoolTokens[];
+  poolType: keyof typeof PoolTypeEnum;
   tvl: number;
   votingShare: number;
   apr: number;
@@ -186,10 +213,6 @@ function TableRow({
   const poolRedirectURL = `/apr/pool/${networkFor(
     network,
   )}/${poolId}/round/${roundId}`;
-  const pool = new Pool(poolId);
-  const tokens = pool.tokens;
-  const poolType = pool.poolType as keyof typeof PoolTypeEnum;
-
   return (
     <Table.BodyRow classNames="hover:bg-blue4 hover:cursor-pointer duration-500">
       <Table.BodyCellLink href={poolRedirectURL} tdClassNames="w-6">
@@ -238,12 +261,15 @@ function TableRow({
   );
 }
 
-function OrderIcon(order: "asc" | "desc" | "neutral") {
-  if (order === "asc") {
+function OrderIcon(
+  searchParams: ReadonlyURLSearchParams,
+  fieldName: keyof PoolStatsData,
+) {
+  if (searchParams.get("sort") !== fieldName) return <DashIcon />;
+
+  if (searchParams.get("order") === "asc") {
     return <TriangleUpIcon />;
-  } else if (order === "desc") {
+  } else if (searchParams.get("order") === "desc") {
     return <TriangleDownIcon />;
-  } else {
-    return <DashIcon />;
   }
 }

@@ -66,6 +66,14 @@ export const MultiSelectDropdown = ({
     [selectedItems],
   );
 
+  const getFilteredItems = useCallback(
+    (inputValue: string | null) => {
+      return items.filter(
+        (item) =>
+          !selectedItems.find((selected) => selected === item) &&
+          item.includes(String(inputValue)),
+      );
+    },
     [selectedItems],
   );
 
@@ -132,34 +140,20 @@ export const MultiSelectDropdown = ({
 
               {isOpen && (
                 <div className="absolute z-50 my-2 flex max-h-52 flex-col overflow-y-scroll rounded border-[1px] border-blue6 bg-blue3 scrollbar-thin scrollbar-track-blue2 scrollbar-thumb-slate12 w-full">
-                  {items.filter(
-                    (item) =>
-                      !selectedItems.find((selected) => selected === item) &&
-                      item.includes(String(inputValue)),
-                  ).length > 0 ? (
-                    items
-                      .filter(
-                        (item) =>
-                          !selectedItems.find(
-                            (selected) => selected === item,
-                          ) && item.includes(String(inputValue)),
-                      )
-                      .map((item, idx) => {
-                        return (
-                          <div
-                            className={`flex w-full flex-col items-start cursor-pointer p-2 ${
-                              idx == highlightedIndex
-                                ? "bg-blue6"
-                                : "bg-transparent"
-                            }`}
-                            {...getItemProps({ item, key: item + idx })}
-                          >
-                            <div>
-                              <span>{item}</span>
-                            </div>
-                          </div>
-                        );
-                      })
+                  {getFilteredItems(inputValue).length > 0 ? (
+                    getFilteredItems(inputValue).map((item, idx) => {
+                      return (
+                        <div
+                          className={`flex w-full flex-col items-start cursor-pointer p-2 ${
+                            idx == highlightedIndex
+                              ? "bg-blue6"
+                              : "bg-transparent"
+                          }`}
+                          {...getItemProps({ item, key: item + idx })}
+                          <span>{item}</span>
+                        </div>
+                      );
+                    })
                   ) : (
                     <div className="flex flex-col items-center text-center text-slate12 p-4">
                       <span>Sorry, no token was found with the symbol</span>
@@ -176,4 +170,3 @@ export const MultiSelectDropdown = ({
     </div>
   );
 };
-

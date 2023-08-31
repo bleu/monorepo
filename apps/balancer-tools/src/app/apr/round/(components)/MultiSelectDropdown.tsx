@@ -31,37 +31,42 @@ export const MultiSelectDropdown = ({
     }
   }
 
-  const changeHandler = useCallback((
-    selectedItems: string[],
-    setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>,
-    onSelectionItemsChange: (items: string[]) => void,
-  ) => {
-    return (
-      selectedItem: string | null,
-      downshift: ControllerStateAndHelpers<string>,
+  const changeHandler = useCallback(
+    (
+      selectedItems: string[],
+      setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>,
+      onSelectionItemsChange: (items: string[]) => void,
     ) => {
-      if (!selectedItem) return;
-      const i = selectedItems.findIndex((item) => item === selectedItem);
-      if (i === -1) setSelectedItems([...selectedItems, selectedItem]);
-      onSelectionItemsChange([...selectedItems, selectedItem]);
-      downshift.clearSelection();
-    };
-  },
-  [selectedItems],
+      return (
+        selectedItem: string | null,
+        downshift: ControllerStateAndHelpers<string>,
+      ) => {
+        if (!selectedItem) return;
+        const i = selectedItems.findIndex((item) => item === selectedItem);
+        if (i === -1) setSelectedItems([...selectedItems, selectedItem]);
+        onSelectionItemsChange([...selectedItems, selectedItem]);
+        downshift.clearSelection();
+      };
+    },
+    [selectedItems],
   );
 
-  const removeSelectedItemByIndex = useCallback((
-    i: number,
-    selectedItems: string[],
-    setSelectedItems: (items: string[]) => void,
-    onSelectionItemsChange: (items: string[]) => void,
-  ) => {
-    const temp = [...selectedItems];
-    temp.splice(i, 1);
-    setSelectedItems(temp);
-    onSelectionItemsChange(temp);
-  },
-  [selectedItems],
+  const removeSelectedItemByIndex = useCallback(
+    (
+      i: number,
+      selectedItems: string[],
+      setSelectedItems: (items: string[]) => void,
+      onSelectionItemsChange: (items: string[]) => void,
+    ) => {
+      const temp = [...selectedItems];
+      temp.splice(i, 1);
+      setSelectedItems(temp);
+      onSelectionItemsChange(temp);
+    },
+    [selectedItems],
+  );
+
+    [selectedItems],
   );
 
   return (
@@ -86,12 +91,10 @@ export const MultiSelectDropdown = ({
           return (
             <div>
               <div className="relative mt-1">
-                <div className="flex items-center bg-blue6 relative w-full cursor-default overflow-hidden rounded-lg text-left shadow-md focus:outline-none focus-within:ring-2 focus-within:ring-blue6 focus-within:ring-opacity/75 focus-within:ring-offset-2 focus-within:ring-offset-blue3 sm:text-sm">
+                <div className="flex items-center bg-blue4 relative w-full cursor-default overflow-hidden rounded-lg text-left shadow-md focus:outline-none focus-within:ring-2 focus-within:ring-blue6 focus-within:ring-opacity/75 focus-within:ring-offset-2 focus-within:ring-offset-blue3 sm:text-sm">
                   <label {...getLabelProps()} className="flex-1 mx-1">
                     <MagnifyingGlassIcon />
                   </label>
-                  {selectedItems.map((value, idx) => {
-                    return (
                       <button
                         key={value + idx}
                         className="relative mx-1 flex gap-2 h-fit items-center rounded-md px-2 py-1 bg-blue7 whitespace-nowrap"

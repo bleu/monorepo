@@ -2,7 +2,7 @@
 
 import { Cross1Icon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import Downshift, { ControllerStateAndHelpers } from "downshift";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 
 export const MultiSelectDropdown = ({
   items,

@@ -16,7 +16,7 @@ export enum PoolTypeEnum {
   WEIGHTED = "Weighted",
   GYROE = "GyroE",
   STABLE = "Stable",
-  MetaStable = "MetaStable",
+  META_STABLE = "MetaStable",
   UNKNOWN = "FX",
 }
 

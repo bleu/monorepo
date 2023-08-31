@@ -29,6 +29,7 @@ import { PoolTypeEnum } from "../../(utils)/calculatePoolStats";
 import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
 import { PoolStatsData, PoolStatsResults, PoolTokens } from "../../api/route";
 import { TokenFilterInput } from "./TokenFilterInput";
+import { MoreFiltersButton } from "./MoreFiltersButton";
 
 export function PoolListTable({
   roundId,
@@ -81,8 +82,9 @@ export function PoolListTable({
 
   return (
     <div className="flex flex-col justify-center text-white">
-      <div className="flex text-white mb-5">
+      <div className="flex text-white mb-5 gap-2">
         <TokenFilterInput />
+        <MoreFiltersButton />
       </div>
       <div className="flex justify-center text-white shadow-lg mb-5">
         <Table color="blue" shade={"darkWithBorder"}>

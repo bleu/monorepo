@@ -34,33 +34,21 @@ export const MultiSelectDropdown = ({
     }
   }
 
-  const changeHandler = useCallback(
-    (
-      selectedItems: string[],
-      setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>,
-      onSelectionItemsChange: (items: string[]) => void,
+  const changeHandler = useCallback(() => {
+    return (
+      selectedItem: string | null,
+      downshift: ControllerStateAndHelpers<string>,
     ) => {
-      return (
-        selectedItem: string | null,
-        downshift: ControllerStateAndHelpers<string>,
-      ) => {
-        if (!selectedItem) return;
-        const i = selectedItems.findIndex((item) => item === selectedItem);
-        if (i === -1) setSelectedItems([...selectedItems, selectedItem]);
-        onSelectionItemsChange([...selectedItems, selectedItem]);
-        downshift.clearSelection();
-      };
-    },
-    [selectedItems],
-  );
+      if (!selectedItem) return;
+      const i = selectedItems.findIndex((item) => item === selectedItem);
+      if (i === -1) setSelectedItems([...selectedItems, selectedItem]);
+      onSelectionItemsChange([...selectedItems, selectedItem]);
+      downshift.clearSelection();
+    };
+  }, [selectedItems]);
 
   const removeSelectedItemByIndex = useCallback(
-    (
-      i: number,
-      selectedItems: string[],
-      setSelectedItems: (items: string[]) => void,
-      onSelectionItemsChange: (items: string[]) => void,
-    ) => {
+    (i: number) => {
       const temp = [...selectedItems];
       temp.splice(i, 1);
       setSelectedItems(temp);
@@ -82,14 +70,7 @@ export const MultiSelectDropdown = ({
 
   return (
     <div className="relative">
-      <Downshift
-        {...rest}
-        onChange={changeHandler(
-          selectedItems,
-          setSelectedItems,
-          onSelectionItemsChange,
-        )}
-      >
+      <Downshift {...rest} onChange={changeHandler()}>
         {({
           getLabelProps,
           getInputProps,
@@ -112,14 +93,7 @@ export const MultiSelectDropdown = ({
                         <Badge key={value + idx} color="blue">
                           <div
                             className="flex gap-2 items-center w-max"
-                            onClick={() =>
-                              removeSelectedItemByIndex(
-                                idx,
-                                selectedItems,
-                                setSelectedItems,
-                                onSelectionItemsChange,
-                              )
-                            }
+                            onClick={() => removeSelectedItemByIndex(idx)}
                           >
                             <span>{value}</span>
                             <span className="cursor-pointer">

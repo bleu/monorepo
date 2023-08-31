@@ -9,7 +9,12 @@ import {
   TriangleUpIcon,
 } from "@radix-ui/react-icons";
 import Image from "next/image";
-import { useState } from "react";
+import {
+  ReadonlyURLSearchParams,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { Button } from "#/components";
 import { Badge } from "#/components/Badge";
@@ -29,49 +34,40 @@ export function PoolListTable({
   initialData,
 }: {
   roundId: string;
-  initialData: PoolStatsResults;
+  initialData: PoolStatsData[];
 }) {
-  const [tableData, setTableData] = useState(initialData.perRound);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [tableData, setTableData] = useState(initialData);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [sortField, setSortField] = useState("apr");
-  const [order, setOrder] = useState<"asc" | "desc">("desc");
 
-  const handleSorting = (sortField: keyof PoolStatsData, sortOrder: string) => {
-    if (sortField) {
-      setTableData((prevTableData) => {
-        const sortedArray = prevTableData.slice().sort((a, b) => {
-          const aValue = a[sortField] as number | string;
-          const bValue = b[sortField] as number | string;
-
-          // Handle NaN values
-          if (typeof aValue === "number" && isNaN(aValue)) return 1;
-          if (typeof bValue === "number" && isNaN(bValue)) return -1;
-
-          if (aValue < bValue) {
-            return sortOrder === "asc" ? -1 : 1;
-          } else if (aValue > bValue) {
-            return sortOrder === "asc" ? 1 : -1;
-          }
-          return 0;
-        });
-
-        return sortedArray;
-      });
-    }
-  };
+  useEffect(() => {
+    setTableData(initialData);
+  }, [initialData]);
 
   const handleSortingChange = (accessor: keyof PoolStatsData) => {
     const sortOrder =
-      accessor === sortField && order === "desc" ? "asc" : "desc";
-    setSortField(accessor);
-    setOrder(sortOrder);
-    handleSorting(accessor, sortOrder);
+      accessor === searchParams.get("sort") &&
+      searchParams.get("order") === "desc"
+        ? "asc"
+        : "desc";
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
+    current.set("sort", accessor);
+    current.set("order", sortOrder);
+
+    const search = current.toString();
+    const query = search ? `?${search}` : "";
+    router.push(window.location.pathname + query, { scroll: false });
   };
 
   const loadMorePools = async () => {
     setIsLoadingMore(true);
     const aditionalPoolsData = await fetcher<PoolStatsResults>(
-      `${BASE_URL}/apr/api/?roundId=${roundId}&sort=${sortField}&order=${order}&limit=10&offset=${
+      `${
+        process.env.NEXT_PUBLIC_SITE_URL
+      }/apr/api/?roundId=${roundId}&sort=${searchParams.get(
+        "sort",
+      )}&order=${searchParams.get("order")}&limit=10&offset=${
         Object.keys(tableData).length
       }&minTvl=1000`,
     );
@@ -105,7 +101,7 @@ export function PoolListTable({
                   <InfoCircledIcon />
                 </Tooltip>
                 <span>TVL</span>
-                {sortField == "tvl" ? OrderIcon(order) : OrderIcon("neutral")}
+                {OrderIcon(searchParams, "tvl")}
               </div>
             </Table.HeaderCell>
             <Table.HeaderCell
@@ -114,9 +110,7 @@ export function PoolListTable({
             >
               <div className="flex gap-x-1 items-center">
                 <span>Voting %</span>
-                {sortField == "votingShare"
-                  ? OrderIcon(order)
-                  : OrderIcon("neutral")}
+                {OrderIcon(searchParams, "votingShare")}
               </div>
             </Table.HeaderCell>
             <Table.HeaderCell
@@ -130,7 +124,7 @@ export function PoolListTable({
                   <InfoCircledIcon />
                 </Tooltip>
                 <span> APR</span>
-                {sortField == "apr" ? OrderIcon(order) : OrderIcon("neutral")}
+                {OrderIcon(searchParams, "apr")}
               </div>
             </Table.HeaderCell>
           </Table.HeaderRow>
@@ -243,12 +237,15 @@ function TableRow({
   );
 }
 
-function OrderIcon(order: "asc" | "desc" | "neutral") {
-  if (order === "asc") {
+function OrderIcon(
+  searchParams: ReadonlyURLSearchParams,
+  fieldName: keyof PoolStatsData,
+) {
+  if (searchParams.get("sort") !== fieldName) return <DashIcon />;
+
+  if (searchParams.get("order") === "asc") {
     return <TriangleUpIcon />;
-  } else if (order === "desc") {
+  } else if (searchParams.get("order") === "desc") {
     return <TriangleDownIcon />;
-  } else {
-    return <DashIcon />;
   }
 }

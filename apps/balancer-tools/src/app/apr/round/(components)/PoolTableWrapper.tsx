@@ -13,5 +13,5 @@ export default async function PoolTableWrapper({
   const initialData = await fetcher<PoolStatsResults>(
     filteredApiUrl + `&roundId=${roundId}`,
   );
-  return <PoolListTable roundId={roundId} initialData={initialData} />;
+  return <PoolListTable roundId={roundId} initialData={initialData.perRound} />;
 }

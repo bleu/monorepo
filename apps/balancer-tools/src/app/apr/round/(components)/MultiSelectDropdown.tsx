@@ -50,6 +50,20 @@ export const MultiSelectDropdown = ({
   [selectedItems],
   );
 
+  const removeSelectedItemByIndex = useCallback((
+    i: number,
+    selectedItems: string[],
+    setSelectedItems: (items: string[]) => void,
+    onSelectionItemsChange: (items: string[]) => void,
+  ) => {
+    const temp = [...selectedItems];
+    temp.splice(i, 1);
+    setSelectedItems(temp);
+    onSelectionItemsChange(temp);
+  },
+  [selectedItems],
+  );
+
   return (
     <div className="relative">
       <Downshift
@@ -160,15 +174,3 @@ export const MultiSelectDropdown = ({
   );
 };
 
-
-function removeSelectedItemByIndex(
-  i: number,
-  selectedItems: string[],
-  setSelectedItems: (items: string[]) => void,
-  onSelectionItemsChange: (items: string[]) => void,
-) {
-  const temp = [...selectedItems];
-  temp.splice(i, 1);
-  setSelectedItems(temp);
-  onSelectionItemsChange(temp);
-}

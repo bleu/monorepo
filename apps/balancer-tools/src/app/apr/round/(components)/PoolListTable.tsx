@@ -26,7 +26,7 @@ import { formatNumber } from "#/utils/formatNumber";
 
 import { PoolTypeEnum } from "../../(utils)/calculatePoolStats";
 import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
-import { BASE_URL, PoolStatsData, PoolStatsResults, PoolTokens } from "../../api/route";
+import { PoolStatsData, PoolStatsResults, PoolTokens } from "../../api/route";
 import { TokenFilterInput } from "./TokenFilterInput";
 
 export function PoolListTable({

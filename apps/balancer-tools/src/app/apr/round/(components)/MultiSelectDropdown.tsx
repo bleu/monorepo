@@ -138,7 +138,7 @@ export const MultiSelectDropdown = ({
                       toggleMenu();
                     }}
                     onKeyDown={handleOnKeyDown}
-                    className="hover:shadow-[0] focus:shadow-[0] shadow-[0]"
+                    className="hover:shadow-[0] focus:shadow-[0] shadow-none"
                   />
                 </div>
               </div>

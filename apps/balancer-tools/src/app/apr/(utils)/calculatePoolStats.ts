@@ -75,7 +75,7 @@ export async function calculatePoolStats({
   const pool = new Pool(poolId);
   const network = String(pool.network ?? 1);
 
-  const [balPriceUSD, [tvl, symbol], votingShare] = await Promise.all([
+  const [balPriceUSD, [tvl, symbol], votingShare, feeAPR] = await Promise.all([
     getDataFromCacheOrCompute(`bal_price_${round.value}`, () =>
       getBALPriceByRound(round),
     ),
@@ -93,9 +93,19 @@ export async function calculatePoolStats({
       `pool_weight_${poolId}_${round.value}_${network}`,
       () => getPoolRelativeWeight(poolId, round.endDate.getTime() / 1000),
     ),
+    getDataFromCacheOrCompute(
+      `pool_fee_apr_${poolId}_${round.value}_${network}`,
+      () =>
+        getFeeApr(
+          poolId,
+          network,
+          round.startDate.getTime() / 1000 - 60,
+          round.endDate.getTime() / 1000 + 60,
+        ),
+    ),
   ]);
 
-  const apr = calculateRoundAPR(round, votingShare, tvl, balPriceUSD);
+  const apr = calculateRoundAPR(round, votingShare, tvl, balPriceUSD, feeAPR);
 
   if (apr.total === -1 || apr.breakdown.veBAL === -1) {
     Sentry.captureMessage("vebalAPR resulted in -1", {
@@ -121,6 +131,7 @@ function calculateRoundAPR(
   votingShare: number,
   tvl: number,
   balPriceUSD: number,
+  feeAPR: number,
 ) {
   const emissions = balEmissions.weekly(round.endDate.getTime() / 1000);
   const vebalAPR =
@@ -129,9 +140,37 @@ function calculateRoundAPR(
       : -1;
 
   return {
-    total: vebalAPR,
+    total: vebalAPR + feeAPR,
     breakdown: {
       veBAL: vebalAPR,
+      fee: feeAPR,
     },
   };
 }
+
+const getFeeApr = async (
+  poolId: string,
+  network: string,
+  from: number,
+  to: number,
+): Promise<number> => {
+  const res = await pools.gql(network).poolSnapshotInRange({
+    poolId,
+    from,
+    to,
+  });
+  const previousRoundEndDate = from + 60;
+  const RoundEndDate = to - 60;
+
+  const previousRoundData = res.poolSnapshots.find(
+    (snapshot) => snapshot.timestamp === previousRoundEndDate,
+  );
+
+  const RoundData = res.poolSnapshots.find(
+    (snapshot) => snapshot.timestamp === RoundEndDate,
+  );
+
+  const feeDiff = RoundData?.swapFees - previousRoundData?.swapFees;
+  const feeApr = feeDiff / RoundData?.pool.totalLiquidity;
+  return isNaN(feeApr) ? 0 : feeApr / 100;
+};

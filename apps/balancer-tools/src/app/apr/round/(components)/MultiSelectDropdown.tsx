@@ -19,6 +19,18 @@ export const MultiSelectDropdown = ({
   const [selectedItems, setSelectedItems] =
     useState<string[]>(initialSelectedItems);
 
+  function handleOKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    const inputElement = event.target as HTMLInputElement;
+    if (!inputElement.value.length) {
+      if (event.key === "Backspace") {
+        const copySelectedItems = [...selectedItems];
+        copySelectedItems.pop();
+        setSelectedItems(copySelectedItems);
+        onSelectionItemsChange(copySelectedItems);
+      }
+    }
+  }
+
   return (
     <div className="relative">
       <Downshift
@@ -69,8 +81,13 @@ export const MultiSelectDropdown = ({
 
                   <input
                     placeholder={labelText}
-                    className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 focus:ring-0 bg-transparent text-white"
                     {...getInputProps()}
+                    onFocus={() => {
+                      toggleMenu();
+                    }}
+                    onKeyDown={(e) => {
+                      handleOKeyDown(e);
+                    }}
                     className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 outline-none text-white bg-transparent"
                     type="text"
                   />

@@ -25,6 +25,7 @@ export interface PoolStats {
     total: number;
     breakdown: {
       veBAL: number;
+      fee: number;
     };
   };
   balPriceUSD: number;
@@ -72,13 +73,14 @@ const computeAverages = (
         total: acc.apr.total + data.apr.total,
         breakdown: {
           veBAL: acc.apr.breakdown.veBAL + data.apr.breakdown.veBAL,
+          fee: acc.apr.breakdown.fee + data.apr.breakdown.fee,
         },
       },
       balPriceUSD: acc.balPriceUSD + data.balPriceUSD,
       tvl: acc.tvl + data.tvl,
     }),
     {
-      apr: { total: 0, breakdown: { veBAL: 0 } },
+      apr: { total: 0, breakdown: { veBAL: 0, fee: 0 } },
       balPriceUSD: 0,
       tvl: 0,
     },
@@ -90,6 +92,7 @@ const computeAverages = (
       total: total.apr.total / count,
       breakdown: {
         veBAL: total.apr.breakdown.veBAL / count,
+        fee: total.apr.breakdown.fee / count,
       },
     },
     balPriceUSD: total.balPriceUSD / count,

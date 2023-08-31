@@ -41,6 +41,7 @@ export function PoolListTable({
   const searchParams = useSearchParams();
   const [tableData, setTableData] = useState(initialData);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMorePools, setHasMorePools] = useState(true);
 
   useEffect(() => {
     setTableData(initialData);
@@ -72,6 +73,7 @@ export function PoolListTable({
       }&minTvl=1000`,
     );
     setTableData((prevTableData) => {
+      if (aditionalPoolsData.perRound.length === 0) setHasMorePools(false);
       return prevTableData.concat(aditionalPoolsData.perRound);
     });
     setIsLoadingMore(false);
@@ -135,13 +137,6 @@ export function PoolListTable({
             </Table.HeaderCell>
           </Table.HeaderRow>
           <Table.Body>
-            <Table.BodyRow>
-              <Table.BodyCell colSpan={6}>
-                <Button
-                  className="w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
-                  shade="medium"
-                  disabled={isLoadingMore}
-                  onClick={loadMorePools}
             {tableData.length > 0 ? (
               <>
                 {tableData.map((pool) => (
@@ -158,17 +153,37 @@ export function PoolListTable({
                   />
                 ))}
 
+                <Table.BodyRow>
+                  <Table.BodyCell colSpan={6}>
+                    <Button
+                      className="w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
+                      shade="medium"
+                      disabled={isLoadingMore || !hasMorePools}
+                      onClick={loadMorePools}
+                    >
+                      {isLoadingMore ? (
+                        <Spinner size="sm" />
+                      ) : hasMorePools ? (
+                        <>
+                          Load More <ChevronDownIcon />
+                        </>
+                      ) : (
+                        <>All pools have been loaded</>
+                      )}
+                    </Button>
+                  </Table.BodyCell>
+                </Table.BodyRow>
+              </>
+            ) : (
+              <Table.BodyRow>
+                <Table.BodyCell
+                  classNames="whitespace-nowrap text-sm text-white py-3 px-5 text-center text-sm font-semibold"
+                  colSpan={6}
                 >
-                  {isLoadingMore ? (
-                    <Spinner size="sm" />
-                  ) : (
-                    <>
-                      Load More <ChevronDownIcon />
-                    </>
-                  )}
-                </Button>
-              </Table.BodyCell>
-            </Table.BodyRow>
+                  No pools found
+                </Table.BodyCell>
+              </Table.BodyRow>
+            )}
           </Table.Body>
         </Table>
       </div>

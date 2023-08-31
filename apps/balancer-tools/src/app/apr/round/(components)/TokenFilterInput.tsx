@@ -4,7 +4,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import { POOLS_WITH_LIVE_GAUGES } from "#/lib/balancer/gauges";
 
-import { MultiSelectDropdown } from "./MultiSelectDropdown";
+import { MultiSelectDropdown } from "../../(components)/MultiSelectDropdown";
+
 
 const AVALIABLE_TOKENS = [
   ...new Set(

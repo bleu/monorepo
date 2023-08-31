@@ -13,7 +13,6 @@ import Link from "next/link";
 import {
   ReadonlyURLSearchParams,
   usePathname,
-  useRouter,
   useSearchParams,
 } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -39,7 +38,6 @@ export function PoolListTable({
   initialData: PoolStatsData[];
 }) {
   const pathname = usePathname();
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [tableData, setTableData] = useState(initialData);
   const [isLoadingMore, setIsLoadingMore] = useState(false);

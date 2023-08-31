@@ -10,8 +10,6 @@ export default async function PoolTableWrapper({
   roundId: string;
   filteredApiUrl: string;
 }) {
-  const initialData = await fetcher<PoolStatsResults>(
-    filteredApiUrl + `&roundId=${roundId}`,
-  );
+  const initialData = await fetcher<PoolStatsResults>(filteredApiUrl);
   return <PoolListTable roundId={roundId} initialData={initialData.perRound} />;
 }

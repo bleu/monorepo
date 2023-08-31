@@ -18,10 +18,13 @@ function getFilterDataFromParams(searchParams: SearchParams) {
     ]),
   );
 }
-export default function getFilteredApiUrl(searchParams: SearchParams) {
+export default function getFilteredRoundApiUrl(
+  searchParams: SearchParams,
+  roundId: string,
+) {
   const filteredData = getFilterDataFromParams(searchParams);
   const params = Object.entries(filteredData)
     .map(([key, value]) => (value !== undefined ? `&${key}=${value}` : ""))
     .join("");
-  return `${process.env.NEXT_PUBLIC_SITE_URL}/apr/api/?&limit=10${params}`;
+  return `${BASE_URL}/round/${roundId}/apr/api/?${params}`;
 }

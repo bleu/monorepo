@@ -16,9 +16,7 @@ export default async function TopPoolsChart({
   const shades = Object.values(greenDarkA).map((color) => color.toString());
   const colors = [...shades.slice(4, 10).reverse(), ...shades.slice(4, 10)];
 
-  const topAprApi = await fetcher<PoolStatsResults>(
-    filteredApiUrl + `&roundId=${roundId}`,
-  );
+  const topAprApi = await fetcher<PoolStatsResults>(filteredApiUrl);
 
   const chartData = {
     hovertemplate: "%{x:.2f}% APR<extra></extra>",

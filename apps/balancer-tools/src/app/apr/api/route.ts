@@ -37,7 +37,6 @@ export interface PoolStats {
 
 type PoolStatsWithoutVotingShare = Omit<PoolStats, "votingShare">;
 
-
 export interface PoolStatsData extends PoolStats {
   symbol: string;
   network: string;

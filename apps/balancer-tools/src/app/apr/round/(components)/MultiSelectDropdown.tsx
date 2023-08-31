@@ -33,13 +33,15 @@ export const MultiSelectDropdown = ({
           getLabelProps,
           getInputProps,
           getItemProps,
+          highlightedIndex,
           isOpen,
+          toggleMenu,
           inputValue,
         }) => {
           return (
             <div>
               <div className="relative mt-1">
-                <div className="flex items-center relative w-full cursor-default overflow-hidden rounded-lg bg-blue6 text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
+                <div className="flex items-center bg-blue6 relative w-full cursor-default overflow-hidden rounded-lg text-left shadow-md focus:outline-none focus-within:ring-2 focus-within:ring-blue6 focus-within:ring-opacity/75 focus-within:ring-offset-2 focus-within:ring-offset-blue3 sm:text-sm">
                   <label {...getLabelProps()} className="flex-1 mx-1">
                     <MagnifyingGlassIcon />
                   </label>
@@ -69,46 +71,47 @@ export const MultiSelectDropdown = ({
                     placeholder={labelText}
                     className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 focus:ring-0 bg-transparent text-white"
                     {...getInputProps()}
+                    className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 outline-none text-white bg-transparent"
                     type="text"
                   />
                 </div>
               </div>
 
               {isOpen && (
-                <div className="absolute z-50 my-2 flex max-h-52 flex-col gap-y-2 overflow-y-scroll rounded border-[1px] border-blue6 bg-blue3 scrollbar-thin scrollbar-track-blue2 scrollbar-thumb-slate12 w-full">
-                  <div className="p-2">
-                    {items.filter(
-                      (item) =>
-                        !selectedItems.find((selected) => selected === item) &&
-                        item.includes(String(inputValue)),
-                    ).length > 0 ? (
-                      items
-                        .filter(
-                          (item) =>
-                            !selectedItems.find(
-                              (selected) => selected === item,
-                            ) && item.includes(String(inputValue)),
-                        )
-                        .map((item, idx) => {
-                          return (
-                            <div
-                              className="flex w-full flex-col items-start cursor-pointer"
-                              {...getItemProps({ item, key: item + idx })}
-                            >
-                              <div>
-                                <span>{item}</span>
-                              </div>
+                <div className="absolute z-50 my-2 flex max-h-52 flex-col overflow-y-scroll rounded border-[1px] border-blue6 bg-blue3 scrollbar-thin scrollbar-track-blue2 scrollbar-thumb-slate12 w-full">
+                  {items.filter(
+                    (item) =>
+                      !selectedItems.find((selected) => selected === item) &&
+                      item.includes(String(inputValue)),
+                  ).length > 0 ? (
+                    items
+                      .filter(
+                        (item) =>
+                          !selectedItems.find(
+                            (selected) => selected === item,
+                          ) && item.includes(String(inputValue)),
+                      )
+                      .map((item, idx) => {
+                        return (
+                          <div
+                            className={`flex w-full flex-col items-start cursor-pointer p-2 ${
+                              idx == highlightedIndex
+                                ? "bg-blue6"
+                                : "bg-transparent"
+                            }`}
+                            {...getItemProps({ item, key: item + idx })}
+                          >
+                            <div>
+                              <span>{item}</span>
                             </div>
-                          );
-                        })
-                    ) : (
-                      <div className="flex flex-col items-center">
-                        <span className="text-center text-slate12">
-                          Sorry, nothing was found 😓
-                        </span>
-                      </div>
-                    )}
-                  </div>
+                          </div>
+                        );
+                      })
+                  ) : (
+                    <div className="flex flex-col items-center text-center text-slate12 p-4">
+                      <span>Sorry, no token was found with the symbol</span>
+                    </div>
+                  )}
                 </div>
               )}
 

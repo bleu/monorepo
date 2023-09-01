@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+import { unsafeNetworkIdFor } from "@bleu-balancer-tools/utils";
 import { NextRequest, NextResponse } from "next/server";
 
 import { Pool, POOLS_WITH_LIVE_GAUGES } from "#/lib/balancer/gauges";
@@ -9,7 +10,6 @@ import {
   PoolTypeEnum,
 } from "../(utils)/calculatePoolStats";
 import { Round } from "../(utils)/rounds";
-import { unsafeNetworkIdFor } from "@bleu-balancer-tools/utils";
 
 export const BASE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ??

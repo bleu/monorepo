@@ -84,7 +84,7 @@ export const MultiSelectDropdown = ({
             <div>
               <div className="relative mt-1">
                 <div className="flex items-center p-1 bg-blue4 max-w-sm relative w-full cursor-default overflow-hidden rounded-lg text-left shadow-md focus:outline-none focus-within:ring-2 focus-within:ring-blue6 focus-within:ring-opacity/75 focus-within:ring-offset-2 focus-within:ring-offset-blue3 sm:text-sm">
-                  <label {...getLabelProps()} className="mt-3 mr-2 self-start">
+                  <label {...getLabelProps()} className="my-3 ml-2 self-start">
                     <MagnifyingGlassIcon />
                   </label>
                   <div className="flex flex-wrap gap-2 items-center">

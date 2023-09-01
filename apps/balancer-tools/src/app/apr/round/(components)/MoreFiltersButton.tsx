@@ -2,6 +2,7 @@
 
 import { capitalize, Network } from "@bleu-balancer-tools/utils";
 import * as Accordion from "@radix-ui/react-accordion";
+import * as Popover from "@radix-ui/react-popover";
 import { MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
@@ -44,11 +45,14 @@ export function MoreFiltersButton() {
   const pathname = usePathname();
 
   const filters = [
-    { name: "network", label: "Network", options: Object.values(networksOnBalancer).map(capitalize) },
+    {
+      name: "network",
+      label: "Network",
+      options: Object.values(networksOnBalancer).map(capitalize),
+    },
     { name: "types", label: "Pool type", options: Object.values(PoolTypeEnum) },
   ];
 
-  const [isOpen, setIsOpen] = useState(false);
   const [selectedAttributes, setSelectedAttributes] =
     useState<SelectedAttributesType>({
       network: [] as string[],
@@ -120,7 +124,7 @@ export function MoreFiltersButton() {
 
   const handleOnMinMaxChange = (
     inputName: keyof SelectedAttributesType,
-    value: string,
+    value: string
   ) => {
     setSelectedAttributes((prevAttributes) => {
       const updatedAttributes = {
@@ -138,79 +142,81 @@ export function MoreFiltersButton() {
     };
   }, [selectedAttributes]);
 
-  const countValues = useCallback(() => (Object.values(selectedAttributes).reduce((count, value) => {
-    if (value !== null && (!Array.isArray(value) || value.length > 0)) {
-      return count + 1;
-    }
-    return count;
-  }, 0)), [selectedAttributes]
+  const countValues = useCallback(
+    () =>
+      Object.values(selectedAttributes).reduce((count, value) => {
+        if (value !== null && (!Array.isArray(value) || value.length > 0)) {
+          return count + 1;
+        }
+        return count;
+      }, 0),
+    [selectedAttributes]
   );
 
   return (
     <>
-      <div className="relative mt-1">
-        <div
-          className="flex h-full items-center gap-x-2 text-sm font-normal text-slate12 bg-blue4 border border-blue6 px-2 rounded-[4px] cursor-pointer"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          <MixerHorizontalIcon />
-          <span className="font-medium pr-1"> More Filters</span>
-          {!!countValues() && (<Badge size="sm" color="blue">{countValues()}</Badge>)}
-          <div></div>
-          {isOpen && (
-            <div
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-              className="absolute top-12 left-0 z-50 p-2 flex overflow-y-scroll rounded border-[1px] border-blue6 bg-blue3 scrollbar-thin scrollbar-track-blue2 scrollbar-thumb-slate12 w-60"
-            >
-              <Accordion.Root className="w-full" type="single" collapsible>
-                {filters.map(({ name, label, options }) => (
-                  <AccordionItem value={label}>
-                    <AccordionTrigger>{label}</AccordionTrigger>
-                    <AccordionContent>
-                      <div className="ml-2 flex flex-col">
-                        {options.map((option) => (
-                          <div key={option} className="flex items-center">
-                            <Checkbox
-                              id={`${name}-${option}`}
-                              checked={
-                                !!selectedAttributes[name]?.includes(option)
-                              }
-                              onChange={() =>
-                                handleAttributeChange(name, option)
-                              }
-                              label={option}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-                <AccordionItemMinMax
-                  name="Tvl"
-                  label="TVL"
-                  onChange={handleOnMinMaxChange}
-                  selectedAttributes={selectedAttributes}
-                />
-                <AccordionItemMinMax
-                  name="Apr"
-                  label="APR"
-                  onChange={handleOnMinMaxChange}
-                  selectedAttributes={selectedAttributes}
-                />
-                <AccordionItemMinMax
-                  name="VotingShare"
-                  label="Voting Share (%)"
-                  onChange={handleOnMinMaxChange}
-                  selectedAttributes={selectedAttributes}
-                />
-              </Accordion.Root>
+      <Popover.Root>
+          <Popover.Trigger asChild>
+            <div className="flex h-full items-center gap-x-2 text-sm font-normal text-slate12 bg-blue4 border border-blue6 px-2 rounded-[4px] cursor-pointer select-none">
+              <MixerHorizontalIcon />
+              <span className="font-medium pr-1"> More Filters</span>
+              {!!countValues() && (
+                <Badge size="sm" color="blue">
+                  {countValues()}
+                </Badge>
+              )}
             </div>
-          )}
-        </div>
-      </div>
+          </Popover.Trigger>
+          <Popover.Portal>
+            <Popover.Content  align="start" className="PopoverContent" sideOffset={5}>
+              <div className="p-2 flex overflow-y-scroll rounded border-[1px] border-blue6 bg-blue3 scrollbar-thin scrollbar-track-blue2 scrollbar-thumb-slate12 w-60">
+                <Accordion.Root className="w-full" type="single" collapsible>
+                  {filters.map(({ name, label, options }) => (
+                    <AccordionItem value={label}>
+                      <AccordionTrigger>{label}</AccordionTrigger>
+                      <AccordionContent>
+                        <div className="ml-2 flex flex-col">
+                          {options.map((option) => (
+                            <div key={option} className="flex items-center">
+                              <Checkbox
+                                id={`${name}-${option}`}
+                                checked={
+                                  !!selectedAttributes[name]?.includes(option)
+                                }
+                                onChange={() =>
+                                  handleAttributeChange(name, option)
+                                }
+                                label={option}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                  <AccordionItemMinMax
+                    name="Tvl"
+                    label="TVL"
+                    onChange={handleOnMinMaxChange}
+                    selectedAttributes={selectedAttributes}
+                  />
+                  <AccordionItemMinMax
+                    name="Apr"
+                    label="APR"
+                    onChange={handleOnMinMaxChange}
+                    selectedAttributes={selectedAttributes}
+                  />
+                  <AccordionItemMinMax
+                    name="VotingShare"
+                    label="Voting Share (%)"
+                    onChange={handleOnMinMaxChange}
+                    selectedAttributes={selectedAttributes}
+                  />
+                </Accordion.Root>
+              </div>
+            </Popover.Content>
+          </Popover.Portal>
+      </Popover.Root>
     </>
   );
 }

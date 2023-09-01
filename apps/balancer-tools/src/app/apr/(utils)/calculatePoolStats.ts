@@ -21,6 +21,8 @@ export enum PoolTypeEnum {
 }
 
 const WEEKS_IN_YEAR = 52;
+const SECONDS_IN_DAY = 86400;
+const SECONDS_IN_YEAR = 365 * 24 * 60 * 60;
 
 const memoryCache: { [key: string]: unknown } = {};
 
@@ -99,8 +101,15 @@ export async function calculatePoolStats({
         getFeeApr(
           poolId,
           network,
-          round.startDate.getTime() / 1000 - 60,
-          round.endDate.getTime() / 1000 + 60,
+          round.startDate.getTime() / 1000,
+          round.endDate.getTime() / 1000 + SECONDS_IN_DAY,
+          // daily swapFee = current day's snapshot - previous day's snapshot
+          // the round swapFee is the diff between the value on the last whole day of the round and the first whole day of the round
+          // which are wed and thu respectively
+          // thu swapFee = fri snapshot - thu snapshot
+          // wed swapFee = thu snapshot - wed snapshot
+          // therefore we need thu - thu, but the "to" parameter is passed to the querty as "lt"
+          // so we need to add a day to the "to" parameter to make sure we get thu-thu
         ),
     ),
   ]);
@@ -143,7 +152,7 @@ function calculateRoundAPR(
     total: vebalAPR + feeAPR,
     breakdown: {
       veBAL: vebalAPR,
-      fee: feeAPR,
+      swapFee: feeAPR,
     },
   };
 }
@@ -159,18 +168,17 @@ const getFeeApr = async (
     from,
     to,
   });
-  const previousRoundEndDate = from + 60;
-  const RoundEndDate = to - 60;
 
-  const previousRoundData = res.poolSnapshots.find(
-    (snapshot) => snapshot.timestamp === previousRoundEndDate,
-  );
+  const startRoundData = res.poolSnapshots[res.poolSnapshots.length - 1];
 
-  const RoundData = res.poolSnapshots.find(
-    (snapshot) => snapshot.timestamp === RoundEndDate,
-  );
+  const endRoundData = res.poolSnapshots[0];
 
-  const feeDiff = RoundData?.swapFees - previousRoundData?.swapFees;
-  const feeApr = feeDiff / RoundData?.pool.totalLiquidity;
-  return isNaN(feeApr) ? 0 : feeApr / 100;
+  const feeDiff = endRoundData?.swapFees - startRoundData?.swapFees;
+
+  const feeApr = 10000 * (feeDiff / endRoundData?.pool.totalLiquidity);
+  const annualizedFeeApr =
+    feeApr *
+    (SECONDS_IN_YEAR / (endRoundData.timestamp - startRoundData.timestamp));
+
+  return isNaN(annualizedFeeApr) ? 0 : annualizedFeeApr / 100;
 };

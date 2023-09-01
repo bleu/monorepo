@@ -302,8 +302,8 @@ function filterPoolStats(
   if (minVotingShare || maxVotingShare) {
     filteredData = filteredData.filter(
       (pool) =>
-        pool.votingShare >= minVotingShare &&
-        pool.votingShare <= maxVotingShare,
+        pool.votingShare * 100 >= minVotingShare &&
+        pool.votingShare * 100 <= maxVotingShare,
     );
   }
   if (tokenSymbol) {

@@ -2,8 +2,8 @@
 
 import { capitalize, Network } from "@bleu-balancer-tools/utils";
 import * as Accordion from "@radix-ui/react-accordion";
-import * as Popover from "@radix-ui/react-popover";
 import { MixerHorizontalIcon } from "@radix-ui/react-icons";
+import * as Popover from "@radix-ui/react-popover";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 
@@ -12,11 +12,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "#/components/Accordion";
+import { Badge } from "#/components/Badge";
 import { Checkbox } from "#/components/Checkbox";
 import { BaseInput } from "#/components/Input";
 
 import { PoolTypeEnum } from "../../(utils)/calculatePoolStats";
-import { Badge } from "#/components/Badge";
 import { INITIAL_MIN_TVL } from "../../(utils)/getFilteredApiUrl";
 
 const networksOnBalancer = {
@@ -85,10 +85,7 @@ export function MoreFiltersButton() {
 
     arrayAttributes.forEach((value) => {
       if (searchParams.has(value)) {
-        setSelectedAttributes((prevAttributes) => ({
-          ...prevAttributes,
-          [value]: searchParams.get(value)?.split(",") || [],
-        }));
+        updatedAttributes[value] = searchParams.get(value)?.split(",") || [];
       }
     });
     setSelectedAttributes(updatedAttributes);
@@ -112,13 +109,21 @@ export function MoreFiltersButton() {
 
   const handleAttributeChange = (type: string, value: string) => {
     setSelectedAttributes((prevAttributes) => {
-      const updatedAttributes = {
+      const currentAttributes = prevAttributes[type];
+      let updatedAttributes;
+
+      if (Array.isArray(currentAttributes)) {
+        updatedAttributes = currentAttributes.includes(value)
+          ? currentAttributes.filter((v) => v !== value)
+          : [...currentAttributes, value];
+      } else {
+        updatedAttributes = [value];
+      }
+
+      return {
         ...prevAttributes,
-        [type]: prevAttributes[type]?.includes(value)
-          ? prevAttributes[type]?.filter((v) => v !== value)
-          : [...prevAttributes[type], value],
+        [type]: updatedAttributes,
       };
-      return updatedAttributes;
     });
   };
 

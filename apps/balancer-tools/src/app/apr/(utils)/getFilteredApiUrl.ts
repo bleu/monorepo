@@ -4,6 +4,13 @@ import { SearchParams } from "../round/[roundId]/page";
 export const INITIAL_MIN_TVL = 1000;
 export const INITIAL_LIMIT = 10;
 
+interface ExpectedSearchParams extends SearchParams {
+  minTVL?: string | undefined;
+  limit?: string | undefined;
+  sort?: string | undefined;
+  order?: string | undefined;
+}
+
 const convert = (key: string, value: string) => {
   if (["sort", "order"].includes(key)) return value || undefined;
   if (["minTVL", "maxTVL", "minAPR", "maxAPR", "limit"].includes(key))
@@ -14,14 +21,13 @@ const convert = (key: string, value: string) => {
 };
 
 function getFilterDataFromParams(searchParams: SearchParams) {
-  // Use destructuring and provide default values for missing properties
   const {
     minTVL = INITIAL_MIN_TVL,
     limit = INITIAL_LIMIT,
     sort = "apr",
     order = "desc",
     ...rest
-  } = searchParams;
+  } = searchParams as ExpectedSearchParams;
 
   // Convert values for each property if needed
   const convertedParams = Object.fromEntries(

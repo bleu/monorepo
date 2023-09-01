@@ -307,9 +307,13 @@ function filterPoolStats(
     );
   }
   if (tokenSymbol) {
-    const decodedSymbols = tokenSymbol.split(",").map(decodeURIComponent);
+    const decodedSymbols = tokenSymbol
+      .split(",")
+      .map((type) => decodeURIComponent(type).toLowerCase());
     filteredData = filteredData.filter((pool) =>
-      pool.tokens.some((token) => decodedSymbols.includes(token.symbol)),
+      pool.tokens.some((token) =>
+        decodedSymbols.includes(token.symbol.toLowerCase()),
+      ),
     );
   }
   if (poolTypes) {

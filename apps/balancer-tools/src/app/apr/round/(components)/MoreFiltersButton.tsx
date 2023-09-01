@@ -1,9 +1,10 @@
 "use client";
 
+import { capitalize, Network } from "@bleu-balancer-tools/utils";
 import * as Accordion from "@radix-ui/react-accordion";
 import { MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 
 import {
   AccordionContent,
@@ -12,24 +13,29 @@ import {
 } from "#/components/Accordion";
 import { Checkbox } from "#/components/Checkbox";
 import { BaseInput } from "#/components/Input";
-import { POOLS_WITH_LIVE_GAUGES } from "#/lib/balancer/gauges";
 
 import { PoolTypeEnum } from "../../(utils)/calculatePoolStats";
+import { Badge } from "#/components/Badge";
+import { INITIAL_MIN_TVL } from "../../(utils)/getFilteredApiUrl";
 
-const AVALIABLE_NETWORKS = [
-  ...new Set(POOLS_WITH_LIVE_GAUGES.map((pool) => pool.chain)),
-];
+const networksOnBalancer = {
+  "1": Network.Ethereum,
+  "137": Network.Polygon,
+  "42161": Network.Arbitrum,
+  "100": Network.Gnosis,
+  "1101": Network.PolygonZKEVM,
+};
 
 interface SelectedAttributesType {
   [key: string]: string | string[] | null;
   network: string[];
   types: string[];
-  minTvl: null;
-  maxTvl: null;
-  minApr: null;
-  maxApr: null;
-  minVotingShare: null;
-  maxVotingShare: null;
+  minTvl: string | null;
+  maxTvl: string | null;
+  minApr: string | null;
+  maxApr: string | null;
+  minVotingShare: string | null;
+  maxVotingShare: string | null;
 }
 
 export function MoreFiltersButton() {
@@ -38,7 +44,7 @@ export function MoreFiltersButton() {
   const pathname = usePathname();
 
   const filters = [
-    { name: "network", label: "Network", options: AVALIABLE_NETWORKS },
+    { name: "network", label: "Network", options: Object.values(networksOnBalancer).map(capitalize) },
     { name: "types", label: "Pool type", options: Object.values(PoolTypeEnum) },
   ];
 
@@ -47,7 +53,7 @@ export function MoreFiltersButton() {
     useState<SelectedAttributesType>({
       network: [] as string[],
       types: [] as string[],
-      minTvl: null,
+      minTvl: String(INITIAL_MIN_TVL),
       maxTvl: null,
       minApr: null,
       maxApr: null,
@@ -132,6 +138,14 @@ export function MoreFiltersButton() {
     };
   }, [selectedAttributes]);
 
+  const countValues = useCallback(() => (Object.values(selectedAttributes).reduce((count, value) => {
+    if (value !== null && (!Array.isArray(value) || value.length > 0)) {
+      return count + 1;
+    }
+    return count;
+  }, 0)), [selectedAttributes]
+  );
+
   return (
     <>
       <div className="relative mt-1">
@@ -141,6 +155,7 @@ export function MoreFiltersButton() {
         >
           <MixerHorizontalIcon />
           <span className="font-medium pr-1"> More Filters</span>
+          {!!countValues() && (<Badge size="sm" color="blue">{countValues()}</Badge>)}
           <div></div>
           {isOpen && (
             <div

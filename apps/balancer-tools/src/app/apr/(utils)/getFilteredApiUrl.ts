@@ -12,24 +12,34 @@ const convert = (key: string, value: string) => {
     return value ? value.split(",") : undefined;
   return value;
 };
+
 function getFilterDataFromParams(searchParams: SearchParams) {
-  const result = Object.fromEntries(
-    Object.entries(searchParams).map(([key, value]) => [
-      key,
-      convert(key, value),
-    ]),
+  // Use destructuring and provide default values for missing properties
+  const {
+    minTVL = INITIAL_MIN_TVL,
+    limit = INITIAL_LIMIT,
+    sort = "apr",
+    order = "desc",
+    ...rest
+  } = searchParams;
+
+  // Convert values for each property if needed
+  const convertedParams = Object.fromEntries(
+    Object.entries(rest).map(([key, value]) => [key, convert(key, value)]),
   );
 
-  // Include minTVL and limit if they are not already present in searchParams
-  if (!("minTVL" in result)) {
-    result.minTVL = INITIAL_MIN_TVL;
-  }
-  if (!("limit" in result)) {
-    result.limit = INITIAL_LIMIT;
-  }
+  // Merge the converted params with default values
+  const result = {
+    minTVL,
+    limit,
+    sort,
+    order,
+    ...convertedParams,
+  };
 
   return result;
 }
+
 export default function getFilteredRoundApiUrl(
   searchParams: SearchParams,
   roundId: string,

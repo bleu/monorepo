@@ -9,6 +9,7 @@ import {
   PoolTypeEnum,
 } from "../(utils)/calculatePoolStats";
 import { Round } from "../(utils)/rounds";
+import { unsafeNetworkIdFor } from "@bleu-balancer-tools/utils";
 
 export const BASE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ??
@@ -286,7 +287,12 @@ function filterPoolStats(
   const maxTvl = parseFloat(searchParams.get("maxTvl") ?? "Infinity");
 
   if (network) {
-    filteredData = filteredData.filter((pool) => pool.network === network);
+    const decodedNetworks = network
+      .split(",")
+      .map((network) => unsafeNetworkIdFor(network.toLowerCase()));
+    filteredData = filteredData.filter((pool) =>
+      decodedNetworks.includes(pool.network),
+    );
   }
   if (minApr || maxApr) {
     filteredData = filteredData.filter(

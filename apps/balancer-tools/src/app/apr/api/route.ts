@@ -313,9 +313,15 @@ function filterPoolStats(
     );
   }
   if (poolTypes) {
-    const decodedSymbols = poolTypes.split(",").map(decodeURIComponent);
+    const getEnumKey = (value: string): string | undefined =>
+      Object.keys(PoolTypeEnum).find(
+        (key) =>
+          (PoolTypeEnum as Record<string, string>)[key].toLowerCase() ===
+          value.toLowerCase(),
+      );
+    const decodedTypes = poolTypes.split(",").map(getEnumKey);
     filteredData = filteredData.filter((pool) =>
-      decodedSymbols.includes(pool.type),
+      decodedTypes.includes(pool.type),
     );
   }
   if (minTvl || maxTvl) {

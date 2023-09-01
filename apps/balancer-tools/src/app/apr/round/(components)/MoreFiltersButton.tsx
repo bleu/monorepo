@@ -124,7 +124,7 @@ export function MoreFiltersButton() {
 
   const handleOnMinMaxChange = (
     inputName: keyof SelectedAttributesType,
-    value: string
+    value: string,
   ) => {
     setSelectedAttributes((prevAttributes) => {
       const updatedAttributes = {
@@ -150,72 +150,76 @@ export function MoreFiltersButton() {
         }
         return count;
       }, 0),
-    [selectedAttributes]
+    [selectedAttributes],
   );
 
   return (
     <>
       <Popover.Root>
-          <Popover.Trigger asChild>
-            <div className="flex h-full items-center gap-x-2 text-sm font-normal text-slate12 bg-blue4 border border-blue6 px-2 rounded-[4px] cursor-pointer select-none">
-              <MixerHorizontalIcon />
-              <span className="font-medium pr-1"> More Filters</span>
-              {!!countValues() && (
-                <Badge size="sm" color="blue">
-                  {countValues()}
-                </Badge>
-              )}
+        <Popover.Trigger asChild>
+          <div className="flex h-full items-center gap-x-2 text-sm font-normal text-slate12 bg-blue4 border border-blue6 px-2 rounded-[4px] cursor-pointer select-none">
+            <MixerHorizontalIcon />
+            <span className="font-medium pr-1"> More Filters</span>
+            {!!countValues() && (
+              <Badge size="sm" color="blue">
+                {countValues()}
+              </Badge>
+            )}
+          </div>
+        </Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content
+            align="start"
+            className="PopoverContent"
+            sideOffset={5}
+          >
+            <div className="p-2 flex overflow-y-scroll rounded border-[1px] border-blue6 bg-blue3 scrollbar-thin scrollbar-track-blue2 scrollbar-thumb-slate12 w-60">
+              <Accordion.Root className="w-full" type="single" collapsible>
+                {filters.map(({ name, label, options }) => (
+                  <AccordionItem value={label}>
+                    <AccordionTrigger>{label}</AccordionTrigger>
+                    <AccordionContent>
+                      <div className="ml-2 flex flex-col">
+                        {options.map((option) => (
+                          <div key={option} className="flex items-center">
+                            <Checkbox
+                              id={`${name}-${option}`}
+                              checked={
+                                !!selectedAttributes[name]?.includes(option)
+                              }
+                              onChange={() =>
+                                handleAttributeChange(name, option)
+                              }
+                              label={option}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+                <AccordionItemMinMax
+                  name="Tvl"
+                  label="TVL"
+                  onChange={handleOnMinMaxChange}
+                  selectedAttributes={selectedAttributes}
+                />
+                <AccordionItemMinMax
+                  name="Apr"
+                  label="APR"
+                  onChange={handleOnMinMaxChange}
+                  selectedAttributes={selectedAttributes}
+                />
+                <AccordionItemMinMax
+                  name="VotingShare"
+                  label="Voting Share (%)"
+                  onChange={handleOnMinMaxChange}
+                  selectedAttributes={selectedAttributes}
+                />
+              </Accordion.Root>
             </div>
-          </Popover.Trigger>
-          <Popover.Portal>
-            <Popover.Content  align="start" className="PopoverContent" sideOffset={5}>
-              <div className="p-2 flex overflow-y-scroll rounded border-[1px] border-blue6 bg-blue3 scrollbar-thin scrollbar-track-blue2 scrollbar-thumb-slate12 w-60">
-                <Accordion.Root className="w-full" type="single" collapsible>
-                  {filters.map(({ name, label, options }) => (
-                    <AccordionItem value={label}>
-                      <AccordionTrigger>{label}</AccordionTrigger>
-                      <AccordionContent>
-                        <div className="ml-2 flex flex-col">
-                          {options.map((option) => (
-                            <div key={option} className="flex items-center">
-                              <Checkbox
-                                id={`${name}-${option}`}
-                                checked={
-                                  !!selectedAttributes[name]?.includes(option)
-                                }
-                                onChange={() =>
-                                  handleAttributeChange(name, option)
-                                }
-                                label={option}
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                  <AccordionItemMinMax
-                    name="Tvl"
-                    label="TVL"
-                    onChange={handleOnMinMaxChange}
-                    selectedAttributes={selectedAttributes}
-                  />
-                  <AccordionItemMinMax
-                    name="Apr"
-                    label="APR"
-                    onChange={handleOnMinMaxChange}
-                    selectedAttributes={selectedAttributes}
-                  />
-                  <AccordionItemMinMax
-                    name="VotingShare"
-                    label="Voting Share (%)"
-                    onChange={handleOnMinMaxChange}
-                    selectedAttributes={selectedAttributes}
-                  />
-                </Accordion.Root>
-              </div>
-            </Popover.Content>
-          </Popover.Portal>
+          </Popover.Content>
+        </Popover.Portal>
       </Popover.Root>
     </>
   );

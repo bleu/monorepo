@@ -56,7 +56,7 @@ export default async function HistoricalAPRChart({
 
   const trimmedFeeAprData = generateAndTrimAprCords(
     results.perRound,
-    (result) => result.apr.breakdown.fee,
+    (result) => result.apr.breakdown.swapFee,
     0,
   );
 
@@ -76,7 +76,7 @@ export default async function HistoricalAPRChart({
 
   const feeAprPerRoundData = {
     name: "Fee APR %",
-    hovertemplate: "%{x}<br />%{y:.8f}% APR<extra></extra>",
+    hovertemplate: HOVERTEMPLATE,
     x: trimmedFeeAprData.x,
     y: trimmedFeeAprData.y,
     line: { shape: "spline", color: greenDarkA.greenA9 } as const,

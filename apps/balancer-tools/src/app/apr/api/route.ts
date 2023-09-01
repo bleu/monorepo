@@ -4,7 +4,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { Pool, POOLS_WITH_LIVE_GAUGES } from "#/lib/balancer/gauges";
 import { fetcher } from "#/utils/fetcher";
 
-import { calculatePoolStats } from "../(utils)/calculatePoolStats";
+import {
+  calculatePoolStats,
+  PoolTypeEnum,
+} from "../(utils)/calculatePoolStats";
 import { Round } from "../(utils)/rounds";
 
 export const BASE_URL =
@@ -40,6 +43,8 @@ export interface PoolStatsData extends PoolStats {
   network: string;
   poolId: string;
   roundId: number;
+  tokens: PoolTokens[];
+  type: keyof typeof PoolTypeEnum;
 }
 
 export interface PoolStatsResults {
@@ -278,7 +283,8 @@ function filterPoolStats(
   const maxVotingShare = parseFloat(
     searchParams.get("maxVotingShare") ?? "Infinity",
   );
-  const tokenSymbol = searchParams.get("symbol");
+  const tokenSymbol = searchParams.get("tokens");
+  const poolTypes = searchParams.get("types");
   const minTvl = parseFloat(searchParams.get("minTvl") ?? "0");
   const maxTvl = parseFloat(searchParams.get("maxTvl") ?? "Infinity");
 
@@ -298,7 +304,16 @@ function filterPoolStats(
     );
   }
   if (tokenSymbol) {
-    filteredData = filteredData.filter((pool) => pool.symbol === tokenSymbol);
+    const decodedSymbols = tokenSymbol.split(",").map(decodeURIComponent);
+    filteredData = filteredData.filter((pool) =>
+      pool.tokens.some((token) => decodedSymbols.includes(token.symbol)),
+    );
+  }
+  if (poolTypes) {
+    const decodedSymbols = poolTypes.split(",").map(decodeURIComponent);
+    filteredData = filteredData.filter((pool) =>
+      decodedSymbols.includes(pool.type),
+    );
   }
   if (minTvl || maxTvl) {
     filteredData = filteredData.filter(

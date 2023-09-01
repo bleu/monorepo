@@ -5894,7 +5894,7 @@ export type PoolSnapshotInRangeQueryVariables = Exact<{
 }>;
 
 
-export type PoolSnapshotInRangeQuery = { __typename?: 'Query', poolSnapshots: Array<{ __typename?: 'PoolSnapshot', amounts: Array<any>, totalShares: any, swapVolume: any, protocolFee?: any | null, swapFees: any, liquidity: any, swapsCount: any, holdersCount: any, timestamp: number, pool: { __typename?: 'Pool', id: string, address: any, name?: string | null, poolType?: string | null, symbol?: string | null, totalLiquidity: any, tokens?: Array<{ __typename?: 'PoolToken', symbol: string }> | null } }> };
+export type PoolSnapshotInRangeQuery = { __typename?: 'Query', poolSnapshots: Array<{ __typename?: 'PoolSnapshot', amounts: Array<any>, totalShares: any, swapVolume: any, protocolFee?: any | null, swapFees: any, liquidity: any, swapsCount: any, holdersCount: any, timestamp: number, pool: { __typename?: 'Pool', id: string, address: any, name?: string | null, poolType?: string | null, totalLiquidity: any, symbol?: string | null, tokens?: Array<{ __typename?: 'PoolToken', symbol: string }> | null } }> };
 
 export type PoolQueryVariables = Exact<{
   poolId: Scalars['ID'];
@@ -6001,8 +6001,8 @@ export const PoolSnapshotInRangeDocument = gql`
       address
       name
       poolType
-      symbol
       totalLiquidity
+      symbol
       tokens {
         symbol
       }

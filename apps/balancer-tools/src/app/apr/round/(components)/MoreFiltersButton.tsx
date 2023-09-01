@@ -21,13 +21,13 @@ const AVALIABLE_NETWORKS = [
 ];
 
 interface SelectedAttributesType {
-  [key: string]: string[] | null;
+  [key: string]: string | string[] | null;
   network: string[];
-  type: string[];
-  minTVL: null;
-  maxTVL: null;
-  minAPR: null;
-  maxAPR: null;
+  types: string[];
+  minTvl: null;
+  maxTvl: null;
+  minApr: null;
+  maxApr: null;
   minVotingShare: null;
   maxVotingShare: null;
 }
@@ -39,55 +39,49 @@ export function MoreFiltersButton() {
 
   const filters = [
     { name: "network", label: "Network", options: AVALIABLE_NETWORKS },
-    { name: "type", label: "Pool type", options: Object.values(PoolTypeEnum) },
+    { name: "types", label: "Pool type", options: Object.values(PoolTypeEnum) },
   ];
 
   const [isOpen, setIsOpen] = useState(false);
   const [selectedAttributes, setSelectedAttributes] =
     useState<SelectedAttributesType>({
       network: [] as string[],
-      type: [] as string[],
-      minTVL: null,
-      maxTVL: null,
-      minAPR: null,
-      maxAPR: null,
+      types: [] as string[],
+      minTvl: null,
+      maxTvl: null,
+      minApr: null,
+      maxApr: null,
       minVotingShare: null,
       maxVotingShare: null,
     });
 
   useEffect(() => {
     const valuesAttributes = [
-      "minTVL",
-      "maxTVL",
-      "minAPR",
-      "maxAPR",
+      "minTvl",
+      "maxTvl",
+      "minApr",
+      "maxApr",
       "minVotingShare",
       "maxVotingShare",
     ];
-    const arrayAttributes = ["network", "type"];
-    valuesAttributes.map((value) => {
-      if (searchParams.has(value)) {
-        setSelectedAttributes((prevAttributes) => {
-          const updatedAttributes = {
-            ...prevAttributes,
-            [value]: searchParams.get(value),
-          };
-          return updatedAttributes;
-        });
+    const arrayAttributes = ["network", "types"];
+    const updatedAttributes = { ...selectedAttributes };
+    valuesAttributes.forEach((value) => {
+      const paramValue = searchParams.get(value);
+      if (paramValue !== null) {
+        updatedAttributes[value] = paramValue;
       }
     });
 
-    arrayAttributes.map((value) => {
+    arrayAttributes.forEach((value) => {
       if (searchParams.has(value)) {
-        setSelectedAttributes((prevAttributes) => {
-          const updatedAttributes = {
-            ...prevAttributes,
-            [value]: searchParams.get(value)?.split(","),
-          };
-          return updatedAttributes;
-        });
+        setSelectedAttributes((prevAttributes) => ({
+          ...prevAttributes,
+          [value]: searchParams.get(value)?.split(",") || [],
+        }));
       }
     });
+    setSelectedAttributes(updatedAttributes);
   }, []);
 
   const pushQueryparamsURL = () => {
@@ -153,7 +147,7 @@ export function MoreFiltersButton() {
               onClick={(e) => {
                 e.stopPropagation();
               }}
-              className="absolute top-10 left-0 z-50 my-2 flex overflow-y-scroll rounded border-[1px] border-blue6 bg-blue3 scrollbar-thin scrollbar-track-blue2 scrollbar-thumb-slate12 w-60"
+              className="absolute top-12 left-0 z-50 p-2 flex overflow-y-scroll rounded border-[1px] border-blue6 bg-blue3 scrollbar-thin scrollbar-track-blue2 scrollbar-thumb-slate12 w-60"
             >
               <Accordion.Root className="w-full" type="single" collapsible>
                 {filters.map(({ name, label, options }) => (
@@ -180,20 +174,20 @@ export function MoreFiltersButton() {
                   </AccordionItem>
                 ))}
                 <AccordionItemMinMax
-                  name="TVL"
+                  name="Tvl"
                   label="TVL"
                   onChange={handleOnMinMaxChange}
                   selectedAttributes={selectedAttributes}
                 />
                 <AccordionItemMinMax
-                  name="APR"
+                  name="Apr"
                   label="APR"
                   onChange={handleOnMinMaxChange}
                   selectedAttributes={selectedAttributes}
                 />
                 <AccordionItemMinMax
                   name="VotingShare"
-                  label="Voting Share"
+                  label="Voting Share (%)"
                   onChange={handleOnMinMaxChange}
                   selectedAttributes={selectedAttributes}
                 />
@@ -221,7 +215,7 @@ export default function AccordionItemMinMax({
     <AccordionItem value={String(name)}>
       <AccordionTrigger>{label}</AccordionTrigger>
       <AccordionContent>
-        <div className="ml-2 flex flex-col">
+        <div className="py-2 flex flex-col">
           <div className="flex items-center gap-1">
             <BaseInput
               className="flex-1"

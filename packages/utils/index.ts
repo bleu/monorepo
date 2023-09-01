@@ -130,10 +130,12 @@ export function networkIdFor(name?: string) {
     return "1";
   }
 
-  return (
-    Object.keys(networkIdEnumMap).find(
-      (key) => networkIdEnumMap[key as keyof typeof networkIdEnumMap] === name,
-    ) || "1"
+  return unsafeNetworkIdFor(name) || "1";
+}
+
+export function unsafeNetworkIdFor(name: string) {
+  return Object.keys(networkIdEnumMap).find(
+    (key) => networkIdEnumMap[key as keyof typeof networkIdEnumMap] === name,
   );
 }
 

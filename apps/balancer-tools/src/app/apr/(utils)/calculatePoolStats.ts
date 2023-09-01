@@ -22,7 +22,7 @@ export enum PoolTypeEnum {
 
 const WEEKS_IN_YEAR = 52;
 const SECONDS_IN_DAY = 86400;
-const SECONDS_IN_YEAR = 365 * 24 * 60 * 60;
+const SECONDS_IN_YEAR = 365 * SECONDS_IN_DAY;
 
 const memoryCache: { [key: string]: unknown } = {};
 

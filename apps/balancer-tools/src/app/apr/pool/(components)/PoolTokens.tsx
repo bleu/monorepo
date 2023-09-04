@@ -1,7 +1,5 @@
 import { fetcher } from "#/utils/fetcher";
 
-import { getTokenPriceByRound } from "../../(utils)/getBALPriceByRound";
-import { Round } from "../../(utils)/rounds";
 import { BASE_URL, PoolStatsResults } from "../../api/route";
 import PoolTokensTable from "./PoolTokensTable";
 

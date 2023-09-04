@@ -118,6 +118,21 @@ export const networkIdEnumMap = {
   "1101": Network.PolygonZKEVM,
 };
 
+const filteredKeys = [
+  String(NetworkChainId.ETHEREUM),
+  String(NetworkChainId.OPTIMISM),
+  String(NetworkChainId.GNOSIS),
+  String(NetworkChainId.POLYGON),
+  String(NetworkChainId.POLYGONZKEVM),
+  String(NetworkChainId.ARBITRUM),
+];
+
+export const networksOnBalancer = Object.fromEntries(
+  Object.entries(networkIdEnumMap).filter(([key]) =>
+    filteredKeys.includes(key),
+  ),
+);
+
 export function networkFor(key?: string | number) {
   if (!key) {
     return Network.Ethereum;
@@ -130,10 +145,12 @@ export function networkIdFor(name?: string) {
     return "1";
   }
 
-  return (
-    Object.keys(networkIdEnumMap).find(
-      (key) => networkIdEnumMap[key as keyof typeof networkIdEnumMap] === name,
-    ) || "1"
+  return unsafeNetworkIdFor(name) || "1";
+}
+
+export function unsafeNetworkIdFor(name: string) {
+  return Object.keys(networkIdEnumMap).find(
+    (key) => networkIdEnumMap[key as keyof typeof networkIdEnumMap] === name,
   );
 }
 

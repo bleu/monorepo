@@ -27,9 +27,7 @@ export default function TopPoolsChart({
     },
     orientation: "h" as const,
     type: "bar" as PlotType,
-    x: ApiResult.perRound.map((result) =>
-      result.apr.total.toFixed(2),
-    ),
+    x: ApiResult.perRound.map((result) => result.apr.total.toFixed(2)),
     y: ApiResult.perRound
       .filter((pool) => pool.apr.total > 0)
       .map(

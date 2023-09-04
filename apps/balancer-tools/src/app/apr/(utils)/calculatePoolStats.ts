@@ -6,7 +6,7 @@ import { Pool } from "#/lib/balancer/gauges";
 import { pools } from "#/lib/gql/server";
 
 import { PoolStatsData, PoolTokens } from "../api/route";
-import { getBALPriceByRound } from "./getBALPriceByRound";
+import { getBALPriceByRound, getTokenPriceByRound } from "./getBALPriceByRound";
 import { getPoolRelativeWeight } from "./getRelativeWeight";
 import { Round } from "./rounds";
 
@@ -70,6 +70,37 @@ const fetchPoolTVLFromSnapshotAverageFromRange = async (
   ];
 };
 
+async function calculateTokensStats(
+  roundId: string,
+  poolTokenData: PoolTokens[],
+  poolNetwork: string,
+  tokenBalance: { symbol: string; balance: string }[],
+) {
+  const totalBalance = poolTokenData.reduce((acc, token, idx) => {
+    const balance = parseFloat(tokenBalance?.[idx]?.balance);
+    if (!isNaN(balance)) {
+      return acc + balance;
+    }
+    return acc;
+  }, 0);
+
+  const tokenPromises = poolTokenData.map(async (token, idx) => {
+    const tokenPrice = await getTokenPriceByRound(
+      Round.getRoundByNumber(roundId),
+      token.address,
+      parseInt(poolNetwork),
+    );
+    token.price = tokenPrice;
+    token.balance = tokenPrice * parseFloat(tokenBalance?.[idx]?.balance);
+    token.percentageValue =
+      ((tokenPrice * parseFloat(tokenBalance?.[idx]?.balance)) / totalBalance) *
+      100;
+    return token;
+  });
+
+  return Promise.all(tokenPromises);
+}
+
 export async function calculatePoolStats({
   roundId,
   poolId,
@@ -116,13 +147,12 @@ export async function calculatePoolStats({
     ),
   ]);
 
-  const tokens = pool.tokens.map((token, idx) => ({
-    logoSrc: token.logoSrc,
-    address: token.address,
-    symbol: token.symbol,
-    weight: token.weight,
-    balance: tokenBalance?.[idx]?.balance,
-  }));
+  const tokens = await calculateTokensStats(
+    roundId,
+    pool.tokens,
+    network,
+    tokenBalance,
+  );
 
   const apr = calculateRoundAPR(round, votingShare, tvl, balPriceUSD, feeAPR);
 

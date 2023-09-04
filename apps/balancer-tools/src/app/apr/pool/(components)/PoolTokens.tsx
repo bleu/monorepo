@@ -17,24 +17,5 @@ export default async function PoolTokens({
       roundId ? `&roundId=${roundId}` : ""
     }`,
   );
-  if (roundId) {
-    const totalBalance = poolData.perRound[0].tokens.reduce((acc, token) => {
-      const balance = parseFloat(token.balance);
-      if (!isNaN(balance)) {
-        return acc + balance;
-      }
-      return acc;
-    }, 0);
-    poolData.perRound[0].tokens.map(async (token) => {
-      const tokenPrice = await getTokenPriceByRound(
-        Round.getRoundByNumber(roundId),
-        token.address,
-        parseInt(poolData.perRound[0].network),
-      );
-      token.price = tokenPrice;
-      token.percentageValue =
-        ((tokenPrice * parseFloat(token.balance)) / totalBalance) * 100;
-    });
-  }
-  return <PoolTokensTable poolTokensStats={poolData.perRound[0].tokens} />;
+  return <PoolTokensTable poolTokensStats={poolData.perRound[0].tokens} poolNetwork={poolData.perRound[0].network} />;
 }

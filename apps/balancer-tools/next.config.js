@@ -23,6 +23,12 @@ const moduleExports = {
     hideSourceMaps: true,
   },
   images: {
+    domains: [
+      "assets.coingecko.com",
+      "raw.githubusercontent.com",
+      "assets-cdn.trustwallet.com",
+      "beethoven-assets.s3.eu-central-1.amazonaws.com",
+    ],
     remotePatterns: [
       {
         protocol: "https",

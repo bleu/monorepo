@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+import { unsafeNetworkIdFor } from "@bleu-balancer-tools/utils";
 import { NextRequest, NextResponse } from "next/server";
 
 import { Pool, POOLS_WITH_LIVE_GAUGES } from "#/lib/balancer/gauges";
@@ -17,10 +18,13 @@ export const BASE_URL =
 type Order = "asc" | "desc";
 
 export interface PoolTokens {
+  percentageValue?: number;
+  price?: number;
   address: string;
-  logoURI: string;
+  logoSrc: string;
   symbol: string;
   weight: string | null;
+  balance?: number;
 }
 
 export interface PoolStats {
@@ -293,7 +297,12 @@ function filterPoolStats(
   const maxTvl = parseFloat(searchParams.get("maxTvl") ?? "Infinity");
 
   if (network) {
-    filteredData = filteredData.filter((pool) => pool.network === network);
+    const decodedNetworks = network
+      .split(",")
+      .map((network) => unsafeNetworkIdFor(network.toLowerCase()));
+    filteredData = filteredData.filter((pool) =>
+      decodedNetworks.includes(pool.network),
+    );
   }
   if (minApr || maxApr) {
     filteredData = filteredData.filter(
@@ -303,20 +312,30 @@ function filterPoolStats(
   if (minVotingShare || maxVotingShare) {
     filteredData = filteredData.filter(
       (pool) =>
-        pool.votingShare >= minVotingShare &&
-        pool.votingShare <= maxVotingShare,
+        pool.votingShare * 100 >= minVotingShare &&
+        pool.votingShare * 100 <= maxVotingShare,
     );
   }
   if (tokenSymbol) {
-    const decodedSymbols = tokenSymbol.split(",").map(decodeURIComponent);
+    const decodedSymbols = tokenSymbol
+      .split(",")
+      .map((type) => decodeURIComponent(type).toLowerCase());
     filteredData = filteredData.filter((pool) =>
-      pool.tokens.some((token) => decodedSymbols.includes(token.symbol)),
+      pool.tokens.some((token) =>
+        decodedSymbols.includes(token.symbol.toLowerCase()),
+      ),
     );
   }
   if (poolTypes) {
-    const decodedSymbols = poolTypes.split(",").map(decodeURIComponent);
+    const getEnumKey = (value: string): string | undefined =>
+      Object.keys(PoolTypeEnum).find(
+        (key) =>
+          (PoolTypeEnum as Record<string, string>)[key].toLowerCase() ===
+          value.toLowerCase(),
+      );
+    const decodedTypes = poolTypes.split(",").map(getEnumKey);
     filteredData = filteredData.filter((pool) =>
-      decodedSymbols.includes(pool.type),
+      decodedTypes.includes(pool.type),
     );
   }
   if (minTvl || maxTvl) {

@@ -5,6 +5,8 @@ import PoolOverviewCards from "#/app/apr/pool/(components)/PoolOverviewCards";
 import Breadcrumb from "#/app/apr/round/(components)/Breadcrumb";
 import { Spinner } from "#/components/Spinner";
 
+import PoolTokens from "../../(components)/PoolTokens";
+
 export default async function Page({
   params: { poolId },
 }: {
@@ -18,6 +20,9 @@ export default async function Page({
       </Suspense>
       <Suspense fallback={<Spinner />}>
         <HistoricalAPRChart poolId={poolId} />
+      </Suspense>
+      <Suspense fallback={<Spinner />}>
+        <PoolTokens poolId={poolId} />
       </Suspense>
     </div>
   );

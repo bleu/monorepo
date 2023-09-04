@@ -4,6 +4,13 @@ import { SearchParams } from "../round/[roundId]/page";
 export const INITIAL_MIN_TVL = 1000;
 export const INITIAL_LIMIT = 10;
 
+interface ExpectedSearchParams extends SearchParams {
+  minTVL?: string;
+  limit?: string;
+  sort?: string;
+  order?: string;
+}
+
 const convert = (key: string, value: string) => {
   if (["sort", "order"].includes(key)) return value || undefined;
   if (["minTVL", "maxTVL", "minAPR", "maxAPR", "limit"].includes(key))
@@ -12,24 +19,33 @@ const convert = (key: string, value: string) => {
     return value ? value.split(",") : undefined;
   return value;
 };
+
 function getFilterDataFromParams(searchParams: SearchParams) {
-  const result = Object.fromEntries(
-    Object.entries(searchParams).map(([key, value]) => [
-      key,
-      convert(key, value),
-    ]),
+  const {
+    minTVL = INITIAL_MIN_TVL,
+    limit = INITIAL_LIMIT,
+    sort = "apr",
+    order = "desc",
+    ...rest
+  } = searchParams as ExpectedSearchParams;
+
+  // Convert values for each property if needed
+  const convertedParams = Object.fromEntries(
+    Object.entries(rest).map(([key, value]) => [key, convert(key, value)]),
   );
 
-  // Include minTVL and limit if they are not already present in searchParams
-  if (!("minTVL" in result)) {
-    result.minTVL = INITIAL_MIN_TVL;
-  }
-  if (!("limit" in result)) {
-    result.limit = INITIAL_LIMIT;
-  }
+  // Merge the converted params with default values
+  const result = {
+    minTVL,
+    limit,
+    sort,
+    order,
+    ...convertedParams,
+  };
 
   return result;
 }
+
 export default function getFilteredRoundApiUrl(
   searchParams: SearchParams,
   roundId: string,

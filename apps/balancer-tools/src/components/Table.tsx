@@ -1,3 +1,4 @@
+"use client";
 import cn from "clsx";
 import Link from "next/link";
 import { createContext, useContext } from "react";

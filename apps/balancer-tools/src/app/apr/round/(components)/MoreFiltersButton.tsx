@@ -139,7 +139,7 @@ export function MoreFiltersButton() {
     };
   }, [selectedAttributes]);
 
-  const countValues = useCallback(
+  const countNonNullValues = useCallback(
     () =>
       Object.values(selectedAttributes).reduce((count, value) => {
         if (value !== null && (!Array.isArray(value) || value.length > 0)) {
@@ -157,9 +157,9 @@ export function MoreFiltersButton() {
           <div className="flex h-full items-center gap-x-2 text-sm font-normal text-slate12 bg-blue4 border border-blue6 px-2 rounded-[4px] cursor-pointer select-none">
             <MixerHorizontalIcon />
             <span className="font-medium pr-1"> More Filters</span>
-            {!!countValues() && (
+            {!!countNonNullValues() && (
               <Badge size="sm" color="blue">
-                {countValues()}
+                {countNonNullValues()}
               </Badge>
             )}
           </div>

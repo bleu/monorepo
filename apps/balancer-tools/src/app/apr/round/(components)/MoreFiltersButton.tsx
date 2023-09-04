@@ -19,7 +19,6 @@ import { BaseInput } from "#/components/Input";
 import { PoolTypeEnum } from "../../(utils)/calculatePoolStats";
 import { INITIAL_MIN_TVL } from "../../(utils)/getFilteredApiUrl";
 
-
 interface SelectedAttributesType {
   [key: string]: string | string[] | null;
   network: string[];

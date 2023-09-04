@@ -85,9 +85,9 @@ export const MultiSelectDropdown = ({
               <div className="relative">
                 <div className="flex items-center p-1 bg-blue4 max-w-sm relative w-full cursor-default overflow-hidden rounded-lg text-left shadow-md focus:outline-none focus-within:ring-2 focus-within:ring-blue6 focus-within:ring-opacity/75 focus-within:ring-offset-2 focus-within:ring-offset-blue3 sm:text-sm">
                   <div className="flex items-center mx-2">
-                  <label {...getLabelProps()} >
-                    <MagnifyingGlassIcon />
-                  </label>
+                    <label {...getLabelProps()}>
+                      <MagnifyingGlassIcon />
+                    </label>
                   </div>
                   <div className="flex flex-wrap gap-2 items-center">
                     {selectedItems.map((value, idx) => {

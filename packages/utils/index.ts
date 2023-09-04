@@ -128,7 +128,9 @@ const filteredKeys = [
 ];
 
 export const networksOnBalancer = Object.fromEntries(
-  Object.entries(networkIdEnumMap).filter(([key]) => filteredKeys.includes(key))
+  Object.entries(networkIdEnumMap).filter(([key]) =>
+    filteredKeys.includes(key),
+  ),
 );
 
 export function networkFor(key?: string | number) {

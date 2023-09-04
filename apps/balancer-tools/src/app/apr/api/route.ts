@@ -18,9 +18,10 @@ type Order = "asc" | "desc";
 
 export interface PoolTokens {
   address: string;
-  logoURI: string;
+  logo: string;
   symbol: string;
   weight: string | null;
+  balance: string;
 }
 
 export interface PoolStats {

@@ -17,10 +17,13 @@ export const BASE_URL =
 type Order = "asc" | "desc";
 
 export interface PoolTokens {
+  percentageValue?: number;
+  price?: number;
   address: string;
-  logoURI: string;
+  logoSrc: string;
   symbol: string;
   weight: string | null;
+  balance?: number;
 }
 
 export interface PoolStats {

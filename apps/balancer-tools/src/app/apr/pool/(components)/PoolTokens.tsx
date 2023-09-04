@@ -36,5 +36,5 @@ export default async function PoolTokens({
         ((tokenPrice * parseFloat(token.balance)) / totalBalance) * 100;
     });
   }
-  return <PoolTokensTable poolStats={poolData.perRound[0]} />;
+  return <PoolTokensTable poolTokensStats={poolData.perRound[0].tokens} />;
 }

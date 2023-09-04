@@ -4,34 +4,46 @@ import Image from "next/image";
 
 import Table from "#/components/Table";
 
-import { PoolStatsData } from "../../api/route";
+import { PoolTokens } from "../../api/route";
 
 export default function PoolTokensTable({
-  poolStats,
+  poolTokensStats,
 }: {
-  poolStats: PoolStatsData;
+  poolTokensStats: PoolTokens[];
 }) {
+  const tokenBalanceUSD = (balance: string) =>
+    parseFloat(balance).toLocaleString("en-US", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
   return (
     <>
       <Table color="blue" shade={"darkWithBorder"}>
         <Table.HeaderRow>
           <Table.HeaderCell>Name</Table.HeaderCell>
-          <Table.HeaderCell classNames="w-1/6 text-end p-4">
-            Volume
-          </Table.HeaderCell>
-          {poolStats.tokens[0].weight && (
+          {poolTokensStats[0].weight && (
             <Table.HeaderCell classNames="w-1/6 text-end p-4">
               Weight
             </Table.HeaderCell>
           )}
-          {poolStats.tokens[0].price && (
+          {poolTokensStats[0].balance && (
+            <Table.HeaderCell classNames="w-1/6 text-end p-4">
+              Balance
+            </Table.HeaderCell>
+          )}
+          {poolTokensStats[0].price && poolTokensStats[0].balance && (
             <Table.HeaderCell classNames="w-1/6 text-end p-4">
               Value
             </Table.HeaderCell>
           )}
+          {poolTokensStats[0].price && poolTokensStats[0].balance && (
+            <Table.HeaderCell classNames="w-1/6 text-end p-4">
+              Token %
+            </Table.HeaderCell>
+          )}
         </Table.HeaderRow>
         <Table.Body>
-          {poolStats.tokens.map((token) => (
+          {poolTokensStats.map((token) => (
             <Table.BodyRow classNames="hover:bg-blue4 hover:cursor-pointer duration-500">
               <Table.BodyCellLink
                 href={`https://etherscan.io/address/${token.address}`}
@@ -61,28 +73,38 @@ export default function PoolTokensTable({
                   parseFloat(token.weight) * 100
                 ).toFixed()}%`}</Table.BodyCellLink>
               )}
-              <Table.BodyCellLink
-                href={`https://etherscan.io/address/${token.address}`}
-                tdClassNames="w-6"
-                linkClassNames="justify-end w-full"
-              >
-                {parseFloat(token.balance).toLocaleString("en-US", {
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 0,
-                })}
-              </Table.BodyCellLink>
-              {token.price && (
+              {poolTokensStats[0].balance && (
+                <Table.BodyCellLink
+                  href={`https://etherscan.io/address/${token.address}`}
+                  tdClassNames="w-6"
+                  linkClassNames="justify-end w-full"
+                >
+                  {String(tokenBalanceUSD(token.balance)).length <= 3
+                    ? parseFloat(token.balance).toFixed(3)
+                    : tokenBalanceUSD(token.balance)}
+                </Table.BodyCellLink>
+              )}
+              {token.price && poolTokensStats[0].balance && (
                 <Table.BodyCellLink
                   href={`https://etherscan.io/address/${token.address}`}
                   tdClassNames="w-6"
                   linkClassNames="justify-end w-full"
                 >
                   {`$${(
-                    parseFloat(token.price!) * parseFloat(token.balance)
+                    token.price! * parseFloat(token.balance)
                   ).toLocaleString("en-US", {
                     minimumFractionDigits: 0,
                     maximumFractionDigits: 0,
                   })}`}
+                </Table.BodyCellLink>
+              )}
+              {token.price && poolTokensStats[0].balance && (
+                <Table.BodyCellLink
+                  href={`https://etherscan.io/address/${token.address}`}
+                  tdClassNames="w-6"
+                  linkClassNames="justify-end w-full"
+                >
+                  {`${token.percentageValue!.toFixed(2)}%`}
                 </Table.BodyCellLink>
               )}
             </Table.BodyRow>

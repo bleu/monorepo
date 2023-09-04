@@ -15,8 +15,8 @@ export default function PoolTokensTable({
   poolNetwork: string;
 }) {
   const tokenUrl = `${networkUrls[poolNetwork as unknown as NetworkChainId].url}address/${poolTokensStats[0].address}`
-  const tokenBalanceUSD = (balance: string) =>
-    parseFloat(balance).toLocaleString("en-US", {
+  const tokenBalanceUSD = (value: number) =>
+    value.toLocaleString("en-US", {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     });
@@ -77,32 +77,27 @@ export default function PoolTokensTable({
                   parseFloat(token.weight) * 100
                 ).toFixed()}%`}</Table.BodyCellLink>
               )}
-              {poolTokensStats[0].balance && (
+              {token.balance && (
                 <Table.BodyCellLink
                   href={tokenUrl}
                   tdClassNames="w-6"
                   linkClassNames="justify-end w-full"
                 >
-                  {String(tokenBalanceUSD(token.balance)).length <= 3
-                    ? parseFloat(token.balance).toFixed(3)
-                    : tokenBalanceUSD(token.balance)}
+                  {String(tokenBalanceUSD(token.balance!)).length <= 3
+                    ? token.balance!.toFixed(3)
+                    : tokenBalanceUSD(token.balance!)}
                 </Table.BodyCellLink>
               )}
-              {token.price && poolTokensStats[0].balance && (
+              {token.price && token.balance && (
                 <Table.BodyCellLink
                   href={tokenUrl}
                   tdClassNames="w-6"
                   linkClassNames="justify-end w-full"
                 >
-                  {`$${(
-                    token.price! * parseFloat(token.balance)
-                  ).toLocaleString("en-US", {
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0,
-                  })}`}
+                  {`$${tokenBalanceUSD(token.price * token.balance)}`}
                 </Table.BodyCellLink>
               )}
-              {token.price && poolTokensStats[0].balance && (
+              {token.price && token.balance && (
                 <Table.BodyCellLink
                   href={tokenUrl}
                   tdClassNames="w-6"

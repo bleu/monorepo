@@ -14,7 +14,9 @@ export default function PoolTokensTable({
   poolTokensStats: PoolTokens[];
   poolNetwork: string;
 }) {
-  const tokenUrl = `${networkUrls[poolNetwork as unknown as NetworkChainId].url}address/${poolTokensStats[0].address}`
+  const tokenUrl = `${
+    networkUrls[poolNetwork as unknown as NetworkChainId].url
+  }address/${poolTokensStats[0].address}`;
   const tokenBalanceUSD = (value: number) =>
     value.toLocaleString("en-US", {
       minimumFractionDigits: 0,
@@ -70,7 +72,7 @@ export default function PoolTokensTable({
               </Table.BodyCellLink>
               {token.weight && (
                 <Table.BodyCellLink
-                href={tokenUrl}
+                  href={tokenUrl}
                   tdClassNames="w-6"
                   linkClassNames="justify-end w-full"
                 >{`${(

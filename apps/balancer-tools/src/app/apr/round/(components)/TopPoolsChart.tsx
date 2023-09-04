@@ -28,10 +28,10 @@ export default function TopPoolsChart({
     orientation: "h" as const,
     type: "bar" as PlotType,
     x: ApiResult.perRound.map((result) =>
-      result.apr.breakdown.veBAL.toFixed(2),
+      result.apr.total.toFixed(2),
     ),
     y: ApiResult.perRound
-      .filter((pool) => pool.apr.breakdown.veBAL > 0)
+      .filter((pool) => pool.apr.total > 0)
       .map(
         (result) =>
           `${result.tokens
@@ -41,7 +41,7 @@ export default function TopPoolsChart({
                   t.weight ? `-${(parseFloat(t.weight) * 100).toFixed()}%` : ""
                 }`,
             )
-            .join(" ")}: ${result.apr.breakdown.veBAL.toFixed()}% APR`,
+            .join(" ")}: ${result.apr.total.toFixed()}% APR`,
       ),
   };
 

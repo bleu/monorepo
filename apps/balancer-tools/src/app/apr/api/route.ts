@@ -18,10 +18,13 @@ export const BASE_URL =
 type Order = "asc" | "desc";
 
 export interface PoolTokens {
+  percentageValue?: number;
+  price?: number;
   address: string;
-  logoURI: string;
+  logoSrc: string;
   symbol: string;
   weight: string | null;
+  balance?: number;
 }
 
 export interface PoolStats {
@@ -29,14 +32,19 @@ export interface PoolStats {
     total: number;
     breakdown: {
       veBAL: number;
+      swapFee: number;
     };
   };
   balPriceUSD: number;
   tvl: number;
   votingShare: number;
+  collectedFeesUSD: number;
 }
 
-type PoolStatsWithoutVotingShare = Omit<PoolStats, "votingShare">;
+type PoolStatsWithoutVotingShareAndCollectedFees = Omit<
+  PoolStats,
+  "votingShare" | "collectedFeesUSD"
+>;
 
 export interface PoolStatsData extends PoolStats {
   symbol: string;
@@ -49,7 +57,7 @@ export interface PoolStatsData extends PoolStats {
 
 export interface PoolStatsResults {
   perRound: PoolStatsData[];
-  average: PoolStatsWithoutVotingShare;
+  average: PoolStatsWithoutVotingShareAndCollectedFees;
 }
 
 const memoryCache: { [key: string]: unknown } = {};
@@ -71,20 +79,21 @@ const getDataFromCacheOrCompute = async <T>(
 
 const computeAverages = (
   poolData: PoolStatsData[],
-): PoolStatsWithoutVotingShare => {
+): PoolStatsWithoutVotingShareAndCollectedFees => {
   const total = poolData.reduce(
     (acc, data) => ({
       apr: {
         total: acc.apr.total + data.apr.total,
         breakdown: {
           veBAL: acc.apr.breakdown.veBAL + data.apr.breakdown.veBAL,
+          swapFee: acc.apr.breakdown.swapFee + data.apr.breakdown.swapFee,
         },
       },
       balPriceUSD: acc.balPriceUSD + data.balPriceUSD,
       tvl: acc.tvl + data.tvl,
     }),
     {
-      apr: { total: 0, breakdown: { veBAL: 0 } },
+      apr: { total: 0, breakdown: { veBAL: 0, swapFee: 0 } },
       balPriceUSD: 0,
       tvl: 0,
     },
@@ -96,6 +105,7 @@ const computeAverages = (
       total: total.apr.total / count,
       breakdown: {
         veBAL: total.apr.breakdown.veBAL / count,
+        swapFee: total.apr.breakdown.swapFee / count,
       },
     },
     balPriceUSD: total.balPriceUSD / count,

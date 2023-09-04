@@ -6,7 +6,7 @@ import { Pool } from "#/lib/balancer/gauges";
 import { pools } from "#/lib/gql/server";
 
 import { PoolStatsData, PoolTokens } from "../api/route";
-import { getBALPriceByRound } from "./getBALPriceByRound";
+import { getBALPriceByRound, getTokenPriceByRound } from "./getBALPriceByRound";
 import { getPoolRelativeWeight } from "./getRelativeWeight";
 import { Round } from "./rounds";
 
@@ -21,6 +21,8 @@ export enum PoolTypeEnum {
 }
 
 const WEEKS_IN_YEAR = 52;
+const SECONDS_IN_DAY = 86400;
+const SECONDS_IN_YEAR = 365 * SECONDS_IN_DAY;
 
 const memoryCache: { [key: string]: unknown } = {};
 
@@ -44,7 +46,7 @@ const fetchPoolTVLFromSnapshotAverageFromRange = async (
   network: string,
   from: number,
   to: number,
-): Promise<[number, string]> => {
+): Promise<[number, string, { symbol: string; balance: string }[]]> => {
   const res = await pools.gql(network).poolSnapshotInRange({
     poolId,
     from,
@@ -58,11 +60,46 @@ const fetchPoolTVLFromSnapshotAverageFromRange = async (
     ) / res.poolSnapshots.length;
 
   if (res.poolSnapshots.length === 0) {
-    return [0, ""];
+    return [0, "", []];
   }
 
-  return [avgLiquidity, res.poolSnapshots[0].pool.symbol ?? ""];
+  return [
+    avgLiquidity,
+    res.poolSnapshots[0].pool.symbol ?? "",
+    res.poolSnapshots[0].pool.tokens ?? [],
+  ];
 };
+
+async function calculateTokensStats(
+  roundId: string,
+  poolTokenData: PoolTokens[],
+  poolNetwork: string,
+  tokenBalance: { symbol: string; balance: string }[],
+) {
+  const totalBalance = poolTokenData.reduce((acc, token, idx) => {
+    const balance = parseFloat(tokenBalance?.[idx]?.balance);
+    if (!isNaN(balance)) {
+      return acc + balance;
+    }
+    return acc;
+  }, 0);
+
+  const tokenPromises = poolTokenData.map(async (token, idx) => {
+    const tokenPrice = await getTokenPriceByRound(
+      Round.getRoundByNumber(roundId),
+      token.address,
+      parseInt(poolNetwork),
+    );
+    token.price = tokenPrice;
+    token.balance = tokenPrice * parseFloat(tokenBalance?.[idx]?.balance);
+    token.percentageValue =
+      ((tokenPrice * parseFloat(tokenBalance?.[idx]?.balance)) / totalBalance) *
+      100;
+    return token;
+  });
+
+  return Promise.all(tokenPromises);
+}
 
 export async function calculatePoolStats({
   roundId,
@@ -75,7 +112,12 @@ export async function calculatePoolStats({
   const pool = new Pool(poolId);
   const network = String(pool.network ?? 1);
 
-  const [balPriceUSD, [tvl, symbol], votingShare] = await Promise.all([
+  const [
+    balPriceUSD,
+    [tvl, symbol, tokenBalance],
+    votingShare,
+    [feeAPR, collectedFeesUSD],
+  ] = await Promise.all([
     getDataFromCacheOrCompute(`bal_price_${round.value}`, () =>
       getBALPriceByRound(round),
     ),
@@ -93,9 +135,26 @@ export async function calculatePoolStats({
       `pool_weight_${poolId}_${round.value}_${network}`,
       () => getPoolRelativeWeight(poolId, round.endDate.getTime() / 1000),
     ),
+    getDataFromCacheOrCompute(
+      `pool_fee_apr_${poolId}_${round.value}_${network}`,
+      () =>
+        getFeeApr(
+          poolId,
+          network,
+          round.startDate.getTime() / 1000,
+          round.endDate.getTime() / 1000,
+        ),
+    ),
   ]);
 
-  const apr = calculateRoundAPR(round, votingShare, tvl, balPriceUSD);
+  const tokens = await calculateTokensStats(
+    roundId,
+    pool.tokens,
+    network,
+    tokenBalance,
+  );
+
+  const apr = calculateRoundAPR(round, votingShare, tvl, balPriceUSD, feeAPR);
 
   if (apr.total === -1 || apr.breakdown.veBAL === -1) {
     Sentry.captureMessage("vebalAPR resulted in -1", {
@@ -113,7 +172,8 @@ export async function calculatePoolStats({
     votingShare,
     symbol,
     network,
-    tokens: pool.tokens as PoolTokens[],
+    collectedFeesUSD,
+    tokens: tokens as PoolTokens[],
     type: pool.poolType as keyof typeof PoolTypeEnum,
   };
 }
@@ -123,6 +183,7 @@ function calculateRoundAPR(
   votingShare: number,
   tvl: number,
   balPriceUSD: number,
+  feeAPR: number,
 ) {
   const emissions = balEmissions.weekly(round.endDate.getTime() / 1000);
   const vebalAPR =
@@ -131,9 +192,44 @@ function calculateRoundAPR(
       : -1;
 
   return {
-    total: vebalAPR,
+    total: vebalAPR + feeAPR,
     breakdown: {
       veBAL: vebalAPR,
+      swapFee: feeAPR,
     },
   };
 }
+
+const getFeeApr = async (
+  poolId: string,
+  network: string,
+  from: number,
+  to: number,
+): Promise<[number, number]> => {
+  const lastdayBeforeStartRound = from - SECONDS_IN_DAY;
+  const lastdayOfRound = to;
+
+  const res = await pools.gql(network).poolSnapshotInRange({
+    poolId,
+    from: lastdayBeforeStartRound,
+    to: lastdayOfRound,
+  });
+
+  const startRoundData = res.poolSnapshots[res.poolSnapshots.length - 1];
+
+  const endRoundData = res.poolSnapshots[0];
+
+  if (!startRoundData || !endRoundData) {
+    return [0, 0];
+  }
+
+  const feeDiff = endRoundData?.swapFees - startRoundData?.swapFees;
+
+  const feeApr = 10_000 * (feeDiff / endRoundData?.liquidity);
+  // reference for 10_000 https://github.com/balancer/balancer-sdk/blob/f4879f06289c6f5f9766ead1835f4f4b096ed7dd/balancer-js/src/modules/pools/apr/apr.ts#L85
+  const annualizedFeeApr =
+    feeApr *
+    (SECONDS_IN_YEAR / (endRoundData?.timestamp - startRoundData?.timestamp));
+
+  return [isNaN(annualizedFeeApr) ? 0 : annualizedFeeApr / 100, feeDiff];
+};

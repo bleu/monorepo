@@ -5,7 +5,6 @@ export enum Subgraph {
   BalancerPoolsMetadata = "balancer-pools-metadata",
   BalancerGauges = "balancer-gauges",
   Balancer = "balancer",
-  ChainsBlocks = "chains-blocks",
 }
 
 // IMPORTANT NOTE:
@@ -77,34 +76,6 @@ export const SUBGRAPHS = {
         [Network.Arbitrum]: `${baseEndpoint}/balancer-arbitrum-v2`,
         [Network.Gnosis]: `${baseEndpoint}/balancer-gnosis-chain-v2-beta`,
         [Network.Optimism]: `${baseEndpoint}/balancer-optimism-v2`,
-      };
-    },
-    endpointFor(network: Network) {
-      return this.endpoints()[network];
-    },
-  },
-  [Subgraph.ChainsBlocks]: {
-    name: Subgraph.ChainsBlocks,
-    endpoints() {
-      return {
-        [Network.Ethereum]:
-          "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
-        //TODO: BAL-659 substitute Sepolia, Gnosis and Optimism, not functional yet
-        [Network.Sepolia]:
-          "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
-        [Network.Goerli]:
-          "https://api.thegraph.com/subgraphs/name/bleu-studio/blocks-goerli",
-        [Network.Polygon]:
-          "https://api.thegraph.com/subgraphs/name/ianlapham/polygon-blocks",
-        [Network.PolygonZKEVM]:
-          "https://api.studio.thegraph.com/query/48427/bleu-polygon-zkevm-blocks/version/latest",
-        [Network.Arbitrum]:
-          "https://api.thegraph.com/subgraphs/name/ianlapham/arbitrum-one-blocks",
-        //TODO: BAL-659 substitute Sepolia, Gnosis and Optimism, not functional yet
-        [Network.Gnosis]:
-          "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
-        [Network.Optimism]:
-          "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
       };
     },
     endpointFor(network: Network) {

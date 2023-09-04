@@ -118,6 +118,19 @@ export const networkIdEnumMap = {
   "1101": Network.PolygonZKEVM,
 };
 
+const filteredKeys = [
+  String(NetworkChainId.ETHEREUM),
+  String(NetworkChainId.OPTIMISM),
+  String(NetworkChainId.GNOSIS),
+  String(NetworkChainId.POLYGON),
+  String(NetworkChainId.POLYGONZKEVM),
+  String(NetworkChainId.ARBITRUM),
+];
+
+export const networksOnBalancer = Object.fromEntries(
+  Object.entries(networkIdEnumMap).filter(([key]) => filteredKeys.includes(key))
+);
+
 export function networkFor(key?: string | number) {
   if (!key) {
     return Network.Ethereum;

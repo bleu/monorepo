@@ -1,6 +1,6 @@
 "use client";
 
-import { capitalize, Network } from "@bleu-balancer-tools/utils";
+import { capitalize, networksOnBalancer } from "@bleu-balancer-tools/utils";
 import * as Accordion from "@radix-ui/react-accordion";
 import { MixerHorizontalIcon } from "@radix-ui/react-icons";
 import * as Popover from "@radix-ui/react-popover";
@@ -19,13 +19,6 @@ import { BaseInput } from "#/components/Input";
 import { PoolTypeEnum } from "../../(utils)/calculatePoolStats";
 import { INITIAL_MIN_TVL } from "../../(utils)/getFilteredApiUrl";
 
-const networksOnBalancer = {
-  "1": Network.Ethereum,
-  "137": Network.Polygon,
-  "42161": Network.Arbitrum,
-  "100": Network.Gnosis,
-  "1101": Network.PolygonZKEVM,
-};
 
 interface SelectedAttributesType {
   [key: string]: string | string[] | null;

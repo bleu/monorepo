@@ -17,5 +17,10 @@ export default async function PoolTokens({
       roundId ? `&roundId=${roundId}` : ""
     }`,
   );
-  return <PoolTokensTable poolTokensStats={poolData.perRound[0].tokens} poolNetwork={poolData.perRound[0].network} />;
+  return (
+    <PoolTokensTable
+      poolTokensStats={poolData.perRound[0].tokens}
+      poolNetwork={poolData.perRound[0].network}
+    />
+  );
 }

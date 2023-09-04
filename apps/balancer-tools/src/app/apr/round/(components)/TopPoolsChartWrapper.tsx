@@ -35,9 +35,9 @@ export default async function TopPoolsChartWrapper({
         `${result.tokens
           .map(
             (t) =>
-              `${t.symbol}${t.weight ? `-${parseFloat(t.weight) * 100}%` : ""}`,
+              `${t.symbol}${t.weight ? `-${(parseFloat(t.weight) * 100).toFixed()}%` : ""}`,
           )
-          .join(" ")}: ${result.apr.breakdown.veBAL.toFixed(2)}% APR`,
+          .join(" ")}: ${result.apr.breakdown.veBAL.toFixed()}% APR`,
     ),
   };
 

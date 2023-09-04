@@ -242,20 +242,20 @@ export default function AccordionItemMinMax({
             <BaseInput
               className="flex-1"
               name={`min${name}`}
-              placeholder="Minimum"
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 onChange(`min${name}`, e.target.value)
               }
+              placeholder="min"
               value={selectedAttributes[`min${name}`] || ""}
             />
             <span>-</span>
             <BaseInput
               className="flex-1"
               name={`max${name}`}
-              placeholder="Maximum"
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 onChange(`max${name}`, e.target.value)
               }
+              placeholder="max"
               value={selectedAttributes[`max${name}`] || ""}
             />
           </div>

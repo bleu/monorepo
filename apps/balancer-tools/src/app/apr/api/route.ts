@@ -20,7 +20,7 @@ export interface PoolTokens {
   percentageValue?: number;
   price?: number;
   address: string;
-  logo: string;
+  logoSrc: string;
   symbol: string;
   weight: string | null;
   balance: string;

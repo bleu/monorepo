@@ -52,7 +52,7 @@ export default function PoolTokensTable({
               >
                 <div className="w-[25px]">
                   <Image
-                    src={token.logo}
+                    src={token.logoSrc}
                     height={25}
                     width={25}
                     className="rounded-full"

@@ -119,7 +119,7 @@ export async function calculatePoolStats({
   let tokens;
   try {
     tokens = pool.tokens.map((token, idx) => ({
-      logo: token.logo,
+      logoSrc: token.logoSrc,
       address: token.address,
       symbol: token.symbol,
       weight: token.weight,
@@ -127,7 +127,7 @@ export async function calculatePoolStats({
     }));
   } catch (error) {
     tokens = pool.tokens.map((token) => ({
-      logo: token.logo,
+      logoSrc: token.logoSrc,
       address: token.address,
       symbol: token.symbol,
       weight: token.weight,

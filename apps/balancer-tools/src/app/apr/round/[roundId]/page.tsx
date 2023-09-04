@@ -6,7 +6,7 @@ import getFilteredRoundApiUrl from "../../(utils)/getFilteredApiUrl";
 import Breadcrumb from "../(components)/Breadcrumb";
 import PoolTableWrapper from "../(components)/PoolTableWrapper";
 import RoundOverviewCards from "../(components)/RoundOverviewCards";
-import TopPoolsChart from "../(components)/TopPoolsChart";
+import TopPoolsChartWrapper from "../(components)/TopPoolsChartWrapper";
 
 export interface SearchParams {
   minTVL?: string;
@@ -33,7 +33,10 @@ export default function Page({
         <RoundOverviewCards roundId={roundId} />
       </Suspense>
       <Suspense fallback={<Spinner />}>
-        <TopPoolsChart roundId={roundId} filteredApiUrl={filteredApiUrl} />
+        <TopPoolsChartWrapper
+          roundId={roundId}
+          filteredApiUrl={filteredApiUrl}
+        />
       </Suspense>
       <Suspense fallback={<Spinner />}>
         <PoolTableWrapper roundId={roundId} filteredApiUrl={filteredApiUrl} />

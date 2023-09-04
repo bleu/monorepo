@@ -1,53 +1,60 @@
-import { greenDarkA } from "@radix-ui/colors";
-import { PlotType } from "plotly.js";
+"use client";
+
+import { networkFor } from "@bleu-balancer-tools/utils";
+import { useRouter } from "next/navigation";
+import { Data, PlotMouseEvent } from "plotly.js";
 
 import Plot from "#/components/Plot";
-import { fetcher } from "#/utils/fetcher";
 
 import { PoolStatsResults } from "../../api/route";
 
-export default async function TopPoolsChart({
+export default function TopPoolsChart({
   roundId,
-  filteredApiUrl,
+  chartData,
+  ApiResult,
 }: {
   roundId: string;
-  filteredApiUrl: string;
+  chartData: Data[];
+  ApiResult: PoolStatsResults;
 }) {
-  const shades = Object.values(greenDarkA).map((color) => color.toString());
-  const colors = [...shades.slice(4, 10).reverse(), ...shades.slice(4, 10)];
-
-  const topAprApi = await fetcher<PoolStatsResults>(filteredApiUrl);
-
-  const chartData = {
-    hovertemplate: "%{x:.2f}% APR<extra></extra>",
-    marker: {
-      color: topAprApi.perRound.map(
-        (_, index) => colors[index % colors.length],
-      ),
-    },
-    orientation: "h" as const,
-    type: "bar" as PlotType,
-    x: topAprApi.perRound.map((result) =>
-      result.apr.breakdown.veBAL.toFixed(2),
-    ),
-    y: topAprApi.perRound.map((result) => result.symbol),
-  };
+  const router = useRouter();
+  function onClickHandler(event: PlotMouseEvent) {
+    const clickedRoundData = ApiResult.perRound[event.points[0].pointIndex];
+    const poolRedirectURL = `/apr/pool/${networkFor(
+      clickedRoundData.network,
+    )}/${clickedRoundData.poolId}/round/${roundId}`;
+    router.push(poolRedirectURL);
+  }
 
   return (
     <div className="flex justify-between border border-blue6 bg-blue3 rounded p-4 cursor-pointer">
       <Plot
+        onClick={onClickHandler}
         title={`Top APR Pools of Round ${roundId}`}
         toolTip="Top pools with highest APR."
-        data={[chartData]}
+        data={chartData}
+        hovermode={false}
+        config={{ displayModeBar: false }}
         layout={{
+          showlegend: false,
           barmode: "overlay",
           autosize: true,
           dragmode: false,
+          margin: { t: 30, r: 20, l: 20, b: 30 },
           xaxis: {
             title: `APR %`,
             fixedrange: true,
+            type: "log",
           },
-          yaxis: { fixedrange: true, autorange: "reversed" },
+          yaxis: {
+            fixedrange: true,
+            autorange: "reversed",
+            position: 0,
+            side: "right",
+            // @ts-ignore: 2322
+            tickson: "boundaries",
+            tickfont_family: "Arial Black",
+          },
         }}
       />
     </div>

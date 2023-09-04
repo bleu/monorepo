@@ -91,7 +91,6 @@ export const poolSnapshotInRange = gql`
         address
         name
         poolType
-        totalLiquidity
         symbol
         tokens {
           symbol

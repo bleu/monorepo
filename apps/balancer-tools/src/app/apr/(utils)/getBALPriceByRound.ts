@@ -17,7 +17,7 @@ export const getTokenPriceByRound = async (
   tokenAddress: string,
   tokenNetwork: number,
 ) => {
-  const token = `${networkFor(tokenNetwork)}:${tokenAddress}`;
+  const token = `${networkFor(tokenNetwork).toLowerCase()}:${tokenAddress}`;
   const relevantDateForPrice = Math.min(Date.now(), round.endDate.getTime());
   const api = new DefiLlamaAPI();
 

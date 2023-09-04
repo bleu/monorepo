@@ -18,18 +18,22 @@ export default async function PoolTokens({
     }`,
   );
   if (roundId) {
-    poolData.perRound.map((pool) => {
-      pool.tokens.map(async (token) => {
-        // Is there a way to type this without recreating the interface?
-        // @ts-ignore 2345
-        const tprice = await getTokenPriceByRound(
-          Round.getRoundByNumber(roundId),
-          token.address,
-          parseInt(pool.network),
-        );
-        // @ts-ignore 2345
-        token.price = tprice;
-      });
+    const totalBalance = poolData.perRound[0].tokens.reduce((acc, token) => {
+      const balance = parseFloat(token.balance);
+      if (!isNaN(balance)) {
+        return acc + balance;
+      }
+      return acc;
+    }, 0);
+    poolData.perRound[0].tokens.map(async (token) => {
+      const tokenPrice = await getTokenPriceByRound(
+        Round.getRoundByNumber(roundId),
+        token.address,
+        parseInt(poolData.perRound[0].network),
+      );
+      token.price = tokenPrice;
+      token.percentageValue =
+        ((tokenPrice * parseFloat(token.balance)) / totalBalance) * 100;
     });
   }
   return <PoolTokensTable poolStats={poolData.perRound[0]} />;

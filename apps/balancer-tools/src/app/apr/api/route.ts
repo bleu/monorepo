@@ -17,7 +17,8 @@ export const BASE_URL =
 type Order = "asc" | "desc";
 
 export interface PoolTokens {
-  price?: string;
+  percentageValue?: number;
+  price?: number;
   address: string;
   logo: string;
   symbol: string;

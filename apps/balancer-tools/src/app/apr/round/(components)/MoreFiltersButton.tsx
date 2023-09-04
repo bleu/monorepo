@@ -119,14 +119,11 @@ export function MoreFiltersButton() {
     });
   };
 
-  const handleOnMinMaxChange = (
-    inputName: keyof SelectedAttributesType,
-    value: string,
-  ) => {
+  const handleOnMinMaxChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSelectedAttributes((prevAttributes) => {
       const updatedAttributes = {
         ...prevAttributes,
-        [inputName]: value,
+        [event.target.name]: event.target.value,
       };
       return updatedAttributes;
     });
@@ -230,7 +227,7 @@ export default function AccordionItemMinMax({
 }: {
   name: keyof SelectedAttributesType;
   label: string;
-  onChange: (inputName: string, value: string) => void;
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   selectedAttributes: SelectedAttributesType;
 }) {
   return (
@@ -242,20 +239,16 @@ export default function AccordionItemMinMax({
             <BaseInput
               className="flex-1"
               name={`min${name}`}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                onChange(`min${name}`, e.target.value)
-              }
               placeholder="min"
+              onChange={onChange}
               value={selectedAttributes[`min${name}`] || ""}
             />
             <span>-</span>
             <BaseInput
               className="flex-1"
               name={`max${name}`}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                onChange(`max${name}`, e.target.value)
-              }
               placeholder="max"
+              onChange={onChange}
               value={selectedAttributes[`max${name}`] || ""}
             />
           </div>

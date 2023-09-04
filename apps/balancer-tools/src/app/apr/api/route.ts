@@ -34,9 +34,13 @@ export interface PoolStats {
   balPriceUSD: number;
   tvl: number;
   votingShare: number;
+  collectedFeesUSD: number;
 }
 
-type PoolStatsWithoutVotingShare = Omit<PoolStats, "votingShare">;
+type PoolStatsWithoutVotingShareAndCollectedFees = Omit<
+  PoolStats,
+  "votingShare" | "collectedFeesUSD"
+>;
 
 export interface PoolStatsData extends PoolStats {
   symbol: string;
@@ -49,7 +53,7 @@ export interface PoolStatsData extends PoolStats {
 
 export interface PoolStatsResults {
   perRound: PoolStatsData[];
-  average: PoolStatsWithoutVotingShare;
+  average: PoolStatsWithoutVotingShareAndCollectedFees;
 }
 
 const memoryCache: { [key: string]: unknown } = {};
@@ -71,7 +75,7 @@ const getDataFromCacheOrCompute = async <T>(
 
 const computeAverages = (
   poolData: PoolStatsData[],
-): PoolStatsWithoutVotingShare => {
+): PoolStatsWithoutVotingShareAndCollectedFees => {
   const total = poolData.reduce(
     (acc, data) => ({
       apr: {

@@ -1,4 +1,5 @@
 "use client";
+import { NetworkChainId, networkUrls } from "@bleu-balancer-tools/utils";
 import { ExternalLinkIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 
@@ -8,9 +9,12 @@ import { PoolTokens } from "../../api/route";
 
 export default function PoolTokensTable({
   poolTokensStats,
+  poolNetwork,
 }: {
   poolTokensStats: PoolTokens[];
+  poolNetwork: string;
 }) {
+  const tokenUrl = `${networkUrls[poolNetwork as unknown as NetworkChainId].url}address/${poolTokensStats[0].address}`
   const tokenBalanceUSD = (balance: string) =>
     parseFloat(balance).toLocaleString("en-US", {
       minimumFractionDigits: 0,
@@ -46,7 +50,7 @@ export default function PoolTokensTable({
           {poolTokensStats.map((token) => (
             <Table.BodyRow classNames="hover:bg-blue4 hover:cursor-pointer duration-500">
               <Table.BodyCellLink
-                href={`https://etherscan.io/address/${token.address}`}
+                href={tokenUrl}
                 tdClassNames="w-max"
                 linkClassNames="flex gap-2 items-center"
               >
@@ -66,7 +70,7 @@ export default function PoolTokensTable({
               </Table.BodyCellLink>
               {token.weight && (
                 <Table.BodyCellLink
-                  href={`https://etherscan.io/address/${token.address}`}
+                href={tokenUrl}
                   tdClassNames="w-6"
                   linkClassNames="justify-end w-full"
                 >{`${(
@@ -75,7 +79,7 @@ export default function PoolTokensTable({
               )}
               {poolTokensStats[0].balance && (
                 <Table.BodyCellLink
-                  href={`https://etherscan.io/address/${token.address}`}
+                  href={tokenUrl}
                   tdClassNames="w-6"
                   linkClassNames="justify-end w-full"
                 >
@@ -86,7 +90,7 @@ export default function PoolTokensTable({
               )}
               {token.price && poolTokensStats[0].balance && (
                 <Table.BodyCellLink
-                  href={`https://etherscan.io/address/${token.address}`}
+                  href={tokenUrl}
                   tdClassNames="w-6"
                   linkClassNames="justify-end w-full"
                 >
@@ -100,7 +104,7 @@ export default function PoolTokensTable({
               )}
               {token.price && poolTokensStats[0].balance && (
                 <Table.BodyCellLink
-                  href={`https://etherscan.io/address/${token.address}`}
+                  href={tokenUrl}
                   tdClassNames="w-6"
                   linkClassNames="justify-end w-full"
                 >

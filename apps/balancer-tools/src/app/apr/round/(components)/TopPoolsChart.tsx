@@ -1,8 +1,9 @@
 "use client";
 
 import { networkFor } from "@bleu-balancer-tools/utils";
+import { greenDarkA } from "@radix-ui/colors";
 import { useRouter } from "next/navigation";
-import { Data, PlotMouseEvent } from "plotly.js";
+import { Data, PlotMouseEvent, PlotType } from "plotly.js";
 
 import Plot from "#/components/Plot";
 
@@ -10,13 +11,40 @@ import { PoolStatsResults } from "../../api/route";
 
 export default function TopPoolsChart({
   roundId,
-  chartData,
   ApiResult,
 }: {
   roundId: string;
-  chartData: Data[];
   ApiResult: PoolStatsResults;
 }) {
+  const shades = Object.values(greenDarkA).map((color) => color.toString());
+  const colors = [...shades.slice(4, 10).reverse(), ...shades.slice(4, 10)];
+  const chartData: Data = {
+    hoverinfo: "none",
+    marker: {
+      color: ApiResult.perRound.map(
+        (_, index) => colors[index % colors.length],
+      ),
+    },
+    orientation: "h" as const,
+    type: "bar" as PlotType,
+    x: ApiResult.perRound.map((result) =>
+      result.apr.breakdown.veBAL.toFixed(2),
+    ),
+    y: ApiResult.perRound
+      .filter((pool) => pool.apr.breakdown.veBAL > 0)
+      .map(
+        (result) =>
+          `${result.tokens
+            .map(
+              (t) =>
+                `${t.symbol}${
+                  t.weight ? `-${(parseFloat(t.weight) * 100).toFixed()}%` : ""
+                }`,
+            )
+            .join(" ")}: ${result.apr.breakdown.veBAL.toFixed()}% APR`,
+      ),
+  };
+
   const router = useRouter();
   function onClickHandler(event: PlotMouseEvent) {
     const clickedRoundData = ApiResult.perRound[event.points[0].pointIndex];
@@ -32,7 +60,7 @@ export default function TopPoolsChart({
         onClick={onClickHandler}
         title={`Top APR Pools of Round ${roundId}`}
         toolTip="Top pools with highest APR."
-        data={chartData}
+        data={[chartData]}
         hovermode={false}
         config={{ displayModeBar: false }}
         layout={{

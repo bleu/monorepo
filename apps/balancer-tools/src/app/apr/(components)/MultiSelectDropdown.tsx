@@ -82,11 +82,13 @@ export const MultiSelectDropdown = ({
         }) => {
           return (
             <div>
-              <div className="relative mt-1">
+              <div className="relative">
                 <div className="flex items-center p-1 bg-blue4 max-w-sm relative w-full cursor-default overflow-hidden rounded-lg text-left shadow-md focus:outline-none focus-within:ring-2 focus-within:ring-blue6 focus-within:ring-opacity/75 focus-within:ring-offset-2 focus-within:ring-offset-blue3 sm:text-sm">
-                  <label {...getLabelProps()} className="my-3 ml-2 self-start">
+                  <div className="flex items-center mx-2">
+                  <label {...getLabelProps()} >
                     <MagnifyingGlassIcon />
                   </label>
+                  </div>
                   <div className="flex flex-wrap gap-2 items-center">
                     {selectedItems.map((value, idx) => {
                       return (
@@ -111,7 +113,7 @@ export const MultiSelectDropdown = ({
                         toggleMenu();
                       }}
                       onKeyDown={handleOnKeyDown}
-                      className="hover:shadow-[0] focus:shadow-[0] shadow-none flex-1"
+                      className="hover:shadow-[0] focus:shadow-[0] shadow-none flex-1 !h-6"
                     />
                   </div>
                 </div>

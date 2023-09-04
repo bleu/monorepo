@@ -83,7 +83,7 @@ export function MoreFiltersButton() {
     setSelectedAttributes(updatedAttributes);
   }, []);
 
-  const pushQueryparamsURL = () => {
+  const pushQueryparamsURL = useCallback(() => {
     const current = new URLSearchParams(Array.from(searchParams.entries()));
 
     Object.entries(selectedAttributes).map(([name, values]) => {
@@ -97,7 +97,7 @@ export function MoreFiltersButton() {
     const search = current.toString();
     const query = search ? `?${search}` : "";
     router.push(pathname + query, { scroll: false });
-  };
+  }, [selectedAttributes]);
 
   const handleAttributeChange = (type: string, value: string) => {
     setSelectedAttributes((prevAttributes) => {

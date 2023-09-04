@@ -5,10 +5,10 @@ export const INITIAL_MIN_TVL = 1000;
 export const INITIAL_LIMIT = 10;
 
 interface ExpectedSearchParams extends SearchParams {
-  minTVL?: string | undefined;
-  limit?: string | undefined;
-  sort?: string | undefined;
-  order?: string | undefined;
+  minTVL?: string;
+  limit?: string;
+  sort?: string;
+  order?: string;
 }
 
 const convert = (key: string, value: string) => {

@@ -102,14 +102,7 @@ export async function calculatePoolStats({
           poolId,
           network,
           round.startDate.getTime() / 1000,
-          round.endDate.getTime() / 1000 + SECONDS_IN_DAY,
-          // daily swapFee = current day's snapshot - previous day's snapshot
-          // the round swapFee is the diff between the value on the last whole day of the round and the first whole day of the round
-          // which are wed and thu respectively
-          // thu swapFee = fri snapshot - thu snapshot
-          // wed swapFee = thu snapshot - wed snapshot
-          // therefore we need thu - thu, but the "to" parameter is passed to the querty as "lt"
-          // so we need to add a day to the "to" parameter to make sure we get thu-thu
+          round.endDate.getTime() / 1000,
         ),
     ),
   ]);
@@ -165,22 +158,30 @@ const getFeeApr = async (
   from: number,
   to: number,
 ): Promise<number> => {
+  const lastdayBeforeStartRound = from - SECONDS_IN_DAY;
+  const lastdayOfRound = to;
+
   const res = await pools.gql(network).poolSnapshotInRange({
     poolId,
-    from,
-    to,
+    from: lastdayBeforeStartRound,
+    to: lastdayOfRound,
   });
 
   const startRoundData = res.poolSnapshots[res.poolSnapshots.length - 1];
 
   const endRoundData = res.poolSnapshots[0];
 
+  if (!startRoundData || !endRoundData) {
+    return 0;
+  }
+
   const feeDiff = endRoundData?.swapFees - startRoundData?.swapFees;
 
-  const feeApr = 10000 * (feeDiff / endRoundData?.pool.totalLiquidity);
+  const feeApr = 10_000 * (feeDiff / endRoundData?.liquidity);
+  // reference for 10_000 https://github.com/balancer/balancer-sdk/blob/f4879f06289c6f5f9766ead1835f4f4b096ed7dd/balancer-js/src/modules/pools/apr/apr.ts#L85
   const annualizedFeeApr =
     feeApr *
-    (SECONDS_IN_YEAR / (endRoundData.timestamp - startRoundData.timestamp));
+    (SECONDS_IN_YEAR / (endRoundData?.timestamp - startRoundData?.timestamp));
 
   return isNaN(annualizedFeeApr) ? 0 : annualizedFeeApr / 100;
 };

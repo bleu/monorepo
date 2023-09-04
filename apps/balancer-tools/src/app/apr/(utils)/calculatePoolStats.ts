@@ -46,7 +46,7 @@ const fetchPoolTVLFromSnapshotAverageFromRange = async (
   network: string,
   from: number,
   to: number,
-): Promise<[number, string, {symbol: string; balance: string;}[]]> => {
+): Promise<[number, string, { symbol: string; balance: string }[]]> => {
   const res = await pools.gql(network).poolSnapshotInRange({
     poolId,
     from,
@@ -63,7 +63,11 @@ const fetchPoolTVLFromSnapshotAverageFromRange = async (
     return [0, "", []];
   }
 
-  return [avgLiquidity, res.poolSnapshots[0].pool.symbol ?? "", res.poolSnapshots[0].pool.tokens ?? []];
+  return [
+    avgLiquidity,
+    res.poolSnapshots[0].pool.symbol ?? "",
+    res.poolSnapshots[0].pool.tokens ?? [],
+  ];
 };
 
 export async function calculatePoolStats({
@@ -77,55 +81,59 @@ export async function calculatePoolStats({
   const pool = new Pool(poolId);
   const network = String(pool.network ?? 1);
 
-  const [balPriceUSD, [tvl, symbol, tokenBalance], votingShare, [feeAPR, collectedFeesUSD]] =
-    await Promise.all([
-      getDataFromCacheOrCompute(`bal_price_${round.value}`, () =>
-        getBALPriceByRound(round),
-      ),
-      getDataFromCacheOrCompute(
-        `pool_data_${poolId}_${round.value}_${network}`,
-        () =>
-          fetchPoolTVLFromSnapshotAverageFromRange(
-            poolId,
-            network,
-            round.startDate.getTime() / 1000,
-            round.endDate.getTime() / 1000,
-          ),
-      ),
-      getDataFromCacheOrCompute(
-        `pool_weight_${poolId}_${round.value}_${network}`,
-        () => getPoolRelativeWeight(poolId, round.endDate.getTime() / 1000),
-      ),
-      getDataFromCacheOrCompute(
-        `pool_fee_apr_${poolId}_${round.value}_${network}`,
-        () =>
-          getFeeApr(
-            poolId,
-            network,
-            round.startDate.getTime() / 1000,
-            round.endDate.getTime() / 1000,
-          ),
-      ),
-    ]);
+  const [
+    balPriceUSD,
+    [tvl, symbol, tokenBalance],
+    votingShare,
+    [feeAPR, collectedFeesUSD],
+  ] = await Promise.all([
+    getDataFromCacheOrCompute(`bal_price_${round.value}`, () =>
+      getBALPriceByRound(round),
+    ),
+    getDataFromCacheOrCompute(
+      `pool_data_${poolId}_${round.value}_${network}`,
+      () =>
+        fetchPoolTVLFromSnapshotAverageFromRange(
+          poolId,
+          network,
+          round.startDate.getTime() / 1000,
+          round.endDate.getTime() / 1000,
+        ),
+    ),
+    getDataFromCacheOrCompute(
+      `pool_weight_${poolId}_${round.value}_${network}`,
+      () => getPoolRelativeWeight(poolId, round.endDate.getTime() / 1000),
+    ),
+    getDataFromCacheOrCompute(
+      `pool_fee_apr_${poolId}_${round.value}_${network}`,
+      () =>
+        getFeeApr(
+          poolId,
+          network,
+          round.startDate.getTime() / 1000,
+          round.endDate.getTime() / 1000,
+        ),
+    ),
+  ]);
 
-    let tokens;
-    try {
-      tokens = pool.tokens.map((token, idx) => ({
-        logo: token.logo,
-        address: token.address,
-        symbol: token.symbol,
-        weight: token.weight,
-        balance: tokenBalance[idx].balance,
-      }));
-    } catch (error) {
-      tokens = pool.tokens.map((token) => ({
-        logo: token.logo,
-        address: token.address,
-        symbol: token.symbol,
-        weight: token.weight,
-        balance: null,
-      }));
-    }
+  let tokens;
+  try {
+    tokens = pool.tokens.map((token, idx) => ({
+      logo: token.logo,
+      address: token.address,
+      symbol: token.symbol,
+      weight: token.weight,
+      balance: tokenBalance[idx].balance,
+    }));
+  } catch (error) {
+    tokens = pool.tokens.map((token) => ({
+      logo: token.logo,
+      address: token.address,
+      symbol: token.symbol,
+      weight: token.weight,
+      balance: null,
+    }));
+  }
 
   const apr = calculateRoundAPR(round, votingShare, tvl, balPriceUSD, feeAPR);
 

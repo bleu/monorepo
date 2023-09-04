@@ -21,6 +21,8 @@ export enum PoolTypeEnum {
 }
 
 const WEEKS_IN_YEAR = 52;
+const SECONDS_IN_DAY = 86400;
+const SECONDS_IN_YEAR = 365 * SECONDS_IN_DAY;
 
 const memoryCache: { [key: string]: unknown } = {};
 
@@ -75,7 +77,7 @@ export async function calculatePoolStats({
   const pool = new Pool(poolId);
   const network = String(pool.network ?? 1);
 
-  const [balPriceUSD, [tvl, symbol], votingShare] = await Promise.all([
+  const [balPriceUSD, [tvl, symbol], votingShare, feeAPR] = await Promise.all([
     getDataFromCacheOrCompute(`bal_price_${round.value}`, () =>
       getBALPriceByRound(round),
     ),
@@ -93,9 +95,19 @@ export async function calculatePoolStats({
       `pool_weight_${poolId}_${round.value}_${network}`,
       () => getPoolRelativeWeight(poolId, round.endDate.getTime() / 1000),
     ),
+    getDataFromCacheOrCompute(
+      `pool_fee_apr_${poolId}_${round.value}_${network}`,
+      () =>
+        getFeeApr(
+          poolId,
+          network,
+          round.startDate.getTime() / 1000,
+          round.endDate.getTime() / 1000,
+        ),
+    ),
   ]);
 
-  const apr = calculateRoundAPR(round, votingShare, tvl, balPriceUSD);
+  const apr = calculateRoundAPR(round, votingShare, tvl, balPriceUSD, feeAPR);
 
   if (apr.total === -1 || apr.breakdown.veBAL === -1) {
     Sentry.captureMessage("vebalAPR resulted in -1", {
@@ -123,6 +135,7 @@ function calculateRoundAPR(
   votingShare: number,
   tvl: number,
   balPriceUSD: number,
+  feeAPR: number,
 ) {
   const emissions = balEmissions.weekly(round.endDate.getTime() / 1000);
   const vebalAPR =
@@ -131,9 +144,44 @@ function calculateRoundAPR(
       : -1;
 
   return {
-    total: vebalAPR,
+    total: vebalAPR + feeAPR,
     breakdown: {
       veBAL: vebalAPR,
+      swapFee: feeAPR,
     },
   };
 }
+
+const getFeeApr = async (
+  poolId: string,
+  network: string,
+  from: number,
+  to: number,
+): Promise<number> => {
+  const lastdayBeforeStartRound = from - SECONDS_IN_DAY;
+  const lastdayOfRound = to;
+
+  const res = await pools.gql(network).poolSnapshotInRange({
+    poolId,
+    from: lastdayBeforeStartRound,
+    to: lastdayOfRound,
+  });
+
+  const startRoundData = res.poolSnapshots[res.poolSnapshots.length - 1];
+
+  const endRoundData = res.poolSnapshots[0];
+
+  if (!startRoundData || !endRoundData) {
+    return 0;
+  }
+
+  const feeDiff = endRoundData?.swapFees - startRoundData?.swapFees;
+
+  const feeApr = 10_000 * (feeDiff / endRoundData?.liquidity);
+  // reference for 10_000 https://github.com/balancer/balancer-sdk/blob/f4879f06289c6f5f9766ead1835f4f4b096ed7dd/balancer-js/src/modules/pools/apr/apr.ts#L85
+  const annualizedFeeApr =
+    feeApr *
+    (SECONDS_IN_YEAR / (endRoundData?.timestamp - startRoundData?.timestamp));
+
+  return isNaN(annualizedFeeApr) ? 0 : annualizedFeeApr / 100;
+};

@@ -5991,6 +5991,8 @@ export const PoolSnapshotInRangeDocument = gql`
     query poolSnapshotInRange($poolId: String!, $from: Int!, $to: Int!) {
   poolSnapshots(
     where: {pool_in: [$poolId], timestamp_gte: $from, timestamp_lt: $to}
+    orderBy: timestamp
+    orderDirection: desc
   ) {
     pool {
       id

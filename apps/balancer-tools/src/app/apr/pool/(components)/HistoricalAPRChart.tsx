@@ -1,4 +1,4 @@
-import { amberDarkA, blueDarkA } from "@radix-ui/colors";
+import { amberDarkA, blueDarkA, greenDarkA } from "@radix-ui/colors";
 import { PlotType } from "plotly.js";
 
 import { trimTrailingValues } from "#/lib/utils";
@@ -54,6 +54,12 @@ export default async function HistoricalAPRChart({
     0,
   );
 
+  const trimmedFeeAprData = generateAndTrimAprCords(
+    results.perRound,
+    (result) => result.apr.breakdown.swapFee,
+    0,
+  );
+
   const trimmedTotalAprData = generateAndTrimAprCords(
     results.perRound,
     (result) => result.apr.total,
@@ -68,6 +74,15 @@ export default async function HistoricalAPRChart({
     type: "scatter" as PlotType,
   };
 
+  const feeAprPerRoundData = {
+    name: "Fee APR %",
+    hovertemplate: HOVERTEMPLATE,
+    x: trimmedFeeAprData.x,
+    y: trimmedFeeAprData.y,
+    line: { shape: "spline", color: greenDarkA.greenA9 } as const,
+    type: "scatter" as PlotType,
+  };
+
   const totalAprPerRoundData = {
     name: "Total APR %",
     hovertemplate: HOVERTEMPLATE,
@@ -77,7 +92,11 @@ export default async function HistoricalAPRChart({
     type: "scatter" as PlotType,
   };
 
-  const aprPerRoundData = [totalAprPerRoundData, vebalAprPerRoundData];
+  const aprPerRoundData = [
+    totalAprPerRoundData,
+    vebalAprPerRoundData,
+    feeAprPerRoundData,
+  ];
 
   const chosenRoundMarkerIDX = vebalAprPerRoundData.x.findIndex(
     (item) => item === getRoundName(roundId),

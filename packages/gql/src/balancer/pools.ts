@@ -94,6 +94,7 @@ export const poolSnapshotInRange = gql`
         symbol
         tokens {
           symbol
+          balance
         }
       }
       amounts

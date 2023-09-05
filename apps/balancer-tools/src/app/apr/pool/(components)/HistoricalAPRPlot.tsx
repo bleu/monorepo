@@ -23,6 +23,7 @@ export default function HistoricalAPRPlot({ data }: { data: Plotly.Data[] }) {
           autosize: true,
           xaxis: {
             fixedrange: true,
+            dtick: 1,
             title: "Round Number",
           },
           yaxis: {

@@ -62,7 +62,7 @@ export const MultiSelectDropdown = ({
       return items.filter(
         (item) =>
           !selectedItems.find((selected) => selected === item) &&
-          item.includes(String(inputValue)),
+          item.toLowerCase().includes(String(inputValue?.toLowerCase())),
       );
     },
     [selectedItems],

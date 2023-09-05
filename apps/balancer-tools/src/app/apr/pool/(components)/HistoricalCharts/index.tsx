@@ -34,7 +34,7 @@ export default function HistoricalCharts({
               tabName={chartType}
               key={chartType}
               triggerBgColor="bg-blue6"
-              onClick={handleTabClick}
+              onClick={() => setSelectedTab(chartType))}
             >
               <span>{chartType}</span>
             </Tabs.ItemTrigger>

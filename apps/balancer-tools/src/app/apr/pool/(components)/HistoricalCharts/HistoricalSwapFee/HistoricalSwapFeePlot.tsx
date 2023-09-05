@@ -10,7 +10,7 @@ export default function HistoricalSwapFeePlot({
   return (
     <div className="flex justify-between bg-blue3 rounded p-4 cursor-pointer z-50">
       <Plot
-        title={`Historical Colleted Swap Fee`}
+        title={`Weekly Swap Fees (USD)`}
         data={data}
         layout={{
           autosize: true,

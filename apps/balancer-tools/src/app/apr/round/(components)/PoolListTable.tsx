@@ -27,6 +27,7 @@ import { formatNumber } from "#/utils/formatNumber";
 
 import { PoolTypeEnum } from "../../(utils)/calculatePoolStats";
 import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
+import getFilteredRoundApiUrl from "../../(utils)/getFilteredApiUrl";
 import { PoolStatsData, PoolStatsResults, PoolTokens } from "../../api/route";
 import { MoreFiltersButton } from "./MoreFiltersButton";
 import { TokenFilterInput } from "./TokenFilterInput";
@@ -64,14 +65,10 @@ export function PoolListTable({
 
   const loadMorePools = async () => {
     setIsLoadingMore(true);
+    const params = Object.fromEntries(searchParams.entries());
+    params["offset"] = (tableData.length + 1).toString();
     const aditionalPoolsData = await fetcher<PoolStatsResults>(
-      `${
-        process.env.NEXT_PUBLIC_SITE_URL
-      }/apr/api/?roundId=${roundId}&sort=${searchParams.get(
-        "sort",
-      )}&order=${searchParams.get("order")}&limit=10&offset=${
-        Object.keys(tableData).length
-      }&minTvl=1000`,
+      getFilteredRoundApiUrl(params, roundId),
     );
     setTableData((prevTableData) => {
       if (aditionalPoolsData.perRound.length === 0) setHasMorePools(false);

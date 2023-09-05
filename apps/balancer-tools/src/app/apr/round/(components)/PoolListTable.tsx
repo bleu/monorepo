@@ -19,6 +19,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { Button } from "#/components";
 import { Badge } from "#/components/Badge";
+import { PlotTitle } from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
@@ -79,6 +80,11 @@ export function PoolListTable({
 
   return (
     <div className="flex flex-col justify-center text-white">
+      <PlotTitle
+        title={`All Pools`}
+        tooltip="All values are calculated at the end of the round"
+        classNames="py-3"
+      />
       <div className="flex text-white mb-5 gap-2">
         <TokenFilterInput />
         <MoreFiltersButton />
@@ -97,11 +103,6 @@ export function PoolListTable({
                   className="flex gap-x-1 items-center float-right justify-end"
                   href={pathname + "?" + createQueryString("tvl")}
                 >
-                  <Tooltip
-                    content={`This is the TVL calculated at the end of the round`}
-                  >
-                    <InfoCircledIcon />
-                  </Tooltip>
                   <span>TVL</span>
                   {OrderIcon(searchParams, "tvl")}
                 </Link>
@@ -124,9 +125,7 @@ export function PoolListTable({
                   className="flex gap-x-1 items-center float-right justify-end"
                   href={pathname + "?" + createQueryString("apr")}
                 >
-                  <Tooltip
-                    content={`This is the APR calculate at the end of the round`}
-                  >
+                  <Tooltip content={`The value displayed is the min APR`}>
                     <InfoCircledIcon />
                   </Tooltip>
                   <span> APR</span>

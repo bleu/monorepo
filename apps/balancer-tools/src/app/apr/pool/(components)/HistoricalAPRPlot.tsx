@@ -20,6 +20,7 @@ export default function HistoricalAPRPlot({ data }: { data: Plotly.Data[] }) {
         title={`Historical APR`}
         data={data}
         layout={{
+          margin: { t: 30, r: 20, l: 20, b: 30 },
           autosize: true,
           xaxis: {
             fixedrange: true,

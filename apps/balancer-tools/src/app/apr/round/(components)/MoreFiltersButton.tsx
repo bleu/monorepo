@@ -156,7 +156,7 @@ export function MoreFiltersButton() {
     <>
       <Popover.Root>
         <Popover.Trigger asChild>
-          <div className="flex h-full items-center gap-x-2 text-sm font-normal text-slate12 bg-blue4 border border-blue6 px-2 rounded-[4px] cursor-pointer select-none">
+          <div className="flex sm:h-full items-center gap-x-2 text-sm font-normal text-slate12 bg-blue4 border border-blue6 px-2 rounded-[4px] cursor-pointer select-none h-auto max-h-8">
             <MixerHorizontalIcon />
             <span className="font-medium pr-1"> More Filters</span>
             {!!countNonNullValues() && (

@@ -70,16 +70,19 @@ export function PlotTitle({
   title,
   tooltip,
   justifyCenter = true,
+  classNames,
 }: {
   title: string;
   tooltip?: string;
   justifyCenter?: boolean;
+  classNames?: string;
 }) {
   return (
     <div
       className={cn(
         "flex items-center gap-x-2",
         justifyCenter ? "justify-center" : "",
+        classNames,
       )}
     >
       <h2 className="text-lg font-semibold text-white">{title}</h2>

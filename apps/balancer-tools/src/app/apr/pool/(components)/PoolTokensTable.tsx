@@ -14,9 +14,11 @@ export default function PoolTokensTable({
   poolTokensStats: PoolTokens[];
   poolNetwork: string;
 }) {
-  const tokenUrl = `${
-    networkUrls[poolNetwork as unknown as NetworkChainId].url
-  }address/${poolTokensStats[0].address}`;
+  const tokenUrl = (tokenAddress: string) =>
+    `${
+      networkUrls[poolNetwork as unknown as NetworkChainId].url
+    }address/${tokenAddress}`;
+
   const tokenBalanceUSD = (value: number) =>
     value.toLocaleString("en-US", {
       minimumFractionDigits: 0,
@@ -52,7 +54,7 @@ export default function PoolTokensTable({
           {poolTokensStats.map((token) => (
             <Table.BodyRow classNames="hover:bg-blue4 hover:cursor-pointer duration-500">
               <Table.BodyCellLink
-                href={tokenUrl}
+                href={tokenUrl(token.address)}
                 tdClassNames="w-max"
                 linkClassNames="flex gap-2 items-center"
               >
@@ -72,7 +74,7 @@ export default function PoolTokensTable({
               </Table.BodyCellLink>
               {token.weight && (
                 <Table.BodyCellLink
-                  href={tokenUrl}
+                  href={tokenUrl(token.address)}
                   tdClassNames="w-6"
                   linkClassNames="justify-end w-full"
                 >{`${(
@@ -81,7 +83,7 @@ export default function PoolTokensTable({
               )}
               {token.balance && (
                 <Table.BodyCellLink
-                  href={tokenUrl}
+                  href={tokenUrl(token.address)}
                   tdClassNames="w-6"
                   linkClassNames="justify-end w-full"
                 >
@@ -92,7 +94,7 @@ export default function PoolTokensTable({
               )}
               {token.price && token.balance && (
                 <Table.BodyCellLink
-                  href={tokenUrl}
+                  href={tokenUrl(token.address)}
                   tdClassNames="w-6"
                   linkClassNames="justify-end w-full"
                 >
@@ -101,7 +103,7 @@ export default function PoolTokensTable({
               )}
               {token.price && token.balance && (
                 <Table.BodyCellLink
-                  href={tokenUrl}
+                  href={tokenUrl(token.address)}
                   tdClassNames="w-6"
                   linkClassNames="justify-end w-full"
                 >

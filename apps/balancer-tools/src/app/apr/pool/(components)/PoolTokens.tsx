@@ -1,3 +1,4 @@
+import { PlotTitle } from "#/components/Plot";
 import { fetcher } from "#/utils/fetcher";
 
 import { BASE_URL, PoolStatsResults } from "../../api/route";
@@ -16,9 +17,12 @@ export default async function PoolTokens({
     }`,
   );
   return (
-    <PoolTokensTable
-      poolTokensStats={poolData.perRound[0].tokens}
-      poolNetwork={poolData.perRound[0].network}
-    />
+    <div>
+      <PlotTitle title="Pool Composition" classNames="py-3" />
+      <PoolTokensTable
+        poolTokensStats={poolData.perRound[0].tokens}
+        poolNetwork={poolData.perRound[0].network}
+      />
+    </div>
   );
 }

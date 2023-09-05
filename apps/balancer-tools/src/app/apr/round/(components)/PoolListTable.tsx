@@ -92,7 +92,7 @@ export function PoolListTable({
         <TokenFilterInput />
         <MoreFiltersButton />
       </div>
-      <div className="flex justify-center text-white shadow-lg mb-5">
+      <div className="flex justify-center text-white shadow-lg mb-5 overflow-auto scrollbar-thin scrollbar-track-blue2 scrollbar-thumb-slate12">
         <Table color="blue" shade={"darkWithBorder"}>
           <Table.HeaderRow>
             <Table.HeaderCell>Network</Table.HeaderCell>

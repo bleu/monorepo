@@ -79,7 +79,6 @@ export default function TopPoolsChart({
             side: "right",
             // @ts-ignore: 2322
             tickson: "boundaries",
-            tickfont_family: "Arial Black",
           },
         }}
       />

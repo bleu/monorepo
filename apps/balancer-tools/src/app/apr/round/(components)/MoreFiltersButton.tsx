@@ -94,6 +94,11 @@ export function MoreFiltersButton() {
       }
     });
 
+    if (!searchParams.has("sort")) {
+      current.set("sort", "apr");
+      current.set("order", "desc");
+    }
+
     const search = current.toString();
     const query = search ? `?${search}` : "";
     router.push(pathname + query, { scroll: false });

@@ -157,7 +157,7 @@ export function PoolListTable({
                 <Table.BodyRow>
                   <Table.BodyCell colSpan={6}>
                     <Button
-                      className="w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
+                      className="w-[calc(100vw-2.5rem)] sticky left-0 sm:w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
                       shade="medium"
                       disabled={isLoadingMore || !hasMorePools}
                       onClick={loadMorePools}
@@ -227,7 +227,7 @@ function TableRow({
       <Table.BodyCellLink
         href={poolRedirectURL}
         linkClassNames="gap-2"
-        tdClassNames="w-11/12"
+        tdClassNames="w-11/12 sticky left-0	opacity-90 sm:opacity-100"
       >
         {tokens.map((token) => (
           <Badge color="blue">

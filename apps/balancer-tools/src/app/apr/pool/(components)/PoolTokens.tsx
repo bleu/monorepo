@@ -22,7 +22,7 @@ export default async function PoolTokens({
       <PoolTokensTable
         poolTokensStats={poolData.perRound[0].tokens}
         poolNetwork={poolData.perRound[0].network}
-        />
+      />
     </div>
   );
 }

@@ -15,7 +15,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full">
       <Fonts />
-      <body className="bg-blue2 flex h-full min-w-[930px] flex-col">
+      <body className="bg-blue2 flex h-full flex-col">
         <RootLayout>{children}</RootLayout>
         <Footer
           githubLink="https://github.com/bleu-studio/balancer-tools"

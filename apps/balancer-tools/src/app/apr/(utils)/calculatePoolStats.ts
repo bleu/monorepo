@@ -192,7 +192,7 @@ function calculateRoundAPR(
       : null;
 
   return {
-    total: vebalAPR ? vebalAPR + feeAPR : 0 + feeAPR,
+    total: (vebalAPR || 0) + feeAPR,
     breakdown: {
       veBAL: vebalAPR,
       swapFee: feeAPR,

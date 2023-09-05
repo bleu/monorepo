@@ -31,7 +31,7 @@ export interface PoolStats {
   apr: {
     total: number;
     breakdown: {
-      veBAL: number;
+      veBAL: number | null;
       swapFee: number;
     };
   };
@@ -85,7 +85,7 @@ const computeAverages = (
       apr: {
         total: acc.apr.total + data.apr.total,
         breakdown: {
-          veBAL: acc.apr.breakdown.veBAL + data.apr.breakdown.veBAL,
+          veBAL: data.apr.breakdown.veBAL != null ? data.apr.breakdown.veBAL + acc.apr.breakdown.veBAL : 0,
           swapFee: acc.apr.breakdown.swapFee + data.apr.breakdown.swapFee,
         },
       },

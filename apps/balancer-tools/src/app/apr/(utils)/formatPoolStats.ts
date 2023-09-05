@@ -9,6 +9,9 @@ export function formatTVL(tvl: number) {
 }
 
 export function formatAPR(apr: number) {
+  if (apr === 0) {
+    return "N/A";
+  }
   return `
     ${apr.toLocaleString("en-US", {
       minimumFractionDigits: 2,

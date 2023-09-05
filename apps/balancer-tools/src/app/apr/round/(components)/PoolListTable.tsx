@@ -216,7 +216,11 @@ function TableRow({
   )}/${poolId}/round/${roundId}`;
   return (
     <Table.BodyRow classNames="hover:bg-blue4 hover:cursor-pointer duration-500">
-      <Table.BodyCellLink href={poolRedirectURL} tdClassNames="w-6">
+      <Table.BodyCellLink
+        href={poolRedirectURL}
+        tdClassNames="w-6"
+        linkClassNames="p-0"
+      >
         <Image
           src={`/assets/network/${networkFor(network)}.svg`}
           height={25}
@@ -226,11 +230,11 @@ function TableRow({
       </Table.BodyCellLink>
       <Table.BodyCellLink
         href={poolRedirectURL}
-        linkClassNames="gap-2"
-        tdClassNames="w-11/12 sticky left-0	opacity-90 sm:opacity-100"
+        linkClassNames="gap-2 from-blue3 bg-gradient-to-r flex-col sm:flex-row"
+        tdClassNames="w-11/12 sticky left-0	sm:bg-transparent"
       >
         {tokens.map((token) => (
-          <Badge color="blue">
+          <Badge color="blue" classNames="w-fit">
             {token.symbol}
             {token.weight ? (
               <span className="text-xs ml-1 text-slate-400">

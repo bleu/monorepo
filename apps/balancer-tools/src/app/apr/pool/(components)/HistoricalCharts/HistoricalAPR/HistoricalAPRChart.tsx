@@ -1,39 +1,11 @@
 import { amberDarkA, blueDarkA, greenDarkA } from "@radix-ui/colors";
 import { PlotType } from "plotly.js";
 
-import { trimTrailingValues } from "#/lib/utils";
+import { BASE_URL, PoolStatsResults } from "#/app/apr/api/route";
 import { fetcher } from "#/utils/fetcher";
 
-import { BASE_URL, PoolStatsData, PoolStatsResults } from "../../api/route";
+import { generateAndTrimAprCords, getRoundName } from "..";
 import HistoricalAPRPlot from "./HistoricalAPRPlot";
-
-function generateAndTrimAprCords(
-  data: PoolStatsData[],
-  getValue: (result: PoolStatsData) => number,
-  valueToTrim: number,
-): { x: (string | number)[]; y: (string | number)[] } {
-  const cords = Object.entries(data).reduce(
-    (cords, [_, result]) => {
-      cords.x.push(getRoundName(result.roundId));
-      cords.y.push(getValue(result));
-      return cords;
-    },
-    { x: [], y: [] } as { x: string[]; y: number[] },
-  );
-
-  const trimmedData = trimTrailingValues(
-    cords.x.reverse(),
-    cords.y.reverse(),
-    valueToTrim,
-  );
-  return {
-    x: trimmedData.trimmedIn,
-    y: trimmedData.trimmedOut,
-  };
-}
-
-const getRoundName = (roundId?: string | number) =>
-  roundId !== undefined ? `#${roundId}` : "#";
 
 export default async function HistoricalAPRChart({
   roundId,

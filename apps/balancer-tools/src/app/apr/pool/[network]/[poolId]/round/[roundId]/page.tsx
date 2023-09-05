@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 
-import HistoricalAPRChart from "#/app/apr/pool/(components)/HistoricalAPRChart";
+import HistoricalCharts from "#/app/apr/pool/(components)/HistoricalCharts";
 import PoolOverviewCards from "#/app/apr/pool/(components)/PoolOverviewCards";
 import PoolTokens from "#/app/apr/pool/(components)/PoolTokens";
 import Breadcrumb from "#/app/apr/round/(components)/Breadcrumb";
@@ -17,9 +17,7 @@ export default async function Page({
       <Suspense fallback={<Spinner />}>
         <PoolOverviewCards roundId={roundId} poolId={poolId} />
       </Suspense>
-      <Suspense fallback={<Spinner />}>
-        <HistoricalAPRChart roundId={roundId} poolId={poolId} />
-      </Suspense>
+      <HistoricalCharts roundId={roundId} poolId={poolId} />
       <Suspense fallback={<Spinner />}>
         <PoolTokens poolId={poolId} roundId={roundId} />
       </Suspense>

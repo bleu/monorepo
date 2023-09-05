@@ -26,26 +26,30 @@ export default function PoolTokensTable({
     });
   return (
     <>
-      <Table color="blue" shade={"darkWithBorder"}>
+      <Table
+        classNames="min-w-full border border-blue6 rounded overflow-auto"
+        color="blue"
+        shade={"darkWithBorder"}
+      >
         <Table.HeaderRow>
           <Table.HeaderCell>Name</Table.HeaderCell>
           {poolTokensStats[0].weight && (
-            <Table.HeaderCell classNames="w-1/6 text-end p-4">
+            <Table.HeaderCell classNames="w-1/6 text-end p-4 whitespace-nowrap">
               Weight
             </Table.HeaderCell>
           )}
           {poolTokensStats[0].balance && (
-            <Table.HeaderCell classNames="w-1/6 text-end p-4">
+            <Table.HeaderCell classNames="w-1/6 text-end p-4 whitespace-nowrap">
               Balance
             </Table.HeaderCell>
           )}
           {poolTokensStats[0].price && poolTokensStats[0].balance && (
-            <Table.HeaderCell classNames="w-1/6 text-end p-4">
+            <Table.HeaderCell classNames="w-1/6 text-end p-4 whitespace-nowrap">
               Value
             </Table.HeaderCell>
           )}
           {poolTokensStats[0].price && poolTokensStats[0].balance && (
-            <Table.HeaderCell classNames="w-1/6 text-end p-4">
+            <Table.HeaderCell classNames="w-1/6 text-end p-4 whitespace-nowrap">
               Token %
             </Table.HeaderCell>
           )}

@@ -48,6 +48,9 @@ export function PoolListTable({
 
   useEffect(() => {
     setTableData(initialData);
+    if (tableData.length < 10) {
+      setHasMorePools(false);
+    }
   }, [initialData]);
 
   const createQueryString = useCallback(

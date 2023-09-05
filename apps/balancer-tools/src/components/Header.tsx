@@ -44,7 +44,7 @@ export function Header({
           </div>
         </Link>
       </div>
-      <div className="flex flex-1 justify-center">{children}</div>
+      {children && <div className="flex flex-1 justify-center">{children}</div>}
       <div className="ml-auto flex flex-1 justify-end">{endButton}</div>
     </div>
   );

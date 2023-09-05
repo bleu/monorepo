@@ -45,7 +45,7 @@ export default async function HistoricalSwapFeeChart({
     type: "bar" as PlotType,
   };
 
-  const chosenRoundMarkerIDX = colletedSwapFeePerRoundData.x.findIndex(
+  const chosenRoundMarkerIdx = colletedSwapFeePerRoundData.x.findIndex(
     (item) => item === getRoundName(roundId),
   );
 

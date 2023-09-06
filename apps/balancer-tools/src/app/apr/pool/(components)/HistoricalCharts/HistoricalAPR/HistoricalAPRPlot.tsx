@@ -4,7 +4,6 @@ import Plot from "#/components/Plot";
 
 export default function HistoricalAPRPlot({ data }: { data: Plotly.Data[] }) {
   return (
-    <div className="flex justify-between bg-blue3 rounded p-4 cursor-pointer z-50">
       <Plot
         title={`Historical APR`}
         data={data}
@@ -23,6 +22,5 @@ export default function HistoricalAPRPlot({ data }: { data: Plotly.Data[] }) {
           },
         }}
       />
-    </div>
   );
 }

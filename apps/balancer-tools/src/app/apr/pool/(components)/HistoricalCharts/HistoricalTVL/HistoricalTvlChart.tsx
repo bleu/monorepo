@@ -5,7 +5,7 @@ import { BASE_URL, PoolStatsResults } from "#/app/apr/api/route";
 import { fetcher } from "#/utils/fetcher";
 
 import { generateAndTrimAprCords, getRoundName } from "..";
-import HistoricalTvlPlot from "./HistoricalTVLPlot";
+import HistoricalTvlPlot from "./HistoricalTvlPlot";
 
 export default async function HistoricalTvlChart({
   roundId,

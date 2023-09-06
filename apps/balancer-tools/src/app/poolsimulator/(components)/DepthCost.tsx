@@ -4,7 +4,7 @@ import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
 import { PoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/types";
 import { PlotType } from "plotly.js";
 
-import { ErrorCard } from "#/components/ErrorCard";
+import { AlertCard } from "#/components/AlertCard";
 import Plot, { defaultAxisLayout, PlotTitle } from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
 import {
@@ -23,7 +23,7 @@ export function DepthCost() {
   const { analysisToken, initialData, customData, initialAMM, customAMM } =
     usePoolSimulator();
 
-  if (!initialAMM || !customAMM) return <Spinner />;
+  if (!initialAMM || !customAMM || !analysisToken.balance) return <Spinner />;
 
   const pairTokens = initialData?.tokens.filter(
     (token) => token.symbol !== analysisToken.symbol,
@@ -171,7 +171,8 @@ export function DepthCost() {
     return (
       <div className="flex w-full flex-col">
         <PlotTitle title={PLOT_TITLE} tooltip={PLOT_TOOLTIP} />
-        <ErrorCard
+        <AlertCard
+          style="error"
           message="The depth cost chart runs using numerical calculus. Usually this happens because at least one pool parameter value is not defined properly, so the simulation does not converge. Please review the initial and custom pool parameters used."
           title="Depth Cost didn't converge"
         />

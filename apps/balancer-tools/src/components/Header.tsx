@@ -19,6 +19,7 @@ interface IHeader {
   title: string;
   children?: ReactNode;
   endButton?: ReactNode;
+  onLinkClick?: () => void;
 }
 
 export function Header({
@@ -27,21 +28,23 @@ export function Header({
   title,
   children,
   endButton = <CustomConnectButton />,
+  onLinkClick,
 }: IHeader) {
   return (
     <div className="flex h-20 w-full items-center border-b border-b-blue3 bg-blue2 p-4 text-white">
-      <div className="mr-auto flex flex-1 justify-start">
+      <div className="mr-auto flex sm:flex-1 justify-start">
         <Link
           href={linkUrl}
+          onClick={onLinkClick}
           className="flex items-center gap-3 justify-self-start"
         >
           {imageSrc && <Image src={imageSrc} height={50} width={50} alt="" />}
-          <div className="text-xl font-thin text-slate12">
+          <div className="hidden sm:block text-xl font-thin text-slate12">
             Balancer <p className="font-medium">{title}</p>
           </div>
         </Link>
       </div>
-      <div className="flex flex-1 justify-center">{children}</div>
+      {children && <div className="flex flex-1 justify-center">{children}</div>}
       <div className="ml-auto flex flex-1 justify-end">{endButton}</div>
     </div>
   );

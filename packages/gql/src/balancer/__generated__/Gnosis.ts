@@ -5887,12 +5887,21 @@ export type PoolsWherePoolTypeQueryVariables = Exact<{
 
 export type PoolsWherePoolTypeQuery = { __typename?: 'Query', pools: Array<{ __typename?: 'Pool', id: string, address: any, name?: string | null, poolType?: string | null, symbol?: string | null, totalLiquidity: any, tokens?: Array<{ __typename?: 'PoolToken', symbol: string }> | null }> };
 
+export type PoolSnapshotInRangeQueryVariables = Exact<{
+  poolId: Scalars['String'];
+  from: Scalars['Int'];
+  to: Scalars['Int'];
+}>;
+
+
+export type PoolSnapshotInRangeQuery = { __typename?: 'Query', poolSnapshots: Array<{ __typename?: 'PoolSnapshot', amounts: Array<any>, totalShares: any, swapVolume: any, protocolFee?: any | null, swapFees: any, liquidity: any, swapsCount: any, holdersCount: any, timestamp: number, pool: { __typename?: 'Pool', id: string, address: any, name?: string | null, poolType?: string | null, symbol?: string | null, tokens?: Array<{ __typename?: 'PoolToken', symbol: string, balance: any }> | null } }> };
+
 export type PoolQueryVariables = Exact<{
   poolId: Scalars['ID'];
 }>;
 
 
-export type PoolQuery = { __typename?: 'Query', pool?: { __typename?: 'Pool', address: any, owner?: any | null, poolType?: string | null, symbol?: string | null, swapFee: any, amp?: any | null, c?: any | null, s?: any | null, alpha?: any | null, beta?: any | null, sqrtAlpha?: any | null, sqrtBeta?: any | null, root3Alpha?: any | null, lambda?: any | null, tauAlphaX?: any | null, tauAlphaY?: any | null, tauBetaX?: any | null, tauBetaY?: any | null, delta?: any | null, epsilon?: any | null, u?: any | null, v?: any | null, w?: any | null, z?: any | null, dSq?: any | null, tokens?: Array<{ __typename?: 'PoolToken', address: string, symbol: string, balance: any, decimals: number, priceRate: any, token: { __typename?: 'Token', fxOracleDecimals?: number | null, latestFXPrice?: any | null } }> | null } | null };
+export type PoolQuery = { __typename?: 'Query', pool?: { __typename?: 'Pool', address: any, owner?: any | null, poolType?: string | null, symbol?: string | null, swapFee: any, totalLiquidity: any, amp?: any | null, c?: any | null, s?: any | null, alpha?: any | null, beta?: any | null, sqrtAlpha?: any | null, sqrtBeta?: any | null, root3Alpha?: any | null, lambda?: any | null, tauAlphaX?: any | null, tauAlphaY?: any | null, tauBetaX?: any | null, tauBetaY?: any | null, delta?: any | null, epsilon?: any | null, u?: any | null, v?: any | null, w?: any | null, z?: any | null, dSq?: any | null, tokens?: Array<{ __typename?: 'PoolToken', address: string, symbol: string, balance: any, decimals: number, priceRate: any, token: { __typename?: 'Token', fxOracleDecimals?: number | null, latestFXPrice?: any | null } }> | null } | null };
 
 
 export const InternalBalanceDocument = gql`
@@ -5980,6 +5989,36 @@ export const PoolsWherePoolTypeDocument = gql`
   }
 }
     `;
+export const PoolSnapshotInRangeDocument = gql`
+    query poolSnapshotInRange($poolId: String!, $from: Int!, $to: Int!) {
+  poolSnapshots(
+    where: {pool_in: [$poolId], timestamp_gte: $from, timestamp_lt: $to}
+    orderBy: timestamp
+    orderDirection: desc
+  ) {
+    pool {
+      id
+      address
+      name
+      poolType
+      symbol
+      tokens {
+        symbol
+        balance
+      }
+    }
+    amounts
+    totalShares
+    swapVolume
+    protocolFee
+    swapFees
+    liquidity
+    swapsCount
+    holdersCount
+    timestamp
+  }
+}
+    `;
 export const PoolDocument = gql`
     query Pool($poolId: ID!) {
   pool(id: $poolId) {
@@ -5988,6 +6027,7 @@ export const PoolDocument = gql`
     poolType
     symbol
     swapFee
+    totalLiquidity
     amp
     c
     s
@@ -6045,6 +6085,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     PoolsWherePoolType(variables?: PoolsWherePoolTypeQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<PoolsWherePoolTypeQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<PoolsWherePoolTypeQuery>(PoolsWherePoolTypeDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PoolsWherePoolType', 'query');
     },
+    poolSnapshotInRange(variables: PoolSnapshotInRangeQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<PoolSnapshotInRangeQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<PoolSnapshotInRangeQuery>(PoolSnapshotInRangeDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'poolSnapshotInRange', 'query');
+    },
     Pool(variables: PoolQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<PoolQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<PoolQuery>(PoolDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Pool', 'query');
     }
@@ -6070,6 +6113,9 @@ export function getSdkWithHooks(client: GraphQLClient, withWrapper: SdkFunctionW
     },
     usePoolsWherePoolType(variables?: PoolsWherePoolTypeQueryVariables, config?: SWRConfigInterface<PoolsWherePoolTypeQuery, ClientError>) {
       return useSWR<PoolsWherePoolTypeQuery, ClientError>(genKey<PoolsWherePoolTypeQueryVariables>('PoolsWherePoolType', variables), () => sdk.PoolsWherePoolType(variables), config);
+    },
+    usePoolSnapshotInRange(variables: PoolSnapshotInRangeQueryVariables, config?: SWRConfigInterface<PoolSnapshotInRangeQuery, ClientError>) {
+      return useSWR<PoolSnapshotInRangeQuery, ClientError>(genKey<PoolSnapshotInRangeQueryVariables>('PoolSnapshotInRange', variables), () => sdk.poolSnapshotInRange(variables), config);
     },
     usePool(variables: PoolQueryVariables, config?: SWRConfigInterface<PoolQuery, ClientError>) {
       return useSWR<PoolQuery, ClientError>(genKey<PoolQueryVariables>('Pool', variables), () => sdk.Pool(variables), config);

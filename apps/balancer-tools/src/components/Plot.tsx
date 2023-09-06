@@ -1,3 +1,4 @@
+"use client";
 import { amberDarkA, blueDarkA, grayDarkA, slateDarkA } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import cn from "clsx";
@@ -7,11 +8,11 @@ import { PlotParams } from "react-plotly.js";
 
 import { Spinner } from "#/components/Spinner";
 
-import { Tooltip } from "./Tooltip";
+import { TooltipMobile } from "./TooltipMobile";
 
 interface PlotProps extends PlotParams {
   title: string;
-  toolTip: string;
+  toolTip?: string;
 }
 
 const PlotRoot = dynamic(() => import("react-plotly.js"), {
@@ -69,22 +70,29 @@ export function PlotTitle({
   title,
   tooltip,
   justifyCenter = true,
+  classNames,
 }: {
   title: string;
-  tooltip: string;
+  tooltip?: string;
   justifyCenter?: boolean;
+  classNames?: string;
 }) {
   return (
     <div
       className={cn(
         "flex items-center gap-x-2",
         justifyCenter ? "justify-center" : "",
+        classNames,
       )}
     >
       <h2 className="text-lg font-semibold text-white">{title}</h2>
-      <Tooltip content={tooltip}>
-        <InfoCircledIcon color={slateDarkA.slateA11} />
-      </Tooltip>
+      {tooltip ? (
+        <TooltipMobile content={tooltip}>
+          <InfoCircledIcon color={slateDarkA.slateA11} />
+        </TooltipMobile>
+      ) : (
+        <></>
+      )}
     </div>
   );
 }

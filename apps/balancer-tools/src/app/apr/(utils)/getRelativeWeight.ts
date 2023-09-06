@@ -14,7 +14,6 @@ const GAUGES_CONTROLLER_MAINNET_ADDRESS =
 export async function getPoolRelativeWeight(
   poolId: string,
   time: number = Date.now() / 1000,
-  // blockNumber: bigint = 17880776n,
 ) {
   const gaugeAddress = new Pool(poolId).gauge?.address;
   if (!gaugeAddress) throw new Error(`No gauge found for pool ${poolId}`);
@@ -25,12 +24,12 @@ export async function getPoolRelativeWeight(
       abi,
       functionName: "gauge_relative_weight",
       args: [gaugeAddress as Address, BigInt(Math.floor(time))],
-      // blockNumber,
     });
 
     return Number(data) / 1e18;
   } catch (error) {
-    // If the gauge returns 0, it means it was not active at the time or does not have any votes
-    return 0;
+    throw new Error(
+      `Error fetching relative weight for pool ${poolId}, ${time}, ${error}`,
+    );
   }
 }

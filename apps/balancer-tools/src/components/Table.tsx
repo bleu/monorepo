@@ -1,4 +1,6 @@
+"use client";
 import cn from "clsx";
+import Link from "next/link";
 import { createContext, useContext } from "react";
 
 const TableContext = createContext({});
@@ -6,12 +8,20 @@ const TableContext = createContext({});
 const predefinedClasses = {
   gray: {
     solid: {
-      dark: { style: "bg-slate3", border: "border border-slate7 rounded" },
+      dark: { style: "bg-slate3", border: "border-0" },
+      darkWithBorder: {
+        style: "bg-slate3",
+        border: "border border-slate7 rounded",
+      },
     },
   },
   blue: {
     solid: {
       dark: { style: "bg-blue3", border: "border-0" },
+      darkWithBorder: {
+        style: "bg-blue3",
+        border: "border border-blue6 rounded",
+      },
     },
   },
 } as const;
@@ -49,14 +59,15 @@ export default function Table({
       <div
         className={cn(
           "min-w-full",
-          classNames ?? classNames,
           predefinedClasses[color][variant][shade].border,
+          classNames ?? classNames,
         )}
       >
         <table
           className={cn(
             "divide-y divide-slate7 min-w-full rounded",
             predefinedClasses[color][variant][shade].style,
+            "w-full h-full",
           )}
         >
           {children}
@@ -77,13 +88,23 @@ function HeaderRow({ children }: React.PropsWithChildren) {
 
 function HeaderCell({
   children,
-  padding = "p-4",
-}: React.PropsWithChildren<{ padding?: string }>) {
+  classNames = "p-4",
+  onClick,
+}: React.PropsWithChildren<{
+  padding?: string;
+  classNames?: string;
+  onClick?: () => void;
+}>) {
   useTableContext();
   return (
     <th
+      onClick={onClick}
       scope="col"
-      className={cn("text-slate12 text-left text-sm font-semibold", padding)}
+      className={cn(
+        "text-slate12 text-left text-sm font-semibold",
+        onClick ? "cursor-pointer" : "",
+        classNames,
+      )}
     >
       {children}
     </th>
@@ -93,6 +114,43 @@ function HeaderCell({
 function Body({ children }: React.PropsWithChildren) {
   useTableContext();
   return <tbody>{children}</tbody>;
+}
+
+function BodyCellLink({
+  children,
+  href,
+  linkClassNames,
+  tdClassNames,
+  padding,
+  ...props
+}: React.PropsWithChildren<{
+  href: string;
+  linkClassNames?: string;
+  tdClassNames?: string;
+  customWidth?: string;
+  padding?: string;
+  colSpan?: number;
+}>) {
+  useTableContext();
+  return (
+    <BodyCell
+      classNames={tdClassNames}
+      padding={padding ? padding : "p-0"}
+      {...props}
+    >
+      <div>
+        <Link
+          href={href}
+          className={cn([
+            "whitespace-nowrap text-sm text-slate10 p-4 flex text-white",
+            linkClassNames,
+          ])}
+        >
+          {children}
+        </Link>
+      </div>
+    </BodyCell>
+  );
 }
 
 function BodyRow({
@@ -118,14 +176,23 @@ function BodyCell({
   children,
   customWidth,
   padding = "p-4",
-}: React.PropsWithChildren<{ customWidth?: string; padding?: string }>) {
+  colSpan = 1,
+  classNames,
+}: React.PropsWithChildren<{
+  customWidth?: string;
+  padding?: string;
+  colSpan?: number;
+  classNames?: string;
+}>) {
   useTableContext();
   return (
     <td
       className={cn(
         "whitespace-nowrap text-sm text-slate10",
-        customWidth ? cn(customWidth, "pl-4") : padding,
+        customWidth ? cn(customWidth, "pl-4") : colSpan === 1 ? padding : "p-0",
+        classNames,
       )}
+      colSpan={colSpan}
     >
       {children}
     </td>
@@ -137,3 +204,4 @@ Table.HeaderCell = HeaderCell;
 Table.Body = Body;
 Table.BodyRow = BodyRow;
 Table.BodyCell = BodyCell;
+Table.BodyCellLink = BodyCellLink;

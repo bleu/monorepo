@@ -35,15 +35,20 @@ export function TokenTable({ data }: { data: AnalysisData }) {
   const aboveOrEqualLimit = data?.tokens?.length >= MAX_POOL_TOKENS;
   return (
     <div className="flex w-full flex-1 justify-center text-white">
-      <Table classNames="max-h-[220px] overflow-y-auto">
+      <Table
+        classNames="max-h-[220px] overflow-y-auto"
+        shade={"darkWithBorder"}
+      >
         <Table.HeaderRow>
-          <Table.HeaderCell padding={customPadding}>
+          <Table.HeaderCell classNames={customPadding}>
             <span className="sr-only">Edit</span>
           </Table.HeaderCell>
-          <Table.HeaderCell padding={customPadding}>Symbol</Table.HeaderCell>
-          <Table.HeaderCell padding={customPadding}>Balance</Table.HeaderCell>
-          <Table.HeaderCell padding={customPadding}>Rate</Table.HeaderCell>
-          <Table.HeaderCell padding={customPadding}>
+          <Table.HeaderCell classNames={customPadding}>Symbol</Table.HeaderCell>
+          <Table.HeaderCell classNames={customPadding}>
+            Balance
+          </Table.HeaderCell>
+          <Table.HeaderCell classNames={customPadding}>Rate</Table.HeaderCell>
+          <Table.HeaderCell classNames={customPadding}>
             {aboveOrEqualLimit && (
               <Tooltip
                 content={`This pool type can't have more than ${MAX_POOL_TOKENS} tokens.`}

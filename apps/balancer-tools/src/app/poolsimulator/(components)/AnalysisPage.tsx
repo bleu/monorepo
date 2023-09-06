@@ -1,22 +1,25 @@
 "use client";
 
-import { Spinner } from "#/components/Spinner";
+import { AlertCard } from "#/components/AlertCard";
 import { Tabs } from "#/components/Tabs";
 import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 
+import { PoolTypeEnum } from "../(types)";
+import { ImpactCurve } from "./Curves/ImpactCurve";
+import { SwapCurve } from "./Curves/SwapCurve";
 import { DepthCost } from "./DepthCost";
-import { ImpactCurve } from "./ImpactCurve";
-import { SwapCurve } from "./SwapCurve";
 import { SwapSimulator } from "./SwapSimulator";
 import { TokensDistribution } from "./TokensDistribution";
 
-export default function Page() {
-  const { initialData, analysisToken, setCurrentTabTokenByIndex } =
-    usePoolSimulator();
+const stablePoolTypes = [
+  PoolTypeEnum.Fx,
+  PoolTypeEnum.MetaStable,
+  PoolTypeEnum.GyroE,
+];
 
-  if (!analysisToken.symbol) {
-    return <Spinner />;
-  }
+export default function Page() {
+  const { initialData, customData, analysisToken, setCurrentTabTokenByIndex } =
+    usePoolSimulator();
 
   const indexCurrentTabToken = initialData?.tokens.findIndex(
     ({ symbol }) => symbol.toLowerCase() !== analysisToken.symbol.toLowerCase(),
@@ -32,10 +35,21 @@ export default function Page() {
     setCurrentTabTokenByIndex(tokensSymbol.indexOf(target.innerText));
   }
 
+  const poolTypes = [initialData?.poolType, customData?.poolType];
+  const poolsHaveDifferentPurpose =
+    poolTypes.filter((type) => stablePoolTypes.includes(type)).length == 1; // length equal one means that
+
   return (
     <>
       <div className="flex lg:max-h-[calc(100vh-132px)] w-full flex-col gap-y-20 lg:overflow-auto pr-8 pt-8">
         {/* (h-screen - (header's height + footer's height)) = graph's height space */}
+        {poolsHaveDifferentPurpose && (
+          <AlertCard
+            style="warning"
+            title="Pools with purposes"
+            message="One of the pools was made for stable assets, while the other for non-stable. This may lead to results with different scale ranges."
+          />
+        )}
         <div>
           <div className="flex h-full w-full flex-col lg:flex-row gap-5">
             <SwapSimulator />

@@ -132,14 +132,14 @@ export const AddressSchema = z.object({
     }),
 });
 
-export const getStableSwapSimulatorTokensSchema = ({
+export const getPoolSimulatorTokenSchema = ({
   symbolToEdit,
   existentSymbols,
 }: {
   symbolToEdit?: string;
   existentSymbols?: string[];
 }) => {
-  const StableSwapSimulatorTokensSchema = z.object({
+  const PoolSimulatorTokenSchema = z.object({
     symbol: z
       .string()
       .min(1)
@@ -161,7 +161,7 @@ export const getStableSwapSimulatorTokensSchema = ({
     rate: z.coerce.number().positive(),
     decimal: z.coerce.number().int().positive().max(60),
   });
-  return StableSwapSimulatorTokensSchema;
+  return PoolSimulatorTokenSchema;
 };
 
 export const BasePoolSchema = z.object({
@@ -250,8 +250,7 @@ export const FxSchema = BasePoolSchema.extend({
     },
   );
 
-// TODO: BAL-518 Rename this to StableSwapSchema when pool simulator is finished
-export const StableSwapSimulatorDataSchema = BasePoolSchema.extend({
+export const MetaStableSchema = BasePoolSchema.extend({
   ampFactor: z.coerce.number().positive().min(1).max(5000), //source: https://github.com/balancer/balancer-v2-monorepo/blob/c4cc3d466eaa3c1e5fa62d303208c6c4a10db48a/pkg/pool-stable/contracts/StableMath.sol#L28
   tokens: z.array(BaseTokenSchema).min(2).max(5),
 });

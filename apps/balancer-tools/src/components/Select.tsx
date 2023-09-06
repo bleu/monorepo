@@ -13,6 +13,7 @@ type SelectProps = ComponentPropsWithRef<typeof SelectPrimitive.Root>;
 interface ISelect extends SelectProps {
   theme?: "dark" | "light";
   className?: string;
+  placeholder?: string;
 }
 type SelectItemProps = React.ComponentPropsWithRef<typeof SelectPrimitive.Item>;
 
@@ -25,7 +26,10 @@ const baseLight =
   "bg-white text-slate12 data-[highlighted]:bg-blue5 data-[highlighted]:text-white";
 
 export const Select = forwardRef<HTMLButtonElement, ISelect>(
-  ({ children, theme = "dark", className = "", ...props }, forwardedRef) => {
+  (
+    { children, theme = "dark", className = "", placeholder = null, ...props },
+    forwardedRef,
+  ) => {
     const baseTheme = theme === "dark" ? baseDark : baseLight;
     return (
       <SelectPrimitive.Root {...props}>
@@ -34,13 +38,13 @@ export const Select = forwardRef<HTMLButtonElement, ISelect>(
             "inline-flex h-[35px] outline-none items-center justify-between gap-[4px] rounded px-[8px] text-[13px] leading-none ",
             baseTheme,
             theme === "dark"
-              ? "shadow-blue1/10 border-blue6 border hover:bg-blue4 focus:shadow-[0_0_0_2px] focus:shadow-blue1 disabled:bg-blackA9 data-[placeholder]:text-blue9 shadow-[0_2px_10px]"
+              ? "shadow-blue1/10 border-blue6 border hover:bg-blue4 focus:shadow-[0_0_0_2px] focus:shadow-blue1 disabled:bg-blackA9 shadow-[0_2px_10px]"
               : "",
             className,
           )}
           ref={forwardedRef}
         >
-          <SelectPrimitive.Value />
+          <SelectPrimitive.Value placeholder={placeholder} />
           <SelectPrimitive.Icon className={baseTheme}>
             <ChevronDownIcon />
           </SelectPrimitive.Icon>

@@ -79,6 +79,37 @@ export const poolWherePoolType = gql`
   }
 `;
 
+export const poolSnapshotInRange = gql`
+  query poolSnapshotInRange($poolId: String!, $from: Int!, $to: Int!) {
+    poolSnapshots(
+      where: { pool_in: [$poolId], timestamp_gte: $from, timestamp_lt: $to }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      pool {
+        id
+        address
+        name
+        poolType
+        symbol
+        tokens {
+          symbol
+          balance
+        }
+      }
+      amounts
+      totalShares
+      swapVolume
+      protocolFee
+      swapFees
+      liquidity
+      swapsCount
+      holdersCount
+      timestamp
+    }
+  }
+`;
+
 export const poolById = gql`
   query Pool($poolId: ID!) {
     pool(id: $poolId) {
@@ -87,6 +118,7 @@ export const poolById = gql`
       poolType
       symbol
       swapFee
+      totalLiquidity
       amp
       c
       s

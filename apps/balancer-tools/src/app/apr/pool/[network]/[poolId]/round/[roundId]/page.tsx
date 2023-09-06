@@ -1,29 +1,27 @@
 import { Suspense } from "react";
 
-import BALPrice from "#/app/apr/(components)/BALPrice";
-import { PoolCard } from "#/app/apr/round/(components)/PoolsCards";
-import { Pool } from "#/lib/balancer/gauges";
+import HistoricalAPRChart from "#/app/apr/pool/(components)/HistoricalAPRChart";
+import PoolOverviewCards from "#/app/apr/pool/(components)/PoolOverviewCards";
+import PoolTokens from "#/app/apr/pool/(components)/PoolTokens";
+import Breadcrumb from "#/app/apr/round/(components)/Breadcrumb";
+import { Spinner } from "#/components/Spinner";
 
 export default async function Page({
-  params,
+  params: { roundId, poolId },
 }: {
-  params: { poolId: string; network: string; roundId: string };
+  params: { roundId: string; poolId: string };
 }) {
-  const { poolId, roundId } = params;
-
-  const pool = new Pool(poolId);
-
   return (
-    <div className="flex h-full w-full flex-col justify-center rounded-3xl text-white">
-      <Suspense fallback={"Loading..."}>
-        <BALPrice />
+    <div className="flex flex-1 h-full w-full flex-col justify-start rounded-3xl text-white gap-y-3">
+      <Breadcrumb />
+      <Suspense fallback={<Spinner />}>
+        <PoolOverviewCards roundId={roundId} poolId={poolId} />
       </Suspense>
-      <Suspense fallback={"Loading..."}>
-        <PoolCard
-          roundId={roundId}
-          poolId={pool.id}
-          network={pool.gauge?.network}
-        />
+      <Suspense fallback={<Spinner />}>
+        <HistoricalAPRChart roundId={roundId} poolId={poolId} />
+      </Suspense>
+      <Suspense fallback={<Spinner />}>
+        <PoolTokens poolId={poolId} roundId={roundId} />
       </Suspense>
     </div>
   );

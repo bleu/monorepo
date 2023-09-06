@@ -39,24 +39,26 @@ const clientFor = (client: Subgraph) => (chainId: string) => {
 
 export const pools = {
   client: clientFor(Subgraph.Balancer),
-  gql: (chainId: string) =>
-    balancerSdks[networkFor(chainId)](pools.client(chainId)),
+  gql: (chainId: number | string) =>
+    balancerSdks[networkFor(chainId)](pools.client(String(chainId))),
 };
 
 export const poolsMetadata = {
   client: clientFor(Subgraph.BalancerPoolsMetadata),
-  gql: (chainId: string) =>
-    poolMetadataSdks[networkFor(chainId)](poolsMetadata.client(chainId)),
+  gql: (chainId: number | string) =>
+    poolMetadataSdks[networkFor(chainId)](
+      poolsMetadata.client(String(chainId)),
+    ),
 };
 
 export const gauges = {
   client: clientFor(Subgraph.BalancerGauges),
-  gql: (chainId: string) =>
-    gaugesSdks[networkFor(chainId)](gauges.client(chainId)),
+  gql: (chainId: number | string) =>
+    gaugesSdks[networkFor(chainId)](gauges.client(String(chainId))),
 };
 
 export const internalBalances = {
   client: clientFor(Subgraph.Balancer),
-  gql: (chainId: string) =>
-    balancerSdks[networkFor(chainId)](internalBalances.client(chainId)),
+  gql: (chainId: number | string) =>
+    balancerSdks[networkFor(chainId)](internalBalances.client(String(chainId))),
 };

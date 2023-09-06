@@ -218,8 +218,7 @@ function TableRow({
     <Table.BodyRow classNames="sm:hover:bg-blue4 hover:cursor-pointer duration-500">
       <Table.BodyCellLink
         href={poolRedirectURL}
-        tdClassNames="w-6"
-        linkClassNames="p-0"
+        tdClassNames="flex justify-center items-start sm:items-center h-full w-full"
       >
         <Image
           src={`/assets/network/${networkFor(network)}.svg`}

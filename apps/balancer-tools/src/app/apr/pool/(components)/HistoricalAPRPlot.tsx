@@ -23,7 +23,7 @@ export default function HistoricalAPRPlot({ data }: { data: Plotly.Data[] }) {
         layout={{
           margin: { t: 30, r: 20, l: 20, b: 30 },
           autosize: true,
-          legend: {"orientation": "h", y: -0.2, xanchor: "center", x: 0.5},
+          legend: { orientation: "h", y: -0.2, xanchor: "center", x: 0.5 },
           xaxis: {
             dtick: 1,
             title: "Round Number",

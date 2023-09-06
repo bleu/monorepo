@@ -10,6 +10,16 @@ import { getBALPriceByRound, getTokenPriceByRound } from "./getBALPriceByRound";
 import { getPoolRelativeWeight } from "./getRelativeWeight";
 import { Round } from "./rounds";
 
+export interface calculatePoolData extends Omit<PoolStatsData, "apr"> {
+  apr: {
+    total: number;
+    breakdown: {
+      veBAL: number | null;
+      swapFee: number;
+    };
+  };
+}
+
 // The enum namings should be human-readable and are based on what Balancer shows on their FE
 export enum PoolTypeEnum {
   PHANTOM_STABLE = "ComposableStable",
@@ -107,7 +117,7 @@ export async function calculatePoolStats({
 }: {
   roundId: string;
   poolId: string;
-}): Promise<PoolStatsData> {
+}): Promise<calculatePoolData> {
   const round = Round.getRoundByNumber(roundId);
   const pool = new Pool(poolId);
   const network = String(pool.network ?? 1);
@@ -156,8 +166,8 @@ export async function calculatePoolStats({
 
   const apr = calculateRoundAPR(round, votingShare, tvl, balPriceUSD, feeAPR);
 
-  if (apr.total === -1 || apr.breakdown.veBAL === -1) {
-    Sentry.captureMessage("vebalAPR resulted in -1", {
+  if (apr.total === null || apr.breakdown.veBAL === null) {
+    Sentry.captureMessage("vebalAPR resulted in null", {
       level: "warning",
       extra: { balPriceUSD, tvl, votingShare, roundId, poolId, apr },
     });
@@ -189,10 +199,10 @@ function calculateRoundAPR(
   const vebalAPR =
     balPriceUSD && tvl && votingShare
       ? ((WEEKS_IN_YEAR * (emissions * votingShare * balPriceUSD)) / tvl) * 100
-      : -1;
+      : null;
 
   return {
-    total: vebalAPR + feeAPR,
+    total: (vebalAPR || 0) + feeAPR,
     breakdown: {
       veBAL: vebalAPR,
       swapFee: feeAPR,

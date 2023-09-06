@@ -6,6 +6,7 @@ import { Pool, POOLS_WITH_LIVE_GAUGES } from "#/lib/balancer/gauges";
 import { fetcher } from "#/utils/fetcher";
 
 import {
+  calculatePoolData,
   calculatePoolStats,
   PoolTypeEnum,
 } from "../(utils)/calculatePoolStats";
@@ -78,14 +79,15 @@ const getDataFromCacheOrCompute = async <T>(
 };
 
 const computeAverages = (
-  poolData: PoolStatsData[],
+  poolData: calculatePoolData[],
 ): PoolStatsWithoutVotingShareAndCollectedFees => {
   const total = poolData.reduce(
     (acc, data) => ({
       apr: {
         total: acc.apr.total + data.apr.total,
         breakdown: {
-          veBAL: acc.apr.breakdown.veBAL + data.apr.breakdown.veBAL,
+          veBAL:
+            (data.apr.breakdown.veBAL || 0) + (acc.apr.breakdown.veBAL + 0),
           swapFee: acc.apr.breakdown.swapFee + data.apr.breakdown.swapFee,
         },
       },
@@ -160,7 +162,7 @@ const fetchDataForPoolIdRoundId = async (poolId: string, roundId: string) => {
 
   while (attempts < MAX_RETRIES) {
     try {
-      const data: PoolStatsData | null = await calculatePoolStats({
+      const data: calculatePoolData | null = await calculatePoolStats({
         roundId,
         poolId,
       });

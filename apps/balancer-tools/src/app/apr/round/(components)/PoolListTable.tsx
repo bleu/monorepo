@@ -22,6 +22,7 @@ import { Badge } from "#/components/Badge";
 import { PlotTitle } from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
+import { TooltipMobile } from "#/components/TooltipMobile";
 import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 
@@ -31,7 +32,6 @@ import getFilteredRoundApiUrl from "../../(utils)/getFilteredApiUrl";
 import { PoolStatsData, PoolStatsResults, PoolTokens } from "../../api/route";
 import { MoreFiltersButton } from "./MoreFiltersButton";
 import { TokenFilterInput } from "./TokenFilterInput";
-import { TooltipMobile } from "#/components/TooltipMobile";
 
 export function PoolListTable({
   roundId,

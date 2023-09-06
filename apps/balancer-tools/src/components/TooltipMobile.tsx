@@ -7,7 +7,6 @@ export function TooltipMobile({
   children,
   disableTooltip = false,
   content,
-  open = false,
   defaultOpen,
   onOpenChange,
   ...props

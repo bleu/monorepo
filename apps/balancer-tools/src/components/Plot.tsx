@@ -8,7 +8,7 @@ import { PlotParams } from "react-plotly.js";
 
 import { Spinner } from "#/components/Spinner";
 
-import { Tooltip } from "./Tooltip";
+import { TooltipMobile } from "./TooltipMobile";
 
 interface PlotProps extends PlotParams {
   title: string;
@@ -87,9 +87,9 @@ export function PlotTitle({
     >
       <h2 className="text-lg font-semibold text-white">{title}</h2>
       {tooltip ? (
-        <Tooltip content={tooltip}>
+        <TooltipMobile content={tooltip}>
           <InfoCircledIcon color={slateDarkA.slateA11} />
-        </Tooltip>
+        </TooltipMobile>
       ) : (
         <></>
       )}

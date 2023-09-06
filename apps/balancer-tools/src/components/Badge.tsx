@@ -20,6 +20,7 @@ interface BadgeProps {
   isSelected?: boolean;
   isTrackingTighter?: boolean;
   outline?: boolean;
+  classNames?: string;
 }
 
 export function Badge({
@@ -29,6 +30,7 @@ export function Badge({
   isSelected = false,
   isTrackingTighter = false,
   outline = false,
+  classNames,
 }: BadgeProps) {
   const BadgeColorString = BadgeColor[color];
   const BadgeSizeString = BadgeSize[size];
@@ -54,7 +56,13 @@ export function Badge({
 
   return (
     <span
-      className={cn(baseClasses, colorClasses, sizeClasses, additionalClasses)}
+      className={cn(
+        baseClasses,
+        colorClasses,
+        sizeClasses,
+        additionalClasses,
+        classNames,
+      )}
     >
       {children}
     </span>

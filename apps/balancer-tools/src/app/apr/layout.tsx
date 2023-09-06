@@ -21,7 +21,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         imageSrc={"/assets/balancer-symbol.svg"}
         endButton={<HeaderEndButton />}
       />
-      <div className="flex flex-1 gap-x-8 px-4 pt-4 text-white">{children}</div>
+      <div className="sm:flex flex-1 gap-x-8 px-4 pt-4 text-white">
+        {children}
+      </div>
     </div>
   );
 }

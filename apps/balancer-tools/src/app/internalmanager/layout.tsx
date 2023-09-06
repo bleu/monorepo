@@ -16,7 +16,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <NetworksContextProvider>
-      <div className="flex h-full flex-col">
+      <div className="flex h-full flex-col min-w-[930px]">
         <HeaderNetworkMismatchAlert />
         <Header
           linkUrl={`/internalmanager/${network}`}

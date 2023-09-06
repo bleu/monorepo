@@ -215,7 +215,7 @@ function TableRow({
     network,
   )}/${poolId}/round/${roundId}`;
   return (
-    <Table.BodyRow classNames="hover:bg-blue4 hover:cursor-pointer duration-500">
+    <Table.BodyRow classNames="sm:hover:bg-blue4 hover:cursor-pointer duration-500">
       <Table.BodyCellLink
         href={poolRedirectURL}
         tdClassNames="w-6"

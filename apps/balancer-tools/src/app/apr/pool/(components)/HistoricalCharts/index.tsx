@@ -10,6 +10,7 @@ import { trimTrailingValues } from "#/lib/utils";
 import HistoricalAPRChart from "./HistoricalAPR/HistoricalAPRChart";
 import HistoricalSwapFeeChart from "./HistoricalSwapFee/HistoricalSwapFeeChart";
 import HistoricalTvlChart from "./HistoricalTVL/HistoricalTvlChart";
+import HistoricalVolumeChart from "./HistoricalVolume/HistoricalVolumeChart";
 
 export default function HistoricalCharts({
   poolId,
@@ -18,7 +19,12 @@ export default function HistoricalCharts({
   poolId: string;
   roundId?: string;
 }) {
-  const charts = ["Historical APR", "Weekly Swap Fees (USD)", "Historical TVL"];
+  const charts = [
+    "Historical APR",
+    "Weekly Swap Fees (USD)",
+    "Historical TVL",
+    "Volume",
+  ];
 
   const [selectedTab, setSelectedTab] = useState(0);
 
@@ -55,6 +61,11 @@ export default function HistoricalCharts({
           <Tabs.ItemContent tabName={"2"} classNames="bg-blue3">
             <Suspense fallback={<Spinner />}>
               <HistoricalTvlChart poolId={poolId} roundId={roundId} />
+            </Suspense>
+          </Tabs.ItemContent>
+          <Tabs.ItemContent tabName={"3"} classNames="bg-blue3">
+            <Suspense fallback={<Spinner />}>
+              <HistoricalVolumeChart poolId={poolId} roundId={roundId} />
             </Suspense>
           </Tabs.ItemContent>
         </div>

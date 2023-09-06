@@ -5,11 +5,12 @@ import { PoolListTable } from "./PoolListTable";
 
 export default async function PoolTableWrapper({
   roundId,
-  filteredApiUrl,
+  url,
 }: {
   roundId: string;
-  filteredApiUrl: string;
+  url: string;
 }) {
-  const initialData = await fetcher<PoolStatsResults>(filteredApiUrl);
+  const initialData = await fetcher<PoolStatsResults>(url);
+
   return <PoolListTable roundId={roundId} initialData={initialData.perRound} />;
 }

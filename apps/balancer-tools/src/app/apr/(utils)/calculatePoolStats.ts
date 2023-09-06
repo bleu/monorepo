@@ -10,6 +10,16 @@ import { getBALPriceByRound, getTokenPriceByRound } from "./getBALPriceByRound";
 import { getPoolRelativeWeight } from "./getRelativeWeight";
 import { Round } from "./rounds";
 
+export interface calculatePoolData extends Omit<PoolStatsData, "apr"> {
+  apr: {
+    total: number;
+    breakdown: {
+      veBAL: number | null;
+      swapFee: number;
+    };
+  };
+}
+
 // The enum namings should be human-readable and are based on what Balancer shows on their FE
 export enum PoolTypeEnum {
   PHANTOM_STABLE = "ComposableStable",
@@ -107,7 +117,7 @@ export async function calculatePoolStats({
 }: {
   roundId: string;
   poolId: string;
-}): Promise<PoolStatsData> {
+}): Promise<calculatePoolData> {
   const round = Round.getRoundByNumber(roundId);
   const pool = new Pool(poolId);
   const network = String(pool.network ?? 1);

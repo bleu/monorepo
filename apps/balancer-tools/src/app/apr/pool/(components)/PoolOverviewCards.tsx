@@ -3,7 +3,6 @@ import { fetcher } from "#/utils/fetcher";
 import OverviewCards, {
   getRoundDetails,
 } from "../../(components)/OverviewCards";
-import { calculatePoolStats } from "../../(utils)/calculatePoolStats";
 import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
 import { BASE_URL, PoolStatsResults } from "../../api/route";
 
@@ -34,12 +33,17 @@ export default async function PoolOverviewCards({
     tooltip?: string;
   }[] = [];
   if (roundId) {
-    const { apr, tvl } = await calculatePoolStats({ poolId, roundId });
+    const results: PoolStatsResults = await fetcher(
+      `${BASE_URL}/apr/api/?poolId=${poolId}&sort=roundId`,
+    );
 
     cardsDetails.push(
       ...[
-        { title: "TVL", content: formatTVL(tvl) },
-        { title: "veBAL APR", content: formatAPR(apr.breakdown.veBAL) },
+        { title: "TVL", content: formatTVL(results.average.tvl) },
+        {
+          title: "veBAL APR",
+          content: formatAPR(results.average.apr.breakdown.veBAL),
+        },
         ...getRoundDetails(roundId),
       ],
     );

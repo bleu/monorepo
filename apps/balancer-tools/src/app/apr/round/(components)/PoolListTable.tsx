@@ -71,8 +71,10 @@ export function PoolListTable({
     setIsLoadingMore(true);
     const params = Object.fromEntries(searchParams.entries());
     params["offset"] = (tableData.length + 1).toString();
+
+    const url = new URL(getFilteredRoundApiUrl(params, roundId));
     const aditionalPoolsData = await fetcher<PoolStatsResults>(
-      getFilteredRoundApiUrl(params, roundId),
+      url.pathname + url.search,
     );
     setTableData((prevTableData) => {
       if (aditionalPoolsData.perRound.length === 0) setHasMorePools(false);

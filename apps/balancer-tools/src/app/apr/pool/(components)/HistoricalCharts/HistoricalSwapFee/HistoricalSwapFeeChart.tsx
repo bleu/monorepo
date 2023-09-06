@@ -49,8 +49,8 @@ export default async function HistoricalSwapFeeChart({
     (item) => item === getRoundName(roundId),
   );
 
-  if (chosenRoundMarkerIDX !== -1) {
-    barColors[chosenRoundMarkerIDX] = highlightedBarColor;
+  if (chosenRoundMarkerIdx !== -1) {
+    barColors[chosenRoundMarkerIdx] = highlightedBarColor;
   }
 
   return <HistoricalSwapFeePlot data={[colletedSwapFeePerRoundData]} />;

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-screen flex-col min-w-[930px]">
       <Header
         linkUrl={"/daoadmin"}
         title={"DAO Actions"}

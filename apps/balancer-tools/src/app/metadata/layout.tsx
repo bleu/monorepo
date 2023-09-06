@@ -33,7 +33,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
 
   return (
     <NetworksContextProvider>
-      <div className="flex h-full flex-col">
+      <div className="flex h-full flex-col min-w-[930px]">
         <HeaderNetworkMismatchAlert />
         <Header
           linkUrl={`/metadata/${network}/`}

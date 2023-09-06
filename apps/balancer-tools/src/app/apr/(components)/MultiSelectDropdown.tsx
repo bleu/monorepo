@@ -69,7 +69,7 @@ export const MultiSelectDropdown = ({
   );
 
   return (
-    <div className="relative">
+    <div className="relative flex-1 sm:flex-none">
       <Downshift {...rest} onChange={changeHandler()}>
         {({
           getLabelProps,

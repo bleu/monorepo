@@ -26,26 +26,30 @@ export default function PoolTokensTable({
     });
   return (
     <>
-      <Table color="blue" shade={"darkWithBorder"}>
+      <Table
+        classNames="min-w-full border border-blue6 rounded overflow-auto"
+        color="blue"
+        shade={"darkWithBorder"}
+      >
         <Table.HeaderRow>
           <Table.HeaderCell>Name</Table.HeaderCell>
           {poolTokensStats[0].weight && (
-            <Table.HeaderCell classNames="w-1/6 text-end p-4">
+            <Table.HeaderCell classNames="w-1/6 text-end p-4 whitespace-nowrap">
               Weight
             </Table.HeaderCell>
           )}
           {poolTokensStats[0].balance && (
-            <Table.HeaderCell classNames="w-1/6 text-end p-4">
+            <Table.HeaderCell classNames="w-1/6 text-end p-4 whitespace-nowrap">
               Balance
             </Table.HeaderCell>
           )}
           {poolTokensStats[0].price && poolTokensStats[0].balance && (
-            <Table.HeaderCell classNames="w-1/6 text-end p-4">
+            <Table.HeaderCell classNames="w-1/6 text-end p-4 whitespace-nowrap">
               Value
             </Table.HeaderCell>
           )}
           {poolTokensStats[0].price && poolTokensStats[0].balance && (
-            <Table.HeaderCell classNames="w-1/6 text-end p-4">
+            <Table.HeaderCell classNames="w-1/6 text-end p-4 whitespace-nowrap">
               Token %
             </Table.HeaderCell>
           )}
@@ -55,17 +59,19 @@ export default function PoolTokensTable({
             <Table.BodyRow classNames="hover:bg-blue4 hover:cursor-pointer duration-500">
               <Table.BodyCellLink
                 href={tokenUrl(token.address)}
-                tdClassNames="w-max"
+                tdClassNames="w-max sticky left-0 from-blue3 bg-gradient-to-r from-70% sm:bg-transparent"
                 linkClassNames="flex gap-2 items-center"
               >
                 <div className="w-[25px]">
-                  <Image
-                    src={token.logoSrc}
-                    height={25}
-                    width={25}
-                    className="rounded-full"
-                    alt={`Logo for ${token.symbol}`}
-                  />
+                  {token.logoSrc && (
+                    <Image
+                      src={token.logoSrc}
+                      height={25}
+                      width={25}
+                      className="rounded-full"
+                      alt={`Logo for ${token.symbol}`}
+                    />
+                  )}
                 </div>
                 <div>{token.symbol}</div>
                 <div>

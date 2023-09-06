@@ -2,7 +2,7 @@ import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { Suspense } from "react";
 
 import { Spinner } from "#/components/Spinner";
-import { Tooltip } from "#/components/Tooltip";
+import { TooltipMobile } from "#/components/TooltipMobile";
 
 function KPICardWrapper({ children }: { children: React.ReactNode }) {
   return (
@@ -27,9 +27,9 @@ export function KPI({
         <div className="font-semibold flex items-center gap-x-1">
           {title}
           {tooltip && (
-            <Tooltip content={tooltip}>
+            <TooltipMobile content={tooltip}>
               <InfoCircledIcon />
-            </Tooltip>
+            </TooltipMobile>
           )}
         </div>
         <div className="pt-2">{content}</div>

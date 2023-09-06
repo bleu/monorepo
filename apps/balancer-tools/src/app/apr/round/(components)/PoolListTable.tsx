@@ -22,7 +22,7 @@ import { Badge } from "#/components/Badge";
 import { PlotTitle } from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
-import { Tooltip } from "#/components/Tooltip";
+import { TooltipMobile } from "#/components/TooltipMobile";
 import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 
@@ -94,7 +94,7 @@ export function PoolListTable({
         <TokenFilterInput />
         <MoreFiltersButton />
       </div>
-      <div className="flex justify-center text-white shadow-lg mb-5">
+      <div className="flex justify-center text-white shadow-lg mb-5 overflow-auto scrollbar-thin scrollbar-track-blue2 scrollbar-thumb-slate12">
         <Table color="blue" shade={"darkWithBorder"}>
           <Table.HeaderRow>
             <Table.HeaderCell>Network</Table.HeaderCell>
@@ -125,14 +125,14 @@ export function PoolListTable({
               </div>
             </Table.HeaderCell>
             <Table.HeaderCell classNames="text-end whitespace-nowrap hover:text-amber9">
-              <div>
+              <div className="flex gap-1">
+                <TooltipMobile content={`The value displayed is the min APR`}>
+                  <InfoCircledIcon />
+                </TooltipMobile>
                 <Link
                   className="flex gap-x-1 items-center float-right justify-end"
                   href={pathname + "?" + createQueryString("apr")}
                 >
-                  <Tooltip content={`The value displayed is the min APR`}>
-                    <InfoCircledIcon />
-                  </Tooltip>
                   <span> APR</span>
                   {OrderIcon(searchParams, "apr")}
                 </Link>
@@ -159,7 +159,7 @@ export function PoolListTable({
                 <Table.BodyRow>
                   <Table.BodyCell colSpan={6}>
                     <Button
-                      className="w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
+                      className="w-[calc(100vw-2.5rem)] sticky left-0 sm:w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
                       shade="medium"
                       disabled={isLoadingMore || !hasMorePools}
                       onClick={loadMorePools}
@@ -217,8 +217,11 @@ function TableRow({
     network,
   )}/${poolId}/round/${roundId}`;
   return (
-    <Table.BodyRow classNames="hover:bg-blue4 hover:cursor-pointer duration-500">
-      <Table.BodyCellLink href={poolRedirectURL} tdClassNames="w-6">
+    <Table.BodyRow classNames="sm:hover:bg-blue4 hover:cursor-pointer duration-500">
+      <Table.BodyCellLink
+        href={poolRedirectURL}
+        tdClassNames="flex justify-center items-start sm:items-center h-full w-full"
+      >
         <Image
           src={`/assets/network/${networkFor(network)}.svg`}
           height={25}
@@ -228,11 +231,11 @@ function TableRow({
       </Table.BodyCellLink>
       <Table.BodyCellLink
         href={poolRedirectURL}
-        linkClassNames="gap-2"
-        tdClassNames="w-11/12"
+        linkClassNames="gap-2 from-blue3 sm:from-transparent from-50% bg-gradient-to-r sm:bg-transparent flex-col sm:flex-row"
+        tdClassNames="w-11/12 sticky left-0"
       >
         {tokens.map((token) => (
-          <Badge color="blue">
+          <Badge color="blue" classNames="w-fit">
             {token.symbol}
             {token.weight ? (
               <span className="text-xs ml-1 text-slate-400">

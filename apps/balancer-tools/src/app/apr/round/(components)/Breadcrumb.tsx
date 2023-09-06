@@ -19,23 +19,27 @@ import { Round } from "../../(utils)/rounds";
 function BreadcrumbItem({
   link,
   children,
+  classNames,
 }: {
   link?: string;
   children?: ReactNode;
+  classNames?: string;
 }) {
   return (
-    <li aria-current="page">
+    <li aria-current="page" className={classNames}>
       <div className="flex items-center">
         <ChevronRightIcon />
         {link ? (
           <a
             href={link}
-            className="flex ml-1 text-sm font-medium text-white hover:text-blue-600 md:ml-2"
+            className={`flex ml-1 text-xs sm:text-sm font-medium text-white hover:text-blue-600 md:ml-2 whitespace-nowrap`}
           >
             {children}
           </a>
         ) : (
-          <div className="flex ml-1 text-sm font-medium text-white md:ml-2">
+          <div
+            className={`flex ml-1 text-xs sm:text-sm font-medium text-white md:ml-2 whitespace-nowrap`}
+          >
             {children}
           </div>
         )}
@@ -80,40 +84,45 @@ export default function Breadcrumb() {
   return (
     <>
       <nav
-        className="border border-blue6 bg-blue3 text-white justify-between px-4 py-3 rounded-lg sm:flex sm:px-5 h-16"
+        className="border border-blue6 bg-blue3 text-white justify-between px-4 py-3 rounded-lg flex sm:px-5 h-16"
         aria-label="Breadcrumb"
       >
-        <ol className="inline-flex items-center mb-3 space-x-1 md:space-x-3 sm:mb-0">
-          <li>
+        <ol className="inline-flex items-center space-x-1 mb-0">
+          <li className="hidden sm:block">
             <div className="flex items-center">
               <div className="ml-1 text-sm font-medium text-slate-300 md:ml-2">
-                <Link href="/apr/">Historical APR</Link>
+                <Link href="/apr/">Home</Link>
               </div>
             </div>
           </li>
-          {/* TODO: BAL-710 - Should be re-enabled when we have a way to filter by network */}
           {network && (
-            <BreadcrumbItem link={`/apr/pool/${network}/`}>
+            <BreadcrumbItem
+              classNames="hidden sm:block"
+              link={`/apr/pool/${network}/`}
+            >
               {network}
             </BreadcrumbItem>
           )}
           {poolId && (
-            <BreadcrumbItem link={`/apr/pool/${network}/${poolId}`}>
+            <BreadcrumbItem
+              classNames="hidden sm:block"
+              link={`/apr/pool/${network}/${poolId}`}
+            >
               {selectedPool?.symbol ?? poolId}
             </BreadcrumbItem>
           )}
           {displaySelectedRound(roundId, poolId)}
         </ol>
         {poolId && (
-          <div>
+          <div className="flex">
             <Link
               href={`https://app.balancer.fi/#/${
                 network == "gnosis" ? network + "-chain" : network
               }/pool/${poolId}`}
               target="_blank"
-              className="inline-flex items-center px-3 py-2 text-sm font-normal text-center text-white bg-blue6 border border-blue9 rounded-lg hover:bg-blue7 mr-3"
+              className="inline-flex items-center px-3 py-2 text-sm font-normal text-center text-white bg-blue6 border border-blue9 rounded-lg hover:bg-blue7 sm:mr-3"
             >
-              <span>Show on Balancer&nbsp;</span>
+              <span className="hidden md:block">Show on Balancer&nbsp;</span>
               <ExternalLinkIcon />
             </Link>
             &nbsp;
@@ -124,7 +133,7 @@ export default function Breadcrumb() {
               }}
               className="inline-flex items-center px-3 py-2 text-sm font-normal text-center text-white bg-blue6 border border-blue9 rounded-lg hover:bg-blue7"
             >
-              <span>Copy Link&nbsp;</span>
+              <span className="hidden md:block">Copy Link&nbsp;</span>
               <ClipboardIcon />
             </button>
           </div>

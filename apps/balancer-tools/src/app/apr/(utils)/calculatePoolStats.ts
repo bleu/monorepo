@@ -56,12 +56,16 @@ const fetchPoolTVLFromSnapshotAverageFromRange = async (
   network: string,
   from: number,
   to: number,
-): Promise<[number, string, { symbol: string; balance: string }[]]> => {
+): Promise<[number, number, string, { symbol: string; balance: string }[]]> => {
   const res = await pools.gql(network).poolSnapshotInRange({
     poolId,
     from,
     to,
   });
+
+  if (res.poolSnapshots.length === 0) {
+    return [0, 0, "", []];
+  }
 
   const avgLiquidity =
     res.poolSnapshots.reduce(
@@ -69,12 +73,28 @@ const fetchPoolTVLFromSnapshotAverageFromRange = async (
       0,
     ) / res.poolSnapshots.length;
 
-  if (res.poolSnapshots.length === 0) {
-    return [0, "", []];
+  const avgVolume =
+    res.poolSnapshots.length == 1
+      ? res.poolSnapshots[0].swapVolume
+      : res.poolSnapshots
+          .map((item, index, array) =>
+            index > 0
+              ? Math.abs(
+                  parseFloat(item.swapVolume) -
+                    parseFloat(array[index - 1].swapVolume),
+                )
+              : 0,
+          )
+          .reduce((sum, value) => sum + value, 0) /
+        (res.poolSnapshots.length - 1);
+  if (isNaN(avgVolume)) {
+    console.log(avgVolume);
+    console.log(res.poolSnapshots);
   }
 
   return [
     avgLiquidity,
+    avgVolume,
     res.poolSnapshots[0].pool.symbol ?? "",
     res.poolSnapshots[0].pool.tokens ?? [],
   ];
@@ -124,7 +144,7 @@ export async function calculatePoolStats({
 
   const [
     balPriceUSD,
-    [tvl, symbol, tokenBalance],
+    [tvl, volume, symbol, tokenBalance],
     votingShare,
     [feeAPR, collectedFeesUSD],
   ] = await Promise.all([
@@ -179,6 +199,7 @@ export async function calculatePoolStats({
     apr,
     balPriceUSD,
     tvl,
+    volume,
     votingShare,
     symbol,
     network,

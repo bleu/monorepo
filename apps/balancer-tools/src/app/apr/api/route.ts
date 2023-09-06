@@ -87,9 +87,7 @@ const computeAverages = (
         total: acc.apr.total + data.apr.total,
         breakdown: {
           veBAL:
-            data.apr.breakdown.veBAL != null
-              ? data.apr.breakdown.veBAL + acc.apr.breakdown.veBAL
-              : 0,
+            (data.apr.breakdown.veBAL || 0) + (acc.apr.breakdown.veBAL + 0),
           swapFee: acc.apr.breakdown.swapFee + data.apr.breakdown.swapFee,
         },
       },

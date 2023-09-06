@@ -22,7 +22,6 @@ import { Badge } from "#/components/Badge";
 import { PlotTitle } from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
-import { Tooltip } from "#/components/Tooltip";
 import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 
@@ -32,6 +31,7 @@ import getFilteredRoundApiUrl from "../../(utils)/getFilteredApiUrl";
 import { PoolStatsData, PoolStatsResults, PoolTokens } from "../../api/route";
 import { MoreFiltersButton } from "./MoreFiltersButton";
 import { TokenFilterInput } from "./TokenFilterInput";
+import { TooltipMobile } from "#/components/TooltipMobile";
 
 export function PoolListTable({
   roundId,
@@ -123,14 +123,14 @@ export function PoolListTable({
               </div>
             </Table.HeaderCell>
             <Table.HeaderCell classNames="text-end whitespace-nowrap hover:text-amber9">
-              <div>
+              <div className="flex gap-1">
+                <TooltipMobile content={`The value displayed is the min APR`}>
+                  <InfoCircledIcon />
+                </TooltipMobile>
                 <Link
                   className="flex gap-x-1 items-center float-right justify-end"
                   href={pathname + "?" + createQueryString("apr")}
                 >
-                  <Tooltip content={`The value displayed is the min APR`}>
-                    <InfoCircledIcon />
-                  </Tooltip>
                   <span> APR</span>
                   {OrderIcon(searchParams, "apr")}
                 </Link>

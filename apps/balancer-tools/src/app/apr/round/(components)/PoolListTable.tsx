@@ -230,8 +230,8 @@ function TableRow({
       </Table.BodyCellLink>
       <Table.BodyCellLink
         href={poolRedirectURL}
-        linkClassNames="gap-2 from-blue3 bg-gradient-to-r flex-col sm:flex-row"
-        tdClassNames="w-11/12 sticky left-0	sm:bg-transparent"
+        linkClassNames="gap-2 from-blue3 sm:from-transparent from-50% bg-gradient-to-r sm:bg-transparent flex-col sm:flex-row"
+        tdClassNames="w-11/12 sticky left-0"
       >
         {tokens.map((token) => (
           <Badge color="blue" classNames="w-fit">

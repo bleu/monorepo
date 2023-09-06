@@ -59,7 +59,7 @@ export default function PoolTokensTable({
             <Table.BodyRow classNames="hover:bg-blue4 hover:cursor-pointer duration-500">
               <Table.BodyCellLink
                 href={tokenUrl(token.address)}
-                tdClassNames="w-max"
+                tdClassNames="w-max sticky left-0 from-blue3 bg-gradient-to-r from-70% sm:bg-transparent"
                 linkClassNames="flex gap-2 items-center"
               >
                 <div className="w-[25px]">

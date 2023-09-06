@@ -9,6 +9,7 @@ import { trimTrailingValues } from "#/lib/utils";
 
 import HistoricalAPRChart from "./HistoricalAPR/HistoricalAPRChart";
 import HistoricalSwapFeeChart from "./HistoricalSwapFee/HistoricalSwapFeeChart";
+import HistoricalTvlChart from "./HistoricalTVL/HistoricalTvlChart";
 
 export default function HistoricalCharts({
   poolId,
@@ -17,39 +18,46 @@ export default function HistoricalCharts({
   poolId: string;
   roundId?: string;
 }) {
-  const charts = ["APR", "Swap Fee"];
+  const charts = ["Historical APR", "Weekly Swap Fees (USD)", "Historical TVL"];
 
-  const [selectedTab, setSelectedTab] = useState(charts[0]);
+  const [selectedTab, setSelectedTab] = useState(0);
 
-  function handleTabClick(event: React.FormEvent<HTMLButtonElement>) {
-    const target = event.target as HTMLButtonElement;
-    setSelectedTab(target.innerText);
-  }
   return (
     <div className="border border-blue6 bg-blue3 rounded p-4 w-full">
-      <Tabs defaultValue={charts[0]} value={selectedTab}>
+      <Tabs
+        defaultValue={String(0)}
+        value={String(selectedTab)}
+        classNames="bg-transparent  text-slate10"
+      >
         <Tabs.ItemTriggerWrapper>
-          {charts.map((chartType) => (
+          {charts.map((tabTitle, idx) => (
             <Tabs.ItemTrigger
-              tabName={chartType}
-              key={chartType}
-              triggerBgColor="bg-blue6"
-              onClick={() => setSelectedTab(chartType))}
+              tabName={String(idx)}
+              key={idx}
+              classNames="bg-blue6"
+              onClick={() => setSelectedTab(idx)}
             >
-              <span>{chartType}</span>
+              <span>{tabTitle}</span>
             </Tabs.ItemTrigger>
           ))}
         </Tabs.ItemTriggerWrapper>
-        <Tabs.ItemContent tabName={"APR"} bgColor="bg-blue3">
-          <Suspense fallback={<Spinner />}>
-            <HistoricalAPRChart poolId={poolId} roundId={roundId} />
-          </Suspense>
-        </Tabs.ItemContent>
-        <Tabs.ItemContent tabName={"Swap Fee"} bgColor="bg-blue3">
-          <Suspense fallback={<Spinner />}>
-            <HistoricalSwapFeeChart poolId={poolId} roundId={roundId} />
-          </Suspense>
-        </Tabs.ItemContent>
+        <div className="flex justify-between bg-blue3 rounded p-4 cursor-pointer z-50 min-h-[550px]">
+          <Tabs.ItemContent tabName={"0"} classNames="bg-blue3">
+            <Suspense fallback={<Spinner />}>
+              <HistoricalAPRChart poolId={poolId} roundId={roundId} />
+            </Suspense>
+          </Tabs.ItemContent>
+          <Tabs.ItemContent tabName={"1"} classNames="bg-blue3">
+            <Suspense fallback={<Spinner />}>
+              <HistoricalSwapFeeChart poolId={poolId} roundId={roundId} />
+            </Suspense>
+          </Tabs.ItemContent>
+          <Tabs.ItemContent tabName={"2"} classNames="bg-blue3">
+            <Suspense fallback={<Spinner />}>
+              <HistoricalTvlChart poolId={poolId} roundId={roundId} />
+            </Suspense>
+          </Tabs.ItemContent>
+        </div>
       </Tabs>
     </div>
   );

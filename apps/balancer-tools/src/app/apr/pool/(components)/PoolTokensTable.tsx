@@ -63,13 +63,15 @@ export default function PoolTokensTable({
                 linkClassNames="flex gap-2 items-center"
               >
                 <div className="w-[25px]">
-                  <Image
-                    src={token.logoSrc}
-                    height={25}
-                    width={25}
-                    className="rounded-full"
-                    alt={`Logo for ${token.symbol}`}
-                  />
+                  {token.logoSrc && (
+                    <Image
+                      src={token.logoSrc}
+                      height={25}
+                      width={25}
+                      className="rounded-full"
+                      alt={`Logo for ${token.symbol}`}
+                    />
+                  )}
                 </div>
                 <div>{token.symbol}</div>
                 <div>

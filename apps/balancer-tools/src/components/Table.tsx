@@ -67,6 +67,7 @@ export default function Table({
           className={cn(
             "divide-y divide-slate7 min-w-full rounded",
             predefinedClasses[color][variant][shade].style,
+            "w-full h-full",
           )}
         >
           {children}

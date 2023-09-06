@@ -16,7 +16,7 @@ export default function HistoricalTvlPlot({ data }: { data: Plotly.Data[] }) {
         },
         yaxis: {
           fixedrange: true,
-          title: "Swap Fee $",
+          title: "TVL",
         },
       }}
     />

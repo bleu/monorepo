@@ -14,7 +14,7 @@ export default async function HistoricalTvlChart({
   roundId?: string;
   poolId: string;
 }) {
-  const HOVERTEMPLATE = "%{x}<br />%{y:.2f}% APR<extra></extra>";
+  const HOVERTEMPLATE = "%{x}<br />%{y:.2f} TVL<extra></extra>";
 
   const results: PoolStatsResults = await fetcher(
     `${BASE_URL}/apr/api/?poolId=${poolId}&sort=roundId`,

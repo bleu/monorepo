@@ -14,16 +14,17 @@ export default function HistoricalAPRPlot({ data }: { data: Plotly.Data[] }) {
   }
 
   return (
-    <div className="flex justify-between border border-blue6 bg-blue3 rounded p-4 cursor-pointer">
+    <div className="flex justify-between border border-blue6 bg-blue3 rounded py-4 sm:p-4 cursor-pointer">
       <Plot
         onClick={onClickHandler}
         title={`Historical APR`}
         data={data}
+        config={{ displayModeBar: false }}
         layout={{
           margin: { t: 30, r: 20, l: 20, b: 30 },
           autosize: true,
+          legend: {"orientation": "h", y: -0.2, xanchor: "center", x: 0.5},
           xaxis: {
-            fixedrange: true,
             dtick: 1,
             title: "Round Number",
           },

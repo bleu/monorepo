@@ -1,77 +1,21 @@
-"use client";
-
-import { Suspense, useState } from "react";
-
-import { PoolStatsData } from "#/app/apr/api/route";
-import { Spinner } from "#/components/Spinner";
-import { Tabs } from "#/components/Tabs";
+import { BASE_URL, PoolStatsData, PoolStatsResults } from "#/app/apr/api/route";
 import { trimTrailingValues } from "#/lib/utils";
+import { fetcher } from "#/utils/fetcher";
 
-import HistoricalAPRChart from "./HistoricalAPR/HistoricalAPRChart";
-import HistoricalSwapFeeChart from "./HistoricalSwapFee/HistoricalSwapFeeChart";
-import HistoricalTvlChart from "./HistoricalTVL/HistoricalTvlChart";
-import HistoricalVolumeChart from "./HistoricalVolume/HistoricalVolumeChart";
+import HistoricalChart from "./HistoricalChart";
 
-export default function HistoricalCharts({
+export default async function HistoricalCharts({
   poolId,
   roundId,
 }: {
   poolId: string;
   roundId?: string;
 }) {
-  const charts = [
-    "Historical APR",
-    "Weekly Swap Fees (USD)",
-    "Historical TVL",
-    "Volume",
-  ];
-
-  const [selectedTab, setSelectedTab] = useState(0);
-
-  return (
-    <div className="border border-blue6 bg-blue3 rounded p-4 w-full">
-      <Tabs
-        defaultValue={String(0)}
-        value={String(selectedTab)}
-        classNames="bg-transparent  text-slate10"
-      >
-        <Tabs.ItemTriggerWrapper>
-          {charts.map((tabTitle, idx) => (
-            <Tabs.ItemTrigger
-              tabName={String(idx)}
-              key={idx}
-              classNames="bg-blue6"
-              onClick={() => setSelectedTab(idx)}
-            >
-              <span>{tabTitle}</span>
-            </Tabs.ItemTrigger>
-          ))}
-        </Tabs.ItemTriggerWrapper>
-        <div className="flex justify-between bg-blue3 rounded p-4 cursor-pointer z-50 min-h-[550px]">
-          <Tabs.ItemContent tabName={"0"} classNames="bg-blue3">
-            <Suspense fallback={<Spinner />}>
-              <HistoricalAPRChart poolId={poolId} roundId={roundId} />
-            </Suspense>
-          </Tabs.ItemContent>
-          <Tabs.ItemContent tabName={"1"} classNames="bg-blue3">
-            <Suspense fallback={<Spinner />}>
-              <HistoricalSwapFeeChart poolId={poolId} roundId={roundId} />
-            </Suspense>
-          </Tabs.ItemContent>
-          <Tabs.ItemContent tabName={"2"} classNames="bg-blue3">
-            <Suspense fallback={<Spinner />}>
-              <HistoricalTvlChart poolId={poolId} roundId={roundId} />
-            </Suspense>
-          </Tabs.ItemContent>
-          <Tabs.ItemContent tabName={"3"} classNames="bg-blue3">
-            <Suspense fallback={<Spinner />}>
-              <HistoricalVolumeChart poolId={poolId} roundId={roundId} />
-            </Suspense>
-          </Tabs.ItemContent>
-        </div>
-      </Tabs>
-    </div>
+  const results: PoolStatsResults = await fetcher(
+    `${BASE_URL}/apr/api/?poolId=${poolId}&sort=roundId`,
   );
+
+  return <HistoricalChart apiResult={results} roundId={roundId} />;
 }
 
 export function generateAndTrimAprCords(

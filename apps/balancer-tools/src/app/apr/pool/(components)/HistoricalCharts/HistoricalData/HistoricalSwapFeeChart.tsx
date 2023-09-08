@@ -1,33 +1,22 @@
 import { amberDarkA, blueDarkA } from "@radix-ui/colors";
 import { PlotType } from "plotly.js";
 
-import { BASE_URL, PoolStatsResults } from "#/app/apr/api/route";
-import { fetcher } from "#/utils/fetcher";
+import { PoolStatsResults } from "#/app/apr/api/route";
 
 import { generateAndTrimAprCords, getRoundName } from "..";
-import HistoricalSwapFeePlot from "./HistoricalSwapFeePlot";
 
-export default async function HistoricalSwapFeeChart({
-  roundId,
-  poolId,
-}: {
-  roundId?: string;
-  poolId: string;
-}) {
-  const HOVERTEMPLATE = "%{x}<br />$%{y:.2f}<extra></extra>";
-
-  const results: PoolStatsResults = await fetcher(
-    `${BASE_URL}/apr/api/?poolId=${poolId}&sort=roundId`,
-  );
+export default function HistoricalSwapFeeChartData(
+  apiResult: PoolStatsResults,
+  roundId?: string,
+): Plotly.Data {
+  const normalBarColor = blueDarkA.blueA9;
+  const highlightedBarColor = amberDarkA.amberA9;
 
   const trimmedCollectedSwapFeeData = generateAndTrimAprCords(
-    results.perRound,
+    apiResult.perRound,
     (result) => result.collectedFeesUSD,
     0,
   );
-
-  const normalBarColor = blueDarkA.blueA9;
-  const highlightedBarColor = amberDarkA.amberA9;
 
   const barColors = new Array(trimmedCollectedSwapFeeData.x.length).fill(
     normalBarColor,
@@ -35,7 +24,7 @@ export default async function HistoricalSwapFeeChart({
 
   const colletedSwapFeePerRoundData = {
     name: "Collected SwapFee",
-    hovertemplate: HOVERTEMPLATE,
+    hovertemplate: "Weekly Fees: $%{y:.2f}<extra></extra>",
     x: trimmedCollectedSwapFeeData.x,
     y: trimmedCollectedSwapFeeData.y,
     marker: {
@@ -53,5 +42,5 @@ export default async function HistoricalSwapFeeChart({
     barColors[chosenRoundMarkerIdx] = highlightedBarColor;
   }
 
-  return <HistoricalSwapFeePlot data={[colletedSwapFeePerRoundData]} />;
+  return colletedSwapFeePerRoundData;
 }

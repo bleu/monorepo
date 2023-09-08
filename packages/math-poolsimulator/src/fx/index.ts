@@ -1,15 +1,20 @@
 import {
   bnum,
-  FxMaths,
+  // FxMaths,
   FxPool,
   OldBigNumber,
-  safeParseFixed,
+  // safeParseFixed,
   SubgraphPoolBase,
   SubgraphToken,
 } from "@balancer-labs/sor";
-import { parseFixed } from "@ethersproject/bignumber";
+import { BigNumber, formatFixed, parseFixed } from "@ethersproject/bignumber";
 
-import { bigNumberToOldBigNumber } from "../conversions";
+import {
+  bigNumberToOldBigNumber,
+  // bigNumberToString,
+  numberToBigNumber,
+  // oldBigNumberToString,
+} from "../conversions";
 import { IAMMFunctionality } from "../types";
 
 type FxPoolToken = Pick<
@@ -49,7 +54,7 @@ export class ExtendedFx
       poolParams.beta,
       poolParams.lambda,
       poolParams.delta,
-      poolParams.epsilon,
+      poolParams.epsilon
     );
   }
 
@@ -117,11 +122,11 @@ export class ExtendedFx
       epsilon: this.epsilon,
       tokenInLatestFXPrice: parseFixed(
         tI.token.latestFXPrice,
-        tI.token.fxOracleDecimals,
+        tI.token.fxOracleDecimals
       ), // decimals is formatted from subgraph in rate we get from the chainlink oracle
       tokenOutLatestFXPrice: parseFixed(
         tO.token.latestFXPrice,
-        tO.token.fxOracleDecimals,
+        tO.token.fxOracleDecimals
       ), // decimals is formatted from subgraph in rate we get from the chainlink oracle
       tokenInfxOracleDecimals: tI.token.fxOracleDecimals,
       tokenOutfxOracleDecimals: tO.token.fxOracleDecimals,
@@ -130,26 +135,145 @@ export class ExtendedFx
     return poolPairData;
   }
 
+  // Updates the balance of a given token for the pool
+  updateTokenBalanceForPool(token: string, newBalance: BigNumber): void {
+    // Function copied from sor and changed to accept any string as address
+    // token is BPT
+    if (this.address == token) {
+      this.totalShares = newBalance;
+    } else {
+      // token is underlying in the pool
+      const T = this.tokens.find((t) => t.address === token);
+      if (!T) throw Error("Pool does not contain this token");
+      T.balance = formatFixed(newBalance, T.decimals);
+    }
+  }
+
+  // _copyPool(): ExtendedFx {
+  //   return new ExtendedFx({
+  //     swapFee: bigNumberToString(this.swapFee, 18),
+  //     totalShares: bigNumberToString(this.totalShares, 18),
+  //     tokens: [...this.tokens],
+  //     tokensList: this.tokensList,
+  //     alpha: oldBigNumberToString(this.alpha),
+  //     beta: oldBigNumberToString(this.beta),
+  //     lambda: oldBigNumberToString(this.lambda),
+  //     delta: oldBigNumberToString(this.delta),
+  //     epsilon: oldBigNumberToString(this.epsilon),
+  //   });
+  // }
+
   _spotPrice(poolPairData: FxPoolPairData): OldBigNumber {
-    return this._inHigherPrecision(
-      FxMaths.spotPriceBeforeSwap,
-      safeParseFixed(bnum(0).toString(), 36),
+    return this._spotPriceAfterSwapExactTokenInForTokenOut(
       poolPairData,
+      bnum("0")
     );
   }
 
+  parsePoolPairDataAfterSwap(
+    tokenIn: string,
+    tokenOut: string,
+    amountIn: OldBigNumber,
+    amountOut: OldBigNumber
+  ): FxPoolPairData {
+    const balanceInString = this.tokens.find((t) => t.address === tokenIn)
+      ?.balance as string;
+    const decimalsIn = this.tokens.find((t) => t.address === tokenIn)
+      ?.decimals as number;
+    const balanceOut = this.tokens.find((t) => t.address === tokenOut)
+      ?.balance as string;
+    const decimalsOut = this.tokens.find((t) => t.address === tokenOut)
+      ?.decimals as number;
+
+    const balanceInBigNumber = numberToBigNumber({
+      number: Number(balanceInString),
+      decimals: decimalsIn,
+    });
+    const balanceOutBigNumber = numberToBigNumber({
+      number: Number(balanceOut),
+      decimals: decimalsOut,
+    });
+
+    this.updateTokenBalanceForPool(
+      tokenIn,
+      balanceInBigNumber.add(
+        numberToBigNumber({
+          number: amountIn.toNumber(),
+          decimals: decimalsIn,
+        })
+      )
+    );
+
+    this.updateTokenBalanceForPool(
+      tokenOut,
+      balanceOutBigNumber.sub(
+        numberToBigNumber({
+          number: amountOut.toNumber(),
+          decimals: decimalsOut,
+        })
+      )
+    );
+
+    const poolPairDataAfterSwap = this.parsePoolPairData(tokenIn, tokenOut);
+
+    this.updateTokenBalanceForPool(tokenIn, balanceInBigNumber);
+    this.updateTokenBalanceForPool(tokenOut, balanceOutBigNumber);
+
+    return poolPairDataAfterSwap;
+  }
+
+  // _spotPriceAfterSwapExactTokenInForTokenOut(
+  //   poolPairData: FxPoolPairData,
+  //   amount: OldBigNumber
+  // ): OldBigNumber {
+  //   const amountOut = this._exactTokenInForTokenOut(poolPairData, amount);
+
+  //   const poolPairDataAfterSwap = this.parsePoolPairDataAfterSwap(
+  //     poolPairData.tokenIn,
+  //     poolPairData.tokenOut,
+  //     amount,
+  //     amountOut
+  //   );
+
+  //   return this._inHigherPrecision(
+  //     FxMaths._spotPriceAfterSwapExactTokenInForTokenOut,
+  //     safeParseFixed("1", 36),
+  //     poolPairDataAfterSwap
+  //   );
+  // }
+
+  // _spotPriceAfterSwapTokenInForExactTokenOut(
+  //   poolPairData: FxPoolPairData,
+  //   amount: OldBigNumber
+  // ): OldBigNumber {
+  //   const amountIn = this._tokenInForExactTokenOut(poolPairData, amount);
+
+  //   const poolPairDataAfterSwap = this.parsePoolPairDataAfterSwap(
+  //     poolPairData.tokenIn,
+  //     poolPairData.tokenOut,
+  //     amountIn,
+  //     amount
+  //   );
+
+  //   return this._inHigherPrecision(
+  //     FxMaths.spotPriceBeforeSwap,
+  //     safeParseFixed("0", 36),
+  //     poolPairDataAfterSwap
+  //   );
+  // }
+
   _firstGuessOfTokenInForExactSpotPriceAfterSwap(
-    poolPairData: FxPoolPairData,
+    poolPairData: FxPoolPairData
   ): OldBigNumber {
     return bigNumberToOldBigNumber(
       poolPairData.balanceIn,
-      poolPairData.decimalsIn,
+      poolPairData.decimalsIn
     ).times(bnum(0.01));
   }
 
   _checkIfInIsOnLimit(
     poolPairData: FxPoolPairData,
-    amountIn: OldBigNumber,
+    amountIn: OldBigNumber
   ): boolean {
     const amountOut = this._exactTokenInForTokenOut(poolPairData, amountIn);
     return amountOut.toNumber() > 0 && amountIn.toNumber() > 0;

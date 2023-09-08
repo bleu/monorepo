@@ -13,9 +13,9 @@
     "swapEnabled": true,
     "tokens": [
       {
-        "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "address": "USDC",
         "symbol": "USDC",
-        "balance": "58398.373699",
+        "balance": "80000.000000",
         "decimals": 6,
         "priceRate": "1",
         "weight": null,
@@ -25,9 +25,9 @@
         }
       },
       {
-        "address": "0xdb25f211ab05b1c97d595516f45794528a807ad8",
+        "address": "EURS",
         "symbol": "EURS",
-        "balance": "128879.65",
+        "balance": "120000.00",
         "decimals": 2,
         "priceRate": "1",
         "weight": null,

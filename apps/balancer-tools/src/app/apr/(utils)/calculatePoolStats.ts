@@ -87,10 +87,6 @@ const fetchPoolTVLFromSnapshotAverageFromRange = async (
           )
           .reduce((sum, value) => sum + value, 0) /
         (res.poolSnapshots.length - 1);
-  if (isNaN(avgVolume)) {
-    console.log(avgVolume);
-    console.log(res.poolSnapshots);
-  }
 
   return [
     avgLiquidity,

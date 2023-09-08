@@ -11,7 +11,7 @@ import { Spinner } from "#/components/Spinner";
 import { TooltipMobile } from "./TooltipMobile";
 
 interface PlotProps extends PlotParams {
-  title: string;
+  title?: string;
   toolTip?: string;
 }
 
@@ -101,7 +101,9 @@ export default function Plot(props: PlotProps) {
   const plotProps = merge(defaultPlotPropsDeepCopy, props); // deep copy is needed because merge mutates the first argument
   return (
     <div className="flex w-full flex-col">
-      <PlotTitle title={plotProps.title} tooltip={plotProps.toolTip} />
+      {plotProps.title && (
+        <PlotTitle title={plotProps.title} tooltip={plotProps.toolTip} />
+      )}
       <PlotRoot {...plotProps} />
     </div>
   );

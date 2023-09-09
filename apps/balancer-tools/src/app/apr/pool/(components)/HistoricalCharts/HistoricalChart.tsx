@@ -64,7 +64,7 @@ export default function HistoricalChartWrapper({
   return (
     <div className="border border-blue6 bg-blue3 rounded p-4 w-full">
       <div className="flex justify-between flex-col sm:flex-row gap-2 sm:gap-0">
-        <span className="text-2xl	">Historical Data </span>
+        <span className="text-2xl">Historical Data</span>
         <FilterTabs
           tabs={charts}
           selectedTabs={selectedTabs}

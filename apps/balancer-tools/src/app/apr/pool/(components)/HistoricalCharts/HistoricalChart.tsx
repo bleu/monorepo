@@ -87,7 +87,7 @@ export default function HistoricalChartWrapper({
           xaxis: {
             dtick: 1,
             title: "Round Number",
-            gridcolor: blueDark.blue6,
+gridcolor: blueDark.blue6,
             linecolor: blueDark.blue6,
             mirror: true,
           },
@@ -99,6 +99,9 @@ export default function HistoricalChartWrapper({
             position: 0.5,
           },
           yaxis2: {
+            gridcolor: blueDark.blue6,
+            linecolor: blueDark.blue6,
+            mirror: true,
             fixedrange: true,
             title: "APR %",
             overlaying: "y",
@@ -107,6 +110,9 @@ export default function HistoricalChartWrapper({
             autoshift: true,
           },
           yaxis3: {
+            gridcolor: blueDark.blue6,
+            linecolor: blueDark.blue6,
+            mirror: true,
             fixedrange: true,
             title: "TVL",
             overlaying: "y",
@@ -115,6 +121,9 @@ export default function HistoricalChartWrapper({
             autoshift: true,
           },
           yaxis4: {
+            gridcolor: blueDark.blue6,
+            linecolor: blueDark.blue6,
+            mirror: true,
             fixedrange: true,
             title: "Volume",
             overlaying: "y",
@@ -123,6 +132,9 @@ export default function HistoricalChartWrapper({
             autoshift: true,
           },
           yaxis5: {
+            gridcolor: blueDark.blue6,
+            linecolor: blueDark.blue6,
+            mirror: true,
             fixedrange: true,
             title: "Swap Fee $",
             overlaying: "y",

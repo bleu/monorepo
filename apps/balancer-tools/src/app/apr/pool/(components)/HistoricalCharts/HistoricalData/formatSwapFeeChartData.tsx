@@ -8,7 +8,7 @@ import { generateAndTrimAprCords, getRoundName } from "..";
 export default function HistoricalSwapFeeChartData(
   apiResult: PoolStatsResults,
   roundId?: string,
-  yaxis: string,
+  yaxis: string = 'y',
 ): Plotly.Data {
   const normalBarColor = blueDarkA.blueA9;
   const highlightedBarColor = amberDarkA.amberA9;

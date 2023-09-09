@@ -1,29 +1,27 @@
-import { redDarkA } from "@radix-ui/colors";
+import { yellowDarkA } from "@radix-ui/colors";
 import { PlotType } from "plotly.js";
 
 import { PoolStatsResults } from "#/app/apr/api/route";
 
 import { generateAndTrimAprCords } from "..";
 
-export default function HistoricalVolumeChartData(
+export default function formatTvlChartData(
   apiResult: PoolStatsResults,
   yaxis: string,
 ): Plotly.Data {
-  const HOVERTEMPLATE = "$%{y:.2f}";
-
   const trimmedTotalAprData = generateAndTrimAprCords(
     apiResult.perRound,
-    (result) => result.volume,
+    (result) => result.tvl,
     0,
   );
 
   return {
-    name: "Volume",
+    name: "TVL",
     yaxis: yaxis,
-    hovertemplate: HOVERTEMPLATE,
+    hovertemplate: "%{y:.2f}",
     x: trimmedTotalAprData.x,
     y: trimmedTotalAprData.y,
-    line: { shape: "spline", color: redDarkA.redA9 } as const,
+    line: { shape: "spline", color: yellowDarkA.yellowA9 } as const,
     type: "scatter" as PlotType,
   };
 }

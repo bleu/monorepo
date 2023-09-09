@@ -8,10 +8,10 @@ import { PoolStatsResults } from "#/app/apr/api/route";
 import Plot from "#/components/Plot";
 
 import FilterTabs from "./FilterTabs";
-import HistoricalAPRChartData from "./HistoricalData/HistoricalAPRChart";
-import HistoricalSwapFeeChartData from "./HistoricalData/HistoricalSwapFeeChart";
-import HistoricalTvlChartData from "./HistoricalData/HistoricalTvlChart";
-import HistoricalVolumeChartData from "./HistoricalData/HistoricalVolumeChart";
+import formatAPRChartData from "./HistoricalData/formatAPRChartData";
+import formatSwapFeeChartData from "./HistoricalData/formatSwapFeeChartData";
+import formatTvlChartData from "./HistoricalData/formatTvlChartData";
+import formatVolumeChartData from "./HistoricalData/formatVolumeChartData";
 
 function getActiveData(
   enabledIndices: number[],
@@ -40,10 +40,10 @@ export default function HistoricalChartWrapper({
   const charts = ["APR", "Weekly Swap Fees (USD)", "TVL", "Volume"];
   const [selectedTabs, setselectedTabs] = useState([0]);
 
-  const aprChartData = HistoricalAPRChartData(apiResult, "y2");
-  const tvlChartData = HistoricalTvlChartData(apiResult, "y3");
-  const volumeChartData = HistoricalVolumeChartData(apiResult, "y4");
-  const feeChartData = HistoricalSwapFeeChartData(apiResult, roundId, "y5");
+  const aprChartData = formatAPRChartData(apiResult, "y2");
+  const tvlChartData = formatTvlChartData(apiResult, "y3");
+  const volumeChartData = formatVolumeChartData(apiResult, "y4");
+  const feeChartData = formatSwapFeeChartData(apiResult, roundId, "y5");
   const activeCharts = getActiveData(
     selectedTabs,
     aprChartData,

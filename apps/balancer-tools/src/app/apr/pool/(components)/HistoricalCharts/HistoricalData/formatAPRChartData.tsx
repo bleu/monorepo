@@ -5,7 +5,7 @@ import { PoolStatsResults } from "#/app/apr/api/route";
 
 import { generateAndTrimAprCords } from "..";
 
-export default function HistoricalAPRChartData(
+export default function formatAPRChartData(
   apiResult: PoolStatsResults,
   yaxis: string,
 ): Plotly.Data[] {

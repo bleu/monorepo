@@ -87,7 +87,7 @@ export default function HistoricalChartWrapper({
           xaxis: {
             dtick: 1,
             title: "Round Number",
-gridcolor: blueDark.blue6,
+            gridcolor: blueDark.blue6,
             linecolor: blueDark.blue6,
             mirror: true,
           },

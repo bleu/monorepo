@@ -40,10 +40,10 @@ export default function HistoricalChartWrapper({
   const charts = ["APR", "Weekly Swap Fees (USD)", "TVL", "Volume"];
   const [selectedTabs, setselectedTabs] = useState([0]);
 
-  const aprChartData = HistoricalAPRChartData(apiResult);
-  const tvlChartData = HistoricalTvlChartData(apiResult);
-  const volumeChartData = HistoricalVolumeChartData(apiResult);
-  const feeChartData = HistoricalSwapFeeChartData(apiResult, roundId);
+  const aprChartData = HistoricalAPRChartData(apiResult, "y2");
+  const tvlChartData = HistoricalTvlChartData(apiResult, "y3");
+  const volumeChartData = HistoricalVolumeChartData(apiResult, "y4");
+  const feeChartData = HistoricalSwapFeeChartData(apiResult, roundId, "y5");
   const activeCharts = getActiveData(
     selectedTabs,
     aprChartData,
@@ -51,6 +51,15 @@ export default function HistoricalChartWrapper({
     tvlChartData,
     volumeChartData,
   );
+
+  // This is needed to enable an axis that isn't meant to be shown
+  // If the anchor axis isn't enabled the other it'll only show one trace at a time
+  activeCharts.push({
+    name: " ",
+    yaxis: "y",
+    x: [],
+    y: [],
+  });
 
   return (
     <div className="border border-blue6 bg-blue3 rounded p-4 w-full">
@@ -78,10 +87,48 @@ export default function HistoricalChartWrapper({
           xaxis: {
             dtick: 1,
             title: "Round Number",
+            gridcolor: blueDark.blue6,
+            linecolor: blueDark.blue6,
+            mirror: true,
           },
           yaxis: {
+            // This is a dull axis, not meant to be shown
+            // It's needed since all other axis are anchored on this one
+            // If this axis isn't enabled the others it'll only show one at a time
+            visible: false,
+            position: 0.5,
+          },
+          yaxis2: {
             fixedrange: true,
-            // title: "APR %",
+            title: "APR %",
+            overlaying: "y",
+            anchor: "free",
+            // @ts-ignore: 2322
+            autoshift: true,
+          },
+          yaxis3: {
+            fixedrange: true,
+            title: "TVL",
+            overlaying: "y",
+            anchor: "free",
+            // @ts-ignore: 2322
+            autoshift: true,
+          },
+          yaxis4: {
+            fixedrange: true,
+            title: "Volume",
+            overlaying: "y",
+            anchor: "free",
+            // @ts-ignore: 2322
+            autoshift: true,
+          },
+          yaxis5: {
+            fixedrange: true,
+            title: "Swap Fee $",
+            overlaying: "y",
+            anchor: "free",
+            // @ts-ignore: 2322
+            autoshift: true,
           },
         }}
       />

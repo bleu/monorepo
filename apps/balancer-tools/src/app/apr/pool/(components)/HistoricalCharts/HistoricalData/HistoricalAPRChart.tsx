@@ -7,6 +7,7 @@ import { generateAndTrimAprCords } from "..";
 
 export default function HistoricalAPRChartData(
   apiResult: PoolStatsResults,
+  yaxis: string,
 ): Plotly.Data[] {
   const HOVERTEMPLATE = "%{y:.2f}%";
   const trimmedVebalAprData = generateAndTrimAprCords(
@@ -28,6 +29,7 @@ export default function HistoricalAPRChartData(
   );
   const vebalAprPerRoundData = {
     name: "veBAL APR %",
+    yaxis: yaxis,
     hovertemplate: HOVERTEMPLATE,
     x: trimmedVebalAprData.x,
     y: trimmedVebalAprData.y,
@@ -37,6 +39,7 @@ export default function HistoricalAPRChartData(
 
   const feeAprPerRoundData = {
     name: "Fee APR %",
+    yaxis: yaxis,
     hovertemplate: HOVERTEMPLATE,
     x: trimmedFeeAprData.x,
     y: trimmedFeeAprData.y,
@@ -46,6 +49,7 @@ export default function HistoricalAPRChartData(
 
   const totalAprPerRoundData = {
     name: "Total APR %",
+    yaxis: yaxis,
     hovertemplate: HOVERTEMPLATE,
     x: trimmedTotalAprData.x,
     y: trimmedTotalAprData.y,

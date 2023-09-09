@@ -7,6 +7,7 @@ import { generateAndTrimAprCords } from "..";
 
 export default function HistoricalTvlChartData(
   apiResult: PoolStatsResults,
+  yaxis: string,
 ): Plotly.Data {
   const trimmedTotalAprData = generateAndTrimAprCords(
     apiResult.perRound,
@@ -16,6 +17,7 @@ export default function HistoricalTvlChartData(
 
   return {
     name: "TVL",
+    yaxis: yaxis,
     hovertemplate: "%{y:.2f}",
     x: trimmedTotalAprData.x,
     y: trimmedTotalAprData.y,

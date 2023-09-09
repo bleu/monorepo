@@ -7,6 +7,7 @@ import { generateAndTrimAprCords } from "..";
 
 export default function HistoricalVolumeChartData(
   apiResult: PoolStatsResults,
+  yaxis: string,
 ): Plotly.Data {
   const HOVERTEMPLATE = "$%{y:.2f}";
 
@@ -18,6 +19,7 @@ export default function HistoricalVolumeChartData(
 
   return {
     name: "Volume",
+    yaxis: yaxis,
     hovertemplate: HOVERTEMPLATE,
     x: trimmedTotalAprData.x,
     y: trimmedTotalAprData.y,

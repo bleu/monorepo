@@ -25,7 +25,6 @@ export default function Page({
   params: { roundId: string };
   searchParams: SearchParams;
 }) {
-  const filteredApiUrl = getFilteredRoundApiUrl(searchParams, roundId);
   return (
     <div className="flex flex-1 flex-col gap-y-3">
       <Breadcrumb />
@@ -33,13 +32,13 @@ export default function Page({
         <RoundOverviewCards roundId={roundId} />
       </Suspense>
       <Suspense fallback={<Spinner />}>
-        <TopPoolsChartWrapper
-          roundId={roundId}
-          filteredApiUrl={filteredApiUrl}
-        />
+        <TopPoolsChartWrapper roundId={roundId} />
       </Suspense>
       <Suspense fallback={<Spinner />}>
-        <PoolTableWrapper roundId={roundId} filteredApiUrl={filteredApiUrl} />
+        <PoolTableWrapper
+          roundId={roundId}
+          url={getFilteredRoundApiUrl(searchParams, roundId)}
+        />
       </Suspense>
     </div>
   );

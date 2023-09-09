@@ -1,16 +1,17 @@
 import { fetcher } from "#/utils/fetcher";
 
+import getFilteredRoundApiUrl from "../../(utils)/getFilteredApiUrl";
 import { PoolStatsResults } from "../../api/route";
 import TopPoolsChart from "./TopPoolsChart";
 
 export default async function TopPoolsChartWrapper({
   roundId,
-  filteredApiUrl,
 }: {
   roundId: string;
-  filteredApiUrl: string;
 }) {
-  const topAprApi = await fetcher<PoolStatsResults>(filteredApiUrl);
+  const topAprApi = await fetcher<PoolStatsResults>(
+    getFilteredRoundApiUrl({}, roundId),
+  );
 
   return <TopPoolsChart roundId={roundId} ApiResult={topAprApi} />;
 }

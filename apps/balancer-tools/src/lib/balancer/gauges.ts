@@ -42,7 +42,6 @@ export class Pool {
   gauge!: Gauge;
 
   constructor(id: string, associatedGauge?: Gauge) {
-    // Return cached instance if it exists
     if (POOL_CACHE[id]) {
       return POOL_CACHE[id];
     }

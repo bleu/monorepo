@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function KpiSkeleton() {
   return (
     <div className="animate-pulse border-blue6 bg-blue3 grid w-full auto-rows-fr gap-6 rounded border p-4 sm:auto-cols-fr sm:grid-flow-col">

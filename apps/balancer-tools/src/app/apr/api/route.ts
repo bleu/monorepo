@@ -66,8 +66,9 @@ const memoryCache: { [key: string]: unknown } = {};
 const getDataFromCacheOrCompute = async <T>(
   cacheKey: string,
   computeFn: () => Promise<T>,
+  alwaysMiss: boolean = false,
 ): Promise<T> => {
-  if (memoryCache[cacheKey]) {
+  if (memoryCache[cacheKey] && !alwaysMiss) {
     console.debug(`Cache hit for ${cacheKey}`);
     return memoryCache[cacheKey] as T;
   }
@@ -246,8 +247,6 @@ function validateSearchParams(poolId: string | null, roundId: string | null) {
     }
   }
   if (roundId) {
-    console.log({ roundId });
-
     if (
       isNaN(parseInt(roundId)) ||
       parseInt(roundId) > parseInt(Round.currentRound().value)
@@ -282,6 +281,7 @@ export async function GET(request: NextRequest) {
       await getDataFromCacheOrCompute(
         `pool_${poolId}_round_${roundId}`,
         async () => fetchDataForPoolIdRoundId(poolId, roundId),
+        parseInt(roundId) === parseInt(Round.currentRound().value),
       ),
     );
   } else if (poolId) {
@@ -293,6 +293,7 @@ export async function GET(request: NextRequest) {
     responseData = await getDataFromCacheOrCompute(
       `fetch_round_id_${roundId}`,
       async () => fetchDataForRoundId(roundId),
+      parseInt(roundId) === parseInt(Round.currentRound().value),
     );
   }
 

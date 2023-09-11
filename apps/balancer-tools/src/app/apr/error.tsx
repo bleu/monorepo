@@ -34,7 +34,7 @@ export default function Error({
               </h3>
             </div>
             <div className="p-6 space-y-6">
-              <p className="text-base leading-relaxed text-gray-400">
+              <p className="text-base leading-relaxed text-gray-400 break-all">
                 {error.message}
               </p>
             </div>

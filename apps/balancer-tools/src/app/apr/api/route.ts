@@ -66,9 +66,9 @@ const memoryCache: { [key: string]: unknown } = {};
 const getDataFromCacheOrCompute = async <T>(
   cacheKey: string,
   computeFn: () => Promise<T>,
-  alwaysMiss: boolean = false,
+  skipCache: boolean = false,
 ): Promise<T> => {
-  if (memoryCache[cacheKey] && !alwaysMiss) {
+  if (memoryCache[cacheKey] && !skipCache) {
     console.debug(`Cache hit for ${cacheKey}`);
     return memoryCache[cacheKey] as T;
   }

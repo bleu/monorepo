@@ -5,7 +5,7 @@ import Link from "next/link";
 import BreadcrumbSkeleton from "./(components)/(skeleton)/BreadcrumbSkeleton";
 import ChartSkelton from "./(components)/(skeleton)/ChartSkelton";
 import KpisSkeleton from "./(components)/(skeleton)/KpisSkeleton";
-import TableSkeleton from "./(components)/(skeleton)/PoolTableSkeleton";
+import TableSkeleton from "./(components)/(skeleton)/TableSkeleton";
 
 export default function Error({
   error,
@@ -19,7 +19,7 @@ export default function Error({
       <BreadcrumbSkeleton />
       <KpisSkeleton />
       <ChartSkelton />
-      <TableSkeleton />
+      <TableSkeleton colNumbers={10} />
 
       <div
         id="medium-modal"

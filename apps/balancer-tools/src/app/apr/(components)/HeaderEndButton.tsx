@@ -1,6 +1,11 @@
 "use client";
 
-import { networkFor, networkIdFor } from "@bleu-balancer-tools/utils";
+import {
+  capitalize,
+  networkFor,
+  networkIdFor,
+  networksOnBalancer,
+} from "@bleu-balancer-tools/utils";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { useParams, useRouter } from "next/navigation";
 import * as React from "react";
@@ -39,13 +44,17 @@ export default function HeaderEndButton() {
   }) => {
     router.push(`/apr/pool/${networkFor(network)}/${poolId}`);
   };
-
+  const avaliableNetworks = Object.keys(networksOnBalancer).map((key) => ({
+    value: key,
+    label: capitalize(networksOnBalancer[key]),
+  }));
   return (
     <div className="flex gap-6">
       <Dialog
         title="Go to pool"
         content={
           <SearchPoolForm
+            availableNetworks={avaliableNetworks}
             defaultValueNetwork={networkIdFor(network as string)}
             onSubmit={handlePoolClick}
             showPools
@@ -53,7 +62,6 @@ export default function HeaderEndButton() {
           />
         }
       >
-        {/* 35px is the select height */}
         <div className="flex items-center gap-x-2 text-sm font-normal text-slate12 bg-blue4 border border-blue6 px-2 rounded-[4px] cursor-pointer h-[35px]">
           <MagnifyingGlassIcon width="20" height="20" strokeWidth={1} />
           <span className="font-medium pr-1">Go to pool</span>

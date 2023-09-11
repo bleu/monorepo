@@ -48,6 +48,12 @@ export class Round {
   }
 
   static getRoundByNumber(roundNumber: number | string): Round {
+    if (
+      isNaN(parseInt(roundNumber.toString())) ||
+      parseInt(roundNumber.toString()) > parseInt(Round.currentRound().value)
+    ) {
+      throw new Error(`Round number ${roundNumber} is invalid`);
+    }
     const allRounds = Round.getAllRounds();
     return allRounds.find((round) => round.value === String(roundNumber))!;
   }

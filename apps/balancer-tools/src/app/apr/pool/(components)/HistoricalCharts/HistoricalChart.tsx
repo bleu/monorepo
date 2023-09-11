@@ -61,23 +61,27 @@ export default function HistoricalChartWrapper({
     y: [],
   });
 
+  const selectedRoundShape =
   // @ts-ignore: 2322
-  const selectedRoundShape = (roundId && (aprChartData[0].x.includes(`#${roundId}`))) ? [
-    {
-      type: 'line',
-      x0: roundId,
-      y0: 0,
-      x1: roundId,
-      y1: 2,
-      line: {
-        color: 'rgb(55, 128, 191)',
-        width: 3,
-        dash: 'dot'
-      },
-      label: {
-        text: 'Selected Round',
-      },
-    },] : []
+    roundId && aprChartData[0].x.includes(`#${roundId}`)
+      ? [
+          {
+            type: "line",
+            x0: roundId,
+            y0: 0,
+            x1: roundId,
+            y1: 2,
+            line: {
+              color: "rgb(55, 128, 191)",
+              width: 3,
+              dash: "dot",
+            },
+            label: {
+              text: "Selected Round",
+            },
+          },
+        ]
+      : [];
 
   return (
     <div className="border border-blue6 bg-blue3 rounded p-4 w-full">
@@ -136,6 +140,7 @@ export default function HistoricalChartWrapper({
             fixedrange: true,
             title: "TVL",
             overlaying: "y",
+            side: "right",
             anchor: "free",
             // @ts-ignore: 2322
             autoshift: true,
@@ -147,6 +152,7 @@ export default function HistoricalChartWrapper({
             fixedrange: true,
             title: "Volume",
             overlaying: "y",
+            side: "right",
             anchor: "free",
             // @ts-ignore: 2322
             autoshift: true,
@@ -158,6 +164,7 @@ export default function HistoricalChartWrapper({
             fixedrange: true,
             title: "Swap Fee $",
             overlaying: "y",
+            side: "right",
             anchor: "free",
             // @ts-ignore: 2322
             autoshift: true,

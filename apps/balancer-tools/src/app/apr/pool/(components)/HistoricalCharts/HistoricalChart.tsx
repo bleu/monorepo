@@ -61,6 +61,24 @@ export default function HistoricalChartWrapper({
     y: [],
   });
 
+  // @ts-ignore: 2322
+  const selectedRoundShape = (roundId && (aprChartData[0].x.includes(`#${roundId}`))) ? [
+    {
+      type: 'line',
+      x0: roundId,
+      y0: 0,
+      x1: roundId,
+      y1: 2,
+      line: {
+        color: 'rgb(55, 128, 191)',
+        width: 3,
+        dash: 'dot'
+      },
+      label: {
+        text: 'Selected Round',
+      },
+    },] : []
+
   return (
     <div className="border border-blue6 bg-blue3 rounded p-4 w-full">
       <div className="flex justify-between flex-col sm:flex-row gap-2 sm:gap-0">
@@ -75,6 +93,8 @@ export default function HistoricalChartWrapper({
         data={activeCharts}
         config={{ displayModeBar: false }}
         layout={{
+          // @ts-ignore: 2322
+          shapes: selectedRoundShape,
           plot_bgcolor: blueDark.blue3,
           margin: { t: 30, r: 20, l: 20, b: 30 },
           autosize: true,

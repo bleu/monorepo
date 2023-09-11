@@ -54,7 +54,7 @@ export default function HeaderEndButton() {
         title="Go to pool"
         content={
           <SearchPoolForm
-            possibleNetworks={avaliableNetworks}
+            availableNetworks={avaliableNetworks}
             defaultValueNetwork={networkIdFor(network as string)}
             onSubmit={handlePoolClick}
             showPools

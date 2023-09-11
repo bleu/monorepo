@@ -1,4 +1,4 @@
-import { amberDarkA, blueDarkA } from "@radix-ui/colors";
+import { amberDarkA, plumDarkA } from "@radix-ui/colors";
 import { PlotType } from "plotly.js";
 
 import { PoolStatsResults } from "#/app/apr/api/route";
@@ -10,17 +10,13 @@ export default function HistoricalSwapFeeChartData(
   roundId?: string,
   yaxis: string = "y",
 ): Plotly.Data {
-  const normalBarColor = blueDarkA.blueA9;
+  const normalBarColor = plumDarkA.plumA9;
   const highlightedBarColor = amberDarkA.amberA9;
 
   const trimmedCollectedSwapFeeData = generateAndTrimAprCords(
     apiResult.perRound,
     (result) => result.collectedFeesUSD,
     0,
-  );
-
-  const barColors = new Array(trimmedCollectedSwapFeeData.x.length).fill(
-    normalBarColor,
   );
 
   const colletedSwapFeePerRoundData = {
@@ -30,7 +26,7 @@ export default function HistoricalSwapFeeChartData(
     x: trimmedCollectedSwapFeeData.x,
     y: trimmedCollectedSwapFeeData.y,
     marker: {
-      color: barColors,
+      color: normalBarColor,
     },
     line: { shape: "spline" } as const,
     type: "bar" as PlotType,
@@ -41,7 +37,7 @@ export default function HistoricalSwapFeeChartData(
   );
 
   if (chosenRoundMarkerIdx !== -1) {
-    barColors[chosenRoundMarkerIdx] = highlightedBarColor;
+    trimmedCollectedSwapFeeData.x[chosenRoundMarkerIdx] = highlightedBarColor;
   }
 
   return colletedSwapFeePerRoundData;

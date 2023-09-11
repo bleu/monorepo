@@ -1,4 +1,4 @@
-import { blueDarkA, greenDarkA } from "@radix-ui/colors";
+import { blackA, blueDarkA, greenDarkA, whiteA } from "@radix-ui/colors";
 import { PlotType } from "plotly.js";
 
 import { PoolStatsResults } from "#/app/apr/api/route";
@@ -33,7 +33,7 @@ export default function formatAPRChartData(
     hovertemplate: HOVERTEMPLATE,
     x: trimmedVebalAprData.x,
     y: trimmedVebalAprData.y,
-    line: { shape: "spline" } as const,
+    line: { shape: "spline", color: blueDarkA.blueA9 } as const,
     type: "scatter" as PlotType,
   };
 
@@ -53,7 +53,7 @@ export default function formatAPRChartData(
     hovertemplate: HOVERTEMPLATE,
     x: trimmedTotalAprData.x,
     y: trimmedTotalAprData.y,
-    line: { shape: "spline", color: blueDarkA.blueA9 } as const,
+    line: { shape: "spline", color: whiteA.whiteA9 } as const,
     type: "scatter" as PlotType,
   };
 

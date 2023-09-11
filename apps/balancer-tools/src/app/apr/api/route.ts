@@ -64,18 +64,19 @@ export interface PoolStatsResults {
 const memoryCache: { [key: string]: unknown } = {};
 
 const getDataFromCacheOrCompute = async <T>(
-  cacheKey: string,
+  cacheKey: string | null,
   computeFn: () => Promise<T>,
-  skipCache: boolean = false,
 ): Promise<T> => {
-  if (memoryCache[cacheKey] && !skipCache) {
+  if (cacheKey && memoryCache[cacheKey]) {
     console.debug(`Cache hit for ${cacheKey}`);
     return memoryCache[cacheKey] as T;
   }
 
   console.debug(`Cache miss for ${cacheKey}`);
   const computedData = await computeFn();
-  memoryCache[cacheKey] = computedData;
+  if (cacheKey) {
+    memoryCache[cacheKey] = computedData;
+  }
   return computedData;
 };
 
@@ -279,9 +280,10 @@ export async function GET(request: NextRequest) {
   if (poolId && roundId) {
     return NextResponse.json(
       await getDataFromCacheOrCompute(
-        `pool_${poolId}_round_${roundId}`,
+        parseInt(roundId) === parseInt(Round.currentRound().value)
+          ? null
+          : `pool_${poolId}_round_${roundId}`,
         async () => fetchDataForPoolIdRoundId(poolId, roundId),
-        parseInt(roundId) === parseInt(Round.currentRound().value),
       ),
     );
   } else if (poolId) {
@@ -291,9 +293,10 @@ export async function GET(request: NextRequest) {
     );
   } else if (roundId) {
     responseData = await getDataFromCacheOrCompute(
-      `fetch_round_id_${roundId}`,
+      parseInt(roundId) === parseInt(Round.currentRound().value)
+        ? null
+        : `fetch_round_id_${roundId}`,
       async () => fetchDataForRoundId(roundId),
-      parseInt(roundId) === parseInt(Round.currentRound().value),
     );
   }
 

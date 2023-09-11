@@ -12,17 +12,13 @@ export const getBALPriceByRound = async (round: Round) =>
       {
         length:
           Math.floor(
-            (round.endDate.getTime() -
-              round.startDate.getTime()) /
+            (round.endDate.getTime() - round.startDate.getTime()) /
               MILLISECONDS_IN_DAY,
           ) + 1,
       },
       (_, i) =>
         getTokenPriceByDate(
-          new Date(
-            round.startDate.getTime() +
-              i * MILLISECONDS_IN_DAY,
-          ),
+          new Date(round.startDate.getTime() + i * MILLISECONDS_IN_DAY),
           "0xba100000625a3754423978a60c9317c58a424e3d",
           1,
         ),

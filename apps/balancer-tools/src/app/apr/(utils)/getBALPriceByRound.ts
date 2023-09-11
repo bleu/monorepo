@@ -10,14 +10,14 @@ const BAL_TOKEN_NETWORK = 1;
 
 /**
  * Calculates the number of days between two dates, inclusive of both start and end dates.
-*/
+ */
 const calculateDaysBetween = (startDate: Date, endDate: Date) =>
   Math.floor((endDate.getTime() - startDate.getTime()) / MILLISECONDS_IN_DAY) +
   1;
 
 /**
  * Calculates the average of an array of numbers.
-*/
+ */
 const calculateAverage = (arr: number[]) =>
   arr.reduce((sum, val) => sum + val, 0) / arr.length;
 

@@ -24,6 +24,8 @@ export default function formatVolumeChartData(
     x: trimmedTotalAprData.x,
     y: trimmedTotalAprData.y,
     line: { shape: "spline", color: redDarkA.redA9 } as const,
-    type: "scatter" as PlotType,
+    type: "bar" as PlotType,
+    // @ts-ignore: 2322
+    offsetgroup: 3,
   };
 }

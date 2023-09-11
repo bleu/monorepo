@@ -30,6 +30,7 @@ export default function HistoricalSwapFeeChartData(
     },
     line: { shape: "spline" } as const,
     type: "bar" as PlotType,
+    offsetgroup: 1,
   };
 
   const chosenRoundMarkerIdx = colletedSwapFeePerRoundData.x.findIndex(

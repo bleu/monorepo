@@ -18,10 +18,12 @@ export default function formatTvlChartData(
   return {
     name: "TVL",
     yaxis: yaxis,
-    hovertemplate: "%{y:.2f}",
+    hovertemplate: "%{y:$,.0f}",
     x: trimmedTotalAprData.x,
     y: trimmedTotalAprData.y,
     line: { shape: "spline", color: yellowDarkA.yellowA9 } as const,
-    type: "scatter" as PlotType,
+    type: "bar" as PlotType,
+    // @ts-ignore: 2322
+    offsetgroup: 2,
   };
 }

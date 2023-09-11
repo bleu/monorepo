@@ -1,10 +1,9 @@
 import { Suspense } from "react";
 
-import HistoricalCharts from "#/app/apr/pool/(components)/HistoricalCharts";
 import ChartSkelton from "#/app/apr/(components)/(skeleton)/ChartSkelton";
 import KpisSkeleton from "#/app/apr/(components)/(skeleton)/KpisSkeleton";
 import TableSkeleton from "#/app/apr/(components)/(skeleton)/TableSkeleton";
-import HistoricalAPRChart from "#/app/apr/pool/(components)/HistoricalAPRChart";
+import HistoricalCharts from "#/app/apr/pool/(components)/HistoricalCharts";
 import PoolOverviewCards from "#/app/apr/pool/(components)/PoolOverviewCards";
 import PoolTokens from "#/app/apr/pool/(components)/PoolTokens";
 import Breadcrumb from "#/app/apr/round/(components)/Breadcrumb";

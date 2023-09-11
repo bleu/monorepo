@@ -1,9 +1,11 @@
 import { Suspense } from "react";
 
+import ChartSkelton from "#/app/apr/(components)/(skeleton)/ChartSkelton";
+import KpisSkeleton from "#/app/apr/(components)/(skeleton)/KpisSkeleton";
+import TableSkeleton from "#/app/apr/(components)/(skeleton)/TableSkeleton";
 import HistoricalAPRChart from "#/app/apr/pool/(components)/HistoricalAPRChart";
 import PoolOverviewCards from "#/app/apr/pool/(components)/PoolOverviewCards";
 import Breadcrumb from "#/app/apr/round/(components)/Breadcrumb";
-import { Spinner } from "#/components/Spinner";
 
 import PoolTokens from "../../(components)/PoolTokens";
 
@@ -15,13 +17,13 @@ export default async function Page({
   return (
     <div className="flex flex-1 h-full w-full flex-col justify-start rounded-3xl text-white gap-y-3">
       <Breadcrumb />
-      <Suspense fallback={<Spinner />}>
+      <Suspense fallback={<KpisSkeleton />}>
         <PoolOverviewCards poolId={poolId} />
       </Suspense>
-      <Suspense fallback={<Spinner />}>
+      <Suspense fallback={<ChartSkelton />}>
         <HistoricalAPRChart poolId={poolId} />
       </Suspense>
-      <Suspense fallback={<Spinner />}>
+      <Suspense fallback={<TableSkeleton colNumbers={2} />}>
         <PoolTokens poolId={poolId} />
       </Suspense>
     </div>

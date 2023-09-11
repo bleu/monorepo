@@ -64,17 +64,19 @@ export interface PoolStatsResults {
 const memoryCache: { [key: string]: unknown } = {};
 
 const getDataFromCacheOrCompute = async <T>(
-  cacheKey: string,
+  cacheKey: string | null,
   computeFn: () => Promise<T>,
 ): Promise<T> => {
-  if (memoryCache[cacheKey]) {
+  if (cacheKey && memoryCache[cacheKey]) {
     console.debug(`Cache hit for ${cacheKey}`);
     return memoryCache[cacheKey] as T;
   }
 
   console.debug(`Cache miss for ${cacheKey}`);
   const computedData = await computeFn();
-  memoryCache[cacheKey] = computedData;
+  if (cacheKey) {
+    memoryCache[cacheKey] = computedData;
+  }
   return computedData;
 };
 
@@ -232,6 +234,29 @@ const fetchDataForRoundId = async (
   };
 };
 
+function validateSearchParams(poolId: string | null, roundId: string | null) {
+  if ((!poolId || poolId === null) && (!roundId || roundId === null)) {
+    throw new Error("no roundId or poolId provided");
+  }
+  if (poolId) {
+    if (
+      !POOLS_WITH_LIVE_GAUGES.find(
+        (g) => g.id.toLowerCase() === poolId.toLowerCase(),
+      )
+    ) {
+      throw new Error(`Pool with ID ${poolId} not found`);
+    }
+  }
+  if (roundId) {
+    if (
+      isNaN(parseInt(roundId)) ||
+      parseInt(roundId) > parseInt(Round.currentRound().value)
+    ) {
+      throw new Error(`Round number ${roundId} is invalid`);
+    }
+  }
+}
+
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
 
@@ -241,13 +266,23 @@ export async function GET(request: NextRequest) {
   const order = (searchParams.get("order") as Order) || "desc";
   const limit = parseInt(searchParams.get("limit") ?? "0") || Infinity;
   const offset = parseInt(searchParams.get("offset") ?? "0");
-
   let responseData;
+
+  try {
+    validateSearchParams(poolId, roundId);
+  } catch (error) {
+    return NextResponse.json(
+      { error: (error as Error).message },
+      { status: 400 },
+    );
+  }
 
   if (poolId && roundId) {
     return NextResponse.json(
       await getDataFromCacheOrCompute(
-        `pool_${poolId}_round_${roundId}`,
+        parseInt(roundId) === parseInt(Round.currentRound().value)
+          ? null
+          : `pool_${poolId}_round_${roundId}`,
         async () => fetchDataForPoolIdRoundId(poolId, roundId),
       ),
     );
@@ -258,15 +293,15 @@ export async function GET(request: NextRequest) {
     );
   } else if (roundId) {
     responseData = await getDataFromCacheOrCompute(
-      `fetch_round_id_${roundId}`,
+      parseInt(roundId) === parseInt(Round.currentRound().value)
+        ? null
+        : `fetch_round_id_${roundId}`,
       async () => fetchDataForRoundId(roundId),
     );
-  } else {
-    return NextResponse.json({ error: "no roundId or poolId provided" });
   }
 
-  if (responseData === null) {
-    return NextResponse.json({ error: "error fetching data" });
+  if (responseData === null || !responseData) {
+    return NextResponse.json({ error: "error fetching data" }, { status: 400 });
   }
 
   return NextResponse.json(

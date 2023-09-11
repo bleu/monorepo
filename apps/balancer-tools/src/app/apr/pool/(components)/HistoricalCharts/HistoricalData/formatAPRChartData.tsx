@@ -1,4 +1,4 @@
-import { blackA, blueDarkA, greenDarkA, whiteA } from "@radix-ui/colors";
+import { blueDarkA, greenDarkA, whiteA } from "@radix-ui/colors";
 import { PlotType } from "plotly.js";
 
 import { PoolStatsResults } from "#/app/apr/api/route";

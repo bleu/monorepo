@@ -18,7 +18,7 @@ function TableRowSkeleton({ classNames }: { classNames: string }) {
 export default function TableSkeleton({
   colNumbers = 10,
 }: {
-  colNumbers: number;
+  colNumbers?: number;
 }) {
   return (
     <div className="w-full animate-pulse space-y-4 rounded border p-4 shadow md:p-6 border-blue6 bg-blue3">

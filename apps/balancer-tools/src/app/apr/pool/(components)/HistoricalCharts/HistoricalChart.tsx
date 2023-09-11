@@ -62,7 +62,7 @@ export default function HistoricalChartWrapper({
   });
 
   const selectedRoundShape =
-  // @ts-ignore: 2322
+    // @ts-ignore: 2322
     roundId && aprChartData[0].x.includes(`#${roundId}`)
       ? [
           {

@@ -29,7 +29,7 @@ export default function FilterTabs({
     <div className="overflow-hidden grid grid-cols-2 sm:flex sm:flex-wrap rounded-full p-1 justify-self-center col-span-full border border-blue6 bg-blue3 select-none">
       {tabs.map((tabTitle, idx) => (
         <div
-          className="cursor-pointer flex grow justify-center items-center sm:min-w-[96px] min-w-[76px] sm:h-9 h-7"
+          className="cursor-pointer flex grow justify-center items-center sm:min-w-[96px] min-w-[76px] sm:h-9 h-7 rounded-full"
           role="radio"
           aria-checked={selectedTabs.includes(idx)}
           tabIndex={idx}

@@ -37,7 +37,7 @@ export default function HistoricalChartWrapper({
   apiResult: PoolStatsResults;
   roundId?: string;
 }) {
-  const charts = ["APR", "Weekly Swap Fees (USD)", "TVL", "Volume"];
+  const charts = ["APR", "Weekly Swap Fees", "TVL", "Volume"];
   const [selectedTabs, setselectedTabs] = useState([0]);
 
   const aprChartData = formatAPRChartData(apiResult, "y2");
@@ -162,7 +162,7 @@ export default function HistoricalChartWrapper({
             linecolor: blueDark.blue6,
             mirror: true,
             fixedrange: true,
-            title: "Swap Fee $",
+            title: "Swap Fee",
             overlaying: "y",
             side: "right",
             anchor: "free",

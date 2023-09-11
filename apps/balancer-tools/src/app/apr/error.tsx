@@ -24,7 +24,7 @@ export default function Error({
       <div
         id="medium-modal"
         tabIndex={-1}
-        className="fixed top-0 inset-x-0 z-50 w-full p-4 overflow-hidden md:inset-0 max-h-full bg-black/60 flex justify-center items-center"
+        className="fixed top-0 inset-x-0 z-50 h-screen sm:h-full w-full p-4 overflow-hidden md:inset-0 sm:max-h-full bg-black/60 flex justify-center items-center"
       >
         <div className="relative w-full max-w-lg max-h-full">
           <div className="relative border border-blue6 bg-blue3 rounded-lg">

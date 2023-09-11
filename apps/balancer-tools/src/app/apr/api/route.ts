@@ -298,7 +298,7 @@ export async function GET(request: NextRequest) {
   }
 
   if (responseData === null || !responseData) {
-    return NextResponse.json({ error: "error fetching data" }, { status: 500 });
+    return NextResponse.json({ error: "error fetching data" }, { status: 400 });
   }
 
   return NextResponse.json(

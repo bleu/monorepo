@@ -12,13 +12,13 @@ export const getBALPriceByRound = async (round: Round) => {
   );
 };
 
-export const getTokenPriceByRound = async (
-  round: Round,
+export const getTokenPriceByDate = async (
+  date: Date,
   tokenAddress: string,
   tokenNetwork: number,
 ) => {
   const token = `${networkFor(tokenNetwork).toLowerCase()}:${tokenAddress}`;
-  const relevantDateForPrice = Math.min(Date.now(), round.endDate.getTime());
+  const relevantDateForPrice = Math.min(Date.now(), date.getTime());
   const api = new DefiLlamaAPI();
 
   const response = await api.getHistoricalPrice(

@@ -34,7 +34,7 @@ export function SearchPoolForm({
   defaultValueNetwork = "1",
   defaultValuePool,
   form = useForm<PoolAttribute>(),
-  possibleNetworks = inputTypenames,
+  availableNetworks = inputTypenames,
   children,
 }: {
   onSubmit?: (formData: PoolAttribute) => void;
@@ -45,7 +45,7 @@ export function SearchPoolForm({
   defaultValueNetwork?: string;
   defaultValuePool?: string;
   form?: UseFormReturn<PoolAttribute>;
-  possibleNetworks?: { value: string; label: string }[];
+  availableNetworks?: { value: string; label: string }[];
   children?: ReactNode | undefined;
 }) {
   const [comboBoxIsOpen, setComboBoxIsOpen] = useState(false);
@@ -137,7 +137,7 @@ export function SearchPoolForm({
             defaultValue={defaultValueNetwork}
             render={({ field: { onChange, value, ref } }) => (
               <Select onValueChange={onChange} value={value} ref={ref}>
-                {possibleNetworks.map(
+                {availableNetworks.map(
                   ({ value, label }: { value: string; label: string }) => (
                     <SelectItem key={value} value={value}>
                       {label}

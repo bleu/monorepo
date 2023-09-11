@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 
 import ChartSkelton from "#/app/apr/(components)/(skeleton)/ChartSkelton";
-import KpiSkeleton from "#/app/apr/(components)/(skeleton)/KpiSkeleton";
+import KpisSkeleton from "#/app/apr/(components)/(skeleton)/KpisSkeleton";
 import PoolTableSkeleton from "#/app/apr/(components)/(skeleton)/PoolTableSkeleton";
 import HistoricalAPRChart from "#/app/apr/pool/(components)/HistoricalAPRChart";
 import PoolOverviewCards from "#/app/apr/pool/(components)/PoolOverviewCards";
@@ -17,7 +17,7 @@ export default async function Page({
   return (
     <div className="flex flex-1 h-full w-full flex-col justify-start rounded-3xl text-white gap-y-3">
       <Breadcrumb />
-      <Suspense fallback={<KpiSkeleton />}>
+      <Suspense fallback={<KpisSkeleton />}>
         <PoolOverviewCards poolId={poolId} />
       </Suspense>
       <Suspense fallback={<ChartSkelton />}>

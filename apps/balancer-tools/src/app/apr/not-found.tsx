@@ -4,14 +4,14 @@ import Link from "next/link";
 
 import BreadcrumbSkeleton from "./(components)/(skeleton)/BreadcrumbSkeleton";
 import ChartSkelton from "./(components)/(skeleton)/ChartSkelton";
-import KpiSkeleton from "./(components)/(skeleton)/KpiSkeleton";
+import KpisSkeleton from "./(components)/(skeleton)/KpisSkeleton";
 import TableSkeleton from "./(components)/(skeleton)/PoolTableSkeleton";
 
 export default function NotFound() {
   return (
     <div className="flex flex-1 h-full w-full flex-col justify-start rounded-3xl text-white gap-y-3">
       <BreadcrumbSkeleton />
-      <KpiSkeleton />
+      <KpisSkeleton />
       <ChartSkelton />
       <TableSkeleton />
 

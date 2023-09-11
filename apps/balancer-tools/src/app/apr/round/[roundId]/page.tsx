@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 
 import ChartSkelton from "../../(components)/(skeleton)/ChartSkelton";
-import KpiSkeleton from "../../(components)/(skeleton)/KpiSkeleton";
+import KpisSkeleton from "../../(components)/(skeleton)/KpisSkeleton";
 import PoolTableSkeleton from "../../(components)/(skeleton)/PoolTableSkeleton";
 import getFilteredRoundApiUrl from "../../(utils)/getFilteredApiUrl";
 import Breadcrumb from "../(components)/Breadcrumb";
@@ -29,7 +29,7 @@ export default function Page({
   return (
     <div className="flex flex-1 flex-col gap-y-3">
       <Breadcrumb />
-      <Suspense fallback={<KpiSkeleton />}>
+      <Suspense fallback={<KpisSkeleton />}>
         <RoundOverviewCards roundId={roundId} />
       </Suspense>
       <Suspense fallback={<ChartSkelton />}>

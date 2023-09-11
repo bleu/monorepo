@@ -6,7 +6,7 @@ import { Pool } from "#/lib/balancer/gauges";
 import { pools } from "#/lib/gql/server";
 
 import { PoolStatsData, PoolTokens } from "../api/route";
-import { getBALPriceByRound, getTokenPriceByRound } from "./getBALPriceByRound";
+import { getBALPriceByRound, getTokenPriceByDate } from "./getBALPriceByRound";
 import { getPoolRelativeWeight } from "./getRelativeWeight";
 import { Round } from "./rounds";
 
@@ -95,8 +95,8 @@ async function calculateTokensStats(
   }, 0);
 
   const tokenPromises = poolTokenData.map(async (token, idx) => {
-    const tokenPrice = await getTokenPriceByRound(
-      Round.getRoundByNumber(roundId),
+    const tokenPrice = await getTokenPriceByDate(
+      Round.getRoundByNumber(roundId).endDate,
       token.address,
       parseInt(poolNetwork),
     );

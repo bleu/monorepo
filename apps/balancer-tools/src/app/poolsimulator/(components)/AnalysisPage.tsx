@@ -80,7 +80,7 @@ export default function Page() {
               </Tabs.ItemTriggerWrapper>
               {tabTokens.map((symbol) => (
                 <div key={symbol}>
-                  <Tabs.ItemContent tabName={symbol} bgColor="bg-blue1">
+                  <Tabs.ItemContent tabName={symbol} classNames="bg-blue1">
                     <div className="flex flex-col gap-y-10 py-4">
                       <SwapCurve />
                       <ImpactCurve />

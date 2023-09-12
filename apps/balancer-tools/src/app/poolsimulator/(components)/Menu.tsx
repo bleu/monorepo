@@ -57,13 +57,13 @@ function IndexMenu() {
       <Tabs.ItemTriggerWrapper>
         <Tabs.ItemTrigger
           tabName={PoolSimulatorFormTabs.InitialData}
-          color="blue7"
+          itemClassNames="bg-blue7"
         >
           <span>Initial</span>
         </Tabs.ItemTrigger>
         <Tabs.ItemTrigger
           tabName={PoolSimulatorFormTabs.CustomData}
-          color="amber9"
+          itemClassNames="bg-amber9"
         >
           <span>Custom</span>
         </Tabs.ItemTrigger>
@@ -291,13 +291,13 @@ export function AnalysisMenu() {
             <Tabs.ItemTriggerWrapper>
               <Tabs.ItemTrigger
                 tabName={PoolSimulatorFormTabs.InitialData}
-                color="blue7"
+                itemClassNames="bg-blue7"
               >
                 <span>Initial</span>
               </Tabs.ItemTrigger>
               <Tabs.ItemTrigger
                 tabName={PoolSimulatorFormTabs.CustomData}
-                color="amber9"
+                itemClassNames="bg-amber9"
               >
                 <span>Custom</span>
               </Tabs.ItemTrigger>

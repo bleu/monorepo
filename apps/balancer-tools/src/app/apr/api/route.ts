@@ -37,6 +37,7 @@ export interface PoolStats {
     };
   };
   balPriceUSD: number;
+  volume: number;
   tvl: number;
   votingShare: number;
   collectedFeesUSD: number;
@@ -94,11 +95,13 @@ const computeAverages = (
         },
       },
       balPriceUSD: acc.balPriceUSD + data.balPriceUSD,
+      volume: acc.volume + data.volume,
       tvl: acc.tvl + data.tvl,
     }),
     {
       apr: { total: 0, breakdown: { veBAL: 0, swapFee: 0 } },
       balPriceUSD: 0,
+      volume: 0,
       tvl: 0,
     },
   );
@@ -113,6 +116,7 @@ const computeAverages = (
       },
     },
     balPriceUSD: total.balPriceUSD / count,
+    volume: total.volume / count,
     tvl: total.tvl / count,
   };
 };
@@ -175,6 +179,7 @@ const fetchDataForPoolIdRoundId = async (poolId: string, roundId: string) => {
           average: {
             apr: 0,
             balPriceUSD: 0,
+            volume: 0,
             tvl: 0,
           },
         };

@@ -3,10 +3,10 @@ import { Suspense } from "react";
 import ChartSkelton from "#/app/apr/(components)/(skeleton)/ChartSkelton";
 import KpisSkeleton from "#/app/apr/(components)/(skeleton)/KpisSkeleton";
 import TableSkeleton from "#/app/apr/(components)/(skeleton)/TableSkeleton";
-import HistoricalAPRChart from "#/app/apr/pool/(components)/HistoricalAPRChart";
 import PoolOverviewCards from "#/app/apr/pool/(components)/PoolOverviewCards";
 import Breadcrumb from "#/app/apr/round/(components)/Breadcrumb";
 
+import HistoricalCharts from "../../(components)/HistoricalCharts";
 import PoolTokens from "../../(components)/PoolTokens";
 
 export default async function Page({
@@ -21,7 +21,7 @@ export default async function Page({
         <PoolOverviewCards poolId={poolId} />
       </Suspense>
       <Suspense fallback={<ChartSkelton />}>
-        <HistoricalAPRChart poolId={poolId} />
+        <HistoricalCharts poolId={poolId} />
       </Suspense>
       <Suspense fallback={<TableSkeleton colNumbers={2} />}>
         <PoolTokens poolId={poolId} />

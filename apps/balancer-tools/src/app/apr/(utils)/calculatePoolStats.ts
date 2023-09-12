@@ -3,6 +3,7 @@ import * as Sentry from "@sentry/nextjs";
 
 import * as balEmissions from "#/lib/balancer/emissions";
 import { Pool } from "#/lib/balancer/gauges";
+import { getDataFromCacheOrCompute } from "#/lib/cache";
 import { pools } from "#/lib/gql/server";
 
 import { PoolStatsData, PoolTokens } from "../api/route";
@@ -33,25 +34,6 @@ export enum PoolTypeEnum {
 const WEEKS_IN_YEAR = 52;
 const SECONDS_IN_DAY = 86400;
 const SECONDS_IN_YEAR = 365 * SECONDS_IN_DAY;
-
-const memoryCache: { [key: string]: unknown } = {};
-
-const getDataFromCacheOrCompute = async <T>(
-  cacheKey: string | null,
-  computeFn: () => Promise<T>,
-): Promise<T> => {
-  if (cacheKey && memoryCache[cacheKey]) {
-    console.debug(`Cache hit for ${cacheKey}`);
-    return memoryCache[cacheKey] as T;
-  }
-
-  console.debug(`Cache miss for ${cacheKey}`);
-  const computedData = await computeFn();
-  if (cacheKey) {
-    memoryCache[cacheKey] = computedData;
-  }
-  return computedData;
-};
 
 const fetchPoolTVLFromSnapshotAverageFromRange = async (
   poolId: string,

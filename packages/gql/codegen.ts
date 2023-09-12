@@ -32,6 +32,8 @@ export const SUBGRAPHS = {
         [Network.Arbitrum]: `${baseEndpoint}/bal-pools-metadata-arb`,
         [Network.Gnosis]: `${baseEndpoint}/balancer-pools-metadata-gnosis`,
         [Network.Optimism]: `${baseEndpoint}/balancer-pools-metadata-op`,
+        // TODO: deploy Base subgraph
+        [Network.Base]: `${baseEndpoint}/balancer-pool-metadata`,
       };
     },
     endpointFor(network: Network) {
@@ -55,6 +57,7 @@ export const SUBGRAPHS = {
         [Network.Arbitrum]: `${baseEndpoint}-arbitrum`,
         [Network.Gnosis]: `${baseEndpoint}-gnosis-chain`,
         [Network.Optimism]: `${baseEndpoint}-optimism`,
+        [Network.Base]: `https://api.studio.thegraph.com/query/24660/balancer-gauges-base/version/latest/graphql`,
       };
     },
     endpointFor(network: Network) {
@@ -76,6 +79,8 @@ export const SUBGRAPHS = {
         [Network.Arbitrum]: `${baseEndpoint}/balancer-arbitrum-v2`,
         [Network.Gnosis]: `${baseEndpoint}/balancer-gnosis-chain-v2-beta`,
         [Network.Optimism]: `${baseEndpoint}/balancer-optimism-v2`,
+        [Network.Base]:
+          "https://api.studio.thegraph.com/query/24660/balancer-base-v2/version/latest",
       };
     },
     endpointFor(network: Network) {

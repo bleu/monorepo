@@ -32,6 +32,7 @@ export type Block_Height = {
 export type Chain =
   | 'Arbitrum'
   | 'Avalanche'
+  | 'Base'
   | 'Gnosis'
   | 'Optimism'
   | 'Polygon'

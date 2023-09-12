@@ -11,6 +11,7 @@ export enum Network {
   Goerli = "goerli",
   Sepolia = "sepolia",
   PolygonZKEVM = "polygon-zkevm",
+  Base = "base",
 }
 
 export enum NetworkChainId {
@@ -22,6 +23,7 @@ export enum NetworkChainId {
   GOERLI = 5,
   SEPOLIA = 11_155_111,
   POLYGONZKEVM = 1_101,
+  BASE = 8453,
 }
 
 export const networkUrls = {
@@ -56,6 +58,10 @@ export const networkUrls = {
   [NetworkChainId.POLYGONZKEVM]: {
     url: "https://zkevm.polygonscan.com/",
     name: "Polygon zkEVM Chain Explorer",
+  },
+  [NetworkChainId.BASE]: {
+    url: "https://basescan.org/",
+    name: "Base Chain Explorer",
   },
 };
 

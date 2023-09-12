@@ -1,6 +1,7 @@
 import { Network } from "@bleu-balancer-tools/utils";
 
 import { getSdkWithHooks as arbitrumSdk } from "./__generated__/Arbitrum";
+import { getSdkWithHooks as baseSdk } from "./__generated__/Base";
 import { getSdkWithHooks as ethereumSdk } from "./__generated__/Ethereum";
 import { getSdkWithHooks as gnosisSdk } from "./__generated__/Gnosis";
 import { getSdkWithHooks as goerliSdk } from "./__generated__/Goerli";
@@ -18,4 +19,5 @@ export default {
   [Network.Goerli]: goerliSdk,
   [Network.Sepolia]: sepoliaSdk,
   [Network.PolygonZKEVM]: polygonZkEVMSdk,
+  [Network.Base]: baseSdk,
 };

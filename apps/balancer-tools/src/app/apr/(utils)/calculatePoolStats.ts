@@ -37,17 +37,19 @@ const SECONDS_IN_YEAR = 365 * SECONDS_IN_DAY;
 const memoryCache: { [key: string]: unknown } = {};
 
 const getDataFromCacheOrCompute = async <T>(
-  cacheKey: string,
+  cacheKey: string | null,
   computeFn: () => Promise<T>,
 ): Promise<T> => {
-  if (memoryCache[cacheKey]) {
+  if (cacheKey && memoryCache[cacheKey]) {
     console.debug(`Cache hit for ${cacheKey}`);
     return memoryCache[cacheKey] as T;
   }
 
   console.debug(`Cache miss for ${cacheKey}`);
   const computedData = await computeFn();
-  memoryCache[cacheKey] = computedData;
+  if (cacheKey) {
+    memoryCache[cacheKey] = computedData;
+  }
   return computedData;
 };
 

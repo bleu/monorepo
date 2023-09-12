@@ -4,7 +4,6 @@ import { networkFor } from "@bleu-balancer-tools/utils";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import Link from "next/link";
-import * as React from "react";
 import { ReactNode } from "react";
 
 import { useNetworks } from "#/contexts/networks";
@@ -38,10 +37,12 @@ export function Header({
           onClick={onLinkClick}
           className="flex items-center gap-3 justify-self-start"
         >
-          {imageSrc && <Image src={imageSrc} height={50} width={50} alt="" />}
-          <div className="hidden sm:block text-xl font-thin text-slate12">
-            Balancer <p className="font-medium">{title}</p>
-          </div>
+          <>
+            {imageSrc && <Image src={imageSrc} height={50} width={50} alt="" />}
+            <div className="hidden sm:block text-xl font-thin text-slate12">
+              Balancer <p className="font-medium">{title}</p>
+            </div>
+          </>
         </Link>
       </div>
       {children && <div className="flex flex-1 justify-center">{children}</div>}

@@ -3,6 +3,7 @@ import { unsafeNetworkIdFor } from "@bleu-balancer-tools/utils";
 import { NextRequest, NextResponse } from "next/server";
 
 import { Pool, POOLS_WITH_LIVE_GAUGES } from "#/lib/balancer/gauges";
+import { getDataFromCacheOrCompute } from "#/lib/cache";
 import { fetcher } from "#/utils/fetcher";
 
 import {
@@ -62,25 +63,6 @@ export interface PoolStatsResults {
   average: PoolStatsWithoutVotingShareAndCollectedFees;
 }
 
-const memoryCache: { [key: string]: unknown } = {};
-
-const getDataFromCacheOrCompute = async <T>(
-  cacheKey: string | null,
-  computeFn: () => Promise<T>,
-): Promise<T> => {
-  if (cacheKey && memoryCache[cacheKey]) {
-    console.debug(`Cache hit for ${cacheKey}`);
-    return memoryCache[cacheKey] as T;
-  }
-
-  console.debug(`Cache miss for ${cacheKey}`);
-  const computedData = await computeFn();
-  if (cacheKey) {
-    memoryCache[cacheKey] = computedData;
-  }
-  return computedData;
-};
-
 const computeAverages = (
   poolData: calculatePoolData[],
 ): PoolStatsWithoutVotingShareAndCollectedFees => {
@@ -121,9 +103,7 @@ const computeAverages = (
   };
 };
 
-const fetchDataForPoolId = async (
-  poolId: string,
-): Promise<PoolStatsResults> => {
+const fetchDataForPoolId = async (poolId: string) => {
   const pool = new Pool(poolId);
   const gaugeAddedDate = new Date(pool.gauge.addedTimestamp * 1000);
   const roundGaugeAdded = Round.getRoundByDate(gaugeAddedDate);
@@ -206,9 +186,7 @@ const fetchDataForPoolIdRoundId = async (poolId: string, roundId: string) => {
   }
 };
 
-const fetchDataForRoundId = async (
-  roundId: string,
-): Promise<PoolStatsResults> => {
+const fetchDataForRoundId = async (roundId: string) => {
   const existingPoolsInRound = POOLS_WITH_LIVE_GAUGES.filter(
     ({ gauge: { addedTimestamp } }) =>
       addedTimestamp &&

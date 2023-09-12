@@ -62,6 +62,7 @@ export function PoolListTable({
           : "desc";
       params.set("order", sortOrder);
       params.set("sort", accessor);
+      setHasMorePools(true);
       return params.toString();
     },
     [searchParams],

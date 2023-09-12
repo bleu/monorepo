@@ -48,9 +48,7 @@ export function PoolListTable({
 
   useEffect(() => {
     setTableData(initialData);
-    if (tableData.length < 10) {
-      setHasMorePools(false);
-    }
+    setHasMorePools(!(initialData.length < 10));
   }, [initialData]);
 
   const createQueryString = useCallback(
@@ -62,7 +60,6 @@ export function PoolListTable({
           : "desc";
       params.set("order", sortOrder);
       params.set("sort", accessor);
-      setHasMorePools(true);
       return params.toString();
     },
     [searchParams],

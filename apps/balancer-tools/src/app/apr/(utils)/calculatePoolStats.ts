@@ -162,9 +162,10 @@ export async function calculatePoolStats({
         ),
     ),
     //TODO: on #BAL-795 use another strategy for cache using the poolId
-    getDataFromCacheOrCompute("yield APR", () => getPoolTokensApr(network, poolId as `0x${string}`)),
+    getDataFromCacheOrCompute("yield APR", () =>
+      getPoolTokensApr(network, poolId as `0x${string}`),
+    ),
   ]);
-
 
   const tokens = await calculateTokensStats(
     roundId,

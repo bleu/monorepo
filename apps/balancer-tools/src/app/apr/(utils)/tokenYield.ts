@@ -24,52 +24,50 @@ const DAYS_IN_YEAR = 365;
 const SECONDS_IN_YEAR = DAYS_IN_YEAR * SECONDS_IN_DAY;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function getPoolTokensApr(
-  chain: string,
-  poolId: `0x${string}`
-) {
+export async function getPoolTokensApr(chain: string, poolId: `0x${string}`) {
   const rateProviders = await getPoolTokensRateProviders(chain, poolId);
 
   const now = Math.round(new Date().getTime() / 1000);
 
-  return await Promise.all(rateProviders
-    .filter(({ address }) => address !== zeroAddress)
-    .map(
-      async ({
-        address: rateProviderAddress,
-        token: { symbol, address: tokenAddress },
-      }) => ({
-        address: tokenAddress,
-        symbol,
-        yield: await getAPRFromRateProviderInterval(
-          rateProviderAddress,
-          now - SECONDS_IN_DAY,
-          now
-        ),
-      })
-    ))
+  return await Promise.all(
+    rateProviders
+      .filter(({ address }) => address !== zeroAddress)
+      .map(
+        async ({
+          address: rateProviderAddress,
+          token: { symbol, address: tokenAddress },
+        }) => ({
+          address: tokenAddress,
+          symbol,
+          yield: await getAPRFromRateProviderInterval(
+            rateProviderAddress,
+            now - SECONDS_IN_DAY,
+            now,
+          ),
+        }),
+      ),
+  );
 }
 
 async function getAPRFromRateProviderInterval(
   rateProviderAddress: `0x${string}`,
   timeStart: number,
-  timeEnd: number
+  timeEnd: number,
 ) {
   const { endRate, startRate } = await getIntervalRates(
     rateProviderAddress,
     timeStart,
-    timeEnd
+    timeEnd,
   );
 
   return getAPRFromRate(startRate, endRate, timeStart, timeEnd);
 }
 
-
 function getAPRFromRate(
   rateStart: number,
   rateEnd: number,
   timeStart: number,
-  timeEnd: number
+  timeEnd: number,
 ) {
   const duration = timeEnd - timeStart;
   const rateOfReturn = (rateEnd - rateStart) / rateStart;
@@ -82,18 +80,19 @@ function getAPRFromRate(
 
 async function getPoolTokensRateProviders(
   chain: string,
-  poolId: `0x${string}`
+  poolId: `0x${string}`,
 ) {
   const data = await pools.gql(String(chain)).PoolRateProviders({ poolId });
-  if (!data.pool?.priceRateProviders?.length) return [
-    {
-      address: "0x1a8F81c256aee9C640e14bB0453ce247ea0DFE6F",
-      token: {
-        address: "0xae78736cd615f374d3085123a210448e74fc6393",
-        symbol: "rETH",
+  if (!data.pool?.priceRateProviders?.length)
+    return [
+      {
+        address: "0x1a8F81c256aee9C640e14bB0453ce247ea0DFE6F",
+        token: {
+          address: "0xae78736cd615f374d3085123a210448e74fc6393",
+          symbol: "rETH",
+        },
       },
-    }
-  ];
+    ];
 
   return data.pool?.priceRateProviders;
 }
@@ -101,9 +100,8 @@ async function getPoolTokensRateProviders(
 async function getIntervalRates(
   rateProviderAddress: `0x${string}`,
   timeStart: number,
-  timeEnd: number
+  timeEnd: number,
 ) {
-
   const data = await blocks.gql(String(NetworkChainId.ETHEREUM)).Blocks({
     timestamp_gte: timeStart,
     timestamp_lt: timeEnd,
@@ -121,7 +119,7 @@ async function getIntervalRates(
 
 async function getRateAtBlock(
   rateProviderAddress: `0x${string}`,
-  blockNumber?: number
+  blockNumber?: number,
 ) {
   const args = {
     address: rateProviderAddress,

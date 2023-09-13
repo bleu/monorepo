@@ -10,7 +10,7 @@ import { PoolStatsData, PoolTokens, tokenAPR } from "../api/route";
 import { getBALPriceByRound, getTokenPriceByDate } from "./getBALPriceByRound";
 import { getPoolRelativeWeight } from "./getRelativeWeight";
 import { Round } from "./rounds";
-import { getTokenAprByPoolId } from "./tokenYield";
+import { getPoolTokensApr } from "./tokenYield";
 
 export interface calculatePoolData extends Omit<PoolStatsData, "apr"> {
   apr: {
@@ -162,8 +162,9 @@ export async function calculatePoolStats({
         ),
     ),
     //TODO: on #BAL-795 use another strategy for cache using the poolId
-    getDataFromCacheOrCompute("yield APR", () => getTokenAprByPoolId(poolId)),
+    getDataFromCacheOrCompute("yield APR", () => getPoolTokensApr(network, poolId as `0x${string}`)),
   ]);
+
 
   const tokens = await calculateTokensStats(
     roundId,

@@ -14,64 +14,86 @@ import {
 import { formatNumber } from "#/utils/formatNumber";
 
 import { PoolTypeEnum, TokensData } from "../(types)";
+import { BetaLimits } from "../(utils)/getBetaLimits";
 
 const PLOT_TITLE = "Depth cost";
 const PLOT_TOOLTIP =
-  "Indicates the amount of tokens needed on a swap to alter the spot price (rate between the price of both tokens) to the depth cost point. For stable pools, the depth cost point is 2% of the spot price. For concentrated liquidity pools is 99% of the liquidity range or 2% of the spot price, whichever is closer.";
+  "Indicates the amount of tokens needed on a swap to alter the spot price (rate between the price of both tokens) to the depth cost point. For stable pools, the depth cost point is 2% of the spot price. For concentrated liquidity pools is 99% of the liquidity range or 2% of the spot price, whichever is closer. For FX pools, the depth cost point it is the boundary of the beta region, where the price won't be constant anymore.";
 
-export function DepthCost() {
-  const { analysisToken, initialData, customData, initialAMM, customAMM } =
-    usePoolSimulator();
+export function DepthCost({
+  initialBetaLimits,
+  customBetaLimits,
+}: {
+  initialBetaLimits?: BetaLimits;
+  customBetaLimits?: BetaLimits;
+}) {
+  const {
+    customAnalysisToken,
+    initialAnalysisToken,
+    initialData,
+    customData,
+    initialAMM,
+    customAMM,
+  } = usePoolSimulator();
 
-  if (!initialAMM || !customAMM || !analysisToken.balance) return <Spinner />;
+  if (!initialAMM || !customAMM || !initialAnalysisToken.balance)
+    return <Spinner />;
 
-  const pairTokens = initialData?.tokens.filter(
-    (token) => token.symbol !== analysisToken.symbol,
+  const pairTokensInitial = initialData?.tokens.filter(
+    (token) => token.symbol !== initialAnalysisToken.symbol,
+  );
+
+  const pairTokenCustom = customData?.tokens.filter(
+    (token) => token.symbol !== initialAnalysisToken.symbol,
   );
 
   try {
     const depthCostAmounts = {
       initial: {
-        in: pairTokens.map((pairToken) =>
+        in: pairTokensInitial.map((pairToken) =>
           calculateDepthCost(
             pairToken,
-            analysisToken,
+            initialAnalysisToken,
             "in",
             initialData,
             initialAMM,
             initialData.poolType,
+            initialBetaLimits,
           ),
         ),
-        out: pairTokens.map((pairToken) =>
+        out: pairTokensInitial.map((pairToken) =>
           calculateDepthCost(
             pairToken,
-            analysisToken,
+            initialAnalysisToken,
             "out",
             initialData,
             initialAMM,
             initialData.poolType,
+            initialBetaLimits,
           ),
         ),
       },
       custom: {
-        in: pairTokens.map((pairToken) =>
+        in: pairTokenCustom.map((pairToken) =>
           calculateDepthCost(
             pairToken,
-            analysisToken,
+            customAnalysisToken,
             "in",
             customData,
             customAMM,
             customData.poolType,
+            customBetaLimits,
           ),
         ),
-        out: pairTokens.map((pairToken) =>
+        out: pairTokenCustom.map((pairToken) =>
           calculateDepthCost(
             pairToken,
-            analysisToken,
+            customAnalysisToken,
             "out",
             customData,
             customAMM,
             customData.poolType,
+            customBetaLimits,
           ),
         ),
       },
@@ -84,9 +106,16 @@ export function DepthCost() {
       ...depthCostAmounts.custom.out.map(({ amount }) => amount),
     );
 
-    if (!maxDepthCostAmount) return <Spinner />;
+    if (maxDepthCostAmount == -1) return <Spinner />;
 
-    const dataX = pairTokens.map((token) => token.symbol);
+    const showWarning = [
+      ...depthCostAmounts.initial.in.map(({ type }) => type),
+      ...depthCostAmounts.initial.out.map(({ type }) => type),
+      ...depthCostAmounts.custom.in.map(({ type }) => type),
+      ...depthCostAmounts.custom.out.map(({ type }) => type),
+    ].includes("already outside of beta region");
+
+    const dataX = pairTokensInitial.map((token) => token.symbol);
 
     const data = [
       createDataObject(
@@ -96,7 +125,7 @@ export function DepthCost() {
         "Initial",
         true,
         "in",
-        analysisToken?.symbol,
+        initialAnalysisToken?.symbol,
         depthCostAmounts.initial.in.map(({ type }) => type),
       ),
       createDataObject(
@@ -106,7 +135,7 @@ export function DepthCost() {
         "Custom",
         true,
         "in",
-        analysisToken?.symbol,
+        initialAnalysisToken?.symbol,
         depthCostAmounts.custom.in.map(({ type }) => type),
       ),
       createDataObject(
@@ -116,7 +145,7 @@ export function DepthCost() {
         "Initial",
         false,
         "out",
-        analysisToken?.symbol,
+        initialAnalysisToken?.symbol,
         depthCostAmounts.initial.out.map(({ type }) => type),
         "y2",
         "x2",
@@ -128,7 +157,7 @@ export function DepthCost() {
         "Custom",
         false,
         "out",
-        analysisToken?.symbol,
+        initialAnalysisToken?.symbol,
         depthCostAmounts.custom.out.map(({ type }) => type),
         "y2",
         "x2",
@@ -144,21 +173,21 @@ export function DepthCost() {
         xaxis: {
           tickmode: "array" as const,
           tickvals: dataX,
-          ticktext: pairTokens.map((token) => token.symbol),
+          ticktext: pairTokensInitial.map((token) => token.symbol),
         },
         xaxis2: {
           ...defaultAxisLayout,
           tickmode: "array" as const,
           tickvals: dataX,
-          ticktext: pairTokens.map((token) => token.symbol),
+          ticktext: pairTokensInitial.map((token) => token.symbol),
         },
         yaxis: {
-          title: `${analysisToken?.symbol} in`,
+          title: `${initialAnalysisToken?.symbol} in`,
           range: [0, maxDepthCostAmount],
         },
         yaxis2: {
           ...defaultAxisLayout,
-          title: `${analysisToken?.symbol} out`,
+          title: `${initialAnalysisToken?.symbol} out`,
           range: [0, maxDepthCostAmount],
         },
         grid: { columns: 2, rows: 1, pattern: "independent" as const },
@@ -166,7 +195,18 @@ export function DepthCost() {
       config: { displayModeBar: false },
     };
 
-    return <Plot {...props} />;
+    return (
+      <div className="flex flex-col gap-y-3">
+        <Plot {...props} />;
+        {showWarning && (
+          <AlertCard
+            style="warning"
+            title="Fx Pool outside of beta region"
+            message="The depth cost equal to zero means that the pool is already outside of the beta region point"
+          />
+        )}
+      </div>
+    );
   } catch (e) {
     return (
       <div className="flex w-full flex-col">
@@ -243,6 +283,7 @@ export function calculateDepthCost(
   data: AnalysisData,
   amm: AMM<PoolPairData>,
   poolType: PoolTypeEnum,
+  betaLimits?: BetaLimits,
 ) {
   if (!analysisToken) throw new Error("Analysis token not found");
   const tokenIn = poolSide === "in" ? analysisToken : pairToken;
@@ -305,8 +346,24 @@ export function calculateDepthCost(
         amount: amountCalculator(newSpotPrice),
         type: "2% of price change",
       };
+    case PoolTypeEnum.Fx:
+      const betaLimitAmount =
+        poolSide === "in"
+          ? betaLimits?.analysisTokenIn.analysisAmount
+          : (betaLimits?.tabTokenIn.analysisAmount as number) * -1; // the amount is negative because the tokenIn is the tabToken
+
+      if (!betaLimitAmount || betaLimitAmount < 0) {
+        return {
+          amount: 0,
+          type: "already outside of beta region",
+        };
+      }
+      return {
+        amount: betaLimitAmount,
+        type: "beta region limit",
+      };
     default:
-      return { amount: 0, type: "" };
+      return { amount: -1, type: "" };
   }
 }
 

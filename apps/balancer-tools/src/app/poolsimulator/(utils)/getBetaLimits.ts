@@ -1,20 +1,33 @@
+export interface BetaLimits {
+  analysis: number[];
+  pair: number[];
+  tabTokenIn: {
+    tabAmount: number;
+    analysisAmount: number;
+  };
+  analysisTokenIn: {
+    tabAmount: number;
+    analysisAmount: number;
+  };
+}
+
 export const computeSwapAmounts = (tokenOut: number[], tokenIn: number[]) =>
   // Join token In and Out amounts and order then.
   // Token Out is negative and In is positive
   // Both are ordered from the smallest absolute value to the biggest
   [...tokenOut].reverse().concat(tokenIn);
 
-export const computeBalances = (
-  swaps: number[],
-  tokenRate: number,
-  initialBalance: number,
-) => swaps.map((swap) => (initialBalance + swap) * tokenRate);
-
 export const isInBetaRegion = (
   balanceX: number,
   balanceY: number,
   beta: number,
 ) => Math.abs(balanceX - balanceY) / (balanceX + balanceY) < beta;
+
+export const computeBalances = (
+  swaps: number[],
+  tokenRate: number,
+  initialBalance: number,
+) => swaps.map((swap) => (initialBalance + swap) * tokenRate);
 
 export const findTransitions = (
   analysisAmounts: number[],
@@ -40,6 +53,10 @@ export function getTransitionIndices(booleans: boolean[]): number[] {
   if (end - start !== trueIndices.length) {
     throw new Error("The true values are not continuous.");
   }
+
+  // if (end === booleans.length) {
+  //   throw new Error("Not found one of the boundaries");
+  // }
 
   return end === start ? [start] : [start, end];
 }
@@ -68,30 +85,41 @@ export function getBetaLimitsIndexes({
   return [start, end].filter((i) => i !== 0);
 }
 
-export default function getBetaLimits({
+export function getBetaLimits({
   analysisTokenOut,
   analysisTokenIn,
   analysisTokenRate,
   tabTokenRate,
-  tabTokenIn,
-  tabTokenOut,
+  pairTokenIn,
+  pairTokenOut,
   analysisTokenInitialBalance,
   tabTokenInitialBalance,
   beta,
 }: {
   analysisTokenOut: number[];
   analysisTokenIn: number[];
-  tabTokenIn: number[];
+  pairTokenIn: number[];
   analysisTokenRate: number;
   tabTokenRate: number;
-  tabTokenOut: number[];
+  pairTokenOut: number[];
   analysisTokenInitialBalance: number;
   tabTokenInitialBalance: number;
   beta: number;
-}) {
+}): BetaLimits {
+  // console.log({
+  //   analysisTokenOut,
+  //   analysisTokenIn,
+  //   pairTokenIn,
+  //   analysisTokenRate,
+  //   tabTokenRate,
+  //   pairTokenOut,
+  //   analysisTokenInitialBalance,
+  //   tabTokenInitialBalance,
+  //   beta,
+  // });
   // https://docs.xave.co/product-overview-1/fxpools/amm-faqs
   const analysisAmounts = computeSwapAmounts(analysisTokenOut, analysisTokenIn);
-  const tabAmounts = computeSwapAmounts(tabTokenIn, tabTokenOut);
+  const tabAmounts = computeSwapAmounts(pairTokenIn, pairTokenOut);
 
   const [start, end] = getBetaLimitsIndexes({
     amountsA: analysisAmounts,
@@ -103,8 +131,16 @@ export default function getBetaLimits({
     beta,
   });
 
-  return [
-    [analysisAmounts[start], analysisAmounts[end]],
-    [tabAmounts[start], tabAmounts[end]],
-  ];
+  return {
+    analysis: [analysisAmounts[start], analysisAmounts[end]],
+    pair: [tabAmounts[start], tabAmounts[end]],
+    tabTokenIn: {
+      tabAmount: tabAmounts[start],
+      analysisAmount: analysisAmounts[start],
+    },
+    analysisTokenIn: {
+      tabAmount: tabAmounts[end],
+      analysisAmount: analysisAmounts[end],
+    },
+  };
 }

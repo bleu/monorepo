@@ -21,12 +21,17 @@ export const publicClient = createPublicClient({
 
 const SECONDS_IN_DAY = 86400;
 
-export async function getTokenYieldByPoolId() {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function getTokenAprByPoolId(poolId: string) {
   const { currentRate, rate24hAgo } = await getDailyRateDiff();
 
-  const apr = ((currentRate - rate24hAgo) / 10 ** 18) * 365 * 100;
-
-  return apr;
+  return [
+    {
+      address: "0xae78736cd615f374d3085123a210448e74fc6393",
+      symbol: "rETH",
+      yield: ((currentRate - rate24hAgo) / 10 ** 18) * 365 * 100,
+    },
+  ];
 }
 
 async function getDailyRateDiff() {

@@ -13,7 +13,7 @@ import { GraphQLClient } from "graphql-request";
 
 export function impersonateWhetherDAO(
   chainId: string,
-  address: Address | undefined
+  address: Address | undefined,
 ) {
   const network = networkFor(chainId);
 

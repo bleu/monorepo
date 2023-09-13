@@ -1,4 +1,4 @@
-import { blueDarkA, greenDarkA, whiteA } from "@radix-ui/colors";
+import { blueDarkA, greenDarkA, violetDarkA, whiteA } from "@radix-ui/colors";
 import { PlotType } from "plotly.js";
 
 import { PoolStatsResults } from "#/app/apr/api/route";
@@ -57,5 +57,47 @@ export default function formatAPRChartData(
     type: "scatter" as PlotType,
   };
 
-  return [totalAprPerRoundData, vebalAprPerRoundData, feeAprPerRoundData];
+  const aprTokensData =
+    apiResult.perRound[0].apr.breakdown.tokens.breakdown.map(
+      ({ symbol }, idx) => {
+        const trimmedTokenAprData = generateAndTrimAprCords(
+          apiResult.perRound,
+          (result) => result.apr.breakdown.tokens.breakdown[idx].yield,
+          0,
+        );
+        return {
+          name: `${symbol} APR %`,
+          yaxis: yaxis,
+          showlegend: false,
+          hovertemplate: HOVERTEMPLATE,
+          x: trimmedTokenAprData.x,
+          y: trimmedTokenAprData.y,
+          line: { shape: "spline", color: "rgba(0,0,0,0);" } as const,
+          type: "scatter" as PlotType,
+        };
+      },
+    );
+
+  const trimmedTokenTotalAprData = generateAndTrimAprCords(
+    apiResult.perRound,
+    (result) => result.apr.breakdown.tokens.total,
+    0,
+  );
+  const aprTokensTotalData = {
+    name: `Tokens Yield APR %`,
+    yaxis: yaxis,
+    hovertemplate: HOVERTEMPLATE,
+    x: trimmedTokenTotalAprData.x,
+    y: trimmedTokenTotalAprData.y,
+    line: { shape: "spline", color: violetDarkA.violetA9 } as const,
+    type: "scatter" as PlotType,
+  };
+
+  return [
+    totalAprPerRoundData,
+    vebalAprPerRoundData,
+    feeAprPerRoundData,
+    aprTokensTotalData,
+    ...aprTokensData,
+  ];
 }

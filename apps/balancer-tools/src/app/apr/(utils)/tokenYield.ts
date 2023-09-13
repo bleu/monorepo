@@ -2,8 +2,17 @@ import { NetworkChainId } from "@bleu-balancer-tools/utils";
 import { createPublicClient, http } from "viem";
 import { mainnet } from "viem/chains";
 
-import { rethRateProviderAbi } from "#/abis/rethRateProvider";
 import { blocks } from "#/lib/gql/server";
+
+const rateProviderAbi = [
+  {
+    inputs: [],
+    name: "getRate",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+];
 
 export const publicClient = createPublicClient({
   chain: mainnet,
@@ -15,9 +24,7 @@ const SECONDS_IN_DAY = 86400;
 export async function getTokenYieldByPoolId() {
   const { currentRate, rate24hAgo } = await getDailyRateDiff();
 
-  const calc = (currentRate - rate24hAgo) / rate24hAgo;
-
-  const apr = ((1 + calc) ** 365 - 1) * 100;
+  const apr = ((currentRate - rate24hAgo) / 10 ** 18) * 365 * 100;
 
   return apr;
 }
@@ -34,13 +41,13 @@ async function getDailyRateDiff() {
 
   const currentRate = await publicClient.readContract({
     address: "0x1a8F81c256aee9C640e14bB0453ce247ea0DFE6F",
-    abi: rethRateProviderAbi,
+    abi: rateProviderAbi,
     functionName: "getRate",
   });
 
   const rate24hAgo = await publicClient.readContract({
     address: "0x1a8F81c256aee9C640e14bB0453ce247ea0DFE6F",
-    abi: rethRateProviderAbi,
+    abi: rateProviderAbi,
     functionName: "getRate",
     blockNumber: BigInt(block24hAgo),
   });

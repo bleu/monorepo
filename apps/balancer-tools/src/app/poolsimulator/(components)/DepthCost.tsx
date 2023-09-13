@@ -347,6 +347,8 @@ export function calculateDepthCost(
         type: "2% of price change",
       };
     case PoolTypeEnum.Fx:
+      // For FX pools we'll assume depth cost as the beta region limit
+      // if the pool is already outside of the beta region, 0 will be displayed
       const betaLimitAmount =
         poolSide === "in"
           ? betaLimits?.analysisTokenIn.analysisAmount
@@ -363,7 +365,7 @@ export function calculateDepthCost(
         type: "beta region limit",
       };
     default:
-      return { amount: -1, type: "" };
+      return { amount: 0, type: "" };
   }
 }
 

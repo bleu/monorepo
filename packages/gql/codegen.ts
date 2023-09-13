@@ -5,6 +5,7 @@ export enum Subgraph {
   BalancerPoolsMetadata = "balancer-pools-metadata",
   BalancerGauges = "balancer-gauges",
   Balancer = "balancer",
+  ChainsBlocks = "chains-blocks",
 }
 
 // IMPORTANT NOTE:
@@ -57,7 +58,7 @@ export const SUBGRAPHS = {
         [Network.Arbitrum]: `${baseEndpoint}-arbitrum`,
         [Network.Gnosis]: `${baseEndpoint}-gnosis-chain`,
         [Network.Optimism]: `${baseEndpoint}-optimism`,
-        [Network.Base]: `https://api.studio.thegraph.com/query/24660/balancer-gauges-base/version/latest/graphql`,
+        [Network.Base]: `${baseEndpoint}-goerli`,
       };
     },
     endpointFor(network: Network) {
@@ -81,6 +82,35 @@ export const SUBGRAPHS = {
         [Network.Optimism]: `${baseEndpoint}/balancer-optimism-v2`,
         [Network.Base]:
           "https://api.studio.thegraph.com/query/24660/balancer-base-v2/version/latest",
+      };
+    },
+    endpointFor(network: Network) {
+      return this.endpoints()[network];
+    },
+  },
+  [Subgraph.ChainsBlocks]: {
+    name: Subgraph.ChainsBlocks,
+    endpoints() {
+      return {
+        [Network.Ethereum]:
+          "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
+        [Network.Goerli]:
+          "https://api.thegraph.com/subgraphs/name/bleu-studio/blocks-goerli",
+        [Network.Polygon]:
+          "https://api.thegraph.com/subgraphs/name/ianlapham/polygon-blocks",
+        [Network.PolygonZKEVM]:
+          "https://api.studio.thegraph.com/query/48427/bleu-polygon-zkevm-blocks/version/latest",
+        [Network.Arbitrum]:
+          "https://api.thegraph.com/subgraphs/name/ianlapham/arbitrum-one-blocks",
+        //TODO: Gnosis, Optimism and Base not functional yet
+        [Network.Sepolia]:
+          "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
+        [Network.Gnosis]:
+          "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
+        [Network.Optimism]:
+          "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
+        [Network.Base]:
+          "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
       };
     },
     endpointFor(network: Network) {
@@ -121,9 +151,9 @@ const generates = Object.assign(
             },
           ],
         ])
-        .flat(1),
-    ),
-  ),
+        .flat(1)
+    )
+  )
 );
 
 const config: CodegenConfig = {

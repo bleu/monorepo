@@ -169,6 +169,8 @@ export async function calculatePoolStats({
         getPoolTokensAprForDate(
           network,
           poolId as Address,
+          //Currently, this is calculating the APR on the last day of the round.
+          //This should be changed on #BAL-799
           round.activeRound
             ? Math.round(new Date().getTime() / 1000)
             : round.endDate.getTime() / 1000,

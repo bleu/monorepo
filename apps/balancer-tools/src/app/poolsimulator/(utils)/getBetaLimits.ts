@@ -54,10 +54,6 @@ export function getTransitionIndices(booleans: boolean[]): number[] {
     throw new Error("The true values are not continuous.");
   }
 
-  // if (end === booleans.length) {
-  //   throw new Error("Not found one of the boundaries");
-  // }
-
   return end === start ? [start] : [start, end];
 }
 
@@ -106,17 +102,6 @@ export function getBetaLimits({
   tabTokenInitialBalance: number;
   beta: number;
 }): BetaLimits {
-  // console.log({
-  //   analysisTokenOut,
-  //   analysisTokenIn,
-  //   pairTokenIn,
-  //   analysisTokenRate,
-  //   tabTokenRate,
-  //   pairTokenOut,
-  //   analysisTokenInitialBalance,
-  //   tabTokenInitialBalance,
-  //   beta,
-  // });
   // https://docs.xave.co/product-overview-1/fxpools/amm-faqs
   const analysisAmounts = computeSwapAmounts(analysisTokenOut, analysisTokenIn);
   const tabAmounts = computeSwapAmounts(pairTokenIn, pairTokenOut);

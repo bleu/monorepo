@@ -93,18 +93,6 @@ export function SwapCurve({
     };
   };
 
-  // if (
-  //   !initialAmounts.analysisTokenIn ||
-  //   !initialAmounts.analysisTokenOut ||
-  //   !initialAmounts.pairTokenIn ||
-  //   !initialAmounts.pairTokenOut ||
-  //   !customAmounts.analysisTokenIn ||
-  //   !customAmounts.analysisTokenOut ||
-  //   !customAmounts.pairTokenIn ||
-  //   !customAmounts.pairTokenOut
-  // )
-  //   return <Spinner />;
-
   const data = [
     createDataObject(
       initialAmounts.analysisTokenIn,

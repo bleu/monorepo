@@ -19,6 +19,11 @@ export const BASE_URL =
 
 type Order = "asc" | "desc";
 
+export interface tokenAPR {
+  address: string;
+  symbol: string;
+  yield: number;
+}
 export interface PoolTokens {
   percentageValue?: number;
   price?: number;
@@ -35,6 +40,10 @@ export interface PoolStats {
     breakdown: {
       veBAL: number;
       swapFee: number;
+      tokens: {
+        total: number;
+        breakdown: tokenAPR[];
+      };
     };
   };
   balPriceUSD: number;
@@ -74,6 +83,7 @@ const computeAverages = (
           veBAL:
             (data.apr.breakdown.veBAL || 0) + (acc.apr.breakdown.veBAL + 0),
           swapFee: acc.apr.breakdown.swapFee + data.apr.breakdown.swapFee,
+          //TODO: on #BAL-795 add tokenAPR to the total
         },
       },
       balPriceUSD: acc.balPriceUSD + data.balPriceUSD,
@@ -95,6 +105,11 @@ const computeAverages = (
       breakdown: {
         veBAL: total.apr.breakdown.veBAL / count,
         swapFee: total.apr.breakdown.swapFee / count,
+        //TODO: on #BAL-795 get tokenAPR from total
+        tokens: {
+          total: poolData[0].apr.breakdown.tokens.total,
+          breakdown: poolData[0].apr.breakdown.tokens.breakdown,
+        },
       },
     },
     balPriceUSD: total.balPriceUSD / count,

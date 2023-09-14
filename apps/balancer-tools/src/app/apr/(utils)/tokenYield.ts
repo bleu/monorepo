@@ -1,4 +1,4 @@
-import { NetworkChainId } from "@bleu-balancer-tools/utils";
+import { Address, NetworkChainId } from "@bleu-balancer-tools/utils";
 import { createPublicClient, http, zeroAddress } from "viem";
 import { mainnet } from "viem/chains";
 
@@ -24,10 +24,12 @@ const DAYS_IN_YEAR = 365;
 const SECONDS_IN_YEAR = DAYS_IN_YEAR * SECONDS_IN_DAY;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function getPoolTokensApr(chain: string, poolId: `0x${string}`) {
+export async function getPoolTokensAprForDate(
+  chain: string,
+  poolId: Address,
+  date: number,
+) {
   const rateProviders = await getPoolTokensRateProviders(chain, poolId);
-
-  const now = Math.round(new Date().getTime() / 1000);
 
   return await Promise.all(
     rateProviders
@@ -41,8 +43,8 @@ export async function getPoolTokensApr(chain: string, poolId: `0x${string}`) {
           symbol,
           yield: await getAPRFromRateProviderInterval(
             rateProviderAddress,
-            now - SECONDS_IN_DAY,
-            now,
+            date - SECONDS_IN_DAY,
+            date,
           ),
         }),
       ),
@@ -50,7 +52,7 @@ export async function getPoolTokensApr(chain: string, poolId: `0x${string}`) {
 }
 
 async function getAPRFromRateProviderInterval(
-  rateProviderAddress: `0x${string}`,
+  rateProviderAddress: Address,
   timeStart: number,
   timeEnd: number,
 ) {
@@ -75,14 +77,17 @@ function getAPRFromRate(
 
   const APR = rateOfReturn * annualScalingFactor * 100;
 
-  return APR;
+  if (APR < 0) {
+    // eslint-disable-next-line no-console
+    console.error("Negative APR");
+  }
+
+  return APR < 0 ? 0 : APR;
 }
 
-async function getPoolTokensRateProviders(
-  chain: string,
-  poolId: `0x${string}`,
-) {
+async function getPoolTokensRateProviders(chain: string, poolId: Address) {
   const data = await pools.gql(String(chain)).PoolRateProviders({ poolId });
+
   if (!data.pool?.priceRateProviders?.length)
     return [
       {
@@ -96,21 +101,27 @@ async function getPoolTokensRateProviders(
 
   return data.pool?.priceRateProviders;
 }
-
 async function getIntervalRates(
-  rateProviderAddress: `0x${string}`,
+  rateProviderAddress: Address,
   timeStart: number,
   timeEnd: number,
 ) {
-  const data = await blocks.gql(String(NetworkChainId.ETHEREUM)).Blocks({
+  const dataStart = await blocks.gql(String(NetworkChainId.ETHEREUM)).Blocks({
     timestamp_gte: timeStart,
     timestamp_lt: timeEnd,
   });
 
-  const blockStart = data.blocks[0].number;
+  const dataEnd = await blocks.gql(String(NetworkChainId.ETHEREUM)).Blocks({
+    timestamp_gte: timeEnd,
+    timestamp_lt: timeEnd + SECONDS_IN_DAY,
+  });
+
+  const blockStart = dataStart.blocks[0].number;
+
+  const blockEnd = dataEnd.blocks[0]?.number;
 
   const [endRate, startRate] = await Promise.all([
-    getRateAtBlock(rateProviderAddress),
+    getRateAtBlock(rateProviderAddress, blockEnd),
     getRateAtBlock(rateProviderAddress, blockStart),
   ]);
 
@@ -118,7 +129,7 @@ async function getIntervalRates(
 }
 
 async function getRateAtBlock(
-  rateProviderAddress: `0x${string}`,
+  rateProviderAddress: Address,
   blockNumber?: number,
 ) {
   const args = {

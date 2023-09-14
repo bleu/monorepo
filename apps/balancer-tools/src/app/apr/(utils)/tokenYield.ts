@@ -21,6 +21,7 @@ export const publicClient = createPublicClient({
 
 const SECONDS_IN_DAY = 86400;
 
+//TODO: remove this on BAL-797
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function getTokenAprByPoolId(poolId: string) {
   const { currentRate, rate24hAgo } = await getDailyRateDiff();

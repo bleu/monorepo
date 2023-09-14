@@ -8,6 +8,7 @@ import Breadcrumb from "#/app/apr/round/(components)/Breadcrumb";
 
 import HistoricalCharts from "../../(components)/HistoricalCharts";
 import PoolTokens from "../../(components)/PoolTokens";
+import { YieldWarning } from "../../(components)/YieldWarning";
 
 export default async function Page({
   params: { poolId },
@@ -20,6 +21,7 @@ export default async function Page({
       <Suspense fallback={<KpisSkeleton />}>
         <PoolOverviewCards poolId={poolId} />
       </Suspense>
+      <YieldWarning />
       <Suspense fallback={<ChartSkelton />}>
         <HistoricalCharts poolId={poolId} />
       </Suspense>

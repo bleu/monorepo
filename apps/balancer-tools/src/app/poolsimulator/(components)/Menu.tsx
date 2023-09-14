@@ -238,7 +238,7 @@ export function AnalysisMenu() {
     customData,
     setCustomData,
     setAnalysisTokenByIndex,
-    analysisToken,
+    initialAnalysisToken,
     setCurrentTabTokenByIndex,
   } = usePoolSimulator();
 
@@ -251,7 +251,8 @@ export function AnalysisMenu() {
   }, []);
 
   const indexCurrentTabToken = initialData?.tokens.findIndex(
-    ({ symbol }) => symbol.toLowerCase() !== analysisToken.symbol.toLowerCase(),
+    ({ symbol }) =>
+      symbol.toLowerCase() !== initialAnalysisToken.symbol.toLowerCase(),
   );
 
   return (

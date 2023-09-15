@@ -63,45 +63,18 @@ export interface PoolStatsResults {
   average: PoolStatsWithoutVotingShareAndCollectedFees;
 }
 
-const computeAverages = (
-  poolData: calculatePoolData[],
-): PoolStatsWithoutVotingShareAndCollectedFees => {
-  const total = poolData.reduce(
-    (acc, data) => ({
-      apr: {
-        total: acc.apr.total + data.apr.total,
-        breakdown: {
-          veBAL:
-            (data.apr.breakdown.veBAL || 0) + (acc.apr.breakdown.veBAL + 0),
-          swapFee: acc.apr.breakdown.swapFee + data.apr.breakdown.swapFee,
-        },
-      },
-      balPriceUSD: acc.balPriceUSD + data.balPriceUSD,
-      volume: acc.volume + data.volume,
-      tvl: acc.tvl + data.tvl,
-    }),
-    {
-      apr: { total: 0, breakdown: { veBAL: 0, swapFee: 0 } },
-      balPriceUSD: 0,
-      volume: 0,
-      tvl: 0,
-    },
-  );
-
-  const count = poolData.length;
-  return {
+const computeAverages = (formattedPoolData: {
+  [key: string]: calculatePoolData[];
+}): PoolStatsWithoutVotingShareAndCollectedFees => {
+  const averages: PoolStatsWithoutVotingShareAndCollectedFees = {
     apr: {
-      total: total.apr.total / count,
-      breakdown: {
-        veBAL: total.apr.breakdown.veBAL / count,
-        swapFee: total.apr.breakdown.swapFee / count,
-      },
+      total: 0,
+      breakdown: { veBAL: 0, swapFee: 0 },
     },
-    balPriceUSD: total.balPriceUSD / count,
-    volume: total.volume / count,
-    tvl: total.tvl / count,
+    balPriceUSD: 0,
+    tvl: 0,
+    volume: 0,
   };
-};
 
 const fetchDataForPoolId = async (poolId: string) => {
   const pool = new Pool(poolId);
@@ -119,10 +92,32 @@ const fetchDataForPoolId = async (poolId: string) => {
         `${BASE_URL}/apr/api?roundId=${
           index + parseInt(roundGaugeAdded.value)
         }&poolId=${poolId}`,
-      ),
-  );
+  let totalDataCount = 0;
+
+  for (const key in formattedPoolData) {
+    if (Object.hasOwnProperty.call(formattedPoolData, key)) {
+      const dataArr = formattedPoolData[key];
+      dataArr.forEach((data) => {
+        averages.apr.total += data.apr.total;
+        averages.apr.breakdown.veBAL += data.apr.breakdown.veBAL || 0;
+        averages.apr.breakdown.swapFee += data.apr.breakdown.swapFee;
+        averages.balPriceUSD += data.balPriceUSD;
+        averages.tvl += data.tvl;
+        averages.volume += data.volume;
+        totalDataCount++;
+      });
+    }
+  }
 
   const gaugesData = await Promise.allSettled(promises);
+  if (totalDataCount > 0) {
+    averages.apr.total /= totalDataCount;
+    averages.apr.breakdown.veBAL /= totalDataCount;
+    averages.apr.breakdown.swapFee /= totalDataCount;
+    averages.balPriceUSD /= totalDataCount;
+    averages.tvl /= totalDataCount;
+    averages.volume /= totalDataCount;
+  }
 
   const resolvedPoolData = gaugesData
     .filter(
@@ -131,6 +126,8 @@ const fetchDataForPoolId = async (poolId: string) => {
     )
     .map((result) => result.value.perRound)
     .flat();
+  return averages;
+};
 
   const average = computeAverages(resolvedPoolData);
 

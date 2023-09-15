@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+import { Address } from "@bleu-balancer-tools/utils";
 import * as Sentry from "@sentry/nextjs";
 
 import * as balEmissions from "#/lib/balancer/emissions";
@@ -10,7 +11,7 @@ import { PoolStatsData, PoolTokens, tokenAPR } from "../api/route";
 import { getBALPriceByRound, getTokenPriceByDate } from "./getBALPriceByRound";
 import { getPoolRelativeWeight } from "./getRelativeWeight";
 import { Round } from "./rounds";
-import { getTokenAprByPoolId } from "./tokenYield";
+import { getPoolTokensAprForDate } from "./tokenYield";
 
 export interface calculatePoolData extends Omit<PoolStatsData, "apr"> {
   apr: {
@@ -162,7 +163,19 @@ export async function calculatePoolStats({
         ),
     ),
     //TODO: on #BAL-795 use another strategy for cache using the poolId
-    getDataFromCacheOrCompute("yield APR", () => getTokenAprByPoolId(poolId)),
+    getDataFromCacheOrCompute(
+      `pool_yield_apr_${poolId}_${round.value}_${network}`,
+      () =>
+        getPoolTokensAprForDate(
+          network,
+          poolId as Address,
+          //Currently, this is calculating the APR on the last day of the round.
+          //This should be changed on #BAL-799
+          round.activeRound
+            ? Math.round(new Date().getTime() / 1000)
+            : round.endDate.getTime() / 1000,
+        ),
+    ),
   ]);
 
   const tokens = await calculateTokensStats(

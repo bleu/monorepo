@@ -5903,6 +5903,13 @@ export type PoolQueryVariables = Exact<{
 
 export type PoolQuery = { __typename?: 'Query', pool?: { __typename?: 'Pool', address: any, owner?: any | null, poolType?: string | null, symbol?: string | null, swapFee: any, totalLiquidity: any, amp?: any | null, c?: any | null, s?: any | null, alpha?: any | null, beta?: any | null, sqrtAlpha?: any | null, sqrtBeta?: any | null, root3Alpha?: any | null, lambda?: any | null, tauAlphaX?: any | null, tauAlphaY?: any | null, tauBetaX?: any | null, tauBetaY?: any | null, delta?: any | null, epsilon?: any | null, u?: any | null, v?: any | null, w?: any | null, z?: any | null, dSq?: any | null, tokens?: Array<{ __typename?: 'PoolToken', address: string, symbol: string, balance: any, decimals: number, priceRate: any, token: { __typename?: 'Token', fxOracleDecimals?: number | null, latestFXPrice?: any | null } }> | null } | null };
 
+export type PoolRateProvidersQueryVariables = Exact<{
+  poolId: Scalars['ID'];
+}>;
+
+
+export type PoolRateProvidersQuery = { __typename?: 'Query', pool?: { __typename?: 'Pool', priceRateProviders?: Array<{ __typename?: 'PriceRateProvider', address: any, rate?: any | null, token: { __typename?: 'PoolToken', address: string, symbol: string } }> | null } | null };
+
 
 export const InternalBalanceDocument = gql`
     query InternalBalance($userAddress: ID!) {
@@ -6062,6 +6069,20 @@ export const PoolDocument = gql`
   }
 }
     `;
+export const PoolRateProvidersDocument = gql`
+    query PoolRateProviders($poolId: ID!) {
+  pool(id: $poolId) {
+    priceRateProviders {
+      token {
+        address
+        symbol
+      }
+      address
+      rate
+    }
+  }
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string) => Promise<T>;
 
@@ -6090,6 +6111,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     Pool(variables: PoolQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<PoolQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<PoolQuery>(PoolDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Pool', 'query');
+    },
+    PoolRateProviders(variables: PoolRateProvidersQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<PoolRateProvidersQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<PoolRateProvidersQuery>(PoolRateProvidersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PoolRateProviders', 'query');
     }
   };
 }
@@ -6119,6 +6143,9 @@ export function getSdkWithHooks(client: GraphQLClient, withWrapper: SdkFunctionW
     },
     usePool(variables: PoolQueryVariables, config?: SWRConfigInterface<PoolQuery, ClientError>) {
       return useSWR<PoolQuery, ClientError>(genKey<PoolQueryVariables>('Pool', variables), () => sdk.Pool(variables), config);
+    },
+    usePoolRateProviders(variables: PoolRateProvidersQueryVariables, config?: SWRConfigInterface<PoolRateProvidersQuery, ClientError>) {
+      return useSWR<PoolRateProvidersQuery, ClientError>(genKey<PoolRateProvidersQueryVariables>('PoolRateProviders', variables), () => sdk.PoolRateProviders(variables), config);
     }
   };
 }

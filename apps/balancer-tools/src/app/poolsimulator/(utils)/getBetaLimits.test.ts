@@ -1,6 +1,7 @@
-import getBetaLimits, {
+import {
   computeSwapAmounts,
   findTransitions,
+  getBetaLimits,
   getTransitionIndices,
   isInBetaRegion,
 } from "./getBetaLimits";

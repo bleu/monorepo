@@ -153,3 +153,18 @@ export const poolById = gql`
     }
   }
 `;
+
+export const poolRateProviders = gql`
+  query PoolRateProviders($poolId: ID!) {
+    pool(id: $poolId) {
+      priceRateProviders {
+        token {
+          address
+          symbol
+        }
+        address
+        rate
+      }
+    }
+  }
+`;

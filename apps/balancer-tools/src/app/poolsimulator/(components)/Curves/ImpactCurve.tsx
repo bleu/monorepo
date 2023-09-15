@@ -9,12 +9,12 @@ import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
 import { PoolTypeEnum } from "../../(types)";
-import { findTokenBySymbol, POOL_TYPES_TO_ADD_LIMIT } from "../../(utils)";
+import { POOL_TYPES_TO_ADD_LIMIT } from "../../(utils)";
+import { getBetaLimitsIndexes } from "../../(utils)/getBetaLimits";
 import {
   ImpactWorkerInputData,
   ImpactWorkerOutputData,
 } from "../../(workers)/impact-curve-calculation";
-import { getBetaLimitsIndexes } from "./getBetaLimits";
 
 interface Amounts {
   analysisTokenIn?: {
@@ -53,8 +53,14 @@ const createAndPostWorker = (
 };
 
 export function ImpactCurve() {
-  const { analysisToken, currentTabToken, initialData, customData } =
-    usePoolSimulator();
+  const {
+    initialAnalysisToken,
+    customAnalysisToken,
+    initialCurrentTabToken,
+    customCurrentTabToken,
+    initialData,
+    customData,
+  } = usePoolSimulator();
 
   const [initialAmounts, setInitialAmounts] = useState<Amounts>({});
   const [customAmounts, setCustomAmounts] = useState<Amounts>({});
@@ -64,32 +70,32 @@ export function ImpactCurve() {
   useEffect(() => {
     const messages: ImpactWorkerInputData[] = [
       {
-        tokenIn: analysisToken,
-        tokenOut: currentTabToken,
+        tokenIn: initialAnalysisToken,
+        tokenOut: initialCurrentTabToken,
         data: initialData,
         poolType: initialData.poolType,
         swapDirection: "in",
         type: "initial",
       },
       {
-        tokenIn: analysisToken,
-        tokenOut: currentTabToken,
+        tokenIn: initialAnalysisToken,
+        tokenOut: initialCurrentTabToken,
         data: initialData,
         poolType: initialData.poolType,
         swapDirection: "out",
         type: "initial",
       },
       {
-        tokenIn: analysisToken,
-        tokenOut: currentTabToken,
+        tokenIn: customAnalysisToken,
+        tokenOut: customCurrentTabToken,
         data: customData,
         poolType: customData.poolType,
         swapDirection: "in",
         type: "custom",
       },
       {
-        tokenIn: analysisToken,
-        tokenOut: currentTabToken,
+        tokenIn: customAnalysisToken,
+        tokenOut: customCurrentTabToken,
         data: customData,
         poolType: customData.poolType,
         swapDirection: "out",
@@ -100,7 +106,14 @@ export function ImpactCurve() {
     messages.forEach((message) =>
       createAndPostWorker(message, setInitialAmounts, setCustomAmounts),
     );
-  }, [initialData, customData, analysisToken, currentTabToken]);
+  }, [
+    initialData,
+    customData,
+    initialAnalysisToken,
+    customAnalysisToken,
+    customCurrentTabToken,
+    initialCurrentTabToken,
+  ]);
 
   // Helper function to format the swap action string
   const formatAction = (
@@ -122,9 +135,13 @@ export function ImpactCurve() {
   ): string[] => {
     return amounts.map((amount, i) => {
       const swapFromSymbol =
-        direction === "in" ? analysisToken.symbol : currentTabToken.symbol;
+        direction === "in"
+          ? initialAnalysisToken.symbol
+          : initialCurrentTabToken.symbol;
       const swapToSymbol =
-        direction === "in" ? currentTabToken.symbol : analysisToken.symbol;
+        direction === "in"
+          ? initialCurrentTabToken.symbol
+          : initialAnalysisToken.symbol;
 
       const swapAction = formatAction(
         direction,
@@ -223,7 +240,7 @@ export function ImpactCurve() {
       initialAmounts.analysisTokenIn.amounts,
       initialAmounts.analysisTokenIn.priceImpact,
       "Initial",
-      analysisToken.symbol,
+      initialAnalysisToken.symbol,
       true,
       "in",
     ),
@@ -231,7 +248,7 @@ export function ImpactCurve() {
       customAmounts.analysisTokenIn.amounts,
       customAmounts.analysisTokenIn.priceImpact,
       "Custom",
-      analysisToken.symbol,
+      customAnalysisToken.symbol,
       true,
       "in",
     ),
@@ -239,7 +256,7 @@ export function ImpactCurve() {
       initialAmounts.tabTokenIn.amounts,
       initialAmounts.tabTokenIn.priceImpact,
       "Initial",
-      currentTabToken.symbol,
+      customCurrentTabToken.symbol,
       true,
       "out",
       "dashdot",
@@ -248,7 +265,7 @@ export function ImpactCurve() {
       customAmounts.tabTokenIn.amounts,
       customAmounts.tabTokenIn.priceImpact,
       "Custom",
-      currentTabToken.symbol,
+      customCurrentTabToken.symbol,
       true,
       "out",
       "dashdot",
@@ -288,6 +305,10 @@ export function ImpactCurve() {
 
   const poolData = [initialData, customData];
   const amounts = [initialAmounts, customAmounts];
+  const tokens = {
+    analysisToken: [initialAnalysisToken, customAnalysisToken],
+    currentTabToken: [initialCurrentTabToken, customCurrentTabToken],
+  };
   const legends = ["Initial", "Custom"];
   poolData.forEach((pool, index) => {
     if (pool.poolType == PoolTypeEnum.Fx && pool.poolParams?.beta) {
@@ -295,14 +316,8 @@ export function ImpactCurve() {
         amounts[index].analysisTokenIn,
         amounts[index].tabTokenIn,
       ];
-      const analysisTokenData = findTokenBySymbol(
-        pool.tokens,
-        analysisToken.symbol,
-      );
-      const currentTabTokenData = findTokenBySymbol(
-        pool.tokens,
-        currentTabToken.symbol,
-      );
+      const analysisTokenData = tokens.analysisToken[index];
+      const currentTabTokenData = tokens.currentTabToken[index];
       const tokensList = [
         { in: analysisTokenData, out: currentTabTokenData },
         { in: currentTabTokenData, out: analysisTokenData },

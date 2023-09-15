@@ -358,9 +358,26 @@ export async function GET(request: NextRequest) {
 function filterPoolStats(
   poolStats: PoolStatsResults,
   searchParams: URLSearchParams,
-): PoolStatsResults {
-  let filteredData = [...poolStats.perRound];
+) {
+  const perDay = poolStats.perDay;
+  const filteredData: { [key: string]: PoolStatsData | PoolStatsData[] } = {};
 
+  for (const date in perDay) {
+    const poolOnDate = perDay[date];
+
+    if (Array.isArray(poolOnDate)) {
+      filteredData[date] = poolOnDate.filter((pool) =>
+        shouldIncludePool(pool, searchParams),
+      );
+    } else if (shouldIncludePool(poolOnDate, searchParams)) {
+      filteredData[date] = poolOnDate;
+    }
+  }
+
+  return { ...poolStats, perDay: filteredData };
+}
+
+function shouldIncludePool(pool: PoolStatsData, searchParams: URLSearchParams) {
   const network = searchParams.get("network");
   const minApr = parseFloat(searchParams.get("minApr") ?? "0");
   const maxApr = parseFloat(searchParams.get("maxApr") ?? "Infinity");
@@ -372,59 +389,36 @@ function filterPoolStats(
   const poolTypes = searchParams.get("types");
   const minTvl = parseFloat(searchParams.get("minTvl") ?? "0");
   const maxTvl = parseFloat(searchParams.get("maxTvl") ?? "Infinity");
+  const decodedTokenSymbols = tokenSymbol
+    ? tokenSymbol
+        .split(",")
+        .map((type) => decodeURIComponent(type).toLowerCase())
+    : [];
 
-  if (network) {
-    const decodedNetworks = network
-      .split(",")
-      .map((network) => unsafeNetworkIdFor(network.toLowerCase()));
-    filteredData = filteredData.filter((pool) =>
-      decodedNetworks.includes(pool.network),
-    );
-  }
-  if (minApr || maxApr) {
-    filteredData = filteredData.filter(
-      (pool) => pool.apr.total >= minApr && pool.apr.total <= maxApr,
-    );
-  }
-  if (minVotingShare || maxVotingShare) {
-    filteredData = filteredData.filter(
-      (pool) =>
-        pool.votingShare * 100 >= minVotingShare &&
-        pool.votingShare * 100 <= maxVotingShare,
-    );
-  }
-  if (tokenSymbol) {
-    const decodedSymbols = tokenSymbol
-      .split(",")
-      .map((type) => decodeURIComponent(type).toLowerCase());
-    filteredData = filteredData.filter((pool) =>
+  const decodedPoolTypes = poolTypes
+    ? poolTypes
+        .split(",")
+        .map((value) =>
+          Object.keys(PoolTypeEnum).find(
+            (key) => PoolTypeEnum[key].toLowerCase() === value.toLowerCase(),
+          ),
+        )
+    : [];
+
+  return (
+    (!network || pool.network === network) &&
+    pool.apr.total >= minApr &&
+    pool.apr.total <= maxApr &&
+    pool.votingShare * 100 >= minVotingShare &&
+    pool.votingShare * 100 <= maxVotingShare &&
+    (!tokenSymbol ||
       pool.tokens.some((token) =>
-        decodedSymbols.includes(token.symbol.toLowerCase()),
-      ),
-    );
-  }
-  if (poolTypes) {
-    const getEnumKey = (value: string): string | undefined =>
-      Object.keys(PoolTypeEnum).find(
-        (key) =>
-          (PoolTypeEnum as Record<string, string>)[key].toLowerCase() ===
-          value.toLowerCase(),
-      );
-    const decodedTypes = poolTypes.split(",").map(getEnumKey);
-    filteredData = filteredData.filter((pool) =>
-      decodedTypes.includes(pool.type),
-    );
-  }
-  if (minTvl || maxTvl) {
-    filteredData = filteredData.filter(
-      (pool) => pool.tvl >= minTvl && pool.tvl <= maxTvl,
-    );
-  }
-
-  return {
-    ...poolStats,
-    perRound: filteredData,
-  };
+        decodedTokenSymbols.includes(token.symbol.toLowerCase()),
+      )) &&
+    (!poolTypes || decodedPoolTypes.includes(pool.type.toLowerCase())) &&
+    pool.tvl >= minTvl &&
+    pool.tvl <= maxTvl
+  );
 }
 
 function compareNumbers(a: number, b: number, order: Order): number {
@@ -446,30 +440,47 @@ function sortAndLimit(
   order: Order = "desc",
   offset: number = 0,
   limit: number = Infinity,
-) {
-  const sortedEntries = poolStatsResults.perRound
-    .sort((aValue, bValue) => {
-      let valueA = aValue[sortProperty];
-      let valueB = bValue[sortProperty];
+): PoolStatsResults {
+  const sortedData: Record<string, PoolStatsData[]> = {};
 
-      if (sortProperty === "apr") {
-        valueA = (valueA as (typeof aValue)["apr"]).total;
-        valueB = (valueB as (typeof bValue)["apr"]).total;
-      }
+  for (const date in poolStatsResults.perDay) {
+    const dayData = poolStatsResults.perDay[date];
 
-      if (valueA == null || Number.isNaN(valueA)) return 1;
-      if (valueB == null || Number.isNaN(valueB)) return -1;
+    const sortedEntries = dayData
+      .sort((a, b) => {
+        const valueA = a[sortProperty];
+        const valueB = b[sortProperty];
 
-      if (typeof valueA === "number" && typeof valueB === "number") {
-        return compareNumbers(valueA, valueB, order);
-      } else {
-        return compareStrings(valueA.toString(), valueB.toString(), order);
-      }
-    })
-    .slice(offset, offset + limit);
+        if (valueA == null || Number.isNaN(valueA)) return 1;
+        if (valueB == null || Number.isNaN(valueB)) return -1;
+
+        if (typeof valueA === "number" && typeof valueB === "number") {
+          return compareNumbers(valueA, valueB, order);
+        } else {
+          return compareStrings(valueA.toString(), valueB.toString(), order);
+        }
+      })
+      .slice(offset, offset + limit);
+
+    sortedData[date] = sortedEntries;
+  }
 
   return {
-    perRound: sortedEntries,
-    average: poolStatsResults.average,
+    ...poolStatsResults,
+    perDay: sortedData,
   };
+}
+
+function limitData(
+  data: { [key: string]: PoolStatsData[] },
+  offset: number,
+  limit: number,
+) {
+  const limitedData: { [key: string]: PoolStatsData[] } = {};
+
+  for (const date in data) {
+    const dayData = data[date];
+    limitedData[date] = dayData.slice(offset, offset + limit);
+  }
+  return limitedData;
 }

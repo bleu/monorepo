@@ -46,8 +46,10 @@ export enum DataType {
 interface PoolSimulatorContextType {
   initialData: AnalysisData;
   customData: AnalysisData;
-  analysisToken: TokensData;
-  currentTabToken: TokensData;
+  initialAnalysisToken: TokensData;
+  customAnalysisToken: TokensData;
+  initialCurrentTabToken: TokensData;
+  customCurrentTabToken: TokensData;
   setAnalysisTokenBySymbol: (symbol: string) => void;
   setCurrentTabTokenBySymbol: (symbol: string) => void;
   setAnalysisTokenByIndex: (index: number) => void;
@@ -100,31 +102,51 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
     useState<AnalysisData>(defaultAnalysisData);
   const [initialAMM, setInitialAMM] = useState<AMM<PoolPairData>>();
   const [customAMM, setCustomAMM] = useState<AMM<PoolPairData>>();
-  const [analysisToken, setAnalysisToken] =
+  const [initialAnalysisToken, setInitialAnalysisToken] =
     useState<TokensData>(defaultTokensData);
-  const [currentTabToken, setCurrentTabToken] =
+  const [customAnalysisToken, setCustomAnalysisToken] =
+    useState<TokensData>(defaultTokensData);
+  const [initialCurrentTabToken, setInitialCurrentTabToken] =
+    useState<TokensData>(defaultTokensData);
+  const [customCurrentTabToken, setCustomCurrentTabToken] =
     useState<TokensData>(defaultTokensData);
 
   const [isGraphLoading, setIsGraphLoading] = useState<boolean>(false);
 
   function setAnalysisTokenBySymbol(symbol: string) {
-    const token = initialData.tokens.find((token) => token.symbol === symbol);
-    if (token) setAnalysisToken(token);
+    const initialToken = initialData.tokens.find(
+      (token) => token.symbol === symbol,
+    );
+    const customToken = customData.tokens.find(
+      (token) => token.symbol === symbol,
+    );
+    if (initialToken) setInitialAnalysisToken(initialToken);
+    if (customToken) setCustomAnalysisToken(customToken);
   }
 
   function setCurrentTabTokenBySymbol(symbol: string) {
-    const token = initialData.tokens.find((token) => token.symbol === symbol);
-    if (token) setCurrentTabToken(token);
+    const initialToken = initialData.tokens.find(
+      (token) => token.symbol === symbol,
+    );
+    const customToken = customData.tokens.find(
+      (token) => token.symbol === symbol,
+    );
+    if (initialToken) setInitialCurrentTabToken(initialToken);
+    if (customToken) setCustomCurrentTabToken(customToken);
   }
 
   function setAnalysisTokenByIndex(index: number) {
-    const token = initialData.tokens[index];
-    if (token) setAnalysisToken(token);
+    const initialToken = initialData.tokens[index];
+    const customToken = customData.tokens[index];
+    if (initialToken) setInitialAnalysisToken(initialToken);
+    if (customToken) setCustomAnalysisToken(customToken);
   }
 
   function setCurrentTabTokenByIndex(index: number) {
-    const token = initialData.tokens[index];
-    if (token) setCurrentTabToken(token);
+    const initialToken = initialData.tokens[index];
+    const customToken = customData.tokens[index];
+    if (initialToken) setInitialCurrentTabToken(initialToken);
+    if (customToken) setCustomCurrentTabToken(customToken);
   }
 
   async function asyncSetAMM(
@@ -193,10 +215,12 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
         setInitialData,
         customData,
         setCustomData,
-        analysisToken,
+        initialAnalysisToken,
+        customAnalysisToken,
+        initialCurrentTabToken,
+        customCurrentTabToken,
         setAnalysisTokenBySymbol,
         setAnalysisTokenByIndex,
-        currentTabToken,
         setCurrentTabTokenBySymbol,
         setCurrentTabTokenByIndex,
         handleImportPoolParametersById,

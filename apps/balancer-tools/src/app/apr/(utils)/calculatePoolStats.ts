@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+import { Address } from "@bleu-balancer-tools/utils";
 import * as Sentry from "@sentry/nextjs";
 
 import * as balEmissions from "#/lib/balancer/emissions";
@@ -6,10 +7,11 @@ import { Pool } from "#/lib/balancer/gauges";
 import { getDataFromCacheOrCompute } from "#/lib/cache";
 import { pools } from "#/lib/gql/server";
 
-import { PoolStatsData, PoolTokens } from "../api/route";
+import { PoolStatsData, PoolTokens, tokenAPR } from "../api/route";
 import { getBALPriceByRound, getTokenPriceByDate } from "./getBALPriceByRound";
 import { getPoolRelativeWeight } from "./getRelativeWeight";
 import { Round } from "./rounds";
+import { getPoolTokensAprForDate } from "./tokenYield";
 
 export interface calculatePoolData extends Omit<PoolStatsData, "apr"> {
   apr: {
@@ -17,6 +19,10 @@ export interface calculatePoolData extends Omit<PoolStatsData, "apr"> {
     breakdown: {
       veBAL: number | null;
       swapFee: number;
+      tokens: {
+        total: number;
+        breakdown: tokenAPR[];
+      };
     };
   };
 }
@@ -126,6 +132,7 @@ export async function calculatePoolStats({
     [tvl, volume, symbol, tokenBalance],
     votingShare,
     [feeAPR, collectedFeesUSD],
+    tokensAPR,
   ] = await Promise.all([
     getDataFromCacheOrCompute(`bal_price_${round.value}`, () =>
       getBALPriceByRound(round),
@@ -154,6 +161,20 @@ export async function calculatePoolStats({
           round.endDate.getTime() / 1000,
         ),
     ),
+    //TODO: on #BAL-795 use another strategy for cache using the poolId
+    getDataFromCacheOrCompute(
+      `pool_yield_apr_${poolId}_${round.value}_${network}`,
+      () =>
+        getPoolTokensAprForDate(
+          network,
+          poolId as Address,
+          //Currently, this is calculating the APR on the last day of the round.
+          //This should be changed on #BAL-799
+          round.activeRound
+            ? Math.round(new Date().getTime() / 1000)
+            : round.endDate.getTime() / 1000,
+        ),
+    ),
   ]);
 
   const tokens = await calculateTokensStats(
@@ -163,7 +184,14 @@ export async function calculatePoolStats({
     tokenBalance,
   );
 
-  const apr = calculateRoundAPR(round, votingShare, tvl, balPriceUSD, feeAPR);
+  const apr = calculateRoundAPR(
+    round,
+    votingShare,
+    tvl,
+    balPriceUSD,
+    feeAPR,
+    tokensAPR,
+  );
 
   if (apr.total === null || apr.breakdown.veBAL === null) {
     Sentry.captureMessage("vebalAPR resulted in null", {
@@ -194,6 +222,7 @@ function calculateRoundAPR(
   tvl: number,
   balPriceUSD: number,
   feeAPR: number,
+  tokensAPR: tokenAPR[],
 ) {
   const emissions = balEmissions.weekly(round.endDate.getTime() / 1000);
   const vebalAPR =
@@ -202,10 +231,21 @@ function calculateRoundAPR(
       : null;
 
   return {
+    //TODO: on #BAL-795 add tokenAPR to the total
     total: (vebalAPR || 0) + feeAPR,
     breakdown: {
       veBAL: vebalAPR,
       swapFee: feeAPR,
+      tokens: {
+        total: tokensAPR.reduce((acc, token) => acc + token.yield, 0),
+        breakdown: [
+          ...tokensAPR.map((token) => ({
+            address: token.address,
+            symbol: token.symbol,
+            yield: token.yield,
+          })),
+        ],
+      },
     },
   };
 }

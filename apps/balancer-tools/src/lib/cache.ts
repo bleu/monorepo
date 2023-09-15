@@ -41,6 +41,11 @@ export const getDataFromCacheOrCompute = async <T>(
     return MEMORY_CACHE.get<T>(cacheKey);
   }
 
+  if (process.env.NODE_ENV === "development") {
+    console.debug(`Cache miss for ${cacheKey}`);
+    return computeFn();
+  }
+
   try {
     const cached = await KV.get<T>(cacheKey);
 

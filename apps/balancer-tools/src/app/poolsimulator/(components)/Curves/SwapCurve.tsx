@@ -1,84 +1,28 @@
 "use client";
 
 import { PlotType } from "plotly.js";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 import Plot from "#/components/Plot";
-import { Spinner } from "#/components/Spinner";
+// import { Spinner } from "#/components/Spinner";
 import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
 import { formatNumber } from "#/utils/formatNumber";
 
-import { PoolTypeEnum } from "../../(types)";
 import { findTokenBySymbol, POOL_TYPES_TO_ADD_LIMIT } from "../../(utils)";
-import {
-  SwapCurveWorkerInputData,
-  SwapCurveWorkerOutputData,
-} from "../../(workers)/swap-curve-calculation";
-import getBetaLimitIndexes from "./getBetaLimits";
+import { AmountsData } from "../AnalysisPage";
 
-interface AmountsData {
-  analysisTokenIn: number[];
-  analysisTokenOut: number[];
-  tabTokenIn: number[];
-  tabTokenOut: number[];
-}
-
-const createAndPostSwapWorker = (
-  messageData: SwapCurveWorkerInputData,
-  setInitialAmounts: Dispatch<SetStateAction<AmountsData>>,
-  setCustomAmounts: Dispatch<SetStateAction<AmountsData>>,
-) => {
-  const worker = new Worker(
-    new URL("../../(workers)/swap-curve-calculation.ts", import.meta.url),
-  );
-
-  worker.onmessage = (event: MessageEvent<SwapCurveWorkerOutputData>) => {
-    const result = event.data.result;
-    const type = event.data.type;
-
-    if (!result) return;
-
-    const setter = type === "initial" ? setInitialAmounts : setCustomAmounts;
-
-    setter(result);
-  };
-
-  worker.postMessage(messageData);
-};
-
-export function SwapCurve() {
-  const { analysisToken, currentTabToken, initialData, customData } =
-    usePoolSimulator();
-
-  if (!initialData || !customData) return <Spinner />;
-
-  const [initialAmounts, setInitialAmounts] = useState<AmountsData>(
-    {} as AmountsData,
-  );
-  const [customAmounts, setCustomAmounts] = useState<AmountsData>(
-    {} as AmountsData,
-  );
-
-  useEffect(() => {
-    const messages: SwapCurveWorkerInputData[] = [
-      {
-        analysisToken,
-        currentTabToken,
-        data: initialData,
-        type: "initial",
-      },
-      {
-        analysisToken,
-        currentTabToken,
-        data: customData,
-        type: "custom",
-      },
-    ];
-
-    messages.forEach((message) =>
-      createAndPostSwapWorker(message, setInitialAmounts, setCustomAmounts),
-    );
-  }, [initialData, customData, analysisToken, currentTabToken]);
+export function SwapCurve({
+  initialAmounts,
+  customAmounts,
+}: {
+  initialAmounts: AmountsData;
+  customAmounts: AmountsData;
+}) {
+  const {
+    initialAnalysisToken: { symbol: analysisTokenSymbol },
+    initialCurrentTabToken: { symbol: currentTabTokenSymbol },
+    initialData,
+    customData,
+  } = usePoolSimulator();
 
   const formatSwap = (
     amountIn: number,
@@ -149,72 +93,60 @@ export function SwapCurve() {
     };
   };
 
-  if (
-    !initialAmounts.analysisTokenIn ||
-    !initialAmounts.analysisTokenOut ||
-    !initialAmounts.tabTokenIn ||
-    !initialAmounts.tabTokenOut ||
-    !customAmounts.analysisTokenIn ||
-    !customAmounts.analysisTokenOut ||
-    !customAmounts.tabTokenIn ||
-    !customAmounts.tabTokenOut
-  )
-    return <Spinner />;
-
   const data = [
     createDataObject(
       initialAmounts.analysisTokenIn,
-      initialAmounts.tabTokenOut,
+      initialAmounts.pairTokenOut,
       "Initial",
       true,
       initialAmounts.analysisTokenIn.map((amount, index) =>
         formatSwap(
           amount,
-          analysisToken.symbol,
-          -initialAmounts.tabTokenOut[index],
-          currentTabToken.symbol,
+          analysisTokenSymbol,
+          -initialAmounts.pairTokenOut[index],
+          currentTabTokenSymbol,
         ),
       ),
     ),
     createDataObject(
       customAmounts.analysisTokenIn,
-      customAmounts.tabTokenOut,
+      customAmounts.pairTokenOut,
       "Custom",
       true,
       customAmounts.analysisTokenIn.map((amount, index) =>
         formatSwap(
           amount,
-          analysisToken.symbol,
-          -customAmounts.tabTokenOut[index],
-          currentTabToken.symbol,
+          analysisTokenSymbol,
+          -customAmounts.pairTokenOut[index],
+          currentTabTokenSymbol,
         ),
       ),
     ),
     createDataObject(
       initialAmounts.analysisTokenOut,
-      initialAmounts.tabTokenIn,
+      initialAmounts.pairTokenIn,
       "Initial",
       false,
       initialAmounts.analysisTokenOut.map((amount, index) =>
         formatSwap(
-          initialAmounts.tabTokenIn[index],
-          currentTabToken.symbol,
+          initialAmounts.pairTokenIn[index],
+          currentTabTokenSymbol,
           -amount,
-          analysisToken.symbol,
+          analysisTokenSymbol,
         ),
       ),
     ),
     createDataObject(
       customAmounts.analysisTokenOut,
-      customAmounts.tabTokenIn,
+      customAmounts.pairTokenIn,
       "Custom",
       false,
       customAmounts.analysisTokenOut.map((amount, index) =>
         formatSwap(
-          customAmounts.tabTokenIn[index],
-          currentTabToken.symbol,
+          customAmounts.pairTokenIn[index],
+          currentTabTokenSymbol,
           -amount,
-          analysisToken.symbol,
+          analysisTokenSymbol,
         ),
       ),
     ),
@@ -228,8 +160,8 @@ export function SwapCurve() {
           initialAmounts.analysisTokenIn.slice(-1)[0],
         ],
         [
-          initialAmounts.tabTokenIn.slice(-1)[0],
-          initialAmounts.tabTokenOut.slice(-1)[0],
+          initialAmounts.pairTokenIn.slice(-1)[0],
+          initialAmounts.pairTokenOut.slice(-1)[0],
         ],
         "Initial",
       ),
@@ -243,37 +175,23 @@ export function SwapCurve() {
           customAmounts.analysisTokenIn.slice(-1)[0],
         ],
         [
-          customAmounts.tabTokenIn.slice(-1)[0],
-          customAmounts.tabTokenOut.slice(-1)[0],
+          customAmounts.pairTokenIn.slice(-1)[0],
+          customAmounts.pairTokenOut.slice(-1)[0],
         ],
         "Custom",
       ),
     );
   }
-  const poolData = [initialData, customData];
-  const amounts = [initialAmounts, customAmounts];
-  const legends = ["Initial", "Custom"];
 
-  poolData.forEach((pool, index) => {
-    if (pool.poolType == PoolTypeEnum.Fx && pool.poolParams?.beta) {
-      const analysisData = findTokenBySymbol(pool.tokens, analysisToken.symbol);
-      const tabData = findTokenBySymbol(pool.tokens, currentTabToken.symbol);
-      const betaLimits = getBetaLimitIndexes({
-        ...amounts[index],
-        analysisTokenInitialBalance: analysisData?.balance || 0,
-        tabTokenInitialBalance: tabData?.balance || 0,
-        analysisTokenRate: analysisData?.rate || 0,
-        tabTokenRate: tabData?.rate || 0,
-        beta: pool.poolParams.beta,
-      });
-      data.push(
-        createBetaRegionDataObject(
-          betaLimits[0],
-          betaLimits[1],
-          legends[index],
-        ),
-      );
-    }
+  [initialAmounts, customAmounts].forEach((amounts, index) => {
+    if (!amounts.betaLimits) return;
+    data.push(
+      createBetaRegionDataObject(
+        amounts.betaLimits.analysis,
+        amounts.betaLimits.pair,
+        ["Initial", "Custom"][index],
+      ),
+    );
   });
 
   function getGraphScale({
@@ -339,17 +257,17 @@ export function SwapCurve() {
       data={data}
       layout={{
         xaxis: {
-          title: `Amount of ${analysisToken.symbol}`,
+          title: `Amount of ${analysisTokenSymbol}`,
           range: getGraphScale({
-            axisBalanceSymbol: analysisToken.symbol,
-            oppositeAxisBalanceSymbol: currentTabToken.symbol,
+            axisBalanceSymbol: analysisTokenSymbol,
+            oppositeAxisBalanceSymbol: currentTabTokenSymbol,
           }),
         },
         yaxis: {
-          title: `Amount of ${currentTabToken.symbol}`,
+          title: `Amount of ${currentTabTokenSymbol}`,
           range: getGraphScale({
-            axisBalanceSymbol: currentTabToken.symbol,
-            oppositeAxisBalanceSymbol: analysisToken.symbol,
+            axisBalanceSymbol: currentTabTokenSymbol,
+            oppositeAxisBalanceSymbol: analysisTokenSymbol,
           }),
         },
       }}

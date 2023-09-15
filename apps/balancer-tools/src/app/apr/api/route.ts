@@ -59,7 +59,7 @@ export interface PoolStatsData extends PoolStats {
 }
 
 export interface PoolStatsResults {
-  perRound: PoolStatsData[];
+  perDay: { [key: string]: PoolStatsData[] };
   average: PoolStatsWithoutVotingShareAndCollectedFees;
 }
 

@@ -193,40 +193,42 @@ const generateDateRange = (startDate: Date, endDate: Date) => {
   ) {
     dateRange.push(currentDate);
   }
-};
 
-const fetchDataForRoundId = async (roundId: string) => {
-  const existingPoolsInRound = POOLS_WITH_LIVE_GAUGES.filter(
-    ({ gauge: { addedTimestamp } }) =>
-      addedTimestamp &&
-      Round.getRoundByDate(new Date(addedTimestamp * 1000)).value <= roundId,
-  );
-
-  const gaugesData = await Promise.allSettled(
-    existingPoolsInRound.map(({ id: poolId }) =>
-      fetcher<PoolStatsResults>(
-        `${BASE_URL}/apr/api?roundId=${roundId}&poolId=${poolId}`,
-      ),
-    ),
-  );
   return dateRange;
 };
 
-  const resolvedPoolData = gaugesData
+async function fetchDataForDateRange(startDate: Date, endDate: Date) {
+  const existingPoolForDate = POOLS_WITH_LIVE_GAUGES.reverse()
+    .slice(10, 15)
     .filter(
-      (result): result is PromiseFulfilledResult<PoolStatsResults> =>
-        result.status === "fulfilled",
-    )
-    .map((result) => result.value.perRound)
-    .flat();
+      ({ gauge: { addedTimestamp } }) =>
+        addedTimestamp && addedTimestamp <= endDate.getTime(),
+    );
+  const perDayData: { [key: string]: calculatePoolData[] } = {};
 
-  const average = computeAverages(resolvedPoolData);
+  await Promise.all(
+    existingPoolForDate.map(async (pool) => {
+      const gaugesData = await fetcher<PoolStatsResults>(
+        `${BASE_URL}/apr/api?startAt=${formatDateToMMDDYYYY(
+          startDate,
+        )}&endAt=${formatDateToMMDDYYYY(endDate)}&poolId=${pool.id}`,
+      );
+
+      Object.entries(gaugesData.perDay).forEach(([dayStr, poolData]) => {
+        if (perDayData[dayStr]) {
+          perDayData[dayStr].push(poolData[0]);
+        } else {
+          perDayData[dayStr] = [poolData[0]];
+        }
+      });
+    }),
+  );
 
   return {
-    perRound: resolvedPoolData,
-    average,
+    perDay: perDayData,
+    average: computeAverages(perDayData),
   };
-};
+}
 
 function validateSearchParams(
   poolId: string | null,

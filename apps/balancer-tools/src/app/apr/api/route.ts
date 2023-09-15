@@ -140,46 +140,59 @@ const fetchDataForPoolId = async (poolId: string) => {
 const MAX_RETRIES = 3; // specify the number of retry attempts
 const RETRY_DELAY = 1000; // delay between retries in milliseconds
 
-const fetchDataForPoolIdRoundId = async (poolId: string, roundId: string) => {
-  let attempts = 0;
+async function fetchDataForPoolIdDateRange(
+  poolId: string,
+  startDate: Date,
+  endDate: Date,
+) {
+  const allDaysBetween = generateDateRange(startDate, endDate);
+  const perDayData: { [key: string]: calculatePoolData[] } = {};
 
-  while (attempts < MAX_RETRIES) {
-    try {
-      const data: calculatePoolData | null = await calculatePoolStats({
-        roundId,
-        poolId,
-      });
+  for (const dayDate of allDaysBetween) {
+    let attempts = 0;
 
-      if (!data) {
-        return {
-          perRound: [],
-          average: {
-            apr: 0,
-            balPriceUSD: 0,
-            volume: 0,
-            tvl: 0,
-          },
-        };
+    while (attempts < MAX_RETRIES) {
+      try {
+        const currentRound = Round.getRoundByDate(dayDate);
+        const data = await calculatePoolStats({ round: currentRound, poolId });
+        perDayData[formatDateToMMDDYYYY(dayDate)] = [data] || [];
+        break;
+      } catch (error) {
+        attempts++;
+        console.error(
+          `Attempt ${attempts} - Error fetching data for pool ${poolId} and date ${formatDateToMMDDYYYY(
+            dayDate,
+          )}}:`,
+          error,
+        );
+
+        if (attempts >= MAX_RETRIES) {
+          // TODO: BAL-782 - Add sentry here
+          console.error("Max retries reached. Giving up fetching data.");
+          break;
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
       }
-
-      return {
-        perRound: [data],
-        average: [computeAverages([data])],
-      };
-    } catch (error) {
-      attempts++;
-      console.error(
-        `Attempt ${attempts} - Error fetching data for pool ${poolId} and round ${roundId}:`,
-        error,
-      );
-
-      if (attempts >= MAX_RETRIES) {
-        console.error("Max retries reached. Giving up fetching data.");
-        return null;
-      }
-
-      await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY)); // Delay before retrying
     }
+  }
+
+  return {
+    perDay: perDayData,
+    average: computeAverages(perDayData),
+  };
+}
+
+const generateDateRange = (startDate: Date, endDate: Date) => {
+  const dayMilliseconds = 24 * 60 * 60 * 1000;
+  const dateRange = [];
+
+  for (
+    let currentDate = startDate;
+    currentDate <= endDate;
+    currentDate = new Date(currentDate.getTime() + dayMilliseconds)
+  ) {
+    dateRange.push(currentDate);
   }
 };
 
@@ -197,6 +210,8 @@ const fetchDataForRoundId = async (roundId: string) => {
       ),
     ),
   );
+  return dateRange;
+};
 
   const resolvedPoolData = gaugesData
     .filter(
@@ -317,10 +332,8 @@ export async function GET(request: NextRequest) {
     const endAtDate = parseParamToDate(endAt as string);
     return NextResponse.json(
       await getDataFromCacheOrCompute(
-        parseInt(roundId) === parseInt(Round.currentRound().value)
-          ? null
-          : `pool_${poolId}_round_${roundId}`,
-        async () => fetchDataForPoolIdRoundId(poolId, roundId),
+        `pool_${poolId}_round_${startAt}_${endAt}`,
+        async () => fetchDataForPoolIdDateRange(poolId, startAtDate, endAtDate),
       ),
     );
   } else if (poolId) {

@@ -100,7 +100,9 @@ async function calculateTokensStats(
         parseInt(poolNetwork),
       );
       if (tokenPrice === undefined) {
-        console.error(token);
+        console.error(
+          `error to fetch price for ${token.symbol}, with address ${token.address}`,
+        );
       }
       //TODO: some work arround to get token price
       return tokenPrice === undefined ? 1 : tokenPrice;
@@ -109,7 +111,6 @@ async function calculateTokensStats(
 
   const totalValue = poolTokenData.reduce((acc, token, idx) => {
     const balance = parseFloat(tokenBalance?.[idx]?.balance);
-    console.log(balance, tokensPrices[idx]);
     if (!isNaN(balance)) {
       return acc + tokensPrices[idx] * balance;
     }
@@ -117,7 +118,7 @@ async function calculateTokensStats(
   }, 0);
 
   const tokenPromises = poolTokenData.map(async (token, idx) => {
-    token.price = tokensPrices[idx] === undefined ? 1 : tokensPrices[idx];
+    token.price = tokensPrices[idx];
     token.balance = parseFloat(tokenBalance?.[idx]?.balance);
     token.percentageValue =
       ((tokensPrices[idx] * parseFloat(tokenBalance?.[idx]?.balance)) /

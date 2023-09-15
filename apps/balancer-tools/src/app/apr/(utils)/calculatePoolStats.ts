@@ -92,24 +92,36 @@ async function calculateTokensStats(
   poolNetwork: string,
   tokenBalance: { symbol: string; balance: string }[],
 ) {
-  const totalBalance = poolTokenData.reduce((acc, token, idx) => {
+  const tokensPrices = await Promise.all(
+    poolTokenData.map(async (token) => {
+      const tokenPrice = await getTokenPriceByDate(
+        Round.getRoundByNumber(roundId).endDate,
+        token.address,
+        parseInt(poolNetwork),
+      );
+      if (tokenPrice === undefined) {
+        console.error(token);
+      }
+      //TODO: some work arround to get token price
+      return tokenPrice === undefined ? 1 : tokenPrice;
+    }),
+  );
+
+  const totalValue = poolTokenData.reduce((acc, token, idx) => {
     const balance = parseFloat(tokenBalance?.[idx]?.balance);
+    console.log(balance, tokensPrices[idx]);
     if (!isNaN(balance)) {
-      return acc + balance;
+      return acc + tokensPrices[idx] * balance;
     }
     return acc;
   }, 0);
 
   const tokenPromises = poolTokenData.map(async (token, idx) => {
-    const tokenPrice = await getTokenPriceByDate(
-      Round.getRoundByNumber(roundId).endDate,
-      token.address,
-      parseInt(poolNetwork),
-    );
-    token.price = tokenPrice;
-    token.balance = tokenPrice * parseFloat(tokenBalance?.[idx]?.balance);
+    token.price = tokensPrices[idx] === undefined ? 1 : tokensPrices[idx];
+    token.balance = parseFloat(tokenBalance?.[idx]?.balance);
     token.percentageValue =
-      ((tokenPrice * parseFloat(tokenBalance?.[idx]?.balance)) / totalBalance) *
+      ((tokensPrices[idx] * parseFloat(tokenBalance?.[idx]?.balance)) /
+        totalValue) *
       100;
     return token;
   });

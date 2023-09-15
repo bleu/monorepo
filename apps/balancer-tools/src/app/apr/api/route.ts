@@ -217,9 +217,17 @@ const fetchDataForRoundId = async (roundId: string) => {
   };
 };
 
-function validateSearchParams(poolId: string | null, roundId: string | null) {
-  if ((!poolId || poolId === null) && (!roundId || roundId === null)) {
-    throw new Error("no roundId or poolId provided");
+function validateSearchParams(
+  poolId: string | null,
+  startAt: string | null,
+  endAt: string | null,
+) {
+  if (!poolId && (!startAt || startAt === null) && (!endAt || endAt === null)) {
+    throw new Error(
+      `${startAt ? "" : "startAt"} ${startAt && endAt ? "" : "and"}${
+        endAt ? "" : "endAt"
+      } ${endAt ? "" : "endAt"} are required`,
+    );
   }
   if (poolId) {
     if (
@@ -230,21 +238,68 @@ function validateSearchParams(poolId: string | null, roundId: string | null) {
       throw new Error(`Pool with ID ${poolId} not found`);
     }
   }
-  if (roundId) {
-    if (
-      isNaN(parseInt(roundId)) ||
-      parseInt(roundId) > parseInt(Round.currentRound().value)
-    ) {
-      throw new Error(`Round number ${roundId} is invalid`);
+
+  if (startAt && endAt) {
+    const currentDate = new Date();
+    // Defining min date as before bal creation
+    const minDate = new Date("2020-01-01");
+    const startDate = parseParamToDate(startAt);
+    const endDate = parseParamToDate(endAt);
+
+    if (startDate < minDate) {
+      throw new Error(
+        "Start date is before the minimum allowed date (January 1, 2020).",
+      );
+    }
+
+    if (endDate > currentDate) {
+      throw new Error(
+        "End date is in the future. Please provide an end date before today.",
+      );
     }
   }
+}
+
+function parseParamToDate(dateStr: string) {
+  const parts = dateStr.split("-");
+  if (parts.length !== 3) {
+    throw new Error("Invalid date format. Use 'dd-mm-yyyy'.");
+  }
+
+  const [month, day, year] = parts.map(Number);
+
+  if (isNaN(day) || isNaN(month) || isNaN(year)) {
+    throw new Error("Invalid date format. Use 'dd-mm-yyyy'.");
+  }
+
+  // Ensure that the year is four digits
+  if (year < 1000 || year > 9999) {
+    throw new Error("Invalid year. Use a four-digit year (yyyy).");
+  }
+
+  const date = new Date(year, month - 1, day);
+
+  if (isNaN(date.getTime())) {
+    throw new Error("Invalid date.");
+  }
+
+  return date;
+}
+
+function formatDateToMMDDYYYY(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Add 1 to month since it's 0-indexed
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${month}-${day}-${year}`;
 }
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
 
   const poolId = searchParams.get("poolId");
-  const roundId = searchParams.get("roundId");
+  const startAt = searchParams.get("startAt");
+  const endAt = searchParams.get("endAt");
   const sort = (searchParams.get("sort") as keyof PoolStatsData) || "apr";
   const order = (searchParams.get("order") as Order) || "desc";
   const limit = parseInt(searchParams.get("limit") ?? "0") || Infinity;
@@ -252,7 +307,7 @@ export async function GET(request: NextRequest) {
   let responseData;
 
   try {
-    validateSearchParams(poolId, roundId);
+    validateSearchParams(poolId, startAt, endAt);
   } catch (error) {
     return NextResponse.json(
       { error: (error as Error).message },
@@ -260,7 +315,9 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  if (poolId && roundId) {
+  if (poolId && startAt && endAt) {
+    const startAtDate = parseParamToDate(startAt as string);
+    const endAtDate = parseParamToDate(endAt as string);
     return NextResponse.json(
       await getDataFromCacheOrCompute(
         parseInt(roundId) === parseInt(Round.currentRound().value)
@@ -274,12 +331,12 @@ export async function GET(request: NextRequest) {
       `fetch_pool_id_${poolId}`,
       async () => fetchDataForPoolId(poolId),
     );
-  } else if (roundId) {
+  } else if (startAt && endAt) {
+    const startAtDate = parseParamToDate(startAt as string);
+    const endAtDate = parseParamToDate(endAt as string);
     responseData = await getDataFromCacheOrCompute(
-      parseInt(roundId) === parseInt(Round.currentRound().value)
-        ? null
-        : `fetch_round_id_${roundId}`,
-      async () => fetchDataForRoundId(roundId),
+      `fetch_round_id_${startAt}_${endAt}`,
+      async () => fetchDataForDateRange(startAtDate, endAtDate),
     );
   }
 

@@ -76,22 +76,6 @@ const computeAverages = (formattedPoolData: {
     volume: 0,
   };
 
-const fetchDataForPoolId = async (poolId: string) => {
-  const pool = new Pool(poolId);
-  const gaugeAddedDate = new Date(pool.gauge.addedTimestamp * 1000);
-  const roundGaugeAdded = Round.getRoundByDate(gaugeAddedDate);
-  const promises = Array.from(
-    {
-      length:
-        parseInt(Round.currentRound().value) -
-        parseInt(roundGaugeAdded.value) +
-        1,
-    },
-    (_, index) =>
-      fetcher<PoolStatsResults>(
-        `${BASE_URL}/apr/api?roundId=${
-          index + parseInt(roundGaugeAdded.value)
-        }&poolId=${poolId}`,
   let totalDataCount = 0;
 
   for (const key in formattedPoolData) {
@@ -109,7 +93,6 @@ const fetchDataForPoolId = async (poolId: string) => {
     }
   }
 
-  const gaugesData = await Promise.allSettled(promises);
   if (totalDataCount > 0) {
     averages.apr.total /= totalDataCount;
     averages.apr.breakdown.veBAL /= totalDataCount;
@@ -119,23 +102,39 @@ const fetchDataForPoolId = async (poolId: string) => {
     averages.volume /= totalDataCount;
   }
 
-  const resolvedPoolData = gaugesData
-    .filter(
-      (result): result is PromiseFulfilledResult<PoolStatsResults> =>
-        result.status === "fulfilled",
-    )
-    .map((result) => result.value.perRound)
-    .flat();
   return averages;
 };
 
-  const average = computeAverages(resolvedPoolData);
+async function fetchDataForPoolId(poolId: string) {
+  const pool = new Pool(poolId);
+  const gaugeAddedDate = new Date(pool.gauge.addedTimestamp * 1000);
+  const roundGaugeAddedStartDate =
+    Round.getRoundByDate(gaugeAddedDate).startDate;
+  const formattedStartDate = formatDateToMMDDYYYY(roundGaugeAddedStartDate);
+  const formattedEndDate = formatDateToMMDDYYYY(new Date());
 
-  return {
-    perRound: resolvedPoolData,
-    average,
-  };
-};
+  try {
+    const gaugesData = await fetcher<PoolStatsResults>(
+      `${BASE_URL}/apr/api?startAt=${formattedStartDate}&endAt=${formattedEndDate}&poolId=${poolId}`,
+    );
+    return {
+      perDay: gaugesData.perDay,
+      average: computeAverages(gaugesData.perDay),
+    };
+  } catch (error) {
+    // TODO: BAL-782 - Add sentry here
+    console.error("Error fetching data:", error);
+    return {
+      perDay: [],
+      average: {
+        apr: 0,
+        balPriceUSD: 0,
+        volume: 0,
+        tvl: 0,
+      },
+    };
+  }
+}
 
 const MAX_RETRIES = 3; // specify the number of retry attempts
 const RETRY_DELAY = 1000; // delay between retries in milliseconds

@@ -1,6 +1,8 @@
 /* eslint-disable no-console */
 import { kv } from "@vercel/kv";
 
+import { BASE_URL } from "#/app/apr/api/route";
+
 const memoryCache: Record<string, unknown> = {};
 
 export const MEMORY_CACHE = {
@@ -29,12 +31,14 @@ export const KV = {
 };
 
 export const getDataFromCacheOrCompute = async <T>(
-  cacheKey: false | string | null,
+  key: false | string | null,
   computeFn: () => Promise<T>,
 ): Promise<T> => {
-  if (!cacheKey) {
+  if (!key) {
     return computeFn();
   }
+
+  const cacheKey = `cache:${BASE_URL.replace(/[^a-z0-9]/gi, "")}:${key}`;
 
   if (MEMORY_CACHE.get(cacheKey)) {
     console.debug(`Memory cache hit for ${cacheKey}`);

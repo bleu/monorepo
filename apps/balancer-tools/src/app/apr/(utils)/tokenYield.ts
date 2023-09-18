@@ -91,7 +91,7 @@ async function getPoolTokensRateProviders(chain: string, poolId: Address) {
 
   if (!data.pool?.priceRateProviders?.length) {
     const poolRateProvider = manualPoolsRateProvider.find(
-      ({ poolAddress }) => poolAddress === poolId,
+      ({ poolAddress }) => poolAddress.toLowerCase() === poolId.toLowerCase(),
     );
 
     if (poolRateProvider === undefined) {

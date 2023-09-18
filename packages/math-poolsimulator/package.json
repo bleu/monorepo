@@ -21,6 +21,6 @@
     "@bleu-balancer-tools/tsconfig": "workspace:^",
     "@jest/globals": "^29.7.0",
     "ts-jest": "^29.1.1",
-    "tsuml2": "^0.12.0"
+    "tsuml2": "^0.12.1"
   }
 }

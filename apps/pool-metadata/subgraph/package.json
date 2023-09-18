@@ -19,7 +19,7 @@
     "@graphprotocol/graph-cli": "0.57.0",
     "@graphprotocol/graph-ts": "0.31.0",
     "@types/fs-extra": "^11.0.1",
-    "@types/js-yaml": "^4.0.5",
+    "@types/js-yaml": "^4.0.6",
     "handlebars": "^4.7.8",
     "js-yaml": "^4.1.0",
     "matchstick-as": "0.5.2",

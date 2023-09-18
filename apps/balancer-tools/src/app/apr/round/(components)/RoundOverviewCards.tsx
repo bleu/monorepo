@@ -14,17 +14,18 @@ export default async function RoundOverviewCards({
   startAt: Date;
   endAt: Date;
 }) {
-  const balInUSD = (await getBALPriceByRound(startAt, endAt)).toLocaleString("en-US", {
-    style: "currency",
-    currency: "USD",
-  });
+  const balInUSD = (await getBALPriceByRound(startAt, endAt)).toLocaleString(
+    "en-US",
+    {
+      style: "currency",
+      currency: "USD",
+    },
+  );
   const cardsDetails = [
     { title: "BAL Price", content: balInUSD },
     {
       title: "BAL Emissions",
-      content: formatNumber(
-        balEmissions.weekly(endAt.getTime() / 1000),
-      ),
+      content: formatNumber(balEmissions.weekly(endAt.getTime() / 1000)),
     },
     ...getDatesDetails(startAt, endAt),
   ];

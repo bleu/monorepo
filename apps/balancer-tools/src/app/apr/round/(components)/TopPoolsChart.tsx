@@ -20,7 +20,7 @@ export default function TopPoolsChart({
 }) {
   const shades = Object.values(greenDarkA).map((color) => color.toString());
   const colors = [...shades.slice(4, 10).reverse(), ...shades.slice(4, 10)];
-  const selectedDate = ApiResult.perDay[formatDateToMMDDYYYY(endAt)] 
+  const selectedDate = ApiResult.perDay[formatDateToMMDDYYYY(endAt)];
   const yAxisLabels = selectedDate
     .filter((pool) => pool.apr.total > 0)
     .map((result) => [
@@ -51,9 +51,7 @@ export default function TopPoolsChart({
   const chartData: Data = {
     hoverinfo: "none",
     marker: {
-      color: selectedDate.map(
-        (_, index) => colors[index % colors.length],
-      ),
+      color: selectedDate.map((_, index) => colors[index % colors.length]),
     },
     orientation: "h" as const,
     type: "bar" as PlotType,
@@ -64,7 +62,11 @@ export default function TopPoolsChart({
   const router = useRouter();
   function onClickHandler(event: PlotMouseEvent) {
     const clickedRoundData = selectedDate[event.points[0].pointIndex];
-    const poolRedirectURL = `/apr/pool/${networkFor(clickedRoundData.network)}/${clickedRoundData.poolId}/?startAt=${formatDateToMMDDYYYY(startAt)}&endAt=${formatDateToMMDDYYYY(endAt)}`;
+    const poolRedirectURL = `/apr/pool/${networkFor(
+      clickedRoundData.network,
+    )}/${clickedRoundData.poolId}/?startAt=${formatDateToMMDDYYYY(
+      startAt,
+    )}&endAt=${formatDateToMMDDYYYY(endAt)}`;
     router.push(poolRedirectURL);
   }
 
@@ -72,7 +74,9 @@ export default function TopPoolsChart({
     <div className="flex justify-between border border-blue6 bg-blue3 rounded p-4 cursor-pointer">
       <Plot
         onClick={onClickHandler}
-        title={`Top APR Pools of Round ${formatDateToMMDDYYYY(startAt)} - ${formatDateToMMDDYYYY(endAt)}`}
+        title={`Top APR Pools of Round ${formatDateToMMDDYYYY(
+          startAt,
+        )} - ${formatDateToMMDDYYYY(endAt)}`}
         toolTip="Top pools with highest APR."
         data={[chartData]}
         hovermode={false}

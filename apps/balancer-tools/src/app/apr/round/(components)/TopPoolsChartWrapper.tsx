@@ -15,5 +15,7 @@ export default async function TopPoolsChartWrapper({
     getFilteredRoundApiUrl({}, startAt, endAt),
   );
 
-  return <TopPoolsChart startAt={startAt} endAt={endAt} ApiResult={topAprApi} />;
+  return (
+    <TopPoolsChart startAt={startAt} endAt={endAt} ApiResult={topAprApi} />
+  );
 }

@@ -29,7 +29,12 @@ import { formatNumber } from "#/utils/formatNumber";
 import { PoolTypeEnum } from "../../(utils)/calculatePoolStats";
 import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
 import getFilteredRoundApiUrl from "../../(utils)/getFilteredApiUrl";
-import { formatDateToMMDDYYYY,PoolStatsData, PoolStatsResults, PoolTokens } from "../../api/route";
+import {
+  formatDateToMMDDYYYY,
+  PoolStatsData,
+  PoolStatsResults,
+  PoolTokens,
+} from "../../api/route";
 import { MoreFiltersButton } from "./MoreFiltersButton";
 import { TokenFilterInput } from "./TokenFilterInput";
 
@@ -40,11 +45,11 @@ export function PoolListTable({
 }: {
   startAt: Date;
   endAt: Date;
-  initialData: { [key: string]: PoolStatsData[]; };
+  initialData: { [key: string]: PoolStatsData[] };
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const selectedDate = initialData[formatDateToMMDDYYYY(endAt)] 
+  const selectedDate = initialData[formatDateToMMDDYYYY(endAt)];
 
   const [tableData, setTableData] = useState(selectedDate);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -80,7 +85,9 @@ export function PoolListTable({
     );
     setTableData((prevTableData) => {
       if (selectedDate.length === 0) setHasMorePools(false);
-      return prevTableData.concat(aditionalPoolsData.perDay[formatDateToMMDDYYYY(endAt)] );
+      return prevTableData.concat(
+        aditionalPoolsData.perDay[formatDateToMMDDYYYY(endAt)],
+      );
     });
     setIsLoadingMore(false);
   };
@@ -206,7 +213,7 @@ function TableRow({
   votingShare,
   apr,
   startAt,
-  endAt
+  endAt,
 }: {
   poolId: string;
   network: string;

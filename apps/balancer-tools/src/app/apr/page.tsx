@@ -23,20 +23,20 @@ export default function Page({
   searchParams: { startAt, endAt },
 }: {
   params: { roundId: string };
-  searchParams: {startAt: string, endAt: string };
+  searchParams: { startAt: string; endAt: string };
 }) {
-  const startAtDate = parseParamToDate(startAt)
-  const endAtDate = parseParamToDate(endAt)
-  
+  const startAtDate = parseParamToDate(startAt);
+  const endAtDate = parseParamToDate(endAt);
+
   return (
     <div className="flex flex-1 flex-col gap-y-3">
-       <Breadcrumb />
+      <Breadcrumb />
       <Suspense fallback={<KpisSkeleton />}>
-        <RoundOverviewCards startAt={startAtDate} endAt={endAtDate}/>
+        <RoundOverviewCards startAt={startAtDate} endAt={endAtDate} />
       </Suspense>
-      
+
       <Suspense fallback={<ChartSkelton />}>
-        <TopPoolsChartWrapper startAt={startAtDate} endAt={endAtDate}/>
+        <TopPoolsChartWrapper startAt={startAtDate} endAt={endAtDate} />
       </Suspense>
       <Suspense fallback={<TableSkeleton colNumbers={10} />}>
         <PoolTableWrapper startAt={startAtDate} endAt={endAtDate} />

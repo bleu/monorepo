@@ -50,8 +50,8 @@ export default function Breadcrumb() {
   invariant(!Array.isArray(poolId), "poolId cannot be a list");
   invariant(!Array.isArray(network), "network should not be an array");
   const searchParams = useSearchParams();
-  const startAt = searchParams.get("startAt")
-  const endAt = searchParams.get("endAt")
+  const startAt = searchParams.get("startAt");
+  const endAt = searchParams.get("endAt");
 
   const [isNotifierOpen, setIsNotifierOpen] = useState<boolean>(false);
 
@@ -90,11 +90,11 @@ export default function Breadcrumb() {
               {selectedPool?.symbol ?? poolId}
             </BreadcrumbItem>
           )}
-        <BreadcrumbItem link={`/apr/?startAt=${startAt}&endAt=${endAt}&`}>
-          <div className="flex items-center gap-x-2">
-            {startAt} - {endAt}
-          </div>
-        </BreadcrumbItem>
+          <BreadcrumbItem link={`/apr/?startAt=${startAt}&endAt=${endAt}&`}>
+            <div className="flex items-center gap-x-2">
+              {startAt} - {endAt}
+            </div>
+          </BreadcrumbItem>
         </ol>
         {poolId && (
           <div className="flex">

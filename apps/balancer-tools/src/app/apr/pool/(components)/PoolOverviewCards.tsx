@@ -1,6 +1,8 @@
 import { fetcher } from "#/utils/fetcher";
 
-import OverviewCards, { getDatesDetails } from "../../(components)/OverviewCards";
+import OverviewCards, {
+  getDatesDetails,
+} from "../../(components)/OverviewCards";
 import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
 import { BASE_URL, PoolStatsResults } from "../../api/route";
 

@@ -14,6 +14,12 @@ export default async function PoolTableWrapper({
   const initialData = await fetcher<PoolStatsResults>(
     getFilteredRoundApiUrl({}, startAt, endAt),
   );
-  
-  return <PoolListTable startAt={startAt} endAt={endAt} initialData={initialData.perDay} />;
+
+  return (
+    <PoolListTable
+      startAt={startAt}
+      endAt={endAt}
+      initialData={initialData.perDay}
+    />
+  );
 }

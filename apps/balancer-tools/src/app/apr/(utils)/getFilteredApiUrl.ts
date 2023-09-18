@@ -55,5 +55,7 @@ export default function getFilteredRoundApiUrl(
   const params = Object.entries(filteredData)
     .map(([key, value]) => (value !== undefined ? `${key}=${value}` : ""))
     .join("&");
-  return `${BASE_URL}/apr/api?startAt=${formatDateToMMDDYYYY(startAt)}&endAt=${formatDateToMMDDYYYY(endAt)}&${params}`;
+  return `${BASE_URL}/apr/api?startAt=${formatDateToMMDDYYYY(
+    startAt,
+  )}&endAt=${formatDateToMMDDYYYY(endAt)}&${params}`;
 }

@@ -8,8 +8,8 @@
     "format": "prettier --write \"**/*.{md,html,mjml,json,graphql,yml,css,scss,ts,tsx,js,jsx}\"",
     "lint": "eslint '**/*.{ts,tsx}' --max-warnings 0",
     "lint:fix": "eslint '**/*.{ts,tsx}' --fix",
-    "test:failfast": "jest -b",
-    "test:watch": "jest --watchAll --verbose"
+    "test:jest": "pnpm exec jest",
+    "test:watch": "pnpm exec jest --watchAll --verbose"
   },
   "dependencies": {
     "@balancer-labs/sor": "4.1.1-beta.16",

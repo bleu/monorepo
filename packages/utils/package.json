@@ -8,7 +8,8 @@
     "format": "prettier --write \"**/*.{md,html,mjml,json,graphql,yml,css,scss,ts,tsx,js,jsx}\"",
     "lint": "eslint '**/*.{ts,tsx}' --max-warnings 0",
     "lint:fix": "eslint '**/*.{ts,tsx}' --fix",
-    "test": "jest --watchAll --verbose"
+    "test:failfast": "jest -b",
+    "test:watch": "jest --watchAll --verbose"
   },
   "dependencies": {},
   "devDependencies": {

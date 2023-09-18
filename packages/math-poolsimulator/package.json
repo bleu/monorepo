@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@bleu-balancer-tools/tsconfig": "workspace:^",
+    "jest": "^29.7.0",
     "@jest/globals": "^29.7.0",
     "ts-jest": "^29.1.1",
     "tsuml2": "^0.12.1"

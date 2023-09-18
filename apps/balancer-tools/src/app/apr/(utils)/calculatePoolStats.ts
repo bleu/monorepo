@@ -95,7 +95,7 @@ async function calculateTokensStats(
   const tokensPrices = await Promise.all(
     poolTokenData.map(async (token) => {
       const tokenPrice = await getTokenPriceByDate(
-        Round.getRoundByNumber(roundId).endDate,
+        round.endDate,
         token.address,
         parseInt(poolNetwork),
       );

@@ -172,14 +172,14 @@ async function fetchDataForPoolId(poolId: string): Promise<PoolStatsResults> {
         apr: {
           total: 0,
           breakdown: {
-              veBAL: 0,
-              swapFee: 0,
-              tokens: {
-                  total: 0,
-                  breakdown: [],
-              }
-          }
-      },
+            veBAL: 0,
+            swapFee: 0,
+            tokens: {
+              total: 0,
+              breakdown: [],
+            },
+          },
+        },
         balPriceUSD: 0,
         volume: 0,
         tvl: 0,
@@ -249,13 +249,14 @@ const generateDateRange = (startDate: Date, endDate: Date) => {
   return dateRange;
 };
 
-async function fetchDataForDateRange(startDate: Date, endDate: Date): Promise<PoolStatsResults> {
-  const existingPoolForDate = POOLS_WITH_LIVE_GAUGES.reverse()
-    .slice(10, 15)
-    .filter(
-      ({ gauge: { addedTimestamp } }) =>
-        addedTimestamp && addedTimestamp <= endDate.getTime(),
-    );
+async function fetchDataForDateRange(
+  startDate: Date,
+  endDate: Date,
+): Promise<PoolStatsResults> {
+  const existingPoolForDate = POOLS_WITH_LIVE_GAUGES.reverse().filter(
+    ({ gauge: { addedTimestamp } }) =>
+      addedTimestamp && addedTimestamp <= endDate.getTime(),
+  );
   const perDayData: { [key: string]: PoolStatsData[] } = {};
 
   await Promise.all(
@@ -460,14 +461,12 @@ function shouldIncludePool(pool: PoolStatsData, searchParams: URLSearchParams) {
     : [];
 
   const decodedPoolTypes = poolTypes
-    ? poolTypes
-        .split(",")
-        .map((value) =>
-          Object.keys(PoolTypeEnum).find(
-            // @ts-ignore
-            (key) => PoolTypeEnum[key].toLowerCase() === value.toLowerCase(),
-          ),
-        )
+    ? poolTypes.split(",").map((value) =>
+        Object.keys(PoolTypeEnum).find(
+          // @ts-ignore
+          (key) => PoolTypeEnum[key].toLowerCase() === value.toLowerCase(),
+        ),
+      )
     : [];
 
   return (

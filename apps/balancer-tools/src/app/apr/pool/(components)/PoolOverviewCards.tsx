@@ -1,8 +1,6 @@
 import { fetcher } from "#/utils/fetcher";
 
-import OverviewCards, {
-  getRoundDetails,
-} from "../../(components)/OverviewCards";
+import OverviewCards, { getDatesDetails } from "../../(components)/OverviewCards";
 import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
 import { BASE_URL, PoolStatsResults } from "../../api/route";
 
@@ -44,7 +42,7 @@ export default async function PoolOverviewCards({
           title: "veBAL APR",
           content: formatAPR(results.average.apr.breakdown.veBAL),
         },
-        ...getRoundDetails(roundId),
+        ...getDatesDetails(roundId),
       ],
     );
   } else {

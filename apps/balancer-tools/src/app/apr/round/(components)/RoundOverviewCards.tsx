@@ -2,7 +2,7 @@ import * as balEmissions from "#/lib/balancer/emissions";
 import { formatNumber } from "#/utils/formatNumber";
 
 import OverviewCards, {
-  getRoundDetails,
+  getDatesDetails,
 } from "../../(components)/OverviewCards";
 import { getBALPriceByRound } from "../../(utils)/getBALPriceByRound";
 import { Round } from "../../(utils)/rounds";
@@ -26,7 +26,7 @@ export default async function RoundOverviewCards({
         balEmissions.weekly(endAt.getTime() / 1000),
       ),
     },
-    // ...getRoundDetails(roundId),
+    ...getDatesDetails(startAt, endAt),
   ];
   return <OverviewCards cardsDetails={cardsDetails} />;
 }

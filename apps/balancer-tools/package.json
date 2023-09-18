@@ -15,7 +15,8 @@
     "wagmi:watch": "wagmi generate --watch",
     "lint": "eslint '**/*.{ts,tsx}'",
     "lint:fix": "eslint '**/*.{ts,tsx}' --fix",
-    "test": "jest --watchAll --verbose"
+    "test:jest": "pnpm exec jest",
+    "test:watch": "pnpm exec jest --watchAll --verbose"
   },
   "dependencies": {
     "@bleu-balancer-tools/gql": "workspace:*",

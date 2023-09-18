@@ -6,14 +6,14 @@ import { PoolTypeEnum } from "#/app/poolsimulator/(types)";
 import { convertAnalysisDataToAMM } from "#/app/poolsimulator/(utils)";
 
 const mockAnalysisTokens = {
-  balance: 0.7374307,
+  balance: 0.1374307,
   decimal: 8,
   rate: 1,
   symbol: "WBTC",
 };
 
 const mockPairToken = {
-  balance: 19.074547373249157,
+  balance: 30.074547373249157,
   decimal: 18,
   rate: 1,
   symbol: "WETH",
@@ -25,13 +25,13 @@ describe("calculateDepthCost for Gyro2", () => {
   const mockAnalysisDataGyro2 = {
     poolParams: {
       swapFee: 0.0025,
-      sqrtAlpha: 3.3333333333333335,
+      sqrtAlpha: 4,
       sqrtBeta: 4.47213595499958,
     },
     poolType: PoolTypeEnum.Gyro2,
     tokens: [
-      { symbol: "WBTC", balance: 0.7374307, decimal: 8, rate: 1 },
-      { symbol: "WETH", balance: 19.074547373249157, decimal: 18, rate: 1 },
+      { symbol: "WBTC", balance: 0.1374307, decimal: 8, rate: 1 },
+      { symbol: "WETH", balance: 30.074547373249157, decimal: 18, rate: 1 },
     ],
   };
 
@@ -44,15 +44,15 @@ describe("calculateDepthCost for Gyro2", () => {
     mockAmm = mockAmmPromise;
   });
 
-  //alpha = 11.111111111111112
+  //alpha = 16
   //beta = 20.000000000000004
   it("should calculate depth cost for Gyro2CLP pool to price limit", () => {
-    // spotPrice for in is = 0.06371432851920741
+    // new spotPrice for in is 20.094004778821677
     // so (newSpotPrice < alphaBeta.alpha || newSpotPrice > alphaBeta.beta) is true
     const result = calculateDepthCost(
       mockPairToken,
       mockAnalysisTokens,
-      "in",
+      "out",
       mockAnalysisDataGyro2,
       mockAmm,
       mockAnalysisDataGyro2.poolType,
@@ -61,12 +61,13 @@ describe("calculateDepthCost for Gyro2", () => {
     expect(result.type).toBe("price limit");
   });
   it("should calculate depth cost for Gyro2CLP pool to 2% of price change", () => {
-    // spotPrice for out is = 16.411089891869455
+    // new spotPrice for out is 0.052036494677798625
+    // in beta and alpha scale it is 1 / 052036494677798625 = 19.21728214384606
     // so (newSpotPrice < alphaBeta.alpha || newSpotPrice > alphaBeta.beta) is false
     const result = calculateDepthCost(
       mockPairToken,
       mockAnalysisTokens,
-      "out",
+      "in",
       mockAnalysisDataGyro2,
       mockAmm,
       mockAnalysisDataGyro2.poolType,

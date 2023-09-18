@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: true
     concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
+      group: ${{ github.workflow }}-${{ github.ref }}-lint
       cancel-in-progress: true
     steps:
       - uses: actions/checkout@v3
@@ -21,4 +21,20 @@ jobs:
       - uses: ./.github/workflows/setup-pnpm
 
       - name: Check formatting and linting
-        run: pnpm ci
+        run: pnpm run ci
+
+  run-tests:
+    name: Run tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}-test
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: ./.github/workflows/setup-pnpm
+
+      - name: Run tests
+        run: pnpm test:jest

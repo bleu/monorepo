@@ -8,7 +8,8 @@
     "format": "prettier --write \"**/*.{md,html,mjml,json,graphql,yml,css,scss,ts,tsx,js,jsx}\"",
     "lint": "eslint '**/*.{ts,tsx}' --max-warnings 0",
     "lint:fix": "eslint '**/*.{ts,tsx}' --fix",
-    "test": "jest --watchAll --verbose"
+    "test:jest": "pnpm exec jest",
+    "test:watch": "pnpm exec jest --watchAll --verbose"
   },
   "dependencies": {
     "@balancer-labs/sor": "4.1.1-beta.16",
@@ -19,6 +20,7 @@
   },
   "devDependencies": {
     "@bleu-balancer-tools/tsconfig": "workspace:^",
+    "jest": "^29.7.0",
     "@jest/globals": "^29.7.0",
     "ts-jest": "^29.1.1",
     "tsuml2": "^0.12.1"

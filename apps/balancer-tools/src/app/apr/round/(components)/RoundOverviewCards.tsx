@@ -8,12 +8,13 @@ import { getBALPriceByRound } from "../../(utils)/getBALPriceByRound";
 import { Round } from "../../(utils)/rounds";
 
 export default async function RoundOverviewCards({
-  roundId,
+  startAt,
+  endAt,
 }: {
-  roundId: string;
+  startAt: Date;
+  endAt: Date;
 }) {
-  const round = Round.getRoundByNumber(roundId);
-  const balInUSD = (await getBALPriceByRound(round)).toLocaleString("en-US", {
+  const balInUSD = (await getBALPriceByRound(startAt, endAt)).toLocaleString("en-US", {
     style: "currency",
     currency: "USD",
   });
@@ -22,10 +23,10 @@ export default async function RoundOverviewCards({
     {
       title: "BAL Emissions",
       content: formatNumber(
-        balEmissions.weekly(round.endDate.getTime() / 1000),
+        balEmissions.weekly(endAt.getTime() / 1000),
       ),
     },
-    ...getRoundDetails(roundId),
+    // ...getRoundDetails(roundId),
   ];
   return <OverviewCards cardsDetails={cardsDetails} />;
 }

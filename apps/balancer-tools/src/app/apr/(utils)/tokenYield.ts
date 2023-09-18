@@ -97,7 +97,9 @@ async function getPoolTokensRateProviders(chain: string, poolId: Address) {
     if (poolRateProvider === undefined) {
       // eslint-disable-next-line no-console
       console.error(
-        `Pool ${poolId} from ${chain} not found in manualPoolsRateProvider`,
+        `Pool ${poolId} from ${networkFor(
+          chain,
+        )} not found in manualPoolsRateProvider`,
       );
     }
 

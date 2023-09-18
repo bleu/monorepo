@@ -22,3 +22,22 @@ jobs:
 
       - name: Check formatting and linting
         run: pnpm ci
+
+      - name: Run tests
+        run: pnpm test
+
+  run-tests:
+    name: Run tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: ./.github/workflows/setup-pnpm
+
+      - name: Run tests
+        run: pnpm test

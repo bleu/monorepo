@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-import { unsafeNetworkIdFor } from "@bleu-balancer-tools/utils";
 import { NextRequest, NextResponse } from "next/server";
 
 import { Pool, POOLS_WITH_LIVE_GAUGES } from "#/lib/balancer/gauges";
@@ -68,173 +67,233 @@ export interface PoolStatsData extends PoolStats {
 }
 
 export interface PoolStatsResults {
-  perRound: PoolStatsData[];
+  perDay: { [key: string]: PoolStatsData[] };
   average: PoolStatsWithoutVotingShareAndCollectedFees;
 }
 
-const computeAverages = (
-  poolData: calculatePoolData[],
-): PoolStatsWithoutVotingShareAndCollectedFees => {
-  const total = poolData.reduce(
-    (acc, data) => ({
-      apr: {
-        total: acc.apr.total + data.apr.total,
-        breakdown: {
-          veBAL:
-            (data.apr.breakdown.veBAL || 0) + (acc.apr.breakdown.veBAL + 0),
-          swapFee: acc.apr.breakdown.swapFee + data.apr.breakdown.swapFee,
-          //TODO: on #BAL-795 add tokenAPR to the total
-        },
-      },
-      balPriceUSD: acc.balPriceUSD + data.balPriceUSD,
-      volume: acc.volume + data.volume,
-      tvl: acc.tvl + data.tvl,
-    }),
-    {
-      apr: { total: 0, breakdown: { veBAL: 0, swapFee: 0 } },
-      balPriceUSD: 0,
-      volume: 0,
-      tvl: 0,
-    },
-  );
-
-  const count = poolData.length;
-  return {
+const computeAverages = (formattedPoolData: {
+  [key: string]: calculatePoolData[];
+}): PoolStatsWithoutVotingShareAndCollectedFees => {
+  const averages: PoolStatsWithoutVotingShareAndCollectedFees = {
     apr: {
-      total: total.apr.total / count,
+      total: 0,
       breakdown: {
-        veBAL: total.apr.breakdown.veBAL / count,
-        swapFee: total.apr.breakdown.swapFee / count,
+        veBAL: 0,
+        swapFee: 0,
         //TODO: on #BAL-795 get tokenAPR from total
         tokens: {
-          total: poolData[0].apr.breakdown.tokens.total,
-          breakdown: poolData[0].apr.breakdown.tokens.breakdown,
+          total: 0,
+          breakdown: [],
         },
       },
     },
-    balPriceUSD: total.balPriceUSD / count,
-    volume: total.volume / count,
-    tvl: total.tvl / count,
+    balPriceUSD: 0,
+    tvl: 0,
+    volume: 0,
   };
+
+  let totalDataCount = 0;
+  const uniqueEntries: { [key: string]: { idx: number; occorencies: number } } =
+    {};
+
+  for (const key in formattedPoolData) {
+    if (Object.hasOwnProperty.call(formattedPoolData, key)) {
+      const dataArr = formattedPoolData[key];
+      dataArr.forEach((data) => {
+        averages.apr.total += data.apr.total;
+        averages.apr.breakdown.veBAL += data.apr.breakdown.veBAL || 0;
+        averages.apr.breakdown.swapFee += data.apr.breakdown.swapFee;
+        averages.apr.breakdown.tokens.total +=
+          data.apr.breakdown.tokens.total || 0;
+
+        data.apr.breakdown.tokens.breakdown.map((tokenData) => {
+          if (!uniqueEntries[tokenData.symbol]) {
+            uniqueEntries[tokenData.symbol] = {
+              idx: averages.apr.breakdown.tokens.breakdown.length,
+              occorencies: 0,
+            };
+            averages.apr.breakdown.tokens.breakdown.push(tokenData);
+          } else {
+            uniqueEntries[tokenData.symbol].occorencies++;
+            averages.apr.breakdown.tokens.breakdown[
+              uniqueEntries[tokenData.symbol].idx
+            ].yield += tokenData.yield;
+          }
+        });
+
+        averages.balPriceUSD += data.balPriceUSD;
+        averages.tvl += data.tvl;
+        averages.volume += data.volume;
+        totalDataCount++;
+      });
+    }
+  }
+
+  if (totalDataCount > 0) {
+    averages.apr.total /= totalDataCount;
+    averages.apr.breakdown.veBAL /= totalDataCount;
+    averages.apr.breakdown.swapFee /= totalDataCount;
+    averages.balPriceUSD /= totalDataCount;
+    averages.tvl /= totalDataCount;
+    averages.volume /= totalDataCount;
+    averages.apr.breakdown.tokens.breakdown.map((tokenData) => {
+      return {
+        ...tokenData,
+        yield: tokenData.yield / uniqueEntries[tokenData.symbol].occorencies,
+      };
+    });
+  }
+
+  return averages;
 };
 
-const fetchDataForPoolId = async (poolId: string) => {
+async function fetchDataForPoolId(poolId: string): Promise<PoolStatsResults> {
   const pool = new Pool(poolId);
   const gaugeAddedDate = new Date(pool.gauge.addedTimestamp * 1000);
-  const roundGaugeAdded = Round.getRoundByDate(gaugeAddedDate);
-  const promises = Array.from(
-    {
-      length:
-        parseInt(Round.currentRound().value) -
-        parseInt(roundGaugeAdded.value) +
-        1,
-    },
-    (_, index) =>
-      fetcher<PoolStatsResults>(
-        `${BASE_URL}/apr/api?roundId=${
-          index + parseInt(roundGaugeAdded.value)
-        }&poolId=${poolId}`,
-      ),
-  );
+  const roundGaugeAddedStartDate =
+    Round.getRoundByDate(gaugeAddedDate).startDate;
+  const formattedStartDate = formatDateToMMDDYYYY(roundGaugeAddedStartDate);
+  const formattedEndDate = formatDateToMMDDYYYY(new Date());
 
-  const gaugesData = await Promise.allSettled(promises);
-
-  const resolvedPoolData = gaugesData
-    .filter(
-      (result): result is PromiseFulfilledResult<PoolStatsResults> =>
-        result.status === "fulfilled",
-    )
-    .map((result) => result.value.perRound)
-    .flat();
-
-  const average = computeAverages(resolvedPoolData);
-
-  return {
-    perRound: resolvedPoolData,
-    average,
-  };
-};
+  try {
+    const gaugesData = await fetcher<PoolStatsResults>(
+      `${BASE_URL}/apr/api?startAt=${formattedStartDate}&endAt=${formattedEndDate}&poolId=${poolId}`,
+    );
+    return {
+      perDay: gaugesData.perDay,
+      average: computeAverages(gaugesData.perDay),
+    };
+  } catch (error) {
+    // TODO: BAL-782 - Add sentry here
+    console.error("Error fetching data:", error);
+    return {
+      perDay: {},
+      average: {
+        apr: {
+          total: 0,
+          breakdown: {
+            veBAL: 0,
+            swapFee: 0,
+            tokens: {
+              total: 0,
+              breakdown: [],
+            },
+          },
+        },
+        balPriceUSD: 0,
+        volume: 0,
+        tvl: 0,
+      },
+    };
+  }
+}
 
 const MAX_RETRIES = 3; // specify the number of retry attempts
 const RETRY_DELAY = 1000; // delay between retries in milliseconds
 
-const fetchDataForPoolIdRoundId = async (poolId: string, roundId: string) => {
-  let attempts = 0;
+async function fetchDataForPoolIdDateRange(
+  poolId: string,
+  startDate: Date,
+  endDate: Date,
+) {
+  const allDaysBetween = generateDateRange(startDate, endDate);
+  const perDayData: { [key: string]: calculatePoolData[] } = {};
 
-  while (attempts < MAX_RETRIES) {
-    try {
-      const data: calculatePoolData | null = await calculatePoolStats({
-        roundId,
-        poolId,
-      });
+  for (const dayDate of allDaysBetween) {
+    let attempts = 0;
 
-      if (!data) {
-        return {
-          perRound: [],
-          average: {
-            apr: 0,
-            balPriceUSD: 0,
-            volume: 0,
-            tvl: 0,
-          },
-        };
+    while (attempts < MAX_RETRIES) {
+      try {
+        const currentRound = Round.getRoundByDate(dayDate);
+        const data = await calculatePoolStats({ round: currentRound, poolId });
+        perDayData[formatDateToMMDDYYYY(dayDate)] = [data] || [];
+        break;
+      } catch (error) {
+        attempts++;
+        console.error(
+          `Attempt ${attempts} - Error fetching data for pool ${poolId} and date ${formatDateToMMDDYYYY(
+            dayDate,
+          )}}:`,
+          error,
+        );
+
+        if (attempts >= MAX_RETRIES) {
+          // TODO: BAL-782 - Add sentry here
+          console.error("Max retries reached. Giving up fetching data.");
+          break;
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
       }
-
-      return {
-        perRound: [data],
-        average: [computeAverages([data])],
-      };
-    } catch (error) {
-      attempts++;
-      console.error(
-        `Attempt ${attempts} - Error fetching data for pool ${poolId} and round ${roundId}:`,
-        error,
-      );
-
-      if (attempts >= MAX_RETRIES) {
-        console.error("Max retries reached. Giving up fetching data.");
-        return null;
-      }
-
-      await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY)); // Delay before retrying
     }
   }
-};
-
-const fetchDataForRoundId = async (roundId: string) => {
-  const existingPoolsInRound = POOLS_WITH_LIVE_GAUGES.filter(
-    ({ gauge: { addedTimestamp } }) =>
-      addedTimestamp &&
-      Round.getRoundByDate(new Date(addedTimestamp * 1000)).value <= roundId,
-  );
-
-  const gaugesData = await Promise.allSettled(
-    existingPoolsInRound.map(({ id: poolId }) =>
-      fetcher<PoolStatsResults>(
-        `${BASE_URL}/apr/api?roundId=${roundId}&poolId=${poolId}`,
-      ),
-    ),
-  );
-
-  const resolvedPoolData = gaugesData
-    .filter(
-      (result): result is PromiseFulfilledResult<PoolStatsResults> =>
-        result.status === "fulfilled",
-    )
-    .map((result) => result.value.perRound)
-    .flat();
-
-  const average = computeAverages(resolvedPoolData);
 
   return {
-    perRound: resolvedPoolData,
-    average,
+    perDay: perDayData,
+    average: computeAverages(perDayData),
   };
+}
+
+const generateDateRange = (startDate: Date, endDate: Date) => {
+  const dayMilliseconds = 24 * 60 * 60 * 1000;
+  const dateRange = [];
+
+  for (
+    let currentDate = startDate;
+    currentDate <= endDate;
+    currentDate = new Date(currentDate.getTime() + dayMilliseconds)
+  ) {
+    dateRange.push(currentDate);
+  }
+
+  return dateRange;
 };
 
-function validateSearchParams(poolId: string | null, roundId: string | null) {
-  if ((!poolId || poolId === null) && (!roundId || roundId === null)) {
-    throw new Error("no roundId or poolId provided");
+async function fetchDataForDateRange(
+  startDate: Date,
+  endDate: Date,
+): Promise<PoolStatsResults> {
+  const existingPoolForDate = POOLS_WITH_LIVE_GAUGES.reverse().filter(
+    ({ gauge: { addedTimestamp } }) =>
+      addedTimestamp && addedTimestamp <= endDate.getTime(),
+  );
+  const perDayData: { [key: string]: PoolStatsData[] } = {};
+
+  await Promise.all(
+    existingPoolForDate.map(async (pool) => {
+      const gaugesData = await fetcher<PoolStatsResults>(
+        `${BASE_URL}/apr/api?startAt=${formatDateToMMDDYYYY(
+          startDate,
+        )}&endAt=${formatDateToMMDDYYYY(endDate)}&poolId=${pool.id}`,
+      );
+
+      Object.entries(gaugesData.perDay).forEach(([dayStr, poolData]) => {
+        if (perDayData[dayStr]) {
+          perDayData[dayStr].push(poolData[0]);
+        } else {
+          perDayData[dayStr] = [poolData[0]];
+        }
+      });
+    }),
+  );
+
+  return {
+    perDay: perDayData,
+    average: computeAverages(perDayData),
+  };
+}
+
+function validateSearchParams(
+  poolId: string | null,
+  startAt: string | null,
+  endAt: string | null,
+) {
+  if (!poolId && (!startAt || startAt === null) && (!endAt || endAt === null)) {
+    throw new Error(
+      `${startAt ? "" : "startAt"} ${startAt && endAt ? "" : "and"}${
+        endAt ? "" : "endAt"
+      } ${endAt ? "" : "endAt"} are required`,
+    );
   }
   if (poolId) {
     if (
@@ -245,21 +304,68 @@ function validateSearchParams(poolId: string | null, roundId: string | null) {
       throw new Error(`Pool with ID ${poolId} not found`);
     }
   }
-  if (roundId) {
-    if (
-      isNaN(parseInt(roundId)) ||
-      parseInt(roundId) > parseInt(Round.currentRound().value)
-    ) {
-      throw new Error(`Round number ${roundId} is invalid`);
+
+  if (startAt && endAt) {
+    const currentDate = new Date();
+    // Defining min date as before bal creation
+    const minDate = new Date("2020-01-01");
+    const startDate = parseParamToDate(startAt);
+    const endDate = parseParamToDate(endAt);
+
+    if (startDate < minDate) {
+      throw new Error(
+        "Start date is before the minimum allowed date (January 1, 2020).",
+      );
+    }
+
+    if (endDate > currentDate) {
+      throw new Error(
+        "End date is in the future. Please provide an end date before today.",
+      );
     }
   }
+}
+
+function parseParamToDate(dateStr: string) {
+  const parts = dateStr.split("-");
+  if (parts.length !== 3) {
+    throw new Error("Invalid date format. Use 'dd-mm-yyyy'.");
+  }
+
+  const [month, day, year] = parts.map(Number);
+
+  if (isNaN(day) || isNaN(month) || isNaN(year)) {
+    throw new Error("Invalid date format. Use 'dd-mm-yyyy'.");
+  }
+
+  // Ensure that the year is four digits
+  if (year < 1000 || year > 9999) {
+    throw new Error("Invalid year. Use a four-digit year (yyyy).");
+  }
+
+  const date = new Date(year, month - 1, day);
+
+  if (isNaN(date.getTime())) {
+    throw new Error("Invalid date.");
+  }
+
+  return date;
+}
+
+function formatDateToMMDDYYYY(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Add 1 to month since it's 0-indexed
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${month}-${day}-${year}`;
 }
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
 
   const poolId = searchParams.get("poolId");
-  const roundId = searchParams.get("roundId");
+  const startAt = searchParams.get("startAt");
+  const endAt = searchParams.get("endAt");
   const sort = (searchParams.get("sort") as keyof PoolStatsData) || "apr";
   const order = (searchParams.get("order") as Order) || "desc";
   const limit = parseInt(searchParams.get("limit") ?? "0") || Infinity;
@@ -267,7 +373,7 @@ export async function GET(request: NextRequest) {
   let responseData;
 
   try {
-    validateSearchParams(poolId, roundId);
+    validateSearchParams(poolId, startAt, endAt);
   } catch (error) {
     return NextResponse.json(
       { error: (error as Error).message },
@@ -275,13 +381,13 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  if (poolId && roundId) {
+  if (poolId && startAt && endAt) {
+    const startAtDate = parseParamToDate(startAt as string);
+    const endAtDate = parseParamToDate(endAt as string);
     return NextResponse.json(
       await getDataFromCacheOrCompute(
-        parseInt(roundId) === parseInt(Round.currentRound().value)
-          ? null
-          : `pool_${poolId}_round_${roundId}`,
-        async () => fetchDataForPoolIdRoundId(poolId, roundId),
+        `pool_${poolId}_round_${startAt}_${endAt}`,
+        async () => fetchDataForPoolIdDateRange(poolId, startAtDate, endAtDate),
       ),
     );
   } else if (poolId) {
@@ -289,12 +395,12 @@ export async function GET(request: NextRequest) {
       `fetch_pool_id_${poolId}`,
       async () => fetchDataForPoolId(poolId),
     );
-  } else if (roundId) {
+  } else if (startAt && endAt) {
+    const startAtDate = parseParamToDate(startAt as string);
+    const endAtDate = parseParamToDate(endAt as string);
     responseData = await getDataFromCacheOrCompute(
-      parseInt(roundId) === parseInt(Round.currentRound().value)
-        ? null
-        : `fetch_round_id_${roundId}`,
-      async () => fetchDataForRoundId(roundId),
+      `fetch_round_id_${startAt}_${endAt}`,
+      async () => fetchDataForDateRange(startAtDate, endAtDate),
     );
   }
 
@@ -304,6 +410,7 @@ export async function GET(request: NextRequest) {
 
   return NextResponse.json(
     sortAndLimit(
+      // @ts-ignore
       filterPoolStats(responseData, searchParams),
       sort,
       order,
@@ -316,9 +423,26 @@ export async function GET(request: NextRequest) {
 function filterPoolStats(
   poolStats: PoolStatsResults,
   searchParams: URLSearchParams,
-): PoolStatsResults {
-  let filteredData = [...poolStats.perRound];
+) {
+  const perDay = poolStats.perDay;
+  const filteredData: { [key: string]: PoolStatsData | PoolStatsData[] } = {};
 
+  for (const date in perDay) {
+    const poolOnDate = perDay[date];
+
+    if (Array.isArray(poolOnDate)) {
+      filteredData[date] = poolOnDate.filter((pool) =>
+        shouldIncludePool(pool, searchParams),
+      );
+    } else if (shouldIncludePool(poolOnDate, searchParams)) {
+      filteredData[date] = poolOnDate;
+    }
+  }
+
+  return { ...poolStats, perDay: filteredData };
+}
+
+function shouldIncludePool(pool: PoolStatsData, searchParams: URLSearchParams) {
   const network = searchParams.get("network");
   const minApr = parseFloat(searchParams.get("minApr") ?? "0");
   const maxApr = parseFloat(searchParams.get("maxApr") ?? "Infinity");
@@ -330,59 +454,35 @@ function filterPoolStats(
   const poolTypes = searchParams.get("types");
   const minTvl = parseFloat(searchParams.get("minTvl") ?? "0");
   const maxTvl = parseFloat(searchParams.get("maxTvl") ?? "Infinity");
+  const decodedTokenSymbols = tokenSymbol
+    ? tokenSymbol
+        .split(",")
+        .map((type) => decodeURIComponent(type).toLowerCase())
+    : [];
 
-  if (network) {
-    const decodedNetworks = network
-      .split(",")
-      .map((network) => unsafeNetworkIdFor(network.toLowerCase()));
-    filteredData = filteredData.filter((pool) =>
-      decodedNetworks.includes(pool.network),
-    );
-  }
-  if (minApr || maxApr) {
-    filteredData = filteredData.filter(
-      (pool) => pool.apr.total >= minApr && pool.apr.total <= maxApr,
-    );
-  }
-  if (minVotingShare || maxVotingShare) {
-    filteredData = filteredData.filter(
-      (pool) =>
-        pool.votingShare * 100 >= minVotingShare &&
-        pool.votingShare * 100 <= maxVotingShare,
-    );
-  }
-  if (tokenSymbol) {
-    const decodedSymbols = tokenSymbol
-      .split(",")
-      .map((type) => decodeURIComponent(type).toLowerCase());
-    filteredData = filteredData.filter((pool) =>
+  const decodedPoolTypes = poolTypes
+    ? poolTypes.split(",").map((value) =>
+        Object.keys(PoolTypeEnum).find(
+          // @ts-ignore
+          (key) => PoolTypeEnum[key].toLowerCase() === value.toLowerCase(),
+        ),
+      )
+    : [];
+
+  return (
+    (!network || pool.network === network) &&
+    pool.apr.total >= minApr &&
+    pool.apr.total <= maxApr &&
+    pool.votingShare * 100 >= minVotingShare &&
+    pool.votingShare * 100 <= maxVotingShare &&
+    (!tokenSymbol ||
       pool.tokens.some((token) =>
-        decodedSymbols.includes(token.symbol.toLowerCase()),
-      ),
-    );
-  }
-  if (poolTypes) {
-    const getEnumKey = (value: string): string | undefined =>
-      Object.keys(PoolTypeEnum).find(
-        (key) =>
-          (PoolTypeEnum as Record<string, string>)[key].toLowerCase() ===
-          value.toLowerCase(),
-      );
-    const decodedTypes = poolTypes.split(",").map(getEnumKey);
-    filteredData = filteredData.filter((pool) =>
-      decodedTypes.includes(pool.type),
-    );
-  }
-  if (minTvl || maxTvl) {
-    filteredData = filteredData.filter(
-      (pool) => pool.tvl >= minTvl && pool.tvl <= maxTvl,
-    );
-  }
-
-  return {
-    ...poolStats,
-    perRound: filteredData,
-  };
+        decodedTokenSymbols.includes(token.symbol.toLowerCase()),
+      )) &&
+    (!poolTypes || decodedPoolTypes.includes(pool.type.toLowerCase())) &&
+    pool.tvl >= minTvl &&
+    pool.tvl <= maxTvl
+  );
 }
 
 function compareNumbers(a: number, b: number, order: Order): number {
@@ -404,30 +504,33 @@ function sortAndLimit(
   order: Order = "desc",
   offset: number = 0,
   limit: number = Infinity,
-) {
-  const sortedEntries = poolStatsResults.perRound
-    .sort((aValue, bValue) => {
-      let valueA = aValue[sortProperty];
-      let valueB = bValue[sortProperty];
+): PoolStatsResults {
+  const sortedData: Record<string, PoolStatsData[]> = {};
 
-      if (sortProperty === "apr") {
-        valueA = (valueA as (typeof aValue)["apr"]).total;
-        valueB = (valueB as (typeof bValue)["apr"]).total;
-      }
+  for (const date in poolStatsResults.perDay) {
+    const dayData = poolStatsResults.perDay[date];
 
-      if (valueA == null || Number.isNaN(valueA)) return 1;
-      if (valueB == null || Number.isNaN(valueB)) return -1;
+    const sortedEntries = dayData
+      .sort((a, b) => {
+        const valueA = a[sortProperty];
+        const valueB = b[sortProperty];
 
-      if (typeof valueA === "number" && typeof valueB === "number") {
-        return compareNumbers(valueA, valueB, order);
-      } else {
-        return compareStrings(valueA.toString(), valueB.toString(), order);
-      }
-    })
-    .slice(offset, offset + limit);
+        if (valueA == null || Number.isNaN(valueA)) return 1;
+        if (valueB == null || Number.isNaN(valueB)) return -1;
+
+        if (typeof valueA === "number" && typeof valueB === "number") {
+          return compareNumbers(valueA, valueB, order);
+        } else {
+          return compareStrings(valueA.toString(), valueB.toString(), order);
+        }
+      })
+      .slice(offset, offset + limit);
+
+    sortedData[date] = sortedEntries;
+  }
 
   return {
-    perRound: sortedEntries,
-    average: poolStatsResults.average,
+    ...poolStatsResults,
+    perDay: sortedData,
   };
 }

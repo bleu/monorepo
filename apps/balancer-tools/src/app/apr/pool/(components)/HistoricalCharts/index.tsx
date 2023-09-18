@@ -13,11 +13,9 @@ export default async function HistoricalCharts({
   endAt: Date;
   poolId?: string;
 }) {
-  console.log('HistoricalCharts', poolId)
   const results: PoolStatsResults = await fetcher(
     `${BASE_URL}/apr/api/?poolId=${poolId}`,
   );
-  console.log('HistoricalCharts', poolId)
 
 
   return <HistoricalChart apiResult={results} startAt={startAt} endAt={endAt} />;

@@ -227,7 +227,7 @@ function TableRow({
 }) {
   const poolRedirectURL = `/apr/pool/${networkFor(
     network,
-  )}/${poolId}/?startAt=${startAt}&endAt=${endAt}`;
+  )}/${poolId}/?startAt=${formatDateToMMDDYYYY(startAt)}&endAt=${formatDateToMMDDYYYY(endAt)}`;
   return (
     <Table.BodyRow classNames="sm:hover:bg-blue4 hover:cursor-pointer duration-500">
       <Table.BodyCellLink

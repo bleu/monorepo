@@ -29,7 +29,7 @@ export default async function Page({
       </Suspense>
       <YieldWarning />
       <Suspense fallback={<ChartSkelton />}>
-        <HistoricalCharts startAt={startAtDate} endAt={endAtDate} />
+        <HistoricalCharts poolId={poolId} startAt={startAtDate} endAt={endAtDate} />
       </Suspense>
       <Suspense fallback={<TableSkeleton colNumbers={2} />}>
         <PoolTokens startAt={startAtDate} endAt={endAtDate} poolId={poolId} />

@@ -14,7 +14,7 @@ export default async function PoolTokens({
   endAt: Date;
 }) {
   const poolData: PoolStatsResults = await fetcher(
-    `${BASE_URL}/apr/api/?poolId=${poolId}${startAt ? `&startAt=${startAt}` : ""}${endAt ? `&endAt=${endAt}` : ""}`,
+    `${BASE_URL}/apr/api/?poolId=${poolId}${startAt ? `&startAt=${formatDateToMMDDYYYY(startAt)}` : ""}${endAt ? `&endAt=${formatDateToMMDDYYYY(endAt)}` : ""}`,
   );
   return (
     <div>

@@ -5,7 +5,6 @@ import OverviewCards, {
   getDatesDetails,
 } from "../../(components)/OverviewCards";
 import { getBALPriceByRound } from "../../(utils)/getBALPriceByRound";
-import { Round } from "../../(utils)/rounds";
 
 export default async function RoundOverviewCards({
   startAt,

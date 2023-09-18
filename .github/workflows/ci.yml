@@ -21,7 +21,7 @@ jobs:
       - uses: ./.github/workflows/setup-pnpm
 
       - name: Check formatting and linting
-        run: pnpm ci
+        run: pnpm run ci
 
   run-tests:
     name: Run tests

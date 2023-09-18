@@ -1,4 +1,4 @@
-import { BASE_URL } from "../api/route";
+import { BASE_URL, formatDateToMMDDYYYY } from "../api/route";
 import { SearchParams } from "../round/[roundId]/page";
 
 export const INITIAL_MIN_TVL = 1000;
@@ -48,11 +48,12 @@ function getFilterDataFromParams(searchParams: SearchParams) {
 
 export default function getFilteredRoundApiUrl(
   searchParams: SearchParams,
-  roundId: string,
+  startAt: Date,
+  endAt: Date,
 ) {
   const filteredData = getFilterDataFromParams(searchParams);
   const params = Object.entries(filteredData)
     .map(([key, value]) => (value !== undefined ? `${key}=${value}` : ""))
     .join("&");
-  return `${BASE_URL}/apr/api/?roundId=${roundId}&${params}`;
+  return `${BASE_URL}/apr/api?startAt=${formatDateToMMDDYYYY(startAt)}&endAt=${formatDateToMMDDYYYY(endAt)}&${params}`;
 }

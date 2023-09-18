@@ -4,7 +4,7 @@ import { blueDark } from "@radix-ui/colors";
 import { Data } from "plotly.js";
 import { useState } from "react";
 
-import { PoolStatsResults } from "#/app/apr/api/route";
+import { PoolStatsResults, formatDateToMMDDYYYY } from "#/app/apr/api/route";
 import Plot from "#/components/Plot";
 
 import FilterTabs from "./FilterTabs";
@@ -32,18 +32,20 @@ function getActiveData(
 
 export default function HistoricalChartWrapper({
   apiResult,
-  roundId,
+  startAt,
+  endAt,
 }: {
   apiResult: PoolStatsResults;
-  roundId?: string;
+  startAt?: Date;
+  endAt?: Date;
 }) {
   const charts = ["APR", "Weekly Swap Fees", "TVL", "Volume"];
   const [selectedTabs, setselectedTabs] = useState([0]);
 
-  const aprChartData = formatAPRChartData(apiResult, "y2");
+  const aprChartData = formatAPRChartData(apiResult, "y2", endAt);
   const tvlChartData = formatTvlChartData(apiResult, "y3");
   const volumeChartData = formatVolumeChartData(apiResult, "y4");
-  const feeChartData = formatSwapFeeChartData(apiResult, roundId, "y5");
+  const feeChartData = formatSwapFeeChartData(apiResult, "y5");
   const activeCharts = getActiveData(
     selectedTabs,
     aprChartData,
@@ -63,21 +65,23 @@ export default function HistoricalChartWrapper({
 
   const selectedRoundShape =
     // @ts-ignore: 2322
-    roundId && aprChartData[0].x.includes(`#${roundId}`)
+    (startAt && endAt) && aprChartData[0].x.includes(`${formatDateToMMDDYYYY(startAt)}`)
       ? [
           {
-            type: "line",
-            x0: roundId,
+            type: "rect",
+            xref: "x",
+            yref: "paper",
+            x0: formatDateToMMDDYYYY(startAt),
             y0: 0,
-            x1: roundId,
-            y1: 2,
+            x1: formatDateToMMDDYYYY(endAt),
+            y1: 1,
+            fillcolor: '#d3d3d3',
+            opacity: 0.2,
             line: {
-              color: "rgb(55, 128, 191)",
-              width: 3,
-              dash: "dot",
+              width: 0
             },
             label: {
-              text: "Selected Round",
+              text: "Selected Period",
             },
           },
         ]

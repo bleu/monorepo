@@ -17,17 +17,20 @@ export default async function HistoricalCharts({
     `${BASE_URL}/apr/api/?poolId=${poolId}`,
   );
 
-
-  return <HistoricalChart apiResult={results} startAt={startAt} endAt={endAt} />;
+  return (
+    <HistoricalChart apiResult={results} startAt={startAt} endAt={endAt} />
+  );
 }
 
 export function generateAndTrimAprCords(
   data: Record<string, PoolStatsData[]>, // Use Record<string, PoolStatsData[]> for the updated data format
   getValue: (result: PoolStatsData[]) => number,
   valueToTrim: number,
-): { x: string[]; y: number[] } { // Change the return type accordingly
+): { x: string[]; y: number[] } {
+  // Change the return type accordingly
   const cords = Object.entries(data).reduce(
-    (cords, [date, results]) => { // Use destructuring to extract date and results
+    (cords, [date, results]) => {
+      // Use destructuring to extract date and results
       cords.x.push(date); // Use date as the x value
       cords.y.push(getValue(results)); // Use map to get y values from each result
       return cords;

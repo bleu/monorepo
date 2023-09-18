@@ -65,7 +65,9 @@ export default function HistoricalChartWrapper({
 
   const selectedRoundShape =
     // @ts-ignore: 2322
-    (startAt && endAt) && aprChartData[0].x.includes(`${formatDateToMMDDYYYY(startAt)}`)
+    startAt &&
+    endAt &&
+    aprChartData[0].x.includes(`${formatDateToMMDDYYYY(startAt)}`)
       ? [
           {
             type: "rect",
@@ -75,10 +77,10 @@ export default function HistoricalChartWrapper({
             y0: 0,
             x1: formatDateToMMDDYYYY(endAt),
             y1: 1,
-            fillcolor: '#d3d3d3',
+            fillcolor: "#d3d3d3",
             opacity: 0.2,
             line: {
-              width: 0
+              width: 0,
             },
             label: {
               text: "Selected Period",

@@ -23,7 +23,7 @@ async function AverageAPRCard({ poolId }: { poolId: string }) {
 export default async function PoolOverviewCards({
   startAt,
   endAt,
-  poolId
+  poolId,
 }: {
   startAt: Date;
   endAt: Date;

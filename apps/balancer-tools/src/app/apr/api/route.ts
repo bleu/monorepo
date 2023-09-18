@@ -253,13 +253,12 @@ async function fetchDataForDateRange(
   startDate: Date,
   endDate: Date,
 ): Promise<PoolStatsResults> {
-  const existingPoolForDate = POOLS_WITH_LIVE_GAUGES.reverse()
-    .filter(
-      ({ gauge: { addedTimestamp }, chain }) =>
-        addedTimestamp &&
-        addedTimestamp <= endDate.getTime() &&
-        chain == "MAINNET",
-    )
+  const existingPoolForDate = POOLS_WITH_LIVE_GAUGES.reverse().filter(
+    ({ gauge: { addedTimestamp }, chain }) =>
+      addedTimestamp &&
+      addedTimestamp <= endDate.getTime() &&
+      chain == "MAINNET",
+  );
   const perDayData: { [key: string]: PoolStatsData[] } = {};
 
   await Promise.all(

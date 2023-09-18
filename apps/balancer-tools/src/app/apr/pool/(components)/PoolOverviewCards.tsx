@@ -21,10 +21,12 @@ async function AverageAPRCard({ poolId }: { poolId: string }) {
 }
 
 export default async function PoolOverviewCards({
-  roundId,
-  poolId,
+  startAt,
+  endAt,
+  poolId
 }: {
-  roundId?: string;
+  startAt: Date;
+  endAt: Date;
   poolId: string;
 }) {
   const cardsDetails: {
@@ -32,9 +34,9 @@ export default async function PoolOverviewCards({
     content: JSX.Element | string;
     tooltip?: string;
   }[] = [];
-  if (roundId) {
+  if (startAt || endAt) {
     const results: PoolStatsResults = await fetcher(
-      `${BASE_URL}/apr/api/?poolId=${poolId}&sort=roundId`,
+      `${BASE_URL}/apr/api/?poolId=${poolId}&startAt${startAt}&endAt=${endAt}`,
     );
 
     cardsDetails.push(
@@ -44,7 +46,7 @@ export default async function PoolOverviewCards({
           title: "veBAL APR",
           content: formatAPR(results.average.apr.breakdown.veBAL),
         },
-        ...getDatesDetails(roundId),
+        ...getDatesDetails(startAt, endAt),
       ],
     );
   } else {

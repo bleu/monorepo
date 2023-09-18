@@ -27,4 +27,4 @@ export const manualPoolsRateProvider = [
       symbol: "stMatic",
     },
   },
-];
+] as const;

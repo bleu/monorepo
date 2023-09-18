@@ -46,7 +46,7 @@
     "clsx": "^1.2.1",
     "copy-to-clipboard": "^3.3.3",
     "downshift": "^8.1.0",
-    "graphql-request": "5.1.0",
+    "graphql-request": "6.1.0",
     "lodash": "^4.17.21",
     "lodash.merge": "^4.6.2",
     "next": "^13.4.19",

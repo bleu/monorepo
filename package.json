@@ -40,7 +40,7 @@
     "@types/node": "^18.15.11",
     "concurrently": "^8.2.1",
     "ghooks": "^2.0.4",
-    "lint-staged": "^13.2.3",
+    "lint-staged": "^14.0.1",
     "prettier": "^3.0.3",
     "typescript": "^5.2.2"
   },

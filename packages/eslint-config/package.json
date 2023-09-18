@@ -11,7 +11,7 @@
     "@typescript-eslint/eslint-plugin": "latest",
     "eslint": "^8.49.0",
     "eslint-config-next": "latest",
-    "eslint-config-prettier": "^8.8.0",
+    "eslint-config-prettier": "^9.0.0",
     "eslint-import-resolver-typescript": "^3.6.0",
     "eslint-plugin-compat": "latest",
     "eslint-plugin-graphql": "latest",

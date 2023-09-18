@@ -6,15 +6,12 @@ import {
   ExternalLinkIcon,
 } from "@radix-ui/react-icons";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { ReactNode, useState } from "react";
 import invariant from "tiny-invariant";
 
-import { Badge } from "#/components/Badge";
 import { Toast } from "#/components/Toast";
 import { Pool } from "#/lib/balancer/gauges";
-
-import { Round } from "../../(utils)/rounds";
 
 function BreadcrumbItem({
   link,
@@ -48,31 +45,13 @@ function BreadcrumbItem({
   );
 }
 
-function displaySelectedRound(
-  roundId: string | undefined,
-  poolId: string | undefined,
-) {
-  if (!roundId) return <BreadcrumbItem>No Round selected</BreadcrumbItem>;
-
-  return (
-    <BreadcrumbItem link={`/apr/round/${roundId}`}>
-      <div className="flex items-center gap-x-2">
-        Round {roundId}{" "}
-        {!poolId && Round.currentRound().value == roundId && (
-          <Badge color="blue" size="sm" outline>
-            Current
-          </Badge>
-        )}
-      </div>
-    </BreadcrumbItem>
-  );
-}
-
 export default function Breadcrumb() {
-  const { poolId, roundId, network } = useParams();
+  const { poolId, network } = useParams();
   invariant(!Array.isArray(poolId), "poolId cannot be a list");
-  invariant(!Array.isArray(roundId), "roundId cannot be a list");
   invariant(!Array.isArray(network), "network should not be an array");
+  const searchParams = useSearchParams();
+  const startAt = searchParams.get("startAt")
+  const endAt = searchParams.get("endAt")
 
   const [isNotifierOpen, setIsNotifierOpen] = useState<boolean>(false);
 
@@ -111,7 +90,11 @@ export default function Breadcrumb() {
               {selectedPool?.symbol ?? poolId}
             </BreadcrumbItem>
           )}
-          {displaySelectedRound(roundId, poolId)}
+        <BreadcrumbItem link={`/apr/?startAt=${startAt}&endAt=${endAt}&`}>
+          <div className="flex items-center gap-x-2">
+            {startAt} - {endAt}
+          </div>
+        </BreadcrumbItem>
         </ol>
         {poolId && (
           <div className="flex">

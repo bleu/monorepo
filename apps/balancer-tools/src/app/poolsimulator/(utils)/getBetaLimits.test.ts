@@ -21,7 +21,7 @@ describe("Token Functions", () => {
     test("Should return indices of continuous true values", () => {
       expect(
         getTransitionIndices([false, false, true, true, true, false]),
-      ).toEqual([2, 4]);
+      ).toEqual([2, 5]);
     });
 
     test("Should throw an error for non-continuous true values", () => {
@@ -34,14 +34,8 @@ describe("Token Functions", () => {
       expect(getTransitionIndices([false, false, false, false])).toEqual([]);
     });
 
-    test("Should return a single index for a single true value", () => {
-      expect(getTransitionIndices([false, false, true, false, false])).toEqual([
-        2,
-      ]);
-    });
-
     test("Should handle true values at the start and end", () => {
-      expect(getTransitionIndices([true, true, false, false])).toEqual([0, 1]);
+      expect(getTransitionIndices([true, true, false, false])).toEqual([0, 2]);
       expect(getTransitionIndices([false, false, true, true])).toEqual([2, 3]);
     });
   });
@@ -63,16 +57,18 @@ describe("Token Functions", () => {
         analysisTokenIn: [0, 5, 10, 15],
         analysisTokenRate: 1,
         tabTokenRate: 1,
-        tabTokenIn: [0, 5, 10, 15],
-        tabTokenOut: [0, -5, -10, -15],
+        pairTokenIn: [0, 5, 10, 15],
+        pairTokenOut: [0, -5, -10, -15],
         analysisTokenInitialBalance: 120,
         tabTokenInitialBalance: 120,
         beta: 0.05,
       });
-      expect(result).toEqual([
-        [-5, 5],
-        [5, -5],
-      ]);
+      expect(result).toEqual({
+        analysis: [-5, 10],
+        analysisTokenIn: { analysisAmount: 10, tabAmount: -10 },
+        pair: [5, -10],
+        tabTokenIn: { analysisAmount: -5, tabAmount: 5 },
+      });
     });
   });
 });

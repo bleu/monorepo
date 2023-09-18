@@ -1,13 +1,13 @@
 import { Suspense } from "react";
-import Breadcrumb from "./round/(components)/Breadcrumb";
-import KpisSkeleton from "./(components)/(skeleton)/KpisSkeleton";
-import RoundOverviewCards from "./round/(components)/RoundOverviewCards";
+
 import ChartSkelton from "./(components)/(skeleton)/ChartSkelton";
-import TopPoolsChartWrapper from "./round/(components)/TopPoolsChartWrapper";
+import KpisSkeleton from "./(components)/(skeleton)/KpisSkeleton";
 import TableSkeleton from "./(components)/(skeleton)/TableSkeleton";
-import PoolTableWrapper from "./round/(components)/PoolTableWrapper";
-import getFilteredRoundApiUrl from "./(utils)/getFilteredApiUrl";
 import { parseParamToDate } from "./api/route";
+import Breadcrumb from "./round/(components)/Breadcrumb";
+import PoolTableWrapper from "./round/(components)/PoolTableWrapper";
+import RoundOverviewCards from "./round/(components)/RoundOverviewCards";
+import TopPoolsChartWrapper from "./round/(components)/TopPoolsChartWrapper";
 
 export interface SearchParams {
   minTVL?: string;
@@ -23,7 +23,7 @@ export default function Page({
   searchParams: { startAt, endAt },
 }: {
   params: { roundId: string };
-  searchParams: SearchParams;
+  searchParams: {startAt: string, endAt: string };
 }) {
   const startAtDate = parseParamToDate(startAt)
   const endAtDate = parseParamToDate(endAt)
@@ -38,13 +38,9 @@ export default function Page({
       <Suspense fallback={<ChartSkelton />}>
         <TopPoolsChartWrapper startAt={startAtDate} endAt={endAtDate}/>
       </Suspense>
-      {/*
       <Suspense fallback={<TableSkeleton colNumbers={10} />}>
-        <PoolTableWrapper
-          roundId={roundId}
-          url={getFilteredRoundApiUrl(searchParams, roundId)}
-        />
-      </Suspense> */}
+        <PoolTableWrapper startAt={startAtDate} endAt={endAtDate} />
+      </Suspense>
     </div>
   );
 }

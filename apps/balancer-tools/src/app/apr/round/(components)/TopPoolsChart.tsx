@@ -7,19 +7,21 @@ import { Data, PlotMouseEvent, PlotType } from "plotly.js";
 
 import Plot from "#/components/Plot";
 
-import { PoolStatsResults } from "../../api/route";
+import { PoolStatsResults, formatDateToMMDDYYYY } from "../../api/route";
 
 export default function TopPoolsChart({
-  roundId,
+  startAt,
+  endAt,
   ApiResult,
 }: {
-  roundId: string;
+  startAt: Date;
+  endAt: Date;
   ApiResult: PoolStatsResults;
 }) {
   const shades = Object.values(greenDarkA).map((color) => color.toString());
   const colors = [...shades.slice(4, 10).reverse(), ...shades.slice(4, 10)];
-
-  const yAxisLabels = ApiResult.perRound
+  const selectedDate = ApiResult.perDay[formatDateToMMDDYYYY(endAt)] 
+  const yAxisLabels = selectedDate
     .filter((pool) => pool.apr.total > 0)
     .map((result) => [
       result.tokens
@@ -49,22 +51,20 @@ export default function TopPoolsChart({
   const chartData: Data = {
     hoverinfo: "none",
     marker: {
-      color: ApiResult.perRound.map(
+      color: selectedDate.map(
         (_, index) => colors[index % colors.length],
       ),
     },
     orientation: "h" as const,
     type: "bar" as PlotType,
-    x: ApiResult.perRound.map((result) => result.apr.total.toFixed(2)),
+    x: selectedDate.map((result) => result.apr.total.toFixed(2)),
     y: paddedYAxisLabels,
   };
 
   const router = useRouter();
   function onClickHandler(event: PlotMouseEvent) {
-    const clickedRoundData = ApiResult.perRound[event.points[0].pointIndex];
-    const poolRedirectURL = `/apr/pool/${networkFor(
-      clickedRoundData.network,
-    )}/${clickedRoundData.poolId}/round/${roundId}`;
+    const clickedRoundData = selectedDate[event.points[0].pointIndex];
+    const poolRedirectURL = `/apr/pool/${networkFor(clickedRoundData.network)}/${clickedRoundData.poolId}/?startAt=${formatDateToMMDDYYYY(startAt)}&endAt=${formatDateToMMDDYYYY(endAt)}`;
     router.push(poolRedirectURL);
   }
 
@@ -72,7 +72,7 @@ export default function TopPoolsChart({
     <div className="flex justify-between border border-blue6 bg-blue3 rounded p-4 cursor-pointer">
       <Plot
         onClick={onClickHandler}
-        title={`Top APR Pools of Round ${roundId}`}
+        title={`Top APR Pools of Round ${formatDateToMMDDYYYY(startAt)} - ${formatDateToMMDDYYYY(endAt)}`}
         toolTip="Top pools with highest APR."
         data={[chartData]}
         hovermode={false}

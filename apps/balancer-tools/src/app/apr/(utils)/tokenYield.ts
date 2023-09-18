@@ -90,17 +90,25 @@ async function getPoolTokensRateProviders(chain: string, poolId: Address) {
   const data = await pools.gql(String(chain)).PoolRateProviders({ poolId });
 
   if (!data.pool?.priceRateProviders?.length) {
-    const poolRateProvider =
-      manualPoolsRateProvider.find(
-        ({ poolAddress }) => poolAddress === poolId,
-      ) || manualPoolsRateProvider[0];
+    const poolRateProvider = manualPoolsRateProvider.find(
+      ({ poolAddress }) => poolAddress === poolId,
+    );
+
+    if (poolRateProvider === undefined) {
+      // eslint-disable-next-line no-console
+      console.error(
+        `Pool ${poolId} from ${chain} not found in manualPoolsRateProvider`,
+      );
+    }
+
+    const rateProvider = poolRateProvider || manualPoolsRateProvider[0];
 
     return [
       {
-        address: poolRateProvider?.address,
+        address: rateProvider.address,
         token: {
-          address: poolRateProvider?.token.address,
-          symbol: poolRateProvider?.token.symbol,
+          address: rateProvider.token.address,
+          symbol: rateProvider.token.symbol,
         },
       },
     ];

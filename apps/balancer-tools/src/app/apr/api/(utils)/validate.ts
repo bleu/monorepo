@@ -36,17 +36,26 @@ const OptionalNullableString = z.string().nullable().optional();
 const OptionalNullableDate = OptionalNullableString.transform((dateStr) => {
   if (!dateStr) return null;
 
-  const [month, day, year] = dateStr.split('-').map(Number);
+  const [month, day, year] = dateStr.split("-").map(Number);
 
   // Check if the parsing was successful and the date is valid
   if (
-    !isNaN(month) && !isNaN(day) && !isNaN(year) &&
-    month >= 1 && month <= 12 &&
-    day >= 1 && day <= 31 &&
-    year >= 1900 && year <= new Date().getFullYear()
+    !isNaN(month) &&
+    !isNaN(day) &&
+    !isNaN(year) &&
+    month >= 1 &&
+    month <= 12 &&
+    day >= 1 &&
+    day <= 31 &&
+    year >= 1900 &&
+    year <= new Date().getFullYear()
   ) {
     // Create a Date object in the expected format
-    return new Date(`${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}T00:00:00.000Z`);
+    return new Date(
+      `${year}-${month.toString().padStart(2, "0")}-${day
+        .toString()
+        .padStart(2, "0")}T00:00:00.000Z`,
+    );
   }
 
   return null; // Invalid date string

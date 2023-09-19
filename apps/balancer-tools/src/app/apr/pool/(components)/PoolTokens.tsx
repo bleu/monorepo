@@ -2,10 +2,7 @@ import { PlotTitle } from "#/components/Plot";
 import { fetcher } from "#/utils/fetcher";
 
 import { formatDateToMMDDYYYY } from "../../api/(utils)/date";
-import {
-  BASE_URL,
-  PoolStatsResults,
-} from "../../api/route";
+import { BASE_URL, PoolStatsResults } from "../../api/route";
 import PoolTokensTable from "./PoolTokensTable";
 
 export default async function PoolTokens({

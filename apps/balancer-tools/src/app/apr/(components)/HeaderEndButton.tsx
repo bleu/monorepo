@@ -17,7 +17,6 @@ import { SearchPoolForm } from "#/components/SearchPoolForm";
 
 import { formatDateToMMDDYYYY } from "../api/(utils)/date";
 
-
 export default function HeaderEndButton() {
   const { poolId, network } = useParams();
   const searchParams = useSearchParams();

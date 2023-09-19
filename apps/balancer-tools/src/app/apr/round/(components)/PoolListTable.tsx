@@ -30,11 +30,7 @@ import { PoolTypeEnum } from "../../(utils)/calculatePoolStats";
 import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
 import getFilteredRoundApiUrl from "../../(utils)/getFilteredApiUrl";
 import { formatDateToMMDDYYYY } from "../../api/(utils)/date";
-import {
-  PoolStatsData,
-  PoolStatsResults,
-  PoolTokens,
-} from "../../api/route";
+import { PoolStatsData, PoolStatsResults, PoolTokens } from "../../api/route";
 import { MoreFiltersButton } from "./MoreFiltersButton";
 import { TokenFilterInput } from "./TokenFilterInput";
 

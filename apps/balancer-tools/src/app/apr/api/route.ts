@@ -7,6 +7,7 @@ import { PoolTypeEnum } from "../(utils)/calculatePoolStats";
 import { fetchDataForPoolId } from "./(utils)/fetchDataForPoolId";
 import { fetchDataForPoolIdDateRange } from "./(utils)/fetchDataForPoolIdDateRange";
 import { fetchDataForDateRange } from "./(utils)/fetchForDateRange";
+import { filterPoolStats } from "./(utils)/filter";
 import { sortAndLimit } from "./(utils)/sort";
 import { QueryParamsSchema } from "./(utils)/validate";
 
@@ -131,8 +132,8 @@ export async function GET(request: NextRequest) {
 
   return NextResponse.json(
     sortAndLimit(
-      // @ts-ignore
       filterPoolStats(responseData, searchParams),
+      // @ts-ignore
       sort,
       order,
       offset,

@@ -5,6 +5,7 @@ import { blocks, pools } from "#/lib/gql/server";
 
 import { ChainName, publicClients } from "./chainsPublicClients";
 import { manualPoolsRateProvider } from "./poolsRateProvider";
+import { vunerabilityAffecteRateProviders } from "./vulnerabilityAffectedPools";
 
 const rateProviderAbi = [
   {
@@ -57,6 +58,15 @@ async function getAPRFromRateProviderInterval(
   timeEnd: number,
   chainName: ChainName,
 ) {
+  if (
+    timeEnd >= 1692662400 && // pool vunerability was found on August 22
+    vunerabilityAffecteRateProviders.some(
+      ({ address }) => address === rateProviderAddress,
+    )
+  ) {
+    return 0;
+  }
+
   const { endRate, startRate } = await getIntervalRates(
     rateProviderAddress,
     timeStart,
@@ -163,7 +173,7 @@ async function getRateAtBlock(
     rate = await publicClients[chainName].readContract(args);
   } catch (e) {
     // eslint-disable-next-line no-console
-    console.error(e);
+    console.error(e, blockNumber);
     rate = -1;
   }
 

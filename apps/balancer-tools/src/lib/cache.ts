@@ -137,7 +137,7 @@ export const getDataFromCacheOrCompute = async <T>(
 };
 
 const serializeArgs = (args: Array<any>) => {
-  return args.map(arg => JSON.stringify(arg).replace(/[^a-zA-Z0-9]/g, '')).join('-');
+  return args.map(arg => arg ? JSON.stringify(arg).replace(/[^a-zA-Z0-9]/g, '') : "").join('-') ;
 };
 
 type ComputeFn<T, Args extends Array<any>> = (...args: Args) => Promise<T>;

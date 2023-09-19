@@ -1,7 +1,8 @@
 import { PlotTitle } from "#/components/Plot";
 import { fetcher } from "#/utils/fetcher";
 
-import { BASE_URL, PoolStatsResults } from "../../api/route";
+import { BASE_URL } from "../../(utils)/types";
+import { PoolStatsResults } from "../../api/route";
 import PoolTokensTable from "./PoolTokensTable";
 
 export default async function PoolTokens({

@@ -1,7 +1,9 @@
+import "server-only";
+
 /* eslint-disable no-console */
 import { kv } from "@vercel/kv";
 
-import { BASE_URL } from "#/app/apr/api/route";
+import { BASE_URL } from "#/app/apr/(utils)/types";
 import fs from 'fs';
 import util from 'util';
 

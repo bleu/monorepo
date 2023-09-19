@@ -1,5 +1,5 @@
-import { BASE_URL } from "../api/route";
 import { SearchParams } from "../round/[roundId]/page";
+import { BASE_URL } from "./types";
 
 export const INITIAL_MIN_TVL = 1000;
 export const INITIAL_LIMIT = 10;

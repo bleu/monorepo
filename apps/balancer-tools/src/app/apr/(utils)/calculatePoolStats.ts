@@ -12,6 +12,7 @@ import { getBALPriceByRound, getTokenPriceByDate } from "./getBALPriceByRound";
 import { getPoolRelativeWeight } from "./getRelativeWeight";
 import { Round } from "./rounds";
 import { getPoolTokensAprForDate } from "./tokenYield";
+import { PoolTypeEnum } from "./types";
 
 export interface calculatePoolData extends Omit<PoolStatsData, "apr"> {
   apr: {
@@ -27,15 +28,6 @@ export interface calculatePoolData extends Omit<PoolStatsData, "apr"> {
   };
 }
 
-// The enum namings should be human-readable and are based on what Balancer shows on their FE
-export enum PoolTypeEnum {
-  PHANTOM_STABLE = "ComposableStable",
-  WEIGHTED = "Weighted",
-  GYROE = "GyroE",
-  STABLE = "Stable",
-  META_STABLE = "MetaStable",
-  UNKNOWN = "FX",
-}
 
 const WEEKS_IN_YEAR = 52;
 const SECONDS_IN_DAY = 86400;

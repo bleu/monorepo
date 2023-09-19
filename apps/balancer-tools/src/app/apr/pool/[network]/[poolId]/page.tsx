@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import ChartSkelton from "#/app/apr/(components)/(skeleton)/ChartSkelton";
 import KpisSkeleton from "#/app/apr/(components)/(skeleton)/KpisSkeleton";
 import TableSkeleton from "#/app/apr/(components)/(skeleton)/TableSkeleton";
+import { QueryParamsSchema } from "#/app/apr/api/(utils)/validate";
 import { SearchParams } from "#/app/apr/page";
 import Breadcrumb from "#/app/apr/round/(components)/Breadcrumb";
 

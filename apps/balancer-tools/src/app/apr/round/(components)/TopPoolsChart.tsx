@@ -7,7 +7,8 @@ import { Data, PlotMouseEvent, PlotType } from "plotly.js";
 
 import Plot from "#/components/Plot";
 
-import { PoolStatsResults, formatDateToMMDDYYYY } from "../../api/route";
+import { formatDateToMMDDYYYY } from "../../api/(utils)/date";
+import { PoolStatsResults } from "../../api/route";
 
 export default function TopPoolsChart({
   startAt,

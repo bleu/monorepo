@@ -1,9 +1,9 @@
 import { PlotTitle } from "#/components/Plot";
 import { fetcher } from "#/utils/fetcher";
 
+import { formatDateToMMDDYYYY } from "../../api/(utils)/date";
 import {
   BASE_URL,
-  formatDateToMMDDYYYY,
   PoolStatsResults,
 } from "../../api/route";
 import PoolTokensTable from "./PoolTokensTable";

@@ -29,8 +29,8 @@ import { formatNumber } from "#/utils/formatNumber";
 import { PoolTypeEnum } from "../../(utils)/calculatePoolStats";
 import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
 import getFilteredRoundApiUrl from "../../(utils)/getFilteredApiUrl";
+import { formatDateToMMDDYYYY } from "../../api/(utils)/date";
 import {
-  formatDateToMMDDYYYY,
   PoolStatsData,
   PoolStatsResults,
   PoolTokens,

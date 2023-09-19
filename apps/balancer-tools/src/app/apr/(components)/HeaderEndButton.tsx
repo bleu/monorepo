@@ -15,7 +15,8 @@ import { Dialog } from "#/components/Dialog";
 import { BaseInput } from "#/components/Input";
 import { SearchPoolForm } from "#/components/SearchPoolForm";
 
-import { formatDateToMMDDYYYY } from "../api/route";
+import { formatDateToMMDDYYYY } from "../api/(utils)/date";
+
 
 export default function HeaderEndButton() {
   const { poolId, network } = useParams();

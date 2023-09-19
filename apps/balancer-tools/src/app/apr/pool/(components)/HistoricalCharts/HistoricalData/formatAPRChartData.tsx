@@ -1,7 +1,8 @@
 import { blueDarkA, greenDarkA, violetDarkA, whiteA } from "@radix-ui/colors";
 import { PlotType } from "plotly.js";
 
-import { formatDateToMMDDYYYY, PoolStatsResults } from "#/app/apr/api/route";
+import { formatDateToMMDDYYYY } from "#/app/apr/api/(utils)/date";
+import { PoolStatsResults } from "#/app/apr/api/route";
 
 import { generateAndTrimAprCords } from "..";
 

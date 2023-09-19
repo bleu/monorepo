@@ -1,4 +1,5 @@
-import { BASE_URL, formatDateToMMDDYYYY } from "../api/route";
+import { formatDateToMMDDYYYY } from "../api/(utils)/date";
+import { BASE_URL } from "../api/route";
 import { SearchParams } from "../round/[roundId]/page";
 
 export const INITIAL_MIN_TVL = 1000;

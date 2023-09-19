@@ -2,8 +2,6 @@ import { networkFor } from "@bleu-balancer-tools/utils";
 
 import { DefiLlamaAPI } from "#/lib/coingecko";
 
-import { Round } from "./rounds";
-
 const MILLISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
 const BAL_TOKEN_ADDRESS = "0xba100000625a3754423978a60c9317c58a424e3d";
 const BAL_TOKEN_NETWORK = 1;

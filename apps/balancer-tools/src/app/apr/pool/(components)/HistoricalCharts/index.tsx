@@ -26,7 +26,7 @@ export function generateAndTrimAprCords(
   data: Record<string, PoolStatsData[]>, // Use Record<string, PoolStatsData[]> for the updated data format
   getValue: (result: PoolStatsData[]) => number,
   valueToTrim: number,
-): { x: string[]; y: number[] } {
+): { x: (string | number)[]; y: (string | number)[] } {
   // Change the return type accordingly
   const cords = Object.entries(data).reduce(
     (cords, [date, results]) => {

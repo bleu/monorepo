@@ -59,27 +59,27 @@ export default function formatAPRChartData(
     type: "scatter" as PlotType,
   };
 
-  const aprTokensData =
-    endAt &&
-    apiResult.perDay[
-      formatDateToMMDDYYYY(endAt)
-    ][0].apr.breakdown.tokens.breakdown.map(({ symbol }, idx) => {
-      const trimmedTokenAprData = generateAndTrimAprCords(
-        apiResult.perDay,
-        (result) => result[0].apr.breakdown.tokens.breakdown[idx].yield,
-        0,
-      );
-      return {
-        name: `${symbol} APR %`,
-        yaxis: yaxis,
-        showlegend: false,
-        hovertemplate: HOVERTEMPLATE,
-        x: trimmedTokenAprData.x,
-        y: trimmedTokenAprData.y,
-        line: { shape: "spline", color: "rgba(0,0,0,0);" } as const,
-        type: "scatter" as PlotType,
-      };
-    });
+  const aprTokensData = endAt
+    ? apiResult.perDay[
+        formatDateToMMDDYYYY(endAt)
+      ][0].apr.breakdown.tokens.breakdown.map(({ symbol }, idx) => {
+        const trimmedTokenAprData = generateAndTrimAprCords(
+          apiResult.perDay,
+          (result) => result[0].apr.breakdown.tokens.breakdown[idx].yield,
+          0,
+        );
+        return {
+          name: `${symbol} APR %`,
+          yaxis: yaxis,
+          showlegend: false,
+          hovertemplate: HOVERTEMPLATE,
+          x: trimmedTokenAprData.x,
+          y: trimmedTokenAprData.y,
+          line: { shape: "spline", color: "rgba(0,0,0,0);" } as const,
+          type: "scatter" as PlotType,
+        };
+      })
+    : [];
 
   const trimmedTokenTotalAprData = generateAndTrimAprCords(
     apiResult.perDay,

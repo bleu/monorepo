@@ -86,15 +86,23 @@ export default function HeaderEndButton() {
       <BaseInput
         value={startAtInput}
         onChange={(e) => {
-          setStartAtInput(e.target.value);
-          router.push(`/apr/?startAt=${e.target.value}&endAt=${endAtInput}&`);
+          setStartAtInput((e.target as HTMLInputElement).value);
+          router.push(
+            `/apr/?startAt=${
+              (e.target as HTMLInputElement).value
+            }&endAt=${endAtInput}&`,
+          );
         }}
       />
       <BaseInput
         value={endAtInput}
         onChange={(e) => {
-          setEndAtInput(e.target.value);
-          router.push(`/apr/?startAt=${startAtInput}&endAt=${e.target.value}&`);
+          setEndAtInput((e.target as HTMLInputElement).value);
+          router.push(
+            `/apr/?startAt=${startAtInput}&endAt=${
+              (e.target as HTMLInputElement).value
+            }&`,
+          );
         }}
       />
     </div>

@@ -68,6 +68,7 @@ export default function HistoricalChartWrapper({
     // @ts-ignore: 2322
     startAt &&
     endAt &&
+    // @ts-ignore: 2339
     aprChartData[0].x.includes(`${formatDateToMMDDYYYY(startAt)}`)
       ? [
           {

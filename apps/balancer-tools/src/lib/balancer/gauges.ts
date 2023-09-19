@@ -4,6 +4,8 @@ import POOLS_WITH_GAUGES from "#/data/voting-gauges.json";
 
 export const POOLS_WITH_LIVE_GAUGES = POOLS_WITH_GAUGES.filter(
   (pool) => !pool.gauge.isKilled && pool.gauge.addedTimestamp,
+).filter(
+  (pool) => pool.chain !== "ARBITRUM"
 );
 
 const GAUGE_CACHE: { [address: string]: Gauge } = {};

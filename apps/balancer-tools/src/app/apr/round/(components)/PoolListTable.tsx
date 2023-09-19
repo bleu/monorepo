@@ -62,6 +62,7 @@ export function PoolListTable({
 
   const createQueryString = useCallback(
     (accessor: string) => {
+      // @ts-ignore
       const params = new URLSearchParams(searchParams);
       const sortOrder =
         accessor === params.get("sort") && params.get("order") === "desc"

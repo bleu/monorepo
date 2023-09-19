@@ -5,7 +5,7 @@ export const computeAverages = (
 ): PoolStatsWithoutVotingShareAndCollectedFees => {
   const averages: PoolStatsWithoutVotingShareAndCollectedFees = initializeAverages();
 
-  const uniqueEntries: {
+  const uniqueTokenEntries: {
     [key: string]: { idx: number; occurences: number };
   } = {};
 
@@ -16,7 +16,11 @@ export const computeAverages = (
       const dataArr = formattedPoolData[key];
       dataArr.forEach((data) => {
         accumulateData(averages, data);
-        accumulateTokens(averages.apr.breakdown.tokens, data.apr.breakdown.tokens, uniqueEntries);
+        accumulateTokens(
+          averages.apr.breakdown.tokens,
+          data.apr.breakdown.tokens,
+          uniqueTokenEntries,
+        );
         accumulateOtherMetrics(averages, data);
         totalDataCount++;
       });

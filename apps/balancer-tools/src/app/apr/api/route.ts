@@ -192,7 +192,9 @@ const fetchDataForPoolIdRoundId = async (poolId: string, roundId: string) => {
       );
 
       if (attempts >= MAX_RETRIES) {
-        console.error("Max retries reached. Giving up fetching data.");
+        console.error(
+          `Max retries reached. Giving up fetching data for pool ${poolId} and round ${roundId}.`,
+        );
         return null;
       }
 

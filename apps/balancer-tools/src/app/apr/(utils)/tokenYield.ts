@@ -23,7 +23,7 @@ const SECONDS_IN_YEAR = DAYS_IN_YEAR * SECONDS_IN_DAY;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const getPoolTokensAprForDate = withCache(
-  async (chain: string, poolId: Address, date: number) => {
+  async function getPoolTokensAprForDateFn (chain: string, poolId: Address, date: number) {
     const rateProviders = await getPoolTokensRateProviders(chain, poolId);
 
     const chainName = networkFor(chain) as ChainName;
@@ -51,12 +51,12 @@ export const getPoolTokensAprForDate = withCache(
 );
 
 const getAPRFromRateProviderInterval = withCache(
-  async (
+  async function getAPRFromRateProviderIntervalFn (
     rateProviderAddress: Address,
     timeStart: number,
     timeEnd: number,
     chainName: ChainName,
-  ) => {
+  )  {
     const { endRate, startRate } = await getIntervalRates(
       rateProviderAddress,
       timeStart,
@@ -91,7 +91,7 @@ function getAPRFromRate(
 }
 
 const getPoolTokensRateProviders = withCache(
-  async (chain: string, poolId: Address) => {
+  async function getPoolTokensRateProvidersFn (chain: string, poolId: Address) {
     const data = await pools.gql(String(chain)).PoolRateProviders({ poolId });
 
     if (!data.pool?.priceRateProviders?.length) {
@@ -125,12 +125,12 @@ const getPoolTokensRateProviders = withCache(
 );
 
 const getIntervalRates = withCache(
-  async (
+  async function getIntervalRatesFn(
     rateProviderAddress: Address,
     timeStart: number,
     timeEnd: number,
     chainName: ChainName,
-  ) => {
+  ) {
     const [dataStart, dataEnd] = await Promise.all([
       blocks.gql(String(networkIdFor(chainName))).Blocks({
         timestamp_gte: timeStart,
@@ -155,11 +155,11 @@ const getIntervalRates = withCache(
 );
 
 const getRateAtBlock = withCache(
-  async (
+  async function getRateAtBlockFn(
     chainName: ChainName,
     rateProviderAddress: Address,
     blockNumber?: number,
-  ) => {
+  ) {
     const args = {
       address: rateProviderAddress,
       abi: rateProviderAbi,

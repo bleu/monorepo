@@ -13,7 +13,7 @@ const GAUGES_CONTROLLER_MAINNET_ADDRESS =
   "0xC128468b7Ce63eA702C1f104D55A2566b13D3ABD";
 
 export const getPoolRelativeWeight = withCache(
-  async (poolId: string, time: number = Date.now() / 1000) => {
+  async function getPoolRelativeWeightFn (poolId: string, time: number = Date.now() / 1000) {
     const gaugeAddress = new Pool(poolId).gauge?.address;
     if (!gaugeAddress) throw new Error(`No gauge found for pool ${poolId}`);
 

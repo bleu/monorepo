@@ -42,14 +42,14 @@ const SECONDS_IN_DAY = 86400;
 const SECONDS_IN_YEAR = 365 * SECONDS_IN_DAY;
 
 const fetchPoolTVLFromSnapshotAverageFromRange = withCache(
-  async (
+  async function fetchPoolTVLFromSnapshotAverageFromRangeFn(
     poolId: string,
     network: string,
     from: number,
     to: number,
   ): Promise<
     [number, number, string, { symbol: string; balance: string }[]]
-  > => {
+  > {
     const res = await pools.gql(network).poolSnapshotInRange({
       poolId,
       from,
@@ -252,12 +252,12 @@ function calculateRoundAPR(
 }
 
 const getFeeApr = withCache(
-  async (
+  async function getFeeAprFn (
     poolId: string,
     network: string,
     from: number,
     to: number,
-  ): Promise<[number, number]> => {
+  ): Promise<[number, number]> {
     const lastdayBeforeStartRound = from - SECONDS_IN_DAY;
     const lastdayOfRound = to;
 

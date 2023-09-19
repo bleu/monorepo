@@ -1,8 +1,10 @@
-import { Address, NetworkChainId } from "@bleu-balancer-tools/utils";
-import { createPublicClient, http, zeroAddress } from "viem";
-import { mainnet } from "viem/chains";
+import { Address, networkFor, networkIdFor } from "@bleu-balancer-tools/utils";
+import { zeroAddress } from "viem";
 
 import { blocks, pools } from "#/lib/gql/server";
+
+import { ChainName, publicClients } from "./chainsPublicClients";
+import { manualPoolsRateProvider } from "./poolsRateProvider";
 
 const rateProviderAbi = [
   {
@@ -13,11 +15,6 @@ const rateProviderAbi = [
     type: "function",
   },
 ];
-
-export const publicClient = createPublicClient({
-  chain: mainnet,
-  transport: http(),
-});
 
 const SECONDS_IN_DAY = 86400;
 const DAYS_IN_YEAR = 365;
@@ -30,6 +27,8 @@ export async function getPoolTokensAprForDate(
   date: number,
 ) {
   const rateProviders = await getPoolTokensRateProviders(chain, poolId);
+
+  const chainName = networkFor(chain) as ChainName;
 
   return await Promise.all(
     rateProviders
@@ -45,6 +44,7 @@ export async function getPoolTokensAprForDate(
             rateProviderAddress,
             date - SECONDS_IN_DAY,
             date,
+            chainName,
           ),
         }),
       ),
@@ -55,11 +55,13 @@ async function getAPRFromRateProviderInterval(
   rateProviderAddress: Address,
   timeStart: number,
   timeEnd: number,
+  chainName: ChainName,
 ) {
   const { endRate, startRate } = await getIntervalRates(
     rateProviderAddress,
     timeStart,
     timeEnd,
+    chainName,
   );
 
   return getAPRFromRate(startRate, endRate, timeStart, timeEnd);
@@ -81,23 +83,38 @@ function getAPRFromRate(
     // eslint-disable-next-line no-console
     console.error("Negative APR");
   }
-
   return APR < 0 ? 0 : APR;
 }
 
 async function getPoolTokensRateProviders(chain: string, poolId: Address) {
   const data = await pools.gql(String(chain)).PoolRateProviders({ poolId });
 
-  if (!data.pool?.priceRateProviders?.length)
+  if (!data.pool?.priceRateProviders?.length) {
+    const poolRateProvider = manualPoolsRateProvider.find(
+      ({ poolAddress }) => poolAddress.toLowerCase() === poolId.toLowerCase(),
+    );
+
+    if (poolRateProvider === undefined) {
+      // eslint-disable-next-line no-console
+      console.error(
+        `Pool ${poolId} from ${networkFor(
+          chain,
+        )} not found in manualPoolsRateProvider`,
+      );
+    }
+
+    const rateProvider = poolRateProvider || manualPoolsRateProvider[0];
+
     return [
       {
-        address: "0x1a8F81c256aee9C640e14bB0453ce247ea0DFE6F",
+        address: rateProvider.address,
         token: {
-          address: "0xae78736cd615f374d3085123a210448e74fc6393",
-          symbol: "rETH",
+          address: rateProvider.token.address,
+          symbol: rateProvider.token.symbol,
         },
       },
     ];
+  }
 
   return data.pool?.priceRateProviders;
 }
@@ -105,13 +122,14 @@ async function getIntervalRates(
   rateProviderAddress: Address,
   timeStart: number,
   timeEnd: number,
+  chainName: ChainName,
 ) {
-  const dataStart = await blocks.gql(String(NetworkChainId.ETHEREUM)).Blocks({
+  const dataStart = await blocks.gql(String(networkIdFor(chainName))).Blocks({
     timestamp_gte: timeStart,
     timestamp_lt: timeEnd,
   });
 
-  const dataEnd = await blocks.gql(String(NetworkChainId.ETHEREUM)).Blocks({
+  const dataEnd = await blocks.gql(String(networkIdFor(chainName))).Blocks({
     timestamp_gte: timeEnd,
     timestamp_lt: timeEnd + SECONDS_IN_DAY,
   });
@@ -121,14 +139,15 @@ async function getIntervalRates(
   const blockEnd = dataEnd.blocks[0]?.number;
 
   const [endRate, startRate] = await Promise.all([
-    getRateAtBlock(rateProviderAddress, blockEnd),
-    getRateAtBlock(rateProviderAddress, blockStart),
+    getRateAtBlock(chainName, rateProviderAddress, blockEnd),
+    getRateAtBlock(chainName, rateProviderAddress, blockStart),
   ]);
 
   return { endRate: Number(endRate), startRate: Number(startRate) };
 }
 
 async function getRateAtBlock(
+  chainName: ChainName,
   rateProviderAddress: Address,
   blockNumber?: number,
 ) {
@@ -141,7 +160,7 @@ async function getRateAtBlock(
 
   let rate;
   try {
-    rate = await publicClient.readContract(args);
+    rate = await publicClients[chainName].readContract(args);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(e);

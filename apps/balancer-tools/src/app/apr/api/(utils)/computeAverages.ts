@@ -21,7 +21,6 @@ export const computeAverages = (
           data.apr.breakdown.tokens,
           uniqueTokenEntries,
         );
-        accumulateOtherMetrics(averages, data);
         totalDataCount++;
       });
     }
@@ -53,11 +52,36 @@ function initializeAverages(): PoolStatsWithoutVotingShareAndCollectedFees {
   };
 }
 
-function accumulateData(target: PoolStatsWithoutVotingShareAndCollectedFees, source: PoolStatsWithoutVotingShareAndCollectedFees): void {
-  target.apr.total += source.apr.total;
-  target.apr.breakdown.veBAL += source.apr.breakdown.veBAL || 0;
-  target.apr.breakdown.swapFee += source.apr.breakdown.swapFee;
-  target.apr.breakdown.tokens.total += source.apr.breakdown.tokens.total;
+function accumulateData(
+  obj1: PoolStatsWithoutVotingShareAndCollectedFees,
+  obj2: PoolStatsData,
+): PoolStatsData {
+  const result = { ...obj1 };
+
+  for (const key in obj2) {
+    if (obj2.hasOwnProperty(key) && obj1.hasOwnProperty(key)) {
+      // @ts-ignore  - Need help with this typing!
+      if (typeof obj1[key] === "string" && typeof obj2[key] === "string") {
+        continue;
+        // @ts-ignore  - Need help with this typing!
+      } else if (
+        typeof obj1[key] === "object" &&
+        typeof obj2[key] === "object"
+      ) {
+        // @ts-ignore  - Need help with this typing!
+        result[key] = accumulateData(obj1[key], obj2[key]);
+      } else {
+        // @ts-ignore  - Need help with this typing!
+        result[key] = obj1[key] + obj2[key];
+      }
+    } else {
+      // @ts-ignore  - Need help with this typing!
+      result[key] = obj2[key];
+    }
+  }
+
+  // @ts-ignore  - Need help with this typing!
+  return result;
 }
 
 function accumulateTokens(

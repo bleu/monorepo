@@ -75,3 +75,19 @@ export const getDataFromCacheOrCompute = async <T>(
 
   return computedData;
 };
+
+const serializeArgs = (args: Array<any>) => {
+  return JSON.stringify(args).replace(/[^a-z0-9]/gi, "");
+};
+
+type ComputeFn<T, Args extends Array<any>> = (...args: Args) => Promise<T>;
+
+export const withCache = <T, Args extends Array<any>>(
+  fn: ComputeFn<T, Args>,
+): ComputeFn<T, Args> => {
+  return async (...args: Args) => {
+    const serializedArgs = serializeArgs(args);
+    const cacheKey = `fn:${fn.name}:${serializedArgs}`;
+    return getDataFromCacheOrCompute(cacheKey, () => fn(...args));
+  };
+};

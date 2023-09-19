@@ -1,5 +1,6 @@
 import { networkFor } from "@bleu-balancer-tools/utils";
 
+import { withCache } from "#/lib/cache";
 import { DefiLlamaAPI } from "#/lib/coingecko";
 
 import { Round } from "./rounds";
@@ -21,7 +22,7 @@ const calculateDaysBetween = (startDate: Date, endDate: Date) =>
 const calculateAverage = (arr: number[]) =>
   arr.reduce((sum, val) => sum + val, 0) / arr.length;
 
-export const getBALPriceByRound = async (round: Round) => {
+export const getBALPriceByRound = withCache(async (round: Round) => {
   const days = calculateDaysBetween(round.startDate, round.endDate);
   const pricePromises = Array.from({ length: days }, (_, i) =>
     getTokenPriceByDate(
@@ -38,7 +39,7 @@ export const getBALPriceByRound = async (round: Round) => {
     console.error(error);
     throw error;
   }
-};
+});
 
 export const getTokenPriceByDate = async (
   date: Date,

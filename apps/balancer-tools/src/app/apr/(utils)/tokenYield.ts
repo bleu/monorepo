@@ -1,6 +1,7 @@
 import { Address, networkFor, networkIdFor } from "@bleu-balancer-tools/utils";
 import { zeroAddress } from "viem";
 
+import { withCache } from "#/lib/cache";
 import { blocks, pools } from "#/lib/gql/server";
 
 import { ChainName, publicClients } from "./chainsPublicClients";
@@ -21,51 +22,60 @@ const DAYS_IN_YEAR = 365;
 const SECONDS_IN_YEAR = DAYS_IN_YEAR * SECONDS_IN_DAY;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function getPoolTokensAprForDate(
-  chain: string,
-  poolId: Address,
-  date: number,
-) {
-  const rateProviders = await getPoolTokensRateProviders(chain, poolId);
+export const getPoolTokensAprForDate = withCache(
+  async (chain: string, poolId: Address, date: number) => {
+    const rateProviders = await getPoolTokensRateProviders(chain, poolId);
 
-  const chainName = networkFor(chain) as ChainName;
+    const chainName = networkFor(chain) as ChainName;
 
-  return await Promise.all(
-    rateProviders
-      .filter(({ address }) => address !== zeroAddress)
-      .map(
-        async ({
-          address: rateProviderAddress,
-          token: { symbol, address: tokenAddress },
-        }) => ({
-          address: tokenAddress,
-          symbol,
-          yield: await getAPRFromRateProviderInterval(
-            rateProviderAddress,
-            date - SECONDS_IN_DAY,
-            date,
-            chainName,
-          ),
-        }),
-      ),
-  );
-}
+    return await Promise.all(
+      rateProviders
+        .filter(({ address }) => address !== zeroAddress)
+        .map(
+          async ({
+            address: rateProviderAddress,
+            token: { symbol, address: tokenAddress },
+          }) => ({
+            address: tokenAddress,
+            symbol,
+            yield: await getAPRFromRateProviderInterval(
+              rateProviderAddress,
+              date - SECONDS_IN_DAY,
+              date,
+              chainName,
+            ),
+          }),
+        ),
+    );
+  },
+);
 
-async function getAPRFromRateProviderInterval(
-  rateProviderAddress: Address,
-  timeStart: number,
-  timeEnd: number,
-  chainName: ChainName,
-) {
-  const { endRate, startRate } = await getIntervalRates(
-    rateProviderAddress,
-    timeStart,
-    timeEnd,
-    chainName,
-  );
+const getAPRFromRateProviderInterval = withCache(
+  async (
+    rateProviderAddress: Address,
+    timeStart: number,
+    timeEnd: number,
+    chainName: ChainName,
+  ) => {
+    const { endRate, startRate } = await getIntervalRates(
+      rateProviderAddress,
+      timeStart,
+      timeEnd,
+      chainName,
+    );
 
-  return getAPRFromRate(startRate, endRate, timeStart, timeEnd);
-}
+    const apr = getAPRFromRate(startRate, endRate, timeStart, timeEnd);
+
+    if (apr < 0) {
+      // eslint-disable-next-line no-console
+      console.error(
+        `Negative APR for ${rateProviderAddress} between ${timeStart} and ${timeEnd}`,
+      );
+    }
+
+    return apr;
+  },
+);
 
 function getAPRFromRate(
   rateStart: number,
@@ -77,95 +87,97 @@ function getAPRFromRate(
   const rateOfReturn = (rateEnd - rateStart) / rateStart;
   const annualScalingFactor = SECONDS_IN_YEAR / duration;
 
-  const APR = rateOfReturn * annualScalingFactor * 100;
-
-  if (APR < 0) {
-    // eslint-disable-next-line no-console
-    console.error("Negative APR");
-  }
-  return APR < 0 ? 0 : APR;
+  return rateOfReturn * annualScalingFactor * 100;
 }
 
-async function getPoolTokensRateProviders(chain: string, poolId: Address) {
-  const data = await pools.gql(String(chain)).PoolRateProviders({ poolId });
+const getPoolTokensRateProviders = withCache(
+  async (chain: string, poolId: Address) => {
+    const data = await pools.gql(String(chain)).PoolRateProviders({ poolId });
 
-  if (!data.pool?.priceRateProviders?.length) {
-    const poolRateProvider = manualPoolsRateProvider.find(
-      ({ poolAddress }) => poolAddress.toLowerCase() === poolId.toLowerCase(),
-    );
-
-    if (poolRateProvider === undefined) {
-      // eslint-disable-next-line no-console
-      console.error(
-        `Pool ${poolId} from ${networkFor(
-          chain,
-        )} not found in manualPoolsRateProvider`,
+    if (!data.pool?.priceRateProviders?.length) {
+      const poolRateProvider = manualPoolsRateProvider.find(
+        ({ poolAddress }) => poolAddress.toLowerCase() === poolId.toLowerCase(),
       );
+
+      if (poolRateProvider === undefined) {
+        // eslint-disable-next-line no-console
+        console.error(
+          `Pool ${poolId} from ${networkFor(
+            chain,
+          )} not found in manualPoolsRateProvider`,
+        );
+        return [];
+      }
+
+      return [
+        {
+          address: poolRateProvider.address,
+          token: {
+            address: poolRateProvider.token.address,
+            symbol: poolRateProvider.token.symbol,
+          },
+        },
+      ];
     }
 
-    const rateProvider = poolRateProvider || manualPoolsRateProvider[0];
+    return data.pool?.priceRateProviders;
+  },
+);
 
-    return [
-      {
-        address: rateProvider.address,
-        token: {
-          address: rateProvider.token.address,
-          symbol: rateProvider.token.symbol,
-        },
-      },
-    ];
-  }
+const getIntervalRates = withCache(
+  async (
+    rateProviderAddress: Address,
+    timeStart: number,
+    timeEnd: number,
+    chainName: ChainName,
+  ) => {
+    const [dataStart, dataEnd] = await Promise.all([
+      blocks.gql(String(networkIdFor(chainName))).Blocks({
+        timestamp_gte: timeStart,
+        timestamp_lt: timeEnd,
+      }),
+      blocks.gql(String(networkIdFor(chainName))).Blocks({
+        timestamp_gte: timeEnd,
+        timestamp_lt: timeEnd + SECONDS_IN_DAY,
+      }),
+    ]);
 
-  return data.pool?.priceRateProviders;
-}
-async function getIntervalRates(
-  rateProviderAddress: Address,
-  timeStart: number,
-  timeEnd: number,
-  chainName: ChainName,
-) {
-  const dataStart = await blocks.gql(String(networkIdFor(chainName))).Blocks({
-    timestamp_gte: timeStart,
-    timestamp_lt: timeEnd,
-  });
+    const blockStart = dataStart.blocks[0].number;
+    const blockEnd = dataEnd.blocks[0]?.number;
 
-  const dataEnd = await blocks.gql(String(networkIdFor(chainName))).Blocks({
-    timestamp_gte: timeEnd,
-    timestamp_lt: timeEnd + SECONDS_IN_DAY,
-  });
+    const [endRate, startRate] = await Promise.all([
+      getRateAtBlock(chainName, rateProviderAddress, blockEnd),
+      getRateAtBlock(chainName, rateProviderAddress, blockStart),
+    ]);
 
-  const blockStart = dataStart.blocks[0].number;
+    return { endRate: Number(endRate), startRate: Number(startRate) };
+  },
+);
 
-  const blockEnd = dataEnd.blocks[0]?.number;
+const getRateAtBlock = withCache(
+  async (
+    chainName: ChainName,
+    rateProviderAddress: Address,
+    blockNumber?: number,
+  ) => {
+    const args = {
+      address: rateProviderAddress,
+      abi: rateProviderAbi,
+      functionName: "getRate",
+      blockNumber: blockNumber ? BigInt(blockNumber) : undefined,
+    } as const;
 
-  const [endRate, startRate] = await Promise.all([
-    getRateAtBlock(chainName, rateProviderAddress, blockEnd),
-    getRateAtBlock(chainName, rateProviderAddress, blockStart),
-  ]);
+    let rate;
+    try {
+      rate = await publicClients[chainName].readContract(args);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(
+        `Error fetching rate for ${rateProviderAddress} at block ${blockNumber} on ${chainName}`,
+      );
+      rate = -1;
+    }
 
-  return { endRate: Number(endRate), startRate: Number(startRate) };
-}
-
-async function getRateAtBlock(
-  chainName: ChainName,
-  rateProviderAddress: Address,
-  blockNumber?: number,
-) {
-  const args = {
-    address: rateProviderAddress,
-    abi: rateProviderAbi,
-    functionName: "getRate",
-    blockNumber: blockNumber ? BigInt(blockNumber) : undefined,
-  } as const;
-
-  let rate;
-  try {
-    rate = await publicClients[chainName].readContract(args);
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
-    rate = -1;
-  }
-
-  return Number(rate);
-}
+    return Number(rate);
+  },
+);

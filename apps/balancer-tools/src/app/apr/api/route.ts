@@ -78,32 +78,6 @@ function valuesFromSearchParams(searchParams: URLSearchParams) {
   );
 }
 
-export function parseParamToDate(dateStr: string) {
-  const parts = dateStr.split("-");
-  if (parts.length !== 3) {
-    throw new Error("Invalid date format. Use 'dd-mm-yyyy'.");
-  }
-
-  const [month, day, year] = parts.map(Number);
-
-  if (isNaN(day) || isNaN(month) || isNaN(year)) {
-    throw new Error("Invalid date format. Use 'dd-mm-yyyy'.");
-  }
-
-  // Ensure that the year is four digits
-  if (year < 1000 || year > 9999) {
-    throw new Error("Invalid year. Use a four-digit year (yyyy).");
-  }
-
-  const date = new Date(year, month - 1, day);
-
-  if (isNaN(date.getTime())) {
-    throw new Error("Invalid date.");
-  }
-
-  return date;
-}
-
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   const parsedParams = QueryParamsSchema.safeParse(

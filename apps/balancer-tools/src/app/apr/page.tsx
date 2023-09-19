@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import ChartSkelton from "./(components)/(skeleton)/ChartSkelton";
 import KpisSkeleton from "./(components)/(skeleton)/KpisSkeleton";
 import TableSkeleton from "./(components)/(skeleton)/TableSkeleton";
-import { parseParamToDate } from "./api/route";
+import { QueryParamsSchema } from "./api/(utils)/validate";
 import Breadcrumb from "./round/(components)/Breadcrumb";
 import PoolTableWrapper from "./round/(components)/PoolTableWrapper";
 import RoundOverviewCards from "./round/(components)/RoundOverviewCards";
@@ -20,13 +20,16 @@ export interface SearchParams {
 }
 
 export default function Page({
-  searchParams: { startAt, endAt },
+  searchParams,
 }: {
   params: { roundId: string };
-  searchParams: { startAt: string; endAt: string };
+  searchParams: SearchParams;
 }) {
-  const startAtDate = parseParamToDate(startAt);
-  const endAtDate = parseParamToDate(endAt);
+  const {
+    startAt: startAtDate,
+    endAt: endAtDate,
+    // @ts-ignore
+  } = QueryParamsSchema.safeParse(searchParams).data;
 
   return (
     <div className="flex flex-1 flex-col gap-y-3">

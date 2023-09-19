@@ -1,25 +1,29 @@
 import { Suspense } from "react";
 
+import ChartSkelton from "#/app/apr/(components)/(skeleton)/ChartSkelton";
 import KpisSkeleton from "#/app/apr/(components)/(skeleton)/KpisSkeleton";
-import { parseParamToDate } from "#/app/apr/api/route";
+import TableSkeleton from "#/app/apr/(components)/(skeleton)/TableSkeleton";
+import { SearchParams } from "#/app/apr/page";
 import Breadcrumb from "#/app/apr/round/(components)/Breadcrumb";
 
-import PoolOverviewCards from "../../(components)/PoolOverviewCards";
-import { YieldWarning } from "../../(components)/YieldWarning";
-import ChartSkelton from "#/app/apr/(components)/(skeleton)/ChartSkelton";
 import HistoricalCharts from "../../(components)/HistoricalCharts";
-import TableSkeleton from "#/app/apr/(components)/(skeleton)/TableSkeleton";
+import PoolOverviewCards from "../../(components)/PoolOverviewCards";
 import PoolTokens from "../../(components)/PoolTokens";
+import { YieldWarning } from "../../(components)/YieldWarning";
 
 export default async function Page({
   params: { poolId },
-  searchParams: { startAt, endAt },
+  searchParams,
 }: {
-  searchParams: { startAt: string; endAt: string };
+  searchParams: SearchParams;
   params: { poolId: string };
 }) {
-  const startAtDate = parseParamToDate(startAt);
-  const endAtDate = parseParamToDate(endAt);
+  const {
+    startAt: startAtDate,
+    endAt: endAtDate,
+    // @ts-ignore
+  } = QueryParamsSchema.safeParse(searchParams).data;
+
 
   return (
     <div className="flex flex-1 h-full w-full flex-col justify-start rounded-3xl text-white gap-y-3">

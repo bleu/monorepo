@@ -23,15 +23,15 @@ const calculateAverage = (arr: number[]) =>
   arr.reduce((sum, val) => sum + val, 0) / arr.length;
 
 export const getBALPriceByRound = withCache(async function getBALPriceByRoundFn(
-  round: Round
+  round: Round,
 ) {
   const days = calculateDaysBetween(round.startDate, round.endDate);
   const pricePromises = Array.from({ length: days }, (_, i) =>
     getTokenPriceByDate(
       new Date(round.startDate.getTime() + i * MILLISECONDS_IN_DAY),
       BAL_TOKEN_ADDRESS,
-      BAL_TOKEN_NETWORK
-    )
+      BAL_TOKEN_NETWORK,
+    ),
   );
   try {
     const prices = await Promise.all(pricePromises);
@@ -39,7 +39,7 @@ export const getBALPriceByRound = withCache(async function getBALPriceByRoundFn(
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error(
-      `Error fetching BAL price between ${round.startDate} and ${round.endDate}`
+      `Error fetching BAL price between ${round.startDate} and ${round.endDate}`,
     );
     throw error;
   }
@@ -48,7 +48,7 @@ export const getBALPriceByRound = withCache(async function getBALPriceByRoundFn(
 export const getTokenPriceByDate = withCache(async function getTokenPriceByDate(
   date: Date,
   tokenAddress: string,
-  tokenNetwork: number
+  tokenNetwork: number,
 ) {
   const token = `${networkFor(tokenNetwork).toLowerCase()}:${tokenAddress}`;
   const relevantDateForPrice = Math.min(Date.now(), date.getTime());
@@ -56,7 +56,7 @@ export const getTokenPriceByDate = withCache(async function getTokenPriceByDate(
 
   const response = await api.getHistoricalPrice(
     new Date(relevantDateForPrice),
-    [token]
+    [token],
   );
 
   return response.coins[token]?.price;

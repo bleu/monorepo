@@ -7,6 +7,7 @@ pnpm-lock.yaml
 **/.next/**
 **/.vercel/**
 **/.vscode/**
+**/.cache/**
 
 **/__generated__/**
 generated**

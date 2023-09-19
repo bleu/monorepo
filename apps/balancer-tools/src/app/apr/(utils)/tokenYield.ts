@@ -23,7 +23,11 @@ const SECONDS_IN_YEAR = DAYS_IN_YEAR * SECONDS_IN_DAY;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const getPoolTokensAprForDate = withCache(
-  async function getPoolTokensAprForDateFn (chain: string, poolId: Address, date: number) {
+  async function getPoolTokensAprForDateFn(
+    chain: string,
+    poolId: Address,
+    date: number,
+  ) {
     const rateProviders = await getPoolTokensRateProviders(chain, poolId);
 
     const chainName = networkFor(chain) as ChainName;
@@ -51,12 +55,12 @@ export const getPoolTokensAprForDate = withCache(
 );
 
 const getAPRFromRateProviderInterval = withCache(
-  async function getAPRFromRateProviderIntervalFn (
+  async function getAPRFromRateProviderIntervalFn(
     rateProviderAddress: Address,
     timeStart: number,
     timeEnd: number,
     chainName: ChainName,
-  )  {
+  ) {
     const { endRate, startRate } = await getIntervalRates(
       rateProviderAddress,
       timeStart,
@@ -91,7 +95,7 @@ function getAPRFromRate(
 }
 
 const getPoolTokensRateProviders = withCache(
-  async function getPoolTokensRateProvidersFn (chain: string, poolId: Address) {
+  async function getPoolTokensRateProvidersFn(chain: string, poolId: Address) {
     const data = await pools.gql(String(chain)).PoolRateProviders({ poolId });
 
     if (!data.pool?.priceRateProviders?.length) {
@@ -124,60 +128,64 @@ const getPoolTokensRateProviders = withCache(
   },
 );
 
-const getIntervalRates = withCache(
-  async function getIntervalRatesFn(
-    rateProviderAddress: Address,
-    timeStart: number,
-    timeEnd: number,
-    chainName: ChainName,
-  ) {
-    const [dataStart, dataEnd] = await Promise.all([
-      blocks.gql(String(networkIdFor(chainName))).Blocks({
-        timestamp_gte: timeStart,
-        timestamp_lt: timeEnd,
-      }),
-      blocks.gql(String(networkIdFor(chainName))).Blocks({
-        timestamp_gte: timeEnd,
-        timestamp_lt: timeEnd + SECONDS_IN_DAY,
-      }),
-    ]);
+const getIntervalRates = withCache(async function getIntervalRatesFn(
+  rateProviderAddress: Address,
+  timeStart: number,
+  timeEnd: number,
+  chainName: ChainName,
+) {
+  const [dataStart, dataEnd] = await Promise.all([
+    blocks.gql(String(networkIdFor(chainName))).Blocks({
+      timestamp_gte: timeStart,
+      timestamp_lt: timeEnd,
+    }),
+    blocks.gql(String(networkIdFor(chainName))).Blocks({
+      timestamp_gte: timeEnd,
+      timestamp_lt: timeEnd + SECONDS_IN_DAY,
+    }),
+  ]);
 
-    const blockStart = dataStart.blocks[0].number;
-    const blockEnd = dataEnd.blocks[0]?.number;
+  const blockStart = dataStart.blocks[0]?.number;
+  const blockEnd = dataEnd.blocks[0]?.number;
 
-    const [endRate, startRate] = await Promise.all([
-      getRateAtBlock(chainName, rateProviderAddress, blockEnd),
-      getRateAtBlock(chainName, rateProviderAddress, blockStart),
-    ]);
+  if (blockStart === undefined || blockEnd === undefined) {
+    // eslint-disable-next-line no-console
+    console.error(
+      `No blocks found between ${timeStart} and ${timeEnd} on ${chainName}`,
+    );
+    return { endRate: -1, startRate: -1 };
+  }
 
-    return { endRate: Number(endRate), startRate: Number(startRate) };
-  },
-);
+  const [endRate, startRate] = await Promise.all([
+    getRateAtBlock(chainName, rateProviderAddress, blockEnd),
+    getRateAtBlock(chainName, rateProviderAddress, blockStart),
+  ]);
 
-const getRateAtBlock = withCache(
-  async function getRateAtBlockFn(
-    chainName: ChainName,
-    rateProviderAddress: Address,
-    blockNumber?: number,
-  ) {
-    const args = {
-      address: rateProviderAddress,
-      abi: rateProviderAbi,
-      functionName: "getRate",
-      blockNumber: blockNumber ? BigInt(blockNumber) : undefined,
-    } as const;
+  return { endRate: Number(endRate), startRate: Number(startRate) };
+});
 
-    let rate;
-    try {
-      rate = await publicClients[chainName].readContract(args);
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error(
-        `Error fetching rate for ${rateProviderAddress} at block ${blockNumber} on ${chainName}`,
-      );
-      rate = -1;
-    }
+const getRateAtBlock = withCache(async function getRateAtBlockFn(
+  chainName: ChainName,
+  rateProviderAddress: Address,
+  blockNumber?: number,
+) {
+  const args = {
+    address: rateProviderAddress,
+    abi: rateProviderAbi,
+    functionName: "getRate",
+    blockNumber: blockNumber ? BigInt(blockNumber) : undefined,
+  } as const;
 
-    return Number(rate);
-  },
-);
+  let rate;
+  try {
+    rate = await publicClients[chainName].readContract(args);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(
+      `Error fetching rate for ${rateProviderAddress} at block ${blockNumber} on ${chainName}`,
+    );
+    rate = -1;
+  }
+
+  return Number(rate);
+});

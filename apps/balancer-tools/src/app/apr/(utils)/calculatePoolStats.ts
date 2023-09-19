@@ -28,7 +28,6 @@ export interface calculatePoolData extends Omit<PoolStatsData, "apr"> {
   };
 }
 
-
 const WEEKS_IN_YEAR = 52;
 const SECONDS_IN_DAY = 86400;
 const SECONDS_IN_YEAR = 365 * SECONDS_IN_DAY;
@@ -39,9 +38,7 @@ const fetchPoolTVLFromSnapshotAverageFromRange = withCache(
     network: string,
     from: number,
     to: number,
-  ): Promise<
-    [number, number, string, { symbol: string; balance: string }[]]
-  > {
+  ): Promise<[number, number, string, { symbol: string; balance: string }[]]> {
     const res = await pools.gql(network).poolSnapshotInRange({
       poolId,
       from,
@@ -243,38 +240,36 @@ function calculateRoundAPR(
   };
 }
 
-const getFeeApr = withCache(
-  async function getFeeAprFn (
-    poolId: string,
-    network: string,
-    from: number,
-    to: number,
-  ): Promise<[number, number]> {
-    const lastdayBeforeStartRound = from - SECONDS_IN_DAY;
-    const lastdayOfRound = to;
+const getFeeApr = withCache(async function getFeeAprFn(
+  poolId: string,
+  network: string,
+  from: number,
+  to: number,
+): Promise<[number, number]> {
+  const lastdayBeforeStartRound = from - SECONDS_IN_DAY;
+  const lastdayOfRound = to;
 
-    const res = await pools.gql(network).poolSnapshotInRange({
-      poolId,
-      from: lastdayBeforeStartRound,
-      to: lastdayOfRound,
-    });
+  const res = await pools.gql(network).poolSnapshotInRange({
+    poolId,
+    from: lastdayBeforeStartRound,
+    to: lastdayOfRound,
+  });
 
-    const startRoundData = res.poolSnapshots[res.poolSnapshots.length - 1];
+  const startRoundData = res.poolSnapshots[res.poolSnapshots.length - 1];
 
-    const endRoundData = res.poolSnapshots[0];
+  const endRoundData = res.poolSnapshots[0];
 
-    if (!startRoundData || !endRoundData) {
-      return [0, 0];
-    }
+  if (!startRoundData || !endRoundData) {
+    return [0, 0];
+  }
 
-    const feeDiff = endRoundData?.swapFees - startRoundData?.swapFees;
+  const feeDiff = endRoundData?.swapFees - startRoundData?.swapFees;
 
-    const feeApr = 10_000 * (feeDiff / endRoundData?.liquidity);
-    // reference for 10_000 https://github.com/balancer/balancer-sdk/blob/f4879f06289c6f5f9766ead1835f4f4b096ed7dd/balancer-js/src/modules/pools/apr/apr.ts#L85
-    const annualizedFeeApr =
-      feeApr *
-      (SECONDS_IN_YEAR / (endRoundData?.timestamp - startRoundData?.timestamp));
+  const feeApr = 10_000 * (feeDiff / endRoundData?.liquidity);
+  // reference for 10_000 https://github.com/balancer/balancer-sdk/blob/f4879f06289c6f5f9766ead1835f4f4b096ed7dd/balancer-js/src/modules/pools/apr/apr.ts#L85
+  const annualizedFeeApr =
+    feeApr *
+    (SECONDS_IN_YEAR / (endRoundData?.timestamp - startRoundData?.timestamp));
 
-    return [isNaN(annualizedFeeApr) ? 0 : annualizedFeeApr / 100, feeDiff];
-  },
-);
+  return [isNaN(annualizedFeeApr) ? 0 : annualizedFeeApr / 100, feeDiff];
+});

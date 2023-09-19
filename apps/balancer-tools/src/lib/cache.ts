@@ -4,8 +4,8 @@ import "server-only";
 import { kv } from "@vercel/kv";
 
 import { BASE_URL } from "#/app/apr/(utils)/types";
-import fs from 'fs';
-import util from 'util';
+import fs from "fs";
+import util from "util";
 
 const memoryCache: Record<string, unknown> = {};
 
@@ -16,7 +16,7 @@ const mkdir = util.promisify(fs.mkdir);
 
 const ensureDirectoryExistence = async (filePath: string) => {
   try {
-    if (!await exists(filePath)) {
+    if (!(await exists(filePath))) {
       await mkdir(filePath, { recursive: true });
     }
   } catch (error) {
@@ -26,20 +26,20 @@ const ensureDirectoryExistence = async (filePath: string) => {
 
 export const FILE_CACHE = {
   async set(cacheKey: string, data?: Record<string, unknown>) {
-    await ensureDirectoryExistence('./.cache');
+    await ensureDirectoryExistence("./.cache");
     try {
       await writeFile(`./.cache/${cacheKey}.json`, JSON.stringify(data));
     } catch (error) {
       console.error(`File cache error while writing: ${error}`);
-      throw new Error('Could not write to cache file.');
+      throw new Error("Could not write to cache file.");
     }
   },
 
   async get<T>(cacheKey: string): Promise<T | null> {
-    await ensureDirectoryExistence('./.cache');
+    await ensureDirectoryExistence("./.cache");
     try {
       if (await exists(`./.cache/${cacheKey}.json`)) {
-        const content = await readFile(`./.cache/${cacheKey}.json`, 'utf-8');
+        const content = await readFile(`./.cache/${cacheKey}.json`, "utf-8");
         return JSON.parse(content) as T;
       }
     } catch (error) {
@@ -137,7 +137,9 @@ export const getDataFromCacheOrCompute = async <T>(
 };
 
 const serializeArgs = (args: Array<any>) => {
-  return args.map(arg => arg ? JSON.stringify(arg).replace(/[^a-zA-Z0-9]/g, '') : "").join('-') ;
+  return args
+    .map((arg) => (arg ? JSON.stringify(arg).replace(/[^a-zA-Z0-9]/g, "") : ""))
+    .join("-");
 };
 
 type ComputeFn<T, Args extends Array<any>> = (...args: Args) => Promise<T>;

@@ -10,6 +10,20 @@ import { formatNumber } from "#/utils/formatNumber";
 import { findTokenBySymbol, POOL_TYPES_TO_ADD_LIMIT } from "../../(utils)";
 import { AmountsData } from "../AnalysisPage";
 
+export const INVISIBLE_TRACE = {
+  // Used to not mixup the traces colors
+  x: [],
+  y: [],
+  type: "scatter" as PlotType,
+  mode: "lines" as const,
+  line: { dash: "dashdot" } as const,
+  legendgroup: "",
+  legendgrouptitle: { text: "" },
+  name: "",
+  showlegend: false,
+  hovertemplate: [""],
+};
+
 export function SwapCurve({
   initialAmounts,
   customAmounts,
@@ -152,45 +166,33 @@ export function SwapCurve({
     ),
   ];
 
-  if (POOL_TYPES_TO_ADD_LIMIT.includes(initialData.poolType)) {
+  const poolData = [initialData, customData];
+  const amounts = [initialAmounts, customAmounts];
+  const legends = ["Initial", "Custom"];
+  amounts.forEach((amount, index) => {
     data.push(
-      createLimitPointDataObject(
-        [
-          initialAmounts.analysisTokenOut.slice(-1)[0],
-          initialAmounts.analysisTokenIn.slice(-1)[0],
-        ],
-        [
-          initialAmounts.pairTokenIn.slice(-1)[0],
-          initialAmounts.pairTokenOut.slice(-1)[0],
-        ],
-        "Initial",
-      ),
+      POOL_TYPES_TO_ADD_LIMIT.includes(poolData[index].poolType)
+        ? createLimitPointDataObject(
+            [
+              amount.analysisTokenOut.slice(-1)[0],
+              amount.analysisTokenIn.slice(-1)[0],
+            ],
+            [amount.pairTokenIn.slice(-1)[0], amount.pairTokenOut.slice(-1)[0]],
+            legends[index],
+          )
+        : INVISIBLE_TRACE, // Used to not mixup the traces colors
     );
-  }
-  if (POOL_TYPES_TO_ADD_LIMIT.includes(customData.poolType)) {
-    data.push(
-      createLimitPointDataObject(
-        [
-          customAmounts.analysisTokenOut.slice(-1)[0],
-          customAmounts.analysisTokenIn.slice(-1)[0],
-        ],
-        [
-          customAmounts.pairTokenIn.slice(-1)[0],
-          customAmounts.pairTokenOut.slice(-1)[0],
-        ],
-        "Custom",
-      ),
-    );
-  }
+  });
 
-  [initialAmounts, customAmounts].forEach((amounts, index) => {
-    if (!amounts.betaLimits) return;
+  amounts.forEach((amount, index) => {
     data.push(
-      createBetaRegionDataObject(
-        amounts.betaLimits.analysis,
-        amounts.betaLimits.pair,
-        ["Initial", "Custom"][index],
-      ),
+      amount.betaLimits
+        ? createBetaRegionDataObject(
+            amount.betaLimits.analysis,
+            amount.betaLimits.pair,
+            legends[index],
+          )
+        : INVISIBLE_TRACE, // Used to not mixup the traces colors
     );
   });
 

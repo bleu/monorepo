@@ -15,6 +15,7 @@ import {
   ImpactWorkerInputData,
   ImpactWorkerOutputData,
 } from "../../(workers)/impact-curve-calculation";
+import { INVISIBLE_TRACE } from "./SwapCurve";
 
 interface Amounts {
   analysisTokenIn?: {
@@ -272,37 +273,6 @@ export function ImpactCurve() {
     ),
   ];
 
-  if (POOL_TYPES_TO_ADD_LIMIT.includes(initialData.poolType)) {
-    data.push(
-      createLimitPointDataObject(
-        [
-          initialAmounts.analysisTokenIn.amounts.slice(-1)[0],
-          initialAmounts.tabTokenIn.amounts.slice(-1)[0],
-        ],
-        [
-          initialAmounts.analysisTokenIn.priceImpact.slice(-1)[0],
-          initialAmounts.tabTokenIn.priceImpact.slice(-1)[0],
-        ],
-        "Initial",
-      ),
-    );
-  }
-  if (POOL_TYPES_TO_ADD_LIMIT.includes(customData.poolType)) {
-    data.push(
-      createLimitPointDataObject(
-        [
-          customAmounts.analysisTokenIn.amounts.slice(-1)[0],
-          customAmounts.tabTokenIn.amounts.slice(-1)[0],
-        ],
-        [
-          customAmounts.analysisTokenIn.priceImpact.slice(-1)[0],
-          customAmounts.tabTokenIn.priceImpact.slice(-1)[0],
-        ],
-        "Custom",
-      ),
-    );
-  }
-
   const poolData = [initialData, customData];
   const amounts = [initialAmounts, customAmounts];
   const tokens = {
@@ -310,43 +280,62 @@ export function ImpactCurve() {
     currentTabToken: [initialCurrentTabToken, customCurrentTabToken],
   };
   const legends = ["Initial", "Custom"];
+
+  amounts.forEach((amount, index) => {
+    data.push(
+      POOL_TYPES_TO_ADD_LIMIT.includes(poolData[index].poolType)
+        ? createLimitPointDataObject(
+            [
+              amount.analysisTokenIn?.amounts.slice(-1)[0] || 0,
+              amount.tabTokenIn?.amounts.slice(-1)[0] || 0,
+            ],
+            [
+              amount.analysisTokenIn?.priceImpact.slice(-1)[0] || 0,
+              amount.tabTokenIn?.priceImpact.slice(-1)[0] || 0,
+            ],
+            legends[index],
+          )
+        : INVISIBLE_TRACE,
+    );
+  });
+
   poolData.forEach((pool, index) => {
-    if (pool.poolType == PoolTypeEnum.Fx && pool.poolParams?.beta) {
-      const amountsList = [
-        amounts[index].analysisTokenIn,
-        amounts[index].tabTokenIn,
-      ];
-      const analysisTokenData = tokens.analysisToken[index];
-      const currentTabTokenData = tokens.currentTabToken[index];
-      const tokensList = [
-        { in: analysisTokenData, out: currentTabTokenData },
-        { in: currentTabTokenData, out: analysisTokenData },
-      ];
-      const amountLimits = [] as number[];
-      const priceImpactLimits = [] as number[];
-      amountsList.forEach((amount, index) => {
-        const betaLimitsIndexes = getBetaLimitsIndexes({
-          amountsA: amount?.amounts || [],
-          amountsB: amount?.amountsOut || [],
-          rateA: tokensList[index].in?.rate || 1,
-          rateB: tokensList[index].out?.rate || 1,
-          initialBalanceA: tokensList[index].in?.balance || 0,
-          initialBalanceB: tokensList[index].out?.balance || 0,
-          beta: pool.poolParams?.beta || 0,
-        });
-        betaLimitsIndexes.forEach((i) => {
-          amountLimits.push(amount?.amounts[i] || 0);
-          priceImpactLimits.push(amount?.priceImpact[i] || 0);
-        });
+    const amountsList = [
+      amounts[index].analysisTokenIn,
+      amounts[index].tabTokenIn,
+    ];
+    const analysisTokenData = tokens.analysisToken[index];
+    const currentTabTokenData = tokens.currentTabToken[index];
+    const tokensList = [
+      { in: analysisTokenData, out: currentTabTokenData },
+      { in: currentTabTokenData, out: analysisTokenData },
+    ];
+    const amountLimits = [] as number[];
+    const priceImpactLimits = [] as number[];
+    amountsList.forEach((amount, index) => {
+      const betaLimitsIndexes = getBetaLimitsIndexes({
+        amountsA: amount?.amounts || [],
+        amountsB: amount?.amountsOut || [],
+        rateA: tokensList[index].in?.rate || 1,
+        rateB: tokensList[index].out?.rate || 1,
+        initialBalanceA: tokensList[index].in?.balance || 0,
+        initialBalanceB: tokensList[index].out?.balance || 0,
+        beta: pool.poolParams?.beta || 0,
       });
-      data.push(
-        createBetaLimitsDataObject(
-          amountLimits,
-          priceImpactLimits,
-          legends[index],
-        ),
-      );
-    }
+      betaLimitsIndexes.forEach((i) => {
+        amountLimits.push(amount?.amounts[i] || 0);
+        priceImpactLimits.push(amount?.priceImpact[i] || 0);
+      });
+    });
+    data.push(
+      pool.poolType == PoolTypeEnum.Fx && pool.poolParams?.beta
+        ? createBetaLimitsDataObject(
+            amountLimits,
+            priceImpactLimits,
+            legends[index],
+          )
+        : INVISIBLE_TRACE,
+    );
   });
 
   const maxFromInitialAmounts = Math.max(

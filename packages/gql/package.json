@@ -15,7 +15,7 @@
     "@bleu-balancer-tools/tsconfig": "workspace:*",
     "@graphql-codegen/cli": "3.3.1",
     "@graphql-codegen/client-preset": "^3.0.1",
-    "@graphql-codegen/typescript": "3.0.4",
+    "@graphql-codegen/typescript": "4.0.1",
     "@graphql-codegen/typescript-graphql-request": "4.5.9",
     "@graphql-codegen/typescript-operations": "3.0.4",
     "@types/node": "18.15.11",

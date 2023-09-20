@@ -4,6 +4,7 @@ export const computeAverages = (
   formattedPoolData: { [key: string]: PoolStats[] }
 ): PoolStatsWithoutVotingShareAndCollectedFees => {
   const averages: PoolStatsWithoutVotingShareAndCollectedFees = initializeAverages();
+  const poolAverage: { [key: string]: PoolStatsData | calculatePoolData } = {};
 
   const uniqueTokenEntries: {
     [key: string]: { idx: number; occurences: number };
@@ -22,16 +23,63 @@ export const computeAverages = (
           uniqueTokenEntries,
         );
         totalDataCount++;
+
+        if (data.poolId in poolAverage) {
+          poolAverage[data.poolId] = accumulateData(
+            // @ts-ignore  - Need help with this typing!
+            poolAverage[data.poolId],
+            data,
+          );
+        } else {
+          poolAverage[data.poolId] = data;
+        }
       });
     }
   }
 
   if (totalDataCount > 0) {
     calculateAverages(averages, totalDataCount, uniqueEntries);
+    CalculateAveragesForPool(
+      poolAverage,
+      Object.keys(formattedPoolData).length,
+      averages.poolAverage,
+    );
   }
 
   return averages;
 };
+
+function CalculateAveragesForPool(
+  poolAverage: { [key: string]: PoolStatsData | calculatePoolData },
+  divisor: number,
+  output: PoolStatsData[] | calculatePoolData[],
+) {
+  for (const key in poolAverage) {
+    if (poolAverage.hasOwnProperty(key)) {
+      if (typeof poolAverage[key] === "object" && poolAverage[key] !== null) {
+        // Check if the value is an object and not null
+        const poolStatsData = poolAverage[key];
+        const dividedStatsData = {} as PoolStatsData;
+
+        for (const subKey in poolStatsData) {
+          if (poolStatsData.hasOwnProperty(subKey)) {
+            if (
+              typeof poolStatsData[subKey as keyof PoolStatsData] === "number"
+            ) {
+              //@ts-ignore  - Need help with this typing!
+              dividedStatsData[subKey] = poolStatsData[subKey] / divisor;
+            } else {
+              //@ts-ignore  - Need help with this typing!
+              dividedStatsData[subKey] = poolStatsData[subKey];
+            }
+          }
+        }
+
+        output.push(dividedStatsData);
+      }
+    }
+  }
+}
 
 function initializeAverages(): PoolStatsWithoutVotingShareAndCollectedFees {
   return {

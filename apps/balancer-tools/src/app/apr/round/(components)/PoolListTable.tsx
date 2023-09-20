@@ -41,19 +41,18 @@ export function PoolListTable({
 }: {
   startAt: Date;
   endAt: Date;
-  initialData: { [key: string]: PoolStatsData[] };
+  initialData: PoolStatsData[];
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const selectedDate = initialData[formatDateToMMDDYYYY(endAt)];
 
-  const [tableData, setTableData] = useState(selectedDate);
+  const [tableData, setTableData] = useState(initialData);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMorePools, setHasMorePools] = useState(true);
 
   useEffect(() => {
-    setTableData(initialData[formatDateToMMDDYYYY(endAt)]);
-    setHasMorePools(!(initialData[formatDateToMMDDYYYY(endAt)].length < 10));
+    setTableData(initialData);
+    setHasMorePools(!(initialData.length < 10));
   }, [initialData]);
 
   const createQueryString = useCallback(
@@ -81,10 +80,8 @@ export function PoolListTable({
       url.pathname + url.search,
     );
     setTableData((prevTableData) => {
-      if (selectedDate.length === 0) setHasMorePools(false);
-      return prevTableData.concat(
-        aditionalPoolsData.perDay[formatDateToMMDDYYYY(endAt)],
-      );
+      if (initialData.length === 0) setHasMorePools(false);
+      return prevTableData.concat(aditionalPoolsData.average.poolAverage);
     });
     setIsLoadingMore(false);
   };

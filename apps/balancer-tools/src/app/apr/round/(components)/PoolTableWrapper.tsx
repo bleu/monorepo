@@ -19,7 +19,7 @@ export default async function PoolTableWrapper({
     <PoolListTable
       startAt={startAt}
       endAt={endAt}
-      initialData={initialData.perDay}
+      initialData={initialData.average.poolAverage}
     />
   );
 }

@@ -21,8 +21,7 @@ export default function TopPoolsChart({
 }) {
   const shades = Object.values(greenDarkA).map((color) => color.toString());
   const colors = [...shades.slice(4, 10).reverse(), ...shades.slice(4, 10)];
-  const selectedDate = ApiResult.perDay[formatDateToMMDDYYYY(endAt)];
-  const yAxisLabels = selectedDate
+  const yAxisLabels = ApiResult.average.poolAverage
     .filter((pool) => pool.apr.total > 0)
     .map((result) => [
       result.tokens
@@ -52,17 +51,22 @@ export default function TopPoolsChart({
   const chartData: Data = {
     hoverinfo: "none",
     marker: {
-      color: selectedDate.map((_, index) => colors[index % colors.length]),
+      color: ApiResult.average.poolAverage.map(
+        (_, index) => colors[index % colors.length],
+      ),
     },
     orientation: "h" as const,
     type: "bar" as PlotType,
-    x: selectedDate.map((result) => result.apr.total.toFixed(2)),
+    x: ApiResult.average.poolAverage.map((result) =>
+      result.apr.total.toFixed(2),
+    ),
     y: paddedYAxisLabels,
   };
 
   const router = useRouter();
   function onClickHandler(event: PlotMouseEvent) {
-    const clickedRoundData = selectedDate[event.points[0].pointIndex];
+    const clickedRoundData =
+      ApiResult.average.poolAverage[event.points[0].pointIndex];
     const poolRedirectURL = `/apr/pool/${networkFor(
       clickedRoundData.network,
     )}/${clickedRoundData.poolId}/?startAt=${formatDateToMMDDYYYY(

@@ -49,10 +49,10 @@ export interface PoolStats {
   collectedFeesUSD: number;
 }
 
-export type PoolStatsWithoutVotingShareAndCollectedFees = Omit<
-  PoolStats,
-  "votingShare" | "collectedFeesUSD"
->;
+export interface PoolStatsWithoutVotingShareAndCollectedFees
+  extends Omit<PoolStats, "votingShare" | "collectedFeesUSD"> {
+  poolAverage: PoolStatsData[];
+}
 
 export interface PoolStatsData extends PoolStats {
   symbol: string;

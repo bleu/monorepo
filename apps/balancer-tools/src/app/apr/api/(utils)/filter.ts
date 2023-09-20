@@ -24,11 +24,20 @@ export function filterPoolStats(
         ])
         .filter(([, value]) => value !== null),
     );
+    const filteredPoolAverage = poolStats.average.poolAverage.filter(
+      (poolOnDate) => shouldIncludePool(poolOnDate, parsedParams),
+    );
 
-    return { ...poolStats, perDay: filteredData };
+    return {
+      ...poolStats,
+      perDay: filteredData,
+      average: { ...poolStats.average, poolAverage: filteredPoolAverage },
+    };
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.log(error);
+    console.warn("Error sorting for params", searchParams);
+    // eslint-disable-next-line no-console
+    console.warn(error);
     return poolStats;
   }
 }

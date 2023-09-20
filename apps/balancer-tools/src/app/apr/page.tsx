@@ -34,7 +34,7 @@ export default function Page({
       new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
     );
     return redirect(
-      `/apr/?startAt=${currentDateFormated}&endAt=${OneWeekAgoDateFormated}&`,
+      `/apr/?startAt=${OneWeekAgoDateFormated}&endAt=${currentDateFormated}&`,
     );
   }
   const { startAt: startAtDate, endAt: endAtDate } = parsedParams.data;

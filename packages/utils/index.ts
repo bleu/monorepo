@@ -12,6 +12,7 @@ export enum Network {
   Sepolia = "sepolia",
   PolygonZKEVM = "polygon-zkevm",
   Base = "base",
+  Avalanche = "avax",
 }
 
 export enum NetworkChainId {
@@ -24,6 +25,7 @@ export enum NetworkChainId {
   SEPOLIA = 11_155_111,
   POLYGONZKEVM = 1_101,
   BASE = 8453,
+  AVAX = 43114,
 }
 
 export const networkUrls = {
@@ -62,6 +64,10 @@ export const networkUrls = {
   [NetworkChainId.BASE]: {
     url: "https://basescan.org/",
     name: "Base Chain Explorer",
+  },
+  [NetworkChainId.AVAX]: {
+    url: "https://snowtrace.io/",
+    name: "Avalanche C-Chain Explorer",
   },
 };
 
@@ -122,6 +128,8 @@ export const networkIdEnumMap = {
   "5": Network.Goerli,
   "11155111": Network.Sepolia,
   "1101": Network.PolygonZKEVM,
+  "43114": Network.Avalanche,
+  "8453": Network.Base,
 };
 
 const filteredKeys = [
@@ -131,6 +139,8 @@ const filteredKeys = [
   String(NetworkChainId.POLYGON),
   String(NetworkChainId.POLYGONZKEVM),
   String(NetworkChainId.ARBITRUM),
+  String(NetworkChainId.AVAX),
+  String(NetworkChainId.BASE),
 ];
 
 export const networksOnBalancer = Object.fromEntries(

@@ -33,8 +33,9 @@ export const SUBGRAPHS = {
         [Network.Arbitrum]: `${baseEndpoint}/bal-pools-metadata-arb`,
         [Network.Gnosis]: `${baseEndpoint}/balancer-pools-metadata-gnosis`,
         [Network.Optimism]: `${baseEndpoint}/balancer-pools-metadata-op`,
-        // TODO: deploy Base subgraph
+        // TODO: deploy Base and Avalanche subgraphs
         [Network.Base]: `${baseEndpoint}/balancer-pool-metadata`,
+        [Network.Avalanche]: `${baseEndpoint}/balancer-pool-metadata`,
       };
     },
     endpointFor(network: Network) {
@@ -49,16 +50,16 @@ export const SUBGRAPHS = {
 
       return {
         [Network.Ethereum]: `${baseEndpoint}`,
-        // TODO: substitute Sepolia and PolygonZKEvm, not functional yet
+        // TODO: substitute Sepolia
         [Network.Sepolia]: `${baseEndpoint}-goerli`,
         [Network.Goerli]: `${baseEndpoint}-goerli`,
         [Network.Polygon]: `${baseEndpoint}-polygon`,
-        // TODO: substitute Sepolia and PolygonZKEvm, not functional yet
-        [Network.PolygonZKEVM]: `${baseEndpoint}-goerli`,
+        [Network.PolygonZKEVM]: `https://api.studio.thegraph.com/query/24660/balancer-gauges-polygon-zk/version/latest`,
         [Network.Arbitrum]: `${baseEndpoint}-arbitrum`,
         [Network.Gnosis]: `${baseEndpoint}-gnosis-chain`,
         [Network.Optimism]: `${baseEndpoint}-optimism`,
-        [Network.Base]: `${baseEndpoint}-goerli`,
+        [Network.Base]: `https://api.studio.thegraph.com/query/24660/balancer-gauges-base/version/latest`,
+        [Network.Avalanche]: `${baseEndpoint}-avalanche`,
       };
     },
     endpointFor(network: Network) {
@@ -78,10 +79,11 @@ export const SUBGRAPHS = {
         [Network.Polygon]: `${baseEndpoint}/balancer-polygon-v2`,
         [Network.PolygonZKEVM]: `https://api.studio.thegraph.com/query/24660/balancer-polygon-zk-v2/version/latest`,
         [Network.Arbitrum]: `${baseEndpoint}/balancer-arbitrum-v2`,
-        [Network.Gnosis]: `${baseEndpoint}/balancer-gnosis-chain-v2-beta`,
+        [Network.Gnosis]: `${baseEndpoint}/balancer-gnosis-chain-v2`,
         [Network.Optimism]: `${baseEndpoint}/balancer-optimism-v2`,
         [Network.Base]:
           "https://api.studio.thegraph.com/query/24660/balancer-base-v2/version/latest",
+        [Network.Avalanche]: `${baseEndpoint}/balancer-avalanche-v2`,
       };
     },
     endpointFor(network: Network) {
@@ -102,15 +104,16 @@ export const SUBGRAPHS = {
           "https://api.studio.thegraph.com/query/48427/bleu-polygon-zkevm-blocks/version/latest",
         [Network.Arbitrum]:
           "https://api.thegraph.com/subgraphs/name/ianlapham/arbitrum-one-blocks",
-        //TODO: Gnosis, Optimism and Base not functional yet
         [Network.Sepolia]:
           "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
         [Network.Gnosis]:
           "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
         [Network.Optimism]:
-          "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
+          "https://api.thegraph.com/subgraphs/name/lyra-finance/optimism-mainnet-blocks",
         [Network.Base]:
-          "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
+          "https://api.studio.thegraph.com/query/48427/bleu-base-blocks/version/latest",
+        [Network.Avalanche]:
+          "https://api.thegraph.com/subgraphs/name/iliaazhel/avalanche-blocks",
       };
     },
     endpointFor(network: Network) {

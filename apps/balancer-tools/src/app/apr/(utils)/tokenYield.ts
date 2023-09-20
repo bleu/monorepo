@@ -2,9 +2,10 @@ import { Address, networkFor, networkIdFor } from "@bleu-balancer-tools/utils";
 import { zeroAddress } from "viem";
 
 import { withCache } from "#/lib/cache";
-import { blocks, pools } from "#/lib/gql/server";
+import { pools } from "#/lib/gql/server";
 
 import { ChainName, publicClients } from "./chainsPublicClients";
+import getBlockNumberByTimestamp from "./getBlockNumberByTimestamp";
 import { manualPoolsRateProvider } from "./poolsRateProvider";
 import { vunerabilityAffecteRateProviders } from "./vunerabilityAffectedPool";
 
@@ -44,7 +45,7 @@ export const getPoolTokensAprForDate = withCache(
             address: tokenAddress,
             symbol,
             yield: await getAPRFromRateProviderInterval(
-              rateProviderAddress,
+              rateProviderAddress as Address,
               date - SECONDS_IN_DAY,
               date,
               chainName,
@@ -71,22 +72,30 @@ const getAPRFromRateProviderInterval = withCache(
       return 0;
     }
 
-    const { endRate, startRate } = await getIntervalRates(
-      rateProviderAddress,
-      timeStart,
-      timeEnd,
-      chainName,
-    );
+    let apr = -1;
 
-    const apr = getAPRFromRate(startRate, endRate, timeStart, timeEnd);
+    try {
+      const { endRate, startRate } = await getIntervalRates(
+        rateProviderAddress,
+        timeStart,
+        timeEnd,
+        chainName,
+      );
 
-    if (apr < 0) {
+      apr = getAPRFromRate(startRate, endRate, timeStart, timeEnd);
+    } catch (e) {
       // eslint-disable-next-line no-console
       console.error(
-        `Negative APR for ${rateProviderAddress} between ${timeStart} and ${timeEnd}`,
+        `Error fetching rate for ${rateProviderAddress} between ${timeStart} and ${timeEnd} chain ${chainName}`,
       );
+    } finally {
+      if (apr < 0) {
+        // eslint-disable-next-line no-console
+        console.error(
+          `Negative APR for ${rateProviderAddress} between ${timeStart} and ${timeEnd}`,
+        );
+      }
     }
-
     return apr;
   },
 );
@@ -105,7 +114,12 @@ function getAPRFromRate(
 }
 
 const getPoolTokensRateProviders = withCache(
-  async function getPoolTokensRateProvidersFn(chain: string, poolId: Address) {
+  async function getPoolTokensRateProvidersFn(
+    chain: string,
+    poolId: Address,
+  ): Promise<
+    { address: string; token: { address: string; symbol: string } }[]
+  > {
     const data = await pools.gql(String(chain)).PoolRateProviders({ poolId });
 
     if (!data.pool?.priceRateProviders?.length) {
@@ -144,26 +158,23 @@ const getIntervalRates = withCache(async function getIntervalRatesFn(
   timeEnd: number,
   chainName: ChainName,
 ) {
-  const [dataStart, dataEnd] = await Promise.all([
-    blocks.gql(String(networkIdFor(chainName))).Blocks({
-      timestamp_gte: timeStart,
-      timestamp_lt: timeEnd,
-    }),
-    blocks.gql(String(networkIdFor(chainName))).Blocks({
-      timestamp_gte: timeEnd,
-      timestamp_lt: timeEnd + SECONDS_IN_DAY,
-    }),
+  const [blockStart, blockEnd] = await Promise.all([
+    getBlockNumberByTimestamp(
+      parseInt(networkIdFor(chainName)),
+      new Date(timeStart),
+    ),
+    getBlockNumberByTimestamp(
+      parseInt(networkIdFor(chainName)),
+      new Date(timeEnd + SECONDS_IN_DAY),
+    ),
   ]);
-
-  const blockStart = dataStart.blocks[0]?.number;
-  const blockEnd = dataEnd.blocks[0]?.number;
 
   if (blockStart === undefined || blockEnd === undefined) {
     // eslint-disable-next-line no-console
     console.error(
       `No blocks found between ${timeStart} and ${timeEnd} on ${chainName}`,
     );
-    return { endRate: -1, startRate: -1 };
+    throw new Error("No blocks found");
   }
 
   const [endRate, startRate] = await Promise.all([

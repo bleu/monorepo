@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import ChartSkelton from "#/app/apr/(components)/(skeleton)/ChartSkelton";
 import KpisSkeleton from "#/app/apr/(components)/(skeleton)/KpisSkeleton";
 import TableSkeleton from "#/app/apr/(components)/(skeleton)/TableSkeleton";
+import { formatDateToMMDDYYYY } from "#/app/apr/api/(utils)/date";
 import { QueryParamsPagesSchema } from "#/app/apr/api/(utils)/validate";
 import { SearchParams } from "#/app/apr/page";
 import Breadcrumb from "#/app/apr/round/(components)/Breadcrumb";
@@ -22,7 +23,9 @@ export default async function Page({
 }) {
   const parsedParams = QueryParamsPagesSchema.safeParse(searchParams);
   if (!parsedParams.success) {
-    return redirect("/apr/");
+    const currentDateFormated = formatDateToMMDDYYYY(new Date());
+    const OneWeekAgoDateFormated = formatDateToMMDDYYYY(new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),);
+    return redirect(`/apr/?startAt=${currentDateFormated}&endAt=${OneWeekAgoDateFormated}&`);
   }
   const { startAt: startAtDate, endAt: endAtDate } = parsedParams.data;
   if (!startAtDate || !endAtDate) {

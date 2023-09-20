@@ -15,10 +15,9 @@ import { Dialog } from "#/components/Dialog";
 import { BaseInput } from "#/components/Input";
 import { SearchPoolForm } from "#/components/SearchPoolForm";
 
-import { formatDateToMMDDYYYY } from "../api/(utils)/date";
 
 export default function HeaderEndButton() {
-  const { poolId, network } = useParams();
+  const { network } = useParams();
   const searchParams = useSearchParams();
   const startAtParam = searchParams.get("startAt");
   const endAtParam = searchParams.get("endAt");
@@ -28,22 +27,9 @@ export default function HeaderEndButton() {
   const [endAtInput, setEndAtInput] = useState("");
 
   React.useEffect(() => {
-    if (!poolId) {
-      if (!startAtInput && !endAtInput && startAtParam && endAtParam) {
-        setStartAtInput(startAtParam);
-        setEndAtInput(endAtParam);
-        router.push(`/apr/?startAt=${startAtParam}&endAt=${endAtParam}&`);
-      } else if (!startAtInput && !endAtInput && !startAtParam && !endAtParam) {
-        const currentDateFormated = formatDateToMMDDYYYY(new Date());
-        const OneWeekAgoDateFormated = formatDateToMMDDYYYY(
-          new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
-        );
-        setStartAtInput(currentDateFormated);
-        setEndAtInput(OneWeekAgoDateFormated);
-        router.push(
-          `/apr/?startAt=${currentDateFormated}&endAt=${OneWeekAgoDateFormated}&`,
-        );
-      }
+    if (startAtParam && endAtParam) {
+      setStartAtInput(startAtParam);
+      setEndAtInput(endAtParam);
     }
   }, [searchParams]);
 

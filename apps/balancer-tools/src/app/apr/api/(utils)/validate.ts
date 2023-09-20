@@ -128,3 +128,34 @@ export const QueryParamsSchema = z
       message: "Both startAt and endAt must be provided together",
     },
   );
+
+export const QueryParamsPagesSchema = z
+  .object({
+    poolId: OptionalNullableString.refine(
+      (poolId) =>
+        !poolId ||
+        POOLS_WITH_LIVE_GAUGES.some(
+          (g) => g.id.toLowerCase() === poolId?.toLowerCase(),
+        ),
+      { message: "Pool with ID not found" },
+    ),
+    startAt: DateSchema,
+    endAt: DateSchema,
+  })
+  .refine((data) => data.poolId || data.startAt || data.endAt, {
+    message: "Either poolId, startAt, or endAt must be provided",
+  })
+  .refine(
+    (data) => {
+      if (data.startAt && !data.endAt) {
+        return false;
+      }
+      if (data.endAt && !data.startAt) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Both startAt and endAt must be provided together",
+    },
+  );

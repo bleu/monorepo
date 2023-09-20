@@ -1,9 +1,10 @@
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 import ChartSkelton from "#/app/apr/(components)/(skeleton)/ChartSkelton";
 import KpisSkeleton from "#/app/apr/(components)/(skeleton)/KpisSkeleton";
 import TableSkeleton from "#/app/apr/(components)/(skeleton)/TableSkeleton";
-import { QueryParamsSchema } from "#/app/apr/api/(utils)/validate";
+import { QueryParamsPagesSchema } from "#/app/apr/api/(utils)/validate";
 import { SearchParams } from "#/app/apr/page";
 import Breadcrumb from "#/app/apr/round/(components)/Breadcrumb";
 
@@ -19,11 +20,14 @@ export default async function Page({
   searchParams: SearchParams;
   params: { poolId: string };
 }) {
-  const {
-    startAt: startAtDate,
-    endAt: endAtDate,
-    // @ts-ignore
-  } = QueryParamsSchema.safeParse(searchParams).data;
+  const parsedParams = QueryParamsPagesSchema.safeParse(searchParams);
+  if (!parsedParams.success) {
+    return redirect(`/apr/`);
+  }
+  const { startAt: startAtDate, endAt: endAtDate } = parsedParams.data;
+  if (!startAtDate || !endAtDate) {
+    return redirect(`/apr/`);
+  }
 
   return (
     <div className="flex flex-1 h-full w-full flex-col justify-start rounded-3xl text-white gap-y-3">

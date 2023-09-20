@@ -1,9 +1,10 @@
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 import ChartSkelton from "./(components)/(skeleton)/ChartSkelton";
 import KpisSkeleton from "./(components)/(skeleton)/KpisSkeleton";
 import TableSkeleton from "./(components)/(skeleton)/TableSkeleton";
-import { QueryParamsSchema } from "./api/(utils)/validate";
+import { QueryParamsPagesSchema } from "./api/(utils)/validate";
 import Breadcrumb from "./round/(components)/Breadcrumb";
 import PoolTableWrapper from "./round/(components)/PoolTableWrapper";
 import RoundOverviewCards from "./round/(components)/RoundOverviewCards";
@@ -25,11 +26,14 @@ export default function Page({
   params: { roundId: string };
   searchParams: SearchParams;
 }) {
-  const {
-    startAt: startAtDate,
-    endAt: endAtDate,
-    // @ts-ignore
-  } = QueryParamsSchema.safeParse(searchParams).data;
+  const parsedParams = QueryParamsPagesSchema.safeParse(searchParams);
+  if (!parsedParams.success) {
+    return redirect(`/apr/`);
+  }
+  const { startAt: startAtDate, endAt: endAtDate } = parsedParams.data;
+  if (!startAtDate || !endAtDate) {
+    return redirect(`/apr/`);
+  }
 
   return (
     <div className="flex flex-1 flex-col gap-y-3">

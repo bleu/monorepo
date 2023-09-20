@@ -5,17 +5,39 @@ export enum Order {
   Desc = "desc",
 }
 
-function compareNumbers(a: number, b: number, order: Order): number {
-  // Handle NaN values
-  if (isNaN(a) && isNaN(b)) return 0;
-  if (isNaN(a)) return 1;
-  if (isNaN(b)) return -1;
-
-  return order === "asc" ? a - b : b - a;
+function compareNumbers(a: number, b: number): number {
+  return a - b;
 }
 
-function compareStrings(a: string, b: string, order: Order): number {
-  return order === "asc" ? a.localeCompare(b) : b.localeCompare(a);
+function compareStrings(a: string, b: string): number {
+  return a.localeCompare(b);
+}
+
+function createSortFunction(
+  sortProperty: keyof PoolStatsData,
+  order: Order,
+): (a: PoolStatsData, b: PoolStatsData) => number {
+  return (a, b) => {
+    let valueA = a[sortProperty];
+    let valueB = b[sortProperty];
+
+    if (sortProperty === "apr") {
+      valueA = a.apr.total;
+      valueB = b.apr.total;
+    }
+
+    if (valueA == null || Number.isNaN(valueA)) return 1;
+    if (valueB == null || Number.isNaN(valueB)) return -1;
+
+    if (typeof valueA === "number" && typeof valueB === "number") {
+      return compareNumbers(valueA, valueB) * (order === Order.Asc ? 1 : -1);
+    } else {
+      return (
+        compareStrings(valueA.toString(), valueB.toString()) *
+        (order === Order.Asc ? 1 : -1)
+      );
+    }
+  };
 }
 
 export function sortAndLimit(
@@ -29,25 +51,18 @@ export function sortAndLimit(
 
   for (const date in poolStatsResults.perDay) {
     const dayData = poolStatsResults.perDay[date];
+    const sortFunction = createSortFunction(sortProperty, order);
 
     const sortedEntries = dayData
-      .sort((a, b) => {
-        const valueA = a[sortProperty];
-        const valueB = b[sortProperty];
-
-        if (valueA == null || Number.isNaN(valueA)) return 1;
-        if (valueB == null || Number.isNaN(valueB)) return -1;
-
-        if (typeof valueA === "number" && typeof valueB === "number") {
-          return compareNumbers(valueA, valueB, order);
-        } else {
-          return compareStrings(valueA.toString(), valueB.toString(), order);
-        }
-      })
+      .sort(sortFunction)
       .slice(offset, offset + limit);
 
     sortedData[date] = sortedEntries;
   }
+
+  poolStatsResults.average.poolAverage = poolStatsResults.average.poolAverage
+    .sort(createSortFunction(sortProperty, order))
+    .slice(offset, offset + limit);
 
   return {
     ...poolStatsResults,

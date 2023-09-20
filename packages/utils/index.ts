@@ -129,6 +129,7 @@ export const networkIdEnumMap = {
   "11155111": Network.Sepolia,
   "1101": Network.PolygonZKEVM,
   "43114": Network.Avalanche,
+  "8453": Network.Base,
 };
 
 const filteredKeys = [

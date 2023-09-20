@@ -2,9 +2,10 @@ import { Address, networkFor, networkIdFor } from "@bleu-balancer-tools/utils";
 import { zeroAddress } from "viem";
 
 import { withCache } from "#/lib/cache";
-import { blocks, pools } from "#/lib/gql/server";
+import { pools } from "#/lib/gql/server";
 
 import { ChainName, publicClients } from "./chainsPublicClients";
+import getBlockNumberByTimestamp from "./getBlockNumberByTimestamp";
 import { manualPoolsRateProvider } from "./poolsRateProvider";
 import { vunerabilityAffecteRateProviders } from "./vunerabilityAffectedPool";
 
@@ -44,7 +45,7 @@ export const getPoolTokensAprForDate = withCache(
             address: tokenAddress,
             symbol,
             yield: await getAPRFromRateProviderInterval(
-              rateProviderAddress,
+              rateProviderAddress as Address,
               date - SECONDS_IN_DAY,
               date,
               chainName,
@@ -117,7 +118,7 @@ const getPoolTokensRateProviders = withCache(
     chain: string,
     poolId: Address,
   ): Promise<
-    { address: Address; token: { address: Address; symbol: string } }[]
+    { address: string; token: { address: string; symbol: string } }[]
   > {
     const data = await pools.gql(String(chain)).PoolRateProviders({ poolId });
 
@@ -157,19 +158,16 @@ const getIntervalRates = withCache(async function getIntervalRatesFn(
   timeEnd: number,
   chainName: ChainName,
 ) {
-  const [dataStart, dataEnd] = await Promise.all([
-    blocks.gql(String(networkIdFor(chainName))).Blocks({
-      timestamp_gte: timeStart,
-      timestamp_lt: timeEnd,
-    }),
-    blocks.gql(String(networkIdFor(chainName))).Blocks({
-      timestamp_gte: timeEnd,
-      timestamp_lt: timeEnd + SECONDS_IN_DAY,
-    }),
+  const [blockStart, blockEnd] = await Promise.all([
+    getBlockNumberByTimestamp(
+      parseInt(networkIdFor(chainName)),
+      new Date(timeStart),
+    ),
+    getBlockNumberByTimestamp(
+      parseInt(networkIdFor(chainName)),
+      new Date(timeEnd + SECONDS_IN_DAY),
+    ),
   ]);
-
-  const blockStart = dataStart.blocks[0]?.number;
-  const blockEnd = dataEnd.blocks[0]?.number;
 
   if (blockStart === undefined || blockEnd === undefined) {
     // eslint-disable-next-line no-console

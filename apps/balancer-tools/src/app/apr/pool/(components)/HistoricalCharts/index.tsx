@@ -1,3 +1,4 @@
+import { formatDateToMMDDYYYY } from "#/app/apr/api/(utils)/date";
 import { BASE_URL, PoolStatsData, PoolStatsResults } from "#/app/apr/api/route";
 import { trimTrailingValues } from "#/lib/utils";
 import { fetcher } from "#/utils/fetcher";
@@ -14,7 +15,9 @@ export default async function HistoricalCharts({
   poolId?: string;
 }) {
   const results: PoolStatsResults = await fetcher(
-    `${BASE_URL}/apr/api/?poolId=${poolId}`,
+    `${BASE_URL}/apr/api/?poolId=${poolId}&startAt=${formatDateToMMDDYYYY(
+      startAt,
+    )}&endAt=${formatDateToMMDDYYYY(endAt)}`,
   );
 
   return (

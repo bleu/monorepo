@@ -132,6 +132,7 @@ export async function GET(request: NextRequest) {
 
   return NextResponse.json(
     sortAndLimit(
+      // @ts-ignore
       filterPoolStats(responseData, searchParams),
       // @ts-ignore
       sort,

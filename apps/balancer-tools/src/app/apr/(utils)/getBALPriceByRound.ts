@@ -2,8 +2,6 @@ import { networkFor } from "@bleu-balancer-tools/utils";
 
 import { DefiLlamaAPI } from "#/lib/coingecko";
 
-import { Round } from "./rounds";
-
 const MILLISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
 const BAL_TOKEN_ADDRESS = "0xba100000625a3754423978a60c9317c58a424e3d";
 const BAL_TOKEN_NETWORK = 1;
@@ -21,11 +19,11 @@ const calculateDaysBetween = (startDate: Date, endDate: Date) =>
 const calculateAverage = (arr: number[]) =>
   arr.reduce((sum, val) => sum + val, 0) / arr.length;
 
-export const getBALPriceByRound = async (round: Round) => {
-  const days = calculateDaysBetween(round.startDate, round.endDate);
+export const getBALPriceByRound = async (startDate: Date, endDate: Date) => {
+  const days = calculateDaysBetween(startDate, endDate);
   const pricePromises = Array.from({ length: days }, (_, i) =>
     getTokenPriceByDate(
-      new Date(round.startDate.getTime() + i * MILLISECONDS_IN_DAY),
+      new Date(startDate.getTime() + i * MILLISECONDS_IN_DAY),
       BAL_TOKEN_ADDRESS,
       BAL_TOKEN_NETWORK,
     ),

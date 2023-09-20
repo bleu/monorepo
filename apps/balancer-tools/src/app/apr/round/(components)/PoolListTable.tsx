@@ -29,30 +29,36 @@ import { formatNumber } from "#/utils/formatNumber";
 import { PoolTypeEnum } from "../../(utils)/calculatePoolStats";
 import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
 import getFilteredRoundApiUrl from "../../(utils)/getFilteredApiUrl";
+import { formatDateToMMDDYYYY } from "../../api/(utils)/date";
 import { PoolStatsData, PoolStatsResults, PoolTokens } from "../../api/route";
 import { MoreFiltersButton } from "./MoreFiltersButton";
 import { TokenFilterInput } from "./TokenFilterInput";
 
 export function PoolListTable({
-  roundId,
+  startAt,
+  endAt,
   initialData,
 }: {
-  roundId: string;
-  initialData: PoolStatsData[];
+  startAt: Date;
+  endAt: Date;
+  initialData: { [key: string]: PoolStatsData[] };
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [tableData, setTableData] = useState(initialData);
+  const selectedDate = initialData[formatDateToMMDDYYYY(endAt)];
+
+  const [tableData, setTableData] = useState(selectedDate);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMorePools, setHasMorePools] = useState(true);
 
   useEffect(() => {
-    setTableData(initialData);
-    setHasMorePools(!(initialData.length < 10));
+    setTableData(initialData[formatDateToMMDDYYYY(endAt)]);
+    setHasMorePools(!(initialData[formatDateToMMDDYYYY(endAt)].length < 10));
   }, [initialData]);
 
   const createQueryString = useCallback(
     (accessor: string) => {
+      // @ts-ignore
       const params = new URLSearchParams(searchParams);
       const sortOrder =
         accessor === params.get("sort") && params.get("order") === "desc"
@@ -70,13 +76,15 @@ export function PoolListTable({
     const params = Object.fromEntries(searchParams.entries());
     params["offset"] = (tableData.length + 1).toString();
 
-    const url = new URL(getFilteredRoundApiUrl(params, roundId));
+    const url = new URL(getFilteredRoundApiUrl(params, startAt, endAt));
     const aditionalPoolsData = await fetcher<PoolStatsResults>(
       url.pathname + url.search,
     );
     setTableData((prevTableData) => {
-      if (aditionalPoolsData.perRound.length === 0) setHasMorePools(false);
-      return prevTableData.concat(aditionalPoolsData.perRound);
+      if (selectedDate.length === 0) setHasMorePools(false);
+      return prevTableData.concat(
+        aditionalPoolsData.perDay[formatDateToMMDDYYYY(endAt)],
+      );
     });
     setIsLoadingMore(false);
   };
@@ -145,12 +153,13 @@ export function PoolListTable({
                     key={pool.poolId}
                     poolId={pool.poolId}
                     network={pool.network}
-                    roundId={roundId}
                     tokens={pool.tokens}
                     poolType={pool.type}
                     tvl={pool.tvl}
                     votingShare={pool.votingShare}
                     apr={pool.apr.total}
+                    startAt={startAt}
+                    endAt={endAt}
                   />
                 ))}
 
@@ -194,26 +203,30 @@ export function PoolListTable({
 
 function TableRow({
   poolId,
-  roundId,
   network,
   tokens,
   poolType,
   tvl,
   votingShare,
   apr,
+  startAt,
+  endAt,
 }: {
   poolId: string;
-  roundId: string;
   network: string;
   tokens: PoolTokens[];
   poolType: keyof typeof PoolTypeEnum;
   tvl: number;
   votingShare: number;
   apr: number;
+  startAt: Date;
+  endAt: Date;
 }) {
   const poolRedirectURL = `/apr/pool/${networkFor(
     network,
-  )}/${poolId}/round/${roundId}`;
+  )}/${poolId}/?startAt=${formatDateToMMDDYYYY(
+    startAt,
+  )}&endAt=${formatDateToMMDDYYYY(endAt)}`;
   return (
     <Table.BodyRow classNames="sm:hover:bg-blue4 hover:cursor-pointer duration-500">
       <Table.BodyCellLink

@@ -5,13 +5,17 @@ import { PoolStatsResults } from "../../api/route";
 import TopPoolsChart from "./TopPoolsChart";
 
 export default async function TopPoolsChartWrapper({
-  roundId,
+  startAt,
+  endAt,
 }: {
-  roundId: string;
+  startAt: Date;
+  endAt: Date;
 }) {
   const topAprApi = await fetcher<PoolStatsResults>(
-    getFilteredRoundApiUrl({}, roundId),
+    getFilteredRoundApiUrl({}, startAt, endAt),
   );
 
-  return <TopPoolsChart roundId={roundId} ApiResult={topAprApi} />;
+  return (
+    <TopPoolsChart startAt={startAt} endAt={endAt} ApiResult={topAprApi} />
+  );
 }

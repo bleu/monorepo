@@ -148,7 +148,7 @@ export async function calculatePoolStats({
     tokensAPR,
   ] = await Promise.all([
     getDataFromCacheOrCompute(`bal_price_${round.value}`, () =>
-      getBALPriceByRound(round),
+      getBALPriceByRound(round.startDate, round.endDate),
     ),
     getDataFromCacheOrCompute(
       `pool_data_${poolId}_${round.value}_${network}`,

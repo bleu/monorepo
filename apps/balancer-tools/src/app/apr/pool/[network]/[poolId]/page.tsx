@@ -22,11 +22,11 @@ export default async function Page({
 }) {
   const parsedParams = QueryParamsPagesSchema.safeParse(searchParams);
   if (!parsedParams.success) {
-    return redirect(`/apr/`);
+    return redirect("/apr/");
   }
   const { startAt: startAtDate, endAt: endAtDate } = parsedParams.data;
   if (!startAtDate || !endAtDate) {
-    return redirect(`/apr/`);
+    return redirect("/apr/");
   }
 
   return (

@@ -1,6 +1,7 @@
 import { Network } from "@bleu-balancer-tools/utils";
 
 import { getSdkWithHooks as arbitrumSdk } from "./__generated__/Arbitrum";
+import { getSdkWithHooks as avalancheSdk } from "./__generated__/Avax";
 import { getSdkWithHooks as baseSdk } from "./__generated__/Base";
 import { getSdkWithHooks as ethereumSdk } from "./__generated__/Ethereum";
 import { getSdkWithHooks as gnosisSdk } from "./__generated__/Gnosis";
@@ -20,4 +21,5 @@ export default {
   [Network.Sepolia]: sepoliaSdk,
   [Network.PolygonZKEVM]: polygonZkEVMSdk,
   [Network.Base]: baseSdk,
+  [Network.Avalanche]: avalancheSdk,
 };

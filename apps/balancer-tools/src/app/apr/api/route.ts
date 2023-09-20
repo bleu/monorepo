@@ -9,13 +9,9 @@ import { fetcher } from "#/utils/fetcher";
 import {
   calculatePoolData,
   calculatePoolStats,
-  PoolTypeEnum,
 } from "../(utils)/calculatePoolStats";
 import { Round } from "../(utils)/rounds";
-
-export const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
+import { BASE_URL, PoolTypeEnum } from "../(utils)/types";
 
 type Order = "asc" | "desc";
 
@@ -192,7 +188,9 @@ const fetchDataForPoolIdRoundId = async (poolId: string, roundId: string) => {
       );
 
       if (attempts >= MAX_RETRIES) {
-        console.error("Max retries reached. Giving up fetching data.");
+        console.error(
+          `Max retries reached. Giving up fetching data for pool ${poolId} and round ${roundId}.`,
+        );
         return null;
       }
 

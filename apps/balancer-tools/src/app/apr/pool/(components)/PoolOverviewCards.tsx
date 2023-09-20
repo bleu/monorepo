@@ -4,7 +4,8 @@ import OverviewCards, {
   getRoundDetails,
 } from "../../(components)/OverviewCards";
 import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
-import { BASE_URL, PoolStatsResults } from "../../api/route";
+import { BASE_URL } from "../../(utils)/types";
+import { PoolStatsResults } from "../../api/route";
 
 async function AverageTVLCard({ poolId }: { poolId: string }) {
   const data: PoolStatsResults = await fetcher(

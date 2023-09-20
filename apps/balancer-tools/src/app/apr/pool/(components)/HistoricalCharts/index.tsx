@@ -1,4 +1,5 @@
-import { BASE_URL, PoolStatsData, PoolStatsResults } from "#/app/apr/api/route";
+import { BASE_URL } from "#/app/apr/(utils)/types";
+import { PoolStatsData, PoolStatsResults } from "#/app/apr/api/route";
 import { trimTrailingValues } from "#/lib/utils";
 import { fetcher } from "#/utils/fetcher";
 

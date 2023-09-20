@@ -7,7 +7,7 @@
   ],
   "devDependencies": {
     "@bleu-balancer-tools/utils": "workspace:^",
-    "@next/eslint-plugin-next": "^13.4.19",
+    "@next/eslint-plugin-next": "^13.5.1",
     "@typescript-eslint/eslint-plugin": "latest",
     "eslint": "^8.49.0",
     "eslint-config-next": "latest",

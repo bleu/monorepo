@@ -1,9 +1,16 @@
-import { PoolStats, PoolStatsWithoutVotingShareAndCollectedFees, tokenAPR } from "../route";
+import { calculatePoolData } from "../../(utils)/calculatePoolStats";
+import {
+  PoolStats,
+  PoolStatsData,
+  PoolStatsWithoutVotingShareAndCollectedFees,
+  tokenAPR,
+} from "../route";
 
-export const computeAverages = (
-  formattedPoolData: { [key: string]: PoolStats[] }
-): PoolStatsWithoutVotingShareAndCollectedFees => {
-  const averages: PoolStatsWithoutVotingShareAndCollectedFees = initializeAverages();
+export const computeAverages = (formattedPoolData: {
+  [key: string]: PoolStatsData[] | calculatePoolData[];
+}): PoolStatsWithoutVotingShareAndCollectedFees => {
+  const averages: PoolStatsWithoutVotingShareAndCollectedFees =
+    initializeAverages();
   const poolAverage: { [key: string]: PoolStatsData | calculatePoolData } = {};
 
   const uniqueTokenEntries: {
@@ -38,7 +45,7 @@ export const computeAverages = (
   }
 
   if (totalDataCount > 0) {
-    calculateAverages(averages, totalDataCount, uniqueEntries);
+    calculateAverages(averages, totalDataCount, uniqueTokenEntries);
     CalculateAveragesForPool(
       poolAverage,
       Object.keys(formattedPoolData).length,
@@ -83,6 +90,7 @@ function CalculateAveragesForPool(
 
 function initializeAverages(): PoolStatsWithoutVotingShareAndCollectedFees {
   return {
+    poolAverage: [],
     apr: {
       total: 0,
       breakdown: {
@@ -102,7 +110,7 @@ function initializeAverages(): PoolStatsWithoutVotingShareAndCollectedFees {
 
 function accumulateData(
   obj1: PoolStatsWithoutVotingShareAndCollectedFees,
-  obj2: PoolStatsData,
+  obj2: PoolStatsData | calculatePoolData,
 ): PoolStatsData {
   const result = { ...obj1 };
 
@@ -135,7 +143,7 @@ function accumulateData(
 function accumulateTokens(
   targetTokens: { total: number; breakdown: tokenAPR[] },
   sourceTokens: { total: number; breakdown: tokenAPR[] },
-  uniqueEntries: { [key: string]: { idx: number; occurences: number } }
+  uniqueEntries: { [key: string]: { idx: number; occurences: number } },
 ): void {
   sourceTokens.breakdown.forEach((tokenData) => {
     if (!uniqueEntries[tokenData.symbol]) {
@@ -146,13 +154,17 @@ function accumulateTokens(
       targetTokens.breakdown.push(tokenData);
     } else {
       uniqueEntries[tokenData.symbol].occurences++;
-      const existingTokenData = targetTokens.breakdown[uniqueEntries[tokenData.symbol].idx];
+      const existingTokenData =
+        targetTokens.breakdown[uniqueEntries[tokenData.symbol].idx];
       existingTokenData.yield += tokenData.yield;
     }
   });
 }
 
-function accumulateOtherMetrics(target: PoolStatsWithoutVotingShareAndCollectedFees, source: PoolStats): void {
+function accumulateOtherMetrics(
+  target: PoolStatsWithoutVotingShareAndCollectedFees,
+  source: PoolStats | calculatePoolData,
+): void {
   target.balPriceUSD += source.balPriceUSD;
   target.tvl += source.tvl;
   target.volume += source.volume;
@@ -161,7 +173,7 @@ function accumulateOtherMetrics(target: PoolStatsWithoutVotingShareAndCollectedF
 function calculateAverages(
   averages: PoolStatsWithoutVotingShareAndCollectedFees,
   totalDataCount: number,
-  uniqueEntries: { [key: string]: { idx: number; occurences: number } }
+  uniqueEntries: { [key: string]: { idx: number; occurences: number } },
 ): void {
   averages.apr.total /= totalDataCount;
   averages.apr.breakdown.veBAL /= totalDataCount;

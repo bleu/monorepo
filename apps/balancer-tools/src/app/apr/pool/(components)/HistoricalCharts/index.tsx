@@ -1,5 +1,6 @@
+import { BASE_URL } from "#/app/apr/(utils)/types";
 import { formatDateToMMDDYYYY } from "#/app/apr/api/(utils)/date";
-import { BASE_URL, PoolStatsData, PoolStatsResults } from "#/app/apr/api/route";
+import { PoolStatsData, PoolStatsResults } from "#/app/apr/api/route";
 import { trimTrailingValues } from "#/lib/utils";
 import { fetcher } from "#/utils/fetcher";
 

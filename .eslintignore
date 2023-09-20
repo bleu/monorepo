@@ -4,3 +4,11 @@
 **/lib/balancer-v2-monorepo/**
 **/lib/forge-std/**
 **/.vercel/**
+
+**/lib/**
+**/wagmi/generated.ts
+**/wagmi*.mjs
+!.lintstagedrc.js
+!.eslintrc.js
+node_modules/
+lib/

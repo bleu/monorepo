@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { POOLS_WITH_LIVE_GAUGES } from "#/lib/balancer/gauges";
 
-import { PoolTypeEnum } from "../../(utils)/calculatePoolStats";
+import { PoolTypeEnum } from "../../(utils)/types";
 import { Order } from "./sort";
 
 const currentDate = new Date();

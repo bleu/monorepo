@@ -3,7 +3,8 @@
 import { POOLS_WITH_LIVE_GAUGES } from "#/lib/balancer/gauges";
 import { fetcher } from "#/utils/fetcher";
 
-import { BASE_URL, PoolStatsData, PoolStatsResults } from "../route";
+import { BASE_URL } from "../../(utils)/types";
+import { PoolStatsData, PoolStatsResults } from "../route";
 import { computeAverages } from "./computeAverages";
 import { formatDateToMMDDYYYY } from "./date";
 

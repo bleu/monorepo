@@ -3,17 +3,13 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { getDataFromCacheOrCompute } from "#/lib/cache";
 
-import { PoolTypeEnum } from "../(utils)/calculatePoolStats";
+import { PoolTypeEnum } from "../(utils)/types";
 import { fetchDataForPoolId } from "./(utils)/fetchDataForPoolId";
 import { fetchDataForPoolIdDateRange } from "./(utils)/fetchDataForPoolIdDateRange";
 import { fetchDataForDateRange } from "./(utils)/fetchForDateRange";
 import { filterPoolStats } from "./(utils)/filter";
 import { sortAndLimit } from "./(utils)/sort";
 import { QueryParamsSchema } from "./(utils)/validate";
-
-export const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
 
 export interface tokenAPR {
   address: string;

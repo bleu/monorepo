@@ -54,7 +54,7 @@ export function getTransitionIndices(booleans: boolean[]): number[] {
     throw new Error("The true values are not continuous.");
   }
 
-  return end === start ? [start] : [start, end];
+  return end === booleans.length ? [start, end - 1] : [start, end];
 }
 
 export function getBetaLimitsIndexes({

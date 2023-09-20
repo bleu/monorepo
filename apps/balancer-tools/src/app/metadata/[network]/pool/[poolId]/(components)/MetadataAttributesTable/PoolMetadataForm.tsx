@@ -62,8 +62,10 @@ export default function PoolMetadataForm({
     switch (mode) {
       case "add":
         handleAddMetadata(formData);
+        break;
       case "edit":
         handleUpdateMetadata(formData);
+        break;
     }
 
     close?.();

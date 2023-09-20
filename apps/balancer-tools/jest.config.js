@@ -1,3 +1,4 @@
+/* eslint-env node */
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const nextJest = require("next/jest");
 
@@ -8,7 +9,8 @@ const createJestConfig = nextJest({
 
 // Add any custom config to be passed to Jest
 const customJestConfig = {
-  setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
+  preset: "ts-jest",
+  setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
   testEnvironment: "jest-environment-jsdom",
 };
 

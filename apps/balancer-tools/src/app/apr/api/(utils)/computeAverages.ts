@@ -61,6 +61,7 @@ function CalculateAveragesForPool(
   output: PoolStatsData[] | calculatePoolData[],
 ) {
   for (const key in poolAverage) {
+    // eslint-disable-next-line no-prototype-builtins
     if (poolAverage.hasOwnProperty(key)) {
       if (typeof poolAverage[key] === "object" && poolAverage[key] !== null) {
         // Check if the value is an object and not null
@@ -68,6 +69,7 @@ function CalculateAveragesForPool(
         const dividedStatsData = {} as PoolStatsData;
 
         for (const subKey in poolStatsData) {
+          // eslint-disable-next-line no-prototype-builtins
           if (poolStatsData.hasOwnProperty(subKey)) {
             if (
               typeof poolStatsData[subKey as keyof PoolStatsData] === "number"
@@ -114,6 +116,7 @@ function accumulateData(
   const result = { ...obj1 };
 
   for (const key in obj2) {
+    // eslint-disable-next-line no-prototype-builtins
     if (obj2.hasOwnProperty(key) && obj1.hasOwnProperty(key)) {
       // @ts-ignore  - Need help with this typing!
       if (typeof obj1[key] === "string" && typeof obj2[key] === "string") {

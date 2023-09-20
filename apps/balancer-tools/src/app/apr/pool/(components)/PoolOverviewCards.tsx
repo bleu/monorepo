@@ -4,7 +4,8 @@ import OverviewCards, {
   getDatesDetails,
 } from "../../(components)/OverviewCards";
 import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
-import { BASE_URL, PoolStatsResults } from "../../api/route";
+import { BASE_URL } from "../../(utils)/types";
+import { PoolStatsResults } from "../../api/route";
 
 export default async function PoolOverviewCards({
   startAt,

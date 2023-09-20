@@ -1,6 +1,5 @@
 import { calculatePoolData } from "../../(utils)/calculatePoolStats";
 import {
-  PoolStats,
   PoolStatsData,
   PoolStatsWithoutVotingShareAndCollectedFees,
   tokenAPR,
@@ -119,9 +118,10 @@ function accumulateData(
       // @ts-ignore  - Need help with this typing!
       if (typeof obj1[key] === "string" && typeof obj2[key] === "string") {
         continue;
-        // @ts-ignore  - Need help with this typing!
       } else if (
+        // @ts-ignore  - Need help with this typing!
         typeof obj1[key] === "object" &&
+        // @ts-ignore  - Need help with this typing!
         typeof obj2[key] === "object"
       ) {
         // @ts-ignore  - Need help with this typing!
@@ -159,15 +159,6 @@ function accumulateTokens(
       existingTokenData.yield += tokenData.yield;
     }
   });
-}
-
-function accumulateOtherMetrics(
-  target: PoolStatsWithoutVotingShareAndCollectedFees,
-  source: PoolStats | calculatePoolData,
-): void {
-  target.balPriceUSD += source.balPriceUSD;
-  target.tvl += source.tvl;
-  target.volume += source.volume;
 }
 
 function calculateAverages(

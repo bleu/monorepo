@@ -1,6 +1,6 @@
 "use client";
 
-import { networkFor } from "@bleu-balancer-tools/utils";
+import { formatDate, networkFor } from "@bleu-balancer-tools/utils";
 import { greenDarkA } from "@radix-ui/colors";
 import { useRouter } from "next/navigation";
 import { Data, PlotMouseEvent, PlotType } from "plotly.js";
@@ -75,10 +75,10 @@ export default function TopPoolsChart({
     <div className="flex justify-between border border-blue6 bg-blue3 rounded p-4 cursor-pointer">
       <Plot
         onClick={onClickHandler}
-        title={`Top APR Pools of Round ${formatDateToMMDDYYYY(
+        title={`Top APR Pools from ${formatDate(
           startAt,
-        )} - ${formatDateToMMDDYYYY(endAt)}`}
-        toolTip="Top pools with highest APR."
+        )} to ${formatDate(endAt)}`}
+        toolTip="Values are averaged for the given dates."
         data={[chartData]}
         hovermode={false}
         config={{ displayModeBar: false }}

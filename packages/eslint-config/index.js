@@ -1,4 +1,7 @@
+/* eslint-env node */
+
 module.exports = {
+  root: true,
   parserOptions: {
     sourceType: "module",
   },
@@ -6,8 +9,14 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  plugins: ["simple-import-sort", "import", "tailwindcss"],
+  plugins: [
+    "simple-import-sort",
+    "import",
+    "tailwindcss",
+    "@typescript-eslint",
+  ],
   extends: [
+    "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:tailwindcss/recommended",
     "plugin:@next/next/recommended",

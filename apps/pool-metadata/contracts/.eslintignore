@@ -1,6 +1,0 @@
-!.lintstagedrc.js
-node_modules/
-lib/
-
-!.eslintrc.js
-!.lintstagedrc.js

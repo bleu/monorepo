@@ -1,11 +1,11 @@
+/* eslint-disable no-console */
 import "server-only";
 
-/* eslint-disable no-console */
 import { kv } from "@vercel/kv";
-
-import { BASE_URL } from "#/app/apr/(utils)/types";
 import fs from "fs";
 import util from "util";
+
+import { BASE_URL } from "#/app/apr/(utils)/types";
 
 const memoryCache: Record<string, unknown> = {};
 
@@ -136,15 +136,15 @@ export const getDataFromCacheOrCompute = async <T>(
   return computedData;
 };
 
-const serializeArgs = (args: Array<any>) => {
+const serializeArgs = (args: Array<unknown>) => {
   return args
     .map((arg) => (arg ? JSON.stringify(arg).replace(/[^a-zA-Z0-9]/g, "") : ""))
     .join("-");
 };
 
-type ComputeFn<T, Args extends Array<any>> = (...args: Args) => Promise<T>;
+type ComputeFn<T, Args extends Array<unknown>> = (...args: Args) => Promise<T>;
 
-export const withCache = <T, Args extends Array<any>>(
+export const withCache = <T, Args extends Array<unknown>>(
   fn: ComputeFn<T, Args>,
 ): ComputeFn<T, Args> => {
   return async (...args: Args) => {

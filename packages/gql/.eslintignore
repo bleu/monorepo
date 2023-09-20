@@ -1,5 +1,0 @@
-**/__generated__/**
-!.lintstagedrc.js
-!.eslintrc.js
-node_modules/
-

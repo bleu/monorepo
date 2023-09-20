@@ -322,6 +322,7 @@ export function calculateDepthCost(
       // The Alpha and Beta values are considering token 0 in units of token 1.
       // This means that token 1 must be the the tokenIn
       // And token 0 must be the tokenOut
+      // eslint-disable-next-line no-case-declarations
       const newSpotPriceOnAlphaAndBetaBase =
         tokenIn.symbol === data.tokens[1].symbol
           ? newSpotPrice
@@ -349,6 +350,7 @@ export function calculateDepthCost(
     case PoolTypeEnum.Fx:
       // For FX pools we'll assume depth cost as the beta region limit
       // if the pool is already outside of the beta region, 0 will be displayed
+      // eslint-disable-next-line no-case-declarations
       const betaLimitAmount =
         poolSide === "in"
           ? betaLimits?.analysisTokenIn.analysisAmount

@@ -11,10 +11,10 @@
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    "../utils/networkMultisigs.ts"
+    "**/*.tsx"
+    // ".next/types/**/*.ts",
+    // "../utils/networkMultisigs.ts"
   ],
   "exclude": ["node_modules"],
-  "types": ["jest", "node"]
+  "types": ["node", "jest", "@testing-library/jest-dom"]
 }

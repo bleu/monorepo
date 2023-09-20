@@ -71,22 +71,30 @@ const getAPRFromRateProviderInterval = withCache(
       return 0;
     }
 
-    const { endRate, startRate } = await getIntervalRates(
-      rateProviderAddress,
-      timeStart,
-      timeEnd,
-      chainName,
-    );
+    let apr = -1;
 
-    const apr = getAPRFromRate(startRate, endRate, timeStart, timeEnd);
+    try {
+      const { endRate, startRate } = await getIntervalRates(
+        rateProviderAddress,
+        timeStart,
+        timeEnd,
+        chainName,
+      );
 
-    if (apr < 0) {
+      apr = getAPRFromRate(startRate, endRate, timeStart, timeEnd);
+    } catch (e) {
       // eslint-disable-next-line no-console
       console.error(
-        `Negative APR for ${rateProviderAddress} between ${timeStart} and ${timeEnd}`,
+        `Error fetching rate for ${rateProviderAddress} between ${timeStart} and ${timeEnd} chain ${chainName}`,
       );
+    } finally {
+      if (apr < 0) {
+        // eslint-disable-next-line no-console
+        console.error(
+          `Negative APR for ${rateProviderAddress} between ${timeStart} and ${timeEnd}`,
+        );
+      }
     }
-
     return apr;
   },
 );
@@ -105,7 +113,12 @@ function getAPRFromRate(
 }
 
 const getPoolTokensRateProviders = withCache(
-  async function getPoolTokensRateProvidersFn(chain: string, poolId: Address) {
+  async function getPoolTokensRateProvidersFn(
+    chain: string,
+    poolId: Address,
+  ): Promise<
+    { address: Address; token: { address: Address; symbol: string } }[]
+  > {
     const data = await pools.gql(String(chain)).PoolRateProviders({ poolId });
 
     if (!data.pool?.priceRateProviders?.length) {
@@ -163,7 +176,7 @@ const getIntervalRates = withCache(async function getIntervalRatesFn(
     console.error(
       `No blocks found between ${timeStart} and ${timeEnd} on ${chainName}`,
     );
-    return { endRate: -1, startRate: -1 };
+    throw new Error("No blocks found");
   }
 
   const [endRate, startRate] = await Promise.all([

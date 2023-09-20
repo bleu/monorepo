@@ -15,8 +15,6 @@
     "test:watch": "forge test -vvv -w",
     "test:gas": "forge test -vvv --gas-report",
     "format": "prettier --write .",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
     "postinstall": "make patch"
   },
   "devDependencies": {

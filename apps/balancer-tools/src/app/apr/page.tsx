@@ -1,9 +1,11 @@
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 import ChartSkelton from "./(components)/(skeleton)/ChartSkelton";
 import KpisSkeleton from "./(components)/(skeleton)/KpisSkeleton";
 import TableSkeleton from "./(components)/(skeleton)/TableSkeleton";
-import { QueryParamsSchema } from "./api/(utils)/validate";
+import { formatDateToMMDDYYYY } from "./api/(utils)/date";
+import { QueryParamsPagesSchema } from "./api/(utils)/validate";
 import Breadcrumb from "./round/(components)/Breadcrumb";
 import PoolTableWrapper from "./round/(components)/PoolTableWrapper";
 import RoundOverviewCards from "./round/(components)/RoundOverviewCards";
@@ -25,11 +27,20 @@ export default function Page({
   params: { roundId: string };
   searchParams: SearchParams;
 }) {
-  const {
-    startAt: startAtDate,
-    endAt: endAtDate,
-    // @ts-ignore
-  } = QueryParamsSchema.safeParse(searchParams).data;
+  const parsedParams = QueryParamsPagesSchema.safeParse(searchParams);
+  if (!parsedParams.success) {
+    const currentDateFormated = formatDateToMMDDYYYY(new Date());
+    const OneWeekAgoDateFormated = formatDateToMMDDYYYY(
+      new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
+    );
+    return redirect(
+      `/apr/?startAt=${currentDateFormated}&endAt=${OneWeekAgoDateFormated}&`,
+    );
+  }
+  const { startAt: startAtDate, endAt: endAtDate } = parsedParams.data;
+  if (!startAtDate || !endAtDate) {
+    return redirect("/apr/");
+  }
 
   return (
     <div className="flex flex-1 flex-col gap-y-3">

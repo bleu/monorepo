@@ -75,9 +75,9 @@ export default function TopPoolsChart({
     <div className="flex justify-between border border-blue6 bg-blue3 rounded p-4 cursor-pointer">
       <Plot
         onClick={onClickHandler}
-        title={`Top APR Pools from ${formatDate(
-          startAt,
-        )} to ${formatDate(endAt)}`}
+        title={`Top APR Pools from ${formatDate(startAt)} to ${formatDate(
+          endAt,
+        )}`}
         toolTip="Values are averaged for the given dates."
         data={[chartData]}
         hovermode={false}

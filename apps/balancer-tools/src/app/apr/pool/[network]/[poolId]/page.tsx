@@ -24,8 +24,12 @@ export default async function Page({
   const parsedParams = QueryParamsPagesSchema.safeParse(searchParams);
   if (!parsedParams.success) {
     const currentDateFormated = formatDateToMMDDYYYY(new Date());
-    const OneWeekAgoDateFormated = formatDateToMMDDYYYY(new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),);
-    return redirect(`/apr/?startAt=${currentDateFormated}&endAt=${OneWeekAgoDateFormated}&`);
+    const OneWeekAgoDateFormated = formatDateToMMDDYYYY(
+      new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
+    );
+    return redirect(
+      `/apr/?startAt=${currentDateFormated}&endAt=${OneWeekAgoDateFormated}&`,
+    );
   }
   const { startAt: startAtDate, endAt: endAtDate } = parsedParams.data;
   if (!startAtDate || !endAtDate) {

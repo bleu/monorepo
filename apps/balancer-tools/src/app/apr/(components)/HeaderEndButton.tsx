@@ -15,7 +15,6 @@ import { Dialog } from "#/components/Dialog";
 import { BaseInput } from "#/components/Input";
 import { SearchPoolForm } from "#/components/SearchPoolForm";
 
-
 export default function HeaderEndButton() {
   const { network } = useParams();
   const searchParams = useSearchParams();

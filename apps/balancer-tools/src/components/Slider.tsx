@@ -17,6 +17,7 @@ interface ISlider
     "name" | "min" | "max" | "defaultValue"
   > {
   name: string;
+  unit: string;
   label: string;
   min?: string | number;
   defaultValue?: number;
@@ -28,7 +29,7 @@ interface ISlider
 
 const BaseSlider = React.forwardRef<
   React.ElementRef<typeof SliderPrimitive.Root>,
-  Omit<ISlider, "label">
+  Omit<ISlider, "label" | "unit">
 >(({ className, min, max, defaultValue, name, ...props }, ref) => {
   const minNumber = Number(min);
   const maxNumber = Number(max);
@@ -74,6 +75,7 @@ export const Slider = React.forwardRef<HTMLInputElement, ISlider>(
     validation,
     tooltipText,
     tooltipLink,
+    unit,
     ...props
   }: ISlider) => {
     const {
@@ -92,7 +94,7 @@ export const Slider = React.forwardRef<HTMLInputElement, ISlider>(
       <div className="flex flex-col">
         <div className="flex flex-row justify-between">
           <FormLabel className="mb-2 block text-sm text-slate12">
-            {label}
+            {label} {unit ? `(${unit})` : ""}
           </FormLabel>
           {tooltipText && tooltipLink && (
             <Tooltip content={tooltipText}>

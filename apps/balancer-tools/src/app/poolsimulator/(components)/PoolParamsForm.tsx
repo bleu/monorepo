@@ -322,6 +322,7 @@ export const PoolParamsForm = forwardRef<unknown, PoolParamsFormProps>(
                     min={input.getMin(defaultValue)}
                     max={input.getMax(defaultValue)}
                     step={input.getStep(defaultValue)}
+                    unit={input.unit}
                   />
                 )}
               />

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { PoolStatsData, PoolStatsResults } from "../route";
+import { PoolStatsData } from "../route";
 import { QueryParamsSchema } from "./validate";
 
 export function filterPoolStats(

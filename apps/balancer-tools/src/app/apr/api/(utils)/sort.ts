@@ -1,4 +1,4 @@
-import { PoolStatsData, PoolStatsResults } from "../route";
+import { PoolStatsData } from "../route";
 
 export enum Order {
   Asc = "asc",

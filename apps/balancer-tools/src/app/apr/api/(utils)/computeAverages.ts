@@ -1,15 +1,16 @@
 import { calculatePoolData } from "../../(utils)/calculatePoolStats";
 import {
   PoolStatsData,
+  PoolStatsResults,
   PoolStatsWithoutVotingShareAndCollectedFees,
   tokenAPR,
 } from "../route";
 
 export const computeAverages = (formattedPoolData: {
   [key: string]: PoolStatsData[] | calculatePoolData[];
-}): PoolStatsWithoutVotingShareAndCollectedFees => {
-  let averages: PoolStatsWithoutVotingShareAndCollectedFees =
-    initializeAverages();
+}): PoolStatsResults => {
+  let averages = initializeAverages();
+
   const poolAverage: { [key: string]: PoolStatsData | calculatePoolData } = {};
 
   const uniqueTokenEntries: {
@@ -31,6 +32,7 @@ export const computeAverages = (formattedPoolData: {
         totalDataCount++;
 
         if (data.poolId in poolAverage) {
+          // @ts-ignore  - Need help with this typing!
           poolAverage[data.poolId] = accumulateData(
             // @ts-ignore  - Need help with this typing!
             poolAverage[data.poolId],
@@ -55,6 +57,7 @@ export const computeAverages = (formattedPoolData: {
     );
   }
 
+  // @ts-ignore  - Need help with this typing!
   return { perDay: formattedPoolData, average: averages };
 };
 
@@ -102,8 +105,8 @@ function calculateAveragesForPool(
     if (poolAverage.hasOwnProperty(key)) {
       const poolStatsData = poolAverage[key];
       if (typeof poolStatsData === "object" && poolStatsData !== null) {
-        // @ts-ignore  - Need help with this typing!
         const dividedStatsData = calculateAverageForObject(
+          // @ts-ignore  - Need help with this typing!
           poolStatsData,
           divisor,
         );
@@ -137,7 +140,7 @@ function initializeAverages(): PoolStatsWithoutVotingShareAndCollectedFees {
 function accumulateData(
   obj1: PoolStatsWithoutVotingShareAndCollectedFees,
   obj2: PoolStatsData | calculatePoolData,
-): PoolStatsData {
+) {
   const result = { ...obj1 };
 
   for (const key in obj2) {

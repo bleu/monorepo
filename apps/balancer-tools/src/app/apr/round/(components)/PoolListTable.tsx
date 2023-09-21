@@ -245,9 +245,9 @@ function TableRow({
         {tokens.map((token) => (
           <Badge color="blue" classNames="w-fit">
             {token.symbol}
-            {token.weight ? (
+            {PoolTypeEnum[poolType] == PoolTypeEnum.WEIGHTED ? (
               <span className="text-xs ml-1 text-slate-400">
-                {(parseFloat(token.weight) * 100).toFixed()}%
+                {(token.weight! * 100).toFixed()}%
               </span>
             ) : (
               ""

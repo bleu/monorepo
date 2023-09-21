@@ -84,7 +84,7 @@ export default function PoolTokensTable({
                   tdClassNames="w-6"
                   linkClassNames="justify-end w-full"
                 >{`${(
-                  parseFloat(token.weight) * 100
+                  token.weight * 100
                 ).toFixed()}%`}</Table.BodyCellLink>
               )}
               {token.balance && (

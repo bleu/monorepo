@@ -23,7 +23,7 @@ export interface PoolTokens {
   address: string;
   logoSrc: string;
   symbol: string;
-  weight: string | null;
+  weight: number | null;
   balance?: number;
 }
 

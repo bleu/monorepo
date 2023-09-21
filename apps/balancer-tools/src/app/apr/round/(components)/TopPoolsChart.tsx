@@ -28,7 +28,7 @@ export default function TopPoolsChart({
         .map(
           (t) =>
             `${t.symbol}${
-              t.weight ? `-${(parseFloat(t.weight) * 100).toFixed()}%` : ""
+              t.weight ? `-${(t.weight! * 100).toFixed()}%` : ""
             }`,
         )
         .join(" "),

@@ -45,69 +45,69 @@ export const computeAverages = (formattedPoolData: {
 
   if (totalDataCount > 0) {
     calculateAverages(averages, totalDataCount, uniqueTokenEntries);
-    CalculateAveragesForPool(
+    averages.poolAverage = calculateAveragesForPool(
       poolAverage,
       Object.keys(formattedPoolData).length,
-      averages.poolAverage,
     );
   }
 
   return averages;
 };
 
-function CalculateAveragesForPool(
-  poolAverage: { [key: string]: PoolStatsData | calculatePoolData },
+function calculateAverageForObject(
+  data: { [key: string]: PoolStatsData | calculatePoolData },
   divisor: number,
-  output: PoolStatsData[] | calculatePoolData[],
-) {
-  for (const key in poolAverage) {
-    const poolStatsData = poolAverage[key];
-    if (typeof poolStatsData === "object" && poolStatsData !== null) {
-      const dividedStatsData = {} as PoolStatsData;
+): PoolStatsData {
+  const result = {} as PoolStatsData;
 
-      for (const subKey in poolStatsData) {
-        // eslint-disable-next-line no-prototype-builtins
-        if (poolStatsData.hasOwnProperty(subKey)) {
-          if (
-            Array.isArray(poolStatsData[subKey as keyof PoolStatsData])
-          ) {
-            // @ts-ignore  - Need help with this typing!
-            dividedStatsData[subKey] = poolStatsData[subKey].map((arrayChild) => {
-              if(typeof arrayChild === "object") {
-                const averageChildObj = {};
-                for (const [childKey, value] of Object.entries(arrayChild)) {
-                  if (typeof value === "number") {
-                    // @ts-ignore  - Need help with this typing!
-                    averageChildObj[childKey] = value / divisor;
-                  } else {
-                    // @ts-ignore  - Need help with this typing!
-                    averageChildObj[childKey] = value;
-                  }
-                }
-                return averageChildObj;
-              } else {
-                if (typeof arrayChild === "number") {
-                  return arrayChild / divisor;
-                } else {
-                  return arrayChild;
-                }
-              }
-            });
-          } else if (
-            typeof poolStatsData[subKey as keyof PoolStatsData] === "number"
-          ) {
-            // @ts-ignore  - Need help with this typing!
-            dividedStatsData[subKey] = poolStatsData[subKey] / divisor;
-          } else {
-            // @ts-ignore  - Need help with this typing!
-            dividedStatsData[subKey] = poolStatsData[subKey];
-          }
-        }
+  for (const key in data) {
+    // eslint-disable-next-line no-prototype-builtins
+    if (data.hasOwnProperty(key)) {
+      const value = data[key];
+
+      if (Array.isArray(value)) {
+        // @ts-ignore  - Need help with this typing!
+        result[key] = value.map((item) =>
+          typeof item === "object"
+            ? calculateAverageForObject(item, divisor)
+            : typeof item === "number"
+            ? item / divisor
+            : item,
+        );
+      } else if (typeof value === "number") {
+        // @ts-ignore  - Need help with this typing!
+        result[key] = value / divisor;
+      } else {
+        // @ts-ignore  - Need help with this typing!
+        result[key] = value;
       }
-
-      output.push(dividedStatsData);
     }
   }
+
+  return result;
+}
+
+function calculateAveragesForPool(
+  poolAverage: { [key: string]: PoolStatsData | calculatePoolData },
+  divisor: number,
+): PoolStatsData[] {
+  const averagedOutput: PoolStatsData[] = [];
+
+  for (const key in poolAverage) {
+    // eslint-disable-next-line no-prototype-builtins
+    if (poolAverage.hasOwnProperty(key)) {
+      const poolStatsData = poolAverage[key];
+      if (typeof poolStatsData === "object" && poolStatsData !== null) {
+        // @ts-ignore  - Need help with this typing!
+        const dividedStatsData = calculateAverageForObject(
+          poolStatsData,
+          divisor,
+        );
+        averagedOutput.push(dividedStatsData);
+      }
+    }
+  }
+  return averagedOutput;
 }
 
 function initializeAverages(): PoolStatsWithoutVotingShareAndCollectedFees {
@@ -149,10 +149,10 @@ function accumulateData(
         Array.isArray(obj2[key])
       ) {
         // @ts-ignore  - Need help with this typing!
-        result[key] = obj1[key].map((arrayChild, idx)=>{
+        result[key] = obj1[key].map((arrayChild, idx) => {
           // @ts-ignore  - Need help with this typing!
-          return accumulateData(arrayChild, obj2[key][idx])
-        })
+          return accumulateData(arrayChild, obj2[key][idx]);
+        });
       } else if (
         // @ts-ignore  - Need help with this typing!
         typeof obj1[key] === "object" &&

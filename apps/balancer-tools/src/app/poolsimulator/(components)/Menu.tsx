@@ -22,11 +22,47 @@ import { PoolTypeChangeConfirmation } from "./PoolTypeChangeConfirmation";
 import { SearchPoolFormDialog } from "./SearchPoolFormDialog";
 
 const POOL_TYPES_MAPPER = {
-  MetaStable: "Meta Stable",
-  GyroE: "Gyro E-CLP",
-  Gyro2: "Gyro 2CLP",
-  Gyro3: "Gyro 3CLP",
-  FX: "FX (in development)",
+  MetaStable: {
+    name: "Meta Stable",
+    defaultParams: {
+      swapFee: 0.01,
+      amp: 5,
+    },
+  },
+  GyroE: {
+    name: "Gyro E-CLP",
+    defaultParams: {
+      swapFee: 0.01,
+      alpha: 0.9,
+      beta: 1.1,
+      lambda: 500,
+      c: 0.707,
+      s: 0.707,
+    },
+  },
+  Gyro2: {
+    name: "Gyro 2CLP",
+    defaultParams: {
+      swapFee: 0.01,
+      sqrtAlpha: 0.9,
+      sqrtBeta: 1.1,
+    },
+  },
+  Gyro3: {
+    name: "Gyro 3CLP",
+    defaultParams: { swapFee: 0.01, root3Alpha: 1 },
+  },
+  FX: {
+    name: "FX (in development)",
+    defaultParams: {
+      swapFee: 0,
+      alpha: 0.8,
+      beta: 0.42,
+      lambda: 0.3,
+      epsilon: 0.0015,
+      delta: 0.3,
+    },
+  },
 };
 
 export enum PoolSimulatorFormTabs {
@@ -85,7 +121,7 @@ function IndexMenu() {
                 setInitialData({
                   ...initialData,
                   poolType,
-                  poolParams: undefined,
+                  poolParams: POOL_TYPES_MAPPER[poolType].defaultParams,
                 })
               }
               defaultValue={initialData}
@@ -123,7 +159,7 @@ function IndexMenu() {
                 setCustomData({
                   ...customData,
                   poolType,
-                  poolParams: undefined,
+                  poolParams: POOL_TYPES_MAPPER[poolType].defaultParams,
                 })
               }
               defaultValue={customData}
@@ -185,7 +221,7 @@ function FormWithPoolType({
           <Select onValueChange={onChange} value={selectedType}>
             {POOL_TYPES.map((type) => (
               <SelectItem key={type} value={type}>
-                {POOL_TYPES_MAPPER[type]}
+                {POOL_TYPES_MAPPER[type].name}
               </SelectItem>
             ))}
           </Select>
@@ -306,7 +342,7 @@ export function AnalysisMenu() {
             <Tabs.ItemContent tabName={PoolSimulatorFormTabs.InitialData}>
               <div className="flex flex-col">
                 <Label className="mb-2 block text-md text-slate12">
-                  {POOL_TYPES_MAPPER[initialData.poolType]}
+                  {POOL_TYPES_MAPPER[initialData.poolType].name}
                 </Label>
                 <PoolParamsForm
                   defaultValue={initialData}
@@ -318,7 +354,7 @@ export function AnalysisMenu() {
             <Tabs.ItemContent tabName={PoolSimulatorFormTabs.CustomData}>
               <div className="flex flex-col">
                 <Label className="mb-2 block text-md text-slate12">
-                  {POOL_TYPES_MAPPER[customData.poolType]}
+                  {POOL_TYPES_MAPPER[customData.poolType].name}
                 </Label>
                 <PoolParamsForm
                   defaultValue={customData}
@@ -335,9 +371,7 @@ export function AnalysisMenu() {
 }
 
 export default function Menu() {
-  // const pathname = usePathname();
   const { customData, initialData, isAnalysis } = usePoolSimulator();
-  // if (pathname.includes("/analysis")) {
   if (isAnalysis) {
     if (
       !initialData ||

@@ -29,32 +29,35 @@ interface ISlider
 const BaseSlider = React.forwardRef<
   React.ElementRef<typeof SliderPrimitive.Root>,
   Omit<ISlider, "label">
->(({ className, min, max, defaultValue, ...props }, ref) => {
+>(({ className, min, max, defaultValue, name, ...props }, ref) => {
   const minNumber = Number(min);
   const maxNumber = Number(max);
-  const [value, setValue] = React.useState(defaultValue || minNumber);
+  const { getValues, setValue } = useFormContext();
+  const meanValue = (minNumber + maxNumber) / 2;
+  const value = name ? getValues(name) || meanValue : meanValue;
 
   return (
     <SliderPrimitive.Root
       ref={ref}
       className={cn(
         "relative flex items-center select-none touch-none w-[200px] h-8 my-4 w-full",
-        className
+        className,
       )}
       min={minNumber}
       max={maxNumber}
-      defaultValue={defaultValue ? [defaultValue] : undefined}
-      onValueChange={(value) => setValue(value[0])}
+      defaultValue={[defaultValue || meanValue]}
+      onValueChange={(value) => setValue(name, value[0])}
+      value={[value ? Number(value) : meanValue]}
       {...props}
     >
-      <SliderPrimitive.Track className="bg-blackA10 relative grow rounded-full h-[3px]">
-        <SliderPrimitive.Range className="absolute bg-white rounded-full h-full" />
+      <SliderPrimitive.Track className="bg-blue4 relative grow rounded-full h-[3px]">
+        <SliderPrimitive.Range className="absolute bg-blue7 rounded-full h-full" />
       </SliderPrimitive.Track>
       <SliderPrimitive.Thumb
-        className="block w-5 h-5 bg-white shadow-[0_2px_10px] shadow-blackA7 rounded-[10px] hover:bg-violet3 focus:outline-none focus:shadow-[0_0_0_5px] focus:shadow-blackA8"
+        className="block w-5 h-5 bg-blue7 shadow-[0_2px_10px] shadow-blackA7 rounded-[10px] hover:bg-violet3 focus:outline-none focus:shadow-[0_0_0_5px] focus:shadow-blackA8"
         aria-label="slider-thumb"
       >
-        <h1 className="absolute ease-in-out duration-150 opacity-100 -translate-y-8 -translate-x-6 px-5 py-1 bg-white text-center rounded-full text-black whitespace-nowrap text-xs font-bold">
+        <h1 className="absolute ease-in-out duration-150 opacity-100 -translate-y-8 -translate-x-6 px-5 py-1 bg-blue7 text-center rounded-full text-white whitespace-nowrap text-xs font-bold">
           {value}
         </h1>
       </SliderPrimitive.Thumb>
@@ -109,5 +112,5 @@ export const Slider = React.forwardRef<HTMLInputElement, ISlider>(
         )}
       </div>
     );
-  }
+  },
 );

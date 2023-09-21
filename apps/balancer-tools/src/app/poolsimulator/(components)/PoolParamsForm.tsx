@@ -40,7 +40,7 @@ const docsMapper = {
 
 const dynamicGetMinMaxAndStep = {
   getMin: (n?: number) => (n ? n / 100 : 0.01),
-  getMax: (n?: number) => (n ? n * 100 : 0.01),
+  getMax: (n?: number) => (n ? n * 10 : 0.01),
   getStep: (n?: number) => (n ? n / 100 : 0.01),
 } as const;
 
@@ -99,9 +99,7 @@ const inputMapper = {
       transformFromDataToForm: (n?: number) => n,
       transformFromFormToData: (n?: number) => n,
       tooltip: "Stretching factor. 1 implies a circle",
-      getMin: (_n?: number) => 0.01,
-      getMax: (_n?: number) => 1,
-      getStep: (_n?: number) => 0.01,
+      ...dynamicGetMinMaxAndStep,
     },
     {
       name: "c",
@@ -110,7 +108,9 @@ const inputMapper = {
       transformFromDataToForm: (n?: number) => n,
       transformFromFormToData: (n?: number) => n,
       tooltip: "First coordinate of rotation point",
-      ...dynamicGetMinMaxAndStep,
+      getMin: (_n?: number) => 0.01,
+      getMax: (_n?: number) => 1,
+      getStep: (_n?: number) => 0.01,
     },
     {
       name: "s",
@@ -119,7 +119,9 @@ const inputMapper = {
       transformFromDataToForm: (n?: number) => n,
       transformFromFormToData: (n?: number) => n,
       tooltip: "Second coordinate of rotation point",
-      ...dynamicGetMinMaxAndStep,
+      getMin: (_n?: number) => 0.01,
+      getMax: (_n?: number) => 1,
+      getStep: (_n?: number) => 0.01,
     },
   ],
   [PoolTypeEnum.Gyro2]: [
@@ -165,7 +167,7 @@ const inputMapper = {
       transformFromFormToData: (n?: number) => (n ? n / 100 : undefined),
       tooltip: "Maximum and minimum allocation of each reserve",
       getMin: (_n?: number) => 55,
-      getMax: (_n?: number) => 95,
+      getMax: (_n?: number) => 100,
       getStep: (_n?: number) => 1,
     },
     {
@@ -217,13 +219,13 @@ const inputMapper = {
 
 const createPayload = (
   poolType: keyof typeof inputMapper,
-  fieldData: FieldValues
+  fieldData: FieldValues,
 ): AnalysisData => ({
   poolParams: Object.fromEntries(
     inputMapper[poolType].map((input) => [
       input.name,
       input.transformFromFormToData(fieldData[input.name]),
-    ])
+    ]),
   ),
   tokens: fieldData.tokens,
   poolType: poolType,
@@ -299,15 +301,14 @@ export const PoolParamsForm = forwardRef<unknown, PoolParamsFormProps>(
       >
         <div className="flex flex-col gap-4">
           {inputMapper[poolType].map((input) => {
-            const value = input.transformFromDataToForm(
-              data.poolParams?.[input.name]
+            const defaultValue = input.transformFromDataToForm(
+              data.poolParams?.[input.name],
             );
             return (
               <FormField
                 name={input.name}
                 render={() => (
                   <Slider
-                    // {...field}
                     name={input.name}
                     label={input.label}
                     validation={{
@@ -315,13 +316,12 @@ export const PoolParamsForm = forwardRef<unknown, PoolParamsFormProps>(
                       valueAsNumber: true,
                       value: data.poolParams?.[input.name],
                     }}
-                    defaultValue={value}
-                    placeholder={`Enter ${input.label}`}
+                    defaultValue={defaultValue}
                     tooltipText={input.tooltip}
                     tooltipLink={docsMapper[poolType]}
-                    min={input.getMin(value)}
-                    max={input.getMax(value)}
-                    step={input.getStep(value)}
+                    min={input.getMin(defaultValue)}
+                    max={input.getMax(defaultValue)}
+                    step={input.getStep(defaultValue)}
                   />
                 )}
               />
@@ -347,5 +347,5 @@ export const PoolParamsForm = forwardRef<unknown, PoolParamsFormProps>(
         </div>
       </Form>
     );
-  }
+  },
 );

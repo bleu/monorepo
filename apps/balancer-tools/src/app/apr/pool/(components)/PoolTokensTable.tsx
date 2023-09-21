@@ -83,9 +83,7 @@ export default function PoolTokensTable({
                   href={tokenUrl(token.address)}
                   tdClassNames="w-6"
                   linkClassNames="justify-end w-full"
-                >{`${(
-                  token.weight * 100
-                ).toFixed()}%`}</Table.BodyCellLink>
+                >{`${(token.weight * 100).toFixed()}%`}</Table.BodyCellLink>
               )}
               {token.balance && (
                 <Table.BodyCellLink

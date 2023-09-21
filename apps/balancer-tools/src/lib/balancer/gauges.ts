@@ -12,13 +12,13 @@ const POOL_CACHE: { [id: string]: Pool } = {};
 class Token {
   logoSrc: string;
   address: string;
-  weight: string | null;
+  weight: number | null;
   symbol: string;
 
   constructor(data: (typeof POOLS_WITH_LIVE_GAUGES)[0]["tokens"][0]) {
     this.logoSrc = data.logoURI;
     this.address = data.address;
-    this.weight = data.weight;
+    this.weight = Number(data.weight);
     this.symbol = data.symbol;
   }
 }

@@ -32,8 +32,8 @@ const WEEKS_IN_YEAR = 52;
 const SECONDS_IN_DAY = 86400;
 const SECONDS_IN_YEAR = 365 * SECONDS_IN_DAY;
 
-const fetchPoolTVLFromSnapshotAverageFromRange = withCache(
-  async function fetchPoolTVLFromSnapshotAverageFromRangeFn(
+const fetchPoolAveragesInRange = withCache(
+  async function fetchPoolAveragesInRangeFn(
     poolId: string,
     network: string,
     from: number,
@@ -41,9 +41,13 @@ const fetchPoolTVLFromSnapshotAverageFromRange = withCache(
   ): Promise<[number, number, string, { symbol: string; balance: string }[]]> {
     const res = await pools.gql(network).poolSnapshotInRange({
       poolId,
-      from,
+      from: from - SECONDS_IN_DAY,
       to,
     });
+
+    res.poolSnapshots = res.poolSnapshots.sort(
+      (a, b) => a.timestamp - b.timestamp,
+    );
 
     if (res.poolSnapshots.length === 0) {
       return [0, 0, "", []];
@@ -56,19 +60,16 @@ const fetchPoolTVLFromSnapshotAverageFromRange = withCache(
       ) / res.poolSnapshots.length;
 
     const avgVolume =
-      res.poolSnapshots.length == 1
-        ? res.poolSnapshots[0].swapVolume
-        : res.poolSnapshots
-            .map((item, index, array) =>
-              index > 0
-                ? Math.abs(
-                    parseFloat(item.swapVolume) -
-                      parseFloat(array[index - 1].swapVolume),
-                  )
-                : 0,
-            )
-            .reduce((sum, value) => sum + value, 0) /
-          (res.poolSnapshots.length - 1);
+      res.poolSnapshots.reduce((sum, current, currentIndex) => {
+        if (currentIndex === 0) return 0;
+
+        const currentDayVolume = current.swapVolume;
+        const previousDayVolume =
+          res.poolSnapshots[currentIndex - 1].swapVolume;
+
+        return sum + (currentDayVolume - previousDayVolume);
+      }, 0) /
+      (res.poolSnapshots.length - 1);
 
     return [
       avgLiquidity,
@@ -141,7 +142,7 @@ export async function calculatePoolStats({
     tokensAPR,
   ] = await Promise.all([
     getBALPriceByRound(round.startDate, round.endDate),
-    fetchPoolTVLFromSnapshotAverageFromRange(
+    fetchPoolAveragesInRange(
       poolId,
       network,
       round.startDate.getTime() / 1000,

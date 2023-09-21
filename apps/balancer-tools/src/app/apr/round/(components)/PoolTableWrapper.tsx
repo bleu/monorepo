@@ -1,18 +1,19 @@
 import { fetcher } from "#/utils/fetcher";
 
-import getFilteredRoundApiUrl from "../../(utils)/getFilteredApiUrl";
 import { PoolStatsResults } from "../../api/route";
 import { PoolListTable } from "./PoolListTable";
 
 export default async function PoolTableWrapper({
   startAt,
   endAt,
+  url
 }: {
   startAt: Date;
   endAt: Date;
+  url: string
 }) {
   const initialData = await fetcher<PoolStatsResults>(
-    getFilteredRoundApiUrl({}, startAt, endAt),
+    url
   );
 
   return (

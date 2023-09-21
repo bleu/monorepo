@@ -9,7 +9,7 @@ import { fetchDataForPoolId } from "./(utils)/fetchDataForPoolId";
 import { fetchDataForPoolIdDateRange } from "./(utils)/fetchDataForPoolIdDateRange";
 import { fetchDataForDateRange } from "./(utils)/fetchForDateRange";
 import { filterPoolStats } from "./(utils)/filter";
-import { Order, sortAndLimit } from "./(utils)/sort";
+import { limitPoolStats, Order, sortPoolStats } from "./(utils)/sort";
 import { QueryParamsSchema } from "./(utils)/validate";
 
 export interface tokenAPR {
@@ -127,14 +127,16 @@ export async function GET(request: NextRequest) {
   }
 
   return NextResponse.json(
-    computeAverages(
-      sortAndLimit(
-        filterPoolStats(responseData, searchParams),
-        sort as keyof PoolStatsData | undefined,
-        order as Order | undefined,
-        offset,
-        limit,
+    sortPoolStats(
+      computeAverages(
+        limitPoolStats(
+          filterPoolStats(responseData, searchParams),
+          offset,
+          limit,
+        ),
       ),
+      sort as keyof PoolStatsData | undefined,
+      order as Order | undefined,
     ),
   );
 }

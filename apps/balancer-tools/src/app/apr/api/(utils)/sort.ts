@@ -1,4 +1,4 @@
-import { PoolStatsData } from "../route";
+import { PoolStatsData, PoolStatsResults } from "../route";
 
 export enum Order {
   Asc = "asc",
@@ -40,25 +40,43 @@ function createSortFunction(
   };
 }
 
-export function sortAndLimit(
-  poolStatsResults: { [key: string]: PoolStatsData[] },
+export function sortPoolStats(
+  poolStatsResults: PoolStatsResults,
   sortProperty: keyof PoolStatsData = "apr",
   order: Order = Order.Desc,
-  offset: number = 0,
-  limit: number = Infinity,
-): { [key: string]: PoolStatsData[] } {
+): PoolStatsResults {
   const sortedData: { [key: string]: PoolStatsData[] } = {};
 
-  for (const date in poolStatsResults) {
-    const dayData = poolStatsResults[date];
+  for (const date in poolStatsResults.perDay) {
+    const dayData = poolStatsResults.perDay[date];
     const sortFunction = createSortFunction(sortProperty, order);
 
-    const sortedEntries = dayData
-      .sort(sortFunction)
-      .slice(offset, offset + limit);
+    const sortedEntries = dayData.sort(sortFunction);
 
     sortedData[date] = sortedEntries;
   }
 
-  return sortedData;
+  poolStatsResults.average.poolAverage =
+    poolStatsResults.average.poolAverage.sort(
+      createSortFunction(sortProperty, order),
+    );
+
+  return {
+    ...poolStatsResults,
+    perDay: sortedData,
+  };
+}
+
+export function limitPoolStats(
+  poolStatsResults: { [key: string]: PoolStatsData[] },
+  offset: number = 0,
+  limit: number = Infinity,
+): { [key: string]: PoolStatsData[] } {
+  const limitedData: { [key: string]: PoolStatsData[] } = {};
+
+  for (const date in poolStatsResults) {
+    limitedData[date] = poolStatsResults[date].slice(offset, offset + limit);
+  }
+
+  return limitedData;
 }

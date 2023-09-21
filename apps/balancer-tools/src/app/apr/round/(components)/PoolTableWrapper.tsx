@@ -6,15 +6,13 @@ import { PoolListTable } from "./PoolListTable";
 export default async function PoolTableWrapper({
   startAt,
   endAt,
-  url
+  url,
 }: {
   startAt: Date;
   endAt: Date;
-  url: string
+  url: string;
 }) {
-  const initialData = await fetcher<PoolStatsResults>(
-    url
-  );
+  const initialData = await fetcher<PoolStatsResults>(url);
 
   return (
     <PoolListTable

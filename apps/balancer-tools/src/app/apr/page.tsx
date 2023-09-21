@@ -53,10 +53,14 @@ export default function Page({
       </Suspense>
 
       <Suspense fallback={<ChartSkelton />}>
-        <TopPoolsChartWrapper startAt={startAtDate} endAt={endAtDate} url={url}/>
+        <TopPoolsChartWrapper
+          startAt={startAtDate}
+          endAt={endAtDate}
+          url={url}
+        />
       </Suspense>
       <Suspense fallback={<TableSkeleton colNumbers={10} />}>
-        <PoolTableWrapper startAt={startAtDate} endAt={endAtDate} url={url}/>
+        <PoolTableWrapper startAt={startAtDate} endAt={endAtDate} url={url} />
       </Suspense>
     </div>
   );

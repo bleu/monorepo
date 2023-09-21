@@ -5,13 +5,12 @@ import { fetcher } from "#/utils/fetcher";
 
 import { BASE_URL } from "../../(utils)/types";
 import { PoolStatsData, PoolStatsResults } from "../route";
-import { computeAverages } from "./computeAverages";
 import { formatDateToMMDDYYYY } from "./date";
 
 export async function fetchDataForDateRange(
   startDate: Date,
   endDate: Date,
-): Promise<PoolStatsResults> {
+): Promise<{ [key: string]: PoolStatsData[] }> {
   const existingPoolForDate = POOLS_WITH_LIVE_GAUGES.reverse().filter(
     ({ gauge: { addedTimestamp } }) =>
       addedTimestamp && addedTimestamp <= endDate.getTime(),
@@ -35,9 +34,5 @@ export async function fetchDataForDateRange(
       });
     }),
   );
-
-  return {
-    perDay: perDayData,
-    average: computeAverages(perDayData),
-  };
+  return perDayData;
 }

@@ -1,15 +1,16 @@
 import { calculatePoolData } from "../../(utils)/calculatePoolStats";
 import {
   PoolStatsData,
+  PoolStatsResults,
   PoolStatsWithoutVotingShareAndCollectedFees,
   tokenAPR,
 } from "../route";
 
 export const computeAverages = (formattedPoolData: {
   [key: string]: PoolStatsData[] | calculatePoolData[];
-}): PoolStatsWithoutVotingShareAndCollectedFees => {
-  const averages: PoolStatsWithoutVotingShareAndCollectedFees =
-    initializeAverages();
+}): PoolStatsResults => {
+  let averages = initializeAverages();
+
   const poolAverage: { [key: string]: PoolStatsData | calculatePoolData } = {};
 
   const uniqueTokenEntries: {
@@ -22,7 +23,7 @@ export const computeAverages = (formattedPoolData: {
     if (Object.hasOwnProperty.call(formattedPoolData, key)) {
       const dataArr = formattedPoolData[key];
       dataArr.forEach((data) => {
-        accumulateData(averages, data);
+        averages = accumulateData(averages, data);
         accumulateTokens(
           averages.apr.breakdown.tokens,
           data.apr.breakdown.tokens,
@@ -31,6 +32,7 @@ export const computeAverages = (formattedPoolData: {
         totalDataCount++;
 
         if (data.poolId in poolAverage) {
+          // @ts-ignore  - Need help with this typing!
           poolAverage[data.poolId] = accumulateData(
             // @ts-ignore  - Need help with this typing!
             poolAverage[data.poolId],
@@ -44,49 +46,75 @@ export const computeAverages = (formattedPoolData: {
   }
 
   if (totalDataCount > 0) {
-    calculateAverages(averages, totalDataCount, uniqueTokenEntries);
-    CalculateAveragesForPool(
+    calculateAverages(
+      averages,
+      Object.keys(poolAverage).length,
+      uniqueTokenEntries,
+    );
+    averages.poolAverage = calculateAveragesForPool(
       poolAverage,
       Object.keys(formattedPoolData).length,
-      averages.poolAverage,
     );
   }
 
-  return averages;
+  // @ts-ignore  - Need help with this typing!
+  return { perDay: formattedPoolData, average: averages };
 };
 
-function CalculateAveragesForPool(
-  poolAverage: { [key: string]: PoolStatsData | calculatePoolData },
+function calculateAverageForObject(
+  data: { [key: string]: PoolStatsData | calculatePoolData },
   divisor: number,
-  output: PoolStatsData[] | calculatePoolData[],
-) {
-  for (const key in poolAverage) {
+): PoolStatsData {
+  const result = {} as PoolStatsData;
+
+  for (const key in data) {
     // eslint-disable-next-line no-prototype-builtins
-    if (poolAverage.hasOwnProperty(key)) {
-      if (typeof poolAverage[key] === "object" && poolAverage[key] !== null) {
-        // Check if the value is an object and not null
-        const poolStatsData = poolAverage[key];
-        const dividedStatsData = {} as PoolStatsData;
+    if (data.hasOwnProperty(key)) {
+      const value = data[key];
 
-        for (const subKey in poolStatsData) {
-          // eslint-disable-next-line no-prototype-builtins
-          if (poolStatsData.hasOwnProperty(subKey)) {
-            if (
-              typeof poolStatsData[subKey as keyof PoolStatsData] === "number"
-            ) {
-              //@ts-ignore  - Need help with this typing!
-              dividedStatsData[subKey] = poolStatsData[subKey] / divisor;
-            } else {
-              //@ts-ignore  - Need help with this typing!
-              dividedStatsData[subKey] = poolStatsData[subKey];
-            }
-          }
-        }
-
-        output.push(dividedStatsData);
+      if (Array.isArray(value)) {
+        // @ts-ignore  - Need help with this typing!
+        result[key] = value.map((item) =>
+          typeof item === "object"
+            ? calculateAverageForObject(item, divisor)
+            : typeof item === "number"
+            ? item / divisor
+            : item,
+        );
+      } else if (typeof value === "number") {
+        // @ts-ignore  - Need help with this typing!
+        result[key] = value / divisor;
+      } else {
+        // @ts-ignore  - Need help with this typing!
+        result[key] = value;
       }
     }
   }
+
+  return result;
+}
+
+function calculateAveragesForPool(
+  poolAverage: { [key: string]: PoolStatsData | calculatePoolData },
+  divisor: number,
+): PoolStatsData[] {
+  const averagedOutput: PoolStatsData[] = [];
+
+  for (const key in poolAverage) {
+    // eslint-disable-next-line no-prototype-builtins
+    if (poolAverage.hasOwnProperty(key)) {
+      const poolStatsData = poolAverage[key];
+      if (typeof poolStatsData === "object" && poolStatsData !== null) {
+        const dividedStatsData = calculateAverageForObject(
+          // @ts-ignore  - Need help with this typing!
+          poolStatsData,
+          divisor,
+        );
+        averagedOutput.push(dividedStatsData);
+      }
+    }
+  }
+  return averagedOutput;
 }
 
 function initializeAverages(): PoolStatsWithoutVotingShareAndCollectedFees {
@@ -112,7 +140,7 @@ function initializeAverages(): PoolStatsWithoutVotingShareAndCollectedFees {
 function accumulateData(
   obj1: PoolStatsWithoutVotingShareAndCollectedFees,
   obj2: PoolStatsData | calculatePoolData,
-): PoolStatsData {
+) {
   const result = { ...obj1 };
 
   for (const key in obj2) {
@@ -121,6 +149,17 @@ function accumulateData(
       // @ts-ignore  - Need help with this typing!
       if (typeof obj1[key] === "string" && typeof obj2[key] === "string") {
         continue;
+      } else if (
+        // @ts-ignore  - Need help with this typing!
+        Array.isArray(obj1[key]) &&
+        // @ts-ignore  - Need help with this typing!
+        Array.isArray(obj2[key])
+      ) {
+        // @ts-ignore  - Need help with this typing!
+        result[key] = obj1[key].map((arrayChild, idx) => {
+          // @ts-ignore  - Need help with this typing!
+          return accumulateData(arrayChild, obj2[key][idx]);
+        });
       } else if (
         // @ts-ignore  - Need help with this typing!
         typeof obj1[key] === "object" &&

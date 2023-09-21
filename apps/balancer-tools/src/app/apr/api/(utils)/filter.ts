@@ -1,10 +1,10 @@
 import { z } from "zod";
 
-import { PoolStatsData, PoolStatsResults } from "../route";
+import { PoolStatsData } from "../route";
 import { QueryParamsSchema } from "./validate";
 
 export function filterPoolStats(
-  poolStats: PoolStatsResults,
+  poolStats: { [key: string]: PoolStatsData[] },
   searchParams: URLSearchParams,
 ) {
   // TODO: ensure this is working as it should
@@ -13,7 +13,7 @@ export function filterPoolStats(
       Object.fromEntries(searchParams),
     );
     const filteredData = Object.fromEntries(
-      Object.entries(poolStats.perDay)
+      Object.entries(poolStats)
         .map(([date, poolOnDate]) => [
           date,
           Array.isArray(poolOnDate)
@@ -24,15 +24,8 @@ export function filterPoolStats(
         ])
         .filter(([, value]) => value !== null),
     );
-    const filteredPoolAverage = poolStats.average.poolAverage.filter(
-      (poolOnDate) => shouldIncludePool(poolOnDate, parsedParams),
-    );
 
-    return {
-      ...poolStats,
-      perDay: filteredData,
-      average: { ...poolStats.average, poolAverage: filteredPoolAverage },
-    };
+    return filteredData;
   } catch (error) {
     // eslint-disable-next-line no-console
     console.warn("Error sorting for params", searchParams);

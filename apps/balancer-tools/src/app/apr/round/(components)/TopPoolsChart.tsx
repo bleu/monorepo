@@ -1,33 +1,33 @@
 "use client";
 
-import { networkFor } from "@bleu-balancer-tools/utils";
+import { formatDate, networkFor } from "@bleu-balancer-tools/utils";
 import { greenDarkA } from "@radix-ui/colors";
 import { useRouter } from "next/navigation";
 import { Data, PlotMouseEvent, PlotType } from "plotly.js";
 
 import Plot from "#/components/Plot";
 
+import { formatDateToMMDDYYYY } from "../../api/(utils)/date";
 import { PoolStatsResults } from "../../api/route";
 
 export default function TopPoolsChart({
-  roundId,
+  startAt,
+  endAt,
   ApiResult,
 }: {
-  roundId: string;
+  startAt: Date;
+  endAt: Date;
   ApiResult: PoolStatsResults;
 }) {
   const shades = Object.values(greenDarkA).map((color) => color.toString());
   const colors = [...shades.slice(4, 10).reverse(), ...shades.slice(4, 10)];
-
-  const yAxisLabels = ApiResult.perRound
+  const yAxisLabels = ApiResult.average.poolAverage
     .filter((pool) => pool.apr.total > 0)
     .map((result) => [
       result.tokens
         .map(
           (t) =>
-            `${t.symbol}${
-              t.weight ? `-${(parseFloat(t.weight) * 100).toFixed()}%` : ""
-            }`,
+            `${t.symbol}${t.weight ? `-${(t.weight! * 100).toFixed()}%` : ""}`,
         )
         .join(" "),
       `${result.apr.total.toFixed()}% APR`,
@@ -49,22 +49,27 @@ export default function TopPoolsChart({
   const chartData: Data = {
     hoverinfo: "none",
     marker: {
-      color: ApiResult.perRound.map(
+      color: ApiResult.average.poolAverage.map(
         (_, index) => colors[index % colors.length],
       ),
     },
     orientation: "h" as const,
     type: "bar" as PlotType,
-    x: ApiResult.perRound.map((result) => result.apr.total.toFixed(2)),
+    x: ApiResult.average.poolAverage.map((result) =>
+      result.apr.total.toFixed(2),
+    ),
     y: paddedYAxisLabels,
   };
 
   const router = useRouter();
   function onClickHandler(event: PlotMouseEvent) {
-    const clickedRoundData = ApiResult.perRound[event.points[0].pointIndex];
+    const clickedRoundData =
+      ApiResult.average.poolAverage[event.points[0].pointIndex];
     const poolRedirectURL = `/apr/pool/${networkFor(
       clickedRoundData.network,
-    )}/${clickedRoundData.poolId}/round/${roundId}`;
+    )}/${clickedRoundData.poolId}/?startAt=${formatDateToMMDDYYYY(
+      startAt,
+    )}&endAt=${formatDateToMMDDYYYY(endAt)}`;
     router.push(poolRedirectURL);
   }
 
@@ -72,8 +77,10 @@ export default function TopPoolsChart({
     <div className="flex justify-between border border-blue6 bg-blue3 rounded p-4 cursor-pointer">
       <Plot
         onClick={onClickHandler}
-        title={`Top APR Pools of Round ${roundId}`}
-        toolTip="Top pools with highest APR."
+        title={`Top APR Pools from ${formatDate(startAt)} to ${formatDate(
+          endAt,
+        )}`}
+        toolTip="Values are averaged for the given dates."
         data={[chartData]}
         hovermode={false}
         config={{ displayModeBar: false }}

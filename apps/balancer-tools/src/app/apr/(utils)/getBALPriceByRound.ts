@@ -1,8 +1,7 @@
 import { networkFor } from "@bleu-balancer-tools/utils";
 
+import { withCache } from "#/lib/cache";
 import { DefiLlamaAPI } from "#/lib/coingecko";
-
-import { Round } from "./rounds";
 
 const MILLISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
 const BAL_TOKEN_ADDRESS = "0xba100000625a3754423978a60c9317c58a424e3d";
@@ -21,11 +20,14 @@ const calculateDaysBetween = (startDate: Date, endDate: Date) =>
 const calculateAverage = (arr: number[]) =>
   arr.reduce((sum, val) => sum + val, 0) / arr.length;
 
-export const getBALPriceByRound = async (round: Round) => {
-  const days = calculateDaysBetween(round.startDate, round.endDate);
+export const getBALPriceByRound = withCache(async function getBALPriceByRoundFn(
+  startAt: Date,
+  endAt: Date,
+) {
+  const days = calculateDaysBetween(startAt, endAt);
   const pricePromises = Array.from({ length: days }, (_, i) =>
     getTokenPriceByDate(
-      new Date(round.startDate.getTime() + i * MILLISECONDS_IN_DAY),
+      new Date(startAt.getTime() + i * MILLISECONDS_IN_DAY),
       BAL_TOKEN_ADDRESS,
       BAL_TOKEN_NETWORK,
     ),
@@ -35,16 +37,16 @@ export const getBALPriceByRound = async (round: Round) => {
     return calculateAverage(prices);
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error(error);
+    console.error(`Error fetching BAL price between ${startAt} and ${endAt}`);
     throw error;
   }
-};
+});
 
-export const getTokenPriceByDate = async (
+export const getTokenPriceByDate = withCache(async function getTokenPriceByDate(
   date: Date,
   tokenAddress: string,
   tokenNetwork: number,
-) => {
+) {
   const token = `${networkFor(tokenNetwork).toLowerCase()}:${tokenAddress}`;
   const relevantDateForPrice = Math.min(Date.now(), date.getTime());
   const api = new DefiLlamaAPI();
@@ -55,4 +57,4 @@ export const getTokenPriceByDate = async (
   );
 
   return response.coins[token]?.price;
-};
+});

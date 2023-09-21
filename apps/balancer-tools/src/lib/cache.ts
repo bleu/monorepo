@@ -1,9 +1,69 @@
 /* eslint-disable no-console */
-import { kv } from "@vercel/kv";
+import "server-only";
 
-import { BASE_URL } from "#/app/apr/api/route";
+import { kv } from "@vercel/kv";
+import crypto from "crypto";
+import fs from "fs";
+import util from "util";
+
+import { BASE_URL } from "#/app/apr/(utils)/types";
+
+type ComputeFn<T, Args extends Array<unknown>> = (...args: Args) => Promise<T>;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const hashFunction = (fn: ComputeFn<any, any>) => {
+  const hash = crypto.createHash("sha256");
+  hash.update(fn.toString());
+  return hash.digest("hex");
+};
 
 const memoryCache: Record<string, unknown> = {};
+
+const writeFile = util.promisify(fs.writeFile);
+const readFile = util.promisify(fs.readFile);
+const exists = util.promisify(fs.exists);
+const mkdir = util.promisify(fs.mkdir);
+
+const ensureDirectoryExistence = async (filePath: string) => {
+  try {
+    if (!(await exists(filePath))) {
+      await mkdir(filePath, { recursive: true });
+    }
+  } catch (error) {
+    console.error(`Error ensuring directory existence: ${error}`);
+  }
+};
+
+export const FILE_CACHE = {
+  async set(cacheKey: string, data?: Record<string, unknown>) {
+    await ensureDirectoryExistence("./.cache");
+    try {
+      await writeFile(
+        `./.cache/${cacheKey.replaceAll(":", "_")}.json`,
+        JSON.stringify(data),
+      );
+    } catch (error) {
+      console.error(`File cache error while writing: ${error}`);
+      throw new Error("Could not write to cache file.");
+    }
+  },
+
+  async get<T>(cacheKey: string): Promise<T | null> {
+    await ensureDirectoryExistence("./.cache");
+    try {
+      if (await exists(`./.cache/${cacheKey.replaceAll(":", "_")}.json`)) {
+        const content = await readFile(
+          `./.cache/${cacheKey.replaceAll(":", "_")}.json`,
+          "utf-8",
+        );
+        return JSON.parse(content) as T;
+      }
+    } catch (error) {
+      console.error(`File cache error while reading: ${error}`);
+    }
+    return null;
+  },
+};
 
 export const MEMORY_CACHE = {
   set(cacheKey: string, data?: Record<string, unknown>) {
@@ -38,7 +98,7 @@ export const getDataFromCacheOrCompute = async <T>(
     return computeFn();
   }
 
-  const cacheKey = `cache:${BASE_URL.replace(/[^a-z0-9]/gi, "")}:${key}`;
+  const cacheKey = `cache:${new URL(BASE_URL).hostname}:${key}`;
 
   if (MEMORY_CACHE.get(cacheKey)) {
     console.debug(`Memory cache hit for ${cacheKey}`);
@@ -46,10 +106,26 @@ export const getDataFromCacheOrCompute = async <T>(
   }
 
   if (process.env.NODE_ENV === "development") {
+    try {
+      const fileCached = await FILE_CACHE.get<T>(cacheKey);
+      if (fileCached) {
+        console.debug(`File cache hit for ${cacheKey}`);
+        return fileCached;
+      }
+    } catch (error) {
+      console.error(`File cache error: ${error}`);
+    }
     console.debug(`Cache miss for ${cacheKey}`);
-    return computeFn();
+    const computedData = await computeFn();
+    if (computedData) {
+      try {
+        FILE_CACHE.set(cacheKey, computedData);
+      } catch (error) {
+        console.error(`File cache error: ${error}`);
+      }
+    }
+    return computedData;
   }
-
   try {
     const cached = await KV.get<T>(cacheKey);
 
@@ -74,4 +150,21 @@ export const getDataFromCacheOrCompute = async <T>(
   }
 
   return computedData;
+};
+
+const serializeArgs = (args: Array<unknown>) => {
+  return args
+    .map((arg) => (arg ? JSON.stringify(arg).replace(/[^a-zA-Z0-9]/g, "") : ""))
+    .join("-");
+};
+
+export const withCache = <T, Args extends Array<unknown>>(
+  fn: ComputeFn<T, Args>,
+): ComputeFn<T, Args> => {
+  return async (...args: Args) => {
+    const serializedArgs = serializeArgs(args);
+    const hashedFn = hashFunction(fn);
+    const cacheKey = `fn:${hashedFn}:${serializedArgs}`;
+    return getDataFromCacheOrCompute(cacheKey, () => fn(...args));
+  };
 };

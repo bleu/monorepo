@@ -2,7 +2,10 @@ function getMultiplier(decimals: string | number) {
   if (typeof decimals !== "number") {
     try {
       decimals = parseInt(decimals);
-    } catch (e) {}
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(`Invalid decimal size: ${decimals}`);
+    }
   }
 
   if (

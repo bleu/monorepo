@@ -1,8 +1,0 @@
-**/node_modules/**
-**/.next/**
-**/__generated__/**
-**/lib/**
-**/.vercel/**
-**/wagmi/generated.ts
-**/wagmi*.mjs
-

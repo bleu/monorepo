@@ -1,3 +1,4 @@
+/* eslint-env node */
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require("fs");
 
@@ -25,9 +26,9 @@ async function gql(endpoint, query, variables = {}, headers = {}) {
   return response.json();
 }
 
-ENDPOINT = "https://api-v3.balancer.fi/graphql";
+const ENDPOINT = "https://api-v3.balancer.fi/graphql";
 
-VOTING_GAUGES_QUERY = `
+const VOTING_GAUGES_QUERY = `
 query VeBalGetVotingList {
     veBalGetVotingList {
         chain

@@ -10,8 +10,8 @@ export default function formatTvlChartData(
   yaxis: string,
 ): Plotly.Data {
   const trimmedTotalAprData = generateAndTrimAprCords(
-    apiResult.perRound,
-    (result) => result.tvl,
+    apiResult.perDay,
+    (result) => result[0].tvl,
     0,
   );
 

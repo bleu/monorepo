@@ -2,10 +2,20 @@
 import "server-only";
 
 import { kv } from "@vercel/kv";
+import crypto from "crypto";
 import fs from "fs";
 import util from "util";
 
 import { BASE_URL } from "#/app/apr/(utils)/types";
+
+type ComputeFn<T, Args extends Array<unknown>> = (...args: Args) => Promise<T>;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const hashFunction = (fn: ComputeFn<any, any>) => {
+  const hash = crypto.createHash("sha256");
+  hash.update(fn.toString());
+  return hash.digest("hex");
+};
 
 const memoryCache: Record<string, unknown> = {};
 
@@ -148,14 +158,13 @@ const serializeArgs = (args: Array<unknown>) => {
     .join("-");
 };
 
-type ComputeFn<T, Args extends Array<unknown>> = (...args: Args) => Promise<T>;
-
 export const withCache = <T, Args extends Array<unknown>>(
   fn: ComputeFn<T, Args>,
 ): ComputeFn<T, Args> => {
   return async (...args: Args) => {
     const serializedArgs = serializeArgs(args);
-    const cacheKey = `fn:${fn.name}:${serializedArgs}`;
+    const hashedFn = hashFunction(fn);
+    const cacheKey = `fn:${hashedFn}:${serializedArgs}`;
     return getDataFromCacheOrCompute(cacheKey, () => fn(...args));
   };
 };

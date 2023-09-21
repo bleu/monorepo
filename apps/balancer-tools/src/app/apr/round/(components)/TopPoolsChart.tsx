@@ -21,7 +21,7 @@ export default function TopPoolsChart({
 }) {
   const shades = Object.values(greenDarkA).map((color) => color.toString());
   const colors = [...shades.slice(4, 10).reverse(), ...shades.slice(4, 10)];
-  const yAxisLabels = ApiResult.average.poolAverage
+  const yAxisLabels = ApiResult.perDay[formatDateToMMDDYYYY(endAt)]
     .filter((pool) => pool.apr.total > 0)
     .map((result) => [
       result.tokens

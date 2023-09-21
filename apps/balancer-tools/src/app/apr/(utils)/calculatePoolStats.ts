@@ -112,6 +112,7 @@ async function calculateTokensStats(
   }, 0);
 
   const tokenPromises = poolTokenData.map(async (token, idx) => {
+    token.weight = parseFloat(token.weight);
     token.price = tokensPrices[idx];
     token.balance = parseFloat(tokenBalance?.[idx]?.balance);
     token.percentageValue =
@@ -197,7 +198,7 @@ export async function calculatePoolStats({
     balPriceUSD,
     tvl,
     volume,
-    votingShare,
+    votingShare: parseFloat(votingShare),
     symbol,
     network,
     collectedFeesUSD,

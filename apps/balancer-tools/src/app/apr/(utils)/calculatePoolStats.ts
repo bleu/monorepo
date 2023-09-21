@@ -32,8 +32,8 @@ const WEEKS_IN_YEAR = 52;
 const SECONDS_IN_DAY = 86400;
 const SECONDS_IN_YEAR = 365 * SECONDS_IN_DAY;
 
-const fetchPoolTVLFromSnapshotAverageFromRange = withCache(
-  async function fetchPoolTVLFromSnapshotAverageFromRangeFn(
+const fetchPoolAveragesInRange = withCache(
+  async function fetchPoolAveragesInRangeFn(
     poolId: string,
     network: string,
     from: number,
@@ -41,9 +41,13 @@ const fetchPoolTVLFromSnapshotAverageFromRange = withCache(
   ): Promise<[number, number, string, { symbol: string; balance: string }[]]> {
     const res = await pools.gql(network).poolSnapshotInRange({
       poolId,
-      from,
+      from: from - SECONDS_IN_DAY,
       to,
     });
+
+    res.poolSnapshots = res.poolSnapshots.sort(
+      (a, b) => a.timestamp - b.timestamp,
+    );
 
     if (res.poolSnapshots.length === 0) {
       return [0, 0, "", []];
@@ -56,19 +60,16 @@ const fetchPoolTVLFromSnapshotAverageFromRange = withCache(
       ) / res.poolSnapshots.length;
 
     const avgVolume =
-      res.poolSnapshots.length == 1
-        ? res.poolSnapshots[0].swapVolume
-        : res.poolSnapshots
-            .map((item, index, array) =>
-              index > 0
-                ? Math.abs(
-                    parseFloat(item.swapVolume) -
-                      parseFloat(array[index - 1].swapVolume),
-                  )
-                : 0,
-            )
-            .reduce((sum, value) => sum + value, 0) /
-          (res.poolSnapshots.length - 1);
+      res.poolSnapshots.reduce((sum, current, currentIndex) => {
+        if (currentIndex === 0) return 0;
+
+        const currentDayVolume = current.swapVolume;
+        const previousDayVolume =
+          res.poolSnapshots[currentIndex - 1].swapVolume;
+
+        return sum + (currentDayVolume - previousDayVolume);
+      }, 0) /
+      (res.poolSnapshots.length - 1);
 
     return [
       avgLiquidity,
@@ -76,30 +77,30 @@ const fetchPoolTVLFromSnapshotAverageFromRange = withCache(
       res.poolSnapshots[0].pool.symbol ?? "",
       res.poolSnapshots[0].pool.tokens ?? [],
     ];
-  }
+  },
 );
 
 async function calculateTokensStats(
   roundId: string,
   poolTokenData: PoolTokens[],
   poolNetwork: string,
-  tokenBalance: { symbol: string; balance: string }[]
+  tokenBalance: { symbol: string; balance: string }[],
 ) {
   const tokensPrices = await Promise.all(
     poolTokenData.map(async (token) => {
       const tokenPrice = await getTokenPriceByDate(
         Round.getRoundByNumber(roundId).endDate,
         token.address,
-        parseInt(poolNetwork)
+        parseInt(poolNetwork),
       );
       if (tokenPrice === undefined) {
         console.warn(
-          `Failed fetching price for ${token.symbol}, with address ${token.address}`
+          `Failed fetching price for ${token.symbol}, with address ${token.address}`,
         );
       }
       //TODO: some work arround to get token price
       return tokenPrice === undefined ? 1 : tokenPrice;
-    })
+    }),
   );
 
   const totalValue = poolTokenData.reduce((acc, token, idx) => {
@@ -142,18 +143,18 @@ export async function calculatePoolStats({
     tokensAPR,
   ] = await Promise.all([
     getBALPriceByRound(round),
-    fetchPoolTVLFromSnapshotAverageFromRange(
+    fetchPoolAveragesInRange(
       poolId,
       network,
       round.startDate.getTime() / 1000,
-      round.endDate.getTime() / 1000
+      round.endDate.getTime() / 1000,
     ),
     getPoolRelativeWeight(poolId, round.endDate.getTime() / 1000),
     getFeeApr(
       poolId,
       network,
       round.startDate.getTime() / 1000,
-      round.endDate.getTime() / 1000
+      round.endDate.getTime() / 1000,
     ),
     //TODO: on #BAL-795 use another strategy for cache using the poolId
     getPoolTokensAprForDate(
@@ -163,7 +164,7 @@ export async function calculatePoolStats({
       //This should be changed on #BAL-799
       round.activeRound
         ? Math.round(new Date().getTime() / 1000)
-        : round.endDate.getTime() / 1000
+        : round.endDate.getTime() / 1000,
     ),
   ]);
 
@@ -171,7 +172,7 @@ export async function calculatePoolStats({
     roundId,
     pool.tokens,
     network,
-    tokenBalance
+    tokenBalance,
   );
 
   const apr = calculateRoundAPR(
@@ -180,7 +181,7 @@ export async function calculatePoolStats({
     tvl,
     balPriceUSD,
     feeAPR,
-    tokensAPR
+    tokensAPR,
   );
 
   if (apr.total === null || apr.breakdown.veBAL === null) {
@@ -212,7 +213,7 @@ function calculateRoundAPR(
   tvl: number,
   balPriceUSD: number,
   feeAPR: number,
-  tokensAPR: tokenAPR[]
+  tokensAPR: tokenAPR[],
 ) {
   const emissions = balEmissions.weekly(round.endDate.getTime() / 1000);
   const vebalAPR =
@@ -244,7 +245,7 @@ const getFeeApr = withCache(async function getFeeAprFn(
   poolId: string,
   network: string,
   from: number,
-  to: number
+  to: number,
 ): Promise<[number, number]> {
   const lastdayBeforeStartRound = from - SECONDS_IN_DAY;
   const lastdayOfRound = to;

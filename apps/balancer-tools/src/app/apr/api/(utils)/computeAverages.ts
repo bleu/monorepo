@@ -61,30 +61,51 @@ function CalculateAveragesForPool(
   output: PoolStatsData[] | calculatePoolData[],
 ) {
   for (const key in poolAverage) {
-    // eslint-disable-next-line no-prototype-builtins
-    if (poolAverage.hasOwnProperty(key)) {
-      if (typeof poolAverage[key] === "object" && poolAverage[key] !== null) {
-        // Check if the value is an object and not null
-        const poolStatsData = poolAverage[key];
-        const dividedStatsData = {} as PoolStatsData;
+    const poolStatsData = poolAverage[key];
+    if (typeof poolStatsData === "object" && poolStatsData !== null) {
+      const dividedStatsData = {} as PoolStatsData;
 
-        for (const subKey in poolStatsData) {
-          // eslint-disable-next-line no-prototype-builtins
-          if (poolStatsData.hasOwnProperty(subKey)) {
-            if (
-              typeof poolStatsData[subKey as keyof PoolStatsData] === "number"
-            ) {
-              //@ts-ignore  - Need help with this typing!
-              dividedStatsData[subKey] = poolStatsData[subKey] / divisor;
-            } else {
-              //@ts-ignore  - Need help with this typing!
-              dividedStatsData[subKey] = poolStatsData[subKey];
-            }
+      for (const subKey in poolStatsData) {
+        // eslint-disable-next-line no-prototype-builtins
+        if (poolStatsData.hasOwnProperty(subKey)) {
+          if (
+            Array.isArray(poolStatsData[subKey as keyof PoolStatsData])
+          ) {
+            // @ts-ignore  - Need help with this typing!
+            dividedStatsData[subKey] = poolStatsData[subKey].map((arrayChild) => {
+              if(typeof arrayChild === "object") {
+                const averageChildObj = {};
+                for (const [childKey, value] of Object.entries(arrayChild)) {
+                  if (typeof value === "number") {
+                    // @ts-ignore  - Need help with this typing!
+                    averageChildObj[childKey] = value / divisor;
+                  } else {
+                    // @ts-ignore  - Need help with this typing!
+                    averageChildObj[childKey] = value;
+                  }
+                }
+                return averageChildObj;
+              } else {
+                if (typeof arrayChild === "number") {
+                  return arrayChild / divisor;
+                } else {
+                  return arrayChild;
+                }
+              }
+            });
+          } else if (
+            typeof poolStatsData[subKey as keyof PoolStatsData] === "number"
+          ) {
+            // @ts-ignore  - Need help with this typing!
+            dividedStatsData[subKey] = poolStatsData[subKey] / divisor;
+          } else {
+            // @ts-ignore  - Need help with this typing!
+            dividedStatsData[subKey] = poolStatsData[subKey];
           }
         }
-
-        output.push(dividedStatsData);
       }
+
+      output.push(dividedStatsData);
     }
   }
 }
@@ -121,6 +142,17 @@ function accumulateData(
       // @ts-ignore  - Need help with this typing!
       if (typeof obj1[key] === "string" && typeof obj2[key] === "string") {
         continue;
+      } else if (
+        // @ts-ignore  - Need help with this typing!
+        Array.isArray(obj1[key]) &&
+        // @ts-ignore  - Need help with this typing!
+        Array.isArray(obj2[key])
+      ) {
+        // @ts-ignore  - Need help with this typing!
+        result[key] = obj1[key].map((arrayChild, idx)=>{
+          // @ts-ignore  - Need help with this typing!
+          return accumulateData(arrayChild, obj2[key][idx])
+        })
       } else if (
         // @ts-ignore  - Need help with this typing!
         typeof obj1[key] === "object" &&

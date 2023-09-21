@@ -28,7 +28,10 @@ export const FILE_CACHE = {
   async set(cacheKey: string, data?: Record<string, unknown>) {
     await ensureDirectoryExistence("./.cache");
     try {
-      await writeFile(`./.cache/${cacheKey}.json`, JSON.stringify(data));
+      await writeFile(
+        `./.cache/${cacheKey.replaceAll(":", "_")}.json`,
+        JSON.stringify(data),
+      );
     } catch (error) {
       console.error(`File cache error while writing: ${error}`);
       throw new Error("Could not write to cache file.");
@@ -38,8 +41,11 @@ export const FILE_CACHE = {
   async get<T>(cacheKey: string): Promise<T | null> {
     await ensureDirectoryExistence("./.cache");
     try {
-      if (await exists(`./.cache/${cacheKey}.json`)) {
-        const content = await readFile(`./.cache/${cacheKey}.json`, "utf-8");
+      if (await exists(`./.cache/${cacheKey.replaceAll(":", "_")}.json`)) {
+        const content = await readFile(
+          `./.cache/${cacheKey.replaceAll(":", "_")}.json`,
+          "utf-8",
+        );
         return JSON.parse(content) as T;
       }
     } catch (error) {

@@ -26,9 +26,9 @@ import { TooltipMobile } from "#/components/TooltipMobile";
 import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 
+import { PoolTypeEnum } from "../../(utils)/calculatePoolStats";
 import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
 import getFilteredRoundApiUrl from "../../(utils)/getFilteredApiUrl";
-import { PoolTypeEnum } from "../../(utils)/types";
 import { formatDateToMMDDYYYY } from "../../api/(utils)/date";
 import { PoolStatsData, PoolStatsResults, PoolTokens } from "../../api/route";
 import { MoreFiltersButton } from "./MoreFiltersButton";
@@ -41,18 +41,19 @@ export function PoolListTable({
 }: {
   startAt: Date;
   endAt: Date;
-  initialData: PoolStatsData[];
+  initialData: { [key: string]: PoolStatsData[] };
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const selectedDate = initialData[formatDateToMMDDYYYY(endAt)];
 
-  const [tableData, setTableData] = useState(initialData);
+  const [tableData, setTableData] = useState(selectedDate);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMorePools, setHasMorePools] = useState(true);
 
   useEffect(() => {
-    setTableData(initialData);
-    setHasMorePools(!(initialData.length < 10));
+    setTableData(initialData[formatDateToMMDDYYYY(endAt)]);
+    setHasMorePools(!(initialData[formatDateToMMDDYYYY(endAt)].length < 10));
   }, [initialData]);
 
   const createQueryString = useCallback(
@@ -80,8 +81,10 @@ export function PoolListTable({
       url.pathname + url.search,
     );
     setTableData((prevTableData) => {
-      if (initialData.length === 0) setHasMorePools(false);
-      return prevTableData.concat(aditionalPoolsData.average.poolAverage);
+      if (selectedDate.length === 0) setHasMorePools(false);
+      return prevTableData.concat(
+        aditionalPoolsData.perDay[formatDateToMMDDYYYY(endAt)],
+      );
     });
     setIsLoadingMore(false);
   };

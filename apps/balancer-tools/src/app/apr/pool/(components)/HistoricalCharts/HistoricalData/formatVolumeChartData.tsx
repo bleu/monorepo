@@ -12,8 +12,8 @@ export default function formatVolumeChartData(
   const HOVERTEMPLATE = "$%{y:.2f}";
 
   const trimmedTotalAprData = generateAndTrimAprCords(
-    apiResult.perRound,
-    (result) => result.volume,
+    apiResult.perDay,
+    (result) => result[0].volume,
     0,
   );
 

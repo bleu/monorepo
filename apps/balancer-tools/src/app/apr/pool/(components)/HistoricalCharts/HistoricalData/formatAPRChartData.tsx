@@ -1,6 +1,7 @@
 import { blueDarkA, greenDarkA, violetDarkA, whiteA } from "@radix-ui/colors";
 import { PlotType } from "plotly.js";
 
+import { formatDateToMMDDYYYY } from "#/app/apr/api/(utils)/date";
 import { PoolStatsResults } from "#/app/apr/api/route";
 
 import { generateAndTrimAprCords } from "..";
@@ -8,23 +9,24 @@ import { generateAndTrimAprCords } from "..";
 export default function formatAPRChartData(
   apiResult: PoolStatsResults,
   yaxis: string,
+  endAt?: Date,
 ): Plotly.Data[] {
   const HOVERTEMPLATE = "%{y:.2f}%";
   const trimmedVebalAprData = generateAndTrimAprCords(
-    apiResult.perRound,
-    (result) => result.apr.breakdown.veBAL,
+    apiResult.perDay,
+    (result) => result[0].apr.breakdown.veBAL,
     0,
   );
 
   const trimmedFeeAprData = generateAndTrimAprCords(
-    apiResult.perRound,
-    (result) => result.apr.breakdown.swapFee,
+    apiResult.perDay,
+    (result) => result[0].apr.breakdown.swapFee,
     0,
   );
 
   const trimmedTotalAprData = generateAndTrimAprCords(
-    apiResult.perRound,
-    (result) => result.apr.total,
+    apiResult.perDay,
+    (result) => result[0].apr.total,
     0,
   );
   const vebalAprPerRoundData = {
@@ -57,12 +59,13 @@ export default function formatAPRChartData(
     type: "scatter" as PlotType,
   };
 
-  const aprTokensData =
-    apiResult.perRound[0].apr.breakdown.tokens.breakdown.map(
-      ({ symbol }, idx) => {
+  const aprTokensData = endAt
+    ? apiResult.perDay[
+        formatDateToMMDDYYYY(endAt)
+      ][0].apr.breakdown.tokens.breakdown.map(({ symbol }, idx) => {
         const trimmedTokenAprData = generateAndTrimAprCords(
-          apiResult.perRound,
-          (result) => result.apr.breakdown.tokens.breakdown[idx].yield,
+          apiResult.perDay,
+          (result) => result[0].apr.breakdown.tokens.breakdown[idx].yield,
           0,
         );
         return {
@@ -75,12 +78,12 @@ export default function formatAPRChartData(
           line: { shape: "spline", color: "rgba(0,0,0,0);" } as const,
           type: "scatter" as PlotType,
         };
-      },
-    );
+      })
+    : [];
 
   const trimmedTokenTotalAprData = generateAndTrimAprCords(
-    apiResult.perRound,
-    (result) => result.apr.breakdown.tokens.total,
+    apiResult.perDay,
+    (result) => result[0].apr.breakdown.tokens.total,
     0,
   );
   const aprTokensTotalData = {

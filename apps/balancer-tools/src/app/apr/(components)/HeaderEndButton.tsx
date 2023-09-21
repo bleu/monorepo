@@ -7,33 +7,30 @@ import {
   networksOnBalancer,
 } from "@bleu-balancer-tools/utils";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import * as React from "react";
+import { useState } from "react";
 
-import { Badge } from "#/components/Badge";
 import { Dialog } from "#/components/Dialog";
+import { BaseInput } from "#/components/Input";
 import { SearchPoolForm } from "#/components/SearchPoolForm";
-import { Select, SelectItem } from "#/components/Select";
-
-import { Round } from "../(utils)/rounds";
-
-const ALL_ROUNDS = Round.getAllRounds();
-const LAST_ROUND_ID = ALL_ROUNDS[0].value;
 
 export default function HeaderEndButton() {
-  const { poolId, roundId, network } = useParams();
+  const { network } = useParams();
+  const searchParams = useSearchParams();
+  const startAtParam = searchParams.get("startAt");
+  const endAtParam = searchParams.get("endAt");
 
   const router = useRouter();
-  const [selectedRound, setSelectedRound] = React.useState(roundId as string);
+  const [startAtInput, setStartAtInput] = useState("");
+  const [endAtInput, setEndAtInput] = useState("");
 
   React.useEffect(() => {
-    if (!poolId && (!roundId || roundId === "current")) {
-      router.push(`/apr/round/${LAST_ROUND_ID}`);
-      setSelectedRound(LAST_ROUND_ID);
-    } else if (typeof roundId === "undefined") {
-      setSelectedRound("");
+    if (startAtParam && endAtParam) {
+      setStartAtInput(startAtParam);
+      setEndAtInput(endAtParam);
     }
-  }, [roundId]);
+  }, [searchParams]);
 
   const handlePoolClick = ({
     network,
@@ -42,7 +39,11 @@ export default function HeaderEndButton() {
     network: string;
     poolId: string;
   }) => {
-    router.push(`/apr/pool/${networkFor(network)}/${poolId}`);
+    router.push(
+      `/apr/pool/${networkFor(
+        network,
+      )}/${poolId}?startAt=${startAtParam}&endAt=${endAtParam}`,
+    );
   };
   const avaliableNetworks = Object.keys(networksOnBalancer).map((key) => ({
     value: key,
@@ -67,39 +68,28 @@ export default function HeaderEndButton() {
           <span className="font-medium pr-1">Go to pool</span>
         </div>
       </Dialog>
-      <Select
-        placeholder="Select a round"
-        value={selectedRound}
-        onValueChange={(value) => {
-          setSelectedRound(value);
+      <BaseInput
+        value={startAtInput}
+        onChange={(e) => {
+          setStartAtInput((e.target as HTMLInputElement).value);
           router.push(
-            !poolId
-              ? `/apr/round/${value}`
-              : `/apr/pool/${network}/${poolId}/round/${value}`,
+            `/apr/?startAt=${
+              (e.target as HTMLInputElement).value
+            }&endAt=${endAtInput}&`,
           );
         }}
-      >
-        {typeof roundId === "undefined" ? (
-          <SelectItem value="">Select a round</SelectItem>
-        ) : (
-          ""
-        )}
-        <div className="flex flex-col gap-y-1">
-          {ALL_ROUNDS.map((round) => (
-            <SelectItem key={round.value} value={round.value}>
-              <div className="flex gap-x-2 items-center">
-                <Badge color="darkBlue" size="sm">
-                  <div className="flex items-center gap-x-1">
-                    <span className="hidden sm:block">Round</span>
-                    {round.value}
-                  </div>
-                </Badge>
-                <span>{round.label}</span>
-              </div>
-            </SelectItem>
-          ))}
-        </div>
-      </Select>
+      />
+      <BaseInput
+        value={endAtInput}
+        onChange={(e) => {
+          setEndAtInput((e.target as HTMLInputElement).value);
+          router.push(
+            `/apr/?startAt=${startAtInput}&endAt=${
+              (e.target as HTMLInputElement).value
+            }&`,
+          );
+        }}
+      />
     </div>
   );
 }

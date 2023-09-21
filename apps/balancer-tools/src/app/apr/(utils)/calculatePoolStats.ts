@@ -81,7 +81,7 @@ const fetchPoolAveragesInRange = withCache(
 );
 
 async function calculateTokensStats(
-  roundId: string,
+  round: Round,
   poolTokenData: PoolTokens[],
   poolNetwork: string,
   tokenBalance: { symbol: string; balance: string }[],
@@ -89,7 +89,7 @@ async function calculateTokensStats(
   const tokensPrices = await Promise.all(
     poolTokenData.map(async (token) => {
       const tokenPrice = await getTokenPriceByDate(
-        Round.getRoundByNumber(roundId).endDate,
+        round.endDate,
         token.address,
         parseInt(poolNetwork),
       );
@@ -125,13 +125,12 @@ async function calculateTokensStats(
 }
 
 export async function calculatePoolStats({
-  roundId,
+  round,
   poolId,
 }: {
-  roundId: string;
+  round: Round;
   poolId: string;
 }): Promise<calculatePoolData> {
-  const round = Round.getRoundByNumber(roundId);
   const pool = new Pool(poolId);
   const network = String(pool.network ?? 1);
 
@@ -142,7 +141,7 @@ export async function calculatePoolStats({
     [feeAPR, collectedFeesUSD],
     tokensAPR,
   ] = await Promise.all([
-    getBALPriceByRound(round),
+    getBALPriceByRound(round.startDate, round.endDate),
     fetchPoolAveragesInRange(
       poolId,
       network,
@@ -169,7 +168,7 @@ export async function calculatePoolStats({
   ]);
 
   const tokens = await calculateTokensStats(
-    roundId,
+    round,
     pool.tokens,
     network,
     tokenBalance,
@@ -187,12 +186,12 @@ export async function calculatePoolStats({
   if (apr.total === null || apr.breakdown.veBAL === null) {
     Sentry.captureMessage("vebalAPR resulted in null", {
       level: "warning",
-      extra: { balPriceUSD, tvl, votingShare, roundId, poolId, apr },
+      extra: { balPriceUSD, tvl, votingShare, poolId, apr },
     });
   }
 
   return {
-    roundId: Number(roundId),
+    roundId: Number(round.value),
     poolId,
     apr,
     balPriceUSD,

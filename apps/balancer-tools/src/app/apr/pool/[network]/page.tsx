@@ -5,5 +5,5 @@ export default function Page({
 }: {
   params: { network: string };
 }) {
-  return redirect(`/apr/round/current?network=${network}`);
+  return redirect(`/apr/?network=${network}`);
 }

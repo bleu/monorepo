@@ -12,7 +12,7 @@ export enum Network {
   Sepolia = "sepolia",
   PolygonZKEVM = "polygon-zkevm",
   Base = "base",
-  Avalanche = "avax",
+  Avalanche = "avalanche",
 }
 
 export enum NetworkChainId {

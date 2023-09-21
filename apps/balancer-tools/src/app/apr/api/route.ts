@@ -4,11 +4,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDataFromCacheOrCompute } from "#/lib/cache";
 
 import { PoolTypeEnum } from "../(utils)/types";
+import { computeAverages } from "./(utils)/computeAverages";
 import { fetchDataForPoolId } from "./(utils)/fetchDataForPoolId";
 import { fetchDataForPoolIdDateRange } from "./(utils)/fetchDataForPoolIdDateRange";
 import { fetchDataForDateRange } from "./(utils)/fetchForDateRange";
 import { filterPoolStats } from "./(utils)/filter";
-import { sortAndLimit } from "./(utils)/sort";
+import { Order, sortAndLimit } from "./(utils)/sort";
 import { QueryParamsSchema } from "./(utils)/validate";
 
 export interface tokenAPR {
@@ -99,7 +100,6 @@ export async function GET(request: NextRequest) {
     offset = 0,
   } = parsedParams.data;
   let responseData;
-
   if (poolId && startAt && endAt) {
     return NextResponse.json(
       await getDataFromCacheOrCompute(
@@ -127,14 +127,14 @@ export async function GET(request: NextRequest) {
   }
 
   return NextResponse.json(
-    sortAndLimit(
-      // @ts-ignore
-      filterPoolStats(responseData, searchParams),
-      // @ts-ignore
-      sort,
-      order,
-      offset,
-      limit,
+    computeAverages(
+      sortAndLimit(
+        filterPoolStats(responseData, searchParams),
+        sort as keyof PoolStatsData | undefined,
+        order as Order | undefined,
+        offset,
+        limit,
+      ),
     ),
   );
 }

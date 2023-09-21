@@ -41,16 +41,16 @@ function createSortFunction(
 }
 
 export function sortAndLimit(
-  poolStatsResults: PoolStatsResults,
+  poolStatsResults: { [key: string]: PoolStatsData[] },
   sortProperty: keyof PoolStatsData = "apr",
   order: Order = Order.Desc,
   offset: number = 0,
   limit: number = Infinity,
-): PoolStatsResults {
-  const sortedData: Record<string, PoolStatsData[]> = {};
+): { [key: string]: PoolStatsData[] } {
+  const sortedData: { [key: string]: PoolStatsData[] } = {};
 
-  for (const date in poolStatsResults.perDay) {
-    const dayData = poolStatsResults.perDay[date];
+  for (const date in poolStatsResults) {
+    const dayData = poolStatsResults[date];
     const sortFunction = createSortFunction(sortProperty, order);
 
     const sortedEntries = dayData
@@ -60,12 +60,5 @@ export function sortAndLimit(
     sortedData[date] = sortedEntries;
   }
 
-  poolStatsResults.average.poolAverage = poolStatsResults.average.poolAverage
-    .sort(createSortFunction(sortProperty, order))
-    .slice(offset, offset + limit);
-
-  return {
-    ...poolStatsResults,
-    perDay: sortedData,
-  };
+  return sortedData;
 }

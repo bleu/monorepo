@@ -8,7 +8,7 @@ import {
 export const computeAverages = (formattedPoolData: {
   [key: string]: PoolStatsData[] | calculatePoolData[];
 }): PoolStatsWithoutVotingShareAndCollectedFees => {
-  const averages: PoolStatsWithoutVotingShareAndCollectedFees =
+  let averages: PoolStatsWithoutVotingShareAndCollectedFees =
     initializeAverages();
   const poolAverage: { [key: string]: PoolStatsData | calculatePoolData } = {};
 
@@ -22,7 +22,7 @@ export const computeAverages = (formattedPoolData: {
     if (Object.hasOwnProperty.call(formattedPoolData, key)) {
       const dataArr = formattedPoolData[key];
       dataArr.forEach((data) => {
-        accumulateData(averages, data);
+        averages = accumulateData(averages, data);
         accumulateTokens(
           averages.apr.breakdown.tokens,
           data.apr.breakdown.tokens,
@@ -44,14 +44,18 @@ export const computeAverages = (formattedPoolData: {
   }
 
   if (totalDataCount > 0) {
-    calculateAverages(averages, totalDataCount, uniqueTokenEntries);
+    calculateAverages(
+      averages,
+      Object.keys(poolAverage).length,
+      uniqueTokenEntries,
+    );
     averages.poolAverage = calculateAveragesForPool(
       poolAverage,
       Object.keys(formattedPoolData).length,
     );
   }
 
-  return averages;
+  return { perDay: formattedPoolData, average: averages };
 };
 
 function calculateAverageForObject(

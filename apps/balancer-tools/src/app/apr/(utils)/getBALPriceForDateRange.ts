@@ -20,28 +20,27 @@ const calculateDaysBetween = (startDate: Date, endDate: Date) =>
 const calculateAverage = (arr: number[]) =>
   arr.reduce((sum, val) => sum + val, 0) / arr.length;
 
-export const getBALPriceForDateRange = withCache(async function getBALPriceByRoundFn(
-  startAt: Date,
-  endAt: Date,
-) {
-  const days = calculateDaysBetween(startAt, endAt);
-  const pricePromises = Array.from({ length: days }, (_, i) =>
-    getTokenPriceByDate(
-      new Date(startAt.getTime() + i * MILLISECONDS_IN_DAY),
-      BAL_TOKEN_ADDRESS,
-      BAL_TOKEN_NETWORK,
-    ),
-  );
-  try {
-    const prices = await Promise.all(pricePromises);
-    return calculateAverage(prices);
-  } catch (error) {
-    // TODO: BAL-782 - Add sentry here
-    // eslint-disable-next-line no-console
-    console.error(`Error fetching BAL price between ${startAt} and ${endAt}`);
-    throw error;
-  }
-});
+export const getBALPriceForDateRange = withCache(
+  async function getBALPriceByRoundFn(startAt: Date, endAt: Date) {
+    const days = calculateDaysBetween(startAt, endAt);
+    const pricePromises = Array.from({ length: days }, (_, i) =>
+      getTokenPriceByDate(
+        new Date(startAt.getTime() + i * MILLISECONDS_IN_DAY),
+        BAL_TOKEN_ADDRESS,
+        BAL_TOKEN_NETWORK,
+      ),
+    );
+    try {
+      const prices = await Promise.all(pricePromises);
+      return calculateAverage(prices);
+    } catch (error) {
+      // TODO: BAL-782 - Add sentry here
+      // eslint-disable-next-line no-console
+      console.error(`Error fetching BAL price between ${startAt} and ${endAt}`);
+      throw error;
+    }
+  },
+);
 
 export const getTokenPriceByDate = withCache(async function getTokenPriceByDate(
   date: Date,

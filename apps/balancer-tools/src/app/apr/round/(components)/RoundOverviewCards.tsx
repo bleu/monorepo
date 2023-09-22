@@ -13,13 +13,12 @@ export default async function RoundOverviewCards({
   startAt: Date;
   endAt: Date;
 }) {
-  const balInUSD = (await getBALPriceForDateRange(startAt, endAt)).toLocaleString(
-    "en-US",
-    {
-      style: "currency",
-      currency: "USD",
-    },
-  );
+  const balInUSD = (
+    await getBALPriceForDateRange(startAt, endAt)
+  ).toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
   const cardsDetails = [
     { title: "BAL Price", content: balInUSD },
     {

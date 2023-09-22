@@ -8,7 +8,10 @@ import { withCache } from "#/lib/cache";
 import { pools } from "#/lib/gql/server";
 
 import { PoolStatsData, PoolTokens, tokenAPR } from "../api/route";
-import { getBALPriceForDateRange, getTokenPriceByDate } from "./getBALPriceForDateRange";
+import {
+  getBALPriceForDateRange,
+  getTokenPriceByDate,
+} from "./getBALPriceForDateRange";
 import { getPoolRelativeWeight } from "./getRelativeWeight";
 import { getPoolTokensAprForDate as getPoolTokensAprForDateRange } from "./tokenYield";
 import { PoolTypeEnum } from "./types";
@@ -133,8 +136,8 @@ export async function calculatePoolStats({
 }): Promise<calculatePoolData> {
   const pool = new Pool(poolId);
   const network = String(pool.network ?? 1);
-  const startAtUnixtimestamp = startAt.getTime() / 1000
-  const endAtUnixtimestamp = endAt.getTime() / 1000
+  const startAtUnixtimestamp = startAt.getTime() / 1000;
+  const endAtUnixtimestamp = endAt.getTime() / 1000;
   const [
     balPriceUSD,
     [tvl, volume, symbol, tokenBalance],
@@ -161,7 +164,7 @@ export async function calculatePoolStats({
       network,
       poolId as Address,
       startAtUnixtimestamp,
-      endAtUnixtimestamp
+      endAtUnixtimestamp,
     ),
   ]);
 
@@ -206,7 +209,9 @@ export async function calculatePoolStats({
 
 function getWeeksApart(startAt: Date, endAt: Date) {
   const millisecondsInAWeek = 7 * 24 * 60 * 60 * 1000;
-  const differenceInMilliseconds = Math.abs(startAt.getTime() - endAt.getTime());
+  const differenceInMilliseconds = Math.abs(
+    startAt.getTime() - endAt.getTime(),
+  );
   return Math.floor(differenceInMilliseconds / millisecondsInAWeek);
 }
 
@@ -219,27 +224,32 @@ function calculateAPRForDateRange(
   feeAPR: number,
   tokensAPR: tokenAPR[],
 ) {
-
   const weeksApart = getWeeksApart(startAt, endAt);
   let emissions;
   if (weeksApart >= 1) {
     const weekArray = Array.from({ length: weeksApart }, (_, index) => {
       const weekStartDate = new Date(startAt);
-      weekStartDate.setDate(startAt.getDate() + (index * 7));
+      weekStartDate.setDate(startAt.getDate() + index * 7);
       const weekEndDate = new Date(weekStartDate);
       weekEndDate.setDate(weekStartDate.getDate() + 6);
       return { weekNumber: index + 1, weekStartDate, weekEndDate };
     });
-  
+
     // Calculate the total balance emissions and count of weeks
-    const { totalBalanceEmissions, weekCount } = weekArray.reduce((acc, week) => {
-      const weeklyBalanceEmissions = balEmissions.weekly(week.weekStartDate.getTime() / 1000);
-      return {
-        totalBalanceEmissions: acc.totalBalanceEmissions + weeklyBalanceEmissions,
-        weekCount: acc.weekCount + 1,
-      };
-    }, { totalBalanceEmissions: 0, weekCount: 0 });
-  
+    const { totalBalanceEmissions, weekCount } = weekArray.reduce(
+      (acc, week) => {
+        const weeklyBalanceEmissions = balEmissions.weekly(
+          week.weekStartDate.getTime() / 1000,
+        );
+        return {
+          totalBalanceEmissions:
+            acc.totalBalanceEmissions + weeklyBalanceEmissions,
+          weekCount: acc.weekCount + 1,
+        };
+      },
+      { totalBalanceEmissions: 0, weekCount: 0 },
+    );
+
     emissions = totalBalanceEmissions / weekCount;
   } else {
     emissions = balEmissions.weekly(endAt.getTime() / 1000);

@@ -4,7 +4,6 @@ import { blueDark } from "@radix-ui/colors";
 import { Data } from "plotly.js";
 import { useState } from "react";
 
-import { formatDateToMMDDYYYY } from "#/app/apr/api/(utils)/date";
 import { PoolStatsResults } from "#/app/apr/api/route";
 import Plot from "#/components/Plot";
 
@@ -33,17 +32,13 @@ function getActiveData(
 
 export default function HistoricalChartWrapper({
   apiResult,
-  startAt,
-  endAt,
 }: {
   apiResult: PoolStatsResults;
-  startAt?: Date;
-  endAt?: Date;
 }) {
   const charts = ["APR", "Weekly Swap Fees", "TVL", "Volume"];
   const [selectedTabs, setselectedTabs] = useState([0]);
 
-  const aprChartData = formatAPRChartData(apiResult, "y2", endAt);
+  const aprChartData = formatAPRChartData(apiResult, "y2");
   const tvlChartData = formatTvlChartData(apiResult, "y3");
   const volumeChartData = formatVolumeChartData(apiResult, "y4");
   const feeChartData = formatSwapFeeChartData(apiResult, "y5");

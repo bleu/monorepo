@@ -1,7 +1,6 @@
 import { blueDarkA, greenDarkA, violetDarkA, whiteA } from "@radix-ui/colors";
 import { PlotType } from "plotly.js";
 
-import { formatDateToMMDDYYYY } from "#/app/apr/api/(utils)/date";
 import { PoolStatsResults } from "#/app/apr/api/route";
 
 import { generateAndTrimAprCords } from "..";
@@ -9,7 +8,6 @@ import { generateAndTrimAprCords } from "..";
 export default function formatAPRChartData(
   apiResult: PoolStatsResults,
   yaxis: string,
-  endAt?: Date,
 ): Plotly.Data[] {
   const HOVERTEMPLATE = "%{y:.2f}%";
   const trimmedVebalAprData = generateAndTrimAprCords(
@@ -59,27 +57,26 @@ export default function formatAPRChartData(
     type: "scatter" as PlotType,
   };
 
-  const aprTokensData = endAt
-    ? apiResult.perDay[
-        formatDateToMMDDYYYY(endAt)
-      ][0].apr.breakdown.tokens.breakdown.map(({ symbol }, idx) => {
-        const trimmedTokenAprData = generateAndTrimAprCords(
-          apiResult.perDay,
-          (result) => result[0].apr.breakdown.tokens.breakdown[idx].yield,
-          0,
-        );
-        return {
-          name: `${symbol} APR %`,
-          yaxis: yaxis,
-          showlegend: false,
-          hovertemplate: HOVERTEMPLATE,
-          x: trimmedTokenAprData.x,
-          y: trimmedTokenAprData.y,
-          line: { shape: "spline", color: "rgba(0,0,0,0);" } as const,
-          type: "scatter" as PlotType,
-        };
-      })
-    : [];
+  const firstDay = Object.keys(apiResult.perDay)[0];
+  const aprTokensData = apiResult.perDay[
+    firstDay
+  ][0].apr.breakdown.tokens.breakdown.map(({ symbol }, idx) => {
+    const trimmedTokenAprData = generateAndTrimAprCords(
+      apiResult.perDay,
+      (result) => result[0].apr.breakdown.tokens.breakdown[idx].yield,
+      0,
+    );
+    return {
+      name: `${symbol} APR %`,
+      yaxis: yaxis,
+      showlegend: false,
+      hovertemplate: HOVERTEMPLATE,
+      x: trimmedTokenAprData.x,
+      y: trimmedTokenAprData.y,
+      line: { shape: "spline", color: "rgba(0,0,0,0);" } as const,
+      type: "scatter" as PlotType,
+    };
+  });
 
   const trimmedTokenTotalAprData = generateAndTrimAprCords(
     apiResult.perDay,

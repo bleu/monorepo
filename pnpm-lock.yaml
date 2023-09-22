@@ -46,7 +46,7 @@ importers:
         version: link:../../packages/tsconfig
       '@hookform/resolvers':
         specifier: 3.1.0
-        version: 3.1.0(react-hook-form@7.43.9)
+        version: 3.1.0(react-hook-form@7.45.4)
       '@radix-ui/colors':
         specifier: ^2.1.0
         version: 2.1.0
@@ -138,8 +138,8 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
       react-hook-form:
-        specifier: 7.43.9
-        version: 7.43.9(react@18.2.0)
+        specifier: 7.45.4
+        version: 7.45.4(react@18.2.0)
       react-plotly.js:
         specifier: ^2.6.0
         version: 2.6.0(plotly.js@2.26.0)(react@18.2.0)
@@ -2860,12 +2860,12 @@ packages:
     dependencies:
       graphql: 16.8.1
 
-  /@hookform/resolvers@3.1.0(react-hook-form@7.43.9):
+  /@hookform/resolvers@3.1.0(react-hook-form@7.45.4):
     resolution: {integrity: sha512-z0A8K+Nxq+f83Whm/ajlwE6VtQlp/yPHZnXw7XWVPIGm1Vx0QV8KThU3BpbBRfAZ7/dYqCKKBNnQh85BkmBKkA==}
     peerDependencies:
       react-hook-form: ^7.0.0
     dependencies:
-      react-hook-form: 7.43.9(react@18.2.0)
+      react-hook-form: 7.45.4(react@18.2.0)
     dev: false
 
   /@humanwhocodes/config-array@0.11.11:
@@ -13940,8 +13940,8 @@ packages:
       react: 18.2.0
       scheduler: 0.23.0
 
-  /react-hook-form@7.43.9(react@18.2.0):
-    resolution: {integrity: sha512-AUDN3Pz2NSeoxQ7Hs6OhQhDr6gtF9YRuutGDwPQqhSUAHJSgGl2VeY3qN19MG0SucpjgDiuMJ4iC5T5uB+eaNQ==}
+  /react-hook-form@7.45.4(react@18.2.0):
+    resolution: {integrity: sha512-HGDV1JOOBPZj10LB3+OZgfDBTn+IeEsNOKiq/cxbQAIbKaiJUe/KV8DBUzsx0Gx/7IG/orWqRRm736JwOfUSWQ==}
     engines: {node: '>=12.22.0'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18

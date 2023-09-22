@@ -4,7 +4,6 @@ import { blueDark } from "@radix-ui/colors";
 import { Data } from "plotly.js";
 import { useState } from "react";
 
-import { formatDateToMMDDYYYY } from "#/app/apr/api/(utils)/date";
 import { PoolStatsResults } from "#/app/apr/api/route";
 import Plot from "#/components/Plot";
 
@@ -33,17 +32,13 @@ function getActiveData(
 
 export default function HistoricalChartWrapper({
   apiResult,
-  startAt,
-  endAt,
 }: {
   apiResult: PoolStatsResults;
-  startAt?: Date;
-  endAt?: Date;
 }) {
   const charts = ["APR", "Weekly Swap Fees", "TVL", "Volume"];
   const [selectedTabs, setselectedTabs] = useState([0]);
 
-  const aprChartData = formatAPRChartData(apiResult, "y2", endAt);
+  const aprChartData = formatAPRChartData(apiResult, "y2");
   const tvlChartData = formatTvlChartData(apiResult, "y3");
   const volumeChartData = formatVolumeChartData(apiResult, "y4");
   const feeChartData = formatSwapFeeChartData(apiResult, "y5");
@@ -64,33 +59,6 @@ export default function HistoricalChartWrapper({
     y: [],
   });
 
-  const selectedRoundShape =
-    // @ts-ignore: 2322
-    startAt &&
-    endAt &&
-    // @ts-ignore: 2339
-    aprChartData[0].x.includes(`${formatDateToMMDDYYYY(startAt)}`)
-      ? [
-          {
-            type: "rect",
-            xref: "x",
-            yref: "paper",
-            x0: formatDateToMMDDYYYY(startAt),
-            y0: 0,
-            x1: formatDateToMMDDYYYY(endAt),
-            y1: 1,
-            fillcolor: "#d3d3d3",
-            opacity: 0.2,
-            line: {
-              width: 0,
-            },
-            label: {
-              text: "Selected Period",
-            },
-          },
-        ]
-      : [];
-
   return (
     <div className="border border-blue6 bg-blue3 rounded p-4 w-full">
       <div className="flex justify-between flex-col sm:flex-row gap-2 sm:gap-0">
@@ -105,8 +73,6 @@ export default function HistoricalChartWrapper({
         data={activeCharts}
         config={{ displayModeBar: false }}
         layout={{
-          // @ts-ignore: 2322
-          shapes: selectedRoundShape,
           plot_bgcolor: blueDark.blue3,
           margin: { t: 30, r: 20, l: 20, b: 30 },
           autosize: true,

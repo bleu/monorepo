@@ -28,7 +28,8 @@ export const getPoolTokensAprForDate = withCache(
   async function getPoolTokensAprForDateFn(
     chain: string,
     poolId: Address,
-    date: number,
+    startAt: number,
+    endAt: number,
   ) {
     const rateProviders = await getPoolTokensRateProviders(chain, poolId);
 
@@ -46,8 +47,8 @@ export const getPoolTokensAprForDate = withCache(
             symbol,
             yield: await getAPRFromRateProviderInterval(
               rateProviderAddress as Address,
-              date - SECONDS_IN_DAY,
-              date,
+              startAt,
+              endAt,
               chainName,
             ),
           }),

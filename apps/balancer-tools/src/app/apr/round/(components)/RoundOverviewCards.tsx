@@ -14,7 +14,10 @@ export default async function RoundOverviewCards({
   endAt: Date;
 }) {
   const balInUSD = (
-    await getBALPriceForDateRange(startAt, endAt)
+    await getBALPriceForDateRange(
+      startAt.getTime() / 1000,
+      endAt.getTime() / 1000,
+    )
   ).toLocaleString("en-US", {
     style: "currency",
     currency: "USD",

@@ -237,6 +237,7 @@ function calculateAPRForDateRange(
       { totalBalanceEmissions: 0, weekCount: 0 },
     );
 
+    // TODO: #BAL-876 - Fix calculation for big changes on year change
     emissions = totalBalanceEmissions / weekCount;
   } else {
     emissions = balEmissions.weekly(endAtTimestamp);

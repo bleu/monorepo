@@ -8,7 +8,7 @@ import { withCache } from "#/lib/cache";
 import { pools } from "#/lib/gql/server";
 
 import { PoolStatsData, PoolTokens, tokenAPR } from "../api/route";
-import { getBALPriceByRound, getTokenPriceByDate } from "./getBALPriceByRound";
+import { getBALPriceForDateRange, getTokenPriceByDate } from "./getBALPriceForDateRange";
 import { getPoolRelativeWeight } from "./getRelativeWeight";
 import { Round } from "./rounds";
 import { getPoolTokensAprForDate } from "./tokenYield";
@@ -141,8 +141,8 @@ export async function calculatePoolStats({
     [feeAPR, collectedFeesUSD],
     tokensAPR,
   ] = await Promise.all([
-    getBALPriceByRound(round.startDate, round.endDate),
     fetchPoolAveragesInRange(
+    getBALPriceForDateRange(startAt, endAt),
       poolId,
       network,
       round.startDate.getTime() / 1000,

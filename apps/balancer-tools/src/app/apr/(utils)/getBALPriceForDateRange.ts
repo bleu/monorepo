@@ -20,7 +20,7 @@ const calculateDaysBetween = (startDate: Date, endDate: Date) =>
 const calculateAverage = (arr: number[]) =>
   arr.reduce((sum, val) => sum + val, 0) / arr.length;
 
-export const getBALPriceByRound = withCache(async function getBALPriceByRoundFn(
+export const getBALPriceForDateRange = withCache(async function getBALPriceByRoundFn(
   startAt: Date,
   endAt: Date,
 ) {
@@ -36,6 +36,7 @@ export const getBALPriceByRound = withCache(async function getBALPriceByRoundFn(
     const prices = await Promise.all(pricePromises);
     return calculateAverage(prices);
   } catch (error) {
+    // TODO: BAL-782 - Add sentry here
     // eslint-disable-next-line no-console
     console.error(`Error fetching BAL price between ${startAt} and ${endAt}`);
     throw error;

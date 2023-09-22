@@ -7,6 +7,7 @@ import { Pool } from "#/lib/balancer/gauges";
 import { withCache } from "#/lib/cache";
 import { pools } from "#/lib/gql/server";
 
+import { getWeeksBetweenDates } from "../api/(utils)/date";
 import { PoolStatsData, PoolTokens, tokenAPR } from "../api/route";
 import {
   getBALPriceForDateRange,
@@ -82,7 +83,7 @@ const fetchPoolAveragesForDateRange = withCache(
 );
 
 async function calculateTokensStats(
-  endAt: Date,
+  endAtTimestamp: number,
   poolTokenData: PoolTokens[],
   poolNetwork: string,
   tokenBalance: { symbol: string; balance: string }[],
@@ -90,7 +91,7 @@ async function calculateTokensStats(
   const tokensPrices = await Promise.all(
     poolTokenData.map(async (token) => {
       const tokenPrice = await getTokenPriceByDate(
-        endAt,
+        endAtTimestamp * 1000,
         token.address,
         parseInt(poolNetwork),
       );
@@ -125,19 +126,18 @@ async function calculateTokensStats(
   return Promise.all(tokenPromises);
 }
 
+// TODO: #BAL-873 - Refactor this logic
 export async function calculatePoolStats({
-  startAt,
-  endAt,
+  startAtTimestamp,
+  endAtTimestamp,
   poolId,
 }: {
-  startAt: Date;
-  endAt: Date;
+  startAtTimestamp: number;
+  endAtTimestamp: number;
   poolId: string;
 }): Promise<calculatePoolData> {
   const pool = new Pool(poolId);
   const network = String(pool.network ?? 1);
-  const startAtUnixtimestamp = startAt.getTime() / 1000;
-  const endAtUnixtimestamp = endAt.getTime() / 1000;
   const [
     balPriceUSD,
     [tvl, volume, symbol, tokenBalance],
@@ -145,39 +145,34 @@ export async function calculatePoolStats({
     [feeAPR, collectedFeesUSD],
     tokensAPR,
   ] = await Promise.all([
-    getBALPriceForDateRange(startAt, endAt),
+    getBALPriceForDateRange(startAtTimestamp, endAtTimestamp),
     fetchPoolAveragesForDateRange(
       poolId,
       network,
-      startAtUnixtimestamp,
-      endAtUnixtimestamp,
+      startAtTimestamp,
+      endAtTimestamp,
     ),
-    getPoolRelativeWeight(poolId, endAtUnixtimestamp),
-    getFeeAprForDateRange(
-      poolId,
-      network,
-      startAtUnixtimestamp,
-      endAtUnixtimestamp,
-    ),
+    getPoolRelativeWeight(poolId, endAtTimestamp),
+    getFeeAprForDateRange(poolId, network, startAtTimestamp, endAtTimestamp),
     //TODO: on #BAL-795 use another strategy for cache using the poolId
     getPoolTokensAprForDateRange(
       network,
       poolId as Address,
-      startAtUnixtimestamp,
-      endAtUnixtimestamp,
+      startAtTimestamp,
+      endAtTimestamp,
     ),
   ]);
 
   const tokens = await calculateTokensStats(
-    endAt,
+    endAtTimestamp,
     pool.tokens,
     network,
     tokenBalance,
   );
 
   const apr = calculateAPRForDateRange(
-    startAt,
-    endAt,
+    startAtTimestamp,
+    endAtTimestamp,
     votingShare,
     tvl,
     balPriceUSD,
@@ -207,29 +202,21 @@ export async function calculatePoolStats({
   };
 }
 
-function getWeeksApart(startAt: Date, endAt: Date) {
-  const millisecondsInAWeek = 7 * 24 * 60 * 60 * 1000;
-  const differenceInMilliseconds = Math.abs(
-    startAt.getTime() - endAt.getTime(),
-  );
-  return Math.floor(differenceInMilliseconds / millisecondsInAWeek);
-}
-
 function calculateAPRForDateRange(
-  startAt: Date,
-  endAt: Date,
+  startAtTimestamp: number,
+  endAtTimestamp: number,
   votingShare: number,
   tvl: number,
   balPriceUSD: number,
   feeAPR: number,
   tokensAPR: tokenAPR[],
 ) {
-  const weeksApart = getWeeksApart(startAt, endAt);
+  const weeksApart = getWeeksBetweenDates(startAtTimestamp, endAtTimestamp);
   let emissions;
   if (weeksApart >= 1) {
     const weekArray = Array.from({ length: weeksApart }, (_, index) => {
-      const weekStartDate = new Date(startAt);
-      weekStartDate.setDate(startAt.getDate() + index * 7);
+      const weekStartDate = new Date(startAtTimestamp * 1000);
+      weekStartDate.setDate(weekStartDate.getDate() + index * 7);
       const weekEndDate = new Date(weekStartDate);
       weekEndDate.setDate(weekStartDate.getDate() + 6);
       return { weekNumber: index + 1, weekStartDate, weekEndDate };
@@ -252,7 +239,7 @@ function calculateAPRForDateRange(
 
     emissions = totalBalanceEmissions / weekCount;
   } else {
-    emissions = balEmissions.weekly(endAt.getTime() / 1000);
+    emissions = balEmissions.weekly(endAtTimestamp);
   }
 
   const vebalAPR =

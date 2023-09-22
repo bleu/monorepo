@@ -23,8 +23,9 @@ export async function fetchDataForPoolIdDateRange(
     while (attempts < MAX_RETRIES) {
       try {
         const data = await calculatePoolStats({
-          startAt: new Date(dayDate.getTime() - 24 * 60 * 60 * 1000),
-          endAt: dayDate,
+          startAtTimestamp:
+            new Date(dayDate.getTime() - 24 * 60 * 60 * 1000).getTime() / 1000,
+          endAtTimestamp: dayDate.getTime() / 1000,
           poolId,
         });
         perDayData[formatDateToMMDDYYYY(dayDate)] = [data] || [];

@@ -43,7 +43,7 @@ const fetchPoolAveragesForDateRange = withCache(
   ): Promise<[number, number, string, { symbol: string; balance: string }[]]> {
     const res = await pools.gql(network).poolSnapshotInRange({
       poolId,
-      from: from,
+      from,
       to,
     });
 

@@ -21,9 +21,7 @@ export default async function HistoricalCharts({
     )}&endAt=${formatDateToMMDDYYYY(endAt)}`,
   );
 
-  return (
-    <HistoricalChart apiResult={results} startAt={startAt} endAt={endAt} />
-  );
+  return <HistoricalChart apiResult={results} />;
 }
 
 export function generateAndTrimAprCords(

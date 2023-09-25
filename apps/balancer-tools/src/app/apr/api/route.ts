@@ -55,7 +55,6 @@ export interface PoolStatsData extends PoolStats {
   symbol: string;
   network: string;
   poolId: string;
-  roundId: number;
   tokens: PoolTokens[];
   type: keyof typeof PoolTypeEnum;
 }

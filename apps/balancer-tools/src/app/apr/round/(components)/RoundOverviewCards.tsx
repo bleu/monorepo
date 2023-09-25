@@ -4,7 +4,7 @@ import { formatNumber } from "#/utils/formatNumber";
 import OverviewCards, {
   getDatesDetails,
 } from "../../(components)/OverviewCards";
-import { getBALPriceByRound } from "../../(utils)/getBALPriceByRound";
+import { getBALPriceForDateRange } from "../../(utils)/getBALPriceForDateRange";
 
 export default async function RoundOverviewCards({
   startAt,
@@ -13,13 +13,15 @@ export default async function RoundOverviewCards({
   startAt: Date;
   endAt: Date;
 }) {
-  const balInUSD = (await getBALPriceByRound(startAt, endAt)).toLocaleString(
-    "en-US",
-    {
-      style: "currency",
-      currency: "USD",
-    },
-  );
+  const balInUSD = (
+    await getBALPriceForDateRange(
+      startAt.getTime() / 1000,
+      endAt.getTime() / 1000,
+    )
+  ).toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
   const cardsDetails = [
     { title: "BAL Price", content: balInUSD },
     {

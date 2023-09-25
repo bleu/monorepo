@@ -2,7 +2,6 @@
 import { Pool } from "#/lib/balancer/gauges";
 import { fetcher } from "#/utils/fetcher";
 
-import { Round } from "../../(utils)/rounds";
 import { BASE_URL } from "../../(utils)/types";
 import { PoolStatsResults } from "../route";
 import { formatDateToMMDDYYYY } from "./date";
@@ -10,9 +9,7 @@ import { formatDateToMMDDYYYY } from "./date";
 export async function fetchDataForPoolId(poolId: string) {
   const pool = new Pool(poolId);
   const gaugeAddedDate = new Date(pool.gauge.addedTimestamp * 1000);
-  const roundGaugeAddedStartDate =
-    Round.getRoundByDate(gaugeAddedDate).startDate;
-  const formattedStartDate = formatDateToMMDDYYYY(roundGaugeAddedStartDate);
+  const formattedStartDate = formatDateToMMDDYYYY(gaugeAddedDate);
   const formattedEndDate = formatDateToMMDDYYYY(new Date());
 
   try {

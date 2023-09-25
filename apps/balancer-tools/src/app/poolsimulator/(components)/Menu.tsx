@@ -53,7 +53,7 @@ const POOL_TYPES_MAPPER = {
     defaultParams: { swapFee: 0.01, root3Alpha: 1 },
   },
   FX: {
-    name: "FX (in development)",
+    name: "FX",
     defaultParams: {
       swapFee: 0,
       alpha: 0.8,

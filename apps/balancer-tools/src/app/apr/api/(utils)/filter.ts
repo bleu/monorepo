@@ -1,12 +1,8 @@
+import { networkIdFor } from "@bleu-balancer-tools/utils";
 import { z } from "zod";
 
 import { PoolStatsData } from "../route";
 import { QueryParamsSchema } from "./validate";
-import {
-  networkFor,
-  networkIdFor,
-  networksOnBalancer,
-} from "@bleu-balancer-tools/utils";
 
 export function filterPoolStats(
   poolStats: { [key: string]: PoolStatsData[] },

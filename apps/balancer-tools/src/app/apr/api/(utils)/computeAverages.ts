@@ -1,9 +1,9 @@
 import { calculatePoolData } from "../../(utils)/calculatePoolStats";
-import { PoolStatsData, PoolStatsResults } from "../route";
+import { PoolStatsData } from "../route";
 
 export const computeAverages = (formattedPoolData: {
   [key: string]: PoolStatsData[] | calculatePoolData[];
-}): PoolStatsResults => {
+}): { poolAverage: PoolStatsData[] } => {
   const averages = initializeAverages();
 
   const poolAverage: { [key: string]: PoolStatsData | calculatePoolData } = {};

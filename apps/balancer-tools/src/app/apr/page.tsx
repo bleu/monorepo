@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import ChartSkelton from "./(components)/(skeleton)/ChartSkelton";
 import KpisSkeleton from "./(components)/(skeleton)/KpisSkeleton";
 import TableSkeleton from "./(components)/(skeleton)/TableSkeleton";
-import getFilteredRoundApiUrl from "./(utils)/getFilteredApiUrl";
+import getFilteredDateApiUrl from "./(utils)/getFilteredApiUrl";
 import { formatDateToMMDDYYYY } from "./api/(utils)/date";
 import { QueryParamsPagesSchema } from "./api/(utils)/validate";
 import Breadcrumb from "./round/(components)/Breadcrumb";
@@ -43,7 +43,7 @@ export default function Page({
     return redirect("/apr/");
   }
 
-  const url = getFilteredRoundApiUrl(startAtDate, endAtDate, searchParams);
+  const url = getFilteredDateApiUrl(startAtDate, endAtDate, searchParams);
 
   return (
     <div className="flex flex-1 flex-col gap-y-3">

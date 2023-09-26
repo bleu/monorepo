@@ -1,6 +1,8 @@
 import { NetworkChainId } from "@bleu-balancer-tools/utils";
 
 import POOLS_WITH_GAUGES from "#/data/voting-gauges.json";
+import ETHEREUM_POOLS from "#/data/pools-ethereum.json";
+import GOERLI_POOLS from "#/data/pools-goerli.json";
 
 export const POOLS_WITH_LIVE_GAUGES = POOLS_WITH_GAUGES.filter(
   (pool) => !pool.gauge.isKilled && pool.gauge.addedTimestamp,
@@ -39,16 +41,52 @@ export class Pool {
   poolType!: string;
   symbol!: string;
   tokens!: Token[];
-  gauge!: Gauge;
+  gauge?: Gauge | null;
+  createdAt!: number;
 
-  constructor(id: string, associatedGauge?: Gauge) {
+  constructor(id: string) {
     if (POOL_CACHE[id]) {
       return POOL_CACHE[id];
     }
 
-    const data = POOLS_WITH_LIVE_GAUGES.find(
-      (g) => g.id.toLowerCase() === id.toLowerCase(),
-    );
+    const commonNetworkConfig = {
+      createdAt: (data) => data.createTime,
+      poolType: (data) => data.poolType,
+      gauge: (data) => null
+    };
+    
+
+    const networks = [
+      {
+        pools: POOLS_WITH_LIVE_GAUGES,
+        networkId: (data) => UPPER_CASE_TO_NETWORK[data.chain as keyof typeof UPPER_CASE_TO_NETWORK],
+        createdAt: (data) => data.gauge.address,
+        poolType: (data) => data.type,
+        gauge: (data) => new Gauge(data.gauge.address)
+      },
+      {
+        pools: ETHEREUM_POOLS,
+        networkId: 1,
+        ...commonNetworkConfig
+      },
+      {
+        pools: GOERLI_POOLS,
+        networkId: 100,
+        ...commonNetworkConfig
+      },
+    ];
+
+    let data;
+    for (const network of networks) {
+      data = network.pools.find((g) => g.id.toLowerCase() === id.toLowerCase());
+      if (data) {
+        this.poolType = network.poolType(data);
+        this.network = network.networkId;
+        this.createdAt = network.createdAt(data);
+        this.gauge = network.gauge(data);
+        break;
+      }
+    }  
 
     if (!data) {
       throw new Error(`Pool with ID ${id} not found`);
@@ -56,15 +94,10 @@ export class Pool {
 
     this.id = data.id;
     this.address = data.address;
-    this.network =
-      UPPER_CASE_TO_NETWORK[data.chain as keyof typeof UPPER_CASE_TO_NETWORK];
-    this.poolType = data.type;
     this.symbol = data.symbol;
     this.tokens = data.tokens.map(
       (t: (typeof POOLS_WITH_LIVE_GAUGES)[0]["tokens"][0]) => new Token(t),
     );
-    this.gauge = associatedGauge || new Gauge(data.gauge.address);
-
     POOL_CACHE[this.id] = this;
   }
 }
@@ -72,9 +105,7 @@ export class Pool {
 export class Gauge {
   address!: string;
   isKilled?: boolean;
-  addedTimestamp!: number;
   relativeWeightCap!: string | null;
-  pool!: Pool;
 
   constructor(address: string) {
     // Return cached instance if it exists
@@ -94,10 +125,7 @@ export class Gauge {
     }
     this.address = data.gauge.address;
     this.isKilled = data.gauge.isKilled;
-    this.addedTimestamp = data.gauge.addedTimestamp;
     this.relativeWeightCap = data.gauge.relativeWeightCap;
-    this.pool = new Pool(data.id, this);
-
     GAUGE_CACHE[this.address] = this;
   }
 }

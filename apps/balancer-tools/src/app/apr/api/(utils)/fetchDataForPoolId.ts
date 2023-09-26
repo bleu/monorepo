@@ -8,7 +8,7 @@ import { formatDateToMMDDYYYY } from "./date";
 
 export async function fetchDataForPoolId(poolId: string) {
   const pool = new Pool(poolId);
-  const gaugeAddedDate = new Date(pool.gauge.addedTimestamp * 1000);
+  const gaugeAddedDate = new Date(pool.createdAt * 1000);
   const formattedStartDate = formatDateToMMDDYYYY(gaugeAddedDate);
   const formattedEndDate = formatDateToMMDDYYYY(new Date());
 

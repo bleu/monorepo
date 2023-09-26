@@ -35,7 +35,8 @@ const BaseSlider = React.forwardRef<
   const maxNumber = Number(max);
   const { getValues, setValue } = useFormContext();
   const meanValue = (minNumber + maxNumber) / 2;
-  const value = name ? getValues(name) || meanValue : meanValue;
+  const value = getValues(name) !== undefined ? getValues(name) : meanValue;
+  const defaultValueNumber = Number(defaultValue);
 
   return (
     <SliderPrimitive.Root
@@ -46,9 +47,9 @@ const BaseSlider = React.forwardRef<
       )}
       min={minNumber}
       max={maxNumber}
-      defaultValue={[defaultValue || meanValue]}
+      defaultValue={[defaultValueNumber]}
       onValueChange={(value) => setValue(name, value[0])}
-      value={[value ? Number(value) : meanValue]}
+      value={[Number(value)]}
       {...props}
     >
       <SliderPrimitive.Track className="bg-blue4 relative grow rounded-full h-[3px]">

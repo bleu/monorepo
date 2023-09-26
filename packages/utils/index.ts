@@ -132,7 +132,7 @@ export const networkIdEnumMap = {
   "8453": Network.Base,
 };
 
-const filteredKeys = [
+const networksNamesOnBalancer = [
   String(NetworkChainId.ETHEREUM),
   String(NetworkChainId.OPTIMISM),
   String(NetworkChainId.GNOSIS),
@@ -145,7 +145,7 @@ const filteredKeys = [
 
 export const networksOnBalancer = Object.fromEntries(
   Object.entries(networkIdEnumMap).filter(([key]) =>
-    filteredKeys.includes(key),
+    networksNamesOnBalancer.includes(key),
   ),
 );
 

@@ -1,3 +1,4 @@
+import { Network, networksOnBalancer } from "@bleu-balancer-tools/utils";
 import { z } from "zod";
 
 import { POOLS_WITH_LIVE_GAUGES } from "#/lib/balancer/gauges";
@@ -8,11 +9,10 @@ import { Order } from "./sort";
 const currentDate = new Date();
 const minDate = new Date("2020-01-01");
 
-const SUPPORTED_NETWORKS = [""];
-
 const isPositiveOrNull = (value?: number | null) => !value || value >= 0;
 const isSupportedNetwork = (value?: string | null) =>
-  !value || SUPPORTED_NETWORKS.includes(value);
+  !value ||
+  Object.values(networksOnBalancer).includes(value.toLowerCase() as Network);
 
 const parseFloatOrNull = (str?: string | null) =>
   str ? parseFloat(str) : null;
@@ -28,8 +28,10 @@ const isValidTokenSymbol = (_symbols: string[] | null) => {
 
 const isValidPoolType = (types: string[] | null) => {
   if (!types) return true;
-  const validTypes = Object.keys(PoolTypeEnum);
-  return types.every((type) => validTypes.includes(type));
+  const validTypes = Object.keys(PoolTypeEnum).map((pType) =>
+    pType.toLowerCase(),
+  );
+  return types.every((type) => validTypes.includes(type.toLowerCase()));
 };
 
 const OptionalNullableString = z.string().nullable().optional();

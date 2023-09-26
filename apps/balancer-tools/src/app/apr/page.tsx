@@ -22,12 +22,7 @@ export interface SearchParams {
   network?: string;
 }
 
-export default function Page({
-  searchParams,
-}: {
-  params: { roundId: string };
-  searchParams: SearchParams;
-}) {
+export default function Page({ searchParams }: { searchParams: SearchParams }) {
   const parsedParams = QueryParamsPagesSchema.safeParse(searchParams);
   if (!parsedParams.success) {
     const currentDateFormated = formatDateToMMDDYYYY(new Date());

@@ -43,7 +43,7 @@ export default function Page({
     return redirect("/apr/");
   }
 
-  const url = getFilteredRoundApiUrl(searchParams, startAtDate, endAtDate);
+  const url = getFilteredRoundApiUrl(startAtDate, endAtDate, searchParams);
 
   return (
     <div className="flex flex-1 flex-col gap-y-3">

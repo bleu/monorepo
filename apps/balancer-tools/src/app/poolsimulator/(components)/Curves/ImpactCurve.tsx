@@ -10,7 +10,6 @@ import { formatNumber } from "#/utils/formatNumber";
 
 import { PoolTypeEnum } from "../../(types)";
 import { POOL_TYPES_TO_ADD_LIMIT } from "../../(utils)";
-import { getBetaLimitsIndexes } from "../../(utils)/getBetaLimits";
 import {
   ImpactWorkerInputData,
   ImpactWorkerOutputData,
@@ -22,11 +21,13 @@ interface Amounts {
     amounts: number[];
     priceImpact: number[];
     amountsOut: number[];
+    betaLimitIndex: number[];
   };
   tabTokenIn?: {
     amounts: number[];
     priceImpact: number[];
     amountsOut: number[];
+    betaLimitIndex: number[];
   };
 }
 
@@ -275,10 +276,6 @@ export function ImpactCurve() {
 
   const poolData = [initialData, customData];
   const amounts = [initialAmounts, customAmounts];
-  const tokens = {
-    analysisToken: [initialAnalysisToken, customAnalysisToken],
-    currentTabToken: [initialCurrentTabToken, customCurrentTabToken],
-  };
   const legends = ["Initial", "Custom"];
 
   amounts.forEach((amount, index) => {
@@ -304,27 +301,13 @@ export function ImpactCurve() {
       amounts[index].analysisTokenIn,
       amounts[index].tabTokenIn,
     ];
-    const analysisTokenData = tokens.analysisToken[index];
-    const currentTabTokenData = tokens.currentTabToken[index];
-    const tokensList = [
-      { in: analysisTokenData, out: currentTabTokenData },
-      { in: currentTabTokenData, out: analysisTokenData },
-    ];
     const amountLimits = [] as number[];
     const priceImpactLimits = [] as number[];
-    amountsList.forEach((amount, index) => {
-      const betaLimitsIndexes = getBetaLimitsIndexes({
-        amountsA: amount?.amounts || [],
-        amountsB: amount?.amountsOut || [],
-        rateA: tokensList[index].in?.rate || 1,
-        rateB: tokensList[index].out?.rate || 1,
-        initialBalanceA: tokensList[index].in?.balance || 0,
-        initialBalanceB: tokensList[index].out?.balance || 0,
-        beta: pool.poolParams?.beta || 0,
-      });
-      betaLimitsIndexes.forEach((i) => {
-        amountLimits.push(amount?.amounts[i] || 0);
-        priceImpactLimits.push(amount?.priceImpact[i] || 0);
+    amountsList.forEach((amount) => {
+      if (!amount) return;
+      amount.betaLimitIndex.forEach((i) => {
+        amountLimits.push(amount?.amounts[i]);
+        priceImpactLimits.push(amount?.priceImpact[i]);
       });
     });
     data.push(

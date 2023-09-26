@@ -66,12 +66,12 @@ export class Pool {
       },
       {
         pools: ETHEREUM_POOLS,
-        networkId: 1,
+        networkId: (data)=> 1,
         ...commonNetworkConfig
       },
       {
         pools: GOERLI_POOLS,
-        networkId: 100,
+        networkId: (data)=> 100,
         ...commonNetworkConfig
       },
     ];
@@ -81,7 +81,7 @@ export class Pool {
       data = network.pools.find((g) => g.id.toLowerCase() === id.toLowerCase());
       if (data) {
         this.poolType = network.poolType(data);
-        this.network = network.networkId;
+        this.network = network.networkId(data);
         this.createdAt = network.createdAt(data);
         this.gauge = network.gauge(data);
         break;

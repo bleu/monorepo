@@ -7,7 +7,10 @@ import { Pool } from "#/lib/balancer/gauges";
 import { withCache } from "#/lib/cache";
 import { pools } from "#/lib/gql/server";
 
-import { getWeeksBetweenDates } from "../api/(utils)/date";
+import {
+  calculateDaysBetween,
+  getWeeksBetweenDates,
+} from "../api/(utils)/date";
 import { PoolStatsData, PoolTokens, tokenAPR } from "../api/route";
 import {
   getBALPriceForDateRange,
@@ -53,8 +56,27 @@ const fetchPoolAveragesForDateRange = withCache(
     );
 
     if (res.poolSnapshots.length === 0) {
-      return [0, 0, "", []];
+      // Following Fabio's recomendation on #BAL-872
+      if (calculateDaysBetween(from, to) != 1) {
+        return [0, 0, "", []];
+      }
+      console.warn(
+        "No return on poolSnapshots, trying to fetch in a few days before",
+      );
+      const retryGQL = await pools.gql(network).poolSnapshotInRange({
+        poolId,
+        from: from - SECONDS_IN_DAY * 7,
+        to,
+      });
+
+      if (retryGQL.poolSnapshots.length === 0) {
+        return [0, 0, "", []];
+      }
+      res.poolSnapshots = retryGQL.poolSnapshots
+        .sort((a, b) => a.timestamp - b.timestamp)
+        .slice(-1);
     }
+
     const avgLiquidity =
       res.poolSnapshots.reduce(
         (acc, snapshot) => acc + parseFloat(snapshot.liquidity),

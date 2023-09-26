@@ -72,9 +72,8 @@ const fetchPoolAveragesForDateRange = withCache(
       if (retyGQL.poolSnapshots.length === 0) {
         return [0, 0, "", []];
       }
-      // Gets the 2 most recent
       res.poolSnapshots = retyGQL.poolSnapshots
-        .slice(-2)
+        .slice(-1)
         .sort((a, b) => a.timestamp - b.timestamp);
     }
     const avgLiquidity =

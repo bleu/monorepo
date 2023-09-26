@@ -1,6 +1,8 @@
 import { Network, networksOnBalancer } from "@bleu-balancer-tools/utils";
 import { z } from "zod";
 
+import ETHEREUM_POOLS from "#/data/pools-ethereum.json";
+import GOERLI_POOLS from "#/data/pools-goerli.json";
 import { POOLS_WITH_LIVE_GAUGES } from "#/lib/balancer/gauges";
 
 import { PoolTypeEnum } from "../../(utils)/types";
@@ -81,9 +83,10 @@ export const QueryParamsSchema = z
     poolId: OptionalNullableString.refine(
       (poolId) =>
         !poolId ||
-        POOLS_WITH_LIVE_GAUGES.some(
-          (g) => g.id.toLowerCase() === poolId?.toLowerCase(),
-        ),
+        (POOLS_WITH_LIVE_GAUGES.some((g) => g.id.toLowerCase() === poolId?.toLowerCase()) ||
+          ETHEREUM_POOLS.some((g) => g.id.toLowerCase() === poolId?.toLowerCase()) ||
+          GOERLI_POOLS.some((g) => g.id.toLowerCase() === poolId?.toLowerCase())), 
+          // TODO: Add more network pools here
       { message: "Pool with ID not found" },
     ),
     startAt: DateSchema,
@@ -136,9 +139,10 @@ export const QueryParamsPagesSchema = z
     poolId: OptionalNullableString.refine(
       (poolId) =>
         !poolId ||
-        POOLS_WITH_LIVE_GAUGES.some(
-          (g) => g.id.toLowerCase() === poolId?.toLowerCase(),
-        ),
+        (POOLS_WITH_LIVE_GAUGES.some((g) => g.id.toLowerCase() === poolId?.toLowerCase()) &&
+          ETHEREUM_POOLS.some((g) => g.id.toLowerCase() === poolId?.toLowerCase()) &&
+          GOERLI_POOLS.some((g) => g.id.toLowerCase() === poolId?.toLowerCase())),  
+          // TODO: Add more network pools here
       { message: "Pool with ID not found" },
     ),
     startAt: DateSchema,

@@ -120,15 +120,14 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  const filteredRespondeData = limitPoolStats(filterPoolStats(responseData, searchParams), offset, limit)
+
   return NextResponse.json(
     sortPoolStats(
-      computeAverages(
-        limitPoolStats(
-          filterPoolStats(responseData, searchParams),
-          offset,
-          limit,
-        ),
-      ),
+      {
+        perDay:  filteredRespondeData,
+        average: computeAverages(filteredRespondeData)
+      },
       sort as keyof PoolStatsData | undefined,
       order as Order | undefined,
     ),

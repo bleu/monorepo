@@ -63,19 +63,20 @@ const fetchPoolAveragesForDateRange = withCache(
       console.warn(
         "No return on poolSnapshots, trying to fetch in a few days before",
       );
-      const retyGQL = await pools.gql(network).poolSnapshotInRange({
+      const retryGQL = await pools.gql(network).poolSnapshotInRange({
         poolId,
         from: from - SECONDS_IN_DAY * 7,
         to,
       });
 
-      if (retyGQL.poolSnapshots.length === 0) {
+      if (retryGQL.poolSnapshots.length === 0) {
         return [0, 0, "", []];
       }
-      res.poolSnapshots = retyGQL.poolSnapshots
-        .slice(-1)
-        .sort((a, b) => a.timestamp - b.timestamp);
+      res.poolSnapshots = retryGQL.poolSnapshots
+        .sort((a, b) => a.timestamp - b.timestamp)
+        .slice(-1);
     }
+
     const avgLiquidity =
       res.poolSnapshots.reduce(
         (acc, snapshot) => acc + parseFloat(snapshot.liquidity),

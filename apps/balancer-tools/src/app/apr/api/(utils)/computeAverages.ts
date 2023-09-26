@@ -58,7 +58,7 @@ export const computeAverages = (formattedPoolData: {
   }
 
   // @ts-ignore  - Need help with this typing!
-  return { perDay: formattedPoolData, average: averages };
+  return averages;
 };
 
 function calculateAverageForObject(

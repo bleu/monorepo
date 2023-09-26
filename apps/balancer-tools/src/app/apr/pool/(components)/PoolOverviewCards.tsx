@@ -26,10 +26,13 @@ export default async function PoolOverviewCards({
   );
   cardsDetails.push(
     ...[
-      { title: "Avg. TVL", content: formatTVL(results.average.tvl) },
+      {
+        title: "Avg. TVL",
+        content: formatTVL(results.average.poolAverage[0].tvl),
+      },
       {
         title: "Avg. veBAL APR",
-        content: formatAPR(results.average.apr.breakdown.veBAL),
+        content: formatAPR(results.average.poolAverage[0].apr.breakdown.veBAL),
       },
       ...getDatesDetails(startAt, endAt),
     ],

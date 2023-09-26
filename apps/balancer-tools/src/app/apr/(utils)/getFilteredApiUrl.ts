@@ -47,7 +47,7 @@ function getFilterDataFromParams(searchParams: SearchParams) {
   return result;
 }
 
-export default function getFilteredRoundApiUrl(
+export default function getFilteredDateApiUrl(
   startAt: Date,
   endAt: Date,
   searchParams?: SearchParams | null,

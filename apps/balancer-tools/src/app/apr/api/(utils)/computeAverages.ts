@@ -183,10 +183,12 @@ function accumulateData(
 }
 
 function accumulateTokens(
-  targetTokens: { total: number; breakdown: tokenAPR[] },
-  sourceTokens: { total: number; breakdown: tokenAPR[] },
-  uniqueEntries: { [key: string]: { idx: number; occurences: number } },
+  targetTokens?: { total: number; breakdown: tokenAPR[] },
+  sourceTokens?: { total: number; breakdown: tokenAPR[] },
+  uniqueEntries?: { [key: string]: { idx: number; occurences: number } },
 ): void {
+  if (!targetTokens || !sourceTokens || !uniqueEntries) return;
+
   sourceTokens.breakdown.forEach((tokenData) => {
     if (!uniqueEntries[tokenData.symbol]) {
       uniqueEntries[tokenData.symbol] = {
@@ -198,7 +200,8 @@ function accumulateTokens(
       uniqueEntries[tokenData.symbol].occurences++;
       const existingTokenData =
         targetTokens.breakdown[uniqueEntries[tokenData.symbol].idx];
-      existingTokenData.yield += tokenData.yield;
+      existingTokenData.yield =
+        (existingTokenData.yield || 0) + (tokenData.yield || 0);
     }
   });
 }
@@ -216,6 +219,7 @@ function calculateAverages(
   averages.volume /= totalDataCount;
 
   averages.apr.breakdown.tokens.breakdown.forEach((tokenData) => {
+    tokenData.yield ||= 0;
     tokenData.yield /= uniqueEntries[tokenData.symbol].occurences;
   });
 }

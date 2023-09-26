@@ -4,7 +4,6 @@ import * as Sentry from "@sentry/nextjs";
 
 import * as balEmissions from "#/lib/balancer/emissions";
 import { Pool } from "#/lib/balancer/gauges";
-import { withCache } from "#/lib/cache";
 import { pools } from "#/lib/gql/server";
 
 import { getWeeksBetweenDates } from "../api/(utils)/date";
@@ -23,7 +22,7 @@ export interface calculatePoolData extends Omit<PoolStatsData, "apr"> {
     breakdown: {
       veBAL: number | null;
       swapFee: number;
-      tokens: {
+      tokens?: {
         total: number;
         breakdown: tokenAPR[];
       };
@@ -35,52 +34,49 @@ const WEEKS_IN_YEAR = 52;
 const SECONDS_IN_DAY = 86400;
 const SECONDS_IN_YEAR = 365 * SECONDS_IN_DAY;
 
-const fetchPoolAveragesForDateRange = withCache(
-  async function fetchPoolAveragesInRangeFn(
-    poolId: string,
-    network: string,
-    from: number,
-    to: number,
-  ): Promise<[number, number, string, { symbol: string; balance: string }[]]> {
-    const res = await pools.gql(network).poolSnapshotInRange({
-      poolId,
-      from,
-      to,
-    });
+async function fetchPoolAveragesForDateRange(
+  poolId: string,
+  network: string,
+  from: number,
+  to: number,
+): Promise<[number, number, string, { symbol: string; balance: string }[]]> {
+  const res = await pools.gql(network).poolSnapshotInRange({
+    poolId,
+    from,
+    to,
+  });
 
-    res.poolSnapshots = res.poolSnapshots.sort(
-      (a, b) => a.timestamp - b.timestamp,
-    );
+  res.poolSnapshots = res.poolSnapshots.sort(
+    (a, b) => a.timestamp - b.timestamp,
+  );
 
-    if (res.poolSnapshots.length === 0) {
-      return [0, 0, "", []];
-    }
-    const avgLiquidity =
-      res.poolSnapshots.reduce(
-        (acc, snapshot) => acc + parseFloat(snapshot.liquidity),
-        0,
-      ) / res.poolSnapshots.length;
+  if (res.poolSnapshots.length === 0) {
+    return [0, 0, "", []];
+  }
+  const avgLiquidity =
+    res.poolSnapshots.reduce(
+      (acc, snapshot) => acc + parseFloat(snapshot.liquidity),
+      0,
+    ) / res.poolSnapshots.length;
 
-    const avgVolume =
-      res.poolSnapshots.reduce((sum, current, currentIndex) => {
-        if (currentIndex === 0) return 0;
+  const avgVolume =
+    res.poolSnapshots.reduce((sum, current, currentIndex) => {
+      if (currentIndex === 0) return 0;
 
-        const currentDayVolume = current.swapVolume;
-        const previousDayVolume =
-          res.poolSnapshots[currentIndex - 1].swapVolume;
+      const currentDayVolume = current.swapVolume;
+      const previousDayVolume = res.poolSnapshots[currentIndex - 1].swapVolume;
 
-        return sum + (currentDayVolume - previousDayVolume);
-      }, 0) /
-      (res.poolSnapshots.length - 1);
+      return sum + (currentDayVolume - previousDayVolume);
+    }, 0) /
+    (res.poolSnapshots.length - 1);
 
-    return [
-      avgLiquidity,
-      avgVolume,
-      res.poolSnapshots[0].pool.symbol ?? "",
-      res.poolSnapshots[0].pool.tokens ?? [],
-    ];
-  },
-);
+  return [
+    avgLiquidity,
+    avgVolume,
+    res.poolSnapshots[0].pool.symbol ?? "",
+    res.poolSnapshots[0].pool.tokens ?? [],
+  ];
+}
 
 async function calculateTokensStats(
   endAtTimestamp: number,
@@ -255,7 +251,7 @@ function calculateAPRForDateRange(
       veBAL: vebalAPR,
       swapFee: feeAPR,
       tokens: {
-        total: tokensAPR.reduce((acc, token) => acc + token.yield, 0),
+        total: tokensAPR.reduce((acc, token) => acc + (token?.yield ?? 0), 0),
         breakdown: [
           ...tokensAPR.map((token) => ({
             address: token.address,
@@ -268,7 +264,7 @@ function calculateAPRForDateRange(
   };
 }
 
-const getFeeAprForDateRange = withCache(async function getFeeAprFn(
+async function getFeeAprForDateRange(
   poolId: string,
   network: string,
   from: number,
@@ -300,4 +296,4 @@ const getFeeAprForDateRange = withCache(async function getFeeAprFn(
     (SECONDS_IN_YEAR / (endRoundData?.timestamp - startRoundData?.timestamp));
 
   return [isNaN(annualizedFeeApr) ? 0 : annualizedFeeApr / 100, feeDiff];
-});
+}

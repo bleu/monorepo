@@ -4,7 +4,7 @@ import OverviewCards, {
   getDatesDetails,
 } from "../../(components)/OverviewCards";
 import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
-import { BASE_URL } from "../../(utils)/types";
+import getFilteredRoundApiUrl from "../../(utils)/getFilteredApiUrl";
 import { PoolStatsResults } from "../../api/route";
 
 export default async function PoolOverviewCards({
@@ -22,9 +22,8 @@ export default async function PoolOverviewCards({
     tooltip?: string;
   }[] = [];
   const results: PoolStatsResults = await fetcher(
-    `${BASE_URL}/apr/api/?poolId=${poolId}&startAt${startAt}&endAt=${endAt}`,
+    getFilteredRoundApiUrl(startAt, endAt, null, poolId),
   );
-
   cardsDetails.push(
     ...[
       { title: "Avg. TVL", content: formatTVL(results.average.tvl) },

@@ -1,3 +1,4 @@
+import { networkIdFor } from "@bleu-balancer-tools/utils";
 import { z } from "zod";
 
 import { PoolStatsData } from "../route";
@@ -43,14 +44,17 @@ type ConditionTypes = {
 };
 
 const conditions: ConditionTypes = {
-  network: (pool, value) => pool.network === value,
+  network: (pool, value) => pool.network === networkIdFor(value as string),
   minApr: (pool, value) => pool.apr.total >= value!,
   maxApr: (pool, value) => pool.apr.total <= value!,
   minVotingShare: (pool, value) => pool.votingShare * 100 >= value!,
   maxVotingShare: (pool, value) => pool.votingShare * 100 <= value!,
   tokens: (pool, value) =>
     pool.tokens.some((token) => value!.includes(token.symbol)),
-  types: (pool, value) => value!.includes(pool.type),
+  types: (pool, value) =>
+    value!
+      .map((pType) => pType.toLowerCase())
+      .includes(pool.type.toLowerCase()),
   minTvl: (pool, value) => pool.tvl >= value!,
   maxTvl: (pool, value) => pool.tvl <= value!,
 };

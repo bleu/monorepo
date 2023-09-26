@@ -10,6 +10,8 @@ import { filterPoolStats } from "./(utils)/filter";
 import { limitPoolStats, Order, sortPoolStats } from "./(utils)/sort";
 import { QueryParamsSchema } from "./(utils)/validate";
 
+export const runtime = "edge";
+
 export interface tokenAPR {
   address: string;
   symbol: string;

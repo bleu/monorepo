@@ -75,7 +75,7 @@ export function PoolListTable({
     const params = Object.fromEntries(searchParams.entries());
     params["offset"] = (tableData.length + 1).toString();
 
-    const url = new URL(getFilteredRoundApiUrl(params, startAt, endAt));
+    const url = new URL(getFilteredRoundApiUrl(startAt, endAt, params));
     const aditionalPoolsData = await fetcher<PoolStatsResults>(
       url.pathname + url.search,
     );

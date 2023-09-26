@@ -270,14 +270,16 @@ function calculateAPRForDateRange(
       ? ((WEEKS_IN_YEAR * (emissions * votingShare * balPriceUSD)) / tvl) * 100
       : null;
 
+  const tokenAPRTotal = tokensAPR.reduce((acc, token) => acc + token.yield, 0);
+
   return {
     //TODO: on #BAL-795 add tokenAPR to the total
-    total: (vebalAPR || 0) + feeAPR,
+    total: (vebalAPR || 0) + feeAPR + tokenAPRTotal,
     breakdown: {
       veBAL: vebalAPR,
       swapFee: feeAPR,
       tokens: {
-        total: tokensAPR.reduce((acc, token) => acc + token.yield, 0),
+        total: tokenAPRTotal,
         breakdown: [
           ...tokensAPR.map((token) => ({
             address: token.address,

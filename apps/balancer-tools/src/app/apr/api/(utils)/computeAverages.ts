@@ -1,9 +1,5 @@
 import { calculatePoolData } from "../../(utils)/calculatePoolStats";
-import {
-  PoolStatsData,
-  PoolStatsResults,
-  PoolStatsWithoutVotingShareAndCollectedFees,
-} from "../route";
+import { PoolStatsData, PoolStatsResults } from "../route";
 
 export const computeAverages = (formattedPoolData: {
   [key: string]: PoolStatsData[] | calculatePoolData[];
@@ -108,7 +104,7 @@ function initializeAverages(): { poolAverage: PoolStatsData[] } {
 }
 
 function accumulateData(
-  obj1: PoolStatsWithoutVotingShareAndCollectedFees,
+  obj1: PoolStatsData[],
   obj2: PoolStatsData | calculatePoolData,
 ) {
   const result = { ...obj1 };

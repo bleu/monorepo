@@ -46,11 +46,6 @@ export interface PoolStats {
   collectedFeesUSD: number;
 }
 
-export interface PoolStatsWithoutVotingShareAndCollectedFees
-  extends Omit<PoolStats, "votingShare" | "collectedFeesUSD"> {
-  poolAverage: PoolStatsData[];
-}
-
 export interface PoolStatsData extends PoolStats {
   symbol: string;
   network: string;
@@ -61,7 +56,7 @@ export interface PoolStatsData extends PoolStats {
 
 export interface PoolStatsResults {
   perDay: { [key: string]: PoolStatsData[] };
-  average: PoolStatsWithoutVotingShareAndCollectedFees;
+  average: { poolAverage: PoolStatsData[] };
 }
 
 function valuesFromSearchParams(searchParams: URLSearchParams) {

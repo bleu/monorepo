@@ -27,7 +27,7 @@ import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 
 import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
-import getFilteredRoundApiUrl from "../../(utils)/getFilteredApiUrl";
+import getFilteredDateApiUrl from "../../(utils)/getFilteredApiUrl";
 import { PoolTypeEnum } from "../../(utils)/types";
 import { formatDateToMMDDYYYY } from "../../api/(utils)/date";
 import { PoolStatsData, PoolStatsResults, PoolTokens } from "../../api/route";
@@ -75,7 +75,7 @@ export function PoolListTable({
     const params = Object.fromEntries(searchParams.entries());
     params["offset"] = (tableData.length + 1).toString();
 
-    const url = new URL(getFilteredRoundApiUrl(startAt, endAt, params));
+    const url = new URL(getFilteredDateApiUrl(startAt, endAt, params));
     const aditionalPoolsData = await fetcher<PoolStatsResults>(
       url.pathname + url.search,
     );

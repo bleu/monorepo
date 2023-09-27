@@ -77,8 +77,7 @@ export function getBetaLimitsIndexes({
   const balancesA = computeBalances(amountsA, rateA, initialBalanceA);
   const balancesB = computeBalances(amountsB, rateB, initialBalanceB);
 
-  const [start, end] = findTransitions(balancesA, balancesB, beta);
-  return [start, end].filter((i) => i !== 0);
+  return findTransitions(balancesA, balancesB, beta).filter((i) => i !== 0);
 }
 
 export function getBetaLimits({

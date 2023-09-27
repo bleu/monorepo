@@ -1,21 +1,12 @@
 import { calculatePoolData } from "../../(utils)/calculatePoolStats";
-import {
-  PoolStatsData,
-  PoolStatsResults,
-  PoolStatsWithoutVotingShareAndCollectedFees,
-  tokenAPR,
-} from "../route";
+import { PoolStatsData } from "../route";
 
 export const computeAverages = (formattedPoolData: {
   [key: string]: PoolStatsData[] | calculatePoolData[];
-}): PoolStatsResults => {
-  let averages = initializeAverages();
+}): { poolAverage: PoolStatsData[] } => {
+  const averages = initializeAverages();
 
   const poolAverage: { [key: string]: PoolStatsData | calculatePoolData } = {};
-
-  const uniqueTokenEntries: {
-    [key: string]: { idx: number; occurences: number };
-  } = {};
 
   let totalDataCount = 0;
 
@@ -23,12 +14,6 @@ export const computeAverages = (formattedPoolData: {
     if (Object.hasOwnProperty.call(formattedPoolData, key)) {
       const dataArr = formattedPoolData[key];
       dataArr.forEach((data) => {
-        averages = accumulateData(averages, data);
-        accumulateTokens(
-          averages.apr.breakdown.tokens,
-          data.apr.breakdown.tokens,
-          uniqueTokenEntries,
-        );
         totalDataCount++;
 
         if (data.poolId in poolAverage) {
@@ -46,11 +31,6 @@ export const computeAverages = (formattedPoolData: {
   }
 
   if (totalDataCount > 0) {
-    calculateAverages(
-      averages,
-      Object.keys(poolAverage).length,
-      uniqueTokenEntries,
-    );
     averages.poolAverage = calculateAveragesForPool(
       poolAverage,
       Object.keys(formattedPoolData).length,
@@ -78,7 +58,7 @@ function calculateAverageForObject(
           typeof item === "object"
             ? calculateAverageForObject(item, divisor)
             : typeof item === "number"
-            ? item / divisor
+            ? Number(item) / divisor
             : item,
         );
       } else if (typeof value === "number") {
@@ -117,28 +97,14 @@ function calculateAveragesForPool(
   return averagedOutput;
 }
 
-function initializeAverages(): PoolStatsWithoutVotingShareAndCollectedFees {
+function initializeAverages(): { poolAverage: PoolStatsData[] } {
   return {
     poolAverage: [],
-    apr: {
-      total: 0,
-      breakdown: {
-        veBAL: 0,
-        swapFee: 0,
-        tokens: {
-          total: 0,
-          breakdown: [],
-        },
-      },
-    },
-    balPriceUSD: 0,
-    tvl: 0,
-    volume: 0,
   };
 }
 
 function accumulateData(
-  obj1: PoolStatsWithoutVotingShareAndCollectedFees,
+  obj1: PoolStatsData[],
   obj2: PoolStatsData | calculatePoolData,
 ) {
   const result = { ...obj1 };
@@ -180,46 +146,4 @@ function accumulateData(
 
   // @ts-ignore  - Need help with this typing!
   return result;
-}
-
-function accumulateTokens(
-  targetTokens?: { total: number; breakdown: tokenAPR[] },
-  sourceTokens?: { total: number; breakdown: tokenAPR[] },
-  uniqueEntries?: { [key: string]: { idx: number; occurences: number } },
-): void {
-  if (!targetTokens || !sourceTokens || !uniqueEntries) return;
-
-  sourceTokens.breakdown.forEach((tokenData) => {
-    if (!uniqueEntries[tokenData.symbol]) {
-      uniqueEntries[tokenData.symbol] = {
-        idx: targetTokens.breakdown.length,
-        occurences: 0,
-      };
-      targetTokens.breakdown.push(tokenData);
-    } else {
-      uniqueEntries[tokenData.symbol].occurences++;
-      const existingTokenData =
-        targetTokens.breakdown[uniqueEntries[tokenData.symbol].idx];
-      existingTokenData.yield =
-        (existingTokenData.yield || 0) + (tokenData.yield || 0);
-    }
-  });
-}
-
-function calculateAverages(
-  averages: PoolStatsWithoutVotingShareAndCollectedFees,
-  totalDataCount: number,
-  uniqueEntries: { [key: string]: { idx: number; occurences: number } },
-): void {
-  averages.apr.total /= totalDataCount;
-  averages.apr.breakdown.veBAL /= totalDataCount;
-  averages.apr.breakdown.swapFee /= totalDataCount;
-  averages.balPriceUSD /= totalDataCount;
-  averages.tvl /= totalDataCount;
-  averages.volume /= totalDataCount;
-
-  averages.apr.breakdown.tokens.breakdown.forEach((tokenData) => {
-    tokenData.yield ||= 0;
-    tokenData.yield /= uniqueEntries[tokenData.symbol].occurences;
-  });
 }

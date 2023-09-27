@@ -5,11 +5,8 @@ import { AnalysisData } from "#/contexts/PoolSimulatorContext";
 import { trimTrailingValues } from "#/lib/utils";
 
 import { PoolTypeEnum, TokensData } from "../(types)";
-import {
-  calculateCurvePoints,
-  convertAnalysisDataToAMM,
-  findTokenBySymbol,
-} from "../(utils)";
+import { calculateCurvePoints, convertAnalysisDataToAMM } from "../(utils)";
+import { getBetaLimitsIndexes } from "../(utils)/getBetaLimits";
 
 export interface ImpactWorkerInputData {
   tokenIn: TokensData;
@@ -26,6 +23,7 @@ export interface ImpactWorkerOutputData {
     amounts: number[];
     priceImpact: number[];
     amountsOut: number[];
+    betaLimitIndex: number[];
   };
   swapDirection?: "in" | "out";
   error?: Error;
@@ -48,7 +46,6 @@ self.addEventListener(
       tokenOut,
       amm,
       poolType,
-      swapDirection,
     }: {
       tokenIn: TokensData;
       tokenOut: TokensData;
@@ -57,9 +54,7 @@ self.addEventListener(
       swapDirection: "in" | "out";
     }) => {
       const maxBalance = Math.max(tokenIn.balance, tokenOut.balance);
-      const limitBalance =
-        swapDirection === "in" ? tokenOut.balance : tokenIn.balance;
-      const rawAmounts =
+      const rawAmountsIn =
         poolType === PoolTypeEnum.MetaStable
           ? calculateCurvePoints({
               balance: maxBalance,
@@ -68,38 +63,46 @@ self.addEventListener(
           : calculateCurvePoints({
               balance: maxBalance,
               startPercentage: 0.001,
-            }).filter((value) => value <= limitBalance);
+            }).filter((value) => value <= tokenOut.balance);
 
-      const rawPriceImpact = rawAmounts.map(
+      const rawPriceImpact = rawAmountsIn.map(
         (amount) =>
           amm.priceImpactForExactTokenInSwap(
             amount,
-            swapDirection === "in" ? tokenIn.symbol : tokenOut.symbol,
-            swapDirection === "in" ? tokenOut.symbol : tokenIn.symbol,
+            tokenIn.symbol,
+            tokenOut.symbol,
           ) * 100,
       );
 
-      const { trimmedIn: amounts, trimmedOut: priceImpact } =
-        trimTrailingValues(rawAmounts, rawPriceImpact, 100);
+      const { trimmedIn: amountsIn, trimmedOut: priceImpact } =
+        trimTrailingValues(rawAmountsIn, rawPriceImpact, 100);
 
-      const amountsOut = rawAmounts.map(
+      const amountsOut = rawAmountsIn.map(
         (amount) =>
-          amm.exactTokenInForTokenOut(
-            amount,
-            swapDirection === "in" ? tokenIn.symbol : tokenOut.symbol,
-            swapDirection === "in" ? tokenOut.symbol : tokenIn.symbol,
-          ) * -1,
+          amm.exactTokenInForTokenOut(amount, tokenIn.symbol, tokenOut.symbol) *
+          -1,
       );
 
+      const betaLimitIndex = getBetaLimitsIndexes({
+        amountsA: amountsIn as number[],
+        amountsB: amountsOut,
+        rateA: tokenIn.rate || 1,
+        rateB: tokenOut.rate || 1,
+        initialBalanceA: tokenIn.balance,
+        initialBalanceB: tokenOut.balance,
+        beta: data.poolParams?.beta || 1,
+      });
+
       return {
-        amounts: amounts as number[],
+        amounts: amountsIn as number[],
         priceImpact: priceImpact as number[],
         amountsOut,
+        betaLimitIndex,
       };
     };
     const calcResult = calculateTokenImpact({
-      tokenIn: findTokenBySymbol(data?.tokens, tokenIn.symbol) as TokensData,
-      tokenOut: findTokenBySymbol(data?.tokens, tokenOut.symbol) as TokensData,
+      tokenIn: swapDirection === "in" ? tokenIn : tokenOut,
+      tokenOut: swapDirection === "in" ? tokenOut : tokenIn,
       amm,
       poolType,
       swapDirection,

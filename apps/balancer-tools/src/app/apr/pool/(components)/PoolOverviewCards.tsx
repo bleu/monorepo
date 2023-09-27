@@ -4,7 +4,7 @@ import OverviewCards, {
   getDatesDetails,
 } from "../../(components)/OverviewCards";
 import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
-import getFilteredRoundApiUrl from "../../(utils)/getFilteredApiUrl";
+import getFilteredDateApiUrl from "../../(utils)/getFilteredApiUrl";
 import { PoolStatsResults } from "../../api/route";
 
 export default async function PoolOverviewCards({
@@ -22,14 +22,17 @@ export default async function PoolOverviewCards({
     tooltip?: string;
   }[] = [];
   const results: PoolStatsResults = await fetcher(
-    getFilteredRoundApiUrl(startAt, endAt, null, poolId),
+    getFilteredDateApiUrl(startAt, endAt, null, poolId),
   );
   cardsDetails.push(
     ...[
-      { title: "Avg. TVL", content: formatTVL(results.average.tvl) },
+      {
+        title: "Avg. TVL",
+        content: formatTVL(results.average.poolAverage[0].tvl),
+      },
       {
         title: "Avg. veBAL APR",
-        content: formatAPR(results.average.apr.breakdown.veBAL),
+        content: formatAPR(results.average.poolAverage[0].apr.breakdown.veBAL),
       },
       ...getDatesDetails(startAt, endAt),
     ],

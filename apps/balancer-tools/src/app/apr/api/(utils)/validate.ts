@@ -1,8 +1,14 @@
 import { Network, networksOnBalancer } from "@bleu-balancer-tools/utils";
 import { z } from "zod";
 
+import ARBITRUM_POOLS from "#/data/pools-arbitrum.json";
+import AVALANCHE_POOLS from "#/data/pools-avalanche.json";
+import BASE_POOLS from "#/data/pools-base.json";
 import ETHEREUM_POOLS from "#/data/pools-ethereum.json";
-import GOERLI_POOLS from "#/data/pools-goerli.json";
+import GNOSIS_POOLS from "#/data/pools-gnosis.json";
+import OPTIMISM_POOLS from "#/data/pools-optimism.json";
+import POLYGON_POOLS from "#/data/pools-polygon.json";
+import POLYGONZKEVM_POOLS from "#/data/pools-polygonzkevm.json";
 import { POOLS_WITH_LIVE_GAUGES } from "#/lib/balancer/gauges";
 
 import { PoolTypeEnum } from "../../(utils)/types";
@@ -81,12 +87,29 @@ const DateSchema = OptionalNullableDate.refine(
 export const QueryParamsSchema = z
   .object({
     poolId: OptionalNullableString.refine(
-      (poolId) =>
-        !poolId ||
-        (POOLS_WITH_LIVE_GAUGES.some((g) => g.id.toLowerCase() === poolId?.toLowerCase()) ||
-          ETHEREUM_POOLS.some((g) => g.id.toLowerCase() === poolId?.toLowerCase()) ||
-          GOERLI_POOLS.some((g) => g.id.toLowerCase() === poolId?.toLowerCase())), 
-          // TODO: Add more network pools here
+      (poolId) => (
+        POOLS_WITH_LIVE_GAUGES.some(
+          (g) => g.id.toLowerCase() === poolId?.toLowerCase(),
+        ) &&
+          ETHEREUM_POOLS.some(
+            (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
+          ) &&
+          BASE_POOLS.some((p) => p.id.toLowerCase() === poolId?.toLowerCase()),
+        ARBITRUM_POOLS.some(
+          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
+        ),
+        AVALANCHE_POOLS.some(
+          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
+        ),
+        GNOSIS_POOLS.some((p) => p.id.toLowerCase() === poolId?.toLowerCase()),
+        OPTIMISM_POOLS.some(
+          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
+        ),
+        POLYGON_POOLS.some((p) => p.id.toLowerCase() === poolId?.toLowerCase()),
+        POLYGONZKEVM_POOLS.some(
+          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
+        )
+      ),
       { message: "Pool with ID not found" },
     ),
     startAt: DateSchema,
@@ -139,10 +162,28 @@ export const QueryParamsPagesSchema = z
     poolId: OptionalNullableString.refine(
       (poolId) =>
         !poolId ||
-        (POOLS_WITH_LIVE_GAUGES.some((g) => g.id.toLowerCase() === poolId?.toLowerCase()) &&
-          ETHEREUM_POOLS.some((g) => g.id.toLowerCase() === poolId?.toLowerCase()) &&
-          GOERLI_POOLS.some((g) => g.id.toLowerCase() === poolId?.toLowerCase())),  
-          // TODO: Add more network pools here
+        (POOLS_WITH_LIVE_GAUGES.some(
+          (g) => g.id.toLowerCase() === poolId?.toLowerCase(),
+        ) &&
+          ETHEREUM_POOLS.some(
+            (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
+          ) &&
+          BASE_POOLS.some((p) => p.id.toLowerCase() === poolId?.toLowerCase()),
+        ARBITRUM_POOLS.some(
+          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
+        ),
+        AVALANCHE_POOLS.some(
+          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
+        ),
+        GNOSIS_POOLS.some((p) => p.id.toLowerCase() === poolId?.toLowerCase()),
+        OPTIMISM_POOLS.some(
+          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
+        ),
+        POLYGON_POOLS.some((p) => p.id.toLowerCase() === poolId?.toLowerCase()),
+        POLYGONZKEVM_POOLS.some(
+          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
+        )),
+      // TODO: Add more network pools here
       { message: "Pool with ID not found" },
     ),
     startAt: DateSchema,

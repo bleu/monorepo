@@ -1,8 +1,8 @@
 import { Network, networksOnBalancer } from "@bleu-balancer-tools/utils";
 import { z } from "zod";
 
-import POOLS_WITH_LIVE_GAUGES from "#/data/voting-gauges.json";
 import POOLS_WITHOUT_GAUGES from "#/data/pools-without-gauge.json";
+import POOLS_WITH_LIVE_GAUGES from "#/data/voting-gauges.json";
 
 import { PoolTypeEnum } from "../../(utils)/types";
 import { Order } from "./sort";

@@ -1,4 +1,4 @@
-import getFilteredRoundApiUrl from "#/app/apr/(utils)/getFilteredApiUrl";
+import getFilteredDateApiUrl from "#/app/apr/(utils)/getFilteredApiUrl";
 import { PoolStatsData, PoolStatsResults } from "#/app/apr/api/route";
 import { trimTrailingValues } from "#/lib/utils";
 import { fetcher } from "#/utils/fetcher";
@@ -15,7 +15,7 @@ export default async function HistoricalCharts({
   poolId?: string;
 }) {
   const results: PoolStatsResults = await fetcher(
-    getFilteredRoundApiUrl(startAt, endAt, null, poolId),
+    getFilteredDateApiUrl(startAt, endAt, null, poolId),
   );
 
   return <HistoricalChart apiResult={results} />;

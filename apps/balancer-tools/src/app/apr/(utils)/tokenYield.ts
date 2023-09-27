@@ -24,82 +24,80 @@ const DAYS_IN_YEAR = 365;
 const SECONDS_IN_YEAR = DAYS_IN_YEAR * SECONDS_IN_DAY;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const getPoolTokensAprForDate = withCache(
-  async function getPoolTokensAprForDateFn(
-    chain: string,
-    poolId: Address,
-    startAt: number,
-    endAt: number,
+// export const getPoolTokensAprForDate = withCache(
+export async function getPoolTokensAprForDate(
+  chain: string,
+  poolId: Address,
+  startAt: number,
+  endAt: number,
+) {
+  const rateProviders = await getPoolTokensRateProviders(chain, poolId);
+
+  const chainName = networkFor(chain) as ChainName;
+
+  return await Promise.all(
+    rateProviders
+      .filter(({ address }) => address !== zeroAddress)
+      .map(
+        async ({
+          address: rateProviderAddress,
+          token: { symbol, address: tokenAddress },
+        }) => ({
+          address: tokenAddress,
+          symbol,
+          yield: await getAPRFromRateProviderInterval(
+            rateProviderAddress as Address,
+            startAt,
+            endAt,
+            chainName,
+          ),
+        }),
+      ),
+  );
+}
+
+async function getAPRFromRateProviderInterval(
+  rateProviderAddress: Address,
+  timeStart: number,
+  timeEnd: number,
+  chainName: ChainName,
+) {
+  if (
+    timeEnd >= 1692662400 && // pool vunerability was found on August 22
+    vunerabilityAffecteRateProviders.some(
+      ({ address }) => address === rateProviderAddress,
+    )
   ) {
-    const rateProviders = await getPoolTokensRateProviders(chain, poolId);
+    return 0;
+  }
 
-    const chainName = networkFor(chain) as ChainName;
-
-    return await Promise.all(
-      rateProviders
-        .filter(({ address }) => address !== zeroAddress)
-        .map(
-          async ({
-            address: rateProviderAddress,
-            token: { symbol, address: tokenAddress },
-          }) => ({
-            address: tokenAddress,
-            symbol,
-            yield: await getAPRFromRateProviderInterval(
-              rateProviderAddress as Address,
-              startAt,
-              endAt,
-              chainName,
-            ),
-          }),
-        ),
+  try {
+    const { endRate, startRate } = await getIntervalRates(
+      rateProviderAddress,
+      timeStart,
+      timeEnd,
+      chainName,
     );
-  },
-);
 
-const getAPRFromRateProviderInterval = withCache(
-  async function getAPRFromRateProviderIntervalFn(
-    rateProviderAddress: Address,
-    timeStart: number,
-    timeEnd: number,
-    chainName: ChainName,
-  ) {
-    if (
-      timeEnd >= 1692662400 && // pool vunerability was found on August 22
-      vunerabilityAffecteRateProviders.some(
-        ({ address }) => address === rateProviderAddress,
-      )
-    ) {
+    const apr = getAPRFromRate(startRate, endRate, timeStart, timeEnd);
+
+    if (apr < 0) {
+      // eslint-disable-next-line no-console
+      console.error(
+        `Negative APR for ${rateProviderAddress} between ${timeStart} and ${timeEnd}: ${apr}`,
+      );
       return 0;
     }
 
-    let apr = -1;
-
-    try {
-      const { endRate, startRate } = await getIntervalRates(
-        rateProviderAddress,
-        timeStart,
-        timeEnd,
-        chainName,
-      );
-
-      apr = getAPRFromRate(startRate, endRate, timeStart, timeEnd);
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error(
-        `Error fetching rate for ${rateProviderAddress} between ${timeStart} and ${timeEnd} chain ${chainName}`,
-      );
-    } finally {
-      if (apr < 0) {
-        // eslint-disable-next-line no-console
-        console.error(
-          `Negative APR for ${rateProviderAddress} between ${timeStart} and ${timeEnd}`,
-        );
-      }
-    }
     return apr;
-  },
-);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(
+      `Error fetching rate for ${rateProviderAddress} between ${timeStart} and ${timeEnd} chain ${chainName}`,
+    );
+    return 0;
+  }
+}
 
 function getAPRFromRate(
   rateStart: number,
@@ -153,7 +151,7 @@ const getPoolTokensRateProviders = withCache(
   },
 );
 
-const getIntervalRates = withCache(async function getIntervalRatesFn(
+async function getIntervalRates(
   rateProviderAddress: Address,
   timeStart: number,
   timeEnd: number,
@@ -184,7 +182,7 @@ const getIntervalRates = withCache(async function getIntervalRatesFn(
   ]);
 
   return { endRate: Number(endRate), startRate: Number(startRate) };
-});
+}
 
 const getRateAtBlock = withCache(async function getRateAtBlockFn(
   chainName: ChainName,

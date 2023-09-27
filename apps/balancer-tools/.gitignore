@@ -50,3 +50,6 @@ next-env.d.ts
 .sentryclirc
 
 .cache/
+
+# Sentry Auth Token
+.sentryclirc

@@ -47,16 +47,26 @@ function getFilterDataFromParams(searchParams: SearchParams) {
   return result;
 }
 
-export default function getFilteredRoundApiUrl(
+export default function getFilteredDateApiUrl(
   startAt: Date,
   endAt: Date,
   searchParams?: SearchParams | null,
   poolId?: string,
 ) {
   const filteredData = getFilterDataFromParams(searchParams ?? {});
+  const uniqueKeys = new Set(["startAt", "endAt"]); // Include 'startAt' and 'endAt' initially
+
   const params = Object.entries(filteredData)
-    .map(([key, value]) => (value !== undefined ? `${key}=${value}` : ""))
+    .filter(([key, value]) => {
+      if (uniqueKeys.has(key) || value === undefined) {
+        return false;
+      }
+      uniqueKeys.add(key);
+      return true;
+    })
+    .map(([key, value]) => `${key}=${value}`)
     .join("&");
+
   return `${BASE_URL}/apr/api?startAt=${formatDateToMMDDYYYY(
     startAt,
   )}&endAt=${formatDateToMMDDYYYY(endAt)}${

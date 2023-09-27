@@ -1,8 +1,6 @@
 /* eslint-disable no-console */
 import { NextRequest, NextResponse } from "next/server";
 
-import { getDataFromCacheOrCompute } from "#/lib/cache";
-
 import { PoolTypeEnum } from "../(utils)/types";
 import { computeAverages } from "./(utils)/computeAverages";
 import { fetchDataForPoolId } from "./(utils)/fetchDataForPoolId";
@@ -46,11 +44,6 @@ export interface PoolStats {
   collectedFeesUSD: number;
 }
 
-export interface PoolStatsWithoutVotingShareAndCollectedFees
-  extends Omit<PoolStats, "votingShare" | "collectedFeesUSD"> {
-  poolAverage: PoolStatsData[];
-}
-
 export interface PoolStatsData extends PoolStats {
   symbol: string;
   network: string;
@@ -61,7 +54,7 @@ export interface PoolStatsData extends PoolStats {
 
 export interface PoolStatsResults {
   perDay: { [key: string]: PoolStatsData[] };
-  average: PoolStatsWithoutVotingShareAndCollectedFees;
+  average: { poolAverage: PoolStatsData[] };
 }
 
 function valuesFromSearchParams(searchParams: URLSearchParams) {
@@ -101,21 +94,13 @@ export async function GET(request: NextRequest) {
   let responseData;
   if (poolId && startAt && endAt) {
     return NextResponse.json(
-      await getDataFromCacheOrCompute(
-        `pool_${poolId}_round_${startAt}_${endAt}`,
-        async () => fetchDataForPoolIdDateRange(poolId, startAt, endAt),
-      ),
+      await fetchDataForPoolIdDateRange(poolId, startAt, endAt),
+      // ),
     );
   } else if (poolId) {
-    responseData = await getDataFromCacheOrCompute(
-      `fetch_pool_id_${poolId}`,
-      async () => fetchDataForPoolId(poolId),
-    );
+    responseData = await fetchDataForPoolId(poolId);
   } else if (startAt && endAt) {
-    responseData = await getDataFromCacheOrCompute(
-      `fetch_round_id_${startAt}_${endAt}`,
-      async () => fetchDataForDateRange(startAt, endAt),
-    );
+    responseData = await fetchDataForDateRange(startAt, endAt);
   }
 
   if (responseData === null || !responseData) {
@@ -125,15 +110,18 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  const filteredRespondeData = limitPoolStats(
+    filterPoolStats(responseData, searchParams),
+    offset,
+    limit,
+  );
+
   return NextResponse.json(
     sortPoolStats(
-      computeAverages(
-        limitPoolStats(
-          filterPoolStats(responseData, searchParams),
-          offset,
-          limit,
-        ),
-      ),
+      {
+        perDay: filteredRespondeData,
+        average: computeAverages(filteredRespondeData),
+      },
       sort as keyof PoolStatsData | undefined,
       order as Order | undefined,
     ),

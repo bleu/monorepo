@@ -8,7 +8,9 @@ import util from "util";
 
 import { BASE_URL } from "#/app/apr/(utils)/types";
 
-type ComputeFn<T, Args extends Array<unknown>> = (...args: Args) => Promise<T>;
+export type ComputeFn<T, Args extends Array<unknown>> = (
+  ...args: Args
+) => Promise<T>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const hashFunction = (fn: ComputeFn<any, any>) => {
@@ -164,7 +166,9 @@ export const withCache = <T, Args extends Array<unknown>>(
   return async (...args: Args) => {
     const serializedArgs = serializeArgs(args);
     const hashedFn = hashFunction(fn);
-    const cacheKey = `fn:${hashedFn}:${serializedArgs}`;
+    const cacheKey = `fn:${
+      fn.name ? `${fn.name}_` : ""
+    }${hashedFn}:${serializedArgs}`;
     return getDataFromCacheOrCompute(cacheKey, () => fn(...args));
   };
 };

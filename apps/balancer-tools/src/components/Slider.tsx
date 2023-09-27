@@ -48,7 +48,7 @@ const BaseSlider = React.forwardRef<
       min={minNumber}
       max={maxNumber}
       defaultValue={[defaultValueNumber]}
-      onValueChange={(value) => setValue(name, value[0])}
+      onValueChange={(value: unknown[]) => setValue(name, value[0])}
       value={[Number(value)]}
       {...props}
     >

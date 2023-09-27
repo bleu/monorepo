@@ -1,8 +1,40 @@
 import { NetworkChainId } from "@bleu-balancer-tools/utils";
 
-import POOLS_WITH_GAUGES from "#/data/voting-gauges.json";
+import ARBITRUM_POOLS from "#/data/pools-arbitrum.json";
+import AVALANCHE_POOLS from "#/data/pools-avalanche.json";
+import BASE_POOLS from "#/data/pools-base.json";
 import ETHEREUM_POOLS from "#/data/pools-ethereum.json";
-import GOERLI_POOLS from "#/data/pools-goerli.json";
+import GNOSIS_POOLS from "#/data/pools-gnosis.json";
+import OPTIMISM_POOLS from "#/data/pools-optimism.json";
+import POLYGON_POOLS from "#/data/pools-polygon.json";
+import POLYGONZKEVM_POOLS from "#/data/pools-polygonzkevm.json";
+import POOLS_WITH_GAUGES from "#/data/voting-gauges.json";
+
+interface PoolToken {
+  address: string;
+  symbol: string;
+  weight: string | null;
+  logoURI?: string;
+}
+
+interface PoolWithoutGauge {
+  id: string;
+  address: string;
+  symbol: string;
+  poolType: string;
+  createTime: number;
+  tokens: PoolToken[];
+}
+
+interface PoolWithGauge {
+  chain: string;
+  id: string;
+  address: string;
+  symbol: string;
+  type: string;
+  gauge: Gauge;
+  tokens: [];
+}
 
 export const POOLS_WITH_LIVE_GAUGES = POOLS_WITH_GAUGES.filter(
   (pool) => !pool.gauge.isKilled && pool.gauge.addedTimestamp,
@@ -12,12 +44,12 @@ const GAUGE_CACHE: { [address: string]: Gauge } = {};
 const POOL_CACHE: { [id: string]: Pool } = {};
 
 class Token {
-  logoSrc: string;
+  logoSrc?: string;
   address: string;
   weight: number | null;
   symbol: string;
 
-  constructor(data: (typeof POOLS_WITH_LIVE_GAUGES)[0]["tokens"][0]) {
+  constructor(data: PoolToken) {
     this.logoSrc = data.logoURI;
     this.address = data.address;
     this.weight = Number(data.weight);
@@ -50,43 +82,87 @@ export class Pool {
     }
 
     const commonNetworkConfig = {
-      createdAt: (data) => data.createTime,
-      poolType: (data) => data.poolType,
-      gauge: (data) => null
+      createdAt: (data: PoolWithoutGauge) => data.createTime,
+      poolType: (data: PoolWithoutGauge) => data.poolType,
+      gauge: (_: PoolWithoutGauge) => null,
     };
-    
 
     const networks = [
       {
         pools: POOLS_WITH_LIVE_GAUGES,
-        networkId: (data) => UPPER_CASE_TO_NETWORK[data.chain as keyof typeof UPPER_CASE_TO_NETWORK],
-        createdAt: (data) => data.gauge.address,
-        poolType: (data) => data.type,
-        gauge: (data) => new Gauge(data.gauge.address)
+        networkId: (data: PoolWithGauge) =>
+          UPPER_CASE_TO_NETWORK[
+            data.chain as keyof typeof UPPER_CASE_TO_NETWORK
+          ],
+        createdAt: (data: PoolWithGauge) => data.gauge.address,
+        poolType: (data: PoolWithGauge) => data.type,
+        gauge: (data: PoolWithGauge) => new Gauge(data.gauge.address),
       },
       {
         pools: ETHEREUM_POOLS,
-        networkId: (data)=> 1,
-        ...commonNetworkConfig
+        networkId: (_: PoolWithoutGauge) => 1,
+        ...commonNetworkConfig,
       },
       {
-        pools: GOERLI_POOLS,
-        networkId: (data)=> 100,
-        ...commonNetworkConfig
+        pools: POLYGON_POOLS,
+        networkId: (_: PoolWithoutGauge) => NetworkChainId.POLYGON,
+        ...commonNetworkConfig,
+      },
+      {
+        pools: POLYGONZKEVM_POOLS,
+        networkId: (_: PoolWithoutGauge) => NetworkChainId.POLYGONZKEVM,
+        ...commonNetworkConfig,
+      },
+      {
+        pools: ARBITRUM_POOLS,
+        networkId: (_: PoolWithoutGauge) => NetworkChainId.ARBITRUM,
+        ...commonNetworkConfig,
+      },
+      {
+        pools: GNOSIS_POOLS,
+        networkId: (_: PoolWithoutGauge) => NetworkChainId.GNOSIS,
+        ...commonNetworkConfig,
+      },
+      {
+        pools: OPTIMISM_POOLS,
+        networkId: (_: PoolWithoutGauge) => NetworkChainId.OPTIMISM,
+        ...commonNetworkConfig,
+      },
+      {
+        pools: BASE_POOLS,
+        networkId: (_: PoolWithoutGauge) => NetworkChainId.BASE,
+        ...commonNetworkConfig,
+      },
+      {
+        pools: AVALANCHE_POOLS,
+        networkId: (_: PoolWithoutGauge) => NetworkChainId.AVAX,
+        ...commonNetworkConfig,
       },
     ];
 
     let data;
     for (const network of networks) {
-      data = network.pools.find((g) => g.id.toLowerCase() === id.toLowerCase());
+      data = network.pools.find(
+        (g: { id: string }) => g.id.toLowerCase() === id.toLowerCase(),
+      );
       if (data) {
-        this.poolType = network.poolType(data);
-        this.network = network.networkId(data);
-        this.createdAt = network.createdAt(data);
-        this.gauge = network.gauge(data);
+        this.poolType = network.poolType(
+          // @ts-ignore: 2345
+          data as PoolWithGauge | PoolWithoutGauge,
+        );
+        this.network = network.networkId(
+          // @ts-ignore: 2345
+          data as PoolWithGauge | PoolWithoutGauge,
+        );
+        this.createdAt = parseFloat(
+          // @ts-ignore: 2345
+          String(network.createdAt(data as PoolWithGauge | PoolWithoutGauge)),
+        );
+        // @ts-ignore: 2345
+        this.gauge = network.gauge(data as PoolWithGauge | PoolWithoutGauge);
         break;
       }
-    }  
+    }
 
     if (!data) {
       throw new Error(`Pool with ID ${id} not found`);
@@ -95,9 +171,7 @@ export class Pool {
     this.id = data.id;
     this.address = data.address;
     this.symbol = data.symbol;
-    this.tokens = data.tokens.map(
-      (t: (typeof POOLS_WITH_LIVE_GAUGES)[0]["tokens"][0]) => new Token(t),
-    );
+    this.tokens = data.tokens.map((t: PoolToken) => new Token(t));
     POOL_CACHE[this.id] = this;
   }
 }

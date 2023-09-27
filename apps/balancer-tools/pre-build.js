@@ -90,6 +90,15 @@ query PoolsWherePoolType($skip: Int!) {
 }
 `;
 
+const UPPER_CASE_TO_NETWORK = {
+  ETHEREUM: "MAINNET",
+  POLYGON: "POLYGON",
+  POLYGONZKEVM: "ZKEVM",
+  OPTIMISM: "OPTIMISM",
+  GNOSIS: "GNOSIS",
+  ARBITRUM: "ARBITRUM",
+};
+
 async function main() {
   const tokenLogoMap = {};
   const response = await gql(ENDPOINT_V3, VOTING_GAUGES_QUERY);
@@ -101,31 +110,47 @@ async function main() {
   });
   console.log(`File created pools with gauges`);
   fs.writeFileSync("src/data/voting-gauges.json", JSON.stringify(votingGauges));
+
+  let allPools = [];
   for (const networkName in EXISTING_NETWORKS) {
     const networkEndpoint = EXISTING_NETWORKS[networkName];
-
     let skipValue = 0;
-    let allPools = [];
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
       const response = await gql(networkEndpoint, POOLS_WITHOUT_GAUGE_QUERY, {
         skip: skipValue,
       });
-      const pools = response.data.pools;
+
+      const pools = response.data.pools.map((poolData) => {
+        return {
+          chain: UPPER_CASE_TO_NETWORK[networkName.toUpperCase()],
+          id: poolData.id,
+          address: poolData.address,
+          symbol: poolData.symbol,
+          type: poolData.poolType.toUpperCase(),
+          addedTimestamp: poolData.createTime,
+          gauge: {},
+          tokens: poolData.tokens.map((tokenData) => {
+            return {
+              logoURI: tokenLogoMap[tokenData.address],
+              ...tokenData,
+            };
+          }),
+        };
+      });
       if (pools.length === 0) {
         break;
       }
       allPools = allPools.concat(pools);
       skipValue += 1000;
+      console.log(`Pools for ${networkName} added with ${pools.length} pools.`);
     }
-
-    const fileName = `pools-${networkName.toLowerCase()}.json`;
-    fs.writeFileSync(`src/data/${fileName}`, JSON.stringify(allPools));
-    console.log(
-      `File created for ${networkName} with ${allPools.length} pools: ${fileName}`,
-    );
   }
+  fs.writeFileSync(
+    `src/data/pools-without-gauge.json`,
+    JSON.stringify(allPools),
+  );
 }
 
 main();

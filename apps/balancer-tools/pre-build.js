@@ -91,8 +91,14 @@ query PoolsWherePoolType($skip: Int!) {
 `;
 
 async function main() {
+  const tokenLogoMap = {};
   const response = await gql(ENDPOINT_V3, VOTING_GAUGES_QUERY);
-  const votingGauges = response.data.veBalGetVotingList;
+  const votingGauges = response.data.veBalGetVotingList.filter((poolData) => {
+    poolData.tokens.forEach((token) => {
+      tokenLogoMap[token.address] = token.logoURI;
+    });
+    return !poolData.gauge.isKilled && poolData.gauge.addedTimestamp;
+  });
   console.log(`File created pools with gauges`);
   fs.writeFileSync("src/data/voting-gauges.json", JSON.stringify(votingGauges));
   for (const networkName in EXISTING_NETWORKS) {

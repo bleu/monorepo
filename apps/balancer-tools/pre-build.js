@@ -69,7 +69,7 @@ const EXISTING_NETWORKS = {
 const POOLS_WITHOUT_GAUGE_QUERY = `
 query PoolsWherePoolType($skip: Int!) {
   pools(
-    where: { totalLiquidity_gt: 0 }
+    where: { totalLiquidity_gt: 5000 }
     orderBy: totalLiquidity
     orderDirection: desc
     first: 1000,

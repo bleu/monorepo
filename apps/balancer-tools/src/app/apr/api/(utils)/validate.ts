@@ -87,29 +87,32 @@ const DateSchema = OptionalNullableDate.refine(
 export const QueryParamsSchema = z
   .object({
     poolId: OptionalNullableString.refine(
-      (poolId) => (
+      (poolId) =>
         POOLS_WITH_LIVE_GAUGES.some(
           (g) => g.id.toLowerCase() === poolId?.toLowerCase(),
-        ) &&
-          ETHEREUM_POOLS.some(
-            (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
-          ) &&
-          BASE_POOLS.some((p) => p.id.toLowerCase() === poolId?.toLowerCase()),
+        ) ||
+        ETHEREUM_POOLS.some(
+          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
+        ) ||
+        BASE_POOLS.some((p) => p.id.toLowerCase() === poolId?.toLowerCase()) ||
         ARBITRUM_POOLS.some(
           (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
-        ),
+        ) ||
         AVALANCHE_POOLS.some(
           (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
-        ),
-        GNOSIS_POOLS.some((p) => p.id.toLowerCase() === poolId?.toLowerCase()),
+        ) ||
+        GNOSIS_POOLS.some(
+          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
+        ) ||
         OPTIMISM_POOLS.some(
           (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
-        ),
-        POLYGON_POOLS.some((p) => p.id.toLowerCase() === poolId?.toLowerCase()),
+        ) ||
+        POLYGON_POOLS.some(
+          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
+        ) ||
         POLYGONZKEVM_POOLS.some(
           (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
-        )
-      ),
+        ),
       { message: "Pool with ID not found" },
     ),
     startAt: DateSchema,
@@ -162,27 +165,31 @@ export const QueryParamsPagesSchema = z
     poolId: OptionalNullableString.refine(
       (poolId) =>
         !poolId ||
-        (POOLS_WITH_LIVE_GAUGES.some(
+        POOLS_WITH_LIVE_GAUGES.some(
           (g) => g.id.toLowerCase() === poolId?.toLowerCase(),
-        ) &&
-          ETHEREUM_POOLS.some(
-            (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
-          ) &&
-          BASE_POOLS.some((p) => p.id.toLowerCase() === poolId?.toLowerCase()),
+        ) ||
+        ETHEREUM_POOLS.some(
+          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
+        ) ||
+        BASE_POOLS.some((p) => p.id.toLowerCase() === poolId?.toLowerCase()) ||
         ARBITRUM_POOLS.some(
           (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
-        ),
+        ) ||
         AVALANCHE_POOLS.some(
           (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
-        ),
-        GNOSIS_POOLS.some((p) => p.id.toLowerCase() === poolId?.toLowerCase()),
+        ) ||
+        GNOSIS_POOLS.some(
+          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
+        ) ||
         OPTIMISM_POOLS.some(
           (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
-        ),
-        POLYGON_POOLS.some((p) => p.id.toLowerCase() === poolId?.toLowerCase()),
+        ) ||
+        POLYGON_POOLS.some(
+          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
+        ) ||
         POLYGONZKEVM_POOLS.some(
           (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
-        )),
+        ),
       // TODO: Add more network pools here
       { message: "Pool with ID not found" },
     ),

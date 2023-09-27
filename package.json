@@ -37,7 +37,7 @@
   "homepage": "https://github.com/bleu-studio/balancer-tools#readme",
   "devDependencies": {
     "@bleu-balancer-tools/eslint-config": "workspace:*",
-    "@types/node": "^18.15.11",
+    "@types/node": "^18.18.0",
     "concurrently": "^8.2.1",
     "ghooks": "^2.0.4",
     "lint-staged": "^14.0.1",

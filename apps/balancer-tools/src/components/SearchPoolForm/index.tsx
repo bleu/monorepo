@@ -6,7 +6,7 @@ import { useForm, UseFormReturn } from "react-hook-form";
 import Button from "#/components/Button";
 import { Input } from "#/components/Input";
 import { Select, SelectItem } from "#/components/Select";
-import { POOLS_WITH_LIVE_GAUGES } from "#/lib/balancer/gauges";
+import POOLS_WITH_LIVE_GAUGES from "#/data/voting-gauges.json";
 import { pools } from "#/lib/gql";
 import { truncateAddress } from "#/utils/truncate";
 

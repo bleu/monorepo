@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import { POOLS_WITH_LIVE_GAUGES } from "#/lib/balancer/gauges";
+import POOLS_WITH_LIVE_GAUGES from "#/data/voting-gauges.json";
 import { fetcher } from "#/utils/fetcher";
 
 import { BASE_URL } from "../../(utils)/types";

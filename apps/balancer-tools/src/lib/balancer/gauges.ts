@@ -35,11 +35,6 @@ interface PoolWithGauge {
   gauge: Gauge;
   tokens: [];
 }
-
-export const POOLS_WITH_LIVE_GAUGES = POOLS_WITH_GAUGES.filter(
-  (pool) => !pool.gauge.isKilled && pool.gauge.addedTimestamp,
-);
-
 const GAUGE_CACHE: { [address: string]: Gauge } = {};
 const POOL_CACHE: { [id: string]: Pool } = {};
 

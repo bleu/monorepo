@@ -1,15 +1,8 @@
 import { Network, networksOnBalancer } from "@bleu-balancer-tools/utils";
 import { z } from "zod";
 
-import ARBITRUM_POOLS from "#/data/pools-arbitrum.json";
-import AVALANCHE_POOLS from "#/data/pools-avalanche.json";
-import BASE_POOLS from "#/data/pools-base.json";
-import ETHEREUM_POOLS from "#/data/pools-ethereum.json";
-import GNOSIS_POOLS from "#/data/pools-gnosis.json";
-import OPTIMISM_POOLS from "#/data/pools-optimism.json";
-import POLYGON_POOLS from "#/data/pools-polygon.json";
-import POLYGONZKEVM_POOLS from "#/data/pools-polygonzkevm.json";
-import { POOLS_WITH_LIVE_GAUGES } from "#/lib/balancer/gauges";
+import POOLS_WITH_LIVE_GAUGES from "#/data/voting-gauges.json";
+import POOLS_WITHOUT_GAUGES from "#/data/pools-without-gauge.json";
 
 import { PoolTypeEnum } from "../../(utils)/types";
 import { Order } from "./sort";
@@ -91,26 +84,7 @@ export const QueryParamsSchema = z
         POOLS_WITH_LIVE_GAUGES.some(
           (g) => g.id.toLowerCase() === poolId?.toLowerCase(),
         ) ||
-        ETHEREUM_POOLS.some(
-          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
-        ) ||
-        BASE_POOLS.some((p) => p.id.toLowerCase() === poolId?.toLowerCase()) ||
-        ARBITRUM_POOLS.some(
-          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
-        ) ||
-        AVALANCHE_POOLS.some(
-          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
-        ) ||
-        GNOSIS_POOLS.some(
-          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
-        ) ||
-        OPTIMISM_POOLS.some(
-          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
-        ) ||
-        POLYGON_POOLS.some(
-          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
-        ) ||
-        POLYGONZKEVM_POOLS.some(
+        POOLS_WITHOUT_GAUGES.some(
           (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
         ),
       { message: "Pool with ID not found" },
@@ -168,29 +142,9 @@ export const QueryParamsPagesSchema = z
         POOLS_WITH_LIVE_GAUGES.some(
           (g) => g.id.toLowerCase() === poolId?.toLowerCase(),
         ) ||
-        ETHEREUM_POOLS.some(
-          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
-        ) ||
-        BASE_POOLS.some((p) => p.id.toLowerCase() === poolId?.toLowerCase()) ||
-        ARBITRUM_POOLS.some(
-          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
-        ) ||
-        AVALANCHE_POOLS.some(
-          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
-        ) ||
-        GNOSIS_POOLS.some(
-          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
-        ) ||
-        OPTIMISM_POOLS.some(
-          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
-        ) ||
-        POLYGON_POOLS.some(
-          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
-        ) ||
-        POLYGONZKEVM_POOLS.some(
+        POOLS_WITHOUT_GAUGES.some(
           (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
         ),
-      // TODO: Add more network pools here
       { message: "Pool with ID not found" },
     ),
     startAt: DateSchema,

@@ -59,7 +59,7 @@ export default function HeaderEndButton() {
             defaultValueNetwork={networkIdFor(network as string)}
             onSubmit={handlePoolClick}
             showPools
-            onlyVotingGauges
+            gqlAdditionalVariable={{ totalLiquidity_gt: 5000 }}
           />
         }
       >

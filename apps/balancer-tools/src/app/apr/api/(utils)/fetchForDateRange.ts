@@ -34,7 +34,7 @@ export async function fetchDataForDateRange(
             startDate,
           )}&endAt=${formatDateToMMDDYYYY(endDate)}&poolId=${pool.id}`,
         );
-        Sentry.captureException(error)
+        Sentry.captureException(error);
       }
 
       if (gaugesData) {

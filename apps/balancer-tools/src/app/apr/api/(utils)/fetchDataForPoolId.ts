@@ -8,13 +8,14 @@ import { formatDateToMMDDYYYY } from "./date";
 
 export async function fetchDataForPoolId(poolId: string) {
   const pool = new Pool(poolId);
-  const gaugeAddedDate = new Date(pool.createdAt * 1000);
-  const formattedStartDate = formatDateToMMDDYYYY(gaugeAddedDate);
+  const formattedStartDate = formatDateToMMDDYYYY(
+    new Date(pool.createdAt * 1000),
+  );
   const formattedEndDate = formatDateToMMDDYYYY(new Date());
 
   try {
     const gaugesData = await fetcher<PoolStatsResults>(
-      `${BASE_URL}/apr/api?startAt=${formattedStartDate}&endAt=${formattedEndDate}&poolId=${poolId}`,
+      `${BASE_URL}/apr/api?startAt=${formattedStartDate}&endAt=${formattedEndDate}&poolId=${poolId}&`,
     );
     return gaugesData.perDay;
   } catch (error) {

@@ -26,7 +26,7 @@ export function SearchPoolFormDialog({
       title="Import pool parameters"
       content={
         <SearchPoolForm
-          poolTypeFilter={poolTypes[poolTypeFilter]}
+          gqlAdditionalVariable={{ poolTypes: poolTypes[poolTypeFilter] }}
           onSubmit={onSubmit}
           showPools
         />

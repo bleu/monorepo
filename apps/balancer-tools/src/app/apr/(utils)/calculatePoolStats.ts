@@ -8,6 +8,7 @@ import { pools } from "#/lib/gql/server";
 
 import {
   calculateDaysBetween,
+  dateToEpoch,
   getWeeksBetweenDates,
 } from "../api/(utils)/date";
 import { PoolStatsData, PoolTokens, tokenAPR } from "../api/route";
@@ -16,7 +17,7 @@ import {
   getTokenPriceByDate,
 } from "./getBALPriceForDateRange";
 import { getPoolRelativeWeight } from "./getRelativeWeight";
-import { getPoolTokensAprForDate as getPoolTokensAprForDateRange } from "./tokenYield";
+import { getPoolTokensAprForDateRange } from "./tokenYield";
 import { PoolTypeEnum } from "./types";
 
 export interface calculatePoolData extends Omit<PoolStatsData, "apr"> {
@@ -37,66 +38,96 @@ const WEEKS_IN_YEAR = 52;
 const SECONDS_IN_DAY = 86400;
 const SECONDS_IN_YEAR = 365 * SECONDS_IN_DAY;
 
+type PoolSnapshot = {
+  timestamp: number;
+  liquidity: string;
+  swapVolume: string;
+  pool: {
+    symbol?: string | null;
+    tokens?: { symbol: string; balance: string }[] | null;
+  };
+  swapFees?: string;
+};
+
 async function fetchPoolAveragesForDateRange(
   poolId: string,
   network: string,
   from: number,
   to: number,
 ): Promise<[number, number, string, { symbol: string; balance: string }[]]> {
+  // Determine if the initial date range is less than 2 days
+  const initialRangeInDays = calculateDaysBetween(from, to);
+  const extendedFrom = initialRangeInDays < 2 ? from - SECONDS_IN_DAY : from;
+
+  // Fetch snapshots within the (potentially extended) date range
   const res = await pools.gql(network).poolSnapshotInRange({
     poolId,
-    from,
+    from: extendedFrom,
     to,
   });
 
-  res.poolSnapshots = res.poolSnapshots.sort(
+  if (res.poolSnapshots.length === 0) {
+    console.warn(
+      `No data found for pool ${poolId}(${network}) in range ${from} - ${to}`,
+    );
+    return [0, 0, "", []];
+  }
+
+  const sortedSnapshots: PoolSnapshot[] = res.poolSnapshots.sort(
     (a, b) => a.timestamp - b.timestamp,
   );
 
-  if (res.poolSnapshots.length === 0) {
-    // Following Fabio's recomendation on #BAL-872
-    if (calculateDaysBetween(from, to) != 1) {
-      return [0, 0, "", []];
+  if (
+    sortedSnapshots.length <= 1 &&
+    sortedSnapshots[sortedSnapshots.length - 1].timestamp <= to
+  ) {
+    const currentData = await pools.gql(network).Pool({ poolId });
+    if (currentData.pool) {
+      sortedSnapshots.push({
+        timestamp: dateToEpoch(new Date()),
+        liquidity: currentData.pool?.totalLiquidity,
+        swapVolume: currentData.pool?.totalSwapVolume,
+        pool: {
+          symbol: currentData.pool?.symbol,
+          tokens: currentData.pool?.tokens,
+        },
+      });
+      sortedSnapshots.sort((a, b) => a.timestamp - b.timestamp);
     }
-    console.warn(
-      "No return on poolSnapshots, trying to fetch in a few days before",
-    );
-    const retryGQL = await pools.gql(network).poolSnapshotInRange({
-      poolId,
-      from: from - SECONDS_IN_DAY * 7,
-      to,
-    });
-
-    if (retryGQL.poolSnapshots.length === 0) {
-      return [0, 0, "", []];
-    }
-    res.poolSnapshots = retryGQL.poolSnapshots
-      .sort((a, b) => a.timestamp - b.timestamp)
-      .slice(-1);
   }
 
+  // If less than two snapshots, return empty data
+  if (sortedSnapshots.length < 2) {
+    console.warn(
+      `Less than two snapshots for pool ${poolId}(${network}) in range ${from} - ${to}`,
+    );
+
+    return [0, 0, "", []];
+  }
+
+  // Compute averages
   const avgLiquidity =
-    res.poolSnapshots.reduce(
+    sortedSnapshots.reduce(
       (acc, snapshot) => acc + parseFloat(snapshot.liquidity),
       0,
-    ) / res.poolSnapshots.length;
+    ) / sortedSnapshots.length;
 
   const avgVolume =
-    res.poolSnapshots.reduce((sum, current, currentIndex) => {
-      if (currentIndex === 0) return 0;
-
-      const currentDayVolume = current.swapVolume;
-      const previousDayVolume = res.poolSnapshots[currentIndex - 1].swapVolume;
-
-      return sum + (currentDayVolume - previousDayVolume);
+    sortedSnapshots.reduce((sum, current, index) => {
+      if (index === 0) return 0;
+      return (
+        sum +
+        (parseFloat(current.swapVolume) -
+          parseFloat(sortedSnapshots[index - 1].swapVolume))
+      );
     }, 0) /
-    (res.poolSnapshots.length - 1);
+    (sortedSnapshots.length - 1);
 
   return [
     avgLiquidity,
     avgVolume,
-    res.poolSnapshots[0].pool.symbol ?? "",
-    res.poolSnapshots[0].pool.tokens ?? [],
+    sortedSnapshots[0].pool.symbol ?? "",
+    sortedSnapshots[0].pool.tokens ?? [],
   ];
 }
 
@@ -109,13 +140,13 @@ async function calculateTokensStats(
   const tokensPrices = await Promise.all(
     poolTokenData.map(async (token) => {
       const tokenPrice = await getTokenPriceByDate(
-        endAtTimestamp * 1000,
+        endAtTimestamp,
         token.address,
         parseInt(poolNetwork),
       );
       if (tokenPrice === undefined) {
         console.warn(
-          `Failed fetching price for ${token.symbol}, with address ${token.address}`,
+          `Failed fetching price for ${token.symbol}(network:${poolNetwork},addr:${token.address}) at ${endAtTimestamp}`,
         );
       }
       //TODO: some work arround to get token price
@@ -156,13 +187,9 @@ export async function calculatePoolStats({
 }): Promise<calculatePoolData> {
   const pool = new Pool(poolId);
   const network = String(pool.network ?? 1);
-  const [
-    balPriceUSD,
-    [tvl, volume, symbol, tokenBalance],
-    votingShare,
-    [feeAPR, collectedFeesUSD],
-    tokensAPR,
-  ] = await Promise.all([
+  const results = await Promise.allSettled([
+    // TODO: what if the pool doesn't exist during that range?
+    pools.gql(network).Pool({ poolId }),
     getBALPriceForDateRange(startAtTimestamp, endAtTimestamp),
     fetchPoolAveragesForDateRange(
       poolId,
@@ -180,6 +207,32 @@ export async function calculatePoolStats({
       endAtTimestamp,
     ),
   ]);
+
+  if (results[0].status === "fulfilled" && !results[0].value?.pool) {
+    throw new Error(
+      `No pool with ID ${poolId}(${network}) in range ${startAtTimestamp} - ${endAtTimestamp}`,
+    );
+  }
+
+  if (results.some((p) => p.status === "rejected")) {
+    const errors = results
+      .filter((p) => p.status === "rejected")
+      // @ts-ignore
+      .map((p) => p.reason);
+    throw new Error(
+      `Error fetching data for pool ${poolId}(${network}) in range ${startAtTimestamp} - ${endAtTimestamp}: ${errors}, function ${errors[0]?.stack}}`,
+    );
+  }
+
+  const [
+    _,
+    balPriceUSD,
+    [tvl, volume, symbol, tokenBalance],
+    votingShare,
+    [feeAPR, collectedFeesUSD],
+    tokensAPR,
+    // @ts-ignore
+  ] = results.filter((p) => p.status === "fulfilled").map((p) => p.value);
 
   const tokens = await calculateTokensStats(
     endAtTimestamp,
@@ -244,7 +297,7 @@ function calculateAPRForDateRange(
     const { totalBalanceEmissions, weekCount } = weekArray.reduce(
       (acc, week) => {
         const weeklyBalanceEmissions = balEmissions.weekly(
-          week.weekStartDate.getTime() / 1000,
+          dateToEpoch(week.weekStartDate),
         );
         return {
           totalBalanceEmissions:
@@ -296,26 +349,72 @@ async function getFeeAprForDateRange(
   from: number,
   to: number,
 ): Promise<[number, number]> {
-  const lastdayBeforeStartRound = from - SECONDS_IN_DAY;
-  const lastdayOfRound = to;
+  // Determine if the initial date range is less than 2 days
+  const initialRangeInDays = calculateDaysBetween(from, to);
+  const extendedFrom = initialRangeInDays < 2 ? from - SECONDS_IN_DAY : from;
 
+  // Fetch snapshots within the (potentially extended) date range
   const res = await pools.gql(network).poolSnapshotInRange({
     poolId,
-    from: lastdayBeforeStartRound,
-    to: lastdayOfRound,
+    from: extendedFrom,
+    to,
   });
 
-  const startRoundData = res.poolSnapshots[res.poolSnapshots.length - 1];
-
-  const endRoundData = res.poolSnapshots[0];
-
-  if (!startRoundData || !endRoundData) {
+  if (res.poolSnapshots.length === 0) {
+    console.warn(
+      `No data found for pool ${poolId}(${network}) in range ${from} - ${to}`,
+    );
     return [0, 0];
   }
 
-  const feeDiff = endRoundData?.swapFees - startRoundData?.swapFees;
+  const sortedSnapshots: PoolSnapshot[] = res.poolSnapshots.sort(
+    (a, b) => a.timestamp - b.timestamp,
+  );
 
-  const feeApr = 10_000 * (feeDiff / endRoundData?.liquidity);
+  if (
+    sortedSnapshots.length <= 1 &&
+    sortedSnapshots[sortedSnapshots.length - 1].timestamp <= to
+  ) {
+    const currentData = await pools.gql(network).Pool({ poolId });
+    if (currentData.pool) {
+      sortedSnapshots.push({
+        timestamp: dateToEpoch(new Date()),
+        liquidity: currentData.pool?.totalLiquidity,
+        swapVolume: currentData.pool?.totalSwapVolume,
+        pool: {
+          symbol: currentData.pool?.symbol,
+          tokens: currentData.pool?.tokens,
+        },
+        swapFees: currentData.pool?.totalSwapFee,
+      });
+      sortedSnapshots.sort((a, b) => a.timestamp - b.timestamp);
+    }
+  }
+
+  const startRoundData = sortedSnapshots.reduce((acc, snapshot) => {
+    if (snapshot.timestamp < acc.timestamp) {
+      return snapshot;
+    }
+    return acc;
+  });
+
+  const endRoundData = sortedSnapshots.reduce((acc, snapshot) => {
+    if (snapshot.timestamp > acc.timestamp) {
+      return snapshot;
+    }
+    return acc;
+  });
+
+  if (!startRoundData?.swapFees || !endRoundData?.swapFees) {
+    throw new Error(
+      `No data found for feeAPR calculation, poolId: ${poolId}, network: ${network}, from: ${from}, to: ${to}`,
+    );
+  }
+
+  const feeDiff =
+    parseInt(endRoundData?.swapFees) - parseInt(startRoundData?.swapFees);
+
+  const feeApr = 10_000 * (feeDiff / parseInt(endRoundData?.liquidity));
   // reference for 10_000 https://github.com/balancer/balancer-sdk/blob/f4879f06289c6f5f9766ead1835f4f4b096ed7dd/balancer-js/src/modules/pools/apr/apr.ts#L85
   const annualizedFeeApr =
     feeApr *

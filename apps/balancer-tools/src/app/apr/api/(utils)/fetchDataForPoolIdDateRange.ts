@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { Pool } from "#/lib/balancer/gauges";
 
 import {
@@ -6,56 +5,83 @@ import {
   calculatePoolStats,
 } from "../../(utils)/calculatePoolStats";
 import { computeAverages } from "./computeAverages";
-import { formatDateToMMDDYYYY, generateDateRange } from "./date";
+import {
+  dateToEpoch,
+  formatDateToMMDDYYYY,
+  generateDateRange,
+  SECONDS_IN_DAY,
+} from "./date";
 
-const MAX_RETRIES = 3; // specify the number of retry attempts
-const RETRY_DELAY = 1000; // delay between retries in milliseconds
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000;
+
+const getStartDateOrPoolAddedDate = (startDate: Date, poolId: string) => {
+  const poolAddedDate = new Date(new Pool(poolId).gauge.addedTimestamp * 1000);
+  return startDate < poolAddedDate ? poolAddedDate : startDate;
+};
+
+const retryAsyncOperation = async <T>(
+  operation: () => Promise<T>,
+  maxRetries: number,
+  delay: number,
+): Promise<T | null> => {
+  let attempts = 0;
+  while (attempts < maxRetries) {
+    try {
+      return await operation();
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error);
+      attempts++;
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
+  return null;
+};
 
 export async function fetchDataForPoolIdDateRange(
   poolId: string,
   startDate: Date,
   endDate: Date,
 ) {
-  const startDateOrPoolAddedDate =
-    startDate < new Date(new Pool(poolId).gauge.addedTimestamp * 1000)
-      ? new Date(new Pool(poolId).gauge.addedTimestamp * 1000)
-      : startDate;
-
-  const allDaysBetween = generateDateRange(startDateOrPoolAddedDate, endDate);
+  const startDateOrPoolAddedDate = getStartDateOrPoolAddedDate(
+    startDate,
+    poolId,
+  );
+  const allDaysBetween = generateDateRange(
+    dateToEpoch(startDateOrPoolAddedDate),
+    dateToEpoch(endDate),
+  );
   const perDayData: { [key: string]: calculatePoolData[] } = {};
 
-  for (const dayDate of allDaysBetween) {
-    let attempts = 0;
-
-    while (attempts < MAX_RETRIES) {
-      try {
-        const data = await calculatePoolStats({
-          startAtTimestamp:
-            new Date(dayDate.getTime() - 24 * 60 * 60 * 1000).getTime() / 1000,
-          endAtTimestamp: dayDate.getTime() / 1000,
+  const fetchPromises = allDaysBetween.map(async (dayDate) => {
+    const data = await retryAsyncOperation(
+      async () => {
+        const startAtTimestamp = Math.floor(dayDate - SECONDS_IN_DAY);
+        const endAtTimestamp = Math.floor(dayDate);
+        return await calculatePoolStats({
+          startAtTimestamp,
+          endAtTimestamp,
           poolId,
         });
-        perDayData[formatDateToMMDDYYYY(dayDate)] = [data] || [];
-        break;
-      } catch (error) {
-        attempts++;
-        console.error(
-          `Attempt ${attempts} - Error fetching data for pool ${poolId} and date ${formatDateToMMDDYYYY(
-            dayDate,
-          )}}:`,
-          error,
-        );
+      },
+      MAX_RETRIES,
+      RETRY_DELAY,
+    );
 
-        if (attempts >= MAX_RETRIES) {
-          // TODO: BAL-782 - Add sentry here
-          console.error("Max retries reached. Giving up fetching data.");
-          break;
-        }
-
-        await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
-      }
+    if (data) {
+      perDayData[formatDateToMMDDYYYY(new Date(dayDate * 1000))] = [data];
+    } else {
+      // eslint-disable-next-line no-console
+      console.error(
+        `Max retries reached for pool ${poolId} and date ${formatDateToMMDDYYYY(
+          new Date(dayDate * 1000),
+        )}.`,
+      );
     }
-  }
+  });
+
+  await Promise.all(fetchPromises);
 
   return {
     perDay: perDayData,

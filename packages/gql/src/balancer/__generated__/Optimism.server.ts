@@ -5901,7 +5901,7 @@ export type PoolQueryVariables = Exact<{
 }>;
 
 
-export type PoolQuery = { __typename?: 'Query', pool?: { __typename?: 'Pool', address: any, owner?: any | null, poolType?: string | null, symbol?: string | null, swapFee: any, totalLiquidity: any, amp?: any | null, c?: any | null, s?: any | null, alpha?: any | null, beta?: any | null, sqrtAlpha?: any | null, sqrtBeta?: any | null, root3Alpha?: any | null, lambda?: any | null, tauAlphaX?: any | null, tauAlphaY?: any | null, tauBetaX?: any | null, tauBetaY?: any | null, delta?: any | null, epsilon?: any | null, u?: any | null, v?: any | null, w?: any | null, z?: any | null, dSq?: any | null, tokens?: Array<{ __typename?: 'PoolToken', address: string, symbol: string, balance: any, decimals: number, priceRate: any, token: { __typename?: 'Token', fxOracleDecimals?: number | null, latestFXPrice?: any | null } }> | null } | null };
+export type PoolQuery = { __typename?: 'Query', pool?: { __typename?: 'Pool', address: any, owner?: any | null, poolType?: string | null, symbol?: string | null, swapFee: any, totalLiquidity: any, totalSwapVolume: any, totalSwapFee: any, amp?: any | null, c?: any | null, s?: any | null, alpha?: any | null, beta?: any | null, sqrtAlpha?: any | null, sqrtBeta?: any | null, root3Alpha?: any | null, lambda?: any | null, tauAlphaX?: any | null, tauAlphaY?: any | null, tauBetaX?: any | null, tauBetaY?: any | null, delta?: any | null, epsilon?: any | null, u?: any | null, v?: any | null, w?: any | null, z?: any | null, dSq?: any | null, tokens?: Array<{ __typename?: 'PoolToken', address: string, symbol: string, balance: any, decimals: number, priceRate: any, token: { __typename?: 'Token', fxOracleDecimals?: number | null, latestFXPrice?: any | null } }> | null } | null };
 
 export type PoolRateProvidersQueryVariables = Exact<{
   poolId: Scalars['ID']['input'];
@@ -5999,9 +5999,9 @@ export const PoolsWherePoolTypeDocument = gql`
 export const PoolSnapshotInRangeDocument = gql`
     query poolSnapshotInRange($poolId: String!, $from: Int!, $to: Int!) {
   poolSnapshots(
-    where: {pool_in: [$poolId], timestamp_gte: $from, timestamp_lt: $to}
+    where: {pool_in: [$poolId], timestamp_gte: $from, timestamp_lte: $to}
     orderBy: timestamp
-    orderDirection: desc
+    orderDirection: asc
   ) {
     pool {
       id
@@ -6035,6 +6035,8 @@ export const PoolDocument = gql`
     symbol
     swapFee
     totalLiquidity
+    totalSwapVolume
+    totalSwapFee
     amp
     c
     s

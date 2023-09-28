@@ -81,6 +81,7 @@ export const QueryParamsSchema = z
   .object({
     poolId: OptionalNullableString.refine(
       (poolId) =>
+        !poolId ||
         POOLS_WITH_LIVE_GAUGES.some(
           (g) => g.id.toLowerCase() === poolId?.toLowerCase(),
         ) ||

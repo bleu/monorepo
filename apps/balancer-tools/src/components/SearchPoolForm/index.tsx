@@ -27,7 +27,6 @@ const inputTypenames = [
 
 export function SearchPoolForm({
   close,
-  poolTypeFilter,
   onSubmit,
   showPools = false,
   onlyVotingGauges = false,
@@ -36,10 +35,10 @@ export function SearchPoolForm({
   form = useForm<PoolAttribute>(),
   availableNetworks = inputTypenames,
   children,
+  gqlAdditionalVariable,
 }: {
   onSubmit?: (formData: PoolAttribute) => void;
   close?: () => void;
-  poolTypeFilter?: string[];
   showPools?: boolean;
   onlyVotingGauges?: boolean;
   defaultValueNetwork?: string;
@@ -47,6 +46,7 @@ export function SearchPoolForm({
   form?: UseFormReturn<PoolAttribute>;
   availableNetworks?: { value: string; label: string }[];
   children?: ReactNode | undefined;
+  gqlAdditionalVariable?: { [key: string]: string[] | string | number };
 }) {
   const [comboBoxIsOpen, setComboBoxIsOpen] = useState(false);
   const {
@@ -63,7 +63,7 @@ export function SearchPoolForm({
 
   const gqlVariables = {
     poolId: poolId?.toLowerCase(),
-    ...(poolTypeFilter?.length ? { poolTypes: poolTypeFilter } : {}),
+    ...gqlAdditionalVariable,
   };
 
   const { data: poolsData } = pools
@@ -72,10 +72,7 @@ export function SearchPoolForm({
 
   const { data: poolsDataList, mutate: poolsDataListMutate } = pools
     .gql(network || "1")
-    .usePoolsWherePoolType(
-      poolTypeFilter?.length ? { poolTypes: poolTypeFilter } : {},
-      { revalidateIfStale: true },
-    );
+    .usePoolsWherePoolType(gqlAdditionalVariable, { revalidateIfStale: true });
 
   function handleSubmitForm(formData: PoolAttribute) {
     onSubmit?.(formData);
@@ -191,8 +188,10 @@ export function SearchPoolForm({
                         <span>
                           {/* By default, FX pools have the name equal to "BPT".
                             So, we'll use name instead of the symbol, since it is more meaningful */}
-                          {poolTypeFilter?.[0] == "FX" &&
-                          poolTypeFilter?.length == 1
+                          {gqlAdditionalVariable?.poolTypes &&
+                          Array.isArray(gqlAdditionalVariable.poolTypes) &&
+                          gqlAdditionalVariable.poolTypes?.[0] == "FX" &&
+                          gqlAdditionalVariable.poolTypes?.length == 1
                             ? pool.name
                             : pool.symbol}
                         </span>

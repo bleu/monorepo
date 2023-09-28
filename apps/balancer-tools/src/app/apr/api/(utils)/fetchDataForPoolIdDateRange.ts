@@ -1,4 +1,6 @@
 /* eslint-disable no-console */
+import { Pool } from "#/lib/balancer/gauges";
+
 import {
   calculatePoolData,
   calculatePoolStats,
@@ -14,7 +16,12 @@ export async function fetchDataForPoolIdDateRange(
   startDate: Date,
   endDate: Date,
 ) {
-  const allDaysBetween = generateDateRange(startDate, endDate);
+  const startDateOrPoolAddedDate =
+    startDate < new Date(new Pool(poolId).gauge.addedTimestamp * 1000)
+      ? new Date(new Pool(poolId).gauge.addedTimestamp * 1000)
+      : startDate;
+
+  const allDaysBetween = generateDateRange(startDateOrPoolAddedDate, endDate);
   const perDayData: { [key: string]: calculatePoolData[] } = {};
 
   for (const dayDate of allDaysBetween) {

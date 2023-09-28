@@ -17,8 +17,8 @@ export async function fetchDataForPoolIdDateRange(
   endDate: Date,
 ) {
   const startDateOrPoolAddedDate =
-    startDate < new Date(new Pool(poolId).gauge.addedTimestamp * 1000)
-      ? new Date(new Pool(poolId).gauge.addedTimestamp * 1000)
+    startDate < new Date(new Pool(poolId).createdAt * 1000)
+      ? new Date(new Pool(poolId).createdAt * 1000)
       : startDate;
 
   const allDaysBetween = generateDateRange(startDateOrPoolAddedDate, endDate);

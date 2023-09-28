@@ -19,7 +19,6 @@ export const getPoolRelativeWeight = withCache(
   ) {
     const gaugeAddress = new Pool(poolId).gauge?.address;
     if (!gaugeAddress) return 0;
-    // if (!gaugeAddress) throw new Error(`No gauge found for pool ${poolId}`);
 
     try {
       const data = await publicClient.readContract({

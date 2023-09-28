@@ -272,7 +272,6 @@ function calculateAPRForDateRange(
   );
 
   return {
-    //TODO: on #BAL-795 add tokenAPR to the total
     total: (vebalAPR || 0) + feeAPR + tokenAPRTotal,
     breakdown: {
       veBAL: vebalAPR,

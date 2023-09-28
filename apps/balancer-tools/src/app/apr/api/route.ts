@@ -95,7 +95,6 @@ export async function GET(request: NextRequest) {
   if (poolId && startAt && endAt) {
     return NextResponse.json(
       await fetchDataForPoolIdDateRange(poolId, startAt, endAt),
-      // ),
     );
   } else if (poolId) {
     responseData = await fetchDataForPoolId(poolId);

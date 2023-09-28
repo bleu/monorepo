@@ -24,6 +24,7 @@ export default async function PoolOverviewCards({
   const results: PoolStatsResults = await fetcher(
     getFilteredDateApiUrl(startAt, endAt, null, poolId),
   );
+
   cardsDetails.push(
     ...[
       {
@@ -31,8 +32,8 @@ export default async function PoolOverviewCards({
         content: formatTVL(results.average.poolAverage[0].tvl),
       },
       {
-        title: "Avg. veBAL APR",
-        content: formatAPR(results.average.poolAverage[0].apr.breakdown.veBAL),
+        title: "Avg. Total APR",
+        content: formatAPR(results.average.poolAverage[0].apr.total),
       },
       ...getDatesDetails(startAt, endAt),
     ],

@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import POOLS_WITH_LIVE_GAUGES from "#/data/voting-gauges.json";
+import POOLS_WITHOUT_GAUGES from "#/data/pools-without-gauge.json";
 import { fetcher } from "#/utils/fetcher";
 
 import { BASE_URL } from "../../(utils)/types";
@@ -11,9 +11,8 @@ export async function fetchDataForDateRange(
   startDate: Date,
   endDate: Date,
 ): Promise<{ [key: string]: PoolStatsData[] }> {
-  const existingPoolForDate = POOLS_WITH_LIVE_GAUGES.reverse().filter(
-    ({ gauge: { addedTimestamp } }) =>
-      addedTimestamp && addedTimestamp <= endDate.getTime(),
+  const existingPoolForDate = POOLS_WITHOUT_GAUGES.filter(
+    (poolData) => poolData.addedTimestamp <= endDate.getTime(),
   );
   const perDayData: { [key: string]: PoolStatsData[] } = {};
 

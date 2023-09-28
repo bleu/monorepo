@@ -63,7 +63,7 @@ export default function HeaderEndButton() {
           />
         }
       >
-        <div className="flex items-center gap-x-2 text-sm font-normal text-slate12 bg-blue4 border border-blue6 px-2 rounded-[4px] cursor-pointer h-[35px]">
+        <div className="flex items-center gap-x-2 text-sm font-normal text-slate12 bg-blue4 border border-blue6 px-2 rounded-[4px] cursor-pointer h-[35px] w-full">
           <MagnifyingGlassIcon width="20" height="20" strokeWidth={1} />
           <span className="font-medium pr-1">Go to pool</span>
         </div>
@@ -78,6 +78,7 @@ export default function HeaderEndButton() {
             }&endAt=${endAtInput}&`,
           );
         }}
+        disabled={true}
       />
       <BaseInput
         value={endAtInput}
@@ -89,6 +90,7 @@ export default function HeaderEndButton() {
             }&`,
           );
         }}
+        disabled={true}
       />
     </div>
   );

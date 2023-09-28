@@ -11,7 +11,6 @@ import { Pool } from "#/lib/balancer/gauges";
 
 import HistoricalCharts from "../../(components)/HistoricalCharts";
 import PoolOverviewCards from "../../(components)/PoolOverviewCards";
-import { YieldWarning } from "../../(components)/YieldWarning";
 
 export default async function Page({
   params: { poolId, network },
@@ -54,7 +53,6 @@ export default async function Page({
           poolId={poolId}
         />
       </Suspense>
-      <YieldWarning />
       <Suspense fallback={<ChartSkelton />}>
         <HistoricalCharts
           poolId={poolId}

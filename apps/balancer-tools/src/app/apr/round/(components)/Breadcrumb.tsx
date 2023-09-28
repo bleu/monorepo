@@ -14,7 +14,13 @@ import invariant from "tiny-invariant";
 import { Toast } from "#/components/Toast";
 import { Pool } from "#/lib/balancer/gauges";
 
-function poolUrl({ network, poolId }: { network: string; poolId: string }) {
+function getPoolExternalUrl({
+  network,
+  poolId,
+}: {
+  network: string;
+  poolId: string;
+}) {
   let url: string;
 
   switch (network) {
@@ -117,7 +123,7 @@ export default function Breadcrumb() {
         {poolId && (
           <div className="flex">
             <Link
-              href={poolUrl({ network, poolId })}
+              href={getPoolExternalUrl({ network, poolId })}
               target="_blank"
               className="inline-flex items-center px-3 py-2 text-sm font-normal text-center text-white bg-blue6 border border-blue9 rounded-lg hover:bg-blue7 sm:mr-3"
             >

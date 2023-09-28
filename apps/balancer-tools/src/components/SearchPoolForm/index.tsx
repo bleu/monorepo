@@ -72,11 +72,7 @@ export function SearchPoolForm({
 
   const { data: poolsDataList, mutate: poolsDataListMutate } = pools
     .gql(network || "1")
-    .usePoolsWherePoolType(
-      gqlAdditionalVariable,
-      // poolTypeFilter?.length ? { poolTypes: poolTypeFilter } : {},
-      { revalidateIfStale: true },
-    );
+    .usePoolsWherePoolType(gqlAdditionalVariable, { revalidateIfStale: true });
 
   function handleSubmitForm(formData: PoolAttribute) {
     onSubmit?.(formData);
@@ -192,10 +188,10 @@ export function SearchPoolForm({
                         <span>
                           {/* By default, FX pools have the name equal to "BPT".
                             So, we'll use name instead of the symbol, since it is more meaningful */}
-                          {gqlAdditionalVariable?.poolTypeFilter &&
-                          Array.isArray(gqlAdditionalVariable.poolTypeFilter) &&
-                          gqlAdditionalVariable.poolTypeFilter?.[0] == "FX" &&
-                          gqlAdditionalVariable.poolTypeFilter?.length == 1
+                          {gqlAdditionalVariable?.poolTypes &&
+                          Array.isArray(gqlAdditionalVariable.poolTypes) &&
+                          gqlAdditionalVariable.poolTypes?.[0] == "FX" &&
+                          gqlAdditionalVariable.poolTypes?.length == 1
                             ? pool.name
                             : pool.symbol}
                         </span>

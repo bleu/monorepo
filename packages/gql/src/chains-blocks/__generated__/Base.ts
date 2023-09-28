@@ -1,219 +1,221 @@
 import { GraphQLClient } from 'graphql-request';
-import * as Dom from 'graphql-request/dist/types.dom';
+import { GraphQLClientRequestHeaders } from 'graphql-request/build/cjs/types';
 import gql from 'graphql-tag';
-import { ClientError } from 'graphql-request/dist/types';
+import { ClientError } from 'graphql-request';
 import useSWR, { SWRConfiguration as SWRConfigInterface, Key as SWRKeyInterface } from 'swr';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: string;
-  String: string;
-  Boolean: boolean;
-  Int: number;
-  Float: number;
-  BigDecimal: any;
-  BigInt: any;
-  Bytes: any;
-  Int8: any;
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
+  BigDecimal: { input: any; output: any; }
+  BigInt: { input: any; output: any; }
+  Bytes: { input: any; output: any; }
+  Int8: { input: any; output: any; }
 };
 
 export type Block = {
   __typename?: 'Block';
   /**  address of the beneficiary to whom the mining rewards were given  */
-  author: Scalars['Bytes'];
+  author: Scalars['Bytes']['output'];
   /**  the minimum gas fee a user must pay to include a transaction in the block  */
-  baseFeePerGas?: Maybe<Scalars['BigInt']>;
+  baseFeePerGas?: Maybe<Scalars['BigInt']['output']>;
   /**  number of leading zeroes that are required in the resulting block hash for it to be considered valid - PoW only */
-  difficulty: Scalars['BigInt'];
+  difficulty: Scalars['BigInt']['output'];
   /**  maximum gas allowed in this block  */
-  gasLimit: Scalars['BigInt'];
+  gasLimit: Scalars['BigInt']['output'];
   /**  the actual amount of gas used in this block  */
-  gasUsed: Scalars['BigInt'];
+  gasUsed: Scalars['BigInt']['output'];
   /**  the block hash  */
-  hash: Scalars['Bytes'];
+  hash: Scalars['Bytes']['output'];
   /**  the block hash  */
-  id: Scalars['ID'];
+  id: Scalars['ID']['output'];
   /**  the block number  */
-  number: Scalars['BigInt'];
+  number: Scalars['BigInt']['output'];
   /**  hash of the parent block  */
-  parentHash: Scalars['Bytes'];
+  parentHash: Scalars['Bytes']['output'];
   /**  hash of the transaction receipts trie  */
-  receiptsRoot: Scalars['Bytes'];
+  receiptsRoot: Scalars['Bytes']['output'];
   /**  the size of the block in bytes  */
-  size?: Maybe<Scalars['BigInt']>;
+  size?: Maybe<Scalars['BigInt']['output']>;
   /**  root hash for the global state after applying changes in this block  */
-  stateRoot: Scalars['Bytes'];
+  stateRoot: Scalars['Bytes']['output'];
   /**  the block time  */
-  timestamp: Scalars['BigInt'];
+  timestamp: Scalars['BigInt']['output'];
   /**  the sum of the Ethash mining difficulty for all blocks up to some specific point in the blockchain  */
-  totalDifficulty: Scalars['BigInt'];
+  totalDifficulty: Scalars['BigInt']['output'];
   /**  root hash of the transactions in the payload  */
-  transactionsRoot: Scalars['Bytes'];
+  transactionsRoot: Scalars['Bytes']['output'];
   /**  hash of the uncle block */
-  unclesHash: Scalars['Bytes'];
+  unclesHash: Scalars['Bytes']['output'];
 };
 
 export type BlockChangedFilter = {
-  number_gte: Scalars['Int'];
+  number_gte: Scalars['Int']['input'];
 };
 
 export type Block_Filter = {
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<Block_Filter>>>;
-  author?: InputMaybe<Scalars['Bytes']>;
-  author_contains?: InputMaybe<Scalars['Bytes']>;
-  author_gt?: InputMaybe<Scalars['Bytes']>;
-  author_gte?: InputMaybe<Scalars['Bytes']>;
-  author_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  author_lt?: InputMaybe<Scalars['Bytes']>;
-  author_lte?: InputMaybe<Scalars['Bytes']>;
-  author_not?: InputMaybe<Scalars['Bytes']>;
-  author_not_contains?: InputMaybe<Scalars['Bytes']>;
-  author_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  baseFeePerGas?: InputMaybe<Scalars['BigInt']>;
-  baseFeePerGas_gt?: InputMaybe<Scalars['BigInt']>;
-  baseFeePerGas_gte?: InputMaybe<Scalars['BigInt']>;
-  baseFeePerGas_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  baseFeePerGas_lt?: InputMaybe<Scalars['BigInt']>;
-  baseFeePerGas_lte?: InputMaybe<Scalars['BigInt']>;
-  baseFeePerGas_not?: InputMaybe<Scalars['BigInt']>;
-  baseFeePerGas_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  difficulty?: InputMaybe<Scalars['BigInt']>;
-  difficulty_gt?: InputMaybe<Scalars['BigInt']>;
-  difficulty_gte?: InputMaybe<Scalars['BigInt']>;
-  difficulty_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  difficulty_lt?: InputMaybe<Scalars['BigInt']>;
-  difficulty_lte?: InputMaybe<Scalars['BigInt']>;
-  difficulty_not?: InputMaybe<Scalars['BigInt']>;
-  difficulty_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  gasLimit?: InputMaybe<Scalars['BigInt']>;
-  gasLimit_gt?: InputMaybe<Scalars['BigInt']>;
-  gasLimit_gte?: InputMaybe<Scalars['BigInt']>;
-  gasLimit_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  gasLimit_lt?: InputMaybe<Scalars['BigInt']>;
-  gasLimit_lte?: InputMaybe<Scalars['BigInt']>;
-  gasLimit_not?: InputMaybe<Scalars['BigInt']>;
-  gasLimit_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  gasUsed?: InputMaybe<Scalars['BigInt']>;
-  gasUsed_gt?: InputMaybe<Scalars['BigInt']>;
-  gasUsed_gte?: InputMaybe<Scalars['BigInt']>;
-  gasUsed_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  gasUsed_lt?: InputMaybe<Scalars['BigInt']>;
-  gasUsed_lte?: InputMaybe<Scalars['BigInt']>;
-  gasUsed_not?: InputMaybe<Scalars['BigInt']>;
-  gasUsed_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  hash?: InputMaybe<Scalars['Bytes']>;
-  hash_contains?: InputMaybe<Scalars['Bytes']>;
-  hash_gt?: InputMaybe<Scalars['Bytes']>;
-  hash_gte?: InputMaybe<Scalars['Bytes']>;
-  hash_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  hash_lt?: InputMaybe<Scalars['Bytes']>;
-  hash_lte?: InputMaybe<Scalars['Bytes']>;
-  hash_not?: InputMaybe<Scalars['Bytes']>;
-  hash_not_contains?: InputMaybe<Scalars['Bytes']>;
-  hash_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  id?: InputMaybe<Scalars['ID']>;
-  id_gt?: InputMaybe<Scalars['ID']>;
-  id_gte?: InputMaybe<Scalars['ID']>;
-  id_in?: InputMaybe<Array<Scalars['ID']>>;
-  id_lt?: InputMaybe<Scalars['ID']>;
-  id_lte?: InputMaybe<Scalars['ID']>;
-  id_not?: InputMaybe<Scalars['ID']>;
-  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
-  number?: InputMaybe<Scalars['BigInt']>;
-  number_gt?: InputMaybe<Scalars['BigInt']>;
-  number_gte?: InputMaybe<Scalars['BigInt']>;
-  number_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  number_lt?: InputMaybe<Scalars['BigInt']>;
-  number_lte?: InputMaybe<Scalars['BigInt']>;
-  number_not?: InputMaybe<Scalars['BigInt']>;
-  number_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  author?: InputMaybe<Scalars['Bytes']['input']>;
+  author_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  author_gt?: InputMaybe<Scalars['Bytes']['input']>;
+  author_gte?: InputMaybe<Scalars['Bytes']['input']>;
+  author_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  author_lt?: InputMaybe<Scalars['Bytes']['input']>;
+  author_lte?: InputMaybe<Scalars['Bytes']['input']>;
+  author_not?: InputMaybe<Scalars['Bytes']['input']>;
+  author_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  author_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  baseFeePerGas?: InputMaybe<Scalars['BigInt']['input']>;
+  baseFeePerGas_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  baseFeePerGas_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  baseFeePerGas_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  baseFeePerGas_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  baseFeePerGas_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  baseFeePerGas_not?: InputMaybe<Scalars['BigInt']['input']>;
+  baseFeePerGas_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  difficulty?: InputMaybe<Scalars['BigInt']['input']>;
+  difficulty_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  difficulty_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  difficulty_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  difficulty_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  difficulty_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  difficulty_not?: InputMaybe<Scalars['BigInt']['input']>;
+  difficulty_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  gasLimit?: InputMaybe<Scalars['BigInt']['input']>;
+  gasLimit_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  gasLimit_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  gasLimit_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  gasLimit_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  gasLimit_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  gasLimit_not?: InputMaybe<Scalars['BigInt']['input']>;
+  gasLimit_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  gasUsed?: InputMaybe<Scalars['BigInt']['input']>;
+  gasUsed_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  gasUsed_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  gasUsed_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  gasUsed_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  gasUsed_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  gasUsed_not?: InputMaybe<Scalars['BigInt']['input']>;
+  gasUsed_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  hash?: InputMaybe<Scalars['Bytes']['input']>;
+  hash_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  hash_gt?: InputMaybe<Scalars['Bytes']['input']>;
+  hash_gte?: InputMaybe<Scalars['Bytes']['input']>;
+  hash_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  hash_lt?: InputMaybe<Scalars['Bytes']['input']>;
+  hash_lte?: InputMaybe<Scalars['Bytes']['input']>;
+  hash_not?: InputMaybe<Scalars['Bytes']['input']>;
+  hash_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  hash_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  id_gt?: InputMaybe<Scalars['ID']['input']>;
+  id_gte?: InputMaybe<Scalars['ID']['input']>;
+  id_in?: InputMaybe<Array<Scalars['ID']['input']>>;
+  id_lt?: InputMaybe<Scalars['ID']['input']>;
+  id_lte?: InputMaybe<Scalars['ID']['input']>;
+  id_not?: InputMaybe<Scalars['ID']['input']>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']['input']>>;
+  number?: InputMaybe<Scalars['BigInt']['input']>;
+  number_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  number_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  number_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  number_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  number_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  number_not?: InputMaybe<Scalars['BigInt']['input']>;
+  number_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
   or?: InputMaybe<Array<InputMaybe<Block_Filter>>>;
-  parentHash?: InputMaybe<Scalars['Bytes']>;
-  parentHash_contains?: InputMaybe<Scalars['Bytes']>;
-  parentHash_gt?: InputMaybe<Scalars['Bytes']>;
-  parentHash_gte?: InputMaybe<Scalars['Bytes']>;
-  parentHash_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  parentHash_lt?: InputMaybe<Scalars['Bytes']>;
-  parentHash_lte?: InputMaybe<Scalars['Bytes']>;
-  parentHash_not?: InputMaybe<Scalars['Bytes']>;
-  parentHash_not_contains?: InputMaybe<Scalars['Bytes']>;
-  parentHash_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  receiptsRoot?: InputMaybe<Scalars['Bytes']>;
-  receiptsRoot_contains?: InputMaybe<Scalars['Bytes']>;
-  receiptsRoot_gt?: InputMaybe<Scalars['Bytes']>;
-  receiptsRoot_gte?: InputMaybe<Scalars['Bytes']>;
-  receiptsRoot_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  receiptsRoot_lt?: InputMaybe<Scalars['Bytes']>;
-  receiptsRoot_lte?: InputMaybe<Scalars['Bytes']>;
-  receiptsRoot_not?: InputMaybe<Scalars['Bytes']>;
-  receiptsRoot_not_contains?: InputMaybe<Scalars['Bytes']>;
-  receiptsRoot_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  size?: InputMaybe<Scalars['BigInt']>;
-  size_gt?: InputMaybe<Scalars['BigInt']>;
-  size_gte?: InputMaybe<Scalars['BigInt']>;
-  size_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  size_lt?: InputMaybe<Scalars['BigInt']>;
-  size_lte?: InputMaybe<Scalars['BigInt']>;
-  size_not?: InputMaybe<Scalars['BigInt']>;
-  size_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  stateRoot?: InputMaybe<Scalars['Bytes']>;
-  stateRoot_contains?: InputMaybe<Scalars['Bytes']>;
-  stateRoot_gt?: InputMaybe<Scalars['Bytes']>;
-  stateRoot_gte?: InputMaybe<Scalars['Bytes']>;
-  stateRoot_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  stateRoot_lt?: InputMaybe<Scalars['Bytes']>;
-  stateRoot_lte?: InputMaybe<Scalars['Bytes']>;
-  stateRoot_not?: InputMaybe<Scalars['Bytes']>;
-  stateRoot_not_contains?: InputMaybe<Scalars['Bytes']>;
-  stateRoot_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  timestamp?: InputMaybe<Scalars['BigInt']>;
-  timestamp_gt?: InputMaybe<Scalars['BigInt']>;
-  timestamp_gte?: InputMaybe<Scalars['BigInt']>;
-  timestamp_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  timestamp_lt?: InputMaybe<Scalars['BigInt']>;
-  timestamp_lte?: InputMaybe<Scalars['BigInt']>;
-  timestamp_not?: InputMaybe<Scalars['BigInt']>;
-  timestamp_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  totalDifficulty?: InputMaybe<Scalars['BigInt']>;
-  totalDifficulty_gt?: InputMaybe<Scalars['BigInt']>;
-  totalDifficulty_gte?: InputMaybe<Scalars['BigInt']>;
-  totalDifficulty_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  totalDifficulty_lt?: InputMaybe<Scalars['BigInt']>;
-  totalDifficulty_lte?: InputMaybe<Scalars['BigInt']>;
-  totalDifficulty_not?: InputMaybe<Scalars['BigInt']>;
-  totalDifficulty_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  transactionsRoot?: InputMaybe<Scalars['Bytes']>;
-  transactionsRoot_contains?: InputMaybe<Scalars['Bytes']>;
-  transactionsRoot_gt?: InputMaybe<Scalars['Bytes']>;
-  transactionsRoot_gte?: InputMaybe<Scalars['Bytes']>;
-  transactionsRoot_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  transactionsRoot_lt?: InputMaybe<Scalars['Bytes']>;
-  transactionsRoot_lte?: InputMaybe<Scalars['Bytes']>;
-  transactionsRoot_not?: InputMaybe<Scalars['Bytes']>;
-  transactionsRoot_not_contains?: InputMaybe<Scalars['Bytes']>;
-  transactionsRoot_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  unclesHash?: InputMaybe<Scalars['Bytes']>;
-  unclesHash_contains?: InputMaybe<Scalars['Bytes']>;
-  unclesHash_gt?: InputMaybe<Scalars['Bytes']>;
-  unclesHash_gte?: InputMaybe<Scalars['Bytes']>;
-  unclesHash_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  unclesHash_lt?: InputMaybe<Scalars['Bytes']>;
-  unclesHash_lte?: InputMaybe<Scalars['Bytes']>;
-  unclesHash_not?: InputMaybe<Scalars['Bytes']>;
-  unclesHash_not_contains?: InputMaybe<Scalars['Bytes']>;
-  unclesHash_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  parentHash?: InputMaybe<Scalars['Bytes']['input']>;
+  parentHash_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  parentHash_gt?: InputMaybe<Scalars['Bytes']['input']>;
+  parentHash_gte?: InputMaybe<Scalars['Bytes']['input']>;
+  parentHash_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  parentHash_lt?: InputMaybe<Scalars['Bytes']['input']>;
+  parentHash_lte?: InputMaybe<Scalars['Bytes']['input']>;
+  parentHash_not?: InputMaybe<Scalars['Bytes']['input']>;
+  parentHash_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  parentHash_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  receiptsRoot?: InputMaybe<Scalars['Bytes']['input']>;
+  receiptsRoot_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  receiptsRoot_gt?: InputMaybe<Scalars['Bytes']['input']>;
+  receiptsRoot_gte?: InputMaybe<Scalars['Bytes']['input']>;
+  receiptsRoot_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  receiptsRoot_lt?: InputMaybe<Scalars['Bytes']['input']>;
+  receiptsRoot_lte?: InputMaybe<Scalars['Bytes']['input']>;
+  receiptsRoot_not?: InputMaybe<Scalars['Bytes']['input']>;
+  receiptsRoot_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  receiptsRoot_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  size?: InputMaybe<Scalars['BigInt']['input']>;
+  size_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  size_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  size_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  size_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  size_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  size_not?: InputMaybe<Scalars['BigInt']['input']>;
+  size_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  stateRoot?: InputMaybe<Scalars['Bytes']['input']>;
+  stateRoot_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  stateRoot_gt?: InputMaybe<Scalars['Bytes']['input']>;
+  stateRoot_gte?: InputMaybe<Scalars['Bytes']['input']>;
+  stateRoot_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  stateRoot_lt?: InputMaybe<Scalars['Bytes']['input']>;
+  stateRoot_lte?: InputMaybe<Scalars['Bytes']['input']>;
+  stateRoot_not?: InputMaybe<Scalars['Bytes']['input']>;
+  stateRoot_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  stateRoot_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  timestamp?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  timestamp_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_not?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  totalDifficulty?: InputMaybe<Scalars['BigInt']['input']>;
+  totalDifficulty_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  totalDifficulty_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  totalDifficulty_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  totalDifficulty_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  totalDifficulty_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  totalDifficulty_not?: InputMaybe<Scalars['BigInt']['input']>;
+  totalDifficulty_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  transactionsRoot?: InputMaybe<Scalars['Bytes']['input']>;
+  transactionsRoot_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  transactionsRoot_gt?: InputMaybe<Scalars['Bytes']['input']>;
+  transactionsRoot_gte?: InputMaybe<Scalars['Bytes']['input']>;
+  transactionsRoot_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  transactionsRoot_lt?: InputMaybe<Scalars['Bytes']['input']>;
+  transactionsRoot_lte?: InputMaybe<Scalars['Bytes']['input']>;
+  transactionsRoot_not?: InputMaybe<Scalars['Bytes']['input']>;
+  transactionsRoot_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  transactionsRoot_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  unclesHash?: InputMaybe<Scalars['Bytes']['input']>;
+  unclesHash_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  unclesHash_gt?: InputMaybe<Scalars['Bytes']['input']>;
+  unclesHash_gte?: InputMaybe<Scalars['Bytes']['input']>;
+  unclesHash_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  unclesHash_lt?: InputMaybe<Scalars['Bytes']['input']>;
+  unclesHash_lte?: InputMaybe<Scalars['Bytes']['input']>;
+  unclesHash_not?: InputMaybe<Scalars['Bytes']['input']>;
+  unclesHash_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
+  unclesHash_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
 };
 
 export type Block_Height = {
-  hash?: InputMaybe<Scalars['Bytes']>;
-  number?: InputMaybe<Scalars['Int']>;
-  number_gte?: InputMaybe<Scalars['Int']>;
+  hash?: InputMaybe<Scalars['Bytes']['input']>;
+  number?: InputMaybe<Scalars['Int']['input']>;
+  number_gte?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type Block_OrderBy =
@@ -257,17 +259,17 @@ export type Query_MetaArgs = {
 
 export type QueryBlockArgs = {
   block?: InputMaybe<Block_Height>;
-  id: Scalars['ID'];
+  id: Scalars['ID']['input'];
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryBlocksArgs = {
   block?: InputMaybe<Block_Height>;
-  first?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Block_OrderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<Block_Filter>;
 };
@@ -288,17 +290,17 @@ export type Subscription_MetaArgs = {
 
 export type SubscriptionBlockArgs = {
   block?: InputMaybe<Block_Height>;
-  id: Scalars['ID'];
+  id: Scalars['ID']['input'];
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionBlocksArgs = {
   block?: InputMaybe<Block_Height>;
-  first?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Block_OrderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<Block_Filter>;
 };
@@ -306,11 +308,11 @@ export type SubscriptionBlocksArgs = {
 export type _Block_ = {
   __typename?: '_Block_';
   /** The hash of the block */
-  hash?: Maybe<Scalars['Bytes']>;
+  hash?: Maybe<Scalars['Bytes']['output']>;
   /** The block number */
-  number: Scalars['Int'];
+  number: Scalars['Int']['output'];
   /** Integer representation of the timestamp stored in blocks for the chain */
-  timestamp?: Maybe<Scalars['Int']>;
+  timestamp?: Maybe<Scalars['Int']['output']>;
 };
 
 /** The type for the top-level _meta field */
@@ -325,9 +327,9 @@ export type _Meta_ = {
    */
   block: _Block_;
   /** The deployment ID */
-  deployment: Scalars['String'];
+  deployment: Scalars['String']['output'];
   /** If `true`, the subgraph encountered indexing errors at some past block */
-  hasIndexingErrors: Scalars['Boolean'];
+  hasIndexingErrors: Scalars['Boolean']['output'];
 };
 
 export type _SubgraphErrorPolicy_ =
@@ -338,8 +340,8 @@ export type _SubgraphErrorPolicy_ =
   | '%future added value';
 
 export type BlocksQueryVariables = Exact<{
-  timestamp_gte?: InputMaybe<Scalars['BigInt']>;
-  timestamp_lt?: InputMaybe<Scalars['BigInt']>;
+  timestamp_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_lt?: InputMaybe<Scalars['BigInt']['input']>;
 }>;
 
 
@@ -366,7 +368,7 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationTy
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
-    Blocks(variables?: BlocksQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<BlocksQuery> {
+    Blocks(variables?: BlocksQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<BlocksQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<BlocksQuery>(BlocksDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Blocks', 'query');
     }
   };

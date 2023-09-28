@@ -1,241 +1,243 @@
 import { GraphQLClient } from 'graphql-request';
-import * as Dom from 'graphql-request/dist/types.dom';
+import { GraphQLClientRequestHeaders } from 'graphql-request/build/cjs/types';
 import gql from 'graphql-tag';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: string;
-  String: string;
-  Boolean: boolean;
-  Int: number;
-  Float: number;
-  BigDecimal: any;
-  BigInt: any;
-  Bytes: any;
-  Int8: any;
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
+  BigDecimal: { input: any; output: any; }
+  BigInt: { input: any; output: any; }
+  Bytes: { input: any; output: any; }
+  Int8: { input: any; output: any; }
 };
 
 export type Block = {
   __typename?: 'Block';
-  author?: Maybe<Scalars['String']>;
-  difficulty?: Maybe<Scalars['BigInt']>;
-  gasLimit?: Maybe<Scalars['BigInt']>;
-  gasUsed?: Maybe<Scalars['BigInt']>;
-  id: Scalars['ID'];
-  number: Scalars['BigInt'];
-  parentHash?: Maybe<Scalars['String']>;
-  receiptsRoot?: Maybe<Scalars['String']>;
-  size?: Maybe<Scalars['BigInt']>;
-  stateRoot?: Maybe<Scalars['String']>;
-  timestamp: Scalars['BigInt'];
-  totalDifficulty?: Maybe<Scalars['BigInt']>;
-  transactionsRoot?: Maybe<Scalars['String']>;
-  unclesHash?: Maybe<Scalars['String']>;
+  author?: Maybe<Scalars['String']['output']>;
+  difficulty?: Maybe<Scalars['BigInt']['output']>;
+  gasLimit?: Maybe<Scalars['BigInt']['output']>;
+  gasUsed?: Maybe<Scalars['BigInt']['output']>;
+  id: Scalars['ID']['output'];
+  number: Scalars['BigInt']['output'];
+  parentHash?: Maybe<Scalars['String']['output']>;
+  receiptsRoot?: Maybe<Scalars['String']['output']>;
+  size?: Maybe<Scalars['BigInt']['output']>;
+  stateRoot?: Maybe<Scalars['String']['output']>;
+  timestamp: Scalars['BigInt']['output'];
+  totalDifficulty?: Maybe<Scalars['BigInt']['output']>;
+  transactionsRoot?: Maybe<Scalars['String']['output']>;
+  unclesHash?: Maybe<Scalars['String']['output']>;
 };
 
 export type BlockChangedFilter = {
-  number_gte: Scalars['Int'];
+  number_gte: Scalars['Int']['input'];
 };
 
 export type Block_Filter = {
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<Block_Filter>>>;
-  author?: InputMaybe<Scalars['String']>;
-  author_contains?: InputMaybe<Scalars['String']>;
-  author_contains_nocase?: InputMaybe<Scalars['String']>;
-  author_ends_with?: InputMaybe<Scalars['String']>;
-  author_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  author_gt?: InputMaybe<Scalars['String']>;
-  author_gte?: InputMaybe<Scalars['String']>;
-  author_in?: InputMaybe<Array<Scalars['String']>>;
-  author_lt?: InputMaybe<Scalars['String']>;
-  author_lte?: InputMaybe<Scalars['String']>;
-  author_not?: InputMaybe<Scalars['String']>;
-  author_not_contains?: InputMaybe<Scalars['String']>;
-  author_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  author_not_ends_with?: InputMaybe<Scalars['String']>;
-  author_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  author_not_in?: InputMaybe<Array<Scalars['String']>>;
-  author_not_starts_with?: InputMaybe<Scalars['String']>;
-  author_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  author_starts_with?: InputMaybe<Scalars['String']>;
-  author_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  difficulty?: InputMaybe<Scalars['BigInt']>;
-  difficulty_gt?: InputMaybe<Scalars['BigInt']>;
-  difficulty_gte?: InputMaybe<Scalars['BigInt']>;
-  difficulty_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  difficulty_lt?: InputMaybe<Scalars['BigInt']>;
-  difficulty_lte?: InputMaybe<Scalars['BigInt']>;
-  difficulty_not?: InputMaybe<Scalars['BigInt']>;
-  difficulty_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  gasLimit?: InputMaybe<Scalars['BigInt']>;
-  gasLimit_gt?: InputMaybe<Scalars['BigInt']>;
-  gasLimit_gte?: InputMaybe<Scalars['BigInt']>;
-  gasLimit_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  gasLimit_lt?: InputMaybe<Scalars['BigInt']>;
-  gasLimit_lte?: InputMaybe<Scalars['BigInt']>;
-  gasLimit_not?: InputMaybe<Scalars['BigInt']>;
-  gasLimit_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  gasUsed?: InputMaybe<Scalars['BigInt']>;
-  gasUsed_gt?: InputMaybe<Scalars['BigInt']>;
-  gasUsed_gte?: InputMaybe<Scalars['BigInt']>;
-  gasUsed_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  gasUsed_lt?: InputMaybe<Scalars['BigInt']>;
-  gasUsed_lte?: InputMaybe<Scalars['BigInt']>;
-  gasUsed_not?: InputMaybe<Scalars['BigInt']>;
-  gasUsed_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  id?: InputMaybe<Scalars['ID']>;
-  id_gt?: InputMaybe<Scalars['ID']>;
-  id_gte?: InputMaybe<Scalars['ID']>;
-  id_in?: InputMaybe<Array<Scalars['ID']>>;
-  id_lt?: InputMaybe<Scalars['ID']>;
-  id_lte?: InputMaybe<Scalars['ID']>;
-  id_not?: InputMaybe<Scalars['ID']>;
-  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
-  number?: InputMaybe<Scalars['BigInt']>;
-  number_gt?: InputMaybe<Scalars['BigInt']>;
-  number_gte?: InputMaybe<Scalars['BigInt']>;
-  number_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  number_lt?: InputMaybe<Scalars['BigInt']>;
-  number_lte?: InputMaybe<Scalars['BigInt']>;
-  number_not?: InputMaybe<Scalars['BigInt']>;
-  number_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  author?: InputMaybe<Scalars['String']['input']>;
+  author_contains?: InputMaybe<Scalars['String']['input']>;
+  author_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  author_ends_with?: InputMaybe<Scalars['String']['input']>;
+  author_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  author_gt?: InputMaybe<Scalars['String']['input']>;
+  author_gte?: InputMaybe<Scalars['String']['input']>;
+  author_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  author_lt?: InputMaybe<Scalars['String']['input']>;
+  author_lte?: InputMaybe<Scalars['String']['input']>;
+  author_not?: InputMaybe<Scalars['String']['input']>;
+  author_not_contains?: InputMaybe<Scalars['String']['input']>;
+  author_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  author_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  author_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  author_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  author_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  author_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  author_starts_with?: InputMaybe<Scalars['String']['input']>;
+  author_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  difficulty?: InputMaybe<Scalars['BigInt']['input']>;
+  difficulty_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  difficulty_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  difficulty_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  difficulty_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  difficulty_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  difficulty_not?: InputMaybe<Scalars['BigInt']['input']>;
+  difficulty_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  gasLimit?: InputMaybe<Scalars['BigInt']['input']>;
+  gasLimit_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  gasLimit_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  gasLimit_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  gasLimit_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  gasLimit_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  gasLimit_not?: InputMaybe<Scalars['BigInt']['input']>;
+  gasLimit_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  gasUsed?: InputMaybe<Scalars['BigInt']['input']>;
+  gasUsed_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  gasUsed_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  gasUsed_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  gasUsed_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  gasUsed_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  gasUsed_not?: InputMaybe<Scalars['BigInt']['input']>;
+  gasUsed_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  id_gt?: InputMaybe<Scalars['ID']['input']>;
+  id_gte?: InputMaybe<Scalars['ID']['input']>;
+  id_in?: InputMaybe<Array<Scalars['ID']['input']>>;
+  id_lt?: InputMaybe<Scalars['ID']['input']>;
+  id_lte?: InputMaybe<Scalars['ID']['input']>;
+  id_not?: InputMaybe<Scalars['ID']['input']>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']['input']>>;
+  number?: InputMaybe<Scalars['BigInt']['input']>;
+  number_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  number_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  number_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  number_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  number_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  number_not?: InputMaybe<Scalars['BigInt']['input']>;
+  number_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
   or?: InputMaybe<Array<InputMaybe<Block_Filter>>>;
-  parentHash?: InputMaybe<Scalars['String']>;
-  parentHash_contains?: InputMaybe<Scalars['String']>;
-  parentHash_contains_nocase?: InputMaybe<Scalars['String']>;
-  parentHash_ends_with?: InputMaybe<Scalars['String']>;
-  parentHash_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  parentHash_gt?: InputMaybe<Scalars['String']>;
-  parentHash_gte?: InputMaybe<Scalars['String']>;
-  parentHash_in?: InputMaybe<Array<Scalars['String']>>;
-  parentHash_lt?: InputMaybe<Scalars['String']>;
-  parentHash_lte?: InputMaybe<Scalars['String']>;
-  parentHash_not?: InputMaybe<Scalars['String']>;
-  parentHash_not_contains?: InputMaybe<Scalars['String']>;
-  parentHash_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  parentHash_not_ends_with?: InputMaybe<Scalars['String']>;
-  parentHash_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  parentHash_not_in?: InputMaybe<Array<Scalars['String']>>;
-  parentHash_not_starts_with?: InputMaybe<Scalars['String']>;
-  parentHash_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  parentHash_starts_with?: InputMaybe<Scalars['String']>;
-  parentHash_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  receiptsRoot?: InputMaybe<Scalars['String']>;
-  receiptsRoot_contains?: InputMaybe<Scalars['String']>;
-  receiptsRoot_contains_nocase?: InputMaybe<Scalars['String']>;
-  receiptsRoot_ends_with?: InputMaybe<Scalars['String']>;
-  receiptsRoot_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  receiptsRoot_gt?: InputMaybe<Scalars['String']>;
-  receiptsRoot_gte?: InputMaybe<Scalars['String']>;
-  receiptsRoot_in?: InputMaybe<Array<Scalars['String']>>;
-  receiptsRoot_lt?: InputMaybe<Scalars['String']>;
-  receiptsRoot_lte?: InputMaybe<Scalars['String']>;
-  receiptsRoot_not?: InputMaybe<Scalars['String']>;
-  receiptsRoot_not_contains?: InputMaybe<Scalars['String']>;
-  receiptsRoot_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  receiptsRoot_not_ends_with?: InputMaybe<Scalars['String']>;
-  receiptsRoot_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  receiptsRoot_not_in?: InputMaybe<Array<Scalars['String']>>;
-  receiptsRoot_not_starts_with?: InputMaybe<Scalars['String']>;
-  receiptsRoot_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  receiptsRoot_starts_with?: InputMaybe<Scalars['String']>;
-  receiptsRoot_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  size?: InputMaybe<Scalars['BigInt']>;
-  size_gt?: InputMaybe<Scalars['BigInt']>;
-  size_gte?: InputMaybe<Scalars['BigInt']>;
-  size_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  size_lt?: InputMaybe<Scalars['BigInt']>;
-  size_lte?: InputMaybe<Scalars['BigInt']>;
-  size_not?: InputMaybe<Scalars['BigInt']>;
-  size_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  stateRoot?: InputMaybe<Scalars['String']>;
-  stateRoot_contains?: InputMaybe<Scalars['String']>;
-  stateRoot_contains_nocase?: InputMaybe<Scalars['String']>;
-  stateRoot_ends_with?: InputMaybe<Scalars['String']>;
-  stateRoot_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  stateRoot_gt?: InputMaybe<Scalars['String']>;
-  stateRoot_gte?: InputMaybe<Scalars['String']>;
-  stateRoot_in?: InputMaybe<Array<Scalars['String']>>;
-  stateRoot_lt?: InputMaybe<Scalars['String']>;
-  stateRoot_lte?: InputMaybe<Scalars['String']>;
-  stateRoot_not?: InputMaybe<Scalars['String']>;
-  stateRoot_not_contains?: InputMaybe<Scalars['String']>;
-  stateRoot_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  stateRoot_not_ends_with?: InputMaybe<Scalars['String']>;
-  stateRoot_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  stateRoot_not_in?: InputMaybe<Array<Scalars['String']>>;
-  stateRoot_not_starts_with?: InputMaybe<Scalars['String']>;
-  stateRoot_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  stateRoot_starts_with?: InputMaybe<Scalars['String']>;
-  stateRoot_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  timestamp?: InputMaybe<Scalars['BigInt']>;
-  timestamp_gt?: InputMaybe<Scalars['BigInt']>;
-  timestamp_gte?: InputMaybe<Scalars['BigInt']>;
-  timestamp_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  timestamp_lt?: InputMaybe<Scalars['BigInt']>;
-  timestamp_lte?: InputMaybe<Scalars['BigInt']>;
-  timestamp_not?: InputMaybe<Scalars['BigInt']>;
-  timestamp_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  totalDifficulty?: InputMaybe<Scalars['BigInt']>;
-  totalDifficulty_gt?: InputMaybe<Scalars['BigInt']>;
-  totalDifficulty_gte?: InputMaybe<Scalars['BigInt']>;
-  totalDifficulty_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  totalDifficulty_lt?: InputMaybe<Scalars['BigInt']>;
-  totalDifficulty_lte?: InputMaybe<Scalars['BigInt']>;
-  totalDifficulty_not?: InputMaybe<Scalars['BigInt']>;
-  totalDifficulty_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  transactionsRoot?: InputMaybe<Scalars['String']>;
-  transactionsRoot_contains?: InputMaybe<Scalars['String']>;
-  transactionsRoot_contains_nocase?: InputMaybe<Scalars['String']>;
-  transactionsRoot_ends_with?: InputMaybe<Scalars['String']>;
-  transactionsRoot_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  transactionsRoot_gt?: InputMaybe<Scalars['String']>;
-  transactionsRoot_gte?: InputMaybe<Scalars['String']>;
-  transactionsRoot_in?: InputMaybe<Array<Scalars['String']>>;
-  transactionsRoot_lt?: InputMaybe<Scalars['String']>;
-  transactionsRoot_lte?: InputMaybe<Scalars['String']>;
-  transactionsRoot_not?: InputMaybe<Scalars['String']>;
-  transactionsRoot_not_contains?: InputMaybe<Scalars['String']>;
-  transactionsRoot_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  transactionsRoot_not_ends_with?: InputMaybe<Scalars['String']>;
-  transactionsRoot_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  transactionsRoot_not_in?: InputMaybe<Array<Scalars['String']>>;
-  transactionsRoot_not_starts_with?: InputMaybe<Scalars['String']>;
-  transactionsRoot_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  transactionsRoot_starts_with?: InputMaybe<Scalars['String']>;
-  transactionsRoot_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  unclesHash?: InputMaybe<Scalars['String']>;
-  unclesHash_contains?: InputMaybe<Scalars['String']>;
-  unclesHash_contains_nocase?: InputMaybe<Scalars['String']>;
-  unclesHash_ends_with?: InputMaybe<Scalars['String']>;
-  unclesHash_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  unclesHash_gt?: InputMaybe<Scalars['String']>;
-  unclesHash_gte?: InputMaybe<Scalars['String']>;
-  unclesHash_in?: InputMaybe<Array<Scalars['String']>>;
-  unclesHash_lt?: InputMaybe<Scalars['String']>;
-  unclesHash_lte?: InputMaybe<Scalars['String']>;
-  unclesHash_not?: InputMaybe<Scalars['String']>;
-  unclesHash_not_contains?: InputMaybe<Scalars['String']>;
-  unclesHash_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  unclesHash_not_ends_with?: InputMaybe<Scalars['String']>;
-  unclesHash_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  unclesHash_not_in?: InputMaybe<Array<Scalars['String']>>;
-  unclesHash_not_starts_with?: InputMaybe<Scalars['String']>;
-  unclesHash_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  unclesHash_starts_with?: InputMaybe<Scalars['String']>;
-  unclesHash_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  parentHash?: InputMaybe<Scalars['String']['input']>;
+  parentHash_contains?: InputMaybe<Scalars['String']['input']>;
+  parentHash_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  parentHash_ends_with?: InputMaybe<Scalars['String']['input']>;
+  parentHash_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  parentHash_gt?: InputMaybe<Scalars['String']['input']>;
+  parentHash_gte?: InputMaybe<Scalars['String']['input']>;
+  parentHash_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  parentHash_lt?: InputMaybe<Scalars['String']['input']>;
+  parentHash_lte?: InputMaybe<Scalars['String']['input']>;
+  parentHash_not?: InputMaybe<Scalars['String']['input']>;
+  parentHash_not_contains?: InputMaybe<Scalars['String']['input']>;
+  parentHash_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  parentHash_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  parentHash_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  parentHash_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  parentHash_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  parentHash_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  parentHash_starts_with?: InputMaybe<Scalars['String']['input']>;
+  parentHash_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  receiptsRoot?: InputMaybe<Scalars['String']['input']>;
+  receiptsRoot_contains?: InputMaybe<Scalars['String']['input']>;
+  receiptsRoot_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  receiptsRoot_ends_with?: InputMaybe<Scalars['String']['input']>;
+  receiptsRoot_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  receiptsRoot_gt?: InputMaybe<Scalars['String']['input']>;
+  receiptsRoot_gte?: InputMaybe<Scalars['String']['input']>;
+  receiptsRoot_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  receiptsRoot_lt?: InputMaybe<Scalars['String']['input']>;
+  receiptsRoot_lte?: InputMaybe<Scalars['String']['input']>;
+  receiptsRoot_not?: InputMaybe<Scalars['String']['input']>;
+  receiptsRoot_not_contains?: InputMaybe<Scalars['String']['input']>;
+  receiptsRoot_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  receiptsRoot_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  receiptsRoot_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  receiptsRoot_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  receiptsRoot_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  receiptsRoot_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  receiptsRoot_starts_with?: InputMaybe<Scalars['String']['input']>;
+  receiptsRoot_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  size?: InputMaybe<Scalars['BigInt']['input']>;
+  size_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  size_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  size_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  size_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  size_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  size_not?: InputMaybe<Scalars['BigInt']['input']>;
+  size_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  stateRoot?: InputMaybe<Scalars['String']['input']>;
+  stateRoot_contains?: InputMaybe<Scalars['String']['input']>;
+  stateRoot_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  stateRoot_ends_with?: InputMaybe<Scalars['String']['input']>;
+  stateRoot_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  stateRoot_gt?: InputMaybe<Scalars['String']['input']>;
+  stateRoot_gte?: InputMaybe<Scalars['String']['input']>;
+  stateRoot_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  stateRoot_lt?: InputMaybe<Scalars['String']['input']>;
+  stateRoot_lte?: InputMaybe<Scalars['String']['input']>;
+  stateRoot_not?: InputMaybe<Scalars['String']['input']>;
+  stateRoot_not_contains?: InputMaybe<Scalars['String']['input']>;
+  stateRoot_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  stateRoot_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  stateRoot_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  stateRoot_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  stateRoot_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  stateRoot_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  stateRoot_starts_with?: InputMaybe<Scalars['String']['input']>;
+  stateRoot_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  timestamp?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  timestamp_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_not?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  totalDifficulty?: InputMaybe<Scalars['BigInt']['input']>;
+  totalDifficulty_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  totalDifficulty_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  totalDifficulty_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  totalDifficulty_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  totalDifficulty_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  totalDifficulty_not?: InputMaybe<Scalars['BigInt']['input']>;
+  totalDifficulty_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  transactionsRoot?: InputMaybe<Scalars['String']['input']>;
+  transactionsRoot_contains?: InputMaybe<Scalars['String']['input']>;
+  transactionsRoot_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  transactionsRoot_ends_with?: InputMaybe<Scalars['String']['input']>;
+  transactionsRoot_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  transactionsRoot_gt?: InputMaybe<Scalars['String']['input']>;
+  transactionsRoot_gte?: InputMaybe<Scalars['String']['input']>;
+  transactionsRoot_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  transactionsRoot_lt?: InputMaybe<Scalars['String']['input']>;
+  transactionsRoot_lte?: InputMaybe<Scalars['String']['input']>;
+  transactionsRoot_not?: InputMaybe<Scalars['String']['input']>;
+  transactionsRoot_not_contains?: InputMaybe<Scalars['String']['input']>;
+  transactionsRoot_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  transactionsRoot_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  transactionsRoot_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  transactionsRoot_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  transactionsRoot_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  transactionsRoot_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  transactionsRoot_starts_with?: InputMaybe<Scalars['String']['input']>;
+  transactionsRoot_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  unclesHash?: InputMaybe<Scalars['String']['input']>;
+  unclesHash_contains?: InputMaybe<Scalars['String']['input']>;
+  unclesHash_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  unclesHash_ends_with?: InputMaybe<Scalars['String']['input']>;
+  unclesHash_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  unclesHash_gt?: InputMaybe<Scalars['String']['input']>;
+  unclesHash_gte?: InputMaybe<Scalars['String']['input']>;
+  unclesHash_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  unclesHash_lt?: InputMaybe<Scalars['String']['input']>;
+  unclesHash_lte?: InputMaybe<Scalars['String']['input']>;
+  unclesHash_not?: InputMaybe<Scalars['String']['input']>;
+  unclesHash_not_contains?: InputMaybe<Scalars['String']['input']>;
+  unclesHash_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  unclesHash_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  unclesHash_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  unclesHash_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  unclesHash_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  unclesHash_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  unclesHash_starts_with?: InputMaybe<Scalars['String']['input']>;
+  unclesHash_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Block_Height = {
-  hash?: InputMaybe<Scalars['Bytes']>;
-  number?: InputMaybe<Scalars['Int']>;
-  number_gte?: InputMaybe<Scalars['Int']>;
+  hash?: InputMaybe<Scalars['Bytes']['input']>;
+  number?: InputMaybe<Scalars['Int']['input']>;
+  number_gte?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type Block_OrderBy =
@@ -277,17 +279,17 @@ export type Query_MetaArgs = {
 
 export type QueryBlockArgs = {
   block?: InputMaybe<Block_Height>;
-  id: Scalars['ID'];
+  id: Scalars['ID']['input'];
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryBlocksArgs = {
   block?: InputMaybe<Block_Height>;
-  first?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Block_OrderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<Block_Filter>;
 };
@@ -308,17 +310,17 @@ export type Subscription_MetaArgs = {
 
 export type SubscriptionBlockArgs = {
   block?: InputMaybe<Block_Height>;
-  id: Scalars['ID'];
+  id: Scalars['ID']['input'];
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionBlocksArgs = {
   block?: InputMaybe<Block_Height>;
-  first?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Block_OrderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<Block_Filter>;
 };
@@ -326,11 +328,11 @@ export type SubscriptionBlocksArgs = {
 export type _Block_ = {
   __typename?: '_Block_';
   /** The hash of the block */
-  hash?: Maybe<Scalars['Bytes']>;
+  hash?: Maybe<Scalars['Bytes']['output']>;
   /** The block number */
-  number: Scalars['Int'];
+  number: Scalars['Int']['output'];
   /** Integer representation of the timestamp stored in blocks for the chain */
-  timestamp?: Maybe<Scalars['Int']>;
+  timestamp?: Maybe<Scalars['Int']['output']>;
 };
 
 /** The type for the top-level _meta field */
@@ -345,9 +347,9 @@ export type _Meta_ = {
    */
   block: _Block_;
   /** The deployment ID */
-  deployment: Scalars['String'];
+  deployment: Scalars['String']['output'];
   /** If `true`, the subgraph encountered indexing errors at some past block */
-  hasIndexingErrors: Scalars['Boolean'];
+  hasIndexingErrors: Scalars['Boolean']['output'];
 };
 
 export type _SubgraphErrorPolicy_ =
@@ -358,8 +360,8 @@ export type _SubgraphErrorPolicy_ =
   | '%future added value';
 
 export type BlocksQueryVariables = Exact<{
-  timestamp_gte?: InputMaybe<Scalars['BigInt']>;
-  timestamp_lt?: InputMaybe<Scalars['BigInt']>;
+  timestamp_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  timestamp_lt?: InputMaybe<Scalars['BigInt']['input']>;
 }>;
 
 
@@ -386,7 +388,7 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationTy
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
-    Blocks(variables?: BlocksQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<BlocksQuery> {
+    Blocks(variables?: BlocksQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<BlocksQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<BlocksQuery>(BlocksDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Blocks', 'query');
     }
   };

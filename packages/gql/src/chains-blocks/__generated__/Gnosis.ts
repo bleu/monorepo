@@ -363,7 +363,6 @@ export type _SubgraphErrorPolicy_ =
 
 export type BlocksQueryVariables = Exact<{
   timestamp_gte?: InputMaybe<Scalars['BigInt']['input']>;
-  timestamp_lt?: InputMaybe<Scalars['BigInt']['input']>;
 }>;
 
 
@@ -371,12 +370,12 @@ export type BlocksQuery = { __typename?: 'Query', blocks: Array<{ __typename?: '
 
 
 export const BlocksDocument = gql`
-    query Blocks($timestamp_gte: BigInt, $timestamp_lt: BigInt) {
+    query Blocks($timestamp_gte: BigInt) {
   blocks(
     first: 1
     orderBy: number
     orderDirection: asc
-    where: {timestamp_gte: $timestamp_gte, timestamp_lt: $timestamp_lt}
+    where: {timestamp_gte: $timestamp_gte}
   ) {
     number
   }

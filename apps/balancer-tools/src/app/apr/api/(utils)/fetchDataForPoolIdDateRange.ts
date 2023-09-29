@@ -52,9 +52,10 @@ export async function fetchDataForPoolIdDateRange(
     dateToEpoch(startDateOrPoolAddedDate),
     dateToEpoch(endDate),
   );
-  const perDayData: { [key: string]: calculatePoolData[] } = {};
 
-  const fetchPromises = allDaysBetween.map(async (dayDate) => {
+  const perDayData: (number | calculatePoolData)[][] = [];
+
+  const fetchPromises = allDaysBetween.map(async (dayDate, dayIdx) => {
     const data = await retryAsyncOperation(
       async () => {
         const startAtTimestamp = Math.floor(dayDate - SECONDS_IN_DAY);
@@ -70,7 +71,7 @@ export async function fetchDataForPoolIdDateRange(
     );
 
     if (data) {
-      perDayData[formatDateToMMDDYYYY(new Date(dayDate * 1000))] = [data];
+      perDayData.push([dayIdx, data]);
     } else {
       // eslint-disable-next-line no-console
       console.error(
@@ -83,8 +84,20 @@ export async function fetchDataForPoolIdDateRange(
 
   await Promise.all(fetchPromises);
 
+  //TODO: solve this type
+  //@ts-ignore
+  const orderedPerDayData: { [k: string]: calculatePoolData[] } =
+    Object.fromEntries(
+      perDayData
+        .sort((a, b) => Number(a[0]) - Number(b[0]))
+        .map(([dayIdx, obj]) => [
+          formatDateToMMDDYYYY(new Date(allDaysBetween[Number(dayIdx)] * 1000)),
+          [obj],
+        ]),
+    );
+
   return {
-    perDay: perDayData,
-    average: computeAverages(perDayData),
+    perDay: orderedPerDayData,
+    average: computeAverages(orderedPerDayData),
   };
 }

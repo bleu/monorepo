@@ -66,62 +66,41 @@ async function fetchPoolAveragesForDateRange(
     to,
   });
 
-  if (res.poolSnapshots.length === 0) {
-    console.warn(
-      `No data found for pool ${poolId}(${network}) in range ${from} - ${to}`,
-    );
-    return [0, 0, "", []];
-  }
-
   const sortedSnapshots: PoolSnapshot[] = res.poolSnapshots.sort(
     (a, b) => a.timestamp - b.timestamp,
   );
 
-  if (
-    sortedSnapshots.length <= 1 &&
-    sortedSnapshots[sortedSnapshots.length - 1].timestamp <= to
-  ) {
-    const currentData = await pools.gql(network).Pool({ poolId });
-    if (currentData.pool) {
-      sortedSnapshots.push({
-        timestamp: dateToEpoch(new Date()),
-        liquidity: currentData.pool?.totalLiquidity,
-        swapVolume: currentData.pool?.totalSwapVolume,
-        pool: {
-          symbol: currentData.pool?.symbol,
-          tokens: currentData.pool?.tokens,
-        },
-      });
-      sortedSnapshots.sort((a, b) => a.timestamp - b.timestamp);
-    }
-  }
-
-  // If less than two snapshots, return empty data
-  if (sortedSnapshots.length < 2) {
+  if (sortedSnapshots.length == 0) {
     console.warn(
-      `Less than two snapshots for pool ${poolId}(${network}) in range ${from} - ${to}`,
+      "No return on poolSnapshots, trying to fetch in a few days before",
     );
+    const retryGQL = await pools.gql(network).poolSnapshotInRange({
+      poolId,
+      from: from - SECONDS_IN_DAY * 7,
+      to,
+    });
 
-    return [0, 0, "", []];
+    if (retryGQL.poolSnapshots.length === 0) {
+      console.error(
+        `No return on retrying poolSnapshots. ${poolId}(${network}) in range ${new Date(
+          from * 1000,
+        )} - ${new Date(to * 1000)}`,
+      );
+
+      // TODO: Throw error here and handle outside of it.
+      return [-1, -1, "", []];
+    }
+    sortedSnapshots.concat(
+      retryGQL.poolSnapshots
+        .sort((a, b) => a.timestamp - b.timestamp)
+        .slice(-1),
+    );
   }
 
   // Compute averages
-  const avgLiquidity =
-    sortedSnapshots.reduce(
-      (acc, snapshot) => acc + parseFloat(snapshot.liquidity),
-      0,
-    ) / sortedSnapshots.length;
+  const avgLiquidity = Number(sortedSnapshots[0].liquidity);
 
-  const avgVolume =
-    sortedSnapshots.reduce((sum, current, index) => {
-      if (index === 0) return 0;
-      return (
-        sum +
-        (parseFloat(current.swapVolume) -
-          parseFloat(sortedSnapshots[index - 1].swapVolume))
-      );
-    }, 0) /
-    (sortedSnapshots.length - 1);
+  const avgVolume = Number(sortedSnapshots[0].swapVolume);
 
   return [
     avgLiquidity,

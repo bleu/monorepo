@@ -85,7 +85,7 @@ async function fetchPoolAveragesForDateRange(
       );
 
       // TODO: Throw error here and handle outside of it.
-      return [-1, -1, "", []];
+      return [0, 0, "", []];
     }
     chosenData = retryGQL.poolSnapshots
       .sort((a, b) => a.timestamp - b.timestamp)

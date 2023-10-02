@@ -1,7 +1,7 @@
 import { Network } from "@bleu-balancer-tools/utils";
 
 import { getSdkWithHooks as arbitrumSdk } from "./__generated__/Arbitrum";
-import { getSdk as avalancheSdk } from "./__generated__/Avax";
+import { getSdk as avalancheSdk } from "./__generated__/Avalanche";
 import { getSdkWithHooks as baseSdk } from "./__generated__/Base";
 import { getSdkWithHooks as ethereumSdk } from "./__generated__/Ethereum";
 import { getSdkWithHooks as gnosisSdk } from "./__generated__/Gnosis";

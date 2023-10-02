@@ -1,5 +1,7 @@
-const MILLISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
-const MILLISECONDS_IN_A_WEEK = 7 * MILLISECONDS_IN_DAY;
+export const WEEKS_IN_YEAR = 52;
+export const SECONDS_IN_DAY = 86400;
+export const DAYS_IN_YEAR = 365;
+export const SECONDS_IN_YEAR = DAYS_IN_YEAR * SECONDS_IN_DAY;
 
 export function formatDateToMMDDYYYY(date: Date): string {
   const year = date.getUTCFullYear();
@@ -8,15 +10,18 @@ export function formatDateToMMDDYYYY(date: Date): string {
   return `${month}-${day}-${year}`;
 }
 
-export const generateDateRange = (startDate: Date, endDate: Date) => {
+export const generateDateRange = (
+  startTimestamp: number,
+  endTimestamp: number,
+) => {
   const dateRange = [];
 
   for (
-    let currentDate = startDate;
-    currentDate <= endDate;
-    currentDate = new Date(currentDate.getTime() + MILLISECONDS_IN_DAY)
+    let currentTimestamp = startTimestamp;
+    currentTimestamp <= endTimestamp;
+    currentTimestamp += SECONDS_IN_DAY
   ) {
-    dateRange.push(currentDate);
+    dateRange.push(currentTimestamp);
   }
 
   return dateRange;
@@ -25,16 +30,21 @@ export const generateDateRange = (startDate: Date, endDate: Date) => {
 /**
  * Calculates the number of days between two dates, inclusive of both start and end dates.
  */
-export const calculateDaysBetween = (startDate: number, endDate: number) =>
-  Math.floor((endDate - startDate) / MILLISECONDS_IN_DAY) + 1;
+export const calculateDaysBetween = (
+  startTimestamp: number,
+  endTimestamp: number,
+) => Math.floor((endTimestamp - startTimestamp) / SECONDS_IN_DAY) + 1;
 
 export function getWeeksBetweenDates(
   startDateTimestamp: number,
   endDateTimestamp: number,
 ) {
-  const timeDifferenceInMilliseconds = Math.abs(
+  const timeDifferenceInSeconds = Math.abs(
     startDateTimestamp - endDateTimestamp,
   );
   // Calculate the number of weeks apart
-  return Math.floor(timeDifferenceInMilliseconds / MILLISECONDS_IN_A_WEEK);
+  return Math.floor(timeDifferenceInSeconds / (7 * SECONDS_IN_DAY));
 }
+
+export const dateToEpoch = (date: Date): number =>
+  Math.floor(date.getTime() / 1000);

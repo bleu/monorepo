@@ -80,11 +80,11 @@ export const poolWherePoolType = gql`
 `;
 
 export const poolSnapshotInRange = gql`
-  query poolSnapshotInRange($poolId: String!, $from: Int!, $to: Int!) {
+  query poolSnapshotInRange($poolId: String!, $timestamp: [Int!]) {
     poolSnapshots(
-      where: { pool_in: [$poolId], timestamp_gte: $from, timestamp_lt: $to }
+      where: { pool_in: [$poolId], timestamp_in: $timestamp }
       orderBy: timestamp
-      orderDirection: desc
+      orderDirection: asc
     ) {
       pool {
         id
@@ -119,6 +119,8 @@ export const poolById = gql`
       symbol
       swapFee
       totalLiquidity
+      totalSwapVolume
+      totalSwapFee
       amp
       c
       s

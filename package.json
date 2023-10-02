@@ -47,6 +47,9 @@
   "pnpm": {
     "overrides": {
       "ipfs-http-client": "^60"
+    },
+    "patchedDependencies": {
+      "graphql-codegen-plugin-typescript-swr@0.8.5": "patches/graphql-codegen-plugin-typescript-swr@0.8.5.patch"
     }
   }
 }

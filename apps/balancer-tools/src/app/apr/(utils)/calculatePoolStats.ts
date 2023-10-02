@@ -1,22 +1,20 @@
 /* eslint-disable no-console */
-import { Address } from "@bleu-balancer-tools/utils";
 import * as Sentry from "@sentry/nextjs";
 
-import * as balEmissions from "#/lib/balancer/emissions";
 import { Pool } from "#/lib/balancer/gauges";
 import { pools } from "#/lib/gql/server";
 
 import {
   calculateDaysBetween,
-  getWeeksBetweenDates,
+  generateDateRange,
+  SECONDS_IN_DAY,
 } from "../api/(utils)/date";
 import { PoolStatsData, PoolTokens, tokenAPR } from "../api/route";
+import { calculateAPRForDateRange } from "./calculateApr";
 import {
   getBALPriceForDateRange,
   getTokenPriceByDate,
 } from "./getBALPriceForDateRange";
-import { getPoolRelativeWeight } from "./getRelativeWeight";
-import { getPoolTokensAprForDate as getPoolTokensAprForDateRange } from "./tokenYield";
 import { PoolTypeEnum } from "./types";
 
 export interface calculatePoolData extends Omit<PoolStatsData, "apr"> {
@@ -33,70 +31,58 @@ export interface calculatePoolData extends Omit<PoolStatsData, "apr"> {
   };
 }
 
-const WEEKS_IN_YEAR = 52;
-const SECONDS_IN_DAY = 86400;
-const SECONDS_IN_YEAR = 365 * SECONDS_IN_DAY;
-
 async function fetchPoolAveragesForDateRange(
   poolId: string,
   network: string,
   from: number,
   to: number,
 ): Promise<[number, number, string, { symbol: string; balance: string }[]]> {
+  // Determine if the initial date range is less than 2 days
+  const initialRangeInDays = calculateDaysBetween(from, to);
+  const extendedFrom = initialRangeInDays < 2 ? from - SECONDS_IN_DAY : from;
+
+  // Fetch snapshots within the (potentially extended) date range
   const res = await pools.gql(network).poolSnapshotInRange({
     poolId,
-    from,
-    to,
+    timestamp: [extendedFrom],
   });
 
-  res.poolSnapshots = res.poolSnapshots.sort(
-    (a, b) => a.timestamp - b.timestamp,
-  );
+  let chosenData = res.poolSnapshots[0];
 
-  if (res.poolSnapshots.length === 0) {
-    // Following Fabio's recomendation on #BAL-872
-    if (calculateDaysBetween(from, to) != 1) {
-      return [0, 0, "", []];
-    }
+  if (res.poolSnapshots.length == 0) {
     console.warn(
       "No return on poolSnapshots, trying to fetch in a few days before",
     );
     const retryGQL = await pools.gql(network).poolSnapshotInRange({
       poolId,
-      from: from - SECONDS_IN_DAY * 7,
-      to,
+      timestamp: generateDateRange(from - SECONDS_IN_DAY * 7, to),
     });
 
     if (retryGQL.poolSnapshots.length === 0) {
+      console.error(
+        `No return on retrying poolSnapshots. ${poolId}(${network}) in range ${new Date(
+          from * 1000,
+        )} - ${new Date(to * 1000)}`,
+      );
+
+      // TODO: Throw error here and handle outside of it.
       return [0, 0, "", []];
     }
-    res.poolSnapshots = retryGQL.poolSnapshots
+    chosenData = retryGQL.poolSnapshots
       .sort((a, b) => a.timestamp - b.timestamp)
-      .slice(-1);
+      .slice(-1)[0];
   }
 
-  const avgLiquidity =
-    res.poolSnapshots.reduce(
-      (acc, snapshot) => acc + parseFloat(snapshot.liquidity),
-      0,
-    ) / res.poolSnapshots.length;
+  // Compute averages
+  const avgLiquidity = Number(chosenData.liquidity);
 
-  const avgVolume =
-    res.poolSnapshots.reduce((sum, current, currentIndex) => {
-      if (currentIndex === 0) return 0;
-
-      const currentDayVolume = current.swapVolume;
-      const previousDayVolume = res.poolSnapshots[currentIndex - 1].swapVolume;
-
-      return sum + (currentDayVolume - previousDayVolume);
-    }, 0) /
-    (res.poolSnapshots.length - 1);
+  const avgVolume = Number(chosenData.swapVolume);
 
   return [
     avgLiquidity,
     avgVolume,
-    res.poolSnapshots[0].pool.symbol ?? "",
-    res.poolSnapshots[0].pool.tokens ?? [],
+    chosenData.pool.symbol ?? "",
+    chosenData.pool.tokens ?? [],
   ];
 }
 
@@ -109,13 +95,13 @@ async function calculateTokensStats(
   const tokensPrices = await Promise.all(
     poolTokenData.map(async (token) => {
       const tokenPrice = await getTokenPriceByDate(
-        endAtTimestamp * 1000,
+        endAtTimestamp,
         token.address,
         parseInt(poolNetwork),
       );
       if (tokenPrice === undefined) {
         console.warn(
-          `Failed fetching price for ${token.symbol}, with address ${token.address}`,
+          `Failed fetching price for ${token.symbol}(network:${poolNetwork},addr:${token.address}) at ${endAtTimestamp}`,
         );
       }
       //TODO: some work arround to get token price
@@ -156,13 +142,9 @@ export async function calculatePoolStats({
 }): Promise<calculatePoolData> {
   const pool = new Pool(poolId);
   const network = String(pool.network ?? 1);
-  const [
-    balPriceUSD,
-    [tvl, volume, symbol, tokenBalance],
-    votingShare,
-    [feeAPR, collectedFeesUSD],
-    tokensAPR,
-  ] = await Promise.all([
+  const results = await Promise.allSettled([
+    // TODO: what if the pool doesn't exist during that range?
+    pools.gql(network).Pool({ poolId }),
     getBALPriceForDateRange(startAtTimestamp, endAtTimestamp),
     fetchPoolAveragesForDateRange(
       poolId,
@@ -170,16 +152,30 @@ export async function calculatePoolStats({
       startAtTimestamp,
       endAtTimestamp,
     ),
-    getPoolRelativeWeight(poolId, endAtTimestamp),
-    getFeeAprForDateRange(poolId, network, startAtTimestamp, endAtTimestamp),
-    //TODO: on #BAL-795 use another strategy for cache using the poolId
-    getPoolTokensAprForDateRange(
-      network,
-      poolId as Address,
-      startAtTimestamp,
-      endAtTimestamp,
-    ),
   ]);
+
+  if (results[0].status === "fulfilled" && !results[0].value?.pool) {
+    throw new Error(
+      `No pool with ID ${poolId}(${network}) in range ${startAtTimestamp} - ${endAtTimestamp}`,
+    );
+  }
+
+  if (results.some((p) => p.status === "rejected")) {
+    const errors = results
+      .filter((p) => p.status === "rejected")
+      // @ts-ignore
+      .map((p) => p.reason);
+    throw new Error(
+      `Error fetching data for pool ${poolId}(${network}) in range ${startAtTimestamp} - ${endAtTimestamp}: ${errors}, function ${errors[0]?.stack}}`,
+    );
+  }
+
+  const [
+    _,
+    balPriceUSD,
+    [tvl, volume, symbol, tokenBalance],
+    // @ts-ignore
+  ] = results.filter((p) => p.status === "fulfilled").map((p) => p.value);
 
   const tokens = await calculateTokensStats(
     endAtTimestamp,
@@ -188,14 +184,13 @@ export async function calculatePoolStats({
     tokenBalance,
   );
 
-  const apr = calculateAPRForDateRange(
+  const { apr, votingShare, collectedFeesUSD } = await calculateAPRForDateRange(
     startAtTimestamp,
     endAtTimestamp,
-    votingShare,
     tvl,
     balPriceUSD,
-    feeAPR,
-    tokensAPR,
+    poolId,
+    network,
   );
 
   if (apr.total === null || apr.breakdown.veBAL === null) {
@@ -211,115 +206,11 @@ export async function calculatePoolStats({
     balPriceUSD,
     tvl,
     volume,
-    votingShare: votingShare,
+    votingShare,
     symbol,
     network,
     collectedFeesUSD,
     tokens: tokens as PoolTokens[],
     type: pool.poolType as keyof typeof PoolTypeEnum,
   };
-}
-
-function calculateAPRForDateRange(
-  startAtTimestamp: number,
-  endAtTimestamp: number,
-  votingShare: number,
-  tvl: number,
-  balPriceUSD: number,
-  feeAPR: number,
-  tokensAPR: tokenAPR[],
-) {
-  const weeksApart = getWeeksBetweenDates(startAtTimestamp, endAtTimestamp);
-  let emissions;
-  if (weeksApart >= 1) {
-    const weekArray = Array.from({ length: weeksApart }, (_, index) => {
-      const weekStartDate = new Date(startAtTimestamp * 1000);
-      weekStartDate.setDate(weekStartDate.getDate() + index * 7);
-      const weekEndDate = new Date(weekStartDate);
-      weekEndDate.setDate(weekStartDate.getDate() + 6);
-      return { weekNumber: index + 1, weekStartDate, weekEndDate };
-    });
-
-    // Calculate the total balance emissions and count of weeks
-    const { totalBalanceEmissions, weekCount } = weekArray.reduce(
-      (acc, week) => {
-        const weeklyBalanceEmissions = balEmissions.weekly(
-          week.weekStartDate.getTime() / 1000,
-        );
-        return {
-          totalBalanceEmissions:
-            acc.totalBalanceEmissions + weeklyBalanceEmissions,
-          weekCount: acc.weekCount + 1,
-        };
-      },
-      { totalBalanceEmissions: 0, weekCount: 0 },
-    );
-
-    // TODO: #BAL-876 - Fix calculation for big changes on year change
-    emissions = totalBalanceEmissions / weekCount;
-  } else {
-    emissions = balEmissions.weekly(endAtTimestamp);
-  }
-
-  const vebalAPR =
-    balPriceUSD && tvl && votingShare
-      ? ((WEEKS_IN_YEAR * (emissions * votingShare * balPriceUSD)) / tvl) * 100
-      : null;
-
-  const tokenAPRTotal = tokensAPR.reduce(
-    (acc, token) => acc + (token?.yield ?? 0),
-    0,
-  );
-
-  return {
-    total: (vebalAPR || 0) + feeAPR + tokenAPRTotal,
-    breakdown: {
-      veBAL: vebalAPR,
-      swapFee: feeAPR,
-      tokens: {
-        total: tokenAPRTotal,
-        breakdown: [
-          ...tokensAPR.map((token) => ({
-            address: token.address,
-            symbol: token.symbol,
-            yield: token.yield,
-          })),
-        ],
-      },
-    },
-  };
-}
-
-async function getFeeAprForDateRange(
-  poolId: string,
-  network: string,
-  from: number,
-  to: number,
-): Promise<[number, number]> {
-  const lastdayBeforeStartRound = from - SECONDS_IN_DAY;
-  const lastdayOfRound = to;
-
-  const res = await pools.gql(network).poolSnapshotInRange({
-    poolId,
-    from: lastdayBeforeStartRound,
-    to: lastdayOfRound,
-  });
-
-  const startRoundData = res.poolSnapshots[res.poolSnapshots.length - 1];
-
-  const endRoundData = res.poolSnapshots[0];
-
-  if (!startRoundData || !endRoundData) {
-    return [0, 0];
-  }
-
-  const feeDiff = endRoundData?.swapFees - startRoundData?.swapFees;
-
-  const feeApr = 10_000 * (feeDiff / endRoundData?.liquidity);
-  // reference for 10_000 https://github.com/balancer/balancer-sdk/blob/f4879f06289c6f5f9766ead1835f4f4b096ed7dd/balancer-js/src/modules/pools/apr/apr.ts#L85
-  const annualizedFeeApr =
-    feeApr *
-    (SECONDS_IN_YEAR / (endRoundData?.timestamp - startRoundData?.timestamp));
-
-  return [isNaN(annualizedFeeApr) ? 0 : annualizedFeeApr / 100, feeDiff];
 }

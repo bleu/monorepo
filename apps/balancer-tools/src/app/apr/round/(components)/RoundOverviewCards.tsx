@@ -5,6 +5,7 @@ import OverviewCards, {
   getDatesDetails,
 } from "../../(components)/OverviewCards";
 import { getBALPriceForDateRange } from "../../(utils)/getBALPriceForDateRange";
+import { dateToEpoch } from "../../api/(utils)/date";
 
 export default async function RoundOverviewCards({
   startAt,
@@ -14,10 +15,7 @@ export default async function RoundOverviewCards({
   endAt: Date;
 }) {
   const balInUSD = (
-    await getBALPriceForDateRange(
-      startAt.getTime() / 1000,
-      endAt.getTime() / 1000,
-    )
+    await getBALPriceForDateRange(dateToEpoch(startAt), dateToEpoch(endAt))
   ).toLocaleString("en-US", {
     style: "currency",
     currency: "USD",
@@ -26,7 +24,7 @@ export default async function RoundOverviewCards({
     { title: "BAL Price", content: balInUSD },
     {
       title: "BAL Emissions",
-      content: formatNumber(balEmissions.weekly(endAt.getTime() / 1000)),
+      content: formatNumber(balEmissions.weekly(dateToEpoch(endAt))),
     },
     ...getDatesDetails(startAt, endAt),
   ];

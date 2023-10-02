@@ -5,7 +5,7 @@ import ChartSkelton from "./(components)/(skeleton)/ChartSkelton";
 import KpisSkeleton from "./(components)/(skeleton)/KpisSkeleton";
 import TableSkeleton from "./(components)/(skeleton)/TableSkeleton";
 import getFilteredDateApiUrl from "./(utils)/getFilteredApiUrl";
-import { formatDateToMMDDYYYY } from "./api/(utils)/date";
+import { formatDateToMMDDYYYY, SECONDS_IN_DAY } from "./api/(utils)/date";
 import { QueryParamsPagesSchema } from "./api/(utils)/validate";
 import Breadcrumb from "./round/(components)/Breadcrumb";
 import PoolTableWrapper from "./round/(components)/PoolTableWrapper";
@@ -26,11 +26,11 @@ export default function Page({ searchParams }: { searchParams: SearchParams }) {
   const parsedParams = QueryParamsPagesSchema.safeParse(searchParams);
   if (!parsedParams.success) {
     const currentDateFormated = formatDateToMMDDYYYY(new Date());
-    const OneWeekAgoDateFormated = formatDateToMMDDYYYY(
-      new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
+    const threeDaysAgoDateFormated = formatDateToMMDDYYYY(
+      new Date(new Date().getTime() - 3 * SECONDS_IN_DAY * 1000),
     );
     return redirect(
-      `/apr/?startAt=${OneWeekAgoDateFormated}&endAt=${currentDateFormated}&`,
+      `/apr/?startAt=${threeDaysAgoDateFormated}&endAt=${currentDateFormated}&`,
     );
   }
   const { startAt: startAtDate, endAt: endAtDate } = parsedParams.data;

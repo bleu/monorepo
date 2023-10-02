@@ -13,11 +13,11 @@
  * https://github.com/balancer-labs/balancer-v2-monorepo/blob/master/pkg/liquidity-mining/contracts/BalancerTokenAdmin.sol
  */
 
-import { dateToEpoch } from "#/app/apr/api/(utils)/date";
+import { SECONDS_IN_YEAR, dateToEpoch } from "#/app/apr/api/(utils)/date";
 
 export const INITIAL_RATE = 145000;
 export const START_EPOCH_TIME = 1648465251;
-const RATE_REDUCTION_TIME = 365 * 86400;
+const RATE_REDUCTION_TIME = SECONDS_IN_YEAR;
 const RATE_REDUCTION_COEFFICIENT = 2 ** (1 / 4);
 
 /**

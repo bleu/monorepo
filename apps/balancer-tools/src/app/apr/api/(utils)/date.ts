@@ -1,3 +1,4 @@
+export const WEEKS_IN_YEAR = 52;
 export const SECONDS_IN_DAY = 86400;
 export const DAYS_IN_YEAR = 365;
 export const SECONDS_IN_YEAR = DAYS_IN_YEAR * SECONDS_IN_DAY;

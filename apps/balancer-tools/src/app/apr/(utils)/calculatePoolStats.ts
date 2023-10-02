@@ -66,7 +66,7 @@ async function fetchPoolAveragesForDateRange(
     timestamp: [extendedFrom],
   });
 
-  let chosenData = res.poolSnapshots[0]
+  let chosenData = res.poolSnapshots[0];
 
   if (res.poolSnapshots.length == 0) {
     console.warn(
@@ -87,7 +87,9 @@ async function fetchPoolAveragesForDateRange(
       // TODO: Throw error here and handle outside of it.
       return [-1, -1, "", []];
     }
-    chosenData = retryGQL.poolSnapshots.sort((a, b) => a.timestamp - b.timestamp).slice(-1)[0]
+    chosenData = retryGQL.poolSnapshots
+      .sort((a, b) => a.timestamp - b.timestamp)
+      .slice(-1)[0];
   }
 
   // Compute averages

@@ -1,5 +1,6 @@
 import invariant from "tiny-invariant";
 
+import { dateToEpoch } from "#/app/apr/api/(utils)/date";
 import { fetcher } from "#/utils/fetcher";
 
 type HistoricalPriceResponse = {
@@ -32,8 +33,8 @@ export class DefiLlamaAPI {
     );
     invariant(date <= new Date(), "date must be in the past");
 
-    const url = `${this.baseURL}/prices/historical/${Math.floor(
-      date.getTime() / 1000,
+    const url = `${this.baseURL}/prices/historical/${dateToEpoch(
+      date,
     )}/${coins.join(",")}?searchWidth=${searchWidth}`;
 
     return await fetcher<HistoricalPriceResponse>(url, {

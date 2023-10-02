@@ -4,6 +4,7 @@ import { zeroAddress } from "viem";
 import { withCache } from "#/lib/cache";
 import { pools } from "#/lib/gql/server";
 
+import { SECONDS_IN_DAY, SECONDS_IN_YEAR } from "./../api/(utils)/date";
 import { ChainName, publicClients } from "./chainsPublicClients";
 import getBlockNumberByTimestamp from "./getBlockNumberByTimestamp";
 import { manualPoolsRateProvider } from "./poolsRateProvider";
@@ -19,13 +20,7 @@ const rateProviderAbi = [
   },
 ];
 
-const SECONDS_IN_DAY = 86400;
-const DAYS_IN_YEAR = 365;
-const SECONDS_IN_YEAR = DAYS_IN_YEAR * SECONDS_IN_DAY;
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-// export const getPoolTokensAprForDate = withCache(
-export async function getPoolTokensAprForDate(
+export async function getPoolTokensAprForDateRange(
   chain: string,
   poolId: Address,
   startAt: number,
@@ -93,7 +88,7 @@ async function getAPRFromRateProviderInterval(
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(
-      `Error fetching rate for ${rateProviderAddress} between ${timeStart} and ${timeEnd} chain ${chainName}`,
+      `Error fetching rate for ${rateProviderAddress} between ${timeStart} and ${timeEnd} chain ${chainName} - ${e}`,
     );
     return 0;
   }
@@ -127,12 +122,6 @@ const getPoolTokensRateProviders = withCache(
       );
 
       if (poolRateProvider === undefined) {
-        // eslint-disable-next-line no-console
-        console.error(
-          `Pool ${poolId} from ${networkFor(
-            chain,
-          )} not found in manualPoolsRateProvider`,
-        );
         return [];
       }
 
@@ -158,23 +147,12 @@ async function getIntervalRates(
   chainName: ChainName,
 ) {
   const [blockStart, blockEnd] = await Promise.all([
+    getBlockNumberByTimestamp(parseInt(networkIdFor(chainName)), timeStart),
     getBlockNumberByTimestamp(
       parseInt(networkIdFor(chainName)),
-      new Date(timeStart),
-    ),
-    getBlockNumberByTimestamp(
-      parseInt(networkIdFor(chainName)),
-      new Date(timeEnd + SECONDS_IN_DAY),
+      timeEnd + SECONDS_IN_DAY,
     ),
   ]);
-
-  if (blockStart === undefined || blockEnd === undefined) {
-    // eslint-disable-next-line no-console
-    console.error(
-      `No blocks found between ${timeStart} and ${timeEnd} on ${chainName}`,
-    );
-    throw new Error("No blocks found");
-  }
 
   const [endRate, startRate] = await Promise.all([
     getRateAtBlock(chainName, rateProviderAddress, blockEnd),
@@ -193,7 +171,7 @@ const getRateAtBlock = withCache(async function getRateAtBlockFn(
     address: rateProviderAddress,
     abi: rateProviderAbi,
     functionName: "getRate",
-    blockNumber: blockNumber ? BigInt(blockNumber) : undefined,
+    ...(blockNumber ? { blockNumber: BigInt(blockNumber) } : {}),
   } as const;
 
   let rate;
@@ -202,7 +180,7 @@ const getRateAtBlock = withCache(async function getRateAtBlockFn(
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(
-      `Error fetching rate for ${rateProviderAddress} at block ${blockNumber} on ${chainName}`,
+      `Error fetching rate for ${rateProviderAddress} at block ${blockNumber} on ${chainName}, ${e}`,
     );
     rate = -1;
   }

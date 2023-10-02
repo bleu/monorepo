@@ -175,7 +175,7 @@ export function MoreFiltersButton() {
             <div className="p-2 flex overflow-y-scroll rounded border-[1px] border-blue6 bg-blue3 scrollbar-thin scrollbar-track-blue2 scrollbar-thumb-slate12 w-60">
               <Accordion.Root className="w-full" type="single" collapsible>
                 {filters.map(({ name, label, options }) => (
-                  <AccordionItem value={label}>
+                  <AccordionItem value={label} key={label}>
                     <AccordionTrigger>{label}</AccordionTrigger>
                     <AccordionContent>
                       <div className="ml-2 flex flex-col">

@@ -243,7 +243,7 @@ function TableRow({
         tdClassNames="w-11/12 sticky left-0"
       >
         {tokens.map((token) => (
-          <Badge color="blue" classNames="w-fit">
+          <Badge color="blue" classNames="w-fit" key={token.address}>
             {token.symbol}
             {PoolTypeEnum[poolType] == PoolTypeEnum.WEIGHTED ? (
               <span className="text-xs ml-1 text-slate-400">

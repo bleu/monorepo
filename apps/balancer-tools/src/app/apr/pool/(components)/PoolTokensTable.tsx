@@ -56,7 +56,10 @@ export default function PoolTokensTable({
         </Table.HeaderRow>
         <Table.Body>
           {poolTokensStats.map((token) => (
-            <Table.BodyRow classNames="hover:bg-blue4 hover:cursor-pointer duration-500">
+            <Table.BodyRow
+              classNames="hover:bg-blue4 hover:cursor-pointer duration-500"
+              key={token.address}
+            >
               <Table.BodyCellLink
                 href={tokenUrl(token.address)}
                 tdClassNames="w-max sticky left-0 from-blue3 bg-gradient-to-r from-70% sm:bg-transparent"

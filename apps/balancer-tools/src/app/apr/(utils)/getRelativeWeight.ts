@@ -5,6 +5,8 @@ import { abi } from "#/abis/gaugesController";
 import { Pool } from "#/lib/balancer/gauges";
 import { withCache } from "#/lib/cache";
 
+import { dateToEpoch } from "../api/(utils)/date";
+
 export const publicClient = createPublicClient({
   chain: mainnet,
   transport: http(),
@@ -15,7 +17,7 @@ const GAUGES_CONTROLLER_MAINNET_ADDRESS =
 export const getPoolRelativeWeight = withCache(
   async function getPoolRelativeWeightFn(
     poolId: string,
-    time: number = Date.now() / 1000,
+    time: number = dateToEpoch(new Date()),
   ) {
     const gaugeAddress = new Pool(poolId).gauge?.address;
     if (!gaugeAddress) throw new Error(`No gauge found for pool ${poolId}`);
@@ -31,7 +33,7 @@ export const getPoolRelativeWeight = withCache(
       return Number(data) / 1e18;
     } catch (error) {
       throw new Error(
-        `Error fetching relative weight for pool ${poolId}, ${time}, ${error}`,
+        `Error fetching relative weight for pool ${poolId}, ${time} - ${error}`,
       );
     }
   },

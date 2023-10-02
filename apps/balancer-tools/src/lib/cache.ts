@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import "server-only";
 
 import { kv } from "@vercel/kv";
@@ -8,156 +7,125 @@ import util from "util";
 
 import { BASE_URL } from "#/app/apr/(utils)/types";
 
-export type ComputeFn<T, Args extends Array<unknown>> = (
-  ...args: Args
-) => Promise<T>;
+export type ComputeFn<
+  T = unknown,
+  Args extends Array<unknown> = Array<unknown>,
+> = (...args: Args) => Promise<T>;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const hashFunction = (fn: ComputeFn<any, any>) => {
+const hashCache: Record<string, string> = {};
+
+const hashFunction = <
+  T = unknown,
+  Args extends Array<unknown> = Array<unknown>,
+>(
+  fn: ComputeFn<T, Args>,
+): string => {
+  const fnStr = fn.toString();
+  if (hashCache[fnStr]) return hashCache[fnStr];
   const hash = crypto.createHash("sha256");
-  hash.update(fn.toString());
-  return hash.digest("hex");
+  hash.update(fnStr);
+  const hashValue = hash.digest("hex");
+  hashCache[fnStr] = hashValue;
+  return hashValue;
 };
 
 const memoryCache: Record<string, unknown> = {};
-
-const writeFile = util.promisify(fs.writeFile);
-const readFile = util.promisify(fs.readFile);
-const exists = util.promisify(fs.exists);
-const mkdir = util.promisify(fs.mkdir);
+const promisifiedFs = {
+  writeFile: util.promisify(fs.writeFile),
+  readFile: util.promisify(fs.readFile),
+  exists: util.promisify(fs.exists),
+  mkdir: util.promisify(fs.mkdir),
+};
 
 const ensureDirectoryExistence = async (filePath: string) => {
+  if (!(await promisifiedFs.exists(filePath)))
+    await promisifiedFs.mkdir(filePath, { recursive: true });
+};
+const handleCacheError = (error: unknown, action: string) => {
+  const errorMsg = error instanceof Error ? error : new Error(String(error));
+  // eslint-disable-next-line no-console
+  console.error(`Cache error during ${action}: ${errorMsg}`);
+};
+
+const transformCacheKey = (key: string) => key.replaceAll(":", "_");
+const cacheFilePath = (key: string) =>
+  `./.cache/${transformCacheKey(key)}.json`;
+
+const readAndParseFile = async <T>(key: string): Promise<T | null> => {
   try {
-    if (!(await exists(filePath))) {
-      await mkdir(filePath, { recursive: true });
+    const filePath = cacheFilePath(key);
+    if ((await promisifiedFs.exists(filePath)) && key) {
+      const content = await promisifiedFs.readFile(filePath, "utf-8");
+      return JSON.parse(content) as T;
     }
   } catch (error) {
-    console.error(`Error ensuring directory existence: ${error}`);
+    handleCacheError(error, "read");
+  }
+  return null;
+};
+
+const writeToFileCache = async (key: string, data: unknown) => {
+  await ensureDirectoryExistence("./.cache");
+  try {
+    const filePath = cacheFilePath(key);
+    if (data) {
+      await promisifiedFs.writeFile(filePath, JSON.stringify(data));
+    }
+  } catch (error) {
+    handleCacheError(error, "write");
   }
 };
 
-export const FILE_CACHE = {
-  async set(cacheKey: string, data?: Record<string, unknown>) {
-    await ensureDirectoryExistence("./.cache");
-    try {
-      await writeFile(
-        `./.cache/${cacheKey.replaceAll(":", "_")}.json`,
-        JSON.stringify(data),
-      );
-    } catch (error) {
-      console.error(`File cache error while writing: ${error}`);
-      throw new Error("Could not write to cache file.");
-    }
-  },
+const serializeArgs = (args: Array<unknown>) =>
+  args.map((arg) => (arg ? JSON.stringify(arg) : "")).join("-");
+const getFromMemoryCache = <T>(key: string): T | null => memoryCache[key] as T;
 
-  async get<T>(cacheKey: string): Promise<T | null> {
-    await ensureDirectoryExistence("./.cache");
+const getFromFileCache = async <T>(key: string): Promise<T | null> => {
+  if (process.env.NODE_ENV === "development")
+    return await readAndParseFile<T>(key);
+  return null;
+};
+
+const getFromKVCache = async <T>(key: string): Promise<T | null> => {
+  if (process.env.NODE_ENV === "production") {
     try {
-      if (await exists(`./.cache/${cacheKey.replaceAll(":", "_")}.json`)) {
-        const content = await readFile(
-          `./.cache/${cacheKey.replaceAll(":", "_")}.json`,
-          "utf-8",
-        );
-        return JSON.parse(content) as T;
+      return await kv.get<T>(key);
+    } catch (error) {
+      handleCacheError(error, "KV read");
+    }
+  }
+  return null;
+};
+
+const updateAllCaches = async <T>(key: string, data: T): Promise<void> => {
+  if (data !== null) {
+    memoryCache[key] = data;
+    if (process.env.NODE_ENV === "development")
+      await writeToFileCache(key, data);
+    if (process.env.NODE_ENV === "production") {
+      try {
+        await kv.set(key, data);
+      } catch (error) {
+        handleCacheError(error, "KV write");
       }
-    } catch (error) {
-      console.error(`File cache error while reading: ${error}`);
     }
-    return null;
-  },
+  }
 };
 
-export const MEMORY_CACHE = {
-  set(cacheKey: string, data?: Record<string, unknown>) {
-    memoryCache[cacheKey] = data;
-  },
-
-  get<T>(cacheKey: string) {
-    return memoryCache[cacheKey] as T;
-  },
-};
-
-export const KV = {
-  async set(cacheKey: string, data?: Record<string, unknown>) {
-    await kv.set(cacheKey, data);
-  },
-
-  async get<T>(cacheKey: string) {
-    const cached = await kv.get<T>(cacheKey);
-
-    if (cached) {
-      console.debug(`KV cache hit cache key: ${cacheKey}`);
-      return cached;
-    }
-  },
-};
-
-export const getDataFromCacheOrCompute = async <T>(
-  key: false | string | null,
+const getDataFromCacheOrCompute = async <T>(
+  key: string,
   computeFn: () => Promise<T>,
 ): Promise<T> => {
-  if (!key) {
-    return computeFn();
-  }
-
   const cacheKey = `cache:${new URL(BASE_URL).hostname}:${key}`;
-
-  if (MEMORY_CACHE.get(cacheKey)) {
-    console.debug(`Memory cache hit for ${cacheKey}`);
-    return MEMORY_CACHE.get<T>(cacheKey);
-  }
-
-  if (process.env.NODE_ENV === "development") {
-    try {
-      const fileCached = await FILE_CACHE.get<T>(cacheKey);
-      if (fileCached) {
-        console.debug(`File cache hit for ${cacheKey}`);
-        return fileCached;
-      }
-    } catch (error) {
-      console.error(`File cache error: ${error}`);
-    }
-    console.debug(`Cache miss for ${cacheKey}`);
-    const computedData = await computeFn();
-    if (computedData) {
-      try {
-        FILE_CACHE.set(cacheKey, computedData);
-      } catch (error) {
-        console.error(`File cache error: ${error}`);
-      }
-    }
-    return computedData;
-  }
-  try {
-    const cached = await KV.get<T>(cacheKey);
-
-    if (cached) {
-      MEMORY_CACHE.set(cacheKey, cached);
-      return cached;
-    }
-  } catch (error) {
-    console.error(`KV cache error: ${error}`);
-  }
-
-  console.debug(`Cache miss for ${cacheKey}`);
+  const memoryCached = getFromMemoryCache<T>(cacheKey);
+  if (memoryCached) return memoryCached;
+  const fileCached = await getFromFileCache<T>(cacheKey);
+  if (fileCached) return fileCached;
+  const kvCached = await getFromKVCache<T>(cacheKey);
+  if (kvCached) return kvCached;
   const computedData = await computeFn();
-
-  if (computedData) {
-    MEMORY_CACHE.set(cacheKey, computedData);
-    try {
-      KV.set(cacheKey, computedData);
-    } catch (error) {
-      console.error(`KV cache error: ${error}`);
-    }
-  }
-
+  await updateAllCaches(cacheKey, computedData);
   return computedData;
-};
-
-const serializeArgs = (args: Array<unknown>) => {
-  return args
-    .map((arg) => (arg ? JSON.stringify(arg).replace(/[^a-zA-Z0-9]/g, "") : ""))
-    .join("-");
 };
 
 export const withCache = <T, Args extends Array<unknown>>(

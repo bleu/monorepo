@@ -117,8 +117,8 @@ importers:
         specifier: ^3.3.3
         version: 3.3.3
       downshift:
-        specifier: ^8.2.1
-        version: 8.2.1(react@18.2.0)
+        specifier: ^8.2.2
+        version: 8.2.2(react@18.2.0)
       graphql-request:
         specifier: 5.1.0
         version: 5.1.0(graphql@16.8.1)
@@ -8377,8 +8377,8 @@ packages:
     resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
     engines: {node: '>=12'}
 
-  /downshift@8.2.1(react@18.2.0):
-    resolution: {integrity: sha512-mHQUQMWCliXkoWvhxlRyEyKcdlbs8rZjZ+nSqGi8dKIv26gWtbQ8yVTPuYSHT7X8ff+FkEcskT9ktLuNKNoEHA==}
+  /downshift@8.2.2(react@18.2.0):
+    resolution: {integrity: sha512-UmJHlNTzmFN3i427Hh9f1OXMnkhgSB/J+urC9ywabvwuftm0nB0/Utsb89OtDq+2UqyScQV4Ro7EM2PEV80N5w==}
     peerDependencies:
       react: '>=16.12.0'
     dependencies:

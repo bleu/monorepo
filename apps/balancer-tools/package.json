@@ -46,7 +46,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "copy-to-clipboard": "^3.3.3",
-    "downshift": "^8.2.1",
+    "downshift": "^8.2.2",
     "graphql-request": "5.1.0",
     "lodash": "^4.17.21",
     "lodash.merge": "^4.6.2",

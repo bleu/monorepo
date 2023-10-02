@@ -2,7 +2,7 @@
 
 import * as Sentry from "@sentry/nextjs";
 // @ts-ignore: TS2307
-import pLimit from 'p-limit';
+import pLimit from "p-limit";
 
 import POOLS_WITHOUT_GAUGES from "#/data/pools-without-gauge.json";
 import { fetcher } from "#/utils/fetcher";
@@ -28,15 +28,14 @@ export async function fetchDataForDateRange(
       let gaugesData;
       try {
         // Use limit to control concurrency here
-        gaugesData = await limit(() =>
-        {
-          console.log('>> Returned for pool', pool.id)
+        gaugesData = await limit(() => {
+          console.log(">> Returned for pool", pool.id);
           return fetcher<PoolStatsResults>(
             `${BASE_URL}/apr/api?startAt=${formatDateToMMDDYYYY(
               startDate,
             )}&endAt=${formatDateToMMDDYYYY(endDate)}&poolId=${pool.id}`,
-          )}
-        );
+          );
+        });
       } catch (error) {
         console.log(error);
         console.log(

@@ -80,9 +80,9 @@ export const poolWherePoolType = gql`
 `;
 
 export const poolSnapshotInRange = gql`
-  query poolSnapshotInRange($poolId: String!, $from: Int!, $to: Int!) {
+  query poolSnapshotInRange($poolId: String!, $timestamp: [Int!]) {
     poolSnapshots(
-      where: { pool_in: [$poolId], timestamp_gte: $from, timestamp_lte: $to }
+      where: { pool_in: [$poolId], timestamp_in: $timestamp }
       orderBy: timestamp
       orderDirection: asc
     ) {

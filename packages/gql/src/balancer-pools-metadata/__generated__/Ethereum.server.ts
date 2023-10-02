@@ -1,34 +1,32 @@
 import { GraphQLClient } from 'graphql-request';
-import { GraphQLClientRequestHeaders } from 'graphql-request/build/cjs/types';
+import * as Dom from 'graphql-request/dist/types.dom';
 import gql from 'graphql-tag';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
-export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string; }
-  String: { input: string; output: string; }
-  Boolean: { input: boolean; output: boolean; }
-  Int: { input: number; output: number; }
-  Float: { input: number; output: number; }
-  BigDecimal: { input: any; output: any; }
-  BigInt: { input: any; output: any; }
-  Bytes: { input: any; output: any; }
-  Int8: { input: any; output: any; }
+  ID: string;
+  String: string;
+  Boolean: boolean;
+  Int: number;
+  Float: number;
+  BigDecimal: any;
+  BigInt: any;
+  Bytes: any;
+  Int8: any;
 };
 
 export type BlockChangedFilter = {
-  number_gte: Scalars['Int']['input'];
+  number_gte: Scalars['Int'];
 };
 
 export type Block_Height = {
-  hash?: InputMaybe<Scalars['Bytes']['input']>;
-  number?: InputMaybe<Scalars['Int']['input']>;
-  number_gte?: InputMaybe<Scalars['Int']['input']>;
+  hash?: InputMaybe<Scalars['Bytes']>;
+  number?: InputMaybe<Scalars['Int']>;
+  number_gte?: InputMaybe<Scalars['Int']>;
 };
 
 /** Defines the order direction, either ascending or descending */
@@ -40,134 +38,134 @@ export type OrderDirection =
 export type Pool = {
   __typename?: 'Pool';
   /**  Address of the Pool  */
-  address: Scalars['Bytes']['output'];
+  address: Scalars['Bytes'];
   /**  Pool's poolId  */
-  id: Scalars['ID']['output'];
+  id: Scalars['ID'];
   /**  The sender of the latest PoolMetadataUpdate event  */
-  latestUpdatedBy: Scalars['Bytes']['output'];
+  latestUpdatedBy: Scalars['Bytes'];
   /**  IPFS CID of the latest PoolMetadataUpdate  */
-  metadataCID: Scalars['String']['output'];
+  metadataCID: Scalars['String'];
   /**  List of the Pool's metadata updates  */
   metadataUpdates?: Maybe<Array<PoolMetadataUpdate>>;
 };
 
 
 export type PoolMetadataUpdatesArgs = {
-  first?: InputMaybe<Scalars['Int']['input']>;
+  first?: InputMaybe<Scalars['Int']>;
   orderBy?: InputMaybe<PoolMetadataUpdate_OrderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
+  skip?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<PoolMetadataUpdate_Filter>;
 };
 
 export type PoolMetadataUpdate = {
   __typename?: 'PoolMetadataUpdate';
   /**  Blocknumber of this PoolMetadataUpdate  */
-  blockNumber: Scalars['BigInt']['output'];
+  blockNumber: Scalars['BigInt'];
   /**  Timestamp of this block  */
-  blockTimestamp: Scalars['BigInt']['output'];
+  blockTimestamp: Scalars['BigInt'];
   /**  PoolMetadataUpdated contract address  */
-  id: Scalars['ID']['output'];
+  id: Scalars['ID'];
   /**  IPFS CID of the PoolMetadataUpdate  */
-  metadataCID: Scalars['String']['output'];
+  metadataCID: Scalars['String'];
   /**  Reference to Pool entity  */
   pool: Pool;
   /**  The address of who sent the update transaction  */
-  sender: Scalars['Bytes']['output'];
+  sender: Scalars['Bytes'];
   /**  Address of the PoolMetadataUpdate transaction  */
-  transactionHash: Scalars['Bytes']['output'];
+  transactionHash: Scalars['Bytes'];
 };
 
 export type PoolMetadataUpdate_Filter = {
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<PoolMetadataUpdate_Filter>>>;
-  blockNumber?: InputMaybe<Scalars['BigInt']['input']>;
-  blockNumber_gt?: InputMaybe<Scalars['BigInt']['input']>;
-  blockNumber_gte?: InputMaybe<Scalars['BigInt']['input']>;
-  blockNumber_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
-  blockNumber_lt?: InputMaybe<Scalars['BigInt']['input']>;
-  blockNumber_lte?: InputMaybe<Scalars['BigInt']['input']>;
-  blockNumber_not?: InputMaybe<Scalars['BigInt']['input']>;
-  blockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
-  blockTimestamp?: InputMaybe<Scalars['BigInt']['input']>;
-  blockTimestamp_gt?: InputMaybe<Scalars['BigInt']['input']>;
-  blockTimestamp_gte?: InputMaybe<Scalars['BigInt']['input']>;
-  blockTimestamp_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
-  blockTimestamp_lt?: InputMaybe<Scalars['BigInt']['input']>;
-  blockTimestamp_lte?: InputMaybe<Scalars['BigInt']['input']>;
-  blockTimestamp_not?: InputMaybe<Scalars['BigInt']['input']>;
-  blockTimestamp_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
-  id?: InputMaybe<Scalars['ID']['input']>;
-  id_gt?: InputMaybe<Scalars['ID']['input']>;
-  id_gte?: InputMaybe<Scalars['ID']['input']>;
-  id_in?: InputMaybe<Array<Scalars['ID']['input']>>;
-  id_lt?: InputMaybe<Scalars['ID']['input']>;
-  id_lte?: InputMaybe<Scalars['ID']['input']>;
-  id_not?: InputMaybe<Scalars['ID']['input']>;
-  id_not_in?: InputMaybe<Array<Scalars['ID']['input']>>;
-  metadataCID?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_contains?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_contains_nocase?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_ends_with?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_gt?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_gte?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_in?: InputMaybe<Array<Scalars['String']['input']>>;
-  metadataCID_lt?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_lte?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_not?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_not_contains?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_not_ends_with?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
-  metadataCID_not_starts_with?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_starts_with?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  blockNumber?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_gt?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_gte?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  blockNumber_lt?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_lte?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_not?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  blockTimestamp?: InputMaybe<Scalars['BigInt']>;
+  blockTimestamp_gt?: InputMaybe<Scalars['BigInt']>;
+  blockTimestamp_gte?: InputMaybe<Scalars['BigInt']>;
+  blockTimestamp_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  blockTimestamp_lt?: InputMaybe<Scalars['BigInt']>;
+  blockTimestamp_lte?: InputMaybe<Scalars['BigInt']>;
+  blockTimestamp_not?: InputMaybe<Scalars['BigInt']>;
+  blockTimestamp_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  id?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  metadataCID?: InputMaybe<Scalars['String']>;
+  metadataCID_contains?: InputMaybe<Scalars['String']>;
+  metadataCID_contains_nocase?: InputMaybe<Scalars['String']>;
+  metadataCID_ends_with?: InputMaybe<Scalars['String']>;
+  metadataCID_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  metadataCID_gt?: InputMaybe<Scalars['String']>;
+  metadataCID_gte?: InputMaybe<Scalars['String']>;
+  metadataCID_in?: InputMaybe<Array<Scalars['String']>>;
+  metadataCID_lt?: InputMaybe<Scalars['String']>;
+  metadataCID_lte?: InputMaybe<Scalars['String']>;
+  metadataCID_not?: InputMaybe<Scalars['String']>;
+  metadataCID_not_contains?: InputMaybe<Scalars['String']>;
+  metadataCID_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  metadataCID_not_ends_with?: InputMaybe<Scalars['String']>;
+  metadataCID_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  metadataCID_not_in?: InputMaybe<Array<Scalars['String']>>;
+  metadataCID_not_starts_with?: InputMaybe<Scalars['String']>;
+  metadataCID_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  metadataCID_starts_with?: InputMaybe<Scalars['String']>;
+  metadataCID_starts_with_nocase?: InputMaybe<Scalars['String']>;
   or?: InputMaybe<Array<InputMaybe<PoolMetadataUpdate_Filter>>>;
-  pool?: InputMaybe<Scalars['String']['input']>;
+  pool?: InputMaybe<Scalars['String']>;
   pool_?: InputMaybe<Pool_Filter>;
-  pool_contains?: InputMaybe<Scalars['String']['input']>;
-  pool_contains_nocase?: InputMaybe<Scalars['String']['input']>;
-  pool_ends_with?: InputMaybe<Scalars['String']['input']>;
-  pool_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  pool_gt?: InputMaybe<Scalars['String']['input']>;
-  pool_gte?: InputMaybe<Scalars['String']['input']>;
-  pool_in?: InputMaybe<Array<Scalars['String']['input']>>;
-  pool_lt?: InputMaybe<Scalars['String']['input']>;
-  pool_lte?: InputMaybe<Scalars['String']['input']>;
-  pool_not?: InputMaybe<Scalars['String']['input']>;
-  pool_not_contains?: InputMaybe<Scalars['String']['input']>;
-  pool_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
-  pool_not_ends_with?: InputMaybe<Scalars['String']['input']>;
-  pool_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  pool_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
-  pool_not_starts_with?: InputMaybe<Scalars['String']['input']>;
-  pool_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  pool_starts_with?: InputMaybe<Scalars['String']['input']>;
-  pool_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  sender?: InputMaybe<Scalars['Bytes']['input']>;
-  sender_contains?: InputMaybe<Scalars['Bytes']['input']>;
-  sender_gt?: InputMaybe<Scalars['Bytes']['input']>;
-  sender_gte?: InputMaybe<Scalars['Bytes']['input']>;
-  sender_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
-  sender_lt?: InputMaybe<Scalars['Bytes']['input']>;
-  sender_lte?: InputMaybe<Scalars['Bytes']['input']>;
-  sender_not?: InputMaybe<Scalars['Bytes']['input']>;
-  sender_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
-  sender_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
-  transactionHash?: InputMaybe<Scalars['Bytes']['input']>;
-  transactionHash_contains?: InputMaybe<Scalars['Bytes']['input']>;
-  transactionHash_gt?: InputMaybe<Scalars['Bytes']['input']>;
-  transactionHash_gte?: InputMaybe<Scalars['Bytes']['input']>;
-  transactionHash_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
-  transactionHash_lt?: InputMaybe<Scalars['Bytes']['input']>;
-  transactionHash_lte?: InputMaybe<Scalars['Bytes']['input']>;
-  transactionHash_not?: InputMaybe<Scalars['Bytes']['input']>;
-  transactionHash_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
-  transactionHash_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  pool_contains?: InputMaybe<Scalars['String']>;
+  pool_contains_nocase?: InputMaybe<Scalars['String']>;
+  pool_ends_with?: InputMaybe<Scalars['String']>;
+  pool_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  pool_gt?: InputMaybe<Scalars['String']>;
+  pool_gte?: InputMaybe<Scalars['String']>;
+  pool_in?: InputMaybe<Array<Scalars['String']>>;
+  pool_lt?: InputMaybe<Scalars['String']>;
+  pool_lte?: InputMaybe<Scalars['String']>;
+  pool_not?: InputMaybe<Scalars['String']>;
+  pool_not_contains?: InputMaybe<Scalars['String']>;
+  pool_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  pool_not_ends_with?: InputMaybe<Scalars['String']>;
+  pool_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  pool_not_in?: InputMaybe<Array<Scalars['String']>>;
+  pool_not_starts_with?: InputMaybe<Scalars['String']>;
+  pool_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  pool_starts_with?: InputMaybe<Scalars['String']>;
+  pool_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  sender?: InputMaybe<Scalars['Bytes']>;
+  sender_contains?: InputMaybe<Scalars['Bytes']>;
+  sender_gt?: InputMaybe<Scalars['Bytes']>;
+  sender_gte?: InputMaybe<Scalars['Bytes']>;
+  sender_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  sender_lt?: InputMaybe<Scalars['Bytes']>;
+  sender_lte?: InputMaybe<Scalars['Bytes']>;
+  sender_not?: InputMaybe<Scalars['Bytes']>;
+  sender_not_contains?: InputMaybe<Scalars['Bytes']>;
+  sender_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  transactionHash?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_contains?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_gt?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_gte?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  transactionHash_lt?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_lte?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_not?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_not_contains?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
 };
 
 export type PoolMetadataUpdate_OrderBy =
@@ -187,55 +185,55 @@ export type PoolMetadataUpdate_OrderBy =
 export type Pool_Filter = {
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
-  address?: InputMaybe<Scalars['Bytes']['input']>;
-  address_contains?: InputMaybe<Scalars['Bytes']['input']>;
-  address_gt?: InputMaybe<Scalars['Bytes']['input']>;
-  address_gte?: InputMaybe<Scalars['Bytes']['input']>;
-  address_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
-  address_lt?: InputMaybe<Scalars['Bytes']['input']>;
-  address_lte?: InputMaybe<Scalars['Bytes']['input']>;
-  address_not?: InputMaybe<Scalars['Bytes']['input']>;
-  address_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
-  address_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  address?: InputMaybe<Scalars['Bytes']>;
+  address_contains?: InputMaybe<Scalars['Bytes']>;
+  address_gt?: InputMaybe<Scalars['Bytes']>;
+  address_gte?: InputMaybe<Scalars['Bytes']>;
+  address_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  address_lt?: InputMaybe<Scalars['Bytes']>;
+  address_lte?: InputMaybe<Scalars['Bytes']>;
+  address_not?: InputMaybe<Scalars['Bytes']>;
+  address_not_contains?: InputMaybe<Scalars['Bytes']>;
+  address_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
   and?: InputMaybe<Array<InputMaybe<Pool_Filter>>>;
-  id?: InputMaybe<Scalars['ID']['input']>;
-  id_gt?: InputMaybe<Scalars['ID']['input']>;
-  id_gte?: InputMaybe<Scalars['ID']['input']>;
-  id_in?: InputMaybe<Array<Scalars['ID']['input']>>;
-  id_lt?: InputMaybe<Scalars['ID']['input']>;
-  id_lte?: InputMaybe<Scalars['ID']['input']>;
-  id_not?: InputMaybe<Scalars['ID']['input']>;
-  id_not_in?: InputMaybe<Array<Scalars['ID']['input']>>;
-  latestUpdatedBy?: InputMaybe<Scalars['Bytes']['input']>;
-  latestUpdatedBy_contains?: InputMaybe<Scalars['Bytes']['input']>;
-  latestUpdatedBy_gt?: InputMaybe<Scalars['Bytes']['input']>;
-  latestUpdatedBy_gte?: InputMaybe<Scalars['Bytes']['input']>;
-  latestUpdatedBy_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
-  latestUpdatedBy_lt?: InputMaybe<Scalars['Bytes']['input']>;
-  latestUpdatedBy_lte?: InputMaybe<Scalars['Bytes']['input']>;
-  latestUpdatedBy_not?: InputMaybe<Scalars['Bytes']['input']>;
-  latestUpdatedBy_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
-  latestUpdatedBy_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
-  metadataCID?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_contains?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_contains_nocase?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_ends_with?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_gt?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_gte?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_in?: InputMaybe<Array<Scalars['String']['input']>>;
-  metadataCID_lt?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_lte?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_not?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_not_contains?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_not_ends_with?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
-  metadataCID_not_starts_with?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_starts_with?: InputMaybe<Scalars['String']['input']>;
-  metadataCID_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  latestUpdatedBy?: InputMaybe<Scalars['Bytes']>;
+  latestUpdatedBy_contains?: InputMaybe<Scalars['Bytes']>;
+  latestUpdatedBy_gt?: InputMaybe<Scalars['Bytes']>;
+  latestUpdatedBy_gte?: InputMaybe<Scalars['Bytes']>;
+  latestUpdatedBy_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  latestUpdatedBy_lt?: InputMaybe<Scalars['Bytes']>;
+  latestUpdatedBy_lte?: InputMaybe<Scalars['Bytes']>;
+  latestUpdatedBy_not?: InputMaybe<Scalars['Bytes']>;
+  latestUpdatedBy_not_contains?: InputMaybe<Scalars['Bytes']>;
+  latestUpdatedBy_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  metadataCID?: InputMaybe<Scalars['String']>;
+  metadataCID_contains?: InputMaybe<Scalars['String']>;
+  metadataCID_contains_nocase?: InputMaybe<Scalars['String']>;
+  metadataCID_ends_with?: InputMaybe<Scalars['String']>;
+  metadataCID_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  metadataCID_gt?: InputMaybe<Scalars['String']>;
+  metadataCID_gte?: InputMaybe<Scalars['String']>;
+  metadataCID_in?: InputMaybe<Array<Scalars['String']>>;
+  metadataCID_lt?: InputMaybe<Scalars['String']>;
+  metadataCID_lte?: InputMaybe<Scalars['String']>;
+  metadataCID_not?: InputMaybe<Scalars['String']>;
+  metadataCID_not_contains?: InputMaybe<Scalars['String']>;
+  metadataCID_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  metadataCID_not_ends_with?: InputMaybe<Scalars['String']>;
+  metadataCID_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  metadataCID_not_in?: InputMaybe<Array<Scalars['String']>>;
+  metadataCID_not_starts_with?: InputMaybe<Scalars['String']>;
+  metadataCID_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  metadataCID_starts_with?: InputMaybe<Scalars['String']>;
+  metadataCID_starts_with_nocase?: InputMaybe<Scalars['String']>;
   metadataUpdates_?: InputMaybe<PoolMetadataUpdate_Filter>;
   or?: InputMaybe<Array<InputMaybe<Pool_Filter>>>;
 };
@@ -266,24 +264,24 @@ export type Query_MetaArgs = {
 
 export type QueryPoolArgs = {
   block?: InputMaybe<Block_Height>;
-  id: Scalars['ID']['input'];
+  id: Scalars['ID'];
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryPoolMetadataUpdateArgs = {
   block?: InputMaybe<Block_Height>;
-  id: Scalars['ID']['input'];
+  id: Scalars['ID'];
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryPoolMetadataUpdatesArgs = {
   block?: InputMaybe<Block_Height>;
-  first?: InputMaybe<Scalars['Int']['input']>;
+  first?: InputMaybe<Scalars['Int']>;
   orderBy?: InputMaybe<PoolMetadataUpdate_OrderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
+  skip?: InputMaybe<Scalars['Int']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<PoolMetadataUpdate_Filter>;
 };
@@ -291,10 +289,10 @@ export type QueryPoolMetadataUpdatesArgs = {
 
 export type QueryPoolsArgs = {
   block?: InputMaybe<Block_Height>;
-  first?: InputMaybe<Scalars['Int']['input']>;
+  first?: InputMaybe<Scalars['Int']>;
   orderBy?: InputMaybe<Pool_OrderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
+  skip?: InputMaybe<Scalars['Int']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<Pool_Filter>;
 };
@@ -317,24 +315,24 @@ export type Subscription_MetaArgs = {
 
 export type SubscriptionPoolArgs = {
   block?: InputMaybe<Block_Height>;
-  id: Scalars['ID']['input'];
+  id: Scalars['ID'];
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionPoolMetadataUpdateArgs = {
   block?: InputMaybe<Block_Height>;
-  id: Scalars['ID']['input'];
+  id: Scalars['ID'];
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionPoolMetadataUpdatesArgs = {
   block?: InputMaybe<Block_Height>;
-  first?: InputMaybe<Scalars['Int']['input']>;
+  first?: InputMaybe<Scalars['Int']>;
   orderBy?: InputMaybe<PoolMetadataUpdate_OrderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
+  skip?: InputMaybe<Scalars['Int']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<PoolMetadataUpdate_Filter>;
 };
@@ -342,10 +340,10 @@ export type SubscriptionPoolMetadataUpdatesArgs = {
 
 export type SubscriptionPoolsArgs = {
   block?: InputMaybe<Block_Height>;
-  first?: InputMaybe<Scalars['Int']['input']>;
+  first?: InputMaybe<Scalars['Int']>;
   orderBy?: InputMaybe<Pool_OrderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
+  skip?: InputMaybe<Scalars['Int']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<Pool_Filter>;
 };
@@ -353,11 +351,11 @@ export type SubscriptionPoolsArgs = {
 export type _Block_ = {
   __typename?: '_Block_';
   /** The hash of the block */
-  hash?: Maybe<Scalars['Bytes']['output']>;
+  hash?: Maybe<Scalars['Bytes']>;
   /** The block number */
-  number: Scalars['Int']['output'];
+  number: Scalars['Int'];
   /** Integer representation of the timestamp stored in blocks for the chain */
-  timestamp?: Maybe<Scalars['Int']['output']>;
+  timestamp?: Maybe<Scalars['Int']>;
 };
 
 /** The type for the top-level _meta field */
@@ -372,9 +370,9 @@ export type _Meta_ = {
    */
   block: _Block_;
   /** The deployment ID */
-  deployment: Scalars['String']['output'];
+  deployment: Scalars['String'];
   /** If `true`, the subgraph encountered indexing errors at some past block */
-  hasIndexingErrors: Scalars['Boolean']['output'];
+  hasIndexingErrors: Scalars['Boolean'];
 };
 
 export type _SubgraphErrorPolicy_ =
@@ -385,7 +383,7 @@ export type _SubgraphErrorPolicy_ =
   | '%future added value';
 
 export type MetadataPoolQueryVariables = Exact<{
-  poolId?: InputMaybe<Scalars['ID']['input']>;
+  poolId?: InputMaybe<Scalars['ID']>;
 }>;
 
 
@@ -409,7 +407,7 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationTy
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
-    MetadataPool(variables?: MetadataPoolQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<MetadataPoolQuery> {
+    MetadataPool(variables?: MetadataPoolQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<MetadataPoolQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<MetadataPoolQuery>(MetadataPoolDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'MetadataPool', 'query');
     }
   };

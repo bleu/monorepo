@@ -9,6 +9,7 @@ import { pools } from "#/lib/gql/server";
 import {
   calculateDaysBetween,
   dateToEpoch,
+  generateDateRange,
   getWeeksBetweenDates,
 } from "../api/(utils)/date";
 import { PoolStatsData, PoolTokens, tokenAPR } from "../api/route";
@@ -62,22 +63,18 @@ async function fetchPoolAveragesForDateRange(
   // Fetch snapshots within the (potentially extended) date range
   const res = await pools.gql(network).poolSnapshotInRange({
     poolId,
-    from: extendedFrom,
-    to,
+    timestamp: [extendedFrom],
   });
 
-  const sortedSnapshots: PoolSnapshot[] = res.poolSnapshots.sort(
-    (a, b) => a.timestamp - b.timestamp,
-  );
+  let chosenData = res.poolSnapshots[0]
 
-  if (sortedSnapshots.length == 0) {
+  if (res.poolSnapshots.length == 0) {
     console.warn(
       "No return on poolSnapshots, trying to fetch in a few days before",
     );
     const retryGQL = await pools.gql(network).poolSnapshotInRange({
       poolId,
-      from: from - SECONDS_IN_DAY * 7,
-      to,
+      timestamp: generateDateRange(from - SECONDS_IN_DAY * 7, to),
     });
 
     if (retryGQL.poolSnapshots.length === 0) {
@@ -90,23 +87,19 @@ async function fetchPoolAveragesForDateRange(
       // TODO: Throw error here and handle outside of it.
       return [-1, -1, "", []];
     }
-    sortedSnapshots.concat(
-      retryGQL.poolSnapshots
-        .sort((a, b) => a.timestamp - b.timestamp)
-        .slice(-1),
-    );
+    chosenData = retryGQL.poolSnapshots.sort((a, b) => a.timestamp - b.timestamp).slice(-1)[0]
   }
 
   // Compute averages
-  const avgLiquidity = Number(sortedSnapshots[0].liquidity);
+  const avgLiquidity = Number(chosenData.liquidity);
 
-  const avgVolume = Number(sortedSnapshots[0].swapVolume);
+  const avgVolume = Number(chosenData.swapVolume);
 
   return [
     avgLiquidity,
     avgVolume,
-    sortedSnapshots[0].pool.symbol ?? "",
-    sortedSnapshots[0].pool.tokens ?? [],
+    chosenData.pool.symbol ?? "",
+    chosenData.pool.tokens ?? [],
   ];
 }
 
@@ -335,8 +328,7 @@ async function getFeeAprForDateRange(
   // Fetch snapshots within the (potentially extended) date range
   const res = await pools.gql(network).poolSnapshotInRange({
     poolId,
-    from: extendedFrom,
-    to,
+    timestamp: generateDateRange(extendedFrom, to),
   });
 
   if (res.poolSnapshots.length === 0) {

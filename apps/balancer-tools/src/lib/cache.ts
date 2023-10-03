@@ -47,7 +47,7 @@ const handleCacheError = (error: unknown, action: string) => {
   console.error(`Cache error during ${action}: ${errorMsg}`);
 };
 
-const transformCacheKey = (key: string) => key.replaceAll(":", "_");
+const transformCacheKey = (key: string) => key.replace(/[<>:"/\\|?*]/g, "_");
 const cacheFilePath = (key: string) =>
   `./.cache/${transformCacheKey(key)}.json`;
 

@@ -1,7 +1,8 @@
 import { Network, networksOnBalancer } from "@bleu-balancer-tools/utils";
 import { z } from "zod";
 
-import { POOLS_WITH_LIVE_GAUGES } from "#/lib/balancer/gauges";
+import POOLS_WITHOUT_GAUGES from "#/data/pools-without-gauge.json";
+import POOLS_WITH_LIVE_GAUGES from "#/data/voting-gauges.json";
 
 import { PoolTypeEnum } from "../../(utils)/types";
 import { Order } from "./sort";
@@ -12,7 +13,13 @@ const minDate = new Date("2020-01-01");
 const isPositiveOrNull = (value?: number | null) => !value || value >= 0;
 const isSupportedNetwork = (value?: string | null) =>
   !value ||
-  Object.values(networksOnBalancer).includes(value.toLowerCase() as Network);
+  value
+    .split(",")
+    .some((val) =>
+      Object.values(networksOnBalancer).includes(
+        val.toLowerCase().trim() as Network,
+      ),
+    );
 
 const parseFloatOrNull = (str?: string | null) =>
   str ? parseFloat(str) : null;
@@ -83,6 +90,9 @@ export const QueryParamsSchema = z
         !poolId ||
         POOLS_WITH_LIVE_GAUGES.some(
           (g) => g.id.toLowerCase() === poolId?.toLowerCase(),
+        ) ||
+        POOLS_WITHOUT_GAUGES.some(
+          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
         ),
       { message: "Pool with ID not found" },
     ),
@@ -138,6 +148,9 @@ export const QueryParamsPagesSchema = z
         !poolId ||
         POOLS_WITH_LIVE_GAUGES.some(
           (g) => g.id.toLowerCase() === poolId?.toLowerCase(),
+        ) ||
+        POOLS_WITHOUT_GAUGES.some(
+          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
         ),
       { message: "Pool with ID not found" },
     ),

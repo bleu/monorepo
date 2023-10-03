@@ -44,7 +44,11 @@ type ConditionTypes = {
 };
 
 const conditions: ConditionTypes = {
-  network: (pool, value) => pool.network === networkIdFor(value as string),
+  network: (pool, value) =>
+    (value?.split(",") || []).some(
+      (filterNetwork) =>
+        pool.network === networkIdFor(filterNetwork?.toLowerCase() as string),
+    ),
   minApr: (pool, value) => pool.apr.total >= value!,
   maxApr: (pool, value) => pool.apr.total <= value!,
   minVotingShare: (pool, value) => pool.votingShare * 100 >= value!,

@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { POOLS_WITH_LIVE_GAUGES } from "#/lib/balancer/gauges";
+import POOLS_WITH_LIVE_GAUGES from "#/data/voting-gauges.json";
 
 import { MultiSelectDropdown } from "../../(components)/MultiSelectDropdown";
 

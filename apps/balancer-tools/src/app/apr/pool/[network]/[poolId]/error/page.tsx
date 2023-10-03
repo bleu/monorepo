@@ -23,7 +23,7 @@ export default function PoolError({
   }
 
   const { startAt: startAtDate, endAt: endAtDate } = parsedParams.data;
-  const addedTimestamp = new Pool(poolId).gauge.addedTimestamp;
+  const addedTimestamp = new Pool(poolId).createdAt;
 
   if (!addedTimestamp) {
     return ErrorTemplate({

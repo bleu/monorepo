@@ -36,7 +36,7 @@ export default async function Page({
   if (!startAtDate || !endAtDate) {
     return redirect("/apr/");
   }
-  if (startAtDate < new Date(new Pool(poolId).gauge.addedTimestamp * 1000)) {
+  if (startAtDate < new Date(new Pool(poolId).createdAt * 1000)) {
     const paramsObject = Object.fromEntries(
       Object.entries(searchParams).map(
         ([key, value]) => [key, String(value)] as [string, string],

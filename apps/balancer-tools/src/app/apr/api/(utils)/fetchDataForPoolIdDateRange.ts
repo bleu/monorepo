@@ -16,7 +16,7 @@ const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
 
 const getStartDateOrPoolAddedDate = (startDate: Date, poolId: string) => {
-  const poolAddedDate = new Date(new Pool(poolId).gauge.addedTimestamp * 1000);
+  const poolAddedDate = new Date(new Pool(poolId).createdAt * 1000);
   return startDate < poolAddedDate ? poolAddedDate : startDate;
 };
 

@@ -1,10 +1,7 @@
 import { NetworkChainId } from "@bleu-balancer-tools/utils";
 
+import POOLS_WITHOUT_GAUGES from "#/data/pools-without-gauge.json";
 import POOLS_WITH_GAUGES from "#/data/voting-gauges.json";
-
-export const POOLS_WITH_LIVE_GAUGES = POOLS_WITH_GAUGES.filter(
-  (pool) => !pool.gauge.isKilled && pool.gauge.addedTimestamp,
-);
 
 const GAUGE_CACHE: { [address: string]: Gauge } = {};
 const POOL_CACHE: { [id: string]: Pool } = {};
@@ -15,7 +12,7 @@ class Token {
   weight: number | null;
   symbol: string;
 
-  constructor(data: (typeof POOLS_WITH_LIVE_GAUGES)[0]["tokens"][0]) {
+  constructor(data: (typeof POOLS_WITH_GAUGES)[0]["tokens"][0]) {
     this.logoSrc = data.logoURI;
     this.address = data.address;
     this.weight = Number(data.weight);
@@ -39,32 +36,44 @@ export class Pool {
   poolType!: string;
   symbol!: string;
   tokens!: Token[];
-  gauge!: Gauge;
+  gauge?: Gauge | null;
+  createdAt!: number;
 
-  constructor(id: string, associatedGauge?: Gauge) {
+  constructor(id: string) {
     if (POOL_CACHE[id]) {
       return POOL_CACHE[id];
     }
 
-    const data = POOLS_WITH_LIVE_GAUGES.find(
-      (g) => g.id.toLowerCase() === id.toLowerCase(),
+    let data;
+    data = POOLS_WITH_GAUGES.find(
+      (g: { id: string }) => g.id.toLowerCase() === id.toLowerCase(),
     );
+    if (data) {
+      this.createdAt = data.gauge.addedTimestamp;
+      this.gauge = new Gauge(data.gauge.address);
+    } else {
+      data = POOLS_WITHOUT_GAUGES.find(
+        (g: { id: string }) => g.id.toLowerCase() === id.toLowerCase(),
+      );
+      if (data) {
+        this.createdAt = data.addedTimestamp;
+        this.gauge = null;
+      }
+    }
 
     if (!data) {
       throw new Error(`Pool with ID ${id} not found`);
     }
 
-    this.id = data.id;
-    this.address = data.address;
+    this.poolType = data.type;
     this.network =
       UPPER_CASE_TO_NETWORK[data.chain as keyof typeof UPPER_CASE_TO_NETWORK];
-    this.poolType = data.type;
+    this.id = data.id;
+    this.address = data.address;
     this.symbol = data.symbol;
     this.tokens = data.tokens.map(
-      (t: (typeof POOLS_WITH_LIVE_GAUGES)[0]["tokens"][0]) => new Token(t),
+      (t) => new Token(t as (typeof POOLS_WITH_GAUGES)[0]["tokens"][0]),
     );
-    this.gauge = associatedGauge || new Gauge(data.gauge.address);
-
     POOL_CACHE[this.id] = this;
   }
 }
@@ -72,9 +81,7 @@ export class Pool {
 export class Gauge {
   address!: string;
   isKilled?: boolean;
-  addedTimestamp!: number;
   relativeWeightCap!: string | null;
-  pool!: Pool;
 
   constructor(address: string) {
     // Return cached instance if it exists
@@ -82,7 +89,7 @@ export class Gauge {
       return GAUGE_CACHE[address];
     }
 
-    const data = POOLS_WITH_LIVE_GAUGES.find(
+    const data = POOLS_WITH_GAUGES.find(
       (g) => g.gauge.address.toLowerCase() === address.toLowerCase(),
     );
 
@@ -94,10 +101,7 @@ export class Gauge {
     }
     this.address = data.gauge.address;
     this.isKilled = data.gauge.isKilled;
-    this.addedTimestamp = data.gauge.addedTimestamp;
     this.relativeWeightCap = data.gauge.relativeWeightCap;
-    this.pool = new Pool(data.id, this);
-
     GAUGE_CACHE[this.address] = this;
   }
 }

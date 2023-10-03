@@ -1,13 +1,13 @@
 "use client";
 
-import { formatDate, networkFor } from "@bleu-balancer-tools/utils";
+import { formatDate } from "@bleu-balancer-tools/utils";
 import { greenDarkA } from "@radix-ui/colors";
 import { useRouter } from "next/navigation";
 import { Data, PlotMouseEvent, PlotType } from "plotly.js";
 
 import Plot from "#/components/Plot";
 
-import { formatDateToMMDDYYYY } from "../../api/(utils)/date";
+import { generateRedirectUrlWithParams } from "../../(utils)/getFilteredApiUrl";
 import { PoolStatsResults } from "../../api/route";
 
 export default function TopPoolsChart({
@@ -65,11 +65,12 @@ export default function TopPoolsChart({
   function onClickHandler(event: PlotMouseEvent) {
     const clickedRoundData =
       ApiResult.average.poolAverage[event.points[0].pointIndex];
-    const poolRedirectURL = `/apr/pool/${networkFor(
-      clickedRoundData.network,
-    )}/${clickedRoundData.poolId}/?startAt=${formatDateToMMDDYYYY(
+    const poolRedirectURL = generateRedirectUrlWithParams(
       startAt,
-    )}&endAt=${formatDateToMMDDYYYY(endAt)}`;
+      endAt,
+      null,
+      clickedRoundData.poolId,
+    );
     router.push(poolRedirectURL);
   }
 

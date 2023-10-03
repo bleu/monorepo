@@ -109,12 +109,12 @@ export default function Breadcrumb() {
           {poolId && (
             <BreadcrumbItem
               classNames="hidden sm:block"
-              link={`/apr/pool/${network}/${poolId}`}
+              link={`/apr/pool/${network}/${poolId}?${searchParams.toString()}`}
             >
               {selectedPool?.symbol ?? poolId}
             </BreadcrumbItem>
           )}
-          <BreadcrumbItem link={`/apr/?startAt=${startAt}&endAt=${endAt}&`}>
+          <BreadcrumbItem link={`/apr?${searchParams.toString()}`}>
             <div className="flex items-center gap-x-2">
               {startAt} - {endAt}
             </div>

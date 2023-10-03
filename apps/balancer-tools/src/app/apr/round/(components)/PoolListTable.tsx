@@ -27,9 +27,11 @@ import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 
 import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
-import getFilteredDateApiUrl from "../../(utils)/getFilteredApiUrl";
+import {
+  generateApiUrlWithParams,
+  generateRedirectUrlWithParams,
+} from "../../(utils)/getFilteredApiUrl";
 import { PoolTypeEnum } from "../../(utils)/types";
-import { formatDateToMMDDYYYY } from "../../api/(utils)/date";
 import { PoolStatsData, PoolStatsResults, PoolTokens } from "../../api/route";
 import { MoreFiltersButton } from "./MoreFiltersButton";
 import { TokenFilterInput } from "./TokenFilterInput";
@@ -75,7 +77,7 @@ export function PoolListTable({
     const params = Object.fromEntries(searchParams.entries());
     params["offset"] = (tableData.length + 1).toString();
 
-    const url = new URL(getFilteredDateApiUrl(startAt, endAt, params));
+    const url = new URL(generateApiUrlWithParams(startAt, endAt, params));
     const aditionalPoolsData = await fetcher<PoolStatsResults>(
       url.pathname + url.search,
     );
@@ -219,11 +221,12 @@ function TableRow({
   startAt: Date;
   endAt: Date;
 }) {
-  const poolRedirectURL = `/apr/pool/${networkFor(
-    network,
-  )}/${poolId}/?startAt=${formatDateToMMDDYYYY(
+  const poolRedirectURL = generateRedirectUrlWithParams(
     startAt,
-  )}&endAt=${formatDateToMMDDYYYY(endAt)}`;
+    endAt,
+    null,
+    poolId,
+  );
   return (
     <Table.BodyRow classNames="sm:hover:bg-blue4 hover:cursor-pointer duration-500">
       <Table.BodyCellLink

@@ -3,10 +3,8 @@ import { Suspense } from "react";
 
 import ChartSkelton from "#/app/apr/(components)/(skeleton)/ChartSkelton";
 import KpisSkeleton from "#/app/apr/(components)/(skeleton)/KpisSkeleton";
-import {
-  formatDateToMMDDYYYY,
-  SECONDS_IN_DAY,
-} from "#/app/apr/api/(utils)/date";
+import { generateRedirectUrlWithParams } from "#/app/apr/(utils)/getFilteredApiUrl";
+import { SECONDS_IN_DAY } from "#/app/apr/api/(utils)/date";
 import { QueryParamsPagesSchema } from "#/app/apr/api/(utils)/validate";
 import { SearchParams } from "#/app/apr/page";
 import Breadcrumb from "#/app/apr/round/(components)/Breadcrumb";
@@ -24,12 +22,16 @@ export default async function Page({
 }) {
   const parsedParams = QueryParamsPagesSchema.safeParse(searchParams);
   if (!parsedParams.success) {
-    const currentDateFormated = formatDateToMMDDYYYY(new Date());
-    const threeDaysAgoDateFormated = formatDateToMMDDYYYY(
-      new Date(new Date().getTime() - 3 * SECONDS_IN_DAY * 1000),
+    const currentDateFormated = new Date();
+    const threeDaysAgoDateFormated = new Date(
+      new Date().getTime() - 3 * SECONDS_IN_DAY * 1000,
     );
     return redirect(
-      `/apr/?startAt=${threeDaysAgoDateFormated}&endAt=${currentDateFormated}&`,
+      generateRedirectUrlWithParams(
+        threeDaysAgoDateFormated,
+        currentDateFormated,
+        searchParams,
+      ),
     );
   }
   const { startAt: startAtDate, endAt: endAtDate } = parsedParams.data;

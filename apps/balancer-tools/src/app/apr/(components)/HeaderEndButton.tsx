@@ -2,7 +2,6 @@
 
 import {
   capitalize,
-  networkFor,
   networkIdFor,
   networksOnBalancer,
 } from "@bleu-balancer-tools/utils";
@@ -14,6 +13,9 @@ import { useState } from "react";
 import { Dialog } from "#/components/Dialog";
 import { BaseInput } from "#/components/Input";
 import { SearchPoolForm } from "#/components/SearchPoolForm";
+
+import { generateRedirectUrlWithParams } from "../(utils)/getFilteredApiUrl";
+import { parseMMDDYYYYToDate } from "../api/(utils)/date";
 
 export default function HeaderEndButton() {
   const { network } = useParams();
@@ -32,17 +34,14 @@ export default function HeaderEndButton() {
     }
   }, [searchParams]);
 
-  const handlePoolClick = ({
-    network,
-    poolId,
-  }: {
-    network: string;
-    poolId: string;
-  }) => {
+  const handlePoolClick = ({ poolId }: { poolId: string }) => {
     router.push(
-      `/apr/pool/${networkFor(
-        network,
-      )}/${poolId}?startAt=${startAtParam}&endAt=${endAtParam}`,
+      generateRedirectUrlWithParams(
+        parseMMDDYYYYToDate(startAtParam as string) as Date,
+        parseMMDDYYYYToDate(endAtParam as string) as Date,
+        null,
+        poolId,
+      ),
     );
   };
   const avaliableNetworks = Object.keys(networksOnBalancer).map((key) => ({
@@ -73,7 +72,7 @@ export default function HeaderEndButton() {
         onChange={(e) => {
           setStartAtInput((e.target as HTMLInputElement).value);
           router.push(
-            `/apr/?startAt=${
+            `/apr?startAt=${
               (e.target as HTMLInputElement).value
             }&endAt=${endAtInput}&`,
           );
@@ -85,7 +84,7 @@ export default function HeaderEndButton() {
         onChange={(e) => {
           setEndAtInput((e.target as HTMLInputElement).value);
           router.push(
-            `/apr/?startAt=${startAtInput}&endAt=${
+            `/apr?startAt=${startAtInput}&endAt=${
               (e.target as HTMLInputElement).value
             }&`,
           );

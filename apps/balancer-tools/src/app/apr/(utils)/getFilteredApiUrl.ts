@@ -1,5 +1,7 @@
-import { Pool } from "#/lib/balancer/gauges";
 import { networkFor } from "@bleu-balancer-tools/utils";
+
+import { Pool } from "#/lib/balancer/gauges";
+
 import { formatDateToMMDDYYYY } from "../api/(utils)/date";
 import { SearchParams } from "../page";
 import { BASE_URL } from "./types";
@@ -75,7 +77,6 @@ export function generateApiUrlWithParams(
     poolId ? `&poolId=${poolId}` : ""
   }&${params}`;
 }
-
 
 // TODO: Refactor this!
 export function generateRedirectUrlWithParams(

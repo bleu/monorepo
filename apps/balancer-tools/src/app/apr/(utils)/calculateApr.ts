@@ -13,7 +13,7 @@ import {
   WEEKS_IN_YEAR,
 } from "../api/(utils)/date";
 import { getPoolRelativeWeight } from "./getRelativeWeight";
-import { getPoolTokensAprForDateRange } from "./tokenYield";
+import { getPoolTokensAprForDateRange } from "./tokenApr";
 
 type PoolSnapshot = {
   timestamp: number;

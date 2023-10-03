@@ -13,7 +13,13 @@ const minDate = new Date("2020-01-01");
 const isPositiveOrNull = (value?: number | null) => !value || value >= 0;
 const isSupportedNetwork = (value?: string | null) =>
   !value ||
-  Object.values(networksOnBalancer).includes(value.toLowerCase() as Network);
+  value
+    .split(",")
+    .some((val) =>
+      Object.values(networksOnBalancer).includes(
+        val.toLowerCase().trim() as Network,
+      ),
+    );
 
 const parseFloatOrNull = (str?: string | null) =>
   str ? parseFloat(str) : null;

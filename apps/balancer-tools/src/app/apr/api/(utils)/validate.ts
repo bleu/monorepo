@@ -5,6 +5,7 @@ import POOLS_WITHOUT_GAUGES from "#/data/pools-without-gauge.json";
 import POOLS_WITH_LIVE_GAUGES from "#/data/voting-gauges.json";
 
 import { PoolTypeEnum } from "../../(utils)/types";
+import { parseMMDDYYYYToDate } from "./date";
 import { Order } from "./sort";
 
 const currentDate = new Date();
@@ -42,33 +43,8 @@ const isValidPoolType = (types: string[] | null) => {
 };
 
 const OptionalNullableString = z.string().nullable().optional();
-const OptionalNullableDate = OptionalNullableString.transform((dateStr) => {
-  if (!dateStr) return null;
-
-  const [month, day, year] = dateStr.split("-").map(Number);
-
-  // Check if the parsing was successful and the date is valid
-  if (
-    !isNaN(month) &&
-    !isNaN(day) &&
-    !isNaN(year) &&
-    month >= 1 &&
-    month <= 12 &&
-    day >= 1 &&
-    day <= 31 &&
-    year >= 1900 &&
-    year <= new Date().getFullYear()
-  ) {
-    // Create a Date object in the expected format
-    return new Date(
-      `${year}-${month.toString().padStart(2, "0")}-${day
-        .toString()
-        .padStart(2, "0")}T00:00:00.000Z`,
-    );
-  }
-
-  return null; // Invalid date string
-});
+const OptionalNullableDate =
+  OptionalNullableString.transform(parseMMDDYYYYToDate);
 
 const OptionalNullableFloat = OptionalNullableString.transform(
   parseFloatOrNull,

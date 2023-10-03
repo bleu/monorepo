@@ -1,3 +1,5 @@
+import { Pool } from "#/lib/balancer/gauges";
+import { networkFor } from "@bleu-balancer-tools/utils";
 import { formatDateToMMDDYYYY } from "../api/(utils)/date";
 import { SearchParams } from "../page";
 import { BASE_URL } from "./types";
@@ -47,7 +49,7 @@ function getFilterDataFromParams(searchParams: SearchParams) {
   return result;
 }
 
-export default function getFilteredDateApiUrl(
+export function generateApiUrlWithParams(
   startAt: Date,
   endAt: Date,
   searchParams?: SearchParams | null,
@@ -72,4 +74,38 @@ export default function getFilteredDateApiUrl(
   )}&endAt=${formatDateToMMDDYYYY(endAt)}${
     poolId ? `&poolId=${poolId}` : ""
   }&${params}`;
+}
+
+
+// TODO: Refactor this!
+export function generateRedirectUrlWithParams(
+  startAt: Date,
+  endAt: Date,
+  searchParams?: SearchParams | null,
+  poolId?: string,
+) {
+  const filteredData = getFilterDataFromParams(searchParams ?? {});
+  const uniqueKeys = new Set(["startAt", "endAt"]); // Include 'startAt' and 'endAt' initially
+
+  const params = Object.entries(filteredData)
+    .filter(([key, value]) => {
+      if (uniqueKeys.has(key) || value === undefined) {
+        return false;
+      }
+      uniqueKeys.add(key);
+      return true;
+    })
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+
+  const queryParams = `startAt=${formatDateToMMDDYYYY(
+    startAt,
+  )}&endAt=${formatDateToMMDDYYYY(endAt)}&${params}`;
+  if (poolId) {
+    return `apr/pool/${networkFor(
+      new Pool(poolId).network,
+    )}/${poolId}${queryParams}`;
+  }
+
+  return `/apr?${queryParams}`;
 }

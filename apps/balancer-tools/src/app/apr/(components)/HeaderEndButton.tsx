@@ -14,7 +14,6 @@ import {
   useSearchParams,
 } from "next/navigation";
 import * as React from "react";
-import { useState } from "react";
 
 import { Dialog } from "#/components/Dialog";
 import { SearchPoolForm } from "#/components/SearchPoolForm";
@@ -28,17 +27,7 @@ export default function HeaderEndButton() {
   const startAtParam = searchParams.get("startAt");
   const endAtParam = searchParams.get("endAt");
   const pathname = usePathname();
-
   const router = useRouter();
-  const [startAtInput, setStartAtInput] = useState("");
-  const [endAtInput, setEndAtInput] = useState("");
-
-  React.useEffect(() => {
-    if (startAtParam && endAtParam) {
-      setStartAtInput(startAtParam);
-      setEndAtInput(endAtParam);
-    }
-  }, [searchParams]);
 
   const handleDateUpdate = (from: string, to: string) => {
     const newQuery = {

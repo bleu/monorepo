@@ -8,7 +8,6 @@ import { BASE_URL } from "./types";
 
 export const INITIAL_MIN_TVL = 1000;
 export const INITIAL_LIMIT = 10;
-const API_BASE_URL = `${BASE_URL}/apr/api`;
 
 interface ExpectedSearchParams extends SearchParams {
   minTVL?: string;

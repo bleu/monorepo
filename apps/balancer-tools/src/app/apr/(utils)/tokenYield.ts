@@ -1,4 +1,5 @@
 import { Address, networkFor, networkIdFor } from "@bleu-balancer-tools/utils";
+import * as Sentry from "@sentry/nextjs";
 import { zeroAddress } from "viem";
 
 import { withCache } from "#/lib/cache";
@@ -90,7 +91,8 @@ async function getAPRFromRateProviderInterval(
     console.error(
       `Error fetching rate for ${rateProviderAddress} between ${timeStart} and ${timeEnd} chain ${chainName} - ${e}`,
     );
-    return 0;
+    Sentry.captureException(e)
+    throw e
   }
 }
 
@@ -182,7 +184,8 @@ const getRateAtBlock = withCache(async function getRateAtBlockFn(
     console.error(
       `Error fetching rate for ${rateProviderAddress} at block ${blockNumber} on ${chainName}, ${e}`,
     );
-    rate = -1;
+    Sentry.captureException(e)
+    throw e
   }
 
   return Number(rate);

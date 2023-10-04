@@ -31,12 +31,14 @@ export interface calculatePoolData extends Omit<PoolStatsData, "apr"> {
   };
 }
 
-async function fetchPoolAveragesForDateRange(
+export async function fetchPoolAveragesForDateRange(
   poolId: string,
   network: string,
   from: number,
   to: number,
-): Promise<[number, number, string, { symbol: string; balance: string }[]]> {
+): Promise<
+  [number, number, string, { symbol: string; balance: string }[], number]
+> {
   // Determine if the initial date range is less than 2 days
   const initialRangeInDays = calculateDaysBetween(from, to);
   const extendedFrom = initialRangeInDays < 2 ? from - SECONDS_IN_DAY : from;
@@ -66,7 +68,7 @@ async function fetchPoolAveragesForDateRange(
       );
 
       // TODO: Throw error here and handle outside of it.
-      return [0, 0, "", []];
+      return [0, 0, "", [], 0];
     }
     chosenData = retryGQL.poolSnapshots
       .sort((a, b) => a.timestamp - b.timestamp)
@@ -74,15 +76,19 @@ async function fetchPoolAveragesForDateRange(
   }
 
   // Compute averages
-  const avgLiquidity = Number(chosenData.liquidity);
+  const liquidity = Number(chosenData.liquidity);
 
-  const avgVolume = Number(chosenData.swapVolume);
+  const volume = Number(chosenData.swapVolume);
+
+  const bptPrice =
+    Number(chosenData.liquidity) / Number(chosenData.totalShares);
 
   return [
-    avgLiquidity,
-    avgVolume,
+    liquidity,
+    volume,
     chosenData.pool.symbol ?? "",
     chosenData.pool.tokens ?? [],
+    bptPrice,
   ];
 }
 

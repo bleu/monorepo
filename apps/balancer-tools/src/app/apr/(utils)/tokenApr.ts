@@ -38,16 +38,28 @@ export async function getPoolTokensAprForDateRange(
         async ({
           address: rateProviderAddress,
           token: { symbol, address: tokenAddress },
-        }) => ({
-          address: tokenAddress,
-          symbol,
-          yield: await getAPRFromRateProviderInterval(
-            rateProviderAddress as Address,
-            startAt,
-            endAt,
-            chainName,
-          ),
-        }),
+        }) => {
+          try {
+            return {
+              address: tokenAddress,
+              symbol,
+              yield: await getAPRFromRateProviderInterval(
+                rateProviderAddress as Address,
+                startAt,
+                endAt,
+                chainName,
+              ),
+            };
+          } catch (error) {
+            // eslint-disable-next-line no-console
+            console.error(`Error fetching yield for ${symbol}: ${error}`);
+            return {
+              address: tokenAddress,
+              symbol,
+              yield: 0,
+            };
+          }
+        },
       ),
   );
 }
@@ -91,8 +103,8 @@ async function getAPRFromRateProviderInterval(
     console.error(
       `Error fetching rate for ${rateProviderAddress} between ${timeStart} and ${timeEnd} chain ${chainName} - ${e}`,
     );
-    Sentry.captureException(e)
-    throw e
+    Sentry.captureException(e);
+    throw e;
   }
 }
 
@@ -184,8 +196,8 @@ const getRateAtBlock = withCache(async function getRateAtBlockFn(
     console.error(
       `Error fetching rate for ${rateProviderAddress} at block ${blockNumber} on ${chainName}, ${e}`,
     );
-    Sentry.captureException(e)
-    throw e
+    Sentry.captureException(e);
+    throw e;
   }
 
   return Number(rate);

@@ -32,6 +32,7 @@ export default function FilterTabs({
           className="cursor-pointer flex grow justify-center items-center sm:min-w-[96px] min-w-[76px] sm:h-9 h-7 rounded-full"
           role="radio"
           aria-checked={selectedTabs.includes(idx)}
+          key={idx}
           tabIndex={idx}
           id={String(idx)}
           data-headlessui-state="checked"

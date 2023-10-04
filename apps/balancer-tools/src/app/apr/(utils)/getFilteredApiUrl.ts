@@ -8,6 +8,7 @@ import { BASE_URL } from "./types";
 
 export const INITIAL_MIN_TVL = 1000;
 export const INITIAL_LIMIT = 10;
+const API_BASE_URL = `${BASE_URL}/apr/api`;
 
 interface ExpectedSearchParams extends SearchParams {
   minTVL?: string;
@@ -51,62 +52,55 @@ function getFilterDataFromParams(searchParams: SearchParams) {
   return result;
 }
 
+function generateQueryParams(
+  startAt: Date,
+  endAt: Date,
+  searchParams?: SearchParams | null,
+) {
+  const filteredData = getFilterDataFromParams(searchParams ?? {});
+  const uniqueKeys = new Set(["startAt", "endAt"]);
+
+  const params = Object.entries(filteredData)
+    .filter(([key, value]) => {
+      if (uniqueKeys.has(key) || value === undefined) {
+        return false;
+      }
+      uniqueKeys.add(key);
+      return true;
+    })
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+
+  return `startAt=${formatDateToMMDDYYYY(startAt)}&endAt=${formatDateToMMDDYYYY(
+    endAt,
+  )}&${params}`;
+}
+
 export function generateApiUrlWithParams(
   startAt: Date,
   endAt: Date,
   searchParams?: SearchParams | null,
   poolId?: string,
 ) {
-  const filteredData = getFilterDataFromParams(searchParams ?? {});
-  const uniqueKeys = new Set(["startAt", "endAt"]); // Include 'startAt' and 'endAt' initially
-
-  const params = Object.entries(filteredData)
-    .filter(([key, value]) => {
-      if (uniqueKeys.has(key) || value === undefined) {
-        return false;
-      }
-      uniqueKeys.add(key);
-      return true;
-    })
-    .map(([key, value]) => `${key}=${value}`)
-    .join("&");
-
-  return `${BASE_URL}/apr/api?startAt=${formatDateToMMDDYYYY(
-    startAt,
-  )}&endAt=${formatDateToMMDDYYYY(endAt)}${
+  const queryParams = generateQueryParams(startAt, endAt, searchParams);
+  return `${BASE_URL}/apr/api?${queryParams}${
     poolId ? `&poolId=${poolId}` : ""
-  }&${params}`;
+  }`;
 }
 
-// TODO: Refactor this!
 export function generateRedirectUrlWithParams(
   startAt: Date,
   endAt: Date,
   searchParams?: SearchParams | null,
   poolId?: string,
 ) {
-  const filteredData = getFilterDataFromParams(searchParams ?? {});
-  const uniqueKeys = new Set(["startAt", "endAt"]); // Include 'startAt' and 'endAt' initially
-
-  const params = Object.entries(filteredData)
-    .filter(([key, value]) => {
-      if (uniqueKeys.has(key) || value === undefined) {
-        return false;
-      }
-      uniqueKeys.add(key);
-      return true;
-    })
-    .map(([key, value]) => `${key}=${value}`)
-    .join("&");
-
-  const queryParams = `startAt=${formatDateToMMDDYYYY(
-    startAt,
-  )}&endAt=${formatDateToMMDDYYYY(endAt)}&${params}`;
+  const queryParams = generateQueryParams(startAt, endAt, searchParams);
   if (poolId) {
-    return `apr/pool/${networkFor(
-      new Pool(poolId).network,
-    )}/${poolId}${queryParams}`;
+    const network = networkFor(new Pool(poolId).network);
+    return `apr/pool/${network}/${poolId}?startAt=${formatDateToMMDDYYYY(
+      startAt,
+    )}&endAt=${formatDateToMMDDYYYY(endAt)}`;
+  } else {
+    return `/apr?${queryParams}`;
   }
-
-  return `/apr?${queryParams}`;
 }

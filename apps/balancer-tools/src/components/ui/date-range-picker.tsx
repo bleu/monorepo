@@ -9,7 +9,7 @@ import React, { type FC, useEffect, useRef, useState } from "react";
 
 import { cn } from "#/lib/utils";
 
-import { Button } from "./button";
+import Button from "../Button";
 import { Calendar } from "./calendar";
 import { DateInput } from "./date-input";
 import { Label } from "./label";
@@ -276,12 +276,12 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
         setPreset(preset);
       }}
     >
-      <>
+      <div className="flex">
         <span className={cn("pr-2 opacity-0", isSelected && "opacity-70")}>
           <CheckIcon width={18} height={18} />
         </span>
         {label}
-      </>
+      </div>
     </Button>
   );
 
@@ -313,30 +313,35 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
       }}
     >
       <PopoverTrigger asChild>
-        <Button size={"lg"} variant="outline" className="w-full h-[35px]">
-          <div className="text-right">
-            <div className="">
-              <div>{`${formatDate(range.from, locale)}${
-                range.to != null ? " - " + formatDate(range.to, locale) : ""
-              }`}</div>
-            </div>
-            {rangeCompare != null && (
-              <div className="opacity-60 text-xs -mt-1">
-                <>
-                  vs. {formatDate(rangeCompare.from, locale)}
-                  {rangeCompare.to != null
-                    ? ` - ${formatDate(rangeCompare.to, locale)}`
-                    : ""}
-                </>
+        <Button
+          variant="lighter-outline"
+          className="w-full h-[35px] rounded-md px-3 py-0"
+        >
+          <div className="flex items-center">
+            <div className="text-right">
+              <div className="">
+                <div>{`${formatDate(range.from, locale)}${
+                  range.to != null ? " - " + formatDate(range.to, locale) : ""
+                }`}</div>
               </div>
-            )}
-          </div>
-          <div className="pl-1 opacity-60 -mr-2 scale-125">
-            {isOpen ? (
-              <ChevronUpIcon width={24} />
-            ) : (
-              <ChevronDownIcon width={24} />
-            )}
+              {rangeCompare != null && (
+                <div className="opacity-60 text-xs -mt-1">
+                  <>
+                    vs. {formatDate(rangeCompare.from, locale)}
+                    {rangeCompare.to != null
+                      ? ` - ${formatDate(rangeCompare.to, locale)}`
+                      : ""}
+                  </>
+                </div>
+              )}
+            </div>
+            <div className="pl-1 opacity-60 -mr-2 scale-125">
+              {isOpen ? (
+                <ChevronUpIcon width={24} />
+              ) : (
+                <ChevronDownIcon width={24} />
+              )}
+            </div>
           </div>
         </Button>
       </PopoverTrigger>

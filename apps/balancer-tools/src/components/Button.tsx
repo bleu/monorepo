@@ -15,6 +15,16 @@ export const PREDEFINED_CLASSES = {
         "bg-transparent text-blue4 border-blue4 hover:bg-blue2 hover:border-blue2",
       dark: "bg-transparent text-blue3 border-blue3 hover:bg-blue2 hover:border-blue2",
     },
+    "lighter-outline": {
+      light: "bg-transparent text-blue9 border-blue9",
+      medium: "bg-transparent text-blue4 border-blue4",
+      dark: "bg-transparent text-blue3 border-blue3",
+    },
+    ghost: {
+      light: "border-0 hover:bg-accent hover:text-accent-foreground",
+      medium: "border-0 hover:bg-accent hover:text-accent-foreground",
+      dark: "border-0 hover:bg-accent hover:text-accent-foreground",
+    },
   },
   cyan: {
     solid: {
@@ -28,6 +38,16 @@ export const PREDEFINED_CLASSES = {
       medium:
         "bg-transparent text-cyan4 border-cyan4 hover:bg-cyan2 hover:border-cyan2",
       dark: "bg-transparent text-cyan3 border-cyan3 hover:bg-cyan2 hover:border-cyan2",
+    },
+    "lighter-outline": {
+      light: "bg-transparent text-cyan9 border-cyan9",
+      medium: "bg-transparent text-cyan4 border-cyan4",
+      dark: "bg-transparent text-cyan3 border-cyan3",
+    },
+    ghost: {
+      light: "hover:bg-accent hover:text-accent-foreground",
+      medium: "hover:bg-accent hover:text-accent-foreground",
+      dark: "hover:bg-accent hover:text-accent-foreground",
     },
   },
   amber: {
@@ -43,6 +63,16 @@ export const PREDEFINED_CLASSES = {
         "bg-transparent text-amber5 border-amber4 hover:bg-amber2 hover:border-amber2",
       dark: "bg-transparent text-amber10 border-amber3 hover:bg-amber2 hover:border-amber2",
     },
+    "lighter-outline": {
+      light: "bg-transparent text-amber9 border-amber9",
+      medium: "bg-transparent text-amber4 border-amber4",
+      dark: "bg-transparent text-amber3 border-amber3",
+    },
+    ghost: {
+      light: "hover:bg-accent hover:text-accent-foreground",
+      medium: "hover:bg-accent hover:text-accent-foreground",
+      dark: "hover:bg-accent hover:text-accent-foreground",
+    },
   },
   slate: {
     solid: {
@@ -56,6 +86,11 @@ export const PREDEFINED_CLASSES = {
       medium:
         "bg-transparent text-slate4 border-slate4 hover:bg-slate2 hover:border-slate2",
       dark: "bg-transparent text-slate3 border-slate3 hover:bg-slate2 hover:border-slate2",
+    },
+    ghost: {
+      light: "hover:bg-accent hover:text-accent-foreground",
+      medium: "hover:bg-accent hover:text-accent-foreground",
+      dark: "hover:bg-accent hover:text-accent-foreground",
     },
   },
 } as const;
@@ -100,6 +135,7 @@ const Button = forwardRef(function (
     return child;
   });
 
+  // @ts-ignore
   const buttonClasses = PREDEFINED_CLASSES[color][variant][shade];
 
   return (
@@ -110,7 +146,8 @@ const Button = forwardRef(function (
       className={cn(
         className,
         buttonClasses,
-        "rounded-md py-3 px-5 text-center text-sm font-semibold border focus-visible:outline-blue7 focus-visible:outline-offset-2 disabled:opacity-40",
+        "rounded-md text-center text-sm font-semibold border focus-visible:outline-blue7 focus-visible:outline-offset-2 disabled:opacity-40",
+        /px-|py-|p-/.test(className) ? "" : "py-3 px-5",
       )}
     >
       {modifiedChildren}

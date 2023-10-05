@@ -13,7 +13,6 @@ export function getDatesDetails(startAt: Date, endAtDate: Date) {
     {
       title: "Selected Dates",
       content: `${formatDate(startAt)} - ${formatDate(endAtDate)}`,
-      tooltip: "Every round ends on a Thursday at 00:00 UTC",
     },
   ];
 }

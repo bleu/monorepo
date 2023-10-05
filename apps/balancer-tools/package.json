@@ -52,7 +52,6 @@
     "graphql-request": "6.1.0",
     "lodash": "^4.17.21",
     "lodash.merge": "^4.6.2",
-    "lucide-react": "^0.284.0",
     "next": "^13.5.3",
     "plotly.js": "^2.26.1",
     "react": "^18.2.0",

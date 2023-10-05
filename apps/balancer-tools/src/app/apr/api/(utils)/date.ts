@@ -49,16 +49,13 @@ export function getWeeksBetweenDates(
 export const dateToEpoch = (date: Date): number =>
   Math.floor(date.getTime() / 1000);
 
-export function isTimePeriodsIntersecting(
-  periodOneStartDateTimestamp: number,
-  periodOneEndDateTimestamp: number,
-  periodTwoStartDateTimestamp: number,
-  periodTwoEndDateTimestamp: number,
+type Timestamp = number;
+
+export function doIntervalsIntersect(
+  periodOneStart: Timestamp,
+  periodOneEnd: Timestamp,
+  periodTwoStart: Timestamp,
+  periodTwoEnd: Timestamp
 ): boolean {
-  return (
-    (periodTwoStartDateTimestamp <= periodOneEndDateTimestamp &&
-      periodTwoEndDateTimestamp >= periodOneStartDateTimestamp) ||
-    (periodOneStartDateTimestamp <= periodTwoEndDateTimestamp &&
-      periodOneEndDateTimestamp >= periodTwoStartDateTimestamp)
-  );
+  return !((periodOneStart > periodTwoEnd) ^ (periodTwoStart > periodOneEnd));
 }

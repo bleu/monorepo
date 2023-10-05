@@ -15,16 +15,6 @@ export const PREDEFINED_CLASSES = {
         "bg-transparent text-blue4 border-blue4 hover:bg-blue2 hover:border-blue2",
       dark: "bg-transparent text-blue3 border-blue3 hover:bg-blue2 hover:border-blue2",
     },
-    "lighter-outline": {
-      light: "bg-transparent text-blue9 border-blue9",
-      medium: "bg-transparent text-blue4 border-blue4",
-      dark: "bg-transparent text-blue3 border-blue3",
-    },
-    ghost: {
-      light: "border-0 hover:bg-accent hover:text-accent-foreground",
-      medium: "border-0 hover:bg-accent hover:text-accent-foreground",
-      dark: "border-0 hover:bg-accent hover:text-accent-foreground",
-    },
   },
   cyan: {
     solid: {
@@ -38,16 +28,6 @@ export const PREDEFINED_CLASSES = {
       medium:
         "bg-transparent text-cyan4 border-cyan4 hover:bg-cyan2 hover:border-cyan2",
       dark: "bg-transparent text-cyan3 border-cyan3 hover:bg-cyan2 hover:border-cyan2",
-    },
-    "lighter-outline": {
-      light: "bg-transparent text-cyan9 border-cyan9",
-      medium: "bg-transparent text-cyan4 border-cyan4",
-      dark: "bg-transparent text-cyan3 border-cyan3",
-    },
-    ghost: {
-      light: "hover:bg-accent hover:text-accent-foreground",
-      medium: "hover:bg-accent hover:text-accent-foreground",
-      dark: "hover:bg-accent hover:text-accent-foreground",
     },
   },
   amber: {
@@ -135,7 +115,6 @@ const Button = forwardRef(function (
     return child;
   });
 
-  // @ts-ignore
   const buttonClasses = PREDEFINED_CLASSES[color][variant][shade];
 
   return (

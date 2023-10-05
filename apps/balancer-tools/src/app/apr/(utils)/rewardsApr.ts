@@ -4,6 +4,7 @@ import { NetworkChainId } from "@bleu-balancer-tools/utils";
 import { rewards } from "#/lib/gql/server";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
+import { isTimePeriodsIntersecting } from "../api/(utils)/date";
 import { fetchPoolAveragesForDateRange } from "./calculatePoolStats";
 
 type RewardInfo = ArrElement<
@@ -11,6 +12,7 @@ type RewardInfo = ArrElement<
 >;
 
 export async function getRewardsAprForDateRange(
+  //TODO: remove unused params on BAL-972
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   poolId: string,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -18,6 +20,7 @@ export async function getRewardsAprForDateRange(
   startAt: number,
   endAt: number,
 ) {
+  //TODO: remove temp variables on BAL-972
   const tempPoolId =
     "0x17e7d59bb209a3215ccc25fffef7161498b7c10d000200000000000000000020";
   const tempNetwork = String(NetworkChainId.BASE);
@@ -98,18 +101,6 @@ export async function getTokensRewards({
   }));
 
   return finalRewards;
-}
-
-function isTimePeriodsIntersecting(
-  periodStart: number,
-  periodFinish: number,
-  startAt: number,
-  endAt: number,
-): boolean {
-  return (
-    (startAt <= periodFinish && endAt >= periodStart) ||
-    (periodStart <= endAt && periodFinish >= startAt)
-  );
 }
 
 function calculateAmount(

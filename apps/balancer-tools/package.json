@@ -23,7 +23,7 @@
     "@bleu-balancer-tools/math-poolsimulator": "workspace:*",
     "@bleu-balancer-tools/tsconfig": "workspace:*",
     "@hookform/resolvers": "3.1.0",
-    "@radix-ui/colors": "^2.1.0",
+    "@radix-ui/colors": "^3.0.0",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-checkbox": "^1.0.4",
     "@radix-ui/react-dialog": "^1.0.5",

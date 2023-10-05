@@ -45,14 +45,20 @@ const DateInput: React.FC<DateInputProps> = ({ value, onChange }) => {
 
     // Validate the day of the month
     const newDate = { ...date, [field]: value };
-    const d = new Date(newDate.year, newDate.month - 1, newDate.day);
-    return (
-      d.getFullYear() === newDate.year &&
-      d.getMonth() + 1 === newDate.month &&
-      d.getDate() === newDate.day
-    );
-  };
+    const inputDate = new Date(newDate.year, newDate.month - 1, newDate.day);
+    if (
+      inputDate.getFullYear() !== newDate.year ||
+      inputDate.getMonth() + 1 !== newDate.month ||
+      inputDate.getDate() !== newDate.day
+    ) {
+      return false;
+    }
 
+    // Custom validation: date should not be in the future
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0); // set time to start of the day
+    return inputDate <= currentDate;
+  };
   const handleInputChange =
     (field: keyof DateParts) => (e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = e.target.value ? Number(e.target.value) : "";

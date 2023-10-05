@@ -7,6 +7,7 @@ import {
 } from "@radix-ui/react-icons";
 import React, { type FC, useEffect, useRef, useState } from "react";
 
+import { formatDateToMMDDYYYY } from "#/app/apr/api/(utils)/date";
 import { cn } from "#/lib/utils";
 
 import Button from "../Button";
@@ -42,14 +43,6 @@ export interface DateRangePickerProps {
   showCompare?: boolean;
 }
 
-const formatDate = (date: Date, locale: string = "en-us"): string => {
-  return date.toLocaleDateString(locale, {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-};
-
 interface DateRange {
   from: Date;
   to: Date | undefined;
@@ -63,10 +56,8 @@ interface Preset {
 // Define presets
 const PRESETS: Preset[] = [
   { name: "today", label: "Today" },
-  { name: "last2", label: "Last 2 days" },
+  { name: "last4", label: "Last 4 days" },
   { name: "last7", label: "Last 7 days" },
-  { name: "last14", label: "Last 14 days" },
-  { name: "last30", label: "Last 30 days" },
   { name: "thisWeek", label: "This Week" },
   { name: "lastWeek", label: "Last Week" },
 ];
@@ -81,7 +72,6 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
   initialCompareTo,
   onUpdate,
   align = "end",
-  locale = "en-US",
   showCompare = false,
 }): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false);
@@ -139,23 +129,13 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
         from.setHours(0, 0, 0, 0);
         to.setHours(23, 59, 59, 999);
         break;
-      case "last2":
-        from.setDate(from.getDate() - 1);
+      case "last4":
+        from.setDate(from.getDate() - 3);
         from.setHours(0, 0, 0, 0);
         to.setHours(23, 59, 59, 999);
         break;
       case "last7":
         from.setDate(from.getDate() - 6);
-        from.setHours(0, 0, 0, 0);
-        to.setHours(23, 59, 59, 999);
-        break;
-      case "last14":
-        from.setDate(from.getDate() - 13);
-        from.setHours(0, 0, 0, 0);
-        to.setHours(23, 59, 59, 999);
-        break;
-      case "last30":
-        from.setDate(from.getDate() - 29);
         from.setHours(0, 0, 0, 0);
         to.setHours(23, 59, 59, 999);
         break;
@@ -270,8 +250,8 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
     isSelected: boolean;
   }): JSX.Element => (
     <Button
-      className={cn(isSelected && "pointer-events-none")}
-      variant="ghost"
+      className={cn("w-full", isSelected && "pointer-events-none")}
+      shade="dark"
       onClick={() => {
         setPreset(preset);
       }}
@@ -314,22 +294,29 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
     >
       <PopoverTrigger asChild>
         <Button
-          variant="lighter-outline"
           className="w-full h-[35px] rounded-md px-3 py-0"
+          variant="outline"
+          shade="light"
         >
           <div className="flex items-center">
             <div className="text-right">
               <div className="">
-                <div>{`${formatDate(range.from, locale)}${
-                  range.to != null ? " - " + formatDate(range.to, locale) : ""
+                <div>{`${formatDateToMMDDYYYY(range.from)}${
+                  range.to != null &&
+                  formatDateToMMDDYYYY(range.to ?? undefined) != null
+                    ? " - " + formatDateToMMDDYYYY(range.to)
+                    : ""
                 }`}</div>
               </div>
               {rangeCompare != null && (
                 <div className="opacity-60 text-xs -mt-1">
                   <>
-                    vs. {formatDate(rangeCompare.from, locale)}
-                    {rangeCompare.to != null
-                      ? ` - ${formatDate(rangeCompare.to, locale)}`
+                    vs. {formatDateToMMDDYYYY(rangeCompare.from)}
+                    {rangeCompare.to &&
+                    formatDateToMMDDYYYY(rangeCompare.to ?? undefined) != null
+                      ? ` - ${formatDateToMMDDYYYY(
+                          rangeCompare.to ?? undefined,
+                        )}`
                       : ""}
                   </>
                 </div>
@@ -493,6 +480,9 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
                     }
                   }}
                   selected={range}
+                  disabled={(date) =>
+                    date > new Date() || date < new Date("2020-01-01")
+                  }
                   numberOfMonths={isSmallScreen ? 1 : 2}
                   defaultMonth={
                     new Date(
@@ -526,7 +516,7 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
               setIsOpen(false);
               resetValues();
             }}
-            variant="ghost"
+            variant="outline"
           >
             Cancel
           </Button>

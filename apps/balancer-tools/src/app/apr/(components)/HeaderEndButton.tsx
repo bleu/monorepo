@@ -19,7 +19,7 @@ import { Dialog } from "#/components/Dialog";
 import { SearchPoolForm } from "#/components/SearchPoolForm";
 import { DateRangePicker } from "#/components/ui/date-range-picker";
 
-import { formatDateToMMDDYYYY, parseMMDDYYYYToDate } from "../api/(utils)/date";
+import { formatDateToMMDDYYYY } from "../api/(utils)/date";
 
 export default function HeaderEndButton() {
   const { network } = useParams();
@@ -87,8 +87,8 @@ export default function HeaderEndButton() {
             formatDateToMMDDYYYY(to as Date),
           );
         }}
-        initialDateFrom={parseMMDDYYYYToDate(startAtParam)?.toUTCString()}
-        initialDateTo={parseMMDDYYYYToDate(endAtParam)?.toUTCString()}
+        initialDateFrom={startAtParam ?? undefined}
+        initialDateTo={endAtParam ?? undefined}
       />
     </div>
   );

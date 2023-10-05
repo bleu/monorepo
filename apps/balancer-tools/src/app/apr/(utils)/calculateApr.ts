@@ -13,7 +13,8 @@ import {
   WEEKS_IN_YEAR,
 } from "../api/(utils)/date";
 import { getPoolRelativeWeight } from "./getRelativeWeight";
-import { getPoolTokensAprForDateRange } from "./tokenYield";
+import { getRewardsAprForDateRange } from "./rewardsApr";
+import { getPoolTokensAprForDateRange } from "./tokenApr";
 
 type PoolSnapshot = {
   timestamp: number;
@@ -34,13 +35,19 @@ export async function calculateAPRForDateRange(
   poolId: string,
   network: string,
 ) {
-  const [votingShare, [feeAPR, collectedFeesUSD], tokensAPR] =
+  const [votingShare, [feeAPR, collectedFeesUSD], tokensAPR, rewardsAPR] =
     await Promise.all([
       getPoolRelativeWeight(poolId, endAtTimestamp),
       getFeeAprForDateRange(poolId, network, startAtTimestamp, endAtTimestamp),
       getPoolTokensAprForDateRange(
         network,
         poolId as Address,
+        startAtTimestamp,
+        endAtTimestamp,
+      ),
+      getRewardsAprForDateRange(
+        network,
+        poolId,
         startAtTimestamp,
         endAtTimestamp,
       ),
@@ -88,6 +95,11 @@ export async function calculateAPRForDateRange(
     0,
   );
 
+  const rewardsAPRTotal = rewardsAPR.reduce(
+    (acc, reward) => acc + (reward.apr ?? 0),
+    0,
+  );
+
   return {
     apr: {
       total: (vebalAPR || 0) + feeAPR + tokenAPRTotal,
@@ -101,6 +113,16 @@ export async function calculateAPRForDateRange(
               address: token.address,
               symbol: token.symbol,
               yield: token.yield,
+            })),
+          ],
+        },
+        rewards: {
+          total: rewardsAPRTotal,
+          breakdown: [
+            ...rewardsAPR.map((reward) => ({
+              address: reward.token.address,
+              symbol: reward.token.symbol,
+              value: reward.apr,
             })),
           ],
         },

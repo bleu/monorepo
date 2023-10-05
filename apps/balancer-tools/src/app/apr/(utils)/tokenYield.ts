@@ -52,7 +52,9 @@ export async function getPoolTokensAprForDateRange(
             };
           } catch (error) {
             // eslint-disable-next-line no-console
-            console.error(`Error fetching yield for ${symbol}: ${error}`);
+            console.error(
+              `Error fetching yield for Pool ${poolId} - ${symbol}: ${error}`,
+            );
             return {
               address: tokenAddress,
               symbol,

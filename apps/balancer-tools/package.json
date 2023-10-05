@@ -42,7 +42,7 @@
     "@sentry/nextjs": "^7.72.0",
     "@vercel/kv": "^0.2.3",
     "@wagmi/cli": "1.5.2",
-    "@wagmi/core": "^1.4.2",
+    "@wagmi/core": "^1.4.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "copy-to-clipboard": "^3.3.3",

@@ -108,10 +108,10 @@ importers:
         version: 0.2.3
       '@wagmi/cli':
         specifier: 1.5.2
-        version: 1.5.2(@wagmi/core@1.4.2)(typescript@5.2.2)(wagmi@1.4.3)
+        version: 1.5.2(@wagmi/core@1.4.3)(typescript@5.2.2)(wagmi@1.4.3)
       '@wagmi/core':
-        specifier: ^1.4.2
-        version: 1.4.2(@types/react@18.2.23)(react@18.2.0)(typescript@5.2.2)(viem@1.15.1)(zod@3.22.2)
+        specifier: ^1.4.3
+        version: 1.4.3(@types/react@18.2.23)(react@18.2.0)(typescript@5.2.2)(viem@1.15.1)(zod@3.22.2)
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -5861,7 +5861,7 @@ packages:
       - encoding
     dev: false
 
-  /@wagmi/cli@1.5.2(@wagmi/core@1.4.2)(typescript@5.2.2)(wagmi@1.4.3):
+  /@wagmi/cli@1.5.2(@wagmi/core@1.4.3)(typescript@5.2.2)(wagmi@1.4.3):
     resolution: {integrity: sha512-UfLMYhW6mQBCjR8A5s01Chf9GpHzdpcuuBuzJ36QGXcMSJAxylz5ImVZWfCRV0ct1UruydjKVSW1QSI6azNxRQ==}
     engines: {node: '>=14'}
     hasBin: true
@@ -5877,7 +5877,7 @@ packages:
       wagmi:
         optional: true
     dependencies:
-      '@wagmi/core': 1.4.2(@types/react@18.2.23)(react@18.2.0)(typescript@5.2.2)(viem@1.15.1)(zod@3.22.2)
+      '@wagmi/core': 1.4.3(@types/react@18.2.23)(react@18.2.0)(typescript@5.2.2)(viem@1.15.1)(zod@3.22.2)
       abitype: 0.8.7(typescript@5.2.2)(zod@3.22.2)
       abort-controller: 3.0.0
       bundle-require: 3.1.2(esbuild@0.16.17)
@@ -5933,34 +5933,6 @@ packages:
       - '@types/react'
       - bufferutil
       - encoding
-      - lokijs
-      - react
-      - supports-color
-      - utf-8-validate
-      - zod
-    dev: false
-
-  /@wagmi/core@1.4.2(@types/react@18.2.23)(react@18.2.0)(typescript@5.2.2)(viem@1.15.1)(zod@3.22.2):
-    resolution: {integrity: sha512-szgNs2DCbBXKsq3wdm/YD8FWkg7lfmTRAv25b2nJYJUTQN59pVXznlWfq8VCJLamhKOYjeYHlTQxXkAeUAJdhw==}
-    peerDependencies:
-      typescript: '>=5.0.4'
-      viem: '>=0.3.35'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@wagmi/connectors': 3.1.2(@types/react@18.2.23)(react@18.2.0)(typescript@5.2.2)(viem@1.15.1)(zod@3.22.2)
-      abitype: 0.8.7(typescript@5.2.2)(zod@3.22.2)
-      eventemitter3: 4.0.7
-      typescript: 5.2.2
-      viem: 1.15.1(typescript@5.2.2)(zod@3.22.2)
-      zustand: 4.3.7(react@18.2.0)
-    transitivePeerDependencies:
-      - '@react-native-async-storage/async-storage'
-      - '@types/react'
-      - bufferutil
-      - encoding
-      - immer
       - lokijs
       - react
       - supports-color

@@ -28,7 +28,8 @@ export async function getPoolTokensAprForDateRange(
   endAt: number,
 ) {
   const rateProviders = await getPoolTokensRateProviders(chain, poolId);
-
+  // eslint-disable-next-line no-console
+  console.log(">> getPoolTokensAprForDateRange", poolId, rateProviders);
   const chainName = networkFor(chain) as ChainName;
 
   return await Promise.all(

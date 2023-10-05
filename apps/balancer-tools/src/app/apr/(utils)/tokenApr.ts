@@ -30,8 +30,12 @@ export async function getPoolTokensAprForDateRange(
   const rateProviders = await getPoolTokensRateProviders(chain, poolId);
   // eslint-disable-next-line no-console
   console.log(">> getPoolTokensAprForDateRange", poolId, rateProviders);
+  Sentry.addBreadcrumb({
+    category: "auth",
+    message: "Pool: " + poolId,
+    level: "info",
+  });
   const chainName = networkFor(chain) as ChainName;
-
   return await Promise.all(
     rateProviders
       .filter(({ address }) => address !== zeroAddress)
@@ -49,6 +53,7 @@ export async function getPoolTokensAprForDateRange(
                 startAt,
                 endAt,
                 chainName,
+                poolId,
               ),
             };
           } catch (error) {
@@ -72,6 +77,7 @@ async function getAPRFromRateProviderInterval(
   timeStart: number,
   timeEnd: number,
   chainName: ChainName,
+  poolId: string,
 ) {
   if (
     timeEnd >= 1692662400 && // pool vunerability was found on August 22
@@ -79,6 +85,9 @@ async function getAPRFromRateProviderInterval(
       ({ address }) => address === rateProviderAddress,
     )
   ) {
+    Sentry.captureMessage(
+      "Returning 0 since vunerabilityAffecteRateProviders for pool" + poolId,
+    );
     return 0;
   }
 
@@ -89,14 +98,34 @@ async function getAPRFromRateProviderInterval(
       timeEnd,
       chainName,
     );
+    Sentry.addBreadcrumb({
+      category: "auth",
+      message: "endRate: " + endRate,
+      level: "info",
+    });
+    Sentry.addBreadcrumb({
+      category: "auth",
+      message: "startRate: " + startRate,
+      level: "info",
+    });
 
     const apr = getAPRFromRate(startRate, endRate, timeStart, timeEnd);
+
+    Sentry.addBreadcrumb({
+      category: "auth",
+      message: "apr: " + apr,
+      level: "info",
+    });
 
     if (apr < 0) {
       // eslint-disable-next-line no-console
       console.error(
+        `Negative APR for Pool ${poolId} ${rateProviderAddress} between ${timeStart} and ${timeEnd}: ${apr}`,
+      );
+      Sentry.captureMessage(
         `Negative APR for ${rateProviderAddress} between ${timeStart} and ${timeEnd}: ${apr}`,
       );
+
       return 0;
     }
 

@@ -10,15 +10,14 @@ export function trimTrailingValues(
   amountsOut: (number | string)[],
   valueToTrim: number | string = 100,
 ): { trimmedIn: (number | string)[]; trimmedOut: (number | string)[] } {
-  const lastIndexNonValue = amountsOut
-    .slice()
-    .reverse()
-    .findIndex((value) => value !== valueToTrim);
+  let cutIndex = amountsOut.length;
 
-  const cutIndex =
-    lastIndexNonValue !== -1
-      ? amountsOut.length - lastIndexNonValue
-      : amountsOut.length;
+  for (let i = amountsOut.length - 1; i >= 0; i--) {
+    if (amountsOut[i] !== valueToTrim) {
+      break;
+    }
+    cutIndex--;
+  }
 
   const trimmedIn = amountsIn.slice(0, cutIndex);
   const trimmedOut = amountsOut.slice(0, cutIndex);

@@ -39,7 +39,7 @@ export function createClientForChain(chain: ChainType) {
 
 export const publicClients = {
   ethereum: createClientForChain(mainnet),
-  optmism: createClientForChain(optimism),
+  optimism: createClientForChain(optimism),
   polygon: createClientForChain(polygon),
   "polygon-zkevm": createClientForChain(polygonZkEvm),
   arbitrum: createClientForChain(arbitrum),

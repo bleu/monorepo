@@ -61,6 +61,9 @@ function calculateAverageForObject(
             ? Number(item) / divisor
             : item,
         );
+      } else if (typeof value === "object") {
+        // @ts-ignore  - Need help with this typing!
+        result[key] = calculateAverageForObject(value, divisor);
       } else if (typeof value === "number") {
         // @ts-ignore  - Need help with this typing!
         result[key] = value / divisor;

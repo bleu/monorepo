@@ -55,7 +55,7 @@ export function doIntervalsIntersect(
   periodOneStart: Timestamp,
   periodOneEnd: Timestamp,
   periodTwoStart: Timestamp,
-  periodTwoEnd: Timestamp
+  periodTwoEnd: Timestamp,
 ): boolean {
-  return !((periodOneStart > periodTwoEnd) ^ (periodTwoStart > periodOneEnd));
+  return !(periodOneStart > periodTwoEnd !== periodTwoStart > periodOneEnd);
 }

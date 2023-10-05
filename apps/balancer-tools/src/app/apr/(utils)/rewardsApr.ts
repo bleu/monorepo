@@ -4,7 +4,7 @@ import { NetworkChainId } from "@bleu-balancer-tools/utils";
 import { rewards } from "#/lib/gql/server";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
-import { isTimePeriodsIntersecting } from "../api/(utils)/date";
+import { doIntervalsIntersect } from "../api/(utils)/date";
 import { fetchPoolAveragesForDateRange } from "./calculatePoolStats";
 
 type RewardInfo = ArrElement<
@@ -80,7 +80,7 @@ export async function getTokensRewards({
   }
 
   const intersectedRewards = response.rewardTokenDeposits.filter((reward) =>
-    isTimePeriodsIntersecting(
+    doIntervalsIntersect(
       Number(reward.periodStart),
       Number(reward.periodFinish),
       startAt,
@@ -113,7 +113,7 @@ function calculateAmount(
     const periodFinish = Number(rewardInfo.periodFinish);
     const rate = Number(rewardInfo.rate);
 
-    if (!isTimePeriodsIntersecting(periodStart, periodFinish, startAt, endAt)) {
+    if (!doIntervalsIntersect(periodStart, periodFinish, startAt, endAt)) {
       return accum;
     }
 

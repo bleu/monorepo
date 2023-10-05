@@ -10,19 +10,14 @@ type RewardInfo = ArrElement<
   GetDeepProp<PoolRewardsQuery, "rewardTokenDeposits">
 >;
 
-export async function getRewardsApr({
-  startAt,
-  endAt,
+export async function getRewardsAprForDateRange(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  poolId,
+  poolId: string,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  network,
-}: {
-  startAt: number;
-  endAt: number;
-  poolId: string;
-  network: string;
-}) {
+  network: string,
+  startAt: number,
+  endAt: number,
+) {
   const tempPoolId =
     "0x17e7d59bb209a3215ccc25fffef7161498b7c10d000200000000000000000020";
   const tempNetwork = String(NetworkChainId.BASE);

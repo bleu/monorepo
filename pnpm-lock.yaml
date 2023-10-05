@@ -137,8 +137,8 @@ importers:
         specifier: ^13.5.4
         version: 13.5.4(@babel/core@7.22.9)(react-dom@18.2.0)(react@18.2.0)
       plotly.js:
-        specifier: ^2.26.1
-        version: 2.26.1
+        specifier: ^2.26.2
+        version: 2.26.2
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -150,7 +150,7 @@ importers:
         version: 7.43.9(react@18.2.0)
       react-plotly.js:
         specifier: ^2.6.0
-        version: 2.6.0(plotly.js@2.26.1)(react@18.2.0)
+        version: 2.6.0(plotly.js@2.26.2)(react@18.2.0)
       server-only:
         specifier: ^0.0.1
         version: 0.0.1
@@ -291,8 +291,8 @@ importers:
         specifier: workspace:^
         version: link:../utils
       '@next/eslint-plugin-next':
-        specifier: ^13.5.3
-        version: 13.5.3
+        specifier: ^13.5.4
+        version: 13.5.4
       '@typescript-eslint/eslint-plugin':
         specifier: ^6.7.3
         version: 6.7.3(@typescript-eslint/parser@6.7.3)(eslint@8.50.0)(typescript@5.2.2)
@@ -3493,12 +3493,6 @@ packages:
   /@next/env@13.5.4:
     resolution: {integrity: sha512-LGegJkMvRNw90WWphGJ3RMHMVplYcOfRWf2Be3td3sUa+1AaxmsYyANsA+znrGCBjXJNi4XAQlSoEfUxs/4kIQ==}
     dev: false
-
-  /@next/eslint-plugin-next@13.5.3:
-    resolution: {integrity: sha512-lbZOoEjzSuTtpk9UgV9rOmxYw+PsSfNR+00mZcInqooiDMZ1u+RqT1YQYLsEZPW1kumZoQe5+exkCBtZ2xn0uw==}
-    dependencies:
-      glob: 7.1.7
-    dev: true
 
   /@next/eslint-plugin-next@13.5.4:
     resolution: {integrity: sha512-vI94U+D7RNgX6XypSyjeFrOzxGlZyxOplU0dVE5norIfZGn/LDjJYPHdvdsR5vN1eRtl6PDAsOHmycFEOljK5A==}
@@ -13549,8 +13543,8 @@ packages:
       find-up: 4.1.0
     dev: true
 
-  /plotly.js@2.26.1:
-    resolution: {integrity: sha512-aZgY5NEbuwgsnbTNmMy3BXPkx/QK+wuSnnEWvEeeUnhEZK+fTKazx6zCsbImLPinOvQtTdOXH4LhqrTYcYd69g==}
+  /plotly.js@2.26.2:
+    resolution: {integrity: sha512-HJv4n1I1SFTmY1+kzkLzrRyqqWVJ6r0JekvPKP0XtxITr8jugMJNJBFiErlKiPvSz8hcDEMwys5QIdFsK57KYw==}
     dependencies:
       '@plotly/d3': 3.8.1
       '@plotly/d3-sankey': 0.7.2
@@ -14045,13 +14039,13 @@ packages:
       p-defer: 3.0.0
     dev: true
 
-  /react-plotly.js@2.6.0(plotly.js@2.26.1)(react@18.2.0):
+  /react-plotly.js@2.6.0(plotly.js@2.26.2)(react@18.2.0):
     resolution: {integrity: sha512-g93xcyhAVCSt9kV1svqG1clAEdL6k3U+jjuSzfTV7owaSU9Go6Ph8bl25J+jKfKvIGAEYpe4qj++WHJuc9IaeA==}
     peerDependencies:
       plotly.js: '>1.34.0'
       react: '>0.13.0'
     dependencies:
-      plotly.js: 2.26.1
+      plotly.js: 2.26.2
       prop-types: 15.8.1
       react: 18.2.0
     dev: false

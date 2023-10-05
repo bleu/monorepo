@@ -63,9 +63,7 @@ const PRESETS: Preset[] = [
 ];
 
 /** The DateRangePicker component allows a user to select a range of dates */
-export const DateRangePicker: FC<DateRangePickerProps> & {
-  filePath: string;
-} = ({
+const DateRangePicker: FC<DateRangePickerProps> = ({
   initialDateFrom = new Date(new Date().setHours(0, 0, 0, 0)),
   initialDateTo,
   initialCompareFrom,
@@ -540,5 +538,5 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
 };
 
 DateRangePicker.displayName = "DateRangePicker";
-DateRangePicker.filePath =
-  "libs/shared/ui-kit/src/lib/date-range-picker/date-range-picker.tsx";
+
+export { DateRangePicker };

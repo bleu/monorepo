@@ -31,7 +31,7 @@ export const AccordionTrigger = forwardRef<
     >
       {children}
       <ChevronDownIcon
-        className="text-white transition-transform duration-300 ease-&lsqb;cubic-bezier(0.87,_0,_0.13,_1)&rsqb; group-data-[state=open]:rotate-180"
+        className="text-white transition-transform duration-300 ease-[cubic-bezier(0.87,_0,_0.13,_1)] group-data-[state=open]:rotate-180"
         aria-hidden
       />
     </Accordion.Trigger>

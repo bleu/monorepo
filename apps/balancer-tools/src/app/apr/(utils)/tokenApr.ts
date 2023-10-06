@@ -32,12 +32,12 @@ export async function getPoolTokensAprForDateRange(
     return undefined;
   }
   Sentry.addBreadcrumb({
-    category: "auth",
+    category: "getPoolTokensAprForDateRange",
     message: "Pool: " + poolId,
     level: "info",
   });
   Sentry.addBreadcrumb({
-    category: "auth",
+    category: "getPoolTokensAprForDateRange",
     message: "Rate providers: " + rateProviders,
     level: "info",
   });
@@ -102,12 +102,12 @@ async function getAPRFromRateProviderInterval(
       chainName,
     );
     Sentry.addBreadcrumb({
-      category: "auth",
+      category: "getAPRFromRateProviderInterval",
       message: "endRate: " + endRate,
       level: "info",
     });
     Sentry.addBreadcrumb({
-      category: "auth",
+      category: "getAPRFromRateProviderInterval",
       message: "startRate: " + startRate,
       level: "info",
     });
@@ -115,7 +115,7 @@ async function getAPRFromRateProviderInterval(
     const apr = getAPRFromRate(startRate, endRate, timeStart, timeEnd);
 
     Sentry.addBreadcrumb({
-      category: "auth",
+      category: "getAPRFromRateProviderInterval",
       message: "apr: " + apr,
       level: "info",
     });

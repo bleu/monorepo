@@ -291,8 +291,8 @@ importers:
         specifier: ^4.1.0
         version: 4.1.0
       matchstick-as:
-        specifier: 0.5.2
-        version: 0.5.2
+        specifier: 0.6.0
+        version: 0.6.0
       ts-node:
         specifier: ^10.9.1
         version: 10.9.1(@types/node@18.18.0)(typescript@5.2.2)
@@ -12488,8 +12488,8 @@ packages:
       vt-pbf: 3.1.3
     dev: false
 
-  /matchstick-as@0.5.2:
-    resolution: {integrity: sha512-fb1OVphDKEvJY06Ue02Eh1CNncuW95vp6b8tNAP7UIqplICSLoU/zgN6U7ge7R0upsoO78C7CRi4EyK/7Jxz7g==}
+  /matchstick-as@0.6.0:
+    resolution: {integrity: sha512-E36fWsC1AbCkBFt05VsDDRoFvGSdcZg6oZJrtIe/YDBbuFh8SKbR5FcoqDhNWqSN+F7bN/iS2u8Md0SM+4pUpw==}
     dependencies:
       wabt: 1.0.24
     dev: true

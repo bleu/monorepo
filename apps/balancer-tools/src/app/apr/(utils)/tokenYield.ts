@@ -28,9 +28,17 @@ export async function getPoolTokensAprForDateRange(
   endAt: number,
 ) {
   const rateProviders = await getPoolTokensRateProviders(chain, poolId);
+  if (!rateProviders.length) {
+    return undefined;
+  }
   Sentry.addBreadcrumb({
     category: "auth",
     message: "Pool: " + poolId,
+    level: "info",
+  });
+  Sentry.addBreadcrumb({
+    category: "auth",
+    message: "Rate providers: " + rateProviders,
     level: "info",
   });
   const chainName = networkFor(chain) as ChainName;
@@ -83,9 +91,6 @@ async function getAPRFromRateProviderInterval(
       ({ address }) => address === rateProviderAddress,
     )
   ) {
-    Sentry.captureMessage(
-      "Returning 0 since vunerabilityAffecteRateProviders for pool" + poolId,
-    );
     return 0;
   }
 

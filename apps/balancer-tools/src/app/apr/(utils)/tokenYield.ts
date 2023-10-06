@@ -28,8 +28,6 @@ export async function getPoolTokensAprForDateRange(
   endAt: number,
 ) {
   const rateProviders = await getPoolTokensRateProviders(chain, poolId);
-  // eslint-disable-next-line no-console
-  console.log(">> getPoolTokensAprForDateRange", poolId, rateProviders);
   Sentry.addBreadcrumb({
     category: "auth",
     message: "Pool: " + poolId,

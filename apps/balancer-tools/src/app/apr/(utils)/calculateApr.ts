@@ -99,6 +99,13 @@ export async function calculateAPRForDateRange(
     );
   }
 
+  const totalAprSum = (vebalAPR || 0) + feeAPR + tokenAPRTotal;
+
+  if (totalAprSum === null && tokensAPR != null) {
+    Sentry.captureMessage("vebalAPR resulted in null", {
+      level: "warning",
+      extra: { balPriceUSD, tvl, votingShare, poolId },
+    });
   }
 
   const rewardsAPRTotal = rewardsAPR.reduce(
@@ -108,7 +115,7 @@ export async function calculateAPRForDateRange(
 
   return {
     apr: {
-      total: (vebalAPR || 0) + feeAPR + tokenAPRTotal,
+      total: totalAprSum,
       breakdown: {
         veBAL: vebalAPR,
         swapFee: feeAPR,

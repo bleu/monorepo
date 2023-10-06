@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-import * as Sentry from "@sentry/nextjs";
 
 import { Pool } from "#/lib/balancer/gauges";
 import { pools } from "#/lib/gql/server";
@@ -134,13 +133,6 @@ export async function calculatePoolStats({
     poolId,
     network,
   );
-
-  if (apr.total === null || apr.breakdown.veBAL === null) {
-    Sentry.captureMessage("vebalAPR resulted in null", {
-      level: "warning",
-      extra: { balPriceUSD, tvl, votingShare, poolId, apr },
-    });
-  }
 
   return {
     poolId,

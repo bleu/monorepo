@@ -16,13 +16,13 @@
   "devDependencies": {
     "@bleu-balancer-tools/utils": "workspace:^",
     "@bleu-balancer-tools/tsconfig": "workspace:*",
-    "@graphprotocol/graph-cli": "0.58.0",
+    "@graphprotocol/graph-cli": "0.59.0",
     "@graphprotocol/graph-ts": "0.31.0",
     "@types/fs-extra": "^11.0.2",
     "@types/js-yaml": "^4.0.6",
     "handlebars": "^4.7.8",
     "js-yaml": "^4.1.0",
-    "matchstick-as": "0.5.2",
+    "matchstick-as": "0.6.0",
     "ts-node": "^10.9.1"
   }
 }

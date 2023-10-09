@@ -6,6 +6,7 @@ export enum Subgraph {
   BalancerGauges = "balancer-gauges",
   Balancer = "balancer",
   ChainsBlocks = "chains-blocks",
+  BalancerRewards = "balancer-rewards",
 }
 
 // IMPORTANT NOTE:
@@ -114,6 +115,36 @@ export const SUBGRAPHS = {
           "https://api.studio.thegraph.com/query/48427/bleu-base-blocks/version/latest",
         [Network.Avalanche]:
           "https://api.thegraph.com/subgraphs/name/iliaazhel/avalanche-blocks",
+      };
+    },
+    endpointFor(network: Network) {
+      return this.endpoints()[network];
+    },
+  },
+  [Subgraph.BalancerRewards]: {
+    name: Subgraph.BalancerRewards,
+    endpoints() {
+      return {
+        [Network.Ethereum]:
+          "https://api.studio.thegraph.com/query/40456/balancer-gauges-base/version/latest",
+        [Network.Goerli]:
+          "https://api.studio.thegraph.com/query/40456/balancer-gauges-base/version/latest",
+        [Network.Polygon]:
+          "https://api.studio.thegraph.com/query/40456/balancer-gauges-base/version/latest",
+        [Network.PolygonZKEVM]:
+          "https://api.studio.thegraph.com/query/40456/balancer-gauges-polygon-zk/version/latest",
+        [Network.Arbitrum]:
+          "https://api.studio.thegraph.com/query/40456/balancer-gauges-base/version/latest",
+        [Network.Sepolia]:
+          "https://api.studio.thegraph.com/query/40456/balancer-gauges-sepolia/version/latest",
+        [Network.Gnosis]:
+          "https://api.studio.thegraph.com/query/40456/balancer-gauges-base/version/latest",
+        [Network.Optimism]:
+          "https://api.studio.thegraph.com/query/40456/balancer-gauges-base/version/latest",
+        [Network.Base]:
+          "https://api.studio.thegraph.com/query/40456/balancer-gauges-base/version/latest",
+        [Network.Avalanche]:
+          "https://api.studio.thegraph.com/query/40456/balancer-gauges-base/version/latest",
       };
     },
     endpointFor(network: Network) {

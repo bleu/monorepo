@@ -6,33 +6,40 @@ import {
   networksOnBalancer,
 } from "@bleu-balancer-tools/utils";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import * as React from "react";
-import { useState } from "react";
 
 import { Dialog } from "#/components/Dialog";
-import { BaseInput } from "#/components/Input";
 import { SearchPoolForm } from "#/components/SearchPoolForm";
+import { DateRangePicker } from "#/components/ui/date-range-picker";
 
 import { generatePoolPageLink } from "../(utils)/getFilteredApiUrl";
-import { parseMMDDYYYYToDate } from "../api/(utils)/date";
+import { formatDateToMMDDYYYY, parseMMDDYYYYToDate } from "../api/(utils)/date";
 
 export default function HeaderEndButton() {
   const { network } = useParams();
   const searchParams = useSearchParams();
   const startAtParam = searchParams.get("startAt");
   const endAtParam = searchParams.get("endAt");
-
+  const pathname = usePathname();
   const router = useRouter();
-  const [startAtInput, setStartAtInput] = useState("");
-  const [endAtInput, setEndAtInput] = useState("");
 
-  React.useEffect(() => {
-    if (startAtParam && endAtParam) {
-      setStartAtInput(startAtParam);
-      setEndAtInput(endAtParam);
-    }
-  }, [searchParams]);
+  const handleDateUpdate = (from: string, to: string) => {
+    const newQuery = {
+      startAt: from,
+      endAt: to,
+    };
+
+    const queryString = Object.entries(newQuery)
+      .map(([key, value]) => `&${key}=${value}`)
+      .join("");
+    router.push(pathname + "?" + queryString, { scroll: false });
+  };
 
   const handlePoolClick = ({ poolId }: { poolId: string }) => {
     router.push(
@@ -62,34 +69,23 @@ export default function HeaderEndButton() {
           />
         }
       >
-        <div className="flex items-center gap-x-2 text-sm font-normal text-slate12 bg-blue4 border border-blue6 px-2 rounded-[4px] cursor-pointer h-[35px] w-full">
+        <div className="flex items-center gap-x-2 text-sm font-normal text-slate12 bg-blue4 border border-blue6 px-2 rounded-[4px] cursor-pointer h-[35px]">
           <MagnifyingGlassIcon width="20" height="20" strokeWidth={1} />
-          <span className="font-medium pr-1">Go to pool</span>
+          <span className="font-medium pr-1 w-max">Go to pool</span>
         </div>
       </Dialog>
-      <BaseInput
-        value={startAtInput}
-        onChange={(e) => {
-          setStartAtInput((e.target as HTMLInputElement).value);
-          router.push(
-            `/apr?startAt=${
-              (e.target as HTMLInputElement).value
-            }&endAt=${endAtInput}&`,
+      <DateRangePicker
+        onUpdate={(values) => {
+          const {
+            range: { from, to },
+          } = values;
+          handleDateUpdate(
+            formatDateToMMDDYYYY(from),
+            formatDateToMMDDYYYY(to as Date),
           );
         }}
-        disabled={true}
-      />
-      <BaseInput
-        value={endAtInput}
-        onChange={(e) => {
-          setEndAtInput((e.target as HTMLInputElement).value);
-          router.push(
-            `/apr?startAt=${startAtInput}&endAt=${
-              (e.target as HTMLInputElement).value
-            }&`,
-          );
-        }}
-        disabled={true}
+        initialDateFrom={startAtParam ?? undefined}
+        initialDateTo={endAtParam ?? undefined}
       />
     </div>
   );

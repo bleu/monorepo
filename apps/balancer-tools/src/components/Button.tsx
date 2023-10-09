@@ -43,6 +43,16 @@ export const PREDEFINED_CLASSES = {
         "bg-transparent text-amber5 border-amber4 hover:bg-amber2 hover:border-amber2",
       dark: "bg-transparent text-amber10 border-amber3 hover:bg-amber2 hover:border-amber2",
     },
+    "lighter-outline": {
+      light: "bg-transparent text-amber9 border-amber9",
+      medium: "bg-transparent text-amber4 border-amber4",
+      dark: "bg-transparent text-amber3 border-amber3",
+    },
+    ghost: {
+      light: "hover:bg-accent hover:text-accent-foreground",
+      medium: "hover:bg-accent hover:text-accent-foreground",
+      dark: "hover:bg-accent hover:text-accent-foreground",
+    },
   },
   slate: {
     solid: {
@@ -56,6 +66,11 @@ export const PREDEFINED_CLASSES = {
       medium:
         "bg-transparent text-slate4 border-slate4 hover:bg-slate2 hover:border-slate2",
       dark: "bg-transparent text-slate3 border-slate3 hover:bg-slate2 hover:border-slate2",
+    },
+    ghost: {
+      light: "hover:bg-accent hover:text-accent-foreground",
+      medium: "hover:bg-accent hover:text-accent-foreground",
+      dark: "hover:bg-accent hover:text-accent-foreground",
     },
   },
 } as const;
@@ -110,7 +125,8 @@ const Button = forwardRef(function (
       className={cn(
         className,
         buttonClasses,
-        "rounded-md py-3 px-5 text-center text-sm font-semibold border focus-visible:outline-blue7 focus-visible:outline-offset-2 disabled:opacity-40",
+        "rounded-md text-center text-sm font-semibold border focus-visible:outline-blue7 focus-visible:outline-offset-2 disabled:opacity-40",
+        /px-|py-|p-/.test(className) ? "" : "py-3 px-5",
       )}
     >
       {modifiedChildren}

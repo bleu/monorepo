@@ -14,7 +14,7 @@ import { Dialog } from "#/components/Dialog";
 import { BaseInput } from "#/components/Input";
 import { SearchPoolForm } from "#/components/SearchPoolForm";
 
-import { generateRedirectUrlWithParams } from "../(utils)/getFilteredApiUrl";
+import { generatePoolPageLink } from "../(utils)/getFilteredApiUrl";
 import { parseMMDDYYYYToDate } from "../api/(utils)/date";
 
 export default function HeaderEndButton() {
@@ -36,7 +36,7 @@ export default function HeaderEndButton() {
 
   const handlePoolClick = ({ poolId }: { poolId: string }) => {
     router.push(
-      generateRedirectUrlWithParams(
+      generatePoolPageLink(
         parseMMDDYYYYToDate(startAtParam as string) as Date,
         parseMMDDYYYYToDate(endAtParam as string) as Date,
         null,

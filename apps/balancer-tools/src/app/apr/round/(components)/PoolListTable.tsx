@@ -29,7 +29,7 @@ import { formatNumber } from "#/utils/formatNumber";
 import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
 import {
   generateApiUrlWithParams,
-  generateRedirectUrlWithParams,
+  generatePoolPageLink,
 } from "../../(utils)/getFilteredApiUrl";
 import { PoolTypeEnum } from "../../(utils)/types";
 import { PoolStatsData, PoolStatsResults, PoolTokens } from "../../api/route";
@@ -221,12 +221,7 @@ function TableRow({
   startAt: Date;
   endAt: Date;
 }) {
-  const poolRedirectURL = generateRedirectUrlWithParams(
-    startAt,
-    endAt,
-    null,
-    poolId,
-  );
+  const poolRedirectURL = generatePoolPageLink(startAt, endAt, null, poolId);
   return (
     <Table.BodyRow classNames="sm:hover:bg-blue4 hover:cursor-pointer duration-500">
       <Table.BodyCellLink

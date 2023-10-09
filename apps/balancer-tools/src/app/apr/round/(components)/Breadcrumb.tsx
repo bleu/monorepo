@@ -14,7 +14,7 @@ import invariant from "tiny-invariant";
 import { Toast } from "#/components/Toast";
 import { Pool } from "#/lib/balancer/gauges";
 
-import { generateRedirectUrlWithParams } from "../../(utils)/getFilteredApiUrl";
+import { generatePoolPageLink } from "../../(utils)/getFilteredApiUrl";
 import { parseMMDDYYYYToDate } from "../../api/(utils)/date";
 
 function getPoolExternalUrl({
@@ -104,7 +104,7 @@ export default function Breadcrumb() {
           {network && (
             <BreadcrumbItem
               classNames="hidden sm:block"
-              link={generateRedirectUrlWithParams(
+              link={generatePoolPageLink(
                 parseMMDDYYYYToDate(searchParams.get("startAt")) as Date,
                 parseMMDDYYYYToDate(searchParams.get("endAt")) as Date,
                 { network },
@@ -122,7 +122,7 @@ export default function Breadcrumb() {
             </BreadcrumbItem>
           )}
           <BreadcrumbItem
-            link={generateRedirectUrlWithParams(
+            link={generatePoolPageLink(
               parseMMDDYYYYToDate(searchParams.get("startAt")) as Date,
               parseMMDDYYYYToDate(searchParams.get("endAt")) as Date,
             )}

@@ -7,7 +7,7 @@ import { Data, PlotMouseEvent, PlotType } from "plotly.js";
 
 import Plot from "#/components/Plot";
 
-import { generateRedirectUrlWithParams } from "../../(utils)/getFilteredApiUrl";
+import { generatePoolPageLink } from "../../(utils)/getFilteredApiUrl";
 import { PoolStatsResults } from "../../api/route";
 
 export default function TopPoolsChart({
@@ -65,7 +65,7 @@ export default function TopPoolsChart({
   function onClickHandler(event: PlotMouseEvent) {
     const clickedRoundData =
       ApiResult.average.poolAverage[event.points[0].pointIndex];
-    const poolRedirectURL = generateRedirectUrlWithParams(
+    const poolRedirectURL = generatePoolPageLink(
       startAt,
       endAt,
       null,

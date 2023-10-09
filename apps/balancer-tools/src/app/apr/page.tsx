@@ -6,7 +6,7 @@ import KpisSkeleton from "./(components)/(skeleton)/KpisSkeleton";
 import TableSkeleton from "./(components)/(skeleton)/TableSkeleton";
 import {
   generateApiUrlWithParams,
-  generateRedirectUrlWithParams,
+  generatePoolPageLink,
 } from "./(utils)/getFilteredApiUrl";
 import { SECONDS_IN_DAY } from "./api/(utils)/date";
 import { QueryParamsPagesSchema } from "./api/(utils)/validate";
@@ -33,7 +33,7 @@ export default function Page({ searchParams }: { searchParams: SearchParams }) {
       new Date().getTime() - 3 * SECONDS_IN_DAY * 1000,
     );
     return redirect(
-      generateRedirectUrlWithParams(
+      generatePoolPageLink(
         threeDaysAgoDateFormated,
         currentDateFormated,
         searchParams,

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { generateRedirectUrlWithParams } from "../../(utils)/getFilteredApiUrl";
+import { generatePoolPageLink } from "../../(utils)/getFilteredApiUrl";
 import { SECONDS_IN_DAY } from "../../api/(utils)/date";
 import { QueryParamsPagesSchema } from "../../api/(utils)/validate";
 import { SearchParams } from "../../page";
@@ -18,10 +18,6 @@ export default function Page({ searchParams }: { searchParams: SearchParams }) {
   }
 
   return redirect(
-    generateRedirectUrlWithParams(
-      startAtDate as Date,
-      endAtDate as Date,
-      searchParams,
-    ),
+    generatePoolPageLink(startAtDate as Date, endAtDate as Date, searchParams),
   );
 }

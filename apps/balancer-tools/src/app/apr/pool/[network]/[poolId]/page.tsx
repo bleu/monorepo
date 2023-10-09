@@ -3,7 +3,7 @@ import { Suspense } from "react";
 
 import ChartSkelton from "#/app/apr/(components)/(skeleton)/ChartSkelton";
 import KpisSkeleton from "#/app/apr/(components)/(skeleton)/KpisSkeleton";
-import { generateRedirectUrlWithParams } from "#/app/apr/(utils)/getFilteredApiUrl";
+import { generatePoolPageLink } from "#/app/apr/(utils)/getFilteredApiUrl";
 import { SECONDS_IN_DAY } from "#/app/apr/api/(utils)/date";
 import { QueryParamsPagesSchema } from "#/app/apr/api/(utils)/validate";
 import { SearchParams } from "#/app/apr/page";
@@ -27,7 +27,7 @@ export default async function Page({
       new Date().getTime() - 3 * SECONDS_IN_DAY * 1000,
     );
     return redirect(
-      generateRedirectUrlWithParams(
+      generatePoolPageLink(
         threeDaysAgoDateFormated,
         currentDateFormated,
         searchParams,

@@ -87,7 +87,7 @@ export function generateApiUrlWithParams(
   }`;
 }
 
-export function generateRedirectUrlWithParams(
+export function generatePoolPageLink(
   startAt: Date,
   endAt: Date,
   searchParams?: SearchParams | null,

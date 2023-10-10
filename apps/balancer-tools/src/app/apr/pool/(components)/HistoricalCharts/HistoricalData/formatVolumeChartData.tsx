@@ -1,4 +1,4 @@
-import { redDarkA } from "@radix-ui/colors";
+import { blueDarkA } from "@radix-ui/colors";
 import { PlotType } from "plotly.js";
 
 import { PoolStatsResults } from "#/app/apr/api/route";
@@ -23,7 +23,11 @@ export default function formatVolumeChartData(
     hovertemplate: HOVERTEMPLATE,
     x: trimmedTotalAprData.x,
     y: trimmedTotalAprData.y,
-    line: { shape: "spline", color: redDarkA.redA9 } as const,
+    marker: {
+      color: blueDarkA.blueA9,
+      opacity: 0.8,
+    },
+    line: { shape: "spline" } as const,
     type: "bar" as PlotType,
     // @ts-ignore: 2322
     offsetgroup: 3,

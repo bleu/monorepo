@@ -2,7 +2,6 @@
 
 import {
   capitalize,
-  networkFor,
   networkIdFor,
   networksOnBalancer,
 } from "@bleu-balancer-tools/utils";
@@ -19,7 +18,8 @@ import { Dialog } from "#/components/Dialog";
 import { SearchPoolForm } from "#/components/SearchPoolForm";
 import { DateRangePicker } from "#/components/ui/date-range-picker";
 
-import { formatDateToMMDDYYYY } from "../api/(utils)/date";
+import { generatePoolPageLink } from "../(utils)/getFilteredApiUrl";
+import { formatDateToMMDDYYYY, parseMMDDYYYYToDate } from "../api/(utils)/date";
 
 export default function HeaderEndButton() {
   const { network } = useParams();
@@ -41,17 +41,14 @@ export default function HeaderEndButton() {
     router.push(pathname + "?" + queryString, { scroll: false });
   };
 
-  const handlePoolClick = ({
-    network,
-    poolId,
-  }: {
-    network: string;
-    poolId: string;
-  }) => {
+  const handlePoolClick = ({ poolId }: { poolId: string }) => {
     router.push(
-      `/apr/pool/${networkFor(
-        network,
-      )}/${poolId}?startAt=${startAtParam}&endAt=${endAtParam}`,
+      generatePoolPageLink(
+        parseMMDDYYYYToDate(startAtParam as string) as Date,
+        parseMMDDYYYYToDate(endAtParam as string) as Date,
+        null,
+        poolId,
+      ),
     );
   };
   const avaliableNetworks = Object.keys(networksOnBalancer).map((key) => ({

@@ -14,6 +14,9 @@ import invariant from "tiny-invariant";
 import { Toast } from "#/components/Toast";
 import { Pool } from "#/lib/balancer/gauges";
 
+import { generatePoolPageLink } from "../../(utils)/getFilteredApiUrl";
+import { parseMMDDYYYYToDate } from "../../api/(utils)/date";
+
 function getPoolExternalUrl({
   network,
   poolId,
@@ -101,7 +104,11 @@ export default function Breadcrumb() {
           {network && (
             <BreadcrumbItem
               classNames="hidden sm:block"
-              link={`/apr/pool/${network}/`}
+              link={generatePoolPageLink(
+                parseMMDDYYYYToDate(searchParams.get("startAt")) as Date,
+                parseMMDDYYYYToDate(searchParams.get("endAt")) as Date,
+                { network },
+              )}
             >
               {network}
             </BreadcrumbItem>
@@ -109,12 +116,17 @@ export default function Breadcrumb() {
           {poolId && (
             <BreadcrumbItem
               classNames="hidden sm:block"
-              link={`/apr/pool/${network}/${poolId}`}
+              link={`/apr/pool/${network}/${poolId}?${searchParams.toString()}`}
             >
               {selectedPool?.symbol ?? poolId}
             </BreadcrumbItem>
           )}
-          <BreadcrumbItem link={`/apr/?startAt=${startAt}&endAt=${endAt}&`}>
+          <BreadcrumbItem
+            link={generatePoolPageLink(
+              parseMMDDYYYYToDate(searchParams.get("startAt")) as Date,
+              parseMMDDYYYYToDate(searchParams.get("endAt")) as Date,
+            )}
+          >
             <div className="flex items-center gap-x-2">
               {startAt} - {endAt}
             </div>

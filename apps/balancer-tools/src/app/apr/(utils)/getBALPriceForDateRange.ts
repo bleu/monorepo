@@ -46,7 +46,13 @@ export const getTokenPriceByDate = withCache(async function getTokenPriceByDate(
   tokenAddress: string,
   tokenNetwork: number,
 ) {
-  const token = `${networkFor(tokenNetwork).toLowerCase()}:${tokenAddress}`;
+  let networkName = networkFor(tokenNetwork).toLowerCase();
+
+  if (networkName === "polygon-zkevm") {
+    networkName = networkName.replace("-", "_");
+  }
+
+  const token = `${networkName}:${tokenAddress}`;
   const relevantDateForPrice = Math.min(dateToEpoch(new Date()), dateTimestamp);
   const response = await new DefiLlamaAPI().getHistoricalPrice(
     new Date(relevantDateForPrice * 1000),

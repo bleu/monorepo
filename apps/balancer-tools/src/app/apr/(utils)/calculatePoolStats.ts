@@ -110,8 +110,7 @@ async function calculateTokensStats(
           `Failed fetching price for ${token.symbol}(network:${poolNetwork},addr:${token.address}) at ${endAtTimestamp}`,
         );
       }
-      //TODO: some work arround to get token price
-      return tokenPrice === undefined ? 1 : tokenPrice;
+      return tokenPrice === undefined ? 0 : tokenPrice;
     }),
   );
 

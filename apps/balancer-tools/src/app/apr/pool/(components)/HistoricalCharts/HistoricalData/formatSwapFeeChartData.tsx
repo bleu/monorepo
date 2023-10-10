@@ -25,6 +25,7 @@ export default function HistoricalSwapFeeChartData(
     y: trimmedCollectedSwapFeeData.y,
     marker: {
       color: normalBarColor,
+      opacity: 1,
     },
     line: { shape: "spline" } as const,
     type: "bar" as PlotType,

@@ -38,10 +38,10 @@ export default function HistoricalChartWrapper({
   const charts = ["APR", "Weekly Swap Fees", "TVL", "Volume"];
   const [selectedTabs, setselectedTabs] = useState([0]);
 
-  const aprChartData = formatAPRChartData(apiResult, "y2");
+  const feeChartData = formatSwapFeeChartData(apiResult, "y2");
   const tvlChartData = formatTvlChartData(apiResult, "y3");
   const volumeChartData = formatVolumeChartData(apiResult, "y4");
-  const feeChartData = formatSwapFeeChartData(apiResult, "y5");
+  const aprChartData = formatAPRChartData(apiResult, "y5");
   const activeCharts = getActiveData(
     selectedTabs,
     aprChartData,
@@ -101,8 +101,9 @@ export default function HistoricalChartWrapper({
             linecolor: blueDark.blue6,
             mirror: true,
             fixedrange: true,
-            title: "APR %",
+            title: "Swap Fee",
             overlaying: "y",
+            side: "right",
             anchor: "free",
             // @ts-ignore: 2322
             autoshift: true,
@@ -136,9 +137,8 @@ export default function HistoricalChartWrapper({
             linecolor: blueDark.blue6,
             mirror: true,
             fixedrange: true,
-            title: "Swap Fee",
+            title: "APR %",
             overlaying: "y",
-            side: "right",
             anchor: "free",
             // @ts-ignore: 2322
             autoshift: true,

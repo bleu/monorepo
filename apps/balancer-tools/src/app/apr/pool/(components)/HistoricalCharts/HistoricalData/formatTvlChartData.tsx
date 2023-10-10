@@ -1,4 +1,4 @@
-import { yellowDarkA } from "@radix-ui/colors";
+import { amberDark } from "@radix-ui/colors";
 import { PlotType } from "plotly.js";
 
 import { PoolStatsResults } from "#/app/apr/api/route";
@@ -21,7 +21,11 @@ export default function formatTvlChartData(
     hovertemplate: "%{y:$,.0f}",
     x: trimmedTotalAprData.x,
     y: trimmedTotalAprData.y,
-    line: { shape: "spline", color: yellowDarkA.yellowA9 } as const,
+    marker: {
+      color: amberDark.amber9,
+      opacity: 0.8,
+    },
+    line: { shape: "spline" } as const,
     type: "bar" as PlotType,
     // @ts-ignore: 2322
     offsetgroup: 2,

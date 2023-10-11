@@ -10,7 +10,7 @@ export const INITIAL_MIN_TVL = 1000;
 export const INITIAL_LIMIT = 10;
 
 interface ExpectedSearchParams extends SearchParams {
-  minTVL?: string;
+  minTvl?: string;
   limit?: string;
   sort?: string;
   order?: string;
@@ -18,7 +18,7 @@ interface ExpectedSearchParams extends SearchParams {
 
 const convert = (key: string, value: string) => {
   if (["sort", "order"].includes(key)) return value || undefined;
-  if (["minTVL", "maxTVL", "minAPR", "maxAPR", "limit"].includes(key))
+  if (["minTvl", "maxTvl", "minApr", "maxApr", "limit"].includes(key))
     return Number(value) || undefined;
   if (["tokens", "type", "network"].includes(key))
     return value ? value.split(",") : undefined;
@@ -27,7 +27,7 @@ const convert = (key: string, value: string) => {
 
 function getFilterDataFromParams(searchParams: SearchParams) {
   const {
-    minTVL = INITIAL_MIN_TVL,
+    minTvl = INITIAL_MIN_TVL,
     limit = INITIAL_LIMIT,
     sort = "apr",
     order = "desc",
@@ -41,7 +41,7 @@ function getFilterDataFromParams(searchParams: SearchParams) {
 
   // Merge the converted params with default values
   const result = {
-    minTVL,
+    minTvl,
     limit,
     sort,
     order,

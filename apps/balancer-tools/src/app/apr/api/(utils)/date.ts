@@ -10,6 +10,32 @@ export function formatDateToMMDDYYYY(date: Date): string {
   return `${month}-${day}-${year}`;
 }
 
+export function parseMMDDYYYYToDate(
+  dateStr: string | null | undefined,
+): Date | null {
+  if (!dateStr) return null;
+  const [month, day, year] = dateStr.split("-").map(Number);
+  if (
+    !isNaN(month) &&
+    !isNaN(day) &&
+    !isNaN(year) &&
+    month >= 1 &&
+    month <= 12 &&
+    day >= 1 &&
+    day <= 31 &&
+    year >= 1900 &&
+    year <= new Date().getFullYear()
+  ) {
+    // Create a Date object in the expected format
+    return new Date(
+      `${year}-${month.toString().padStart(2, "0")}-${day
+        .toString()
+        .padStart(2, "0")}T00:00:00.000Z`,
+    );
+  }
+  return null;
+}
+
 export const generateDateRange = (
   startTimestamp: number,
   endTimestamp: number,
@@ -48,3 +74,14 @@ export function getWeeksBetweenDates(
 
 export const dateToEpoch = (date: Date): number =>
   Math.floor(date.getTime() / 1000);
+
+type Timestamp = number;
+
+export function doIntervalsIntersect(
+  periodOneStart: Timestamp,
+  periodOneEnd: Timestamp,
+  periodTwoStart: Timestamp,
+  periodTwoEnd: Timestamp,
+): boolean {
+  return !(periodOneStart > periodTwoEnd !== periodTwoStart > periodOneEnd);
+}

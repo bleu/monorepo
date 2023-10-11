@@ -4,8 +4,11 @@ import { Suspense } from "react";
 import ChartSkelton from "./(components)/(skeleton)/ChartSkelton";
 import KpisSkeleton from "./(components)/(skeleton)/KpisSkeleton";
 import TableSkeleton from "./(components)/(skeleton)/TableSkeleton";
-import getFilteredDateApiUrl from "./(utils)/getFilteredApiUrl";
-import { formatDateToMMDDYYYY, SECONDS_IN_DAY } from "./api/(utils)/date";
+import {
+  generateApiUrlWithParams,
+  generatePoolPageLink,
+} from "./(utils)/getFilteredApiUrl";
+import { SECONDS_IN_DAY } from "./api/(utils)/date";
 import { QueryParamsPagesSchema } from "./api/(utils)/validate";
 import Breadcrumb from "./round/(components)/Breadcrumb";
 import PoolTableWrapper from "./round/(components)/PoolTableWrapper";
@@ -25,12 +28,16 @@ export interface SearchParams {
 export default function Page({ searchParams }: { searchParams: SearchParams }) {
   const parsedParams = QueryParamsPagesSchema.safeParse(searchParams);
   if (!parsedParams.success) {
-    const currentDateFormated = formatDateToMMDDYYYY(new Date());
-    const threeDaysAgoDateFormated = formatDateToMMDDYYYY(
-      new Date(new Date().getTime() - 3 * SECONDS_IN_DAY * 1000),
+    const currentDateFormated = new Date();
+    const threeDaysAgoDateFormated = new Date(
+      new Date().getTime() - 3 * SECONDS_IN_DAY * 1000,
     );
     return redirect(
-      `/apr/?startAt=${threeDaysAgoDateFormated}&endAt=${currentDateFormated}&`,
+      generatePoolPageLink(
+        threeDaysAgoDateFormated,
+        currentDateFormated,
+        searchParams,
+      ),
     );
   }
   const { startAt: startAtDate, endAt: endAtDate } = parsedParams.data;
@@ -38,7 +45,7 @@ export default function Page({ searchParams }: { searchParams: SearchParams }) {
     return redirect("/apr/");
   }
 
-  const url = getFilteredDateApiUrl(startAtDate, endAtDate, searchParams);
+  const url = generateApiUrlWithParams(startAtDate, endAtDate, searchParams);
 
   return (
     <div className="flex flex-1 flex-col gap-y-3">

@@ -4,7 +4,7 @@ import OverviewCards, {
   getDatesDetails,
 } from "../../(components)/OverviewCards";
 import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
-import getFilteredDateApiUrl from "../../(utils)/getFilteredApiUrl";
+import { generateApiUrlWithParams } from "../../(utils)/getFilteredApiUrl";
 import { PoolStatsResults } from "../../api/route";
 
 export default async function PoolOverviewCards({
@@ -22,7 +22,7 @@ export default async function PoolOverviewCards({
     tooltip?: string;
   }[] = [];
   const results: PoolStatsResults = await fetcher(
-    getFilteredDateApiUrl(startAt, endAt, null, poolId),
+    generateApiUrlWithParams(startAt, endAt, null, poolId),
   );
 
   cardsDetails.push(

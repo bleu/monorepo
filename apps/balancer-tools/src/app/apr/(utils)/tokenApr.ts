@@ -5,7 +5,7 @@ import { zeroAddress } from "viem";
 import { withCache } from "#/lib/cache";
 import { pools } from "#/lib/gql/server";
 
-import { SECONDS_IN_DAY, SECONDS_IN_YEAR } from "./../api/(utils)/date";
+import { SECONDS_IN_DAY, SECONDS_IN_YEAR } from "../api/(utils)/date";
 import { ChainName, publicClients } from "./chainsPublicClients";
 import getBlockNumberByTimestamp from "./getBlockNumberByTimestamp";
 import { manualPoolsRateProvider } from "./poolsRateProvider";

@@ -15,14 +15,17 @@ export interface tokenAPR {
   symbol: string;
   yield: number;
 }
-export interface PoolTokens {
-  percentageValue?: number;
-  price?: number;
+
+export interface rewardAPR {
   address: string;
-  logoSrc?: string;
+  symbol: string;
+  value: number;
+}
+export interface PoolTokens {
+  address: string;
   symbol: string;
   weight: number | null;
-  balance?: number;
+  logoSrc?: string;
 }
 
 export interface PoolStats {
@@ -34,6 +37,10 @@ export interface PoolStats {
       tokens: {
         total: number;
         breakdown: tokenAPR[];
+      };
+      rewards: {
+        total: number;
+        breakdown: rewardAPR[];
       };
     };
   };

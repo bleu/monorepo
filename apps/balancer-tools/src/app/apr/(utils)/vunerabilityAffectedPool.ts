@@ -28,4 +28,24 @@ export const vunerabilityAffecteRateProviders: {
     token: "bb-a-WETH",
     address: "0x43894de14462b421372bcfe445fa51b1b4a0ff3d",
   },
+  {
+    token: "bb-a-WMATIC",
+    address: "0xe4885ed2818cc9e840a25f94f9b2a28169d1aea7",
+  },
+  {
+    token: "bb-a-WETH",
+    address: "0xda1cd1711743e57dd57102e9e61b75f3587703da",
+  },
+  {
+    token: "bb-a-USDC",
+    address: "0xbd724eb087d4cc0f61a5fed1fffaf937937e14de",
+  },
+  {
+    token: "bb-a-USDT",
+    address: "0xa1697f9af0875b63ddc472d6eebada8c1fab8568",
+  },
+  {
+    token: "bb-e-USDT",
+    address: "0x3c640f0d3036ad85afa2d5a9e32be651657b874f",
+  },
 ];

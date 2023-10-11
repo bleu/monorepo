@@ -29,6 +29,17 @@ const hashFunction = <
   return hashValue;
 };
 
+const hashString = (input: string): string => {
+  if (hashCache[input]) return hashCache[input];
+
+  const hash = crypto.createHash("sha256");
+  hash.update(input);
+  const hashValue = hash.digest("hex");
+
+  hashCache[input] = hashValue;
+  return hashValue;
+};
+
 const memoryCache: Record<string, unknown> = {};
 const promisifiedFs = {
   writeFile: util.promisify(fs.writeFile),
@@ -134,9 +145,10 @@ export const withCache = <T, Args extends Array<unknown>>(
   return async (...args: Args) => {
     const serializedArgs = serializeArgs(args);
     const hashedFn = hashFunction(fn);
+    const hashedArgs = hashString(serializedArgs);
     const cacheKey = `fn:${
       fn.name ? `${fn.name}_` : ""
-    }${hashedFn}:${serializedArgs}`;
+    }${hashedFn}:${hashedArgs}`;
     return getDataFromCacheOrCompute(cacheKey, () => fn(...args));
   };
 };

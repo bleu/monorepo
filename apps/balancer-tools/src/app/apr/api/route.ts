@@ -116,20 +116,21 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const filteredRespondeData = limitPoolStats(
-    filterPoolStats(responseData, searchParams),
-    offset,
-    limit,
+  const filteredResponseData = filterPoolStats(responseData, searchParams);
+
+  const sortedResponseData = sortPoolStats(
+    {
+      perDay: filteredResponseData,
+      average: computeAverages(filteredResponseData),
+    },
+    sort as keyof PoolStatsData | undefined,
+    order as Order | undefined,
   );
 
-  return NextResponse.json(
-    sortPoolStats(
-      {
-        perDay: filteredRespondeData,
-        average: computeAverages(filteredRespondeData),
-      },
-      sort as keyof PoolStatsData | undefined,
-      order as Order | undefined,
-    ),
-  );
+  const limitedRespondeData = limitPoolStats(sortedResponseData, offset, limit);
+
+  return NextResponse.json({
+    perDay: limitedRespondeData,
+    average: limitedRespondeData.average,
+  });
 }

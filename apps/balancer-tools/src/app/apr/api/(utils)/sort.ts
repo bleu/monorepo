@@ -68,15 +68,32 @@ export function sortPoolStats(
 }
 
 export function limitPoolStats(
-  poolStatsResults: { [key: string]: PoolStatsData[] },
+  poolStatsResults: {
+    perDay: { [key: string]: PoolStatsData[] };
+    average: { [key: string]: PoolStatsData[] };
+  },
   offset: number = 0,
   limit: number = Infinity,
-): { [key: string]: PoolStatsData[] } {
-  const limitedData: { [key: string]: PoolStatsData[] } = {};
+): {
+  perDay: { [key: string]: PoolStatsData[] };
+  average: { [key: string]: PoolStatsData[] };
+} {
+  const limitedPerDay: { [key: string]: PoolStatsData[] } = {};
 
-  for (const date in poolStatsResults) {
-    limitedData[date] = poolStatsResults[date].slice(offset, offset + limit);
+  for (const date in poolStatsResults.perDay) {
+    limitedPerDay[date] = poolStatsResults.perDay[date].slice(
+      offset,
+      offset + limit,
+    );
   }
 
-  return limitedData;
+  const limitedAverage = poolStatsResults.average.poolAverage.slice(
+    offset,
+    offset + limit,
+  );
+
+  return {
+    perDay: limitedPerDay,
+    average: { poolAverage: limitedAverage },
+  };
 }

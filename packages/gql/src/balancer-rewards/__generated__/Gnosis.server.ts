@@ -2501,7 +2501,7 @@ export type PoolRewardsQueryVariables = Exact<{
 }>;
 
 
-export type PoolRewardsQuery = { __typename?: 'Query', rewardTokenDeposits: Array<{ __typename?: 'RewardTokenDeposit', rate?: any | null, periodStart?: any | null, periodFinish?: any | null, token: { __typename?: 'RewardToken', address: any, symbol: string } }> };
+export type PoolRewardsQuery = { __typename?: 'Query', rewardTokenDeposits: Array<{ __typename?: 'RewardTokenDeposit', rate?: any | null, periodStart?: any | null, periodFinish?: any | null, token: { __typename?: 'RewardToken', address: any, symbol: string }, gauge: { __typename?: 'LiquidityGauge', totalSupply: any } }> };
 
 
 export const PoolRewardsDocument = gql`
@@ -2510,6 +2510,9 @@ export const PoolRewardsDocument = gql`
     token {
       address
       symbol
+    }
+    gauge {
+      totalSupply
     }
     rate
     periodStart

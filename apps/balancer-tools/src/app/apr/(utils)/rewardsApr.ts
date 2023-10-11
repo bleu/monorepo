@@ -4,35 +4,48 @@ import { NetworkChainId } from "@bleu-balancer-tools/utils";
 import { rewards } from "#/lib/gql/server";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
-import { doIntervalsIntersect } from "../api/(utils)/date";
+import { doIntervalsIntersect, SECONDS_IN_YEAR } from "../api/(utils)/date";
 import { fetchPoolAveragesForDateRange } from "./calculatePoolStats";
+import { getTokenPriceByDate } from "./getBALPriceForDateRange";
 
 type RewardInfo = ArrElement<
   GetDeepProp<PoolRewardsQuery, "rewardTokenDeposits">
 >;
 
 export async function getRewardsAprForDateRange(
-  //TODO: remove unused params on BAL-972
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   poolId: string,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   network: string,
   startAt: number,
   endAt: number,
 ) {
-  //TODO: remove temp variables on BAL-972
-  const tempPoolId =
-    "0x17e7d59bb209a3215ccc25fffef7161498b7c10d000200000000000000000020";
-  const tempNetwork = String(NetworkChainId.BASE);
+  let tempPoolId = "";
+  let tempNetwork = "";
+
+  switch (network) {
+    case String(NetworkChainId.BASE): {
+      tempPoolId = poolId;
+      tempNetwork = network;
+      break;
+    }
+    case String(NetworkChainId.POLYGONZKEVM): {
+      tempPoolId = poolId;
+      tempNetwork = network;
+      break;
+    }
+    default: {
+      tempPoolId =
+        "0x17e7d59bb209a3215ccc25fffef7161498b7c10d000200000000000000000020";
+      tempNetwork = String(NetworkChainId.BASE);
+    }
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [tvl, volume, symbol, tokenBalance, bptPrice] =
-    await fetchPoolAveragesForDateRange(
-      tempPoolId,
-      tempNetwork,
-      startAt,
-      endAt,
-    );
+  const [tvl, volume, symbol, bptPrice] = await fetchPoolAveragesForDateRange(
+    tempPoolId,
+    tempNetwork,
+    startAt,
+    endAt,
+  );
 
   const tokensRewards = await getTokensRewards({
     startAt,
@@ -45,19 +58,33 @@ export async function getRewardsAprForDateRange(
     return [];
   }
 
-  const rewards = tokensRewards.map((tokenReward) => {
-    const tokenAmount = tokenReward.amount;
-    // reference for 10_000 https://github.com/balancer/balancer-sdk/blob/f4879f06289c6f5f9766ead1835f4f4b096ed7dd/balancer-js/src/modules/pools/apr/apr.ts#L367
-    const tokenApr = ((tokenAmount * bptPrice) / tvl) * 10_000 * 7;
-    return {
-      token: tokenReward.token,
-      amount: tokenAmount,
-      bptPrice,
-      liquidity: tvl,
-      apr: tokenApr,
-    };
-  });
-  return rewards;
+  const rewardsApr = await Promise.all(
+    tokensRewards.map(async (tokenReward) => {
+      const tokenYearlyAmount = tokenReward.yearlyAmount;
+      const tokenPrice =
+        (await getTokenPriceByDate(
+          endAt,
+          tokenReward.token.address,
+          parseInt(tempNetwork),
+        )) ?? 0;
+
+      const tokenYearlyAmountInUsd = tokenYearlyAmount * tokenPrice;
+
+      const totalSupplyInUsd = tokenReward.totalSupply * bptPrice;
+
+      // reference for 10_000 https://github.com/balancer/balancer-sdk/blob/f4879f06289c6f5f9766ead1835f4f4b096ed7dd/balancer-js/src/modules/pools/apr/apr.ts#L367
+      const tokenApr = (tokenYearlyAmountInUsd / totalSupplyInUsd) * 10_000;
+      return {
+        token: tokenReward.token,
+        amount: tokenYearlyAmountInUsd,
+        bptPrice,
+        liquidity: tvl,
+        apr: tokenApr / 100,
+      };
+    }),
+  );
+
+  return rewardsApr;
 }
 
 export async function getTokensRewards({
@@ -95,9 +122,14 @@ export async function getTokensRewards({
     groupedRewards[address].push(reward);
   });
 
+  const duration = endAt - startAt;
+  const annualScalingFactor = SECONDS_IN_YEAR / duration;
+
   const finalRewards = Object.values(groupedRewards).map((groupedReward) => ({
     token: groupedReward[0].token,
-    amount: calculateAmount(groupedReward, startAt, endAt),
+    yearlyAmount:
+      calculateAmount(groupedReward, startAt, endAt) * annualScalingFactor,
+    totalSupply: groupedReward[0].gauge.totalSupply,
   }));
 
   return finalRewards;

@@ -22,13 +22,10 @@ export interface rewardAPR {
   value: number;
 }
 export interface PoolTokens {
-  percentageValue?: number;
-  price?: number;
   address: string;
-  logoSrc?: string;
   symbol: string;
   weight: number | null;
-  balance?: number;
+  logoSrc?: string;
 }
 
 export interface PoolStats {

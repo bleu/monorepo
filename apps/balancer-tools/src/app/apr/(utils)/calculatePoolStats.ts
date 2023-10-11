@@ -9,12 +9,9 @@ import {
   generateDateRange,
   SECONDS_IN_DAY,
 } from "../api/(utils)/date";
-import { PoolStatsData, PoolTokens, tokenAPR } from "../api/route";
+import { PoolStatsData, tokenAPR } from "../api/route";
 import { calculateAPRForDateRange } from "./calculateApr";
-import {
-  getBALPriceForDateRange,
-  getTokenPriceByDate,
-} from "./getBALPriceForDateRange";
+import { getBALPriceForDateRange } from "./getBALPriceForDateRange";
 import { PoolTypeEnum } from "./types";
 
 export interface calculatePoolData extends Omit<PoolStatsData, "apr"> {
@@ -36,9 +33,7 @@ export async function fetchPoolAveragesForDateRange(
   network: string,
   from: number,
   to: number,
-): Promise<
-  [number, number, string, { symbol: string; balance: string }[], number]
-> {
+): Promise<[number, number, string, number]> {
   // Determine if the initial date range is less than 2 days
   const initialRangeInDays = calculateDaysBetween(from, to);
   const extendedFrom = initialRangeInDays < 2 ? from - SECONDS_IN_DAY : from;
@@ -68,14 +63,13 @@ export async function fetchPoolAveragesForDateRange(
       );
 
       // TODO: Throw error here and handle outside of it.
-      return [0, 0, "", [], 0];
+      return [0, 0, "", 0];
     }
     chosenData = retryGQL.poolSnapshots
       .sort((a, b) => a.timestamp - b.timestamp)
       .slice(-1)[0];
   }
 
-  // Compute averages
   const liquidity = Number(chosenData.liquidity);
 
   const volume = Number(chosenData.swapVolume);
@@ -83,60 +77,9 @@ export async function fetchPoolAveragesForDateRange(
   const bptPrice =
     Number(chosenData.liquidity) / Number(chosenData.totalShares);
 
-  return [
-    liquidity,
-    volume,
-    chosenData.pool.symbol ?? "",
-    chosenData.pool.tokens ?? [],
-    bptPrice,
-  ];
+  return [liquidity, volume, chosenData.pool.symbol ?? "", bptPrice];
 }
 
-async function calculateTokensStats(
-  endAtTimestamp: number,
-  poolTokenData: PoolTokens[],
-  poolNetwork: string,
-  tokenBalance: { symbol: string; balance: string }[],
-) {
-  const tokensPrices = await Promise.all(
-    poolTokenData.map(async (token) => {
-      const tokenPrice = await getTokenPriceByDate(
-        endAtTimestamp,
-        token.address,
-        parseInt(poolNetwork),
-      );
-      if (tokenPrice === undefined) {
-        console.warn(
-          `Failed fetching price for ${token.symbol}(network:${poolNetwork},addr:${token.address}) at ${endAtTimestamp}`,
-        );
-      }
-      //TODO: some work arround to get token price
-      return tokenPrice === undefined ? 1 : tokenPrice;
-    }),
-  );
-
-  const totalValue = poolTokenData.reduce((acc, token, idx) => {
-    const balance = parseFloat(tokenBalance?.[idx]?.balance);
-    if (!isNaN(balance)) {
-      return acc + tokensPrices[idx] * balance;
-    }
-    return acc;
-  }, 0);
-
-  const tokenPromises = poolTokenData.map(async (token, idx) => {
-    token.price = tokensPrices[idx];
-    token.balance = parseFloat(tokenBalance?.[idx]?.balance);
-    token.percentageValue =
-      ((tokensPrices[idx] * parseFloat(tokenBalance?.[idx]?.balance)) /
-        totalValue) *
-      100;
-    return token;
-  });
-
-  return Promise.all(tokenPromises);
-}
-
-// TODO: #BAL-873 - Refactor this logic
 export async function calculatePoolStats({
   startAtTimestamp,
   endAtTimestamp,
@@ -179,16 +122,9 @@ export async function calculatePoolStats({
   const [
     _,
     balPriceUSD,
-    [tvl, volume, symbol, tokenBalance],
+    [tvl, volume, symbol],
     // @ts-ignore
   ] = results.filter((p) => p.status === "fulfilled").map((p) => p.value);
-
-  const tokens = await calculateTokensStats(
-    endAtTimestamp,
-    pool.tokens,
-    network,
-    tokenBalance,
-  );
 
   const { apr, votingShare, collectedFeesUSD } = await calculateAPRForDateRange(
     startAtTimestamp,
@@ -211,12 +147,12 @@ export async function calculatePoolStats({
     apr,
     balPriceUSD,
     tvl,
+    tokens: pool.tokens,
     volume,
     votingShare,
     symbol,
     network,
     collectedFeesUSD,
-    tokens: tokens as PoolTokens[],
     type: pool.poolType as keyof typeof PoolTypeEnum,
   };
 }

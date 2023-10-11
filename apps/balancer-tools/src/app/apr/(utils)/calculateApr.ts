@@ -46,8 +46,8 @@ export async function calculateAPRForDateRange(
         endAtTimestamp,
       ),
       getRewardsAprForDateRange(
-        network,
         poolId,
+        network,
         startAtTimestamp,
         endAtTimestamp,
       ),

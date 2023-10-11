@@ -65,7 +65,7 @@ export async function getPoolTokensAprForDateRange(
           } catch (error) {
             // eslint-disable-next-line no-console
             console.error(
-              `Error fetching yield for Pool ${poolId} - ${symbol}: ${error}`,
+              `Error fetching yield for Pool ${poolId} - ${symbol} on ${chainName}: ${error}`,
             );
             return {
               address: tokenAddress,
@@ -100,6 +100,7 @@ async function getAPRFromRateProviderInterval(
       timeStart,
       timeEnd,
       chainName,
+      poolId,
     );
     Sentry.addBreadcrumb({
       category: "getAPRFromRateProviderInterval",
@@ -136,7 +137,7 @@ async function getAPRFromRateProviderInterval(
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(
-      `Error fetching rate for ${rateProviderAddress} between ${timeStart} and ${timeEnd} chain ${chainName} - ${e}`,
+      `Error fetching rate for ${rateProviderAddress} between ${timeStart} and ${timeEnd} chain ${chainName} poolId ${poolId} - ${e}`,
     );
     Sentry.captureException(e);
     throw e;
@@ -194,6 +195,7 @@ async function getIntervalRates(
   timeStart: number,
   timeEnd: number,
   chainName: ChainName,
+  poolId: string,
 ) {
   const [blockStart, blockEnd] = await Promise.all([
     getBlockNumberByTimestamp(parseInt(networkIdFor(chainName)), timeStart),
@@ -204,8 +206,8 @@ async function getIntervalRates(
   ]);
 
   const [endRate, startRate] = await Promise.all([
-    getRateAtBlock(chainName, rateProviderAddress, blockEnd),
-    getRateAtBlock(chainName, rateProviderAddress, blockStart),
+    getRateAtBlock(chainName, rateProviderAddress, poolId, blockEnd),
+    getRateAtBlock(chainName, rateProviderAddress, poolId, blockStart),
   ]);
 
   return { endRate: Number(endRate), startRate: Number(startRate) };
@@ -214,6 +216,7 @@ async function getIntervalRates(
 const getRateAtBlock = withCache(async function getRateAtBlockFn(
   chainName: ChainName,
   rateProviderAddress: Address,
+  poolId: string,
   blockNumber?: number,
 ) {
   const args = {
@@ -229,7 +232,7 @@ const getRateAtBlock = withCache(async function getRateAtBlockFn(
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(
-      `Error fetching rate for ${rateProviderAddress} at block ${blockNumber} on ${chainName}, ${e}`,
+      `Error fetching rate for ${rateProviderAddress} at block ${blockNumber} on ${chainName} poolId ${poolId} , ${e}`,
     );
     Sentry.captureException(e);
     throw e;

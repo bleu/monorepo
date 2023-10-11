@@ -27,6 +27,8 @@ const UPPER_CASE_TO_NETWORK = {
   OPTIMISM: NetworkChainId.OPTIMISM,
   GNOSIS: NetworkChainId.GNOSIS,
   ARBITRUM: NetworkChainId.ARBITRUM,
+  BASE: NetworkChainId.BASE,
+  AVALANCHE: NetworkChainId.AVAX,
 } as const;
 
 export class Pool {

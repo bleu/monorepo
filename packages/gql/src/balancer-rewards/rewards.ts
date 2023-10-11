@@ -7,6 +7,9 @@ export const poolRewards = gql`
         address
         symbol
       }
+      gauge {
+        totalSupply
+      }
       rate
       periodStart
       periodFinish

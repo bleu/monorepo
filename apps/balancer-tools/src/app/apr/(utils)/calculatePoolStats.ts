@@ -70,7 +70,6 @@ export async function fetchPoolAveragesForDateRange(
       .slice(-1)[0];
   }
 
-  // Compute averages
   const liquidity = Number(chosenData.liquidity);
 
   const volume = Number(chosenData.swapVolume);

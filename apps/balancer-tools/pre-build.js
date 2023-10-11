@@ -97,6 +97,8 @@ const UPPER_CASE_TO_NETWORK = {
   OPTIMISM: "OPTIMISM",
   GNOSIS: "GNOSIS",
   ARBITRUM: "ARBITRUM",
+  BASE: "BASE",
+  AVALANCHE: "AVALANCHE",
 };
 
 async function main() {

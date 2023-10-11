@@ -40,13 +40,12 @@ export async function getRewardsAprForDateRange(
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [tvl, volume, symbol, tokenBalance, bptPrice] =
-    await fetchPoolAveragesForDateRange(
-      tempPoolId,
-      tempNetwork,
-      startAt,
-      endAt,
-    );
+  const [tvl, volume, symbol, bptPrice] = await fetchPoolAveragesForDateRange(
+    tempPoolId,
+    tempNetwork,
+    startAt,
+    endAt,
+  );
 
   const tokensRewards = await getTokensRewards({
     startAt,

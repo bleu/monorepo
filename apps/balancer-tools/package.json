@@ -40,7 +40,7 @@
     "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/react-tooltip": "1.0.7",
     "@rainbow-me/rainbowkit": "1.1.1",
-    "@sentry/nextjs": "^7.72.0",
+    "@sentry/nextjs": "^7.74.0",
     "@vercel/kv": "^0.2.3",
     "@wagmi/cli": "1.5.2",
     "@wagmi/core": "^1.4.3",

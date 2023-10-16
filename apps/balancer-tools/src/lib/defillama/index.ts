@@ -30,18 +30,18 @@ export class DefiLlamaAPI {
   public static async getHistoricalPrice(
     date: Date,
     coins: string[],
-    searchWidth: string = "6h"
+    searchWidth: string = "6h",
   ): Promise<HistoricalPriceResponse> {
     const self = this.getInstance();
     invariant(coins.length > 0, "coins must not be empty");
     invariant(
       coins.every((coin) => coin.split(":").length === 2),
-      'coins must be in format "chain:address"'
+      'coins must be in format "chain:address"',
     );
     invariant(date <= new Date(), "date must be in the past");
 
     const url = `${self.baseURL}/prices/historical/${dateToEpoch(
-      date
+      date,
     )}/${coins.join(",")}?searchWidth=${searchWidth}`;
     return await fetcher<HistoricalPriceResponse>(url);
   }
@@ -53,7 +53,7 @@ export class DefiLlamaAPI {
         .toLowerCase()
         .replace("-", "_")
         .replace("gnosis", "xdai")
-        .replace("avalanche", "avax")}/${timestamp}`
+        .replace("avalanche", "avax")}/${timestamp}`,
     );
     return response.height;
   }

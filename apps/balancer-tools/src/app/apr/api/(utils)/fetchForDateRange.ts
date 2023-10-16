@@ -12,9 +12,12 @@ import { PoolStatsData, PoolStatsResults } from "../route";
 import { dateToEpoch, formatDateToMMDDYYYY } from "./date";
 import { QueryParamsSchema } from "./validate";
 
-
-const fetchPoolsFromNetwork = async (network: string, params: ReturnType<typeof QueryParamsSchema.safeParse>, skip=0) => {
-  if (!params.success) return []
+const fetchPoolsFromNetwork = async (
+  network: string,
+  params: ReturnType<typeof QueryParamsSchema.safeParse>,
+  skip = 0,
+) => {
+  if (!params.success) return [];
 
   const maxTvl = params.data.maxTvl || 10_000_000_000;
   const minTvl = params.data.minTvl || 10_000;
@@ -26,44 +29,66 @@ const fetchPoolsFromNetwork = async (network: string, params: ReturnType<typeof 
   let block;
 
   try {
-    block = await DefiLlamaAPI.findBlockNumber(network, createdBefore)
+    block = await DefiLlamaAPI.findBlockNumber(network, createdBefore);
   } catch (e) {
     // If this errors out, probably the network didn't exist at that timestamp
-    return []
+    return [];
   }
 
-
-  let response
+  let response;
   try {
-    response =  await pools.gql(networkIdFor(network)).APRPools({skip,createdBefore: createdBefore,limit,tokens,minTvl,maxTvl,block});
+    response = await pools
+      .gql(networkIdFor(network))
+      .APRPools({
+        skip,
+        createdBefore: createdBefore,
+        limit,
+        tokens,
+        minTvl,
+        maxTvl,
+        block,
+      });
   } catch (e) {
     // If this errors out, probably the subgraph hadn't been deployed yet at this block
-    return []
+    return [];
   }
   let fetchedPools: typeof response.pools;
-  console.log(`Fetched ${response.pools.length} pools from ${network}(${networkIdFor(network)}) for block ${block}`)
+  console.log(
+    `Fetched ${response.pools.length} pools from ${network}(${networkIdFor(
+      network,
+    )}) for block ${block}`,
+  );
   fetchedPools = response.pools;
 
   if (response.pools.length > limit) {
-    fetchedPools = [...fetchedPools, ...(await fetchPoolsFromNetwork(network, params, skip + limit ))]
+    fetchedPools = [
+      ...fetchedPools,
+      ...(await fetchPoolsFromNetwork(network, params, skip + limit)),
+    ];
   }
 
-  return fetchedPools
-}
+  return fetchedPools;
+};
 
-const fetchPools = async (params: ReturnType<typeof QueryParamsSchema.safeParse>) => {
-  if (!params.success) return []
+const fetchPools = async (
+  params: ReturnType<typeof QueryParamsSchema.safeParse>,
+) => {
+  if (!params.success) return [];
 
-  const networks = params.data.network ? [params.data.network] : Object.values(Network).filter(
-    (network) => network !== Network.Sepolia && network !== Network.Goerli,
-  )
+  const networks = params.data.network
+    ? [params.data.network]
+    : Object.values(Network).filter(
+        (network) => network !== Network.Sepolia && network !== Network.Goerli,
+      );
   const allFetchedPools = await Promise.all(
-    networks.map(async (network) => await fetchPoolsFromNetwork(network, params))
+    networks.map(
+      async (network) => await fetchPoolsFromNetwork(network, params),
+    ),
   );
 
   // Flatten the array of arrays into a single array.
   return allFetchedPools.flat();
-}
+};
 
 export async function fetchDataForDateRange(
   startDate: Date,
@@ -78,8 +103,8 @@ export async function fetchDataForDateRange(
   // const existingPoolForDate = POOLS_WITHOUT_GAUGES.filter(
   //   (poolData) => poolData.addedTimestamp <= endDate.getTime(),
   // );
-  const existingPoolForDate  = await fetchPools(parsedParams);
-  console.log(`fetched ${existingPoolForDate.length} pools`)
+  const existingPoolForDate = await fetchPools(parsedParams);
+  console.log(`fetched ${existingPoolForDate.length} pools`);
   const perDayData: { [key: string]: PoolStatsData[] } = {};
 
   await Promise.all(

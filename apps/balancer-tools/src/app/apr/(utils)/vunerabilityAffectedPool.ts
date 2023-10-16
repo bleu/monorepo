@@ -64,4 +64,12 @@ export const vunerabilityAffecteRateProviders: {
     address: "0x8025586ac5fb265a23b9492e7414beccc2059ec3",
     token: "bb-rfWBTC",
   },
+  {
+    address: "0x60D604890feaa0b5460B28A424407c24fe89374a",
+    token: "bb-a-WETH",
+  },
+  {
+    address: "0x7275c131b1f67e8b53b4691f92b0e35a4c1c6e22",
+    token: "bb-a-WAVAX",
+  },
 ];

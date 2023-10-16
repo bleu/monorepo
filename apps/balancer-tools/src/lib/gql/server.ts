@@ -16,7 +16,7 @@ import { withCache } from "../cache";
 
 export function impersonateWhetherDAO(
   chainId: string,
-  address: Address | undefined
+  address: Address | undefined,
 ) {
   const network = networkFor(chainId);
 
@@ -60,7 +60,7 @@ export const pools = {
   client: clientFor(Subgraph.Balancer),
   gql: (chainId: number | string) =>
     wrapWithCache(
-      balancerSdks[networkFor(chainId)](pools.client(String(chainId)))
+      balancerSdks[networkFor(chainId)](pools.client(String(chainId))),
     ),
 };
 
@@ -68,7 +68,7 @@ export const poolsMetadata = {
   client: clientFor(Subgraph.BalancerPoolsMetadata),
   gql: (chainId: number | string) =>
     poolMetadataSdks[networkFor(chainId)](
-      poolsMetadata.client(String(chainId))
+      poolsMetadata.client(String(chainId)),
     ),
 };
 
@@ -76,7 +76,7 @@ export const gauges = {
   client: clientFor(Subgraph.BalancerGauges),
   gql: (chainId: number | string) =>
     wrapWithCache(
-      gaugesSdks[networkFor(chainId)](gauges.client(String(chainId)))
+      gaugesSdks[networkFor(chainId)](gauges.client(String(chainId))),
     ),
 };
 

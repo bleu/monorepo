@@ -37,17 +37,15 @@ const fetchPoolsFromNetwork = async (
 
   let response;
   try {
-    response = await pools
-      .gql(networkIdFor(network))
-      .APRPools({
-        skip,
-        createdBefore: createdBefore,
-        limit,
-        tokens,
-        minTvl,
-        maxTvl,
-        block,
-      });
+    response = await pools.gql(networkIdFor(network)).APRPools({
+      skip,
+      createdBefore: createdBefore,
+      limit,
+      tokens,
+      minTvl,
+      maxTvl,
+      block,
+    });
   } catch (e) {
     // If this errors out, probably the subgraph hadn't been deployed yet at this block
     return [];

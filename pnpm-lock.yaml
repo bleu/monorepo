@@ -101,8 +101,8 @@ importers:
         specifier: 1.0.7
         version: 1.0.7(@types/react-dom@18.2.12)(@types/react@18.2.28)(react-dom@18.2.0)(react@18.2.0)
       '@rainbow-me/rainbowkit':
-        specifier: 1.1.1
-        version: 1.1.1(@types/react@18.2.28)(react-dom@18.2.0)(react@18.2.0)(viem@1.16.5)(wagmi@1.4.3)
+        specifier: 1.1.2
+        version: 1.1.2(@types/react@18.2.28)(react-dom@18.2.0)(react@18.2.0)(viem@1.16.5)(wagmi@1.4.3)
       '@sentry/nextjs':
         specifier: ^7.74.0
         version: 7.74.0(next@13.5.4)(react@18.2.0)
@@ -4821,8 +4821,8 @@ packages:
       '@babel/runtime': 7.23.1
     dev: false
 
-  /@rainbow-me/rainbowkit@1.1.1(@types/react@18.2.28)(react-dom@18.2.0)(react@18.2.0)(viem@1.16.5)(wagmi@1.4.3):
-    resolution: {integrity: sha512-6NGeH2SpJYolstt9RXU6XwmvyL29XKc6OYZtctvdM83F/WNkRX+ywwBrfNNES9BAS6QNdOnPa7nIu+ghtFBgnQ==}
+  /@rainbow-me/rainbowkit@1.1.2(@types/react@18.2.28)(react-dom@18.2.0)(react@18.2.0)(viem@1.16.5)(wagmi@1.4.3):
+    resolution: {integrity: sha512-yWxKDfHL4xDZJW34APGkmO2SkxjHwrEeAfvx6+137hWLttQwHcalG9nj4II8roYV2/2XJPmQsbEs7TM0rC0fOg==}
     engines: {node: '>=12.4'}
     peerDependencies:
       react: '>=17'

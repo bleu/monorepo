@@ -1,13 +1,13 @@
-import { Address, networkFor, networkIdFor } from "@bleu-balancer-tools/utils";
+import { Address, networkFor } from "@bleu-balancer-tools/utils";
 import * as Sentry from "@sentry/nextjs";
 import { zeroAddress } from "viem";
 
 import { withCache } from "#/lib/cache";
+import { DefiLlamaAPI } from "#/lib/defillama";
 import { pools } from "#/lib/gql/server";
 
 import { SECONDS_IN_DAY, SECONDS_IN_YEAR } from "../api/(utils)/date";
 import { ChainName, publicClients } from "./chainsPublicClients";
-import getBlockNumberByTimestamp from "./getBlockNumberByTimestamp";
 import { manualPoolsRateProvider } from "./poolsRateProvider";
 import { vunerabilityAffecteRateProviders } from "./vunerabilityAffectedPool";
 
@@ -198,11 +198,8 @@ async function getIntervalRates(
   poolId: string,
 ) {
   const [blockStart, blockEnd] = await Promise.all([
-    getBlockNumberByTimestamp(parseInt(networkIdFor(chainName)), timeStart),
-    getBlockNumberByTimestamp(
-      parseInt(networkIdFor(chainName)),
-      timeEnd + SECONDS_IN_DAY,
-    ),
+    await DefiLlamaAPI.findBlockNumber(chainName, timeStart),
+    await DefiLlamaAPI.findBlockNumber(chainName, timeEnd + SECONDS_IN_DAY),
   ]);
 
   const [endRate, startRate] = await Promise.all([
@@ -218,7 +215,7 @@ const getRateAtBlock = withCache(async function getRateAtBlockFn(
   rateProviderAddress: Address,
   poolId: string,
   blockNumber?: number,
-) {
+): Promise<number | undefined> {
   const args = {
     address: rateProviderAddress,
     abi: rateProviderAbi,
@@ -229,14 +226,63 @@ const getRateAtBlock = withCache(async function getRateAtBlockFn(
   let rate;
   try {
     rate = await publicClients[chainName].readContract(args);
+    return Number(rate);
   } catch (e) {
     // eslint-disable-next-line no-console
-    console.error(
-      `Error fetching rate for ${rateProviderAddress} at block ${blockNumber} on ${chainName} poolId ${poolId} , ${e}`,
+    console.error(`
+      Error fetching rate for ${rateProviderAddress} at block ${blockNumber} chain ${chainName} poolId ${poolId} - ${e}.
+      Maybe this is a proxy contract? Trying to get implementation to get to rate provider.
+    `);
+    const actualRateProvider = await getImplementationAddress(
+      chainName,
+      rateProviderAddress,
+      blockNumber,
     );
-    Sentry.captureException(e);
-    throw e;
+    if (actualRateProvider) {
+      return getRateAtBlock(chainName, actualRateProvider, poolId, blockNumber);
+    } else {
+      // eslint-disable-next-line no-console
+      console.error(
+        `Error fetching rate for ${rateProviderAddress} chain ${chainName} poolId ${poolId}. This is probably a Linear pool and the call reverted, in which case we can assume value 0.`,
+      );
+      return 0;
+    }
   }
-
-  return Number(rate);
 });
+
+const getImplementationAddress = async (
+  chainName: ChainName,
+  rateProviderAddress: Address,
+  blockNumber?: number,
+): Promise<Address | undefined> => {
+  try {
+    const implementationContract = await publicClients[chainName].readContract({
+      address: rateProviderAddress,
+      abi: [
+        {
+          inputs: [],
+          name: "implementation",
+          outputs: [
+            {
+              internalType: "address",
+              name: "implementation_",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+      ],
+      functionName: "implementation",
+      ...(blockNumber ? { blockNumber: BigInt(blockNumber) } : {}),
+    } as const);
+
+    return implementationContract;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(
+      `Error fetching implementation contract for ${rateProviderAddress} - ${error}`,
+    );
+    return undefined;
+  }
+};

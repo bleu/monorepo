@@ -89,7 +89,7 @@ export async function calculatePoolStats({
   poolId: string;
 }): Promise<calculatePoolData> {
   const pool = new Pool(poolId);
-  const network = String(pool.network ?? 1);
+  const network = String(pool.network);
   const results = await Promise.allSettled([
     // TODO: what if the pool doesn't exist during that range?
     pools.gql(network).Pool({ poolId }),

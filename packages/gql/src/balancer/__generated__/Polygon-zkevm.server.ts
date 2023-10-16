@@ -5909,6 +5909,19 @@ export type PoolRateProvidersQueryVariables = Exact<{
 
 export type PoolRateProvidersQuery = { __typename?: 'Query', pool?: { __typename?: 'Pool', priceRateProviders?: Array<{ __typename?: 'PriceRateProvider', address: any, rate?: any | null, token: { __typename?: 'PoolToken', address: string, symbol: string } }> | null } | null };
 
+export type AprPoolsQueryVariables = Exact<{
+  skip: Scalars['Int']['input'];
+  createdBefore?: InputMaybe<Scalars['Int']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  tokens?: InputMaybe<Array<Scalars['Bytes']['input']> | Scalars['Bytes']['input']>;
+  minTvl?: InputMaybe<Scalars['BigDecimal']['input']>;
+  maxTvl?: InputMaybe<Scalars['BigDecimal']['input']>;
+  block?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type AprPoolsQuery = { __typename?: 'Query', pools: Array<{ __typename?: 'Pool', id: string, address: any, symbol?: string | null, poolType?: string | null, createTime: number, tokens?: Array<{ __typename?: 'PoolToken', address: string, symbol: string, weight?: any | null }> | null }> };
+
 
 export const InternalBalanceDocument = gql`
     query InternalBalance($userAddress: ID!) {
@@ -6084,6 +6097,27 @@ export const PoolRateProvidersDocument = gql`
   }
 }
     `;
+export const AprPoolsDocument = gql`
+    query APRPools($skip: Int!, $createdBefore: Int, $limit: Int, $tokens: [Bytes!], $minTvl: BigDecimal, $maxTvl: BigDecimal, $block: Int) {
+  pools(
+    where: {createTime_lte: $createdBefore, tokensList_contains: $tokens, totalLiquidity_gte: $minTvl, totalLiquidity_lte: $maxTvl}
+    first: $limit
+    skip: $skip
+    block: {number: $block}
+  ) {
+    id
+    address
+    symbol
+    poolType
+    createTime
+    tokens {
+      address
+      symbol
+      weight
+    }
+  }
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string) => Promise<T>;
 
@@ -6115,6 +6149,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     PoolRateProviders(variables: PoolRateProvidersQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<PoolRateProvidersQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<PoolRateProvidersQuery>(PoolRateProvidersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PoolRateProviders', 'query');
+    },
+    APRPools(variables: AprPoolsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AprPoolsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<AprPoolsQuery>(AprPoolsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'APRPools', 'query');
     }
   };
 }

@@ -16,10 +16,10 @@ import RoundOverviewCards from "./round/(components)/RoundOverviewCards";
 import TopPoolsChartWrapper from "./round/(components)/TopPoolsChartWrapper";
 
 export interface SearchParams {
-  minTVL?: string;
-  maxTVL?: string;
-  minAPR?: string;
-  maxAPR?: string;
+  minTvl?: string;
+  maxTvl?: string;
+  minApr?: string;
+  maxApr?: string;
   tokens?: string;
   type?: string;
   network?: string;

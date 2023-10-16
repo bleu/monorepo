@@ -233,34 +233,55 @@ const getRateAtBlock = withCache(async function getRateAtBlockFn(
       Error fetching rate for ${rateProviderAddress} at block ${blockNumber} chain ${chainName} poolId ${poolId} - ${e}.
       Maybe this is a proxy contract? Trying to get implementation to get to rate provider.
     `);
-    let actualRateProvider;
-    try {
-      actualRateProvider = await publicClients[chainName].readContract({
-        address: rateProviderAddress,
-        abi: [
-          {
-            inputs: [],
-            name: "implementation",
-            outputs: [
-              {
-                internalType: "address",
-                name: "implementation_",
-                type: "address",
-              },
-            ],
-            stateMutability: "view",
-            type: "function",
-          },
-        ],
-        functionName: "implementation",
-        ...(blockNumber ? { blockNumber: BigInt(blockNumber) } : {}),
-      } as const);
+    const actualRateProvider = await getImplementationAddress(
+      chainName,
+      rateProviderAddress,
+      blockNumber,
+    );
+    if (actualRateProvider) {
       return getRateAtBlock(chainName, actualRateProvider, poolId, blockNumber);
-    } catch (error) {
+    } else {
       // eslint-disable-next-line no-console
       console.error(
-        `Error fetching rate for ${rateProviderAddress} chain ${chainName} poolId ${poolId} - ${error}`,
+        `Error fetching rate for ${rateProviderAddress} chain ${chainName} poolId ${poolId}`,
       );
     }
   }
 });
+
+const getImplementationAddress = async (
+  chainName: ChainName,
+  rateProviderAddress: Address,
+  blockNumber?: number,
+): Promise<Address | undefined> => {
+  try {
+    const implementationContract = await publicClients[chainName].readContract({
+      address: rateProviderAddress,
+      abi: [
+        {
+          inputs: [],
+          name: "implementation",
+          outputs: [
+            {
+              internalType: "address",
+              name: "implementation_",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+      ],
+      functionName: "implementation",
+      ...(blockNumber ? { blockNumber: BigInt(blockNumber) } : {}),
+    } as const);
+
+    return implementationContract;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(
+      `Error fetching implementation contract for ${rateProviderAddress} - ${error}`,
+    );
+    return undefined;
+  }
+};

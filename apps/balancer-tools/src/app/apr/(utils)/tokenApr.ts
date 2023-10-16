@@ -243,8 +243,9 @@ const getRateAtBlock = withCache(async function getRateAtBlockFn(
     } else {
       // eslint-disable-next-line no-console
       console.error(
-        `Error fetching rate for ${rateProviderAddress} chain ${chainName} poolId ${poolId}`,
+        `Error fetching rate for ${rateProviderAddress} chain ${chainName} poolId ${poolId}. This is probably a Linear pool and the call reverted, in which case we can assume value 0.`,
       );
+      return 0;
     }
   }
 });

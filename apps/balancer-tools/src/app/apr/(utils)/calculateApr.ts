@@ -166,10 +166,6 @@ async function getFeeAprForDateRange(
   });
 
   if (res.poolSnapshots.length === 0) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      `No data found for pool ${poolId}(${network}) in range ${from} - ${to}`,
-    );
     return [0, 0];
   }
 

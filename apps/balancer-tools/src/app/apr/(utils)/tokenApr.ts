@@ -65,7 +65,7 @@ export async function getPoolTokensAprForDateRange(
           } catch (error) {
             // eslint-disable-next-line no-console
             console.error(
-              `Error fetching yield for Pool ${poolId} - ${symbol} on ${chainName}: ${error}`,
+              `Error fetching yield for Pool ${poolId} - ${symbol} on ${chainName} with rate provider ${rateProviderAddress}: ${error}`,
             );
             return {
               address: tokenAddress,

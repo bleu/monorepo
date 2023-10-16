@@ -1,4 +1,5 @@
 import { Address, networkFor, networkIdFor } from "@bleu-balancer-tools/utils";
+import * as Sentry from "@sentry/nextjs";
 import { zeroAddress } from "viem";
 
 import { withCache } from "#/lib/cache";
@@ -27,9 +28,20 @@ export async function getPoolTokensAprForDateRange(
   endAt: number,
 ) {
   const rateProviders = await getPoolTokensRateProviders(chain, poolId);
-
+  if (!rateProviders.length) {
+    return undefined;
+  }
+  Sentry.addBreadcrumb({
+    category: "getPoolTokensAprForDateRange",
+    message: "Pool: " + poolId,
+    level: "info",
+  });
+  Sentry.addBreadcrumb({
+    category: "getPoolTokensAprForDateRange",
+    message: "Rate providers: " + rateProviders,
+    level: "info",
+  });
   const chainName = networkFor(chain) as ChainName;
-
   return await Promise.all(
     rateProviders
       .filter(({ address }) => address !== zeroAddress)
@@ -37,16 +49,31 @@ export async function getPoolTokensAprForDateRange(
         async ({
           address: rateProviderAddress,
           token: { symbol, address: tokenAddress },
-        }) => ({
-          address: tokenAddress,
-          symbol,
-          yield: await getAPRFromRateProviderInterval(
-            rateProviderAddress as Address,
-            startAt,
-            endAt,
-            chainName,
-          ),
-        }),
+        }) => {
+          try {
+            return {
+              address: tokenAddress,
+              symbol,
+              yield: await getAPRFromRateProviderInterval(
+                rateProviderAddress as Address,
+                startAt,
+                endAt,
+                chainName,
+                poolId,
+              ),
+            };
+          } catch (error) {
+            // eslint-disable-next-line no-console
+            console.error(
+              `Error fetching yield for Pool ${poolId} - ${symbol} on ${chainName}: ${error}`,
+            );
+            return {
+              address: tokenAddress,
+              symbol,
+              yield: 0,
+            };
+          }
+        },
       ),
   );
 }
@@ -56,6 +83,7 @@ async function getAPRFromRateProviderInterval(
   timeStart: number,
   timeEnd: number,
   chainName: ChainName,
+  poolId: string,
 ) {
   if (
     timeEnd >= 1692662400 && // pool vunerability was found on August 22
@@ -72,15 +100,36 @@ async function getAPRFromRateProviderInterval(
       timeStart,
       timeEnd,
       chainName,
+      poolId,
     );
+    Sentry.addBreadcrumb({
+      category: "getAPRFromRateProviderInterval",
+      message: "endRate: " + endRate,
+      level: "info",
+    });
+    Sentry.addBreadcrumb({
+      category: "getAPRFromRateProviderInterval",
+      message: "startRate: " + startRate,
+      level: "info",
+    });
 
     const apr = getAPRFromRate(startRate, endRate, timeStart, timeEnd);
+
+    Sentry.addBreadcrumb({
+      category: "getAPRFromRateProviderInterval",
+      message: "apr: " + apr,
+      level: "info",
+    });
 
     if (apr < 0) {
       // eslint-disable-next-line no-console
       console.error(
+        `Negative APR for Pool ${poolId} ${rateProviderAddress} between ${timeStart} and ${timeEnd}: ${apr}`,
+      );
+      Sentry.captureMessage(
         `Negative APR for ${rateProviderAddress} between ${timeStart} and ${timeEnd}: ${apr}`,
       );
+
       return 0;
     }
 
@@ -88,9 +137,10 @@ async function getAPRFromRateProviderInterval(
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(
-      `Error fetching rate for ${rateProviderAddress} between ${timeStart} and ${timeEnd} chain ${chainName} - ${e}`,
+      `Error fetching rate for ${rateProviderAddress} between ${timeStart} and ${timeEnd} chain ${chainName} poolId ${poolId} - ${e}`,
     );
-    return 0;
+    Sentry.captureException(e);
+    throw e;
   }
 }
 
@@ -145,6 +195,7 @@ async function getIntervalRates(
   timeStart: number,
   timeEnd: number,
   chainName: ChainName,
+  poolId: string,
 ) {
   const [blockStart, blockEnd] = await Promise.all([
     getBlockNumberByTimestamp(parseInt(networkIdFor(chainName)), timeStart),
@@ -155,8 +206,8 @@ async function getIntervalRates(
   ]);
 
   const [endRate, startRate] = await Promise.all([
-    getRateAtBlock(chainName, rateProviderAddress, blockEnd),
-    getRateAtBlock(chainName, rateProviderAddress, blockStart),
+    getRateAtBlock(chainName, rateProviderAddress, poolId, blockEnd),
+    getRateAtBlock(chainName, rateProviderAddress, poolId, blockStart),
   ]);
 
   return { endRate: Number(endRate), startRate: Number(startRate) };
@@ -165,6 +216,7 @@ async function getIntervalRates(
 const getRateAtBlock = withCache(async function getRateAtBlockFn(
   chainName: ChainName,
   rateProviderAddress: Address,
+  poolId: string,
   blockNumber?: number,
 ) {
   const args = {
@@ -180,9 +232,10 @@ const getRateAtBlock = withCache(async function getRateAtBlockFn(
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(
-      `Error fetching rate for ${rateProviderAddress} at block ${blockNumber} on ${chainName}, ${e}`,
+      `Error fetching rate for ${rateProviderAddress} at block ${blockNumber} on ${chainName} poolId ${poolId} , ${e}`,
     );
-    rate = -1;
+    Sentry.captureException(e);
+    throw e;
   }
 
   return Number(rate);

@@ -1,4 +1,5 @@
 import { Address } from "@bleu-balancer-tools/utils";
+import * as Sentry from "@sentry/nextjs";
 
 import * as balEmissions from "#/lib/balancer/emissions";
 import { pools } from "#/lib/gql/server";
@@ -90,10 +91,22 @@ export async function calculateAPRForDateRange(
       ? ((WEEKS_IN_YEAR * (emissions * votingShare * balPriceUSD)) / tvl) * 100
       : null;
 
-  const tokenAPRTotal = tokensAPR.reduce(
-    (acc, token) => acc + (token?.yield ?? 0),
-    0,
-  );
+  let tokenAPRTotal = 0;
+  if (tokensAPR != null) {
+    tokenAPRTotal = tokensAPR.reduce(
+      (acc, token) => acc + (token?.yield ?? 0),
+      0,
+    );
+  }
+
+  const totalAprSum = (vebalAPR || 0) + feeAPR + tokenAPRTotal;
+
+  if (totalAprSum === null && tokensAPR != null) {
+    Sentry.captureMessage("vebalAPR resulted in null", {
+      level: "warning",
+      extra: { balPriceUSD, tvl, votingShare, poolId },
+    });
+  }
 
   const rewardsAPRTotal = rewardsAPR.reduce(
     (acc, reward) => acc + (reward.apr ?? 0),
@@ -102,18 +115,21 @@ export async function calculateAPRForDateRange(
 
   return {
     apr: {
-      total: (vebalAPR || 0) + feeAPR + tokenAPRTotal,
+      total: totalAprSum,
       breakdown: {
         veBAL: vebalAPR,
         swapFee: feeAPR,
         tokens: {
           total: tokenAPRTotal,
           breakdown: [
-            ...tokensAPR.map((token) => ({
-              address: token.address,
-              symbol: token.symbol,
-              yield: token.yield,
-            })),
+            ...(tokensAPR ||
+              (
+                [{}] as { address: string; symbol: string; yield: number }[]
+              ).map((token) => ({
+                address: token.address,
+                symbol: token.symbol,
+                yield: token.yield,
+              }))),
           ],
         },
         rewards: {

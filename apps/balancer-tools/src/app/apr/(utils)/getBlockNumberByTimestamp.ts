@@ -37,11 +37,9 @@ async function bestGuess(chain: number, timestamp: number): Promise<number> {
 export default async function getBlockNumberByTimestamp(
   chain: number,
   endTime: number,
-): Promise<number> {
+): Promise<number | undefined> {
   if (endTime > dateToEpoch(new Date())) {
-    throw new Error(
-      `The specified endTime cannot be in the future. EndTime: ${endTime}`,
-    );
+    return undefined;
   }
 
   if (chain === NetworkChainId.GNOSIS) {

@@ -5,6 +5,7 @@ import {
   base,
   gnosis,
   mainnet,
+  optimism,
   polygon,
   polygonZkEvm,
 } from "viem/chains";
@@ -16,6 +17,7 @@ type ChainType =
   | typeof arbitrum
   | typeof avalanche
   | typeof gnosis
+  | typeof optimism
   | typeof base;
 
 export type ChainName =
@@ -25,6 +27,7 @@ export type ChainName =
   | "arbitrum"
   | "avalanche"
   | "gnosis"
+  | "optimism"
   | "base";
 
 export function createClientForChain(chain: ChainType) {
@@ -36,6 +39,7 @@ export function createClientForChain(chain: ChainType) {
 
 export const publicClients = {
   ethereum: createClientForChain(mainnet),
+  optimism: createClientForChain(optimism),
   polygon: createClientForChain(polygon),
   "polygon-zkevm": createClientForChain(polygonZkEvm),
   arbitrum: createClientForChain(arbitrum),

@@ -86,18 +86,8 @@ export const QueryParamsSchema = z
     types: OptionalNullableStringArray.refine(isValidPoolType, {
       message: "Invalid pool type",
     }),
-    minTvl: OptionalNullableFloat.refine(
-      (value) => value === null || (value !== null && value >= 10000),
-      {
-        message: "minTvl should be at least 10,000",
-      },
-    ),
-    maxTvl: OptionalNullableFloat.refine(
-      (value) => value === null || (value !== null && value <= 10000000000),
-      {
-        message: "maxTvl should not be greater than 10,000,000,000",
-      },
-    ),
+    minTvl: OptionalNullableFloat,
+    maxTvl: OptionalNullableFloat,
   })
   .refine((data) => data.poolId || data.startAt || data.endAt, {
     message: "Either poolId, startAt, or endAt must be provided",

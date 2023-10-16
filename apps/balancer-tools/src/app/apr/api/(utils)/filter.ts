@@ -59,8 +59,8 @@ const conditions: ConditionTypes = {
     value!
       .map((pType) => pType.toLowerCase())
       .includes(pool.type.toLowerCase()),
-  minTvl: (pool, value) => pool.tvl >= value!,
-  maxTvl: (pool, value) => pool.tvl <= value!,
+  minTvl: (pool, value) => pool.tvl >= value! && value! >= 10_000,
+  maxTvl: (pool, value) => pool.tvl <= value! && value! <= 10_000_000_000,
 };
 
 function shouldIncludePool(pool: PoolStatsData, params: QueryParams) {

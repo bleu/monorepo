@@ -6,7 +6,7 @@ import { formatDateToMMDDYYYY } from "../api/(utils)/date";
 import { SearchParams } from "../page";
 import { BASE_URL } from "./types";
 
-export const INITIAL_MIN_TVL = 1000;
+export const INITIAL_MIN_TVL = 10_000;
 export const INITIAL_LIMIT = 10;
 
 interface ExpectedSearchParams extends SearchParams {

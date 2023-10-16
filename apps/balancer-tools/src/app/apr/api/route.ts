@@ -98,6 +98,7 @@ export async function GET(request: NextRequest) {
     limit = Infinity,
     offset = 0,
   } = parsedParams.data;
+
   let responseData;
   if (poolId && startAt && endAt) {
     return NextResponse.json(
@@ -106,7 +107,7 @@ export async function GET(request: NextRequest) {
   } else if (poolId) {
     responseData = await fetchDataForPoolId(poolId);
   } else if (startAt && endAt) {
-    responseData = await fetchDataForDateRange(startAt, endAt);
+    responseData = await fetchDataForDateRange(startAt, endAt, parsedParams);
   }
 
   if (responseData === null || !responseData) {

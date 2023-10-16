@@ -61,17 +61,7 @@ const DateSchema = OptionalNullableDate.refine(
 
 export const QueryParamsSchema = z
   .object({
-    poolId: OptionalNullableString.refine(
-      (poolId) =>
-        !poolId ||
-        POOLS_WITH_LIVE_GAUGES.some(
-          (g) => g.id.toLowerCase() === poolId?.toLowerCase(),
-        ) ||
-        POOLS_WITHOUT_GAUGES.some(
-          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
-        ),
-      { message: "Pool with ID not found" },
-    ),
+    poolId: OptionalNullableString,
     startAt: DateSchema,
     endAt: DateSchema,
     // TODO: add sort key validation

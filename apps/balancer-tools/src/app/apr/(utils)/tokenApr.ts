@@ -1,13 +1,13 @@
-import { Address, networkFor, networkIdFor } from "@bleu-balancer-tools/utils";
+import { Address, networkFor } from "@bleu-balancer-tools/utils";
 import * as Sentry from "@sentry/nextjs";
 import { zeroAddress } from "viem";
 
 import { withCache } from "#/lib/cache";
+import { DefiLlamaAPI } from "#/lib/defillama";
 import { pools } from "#/lib/gql/server";
 
 import { SECONDS_IN_DAY, SECONDS_IN_YEAR } from "../api/(utils)/date";
 import { ChainName, publicClients } from "./chainsPublicClients";
-import getBlockNumberByTimestamp from "./getBlockNumberByTimestamp";
 import { manualPoolsRateProvider } from "./poolsRateProvider";
 import { vunerabilityAffecteRateProviders } from "./vunerabilityAffectedPool";
 
@@ -25,7 +25,7 @@ export async function getPoolTokensAprForDateRange(
   chain: string,
   poolId: Address,
   startAt: number,
-  endAt: number,
+  endAt: number
 ) {
   const rateProviders = await getPoolTokensRateProviders(chain, poolId);
   if (!rateProviders.length) {
@@ -59,13 +59,13 @@ export async function getPoolTokensAprForDateRange(
                 startAt,
                 endAt,
                 chainName,
-                poolId,
+                poolId
               ),
             };
           } catch (error) {
             // eslint-disable-next-line no-console
             console.error(
-              `Error fetching yield for Pool ${poolId} - ${symbol} on ${chainName}: ${error}`,
+              `Error fetching yield for Pool ${poolId} - ${symbol} on ${chainName}: ${error}`
             );
             return {
               address: tokenAddress,
@@ -73,8 +73,8 @@ export async function getPoolTokensAprForDateRange(
               yield: 0,
             };
           }
-        },
-      ),
+        }
+      )
   );
 }
 
@@ -83,12 +83,12 @@ async function getAPRFromRateProviderInterval(
   timeStart: number,
   timeEnd: number,
   chainName: ChainName,
-  poolId: string,
+  poolId: string
 ) {
   if (
     timeEnd >= 1692662400 && // pool vunerability was found on August 22
     vunerabilityAffecteRateProviders.some(
-      ({ address }) => address === rateProviderAddress,
+      ({ address }) => address === rateProviderAddress
     )
   ) {
     return 0;
@@ -100,7 +100,7 @@ async function getAPRFromRateProviderInterval(
       timeStart,
       timeEnd,
       chainName,
-      poolId,
+      poolId
     );
     Sentry.addBreadcrumb({
       category: "getAPRFromRateProviderInterval",
@@ -124,10 +124,10 @@ async function getAPRFromRateProviderInterval(
     if (apr < 0) {
       // eslint-disable-next-line no-console
       console.error(
-        `Negative APR for Pool ${poolId} ${rateProviderAddress} between ${timeStart} and ${timeEnd}: ${apr}`,
+        `Negative APR for Pool ${poolId} ${rateProviderAddress} between ${timeStart} and ${timeEnd}: ${apr}`
       );
       Sentry.captureMessage(
-        `Negative APR for ${rateProviderAddress} between ${timeStart} and ${timeEnd}: ${apr}`,
+        `Negative APR for ${rateProviderAddress} between ${timeStart} and ${timeEnd}: ${apr}`
       );
 
       return 0;
@@ -137,7 +137,7 @@ async function getAPRFromRateProviderInterval(
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(
-      `Error fetching rate for ${rateProviderAddress} between ${timeStart} and ${timeEnd} chain ${chainName} poolId ${poolId} - ${e}`,
+      `Error fetching rate for ${rateProviderAddress} between ${timeStart} and ${timeEnd} chain ${chainName} poolId ${poolId} - ${e}`
     );
     Sentry.captureException(e);
     throw e;
@@ -148,7 +148,7 @@ function getAPRFromRate(
   rateStart: number,
   rateEnd: number,
   timeStart: number,
-  timeEnd: number,
+  timeEnd: number
 ) {
   const duration = timeEnd - timeStart;
   const rateOfReturn = (rateEnd - rateStart) / rateStart;
@@ -160,7 +160,7 @@ function getAPRFromRate(
 const getPoolTokensRateProviders = withCache(
   async function getPoolTokensRateProvidersFn(
     chain: string,
-    poolId: Address,
+    poolId: Address
   ): Promise<
     { address: string; token: { address: string; symbol: string } }[]
   > {
@@ -168,7 +168,7 @@ const getPoolTokensRateProviders = withCache(
 
     if (!data.pool?.priceRateProviders?.length) {
       const poolRateProvider = manualPoolsRateProvider.find(
-        ({ poolAddress }) => poolAddress.toLowerCase() === poolId.toLowerCase(),
+        ({ poolAddress }) => poolAddress.toLowerCase() === poolId.toLowerCase()
       );
 
       if (poolRateProvider === undefined) {
@@ -187,7 +187,7 @@ const getPoolTokensRateProviders = withCache(
     }
 
     return data.pool?.priceRateProviders;
-  },
+  }
 );
 
 async function getIntervalRates(
@@ -195,13 +195,13 @@ async function getIntervalRates(
   timeStart: number,
   timeEnd: number,
   chainName: ChainName,
-  poolId: string,
+  poolId: string
 ) {
   const [blockStart, blockEnd] = await Promise.all([
-    getBlockNumberByTimestamp(parseInt(networkIdFor(chainName)), timeStart),
-    getBlockNumberByTimestamp(
-      parseInt(networkIdFor(chainName)),
-      timeEnd + SECONDS_IN_DAY,
+    await DefiLlamaAPI.findBlockNumber(chainName, timeStart),
+    await DefiLlamaAPI.findBlockNumber(
+      chainName,
+      timeEnd + SECONDS_IN_DAY
     ),
   ]);
 
@@ -217,8 +217,8 @@ const getRateAtBlock = withCache(async function getRateAtBlockFn(
   chainName: ChainName,
   rateProviderAddress: Address,
   poolId: string,
-  blockNumber?: number,
-) {
+  blockNumber?: number
+): Promise<number | undefined> {
   const args = {
     address: rateProviderAddress,
     abi: rateProviderAbi,
@@ -229,14 +229,41 @@ const getRateAtBlock = withCache(async function getRateAtBlockFn(
   let rate;
   try {
     rate = await publicClients[chainName].readContract(args);
+    return Number(rate);
   } catch (e) {
     // eslint-disable-next-line no-console
-    console.error(
-      `Error fetching rate for ${rateProviderAddress} at block ${blockNumber} on ${chainName} poolId ${poolId} , ${e}`,
-    );
-    Sentry.captureException(e);
-    throw e;
+    console.error(`
+      Error fetching rate for ${rateProviderAddress} at block ${blockNumber} chain ${chainName} poolId ${poolId} - ${e}.
+      Maybe this is a proxy contract? Trying to get implementation to get to rate provider.
+    `)
+    let actualRateProvider;
+    try {
+      actualRateProvider = await publicClients[chainName].readContract({
+        address: rateProviderAddress,
+        abi: [
+          {
+            inputs: [],
+            name: "implementation",
+            outputs: [
+              {
+                internalType: "address",
+                name: "implementation_",
+                type: "address",
+              },
+            ],
+            stateMutability: "view",
+            type: "function",
+          },
+        ],
+        functionName: "implementation",
+        ...(blockNumber ? { blockNumber: BigInt(blockNumber) } : {}),
+      } as const);
+      return getRateAtBlock(chainName, actualRateProvider, poolId, blockNumber);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(
+        `Error fetching rate for ${rateProviderAddress} chain ${chainName} poolId ${poolId} - ${error}`
+      );
+    }
   }
-
-  return Number(rate);
 });

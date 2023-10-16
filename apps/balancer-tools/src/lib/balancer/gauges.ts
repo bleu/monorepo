@@ -28,7 +28,7 @@ const UPPER_CASE_TO_NETWORK = {
   GNOSIS: NetworkChainId.GNOSIS,
   ARBITRUM: NetworkChainId.ARBITRUM,
   BASE: NetworkChainId.BASE,
-  AVALANCHE: NetworkChainId.AVAX,
+  AVALANCHE: NetworkChainId.AVALANCHE,
 } as const;
 
 export class Pool {

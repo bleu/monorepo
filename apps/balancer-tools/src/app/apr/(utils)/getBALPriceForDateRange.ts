@@ -1,7 +1,7 @@
 import { networkFor } from "@bleu-balancer-tools/utils";
 
 import { withCache } from "#/lib/cache";
-import { DefiLlamaAPI } from "#/lib/coingecko";
+import { DefiLlamaAPI } from "#/lib/defillama";
 
 import { calculateDaysBetween, dateToEpoch } from "../api/(utils)/date";
 
@@ -54,7 +54,7 @@ export const getTokenPriceByDate = withCache(async function getTokenPriceByDate(
 
   const token = `${networkName}:${tokenAddress}`;
   const relevantDateForPrice = Math.min(dateToEpoch(new Date()), dateTimestamp);
-  const response = await new DefiLlamaAPI().getHistoricalPrice(
+  const response = await DefiLlamaAPI.getHistoricalPrice(
     new Date(relevantDateForPrice * 1000),
     [token],
   );

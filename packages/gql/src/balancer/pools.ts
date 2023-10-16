@@ -170,3 +170,38 @@ export const poolRateProviders = gql`
     }
   }
 `;
+
+export const aprPools = gql`
+  query APRPools(
+    $skip: Int!
+    $createdBefore: Int
+    $limit: Int
+    $tokens: [Bytes!]
+    $minTvl: BigDecimal
+    $maxTvl: BigDecimal
+    $block: Int
+  ) {
+    pools(
+      where: {
+        createTime_lte: $createdBefore
+        tokensList_contains: $tokens
+        totalLiquidity_gte: $minTvl
+        totalLiquidity_lte: $maxTvl
+      }
+      first: $limit
+      skip: $skip
+      block: { number: $block }
+    ) {
+      id
+      address
+      symbol
+      poolType
+      createTime
+      tokens {
+        address
+        symbol
+        weight
+      }
+    }
+  }
+`;

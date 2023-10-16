@@ -6,8 +6,7 @@ export async function fetcher<JSON = unknown>(
 
   if (!response.ok) {
     // eslint-disable-next-line no-console
-    console.error(await response.text());
-    throw new Error("Network response was not ok");
+    throw new Error(`Network response was not ok when fetching ${input}`);
   }
 
   return response.json();

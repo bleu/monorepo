@@ -25,7 +25,7 @@ export enum NetworkChainId {
   SEPOLIA = 11_155_111,
   POLYGONZKEVM = 1_101,
   BASE = 8453,
-  AVAX = 43114,
+  AVALANCHE = 43114,
 }
 
 export const networkUrls = {
@@ -65,7 +65,7 @@ export const networkUrls = {
     url: "https://basescan.org/",
     name: "Base Chain Explorer",
   },
-  [NetworkChainId.AVAX]: {
+  [NetworkChainId.AVALANCHE]: {
     url: "https://snowtrace.io/",
     name: "Avalanche C-Chain Explorer",
   },
@@ -139,7 +139,7 @@ const networksNamesOnBalancer = [
   String(NetworkChainId.POLYGON),
   String(NetworkChainId.POLYGONZKEVM),
   String(NetworkChainId.ARBITRUM),
-  String(NetworkChainId.AVAX),
+  String(NetworkChainId.AVALANCHE),
   String(NetworkChainId.BASE),
 ];
 

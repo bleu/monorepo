@@ -72,8 +72,8 @@ export function getWeeksBetweenDates(
   return Math.floor(timeDifferenceInSeconds / (7 * SECONDS_IN_DAY));
 }
 
-export const dateToEpoch = (date: Date): number =>
-  Math.floor(date.getTime() / 1000);
+export const dateToEpoch = (date?: Date | null): number =>
+  date ? Math.floor(date.getTime() / 1000) : 0;
 
 type Timestamp = number;
 

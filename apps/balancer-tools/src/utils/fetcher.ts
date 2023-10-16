@@ -5,8 +5,12 @@ export async function fetcher<JSON = unknown>(
   const response = await fetch(input, init);
 
   if (!response.ok) {
-    // eslint-disable-next-line no-console
-    throw new Error(`Network response was not ok when fetching ${input}`);
+    const errorBody = await response.json();
+    const errorMessage =
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      errorBody.details?.map((e: any) => e.message).join(", ") ||
+      `Network response was not ok when fetching ${input}`;
+    throw new Error(errorMessage);
   }
 
   return response.json();

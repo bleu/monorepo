@@ -98,9 +98,6 @@ export async function fetchDataForDateRange(
     return {};
   }
 
-  // const existingPoolForDate = POOLS_WITHOUT_GAUGES.filter(
-  //   (poolData) => poolData.addedTimestamp <= endDate.getTime(),
-  // );
   const existingPoolForDate = await fetchPools(parsedParams);
   console.log(`fetched ${existingPoolForDate.length} pools`);
   const perDayData: { [key: string]: PoolStatsData[] } = {};

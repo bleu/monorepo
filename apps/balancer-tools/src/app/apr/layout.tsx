@@ -16,14 +16,17 @@ export const metadata: Metadata = {
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-full flex-col">
-      <React.Suspense fallback={<Spinner />}>
-        <Header
-          linkUrl={"/apr"}
-          title={APP_DISPLAY_NAME}
-          imageSrc={"/assets/balancer-symbol.svg"}
-          endButton={<HeaderEndButton />}
-        />
-      </React.Suspense>
+      <Header
+        linkUrl={"/apr"}
+        title={APP_DISPLAY_NAME}
+        imageSrc={"/assets/balancer-symbol.svg"}
+        endButton={
+          <React.Suspense fallback={<Spinner />}>
+            <HeaderEndButton />
+          </React.Suspense>
+        }
+      />
+
       <div className="sm:flex flex-1 gap-x-8 px-4 pt-4 text-white">
         {children}
       </div>

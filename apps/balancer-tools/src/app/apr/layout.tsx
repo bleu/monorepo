@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import * as React from "react";
 
 import { Header } from "#/components/Header";
+import { Spinner } from "#/components/Spinner";
 
 import HeaderEndButton from "./(components)/HeaderEndButton";
 
@@ -19,8 +20,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         linkUrl={"/apr"}
         title={APP_DISPLAY_NAME}
         imageSrc={"/assets/balancer-symbol.svg"}
-        endButton={<HeaderEndButton />}
+        endButton={
+          <React.Suspense fallback={<Spinner />}>
+            <HeaderEndButton />
+          </React.Suspense>
+        }
       />
+
       <div className="sm:flex flex-1 gap-x-8 px-4 pt-4 text-white">
         {children}
       </div>

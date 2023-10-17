@@ -46,27 +46,21 @@ export async function fetchPoolAveragesForDateRange(
   let chosenData = res.poolSnapshots[0];
 
   if (res.poolSnapshots.length == 0) {
-    console.warn(
-      "No return on poolSnapshots, trying to fetch in a few days before",
-    );
     const retryGQL = await pools.gql(network).poolSnapshotInRange({
       poolId,
       timestamp: generateDateRange(from - SECONDS_IN_DAY * 7, to),
     });
 
     if (retryGQL.poolSnapshots.length === 0) {
-      console.error(
-        `No return on retrying poolSnapshots. ${poolId}(${network}) in range ${new Date(
-          from * 1000,
-        )} - ${new Date(to * 1000)}`,
-      );
-
       // TODO: Throw error here and handle outside of it.
       return [0, 0, "", 0];
     }
     chosenData = retryGQL.poolSnapshots
       .sort((a, b) => a.timestamp - b.timestamp)
       .slice(-1)[0];
+
+    // if the retry was needed then the volume on that day is 0
+    chosenData.swapVolume = 0;
   }
 
   const liquidity = Number(chosenData.liquidity);

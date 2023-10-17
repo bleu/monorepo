@@ -10,7 +10,6 @@ import { filterPoolStats } from "./(utils)/filter";
 import { limitPoolStats, Order, sortPoolStats } from "./(utils)/sort";
 import { QueryParamsSchema } from "./(utils)/validate";
 
-export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
 export interface tokenAPR {

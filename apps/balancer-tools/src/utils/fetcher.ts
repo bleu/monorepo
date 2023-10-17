@@ -1,3 +1,5 @@
+export const maxDuration = 300;
+
 export async function fetcher<JSON = unknown>(
   input: RequestInfo,
   init?: RequestInit,

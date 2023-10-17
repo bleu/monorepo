@@ -80,7 +80,10 @@ export const vunerabilityAffecteRateProviders: {
     address: "0xeb486af868aeb3b6e53066abc9623b1041b42bc0",
     token: "bb-e-DAI",
   },
-  { address: "0x20715545c15c76461861cb0d6ba96929766d05a5", token: "bb-rfUSDT" },
+  {
+    address: "0x20715545c15c76461861cb0d6ba96929766d05a5",
+    token: "bb-rfUSDT",
+  },
   {
     address: "0xa5d4802b4ce6b745b0c9e1b4a79c093d197869c8",
     token: "bb-rfDAI",
@@ -89,7 +92,16 @@ export const vunerabilityAffecteRateProviders: {
     address: "0xf970659221bb9d01b615321b63a26e857ffc030b",
     token: "bb-rfUSDC",
   },
-  { address: "0xbef1ccaada458a570c37b11a8872988ba1e4fdb9", token: "bb-rfUSDT" },
-  { address: "0xdc2007d9e9a33f50630f26069faab69c25f7758c", token: "bb-rfUSDC" },
-  { address: "0xcbfa4532d8b2ade2c261d3dd5ef2a2284f792692", token: "bb-a-USDC" },
+  {
+    address: "0xbef1ccaada458a570c37b11a8872988ba1e4fdb9",
+    token: "bb-rfUSDT",
+  },
+  {
+    address: "0xdc2007d9e9a33f50630f26069faab69c25f7758c",
+    token: "bb-rfUSDC",
+  },
+  {
+    address: "0xcbfa4532d8b2ade2c261d3dd5ef2a2284f792692",
+    token: "bb-a-USDC",
+  },
 ];

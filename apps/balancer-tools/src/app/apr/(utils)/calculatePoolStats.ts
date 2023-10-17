@@ -58,6 +58,9 @@ export async function fetchPoolAveragesForDateRange(
     chosenData = retryGQL.poolSnapshots
       .sort((a, b) => a.timestamp - b.timestamp)
       .slice(-1)[0];
+
+    // if the retry was needed then the volume on that day is 0
+    chosenData.swapVolume = 0;
   }
 
   const liquidity = Number(chosenData.liquidity);

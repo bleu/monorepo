@@ -273,8 +273,8 @@ importers:
         specifier: workspace:^
         version: link:../../../packages/utils
       '@graphprotocol/graph-cli':
-        specifier: 0.59.0
-        version: 0.59.0(@types/node@18.18.5)(typescript@5.2.2)
+        specifier: 0.60.0
+        version: 0.60.0(@types/node@18.18.5)(typescript@5.2.2)
       '@graphprotocol/graph-ts':
         specifier: 0.31.0
         version: 0.31.0
@@ -1942,8 +1942,8 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
-  /@graphprotocol/graph-cli@0.59.0(@types/node@18.18.5)(typescript@5.2.2):
-    resolution: {integrity: sha512-uddsyUootdhQgMqQXkrD0INn/nNkQB+3t5luRzjY0pxA4O9hidXjYZNScjvSgf3eiaN0rcEs/s56qa/dsy4LwA==}
+  /@graphprotocol/graph-cli@0.60.0(@types/node@18.18.5)(typescript@5.2.2):
+    resolution: {integrity: sha512-8tGaQJ0EzAPtkDXCAijFGoVdJXM+pKFlGxjiU31TdG5bS4cIUoSB6yWojVsFFod0yETAwf+giel/0/8sudYsDw==}
     engines: {node: '>=14'}
     hasBin: true
     dependencies:
@@ -9249,7 +9249,6 @@ packages:
 
   /ethereum-cryptography@0.1.3:
     resolution: {integrity: sha512-w8/4x1SGGzc+tO97TASLja6SLd3fRIK2tLVcV2Gx4IB21hE19atll5Cq9o3d0ZmAYC/8aw0ipieTSiekAea4SQ==}
-    deprecated: Upgrade to ethereum-cryptography@2.0 for security and reduced package size
     dependencies:
       '@types/pbkdf2': 3.1.0
       '@types/secp256k1': 4.0.3
@@ -13689,7 +13688,7 @@ packages:
     dependencies:
       lilconfig: 2.1.0
       postcss: 8.4.30
-      yaml: 2.3.1
+      yaml: 2.3.2
 
   /postcss-nested@6.0.1(postcss@8.4.30):
     resolution: {integrity: sha512-mEp4xPMi5bSWiMbsgoPfcP74lsWLHkQbZc3sY+jWYd65CUwXrUaTp0fmNpa01ZcETKlIgUdFN/MpS2xZtqL9dQ==}
@@ -16527,11 +16526,11 @@ packages:
   /yaml@2.3.1:
     resolution: {integrity: sha512-2eHWfjaoXgTBC2jNM1LRef62VQa0umtvRiDSk6HSzW7RvS5YtkabJrwYLLEKWBc8a5U2PTSCs+dJjUTJdlHsWQ==}
     engines: {node: '>= 14'}
+    dev: true
 
   /yaml@2.3.2:
     resolution: {integrity: sha512-N/lyzTPaJasoDmfV7YTrYCI0G/3ivm/9wdG0aHuheKowWQwGTsK0Eoiw6utmzAnI6pkJa0DUVygvp3spqqEKXg==}
     engines: {node: '>= 14'}
-    dev: true
 
   /yargs-parser@18.1.3:
     resolution: {integrity: sha512-o50j0JeToy/4K6OZcaQmW6lyXXKhq7csREXcDwk2omFPJEwUNOVtJKvmDr9EI1fAJZUyZcRF7kxGBWmRXudrCQ==}

@@ -65,11 +65,43 @@ export const vunerabilityAffecteRateProviders: {
     token: "bb-rfWBTC",
   },
   {
-    address: "0x60D604890feaa0b5460B28A424407c24fe89374a",
+    address: "0x60d604890feaa0b5460b28a424407c24fe89374a",
     token: "bb-a-WETH",
   },
   {
     address: "0x7275c131b1f67e8b53b4691f92b0e35a4c1c6e22",
     token: "bb-a-WAVAX",
+  },
+  {
+    address: "0x50cf90b954958480b8df7958a9e965752f627124",
+    token: "bb-euler-USD-BPT",
+  },
+  {
+    address: "0xeb486af868aeb3b6e53066abc9623b1041b42bc0",
+    token: "bb-e-DAI",
+  },
+  {
+    address: "0x20715545c15c76461861cb0d6ba96929766d05a5",
+    token: "bb-rfUSDT",
+  },
+  {
+    address: "0xa5d4802b4ce6b745b0c9e1b4a79c093d197869c8",
+    token: "bb-rfDAI",
+  },
+  {
+    address: "0xf970659221bb9d01b615321b63a26e857ffc030b",
+    token: "bb-rfUSDC",
+  },
+  {
+    address: "0xbef1ccaada458a570c37b11a8872988ba1e4fdb9",
+    token: "bb-rfUSDT",
+  },
+  {
+    address: "0xdc2007d9e9a33f50630f26069faab69c25f7758c",
+    token: "bb-rfUSDC",
+  },
+  {
+    address: "0xcbfa4532d8b2ade2c261d3dd5ef2a2284f792692",
+    token: "bb-a-USDC",
   },
 ];

@@ -6,7 +6,7 @@ import { withCache } from "#/lib/cache";
 import { DefiLlamaAPI } from "#/lib/defillama";
 import { pools } from "#/lib/gql/server";
 
-import { SECONDS_IN_DAY, SECONDS_IN_YEAR } from "../api/(utils)/date";
+import { SECONDS_IN_YEAR } from "../api/(utils)/date";
 import { ChainName, publicClients } from "./chainsPublicClients";
 import { manualPoolsRateProvider } from "./poolsRateProvider";
 import { vunerabilityAffecteRateProviders } from "./vunerabilityAffectedPool";
@@ -41,6 +41,7 @@ export async function getPoolTokensAprForDateRange(
     message: "Rate providers: " + rateProviders,
     level: "info",
   });
+
   const chainName = networkFor(chain) as ChainName;
   return await Promise.all(
     rateProviders
@@ -60,13 +61,10 @@ export async function getPoolTokensAprForDateRange(
                 endAt,
                 chainName,
                 poolId,
+                symbol,
               ),
             };
           } catch (error) {
-            // eslint-disable-next-line no-console
-            console.error(
-              `Error fetching yield for Pool ${poolId} - ${symbol} on ${chainName} with rate provider ${rateProviderAddress}: ${error}`,
-            );
             return {
               address: tokenAddress,
               symbol,
@@ -84,6 +82,7 @@ async function getAPRFromRateProviderInterval(
   timeEnd: number,
   chainName: ChainName,
   poolId: string,
+  poolSymbol: string,
 ) {
   if (
     timeEnd >= 1692662400 && // pool vunerability was found on August 22
@@ -102,6 +101,7 @@ async function getAPRFromRateProviderInterval(
       chainName,
       poolId,
     );
+
     Sentry.addBreadcrumb({
       category: "getAPRFromRateProviderInterval",
       message: "endRate: " + endRate,
@@ -137,7 +137,7 @@ async function getAPRFromRateProviderInterval(
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(
-      `Error fetching rate for ${rateProviderAddress} between ${timeStart} and ${timeEnd} chain ${chainName} poolId ${poolId} - ${e}`,
+      `Error fetching rate for ${rateProviderAddress} between ${timeStart} and ${timeEnd} chain ${chainName} poolId ${poolId} - ${poolSymbol} - ${e}`,
     );
     Sentry.captureException(e);
     throw e;
@@ -199,9 +199,8 @@ async function getIntervalRates(
 ) {
   const [blockStart, blockEnd] = await Promise.all([
     await DefiLlamaAPI.findBlockNumber(chainName, timeStart),
-    await DefiLlamaAPI.findBlockNumber(chainName, timeEnd + SECONDS_IN_DAY),
+    await DefiLlamaAPI.findBlockNumber(chainName, timeEnd),
   ]);
-
   const [endRate, startRate] = await Promise.all([
     getRateAtBlock(chainName, rateProviderAddress, poolId, blockEnd),
     getRateAtBlock(chainName, rateProviderAddress, poolId, blockStart),
@@ -243,7 +242,7 @@ const getRateAtBlock = withCache(async function getRateAtBlockFn(
     } else {
       // eslint-disable-next-line no-console
       console.error(
-        `Error fetching rate for ${rateProviderAddress} chain ${chainName} poolId ${poolId}. This is probably a Linear pool and the call reverted, in which case we can assume value 0.`,
+        `Error fetching rate for ${rateProviderAddress} chain ${chainName} poolId ${poolId} on ${blockNumber}. This is probably a Linear pool and the call reverted, in which case we can assume value 0.`,
       );
       return 0;
     }

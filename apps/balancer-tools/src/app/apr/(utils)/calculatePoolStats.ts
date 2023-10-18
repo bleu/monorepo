@@ -10,6 +10,7 @@ import {
 } from "../api/(utils)/date";
 import { PoolStatsData, tokenAPR } from "../api/route";
 import { calculateAPRForDateRange } from "./calculateApr";
+import { fetchPoolSnapshots } from "./fetchPoolSnapshots";
 import { getBALPriceForDateRange } from "./getBALPriceForDateRange";
 import { PoolTypeEnum } from "./types";
 
@@ -38,17 +39,17 @@ export async function fetchPoolAveragesForDateRange(
   const extendedFrom = initialRangeInDays < 2 ? from - SECONDS_IN_DAY : from;
 
   // Fetch snapshots within the (potentially extended) date range
-  const res = await pools.gql(network).poolSnapshotInRange({
-    poolId,
-    timestamp: [extendedFrom],
-  });
+  const res = await fetchPoolSnapshots(to, extendedFrom, network, poolId);
 
   let chosenData = res.poolSnapshots[0];
 
   if (res.poolSnapshots.length == 0) {
     const retryGQL = await pools.gql(network).poolSnapshotInRange({
       poolId,
-      timestamp: generateDateRange(from - SECONDS_IN_DAY * 7, to),
+      timestamp: generateDateRange(
+        from - SECONDS_IN_DAY * 7,
+        to - SECONDS_IN_DAY,
+      ),
     });
 
     if (retryGQL.poolSnapshots.length === 0) {

@@ -2,17 +2,17 @@ import { Address } from "@bleu-balancer-tools/utils";
 import * as Sentry from "@sentry/nextjs";
 
 import * as balEmissions from "#/lib/balancer/emissions";
-import { pools } from "#/lib/gql/server";
+import { poolsWithoutCache } from "#/lib/gql/server";
 
 import {
   calculateDaysBetween,
   dateToEpoch,
-  generateDateRange,
   getWeeksBetweenDates,
   SECONDS_IN_DAY,
   SECONDS_IN_YEAR,
   WEEKS_IN_YEAR,
 } from "../api/(utils)/date";
+import { fetchPoolSnapshots } from "./fetchPoolSnapshots";
 import { getPoolRelativeWeight } from "./getRelativeWeight";
 import { getRewardsAprForDateRange } from "./rewardsApr";
 import { getPoolTokensAprForDateRange } from "./tokenApr";
@@ -159,11 +159,7 @@ async function getFeeAprForDateRange(
   const initialRangeInDays = calculateDaysBetween(from, to);
   const extendedFrom = initialRangeInDays < 2 ? from - SECONDS_IN_DAY : from;
 
-  // Fetch snapshots within the (potentially extended) date range
-  const res = await pools.gql(network).poolSnapshotInRange({
-    poolId,
-    timestamp: generateDateRange(extendedFrom, to),
-  });
+  const res = await fetchPoolSnapshots(to, extendedFrom, network, poolId);
 
   if (res.poolSnapshots.length === 0) {
     return [0, 0];
@@ -177,7 +173,7 @@ async function getFeeAprForDateRange(
     sortedSnapshots.length <= 1 &&
     sortedSnapshots[sortedSnapshots.length - 1].timestamp <= to
   ) {
-    const currentData = await pools.gql(network).Pool({ poolId });
+    const currentData = await poolsWithoutCache.gql(network).Pool({ poolId });
     if (currentData.pool) {
       sortedSnapshots.push({
         timestamp: dateToEpoch(new Date()),

@@ -6,7 +6,7 @@ const { withSentryConfig } = require("@sentry/nextjs");
 const moduleExports = {
   experimental: {
     // Add the "@sentry/profiling-node" to serverComponentsExternalPackages.
-    serverComponentsExternalPackages: ['@sentry/profiling-node'],
+    serverComponentsExternalPackages: ["@sentry/profiling-node"],
   },
   transpilePackages: ["@bleu-balancer-tools/gql"],
   reactStrictMode: true,

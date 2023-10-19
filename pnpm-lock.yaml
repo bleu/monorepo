@@ -213,8 +213,8 @@ importers:
         specifier: ^18.18.5
         version: 18.18.5
       '@types/plotly.js':
-        specifier: ^2.12.27
-        version: 2.12.27
+        specifier: ^2.12.29
+        version: 2.12.29
       '@types/react':
         specifier: ^18.2.28
         version: 18.2.28
@@ -5644,8 +5644,8 @@ packages:
       '@types/node': 18.18.5
     dev: true
 
-  /@types/plotly.js@2.12.27:
-    resolution: {integrity: sha512-Ah7XuePFNxu2XAHG79GeKN/Ky8dZ0k6hzy49da6AeZFrTqO5wDbtJovp3co3C+iRitp8tA6rIxkltiJ3cjsQWw==}
+  /@types/plotly.js@2.12.29:
+    resolution: {integrity: sha512-eaZGh/DFrjBKE6FnWT/CU2Hx1CQ9hT01LvVpiHHB20iVOLmgM5qPV74y08JrM4VjyF7Gx7hAx91dxusqQzE+nQ==}
     dev: true
 
   /@types/prop-types@15.7.5:
@@ -5663,7 +5663,7 @@ packages:
   /@types/react-plotly.js@2.6.1:
     resolution: {integrity: sha512-vFJZRCC2Pav0NdrFm0grPMm9+67ejGZZglDBWqo+J6VFbB4CAatjoNiowfardznuujaaoDNoZ4MSCFwYyVk4aA==}
     dependencies:
-      '@types/plotly.js': 2.12.27
+      '@types/plotly.js': 2.12.29
       '@types/react': 18.2.28
     dev: true
 

@@ -56,19 +56,17 @@ function wrapWithCache<T extends object>(obj: T): T {
   }) as T;
 }
 
-export const poolsWithoutCache = {
-  client: clientFor(Subgraph.Balancer),
-  gql: (chainId: number | string) =>
-    balancerSdks[networkFor(chainId)](
-      poolsWithoutCache.client(String(chainId)),
-    ),
-};
-
 export const pools = {
   client: clientFor(Subgraph.Balancer),
   gql: (chainId: number | string) =>
+    balancerSdks[networkFor(chainId)](pools.client(String(chainId))),
+};
+
+export const poolsWithCache = {
+  client: clientFor(Subgraph.Balancer),
+  gql: (chainId: number | string) =>
     wrapWithCache(
-      balancerSdks[networkFor(chainId)](pools.client(String(chainId))),
+      balancerSdks[networkFor(chainId)](poolsWithCache.client(String(chainId))),
     ),
 };
 

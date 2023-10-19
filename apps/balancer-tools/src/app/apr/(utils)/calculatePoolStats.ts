@@ -3,11 +3,7 @@
 import { Pool } from "#/lib/balancer/gauges";
 import { pools } from "#/lib/gql/server";
 
-import {
-  calculateDaysBetween,
-  generateDateRange,
-  SECONDS_IN_DAY,
-} from "../api/(utils)/date";
+import { calculateDaysBetween, SECONDS_IN_DAY } from "../api/(utils)/date";
 import { PoolStatsData, tokenAPR } from "../api/route";
 import { calculateAPRForDateRange } from "./calculateApr";
 import { fetchPoolSnapshots } from "./fetchPoolSnapshots";
@@ -39,17 +35,21 @@ export async function fetchPoolAveragesForDateRange(
   const extendedFrom = initialRangeInDays < 2 ? from - SECONDS_IN_DAY : from;
 
   // Fetch snapshots within the (potentially extended) date range
-  const res = await fetchPoolSnapshots(to, extendedFrom, network, poolId);
+  const res = await fetchPoolSnapshots({
+    to,
+    from: extendedFrom,
+    network,
+    poolId,
+  });
 
   let chosenData = res.poolSnapshots[0];
 
   if (res.poolSnapshots.length == 0) {
-    const retryGQL = await pools.gql(network).poolSnapshotInRange({
+    const retryGQL = await fetchPoolSnapshots({
+      to: to - SECONDS_IN_DAY,
+      from: from - SECONDS_IN_DAY * 7,
+      network,
       poolId,
-      timestamp: generateDateRange(
-        from - SECONDS_IN_DAY * 7,
-        to - SECONDS_IN_DAY,
-      ),
     });
 
     if (retryGQL.poolSnapshots.length === 0) {

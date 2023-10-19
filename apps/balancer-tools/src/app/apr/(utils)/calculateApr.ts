@@ -2,7 +2,7 @@ import { Address } from "@bleu-balancer-tools/utils";
 import * as Sentry from "@sentry/nextjs";
 
 import * as balEmissions from "#/lib/balancer/emissions";
-import { poolsWithoutCache } from "#/lib/gql/server";
+import { pools } from "#/lib/gql/server";
 
 import {
   calculateDaysBetween,
@@ -159,7 +159,12 @@ async function getFeeAprForDateRange(
   const initialRangeInDays = calculateDaysBetween(from, to);
   const extendedFrom = initialRangeInDays < 2 ? from - SECONDS_IN_DAY : from;
 
-  const res = await fetchPoolSnapshots(to, extendedFrom, network, poolId);
+  const res = await fetchPoolSnapshots({
+    to,
+    from: extendedFrom,
+    network,
+    poolId,
+  });
 
   if (res.poolSnapshots.length === 0) {
     return [0, 0];
@@ -173,7 +178,7 @@ async function getFeeAprForDateRange(
     sortedSnapshots.length <= 1 &&
     sortedSnapshots[sortedSnapshots.length - 1].timestamp <= to
   ) {
-    const currentData = await poolsWithoutCache.gql(network).Pool({ poolId });
+    const currentData = await pools.gql(network).Pool({ poolId });
     if (currentData.pool) {
       sortedSnapshots.push({
         timestamp: dateToEpoch(new Date()),

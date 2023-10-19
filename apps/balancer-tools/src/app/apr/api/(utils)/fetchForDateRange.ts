@@ -4,9 +4,10 @@ import { Network, networkIdFor } from "@bleu-balancer-tools/utils";
 import * as Sentry from "@sentry/nextjs";
 
 import { DefiLlamaAPI } from "#/lib/defillama";
-import { pools } from "#/lib/gql/server";
+import { pools, poolsWithCache } from "#/lib/gql/server";
 import { fetcher } from "#/utils/fetcher";
 
+import { isTimestampToday } from "../../(utils)/fetchPoolSnapshots";
 import { BASE_URL } from "../../(utils)/types";
 import { PoolStatsData, PoolStatsResults } from "../route";
 import { dateToEpoch, formatDateToMMDDYYYY } from "./date";
@@ -34,10 +35,10 @@ const fetchPoolsFromNetwork = async (
     // If this errors out, probably the network didn't exist at that timestamp
     return [];
   }
-
+  const strategy = isTimestampToday(createdBefore) ? pools : poolsWithCache;
   let response;
   try {
-    response = await pools.gql(networkIdFor(network)).APRPools({
+    response = await strategy.gql(networkIdFor(network)).APRPools({
       skip,
       createdBefore: createdBefore,
       limit,

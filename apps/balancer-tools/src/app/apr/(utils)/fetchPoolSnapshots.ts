@@ -1,17 +1,10 @@
 import { PoolSnapshotInRangeQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum.server";
 
-import { pools, poolsWithoutCache } from "#/lib/gql/server";
+import { pools, poolsWithCache } from "#/lib/gql/server";
 
 import { dateToEpoch, generateDateRange } from "../api/(utils)/date";
 
-export async function fetchPoolSnapshots(
-  to: number,
-  extendedFrom: number,
-  network: string,
-  poolId: string,
-): Promise<PoolSnapshotInRangeQuery> {
-  let res: PoolSnapshotInRangeQuery;
-
+export function isTimestampToday(timestamp: number): boolean {
   const now = new Date();
   const utcMidnightTimestampOfCurrentDay = dateToEpoch(
     new Date(
@@ -27,17 +20,25 @@ export async function fetchPoolSnapshots(
     ),
   );
 
-  if (to === currentDateUTC) {
-    res = await poolsWithoutCache.gql(network).poolSnapshotInRange({
-      poolId,
-      timestamp: generateDateRange(extendedFrom, to),
-    });
-  } else {
-    res = await pools.gql(network).poolSnapshotInRange({
-      poolId,
-      timestamp: generateDateRange(extendedFrom, to),
-    });
-  }
+  return timestamp === utcMidnightTimestampOfCurrentDay;
+}
+
+export async function fetchPoolSnapshots({
+  to,
+  from,
+  network,
+  poolId,
+}: {
+  to: number;
+  from: number;
+  network: string;
+  poolId: string;
+}): Promise<PoolSnapshotInRangeQuery> {
+  const strategy = isTimestampToday(to) ? pools : poolsWithCache;
+  const res = await strategy.gql(network).poolSnapshotInRange({
+    poolId,
+    timestamp: generateDateRange(from, to),
+  });
 
   return res;
 }

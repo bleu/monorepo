@@ -13,7 +13,7 @@ export async function fetchPoolSnapshots(
   let res: PoolSnapshotInRangeQuery;
 
   const now = new Date();
-  const currentDateUTC = dateToEpoch(
+  const utcMidnightTimestampOfCurrentDay = dateToEpoch(
     new Date(
       Date.UTC(
         now.getUTCFullYear(),

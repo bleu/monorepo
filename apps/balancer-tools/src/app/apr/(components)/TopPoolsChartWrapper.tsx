@@ -1,6 +1,6 @@
 import { fetcher } from "#/utils/fetcher";
 
-import { PoolStatsResults } from "../../api/route";
+import { PoolStatsResults } from "../api/route";
 import TopPoolsChart from "./TopPoolsChart";
 
 export default async function TopPoolsChartWrapper({

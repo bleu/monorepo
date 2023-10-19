@@ -14,8 +14,8 @@ import invariant from "tiny-invariant";
 import { Toast } from "#/components/Toast";
 import { Pool } from "#/lib/balancer/gauges";
 
-import { generatePoolPageLink } from "../../(utils)/getFilteredApiUrl";
-import { parseMMDDYYYYToDate } from "../../api/(utils)/date";
+import { generatePoolPageLink } from "../(utils)/getFilteredApiUrl";
+import { parseMMDDYYYYToDate } from "../api/(utils)/date";
 
 function getPoolExternalUrl({
   network,

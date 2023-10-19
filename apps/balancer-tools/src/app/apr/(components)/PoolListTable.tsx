@@ -26,13 +26,13 @@ import { TooltipMobile } from "#/components/TooltipMobile";
 import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
 
-import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
+import { formatAPR, formatTVL } from "../(utils)/formatPoolStats";
 import {
   generateApiUrlWithParams,
   generatePoolPageLink,
-} from "../../(utils)/getFilteredApiUrl";
-import { PoolTypeEnum } from "../../(utils)/types";
-import { PoolStatsData, PoolStatsResults, PoolTokens } from "../../api/route";
+} from "../(utils)/getFilteredApiUrl";
+import { PoolTypeEnum } from "../(utils)/types";
+import { PoolStatsData, PoolStatsResults, PoolTokens } from "../api/route";
 import { MoreFiltersButton } from "./MoreFiltersButton";
 import { TokenFilterInput } from "./TokenFilterInput";
 

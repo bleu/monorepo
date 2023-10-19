@@ -1,13 +1,11 @@
 import * as balEmissions from "#/lib/balancer/emissions";
 import { formatNumber } from "#/utils/formatNumber";
 
-import OverviewCards, {
-  getDatesDetails,
-} from "../../(components)/OverviewCards";
-import { getBALPriceForDateRange } from "../../(utils)/getBALPriceForDateRange";
-import { dateToEpoch } from "../../api/(utils)/date";
+import { getBALPriceForDateRange } from "../(utils)/getBALPriceForDateRange";
+import { dateToEpoch } from "../api/(utils)/date";
+import OverviewCards, { getDatesDetails } from "./OverviewCards";
 
-export default async function RoundOverviewCards({
+export default async function HomeOverviewCards({
   startAt,
   endAt,
 }: {

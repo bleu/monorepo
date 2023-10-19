@@ -7,8 +7,8 @@ import { Data, PlotMouseEvent, PlotType } from "plotly.js";
 
 import Plot from "#/components/Plot";
 
-import { generatePoolPageLink } from "../../(utils)/getFilteredApiUrl";
-import { PoolStatsResults } from "../../api/route";
+import { generatePoolPageLink } from "../(utils)/getFilteredApiUrl";
+import { PoolStatsResults } from "../api/route";
 
 export default function TopPoolsChart({
   startAt,

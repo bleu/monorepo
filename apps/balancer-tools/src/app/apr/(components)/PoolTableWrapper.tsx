@@ -1,6 +1,6 @@
 import { fetcher } from "#/utils/fetcher";
 
-import { PoolStatsResults } from "../../api/route";
+import { PoolStatsResults } from "../api/route";
 import { PoolListTable } from "./PoolListTable";
 
 export default async function PoolTableWrapper({

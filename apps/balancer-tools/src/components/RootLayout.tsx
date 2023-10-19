@@ -7,6 +7,7 @@ import { WagmiConfig } from "wagmi";
 
 import { chains, config } from "#/wagmi/client";
 
+import Fathom from "./Fathom";
 import { ToastProvider } from "./Toast";
 
 export function RootLayout({ children }: React.PropsWithChildren) {
@@ -18,6 +19,7 @@ export function RootLayout({ children }: React.PropsWithChildren) {
         theme={CustomTheme}
       >
         <ToastProvider>
+          <Fathom />
           <div className="h-full w-full bg-blue1">{children}</div>
         </ToastProvider>
       </RainbowKitProvider>

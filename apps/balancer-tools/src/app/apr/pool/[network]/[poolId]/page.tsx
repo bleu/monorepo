@@ -3,11 +3,11 @@ import { Suspense } from "react";
 
 import ChartSkelton from "#/app/apr/(components)/(skeleton)/ChartSkelton";
 import KpisSkeleton from "#/app/apr/(components)/(skeleton)/KpisSkeleton";
+import Breadcrumb from "#/app/apr/(components)/Breadcrumb";
 import { generatePoolPageLink } from "#/app/apr/(utils)/getFilteredApiUrl";
 import { SECONDS_IN_DAY } from "#/app/apr/api/(utils)/date";
 import { QueryParamsPagesSchema } from "#/app/apr/api/(utils)/validate";
 import { SearchParams } from "#/app/apr/page";
-import Breadcrumb from "#/app/apr/round/(components)/Breadcrumb";
 import { Pool } from "#/lib/balancer/gauges";
 
 import HistoricalCharts from "../../(components)/HistoricalCharts";

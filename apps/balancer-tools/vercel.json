@@ -1,6 +1,6 @@
 {
   "functions": {
-    "/app/apr/api/route.js": {
+    "app/apr/api/route.js": {
       "memory": 3008,
       "maxDuration": 300
     }

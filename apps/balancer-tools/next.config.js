@@ -4,6 +4,10 @@ const { withSentryConfig } = require("@sentry/nextjs");
 
 /** @type {import('next').NextConfig} */
 const moduleExports = {
+  experimental: {
+    // Add the "@sentry/profiling-node" to serverComponentsExternalPackages.
+    serverComponentsExternalPackages: ["@sentry/profiling-node"],
+  },
   transpilePackages: ["@bleu-balancer-tools/gql"],
   reactStrictMode: true,
   swcMinify: true,
@@ -14,7 +18,9 @@ const moduleExports = {
    */
   webpack: (config) => {
     config.resolve.fallback = { fs: false, net: false, tls: false };
-    config.externals.push("pino-pretty", "lokijs", "encoding");
+    config.externals.push("pino-pretty", "lokijs", "encoding", {
+      "@sentry/profiling-node": "commonjs @sentry/profiling-node",
+    });
     return config;
   },
   sentry: {

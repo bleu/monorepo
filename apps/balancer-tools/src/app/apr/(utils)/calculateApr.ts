@@ -7,12 +7,12 @@ import { pools } from "#/lib/gql/server";
 import {
   calculateDaysBetween,
   dateToEpoch,
-  generateDateRange,
   getWeeksBetweenDates,
   SECONDS_IN_DAY,
   SECONDS_IN_YEAR,
   WEEKS_IN_YEAR,
 } from "../api/(utils)/date";
+import { fetchPoolSnapshots } from "./fetchPoolSnapshots";
 import { getPoolRelativeWeight } from "./getRelativeWeight";
 import { getRewardsAprForDateRange } from "./rewardsApr";
 import { getPoolTokensAprForDateRange } from "./tokenApr";
@@ -159,10 +159,11 @@ async function getFeeAprForDateRange(
   const initialRangeInDays = calculateDaysBetween(from, to);
   const extendedFrom = initialRangeInDays < 2 ? from - SECONDS_IN_DAY : from;
 
-  // Fetch snapshots within the (potentially extended) date range
-  const res = await pools.gql(network).poolSnapshotInRange({
+  const res = await fetchPoolSnapshots({
+    to,
+    from: extendedFrom,
+    network,
     poolId,
-    timestamp: generateDateRange(extendedFrom, to),
   });
 
   if (res.poolSnapshots.length === 0) {

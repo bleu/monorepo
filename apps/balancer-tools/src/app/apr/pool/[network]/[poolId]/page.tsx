@@ -14,6 +14,8 @@ import HistoricalCharts from "../../(components)/HistoricalCharts";
 import PoolOverviewCards from "../../(components)/PoolOverviewCards";
 import { RewardWarning } from "../../(components)/RewardsWarning";
 
+export const revalidate = 60 * 30;
+
 export default async function Page({
   params: { poolId, network },
   searchParams,

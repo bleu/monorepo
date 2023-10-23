@@ -176,7 +176,6 @@ export const aprPools = gql`
     $skip: Int!
     $createdBefore: Int
     $limit: Int
-    $tokens: [String!]
     $minTvl: BigDecimal
     $maxTvl: BigDecimal
     $block: Int
@@ -186,7 +185,6 @@ export const aprPools = gql`
         createTime_lte: $createdBefore
         totalLiquidity_gte: $minTvl
         totalLiquidity_lte: $maxTvl
-        tokens_: { symbol_in: $tokens }
       }
       first: $limit
       skip: $skip

@@ -35,7 +35,8 @@ const fetchPoolsFromNetwork = async (
     return [];
   }
   let response;
-  const tokensList = tokens.length ? { tokens_: { symbol_in: tokens } } : {};
+  const tokensList =
+    tokens.length > 0 ? { tokens_: { symbol_in: tokens } } : {};
   try {
     //TODO: not cache if createdBefore is today
     response = await poolsWithCache.gql(networkIdFor(network)).APRPools({

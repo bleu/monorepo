@@ -277,9 +277,14 @@ function TableRow({
 }
 
 function APRHover({ apr }: { apr: APR }) {
-  const aprEntries = Object.entries(apr.breakdown).filter(
-    ([, value]) => typeof value !== "object",
-  );
+  const aprEntries = Object.entries(apr.breakdown)
+    .map(([key, value]) => {
+      if (typeof value === "object" && value !== null && "total" in value) {
+        return [key, value.total];
+      }
+      return [key, value];
+    })
+    .filter(([, value]) => typeof value !== "object");
 
   return (
     <ul>
@@ -292,6 +297,7 @@ function APRHover({ apr }: { apr: APR }) {
     </ul>
   );
 }
+
 function OrderIcon(
   searchParams: ReadonlyURLSearchParams,
   fieldName: keyof PoolStatsData,

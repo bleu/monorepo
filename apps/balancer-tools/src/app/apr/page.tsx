@@ -25,6 +25,7 @@ export interface SearchParams {
   network?: string;
 }
 
+export const revalidate = SECONDS_IN_DAY;
 export default function Page({ searchParams }: { searchParams: SearchParams }) {
   const parsedParams = QueryParamsPagesSchema.safeParse(searchParams);
   if (!parsedParams.success) {

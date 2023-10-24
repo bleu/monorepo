@@ -1,10 +1,23 @@
 type Swap @entity {
   id: String!
+  user: User!
   chainId: Int!
-  userAddress: Bytes!
-  tokenInAddress: Bytes!
+  tokenIn: Token!
   tokenAmountIn: BigInt!
-  tokenOutAddress: Bytes!
+  tokenOut: Token!
   priceChecker: Bytes!
   priceCheckerData: Bytes!
+  transactionHash: Bytes!
+}
+
+type Token @entity {
+  id: String!
+  name: String
+  symbol: String
+  decimals: Int
+}
+
+type User @entity {
+  id: String!
+  swaps: [Swap!]! @derivedFrom(field: "user")
 }

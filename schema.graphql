@@ -1,0 +1,10 @@
+type Swap @entity {
+  id: String!
+  chainId: Int!
+  userAddress: Bytes!
+  tokenInAddress: Bytes!
+  tokenAmountIn: BigInt!
+  tokenOutAddress: Bytes!
+  priceChecker: Bytes!
+  priceCheckerData: Bytes!
+}

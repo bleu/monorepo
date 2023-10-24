@@ -4,7 +4,7 @@ import { Pool } from "#/lib/balancer/gauges";
 import { pools } from "#/lib/gql/server";
 
 import { calculateDaysBetween, SECONDS_IN_DAY } from "../api/(utils)/date";
-import { PoolStatsData, tokenAPR } from "../api/route";
+import { PoolStatsData, TokenAPR } from "../api/route";
 import { calculateAPRForDateRange } from "./calculateApr";
 import { fetchPoolSnapshots } from "./fetchPoolSnapshots";
 import { getBALPriceForDateRange } from "./getBALPriceForDateRange";
@@ -18,7 +18,7 @@ export interface calculatePoolData extends Omit<PoolStatsData, "apr"> {
       swapFee: number;
       tokens?: {
         total: number;
-        breakdown: tokenAPR[];
+        breakdown: TokenAPR[];
       };
     };
   };

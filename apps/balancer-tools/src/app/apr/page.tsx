@@ -28,14 +28,16 @@ export interface SearchParams {
 export default function Page({ searchParams }: { searchParams: SearchParams }) {
   const parsedParams = QueryParamsPagesSchema.safeParse(searchParams);
   if (!parsedParams.success) {
-    const currentDateFormated = new Date();
-    const threeDaysAgoDateFormated = new Date(
-      new Date().getTime() - 3 * SECONDS_IN_DAY * 1000,
+    const oneDayAgoFormated = new Date(
+      new Date().getTime() - SECONDS_IN_DAY * 1000,
+    );
+    const fourDaysAgoDateFormated = new Date(
+      new Date().getTime() - 4 * SECONDS_IN_DAY * 1000,
     );
     return redirect(
       generatePoolPageLink(
-        threeDaysAgoDateFormated,
-        currentDateFormated,
+        fourDaysAgoDateFormated,
+        oneDayAgoFormated,
         searchParams,
       ),
     );

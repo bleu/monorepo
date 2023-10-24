@@ -14,6 +14,7 @@ import HistoricalCharts from "../../(components)/HistoricalCharts";
 import PoolOverviewCards from "../../(components)/PoolOverviewCards";
 import { RewardWarning } from "../../(components)/RewardsWarning";
 
+export const revalidate = SECONDS_IN_DAY;
 export default async function Page({
   params: { poolId, network },
   searchParams,
@@ -23,14 +24,16 @@ export default async function Page({
 }) {
   const parsedParams = QueryParamsPagesSchema.safeParse(searchParams);
   if (!parsedParams.success) {
-    const currentDateFormated = new Date();
+    const oneDayAgoFormated = new Date(
+      new Date().getTime() - SECONDS_IN_DAY * 1000,
+    );
     const threeDaysAgoDateFormated = new Date(
       new Date().getTime() - 3 * SECONDS_IN_DAY * 1000,
     );
     return redirect(
       generatePoolPageLink(
         threeDaysAgoDateFormated,
-        currentDateFormated,
+        oneDayAgoFormated,
         searchParams,
       ),
     );

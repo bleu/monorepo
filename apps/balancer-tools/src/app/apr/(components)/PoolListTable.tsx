@@ -22,6 +22,7 @@ import { Badge } from "#/components/Badge";
 import { PlotTitle } from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
+import { Tooltip } from "#/components/Tooltip";
 import { TooltipMobile } from "#/components/TooltipMobile";
 import { fetcher } from "#/utils/fetcher";
 import { formatNumber } from "#/utils/formatNumber";
@@ -32,7 +33,7 @@ import {
   generatePoolPageLink,
 } from "../(utils)/getFilteredApiUrl";
 import { PoolTypeEnum } from "../(utils)/types";
-import { PoolStatsData, PoolStatsResults, PoolTokens } from "../api/route";
+import { APR, PoolStatsData, PoolStatsResults, PoolTokens } from "../api/route";
 import { MoreFiltersButton } from "./MoreFiltersButton";
 import { TokenFilterInput } from "./TokenFilterInput";
 
@@ -156,7 +157,7 @@ export function PoolListTable({
                     poolType={pool.type}
                     tvl={pool.tvl}
                     votingShare={pool.votingShare}
-                    apr={pool.apr.total}
+                    apr={pool.apr}
                     startAt={startAt}
                     endAt={endAt}
                   />
@@ -217,7 +218,7 @@ function TableRow({
   poolType: keyof typeof PoolTypeEnum;
   tvl: number;
   votingShare: number;
-  apr: number;
+  apr: APR;
   startAt: Date;
   endAt: Date;
 }) {
@@ -267,9 +268,33 @@ function TableRow({
       </Table.BodyCellLink>
 
       <Table.BodyCellLink linkClassNames="float-right" href={poolRedirectURL}>
-        {formatAPR(apr)}
+        <Tooltip content={<APRHover apr={apr} />}>
+          <span>{formatAPR(apr.total)}</span>
+        </Tooltip>
       </Table.BodyCellLink>
     </Table.BodyRow>
+  );
+}
+
+function APRHover({ apr }: { apr: APR }) {
+  const aprEntries = Object.entries(apr.breakdown)
+    .map(([key, value]) => {
+      if (typeof value === "object" && value !== null && "total" in value) {
+        return [key, value.total];
+      }
+      return [key, value];
+    })
+    .filter(([, value]) => typeof value !== "object");
+
+  return (
+    <ul>
+      {aprEntries.map(([key, value]) => (
+        <li key={key}>
+          <span className="font-semibold text-amber9">{key} APR</span>{" "}
+          {formatNumber(value as number)}%
+        </li>
+      ))}
+    </ul>
   );
 }
 

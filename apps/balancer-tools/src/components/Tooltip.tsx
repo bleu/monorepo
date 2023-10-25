@@ -3,6 +3,14 @@
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { ReactNode } from "react";
 
+type TooltipProps = Omit<
+  TooltipPrimitive.TooltipProps & TooltipPrimitive.TooltipContentProps,
+  "content"
+> & {
+  content: ReactNode;
+  disableTooltip?: boolean;
+};
+
 export function Tooltip({
   children,
   disableTooltip = false,
@@ -11,11 +19,7 @@ export function Tooltip({
   defaultOpen,
   onOpenChange,
   ...props
-}: TooltipPrimitive.TooltipProps &
-  TooltipPrimitive.TooltipContentProps & {
-    content: ReactNode;
-    disableTooltip?: boolean;
-  }) {
+}: TooltipProps) {
   if (disableTooltip) return <>{children}</>;
 
   return (

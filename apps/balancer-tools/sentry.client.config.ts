@@ -28,5 +28,6 @@ Sentry.init({
       maskAllText: true,
       blockAllMedia: true,
     }),
+    // Add profiling integration to list of integrations
   ],
 });

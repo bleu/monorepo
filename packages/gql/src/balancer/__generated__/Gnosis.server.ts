@@ -5913,7 +5913,6 @@ export type AprPoolsQueryVariables = Exact<{
   skip: Scalars['Int']['input'];
   createdBefore?: InputMaybe<Scalars['Int']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
-  tokens?: InputMaybe<Array<Scalars['Bytes']['input']> | Scalars['Bytes']['input']>;
   minTvl?: InputMaybe<Scalars['BigDecimal']['input']>;
   maxTvl?: InputMaybe<Scalars['BigDecimal']['input']>;
   block?: InputMaybe<Scalars['Int']['input']>;
@@ -6013,7 +6012,7 @@ export const PoolSnapshotInRangeDocument = gql`
   poolSnapshots(
     where: {pool_in: [$poolId], timestamp_in: $timestamp}
     orderBy: timestamp
-    orderDirection: asc
+    orderDirection: desc
   ) {
     pool {
       id
@@ -6098,9 +6097,9 @@ export const PoolRateProvidersDocument = gql`
 }
     `;
 export const AprPoolsDocument = gql`
-    query APRPools($skip: Int!, $createdBefore: Int, $limit: Int, $tokens: [Bytes!], $minTvl: BigDecimal, $maxTvl: BigDecimal, $block: Int) {
+    query APRPools($skip: Int!, $createdBefore: Int, $limit: Int, $minTvl: BigDecimal, $maxTvl: BigDecimal, $block: Int) {
   pools(
-    where: {createTime_lte: $createdBefore, tokensList_contains: $tokens, totalLiquidity_gte: $minTvl, totalLiquidity_lte: $maxTvl}
+    where: {createTime_lte: $createdBefore, totalLiquidity_gte: $minTvl, totalLiquidity_lte: $maxTvl}
     first: $limit
     skip: $skip
     block: {number: $block}

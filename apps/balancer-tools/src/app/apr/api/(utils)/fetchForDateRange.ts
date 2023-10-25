@@ -4,7 +4,7 @@ import { Network, networkIdFor } from "@bleu-balancer-tools/utils";
 import * as Sentry from "@sentry/nextjs";
 
 import { DefiLlamaAPI } from "#/lib/defillama";
-import { pools } from "#/lib/gql/server";
+import { poolsWithCache } from "#/lib/gql/server";
 import { fetcher } from "#/utils/fetcher";
 
 import { BASE_URL } from "../../(utils)/types";
@@ -34,17 +34,19 @@ const fetchPoolsFromNetwork = async (
     // If this errors out, probably the network didn't exist at that timestamp
     return [];
   }
-
   let response;
+  const tokensList =
+    tokens.length > 0 ? { tokens_: { symbol_in: tokens } } : {};
   try {
-    response = await pools.gql(networkIdFor(network)).APRPools({
+    //TODO: not cache if createdBefore is today
+    response = await poolsWithCache.gql(networkIdFor(network)).APRPools({
       skip,
       createdBefore: createdBefore,
       limit,
-      tokens,
       minTvl,
       maxTvl,
       block,
+      ...tokensList,
     });
   } catch (e) {
     // If this errors out, probably the subgraph hadn't been deployed yet at this block

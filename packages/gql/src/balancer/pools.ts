@@ -84,7 +84,7 @@ export const poolSnapshotInRange = gql`
     poolSnapshots(
       where: { pool_in: [$poolId], timestamp_in: $timestamp }
       orderBy: timestamp
-      orderDirection: asc
+      orderDirection: desc
     ) {
       pool {
         id
@@ -176,7 +176,6 @@ export const aprPools = gql`
     $skip: Int!
     $createdBefore: Int
     $limit: Int
-    $tokens: [Bytes!]
     $minTvl: BigDecimal
     $maxTvl: BigDecimal
     $block: Int
@@ -184,7 +183,6 @@ export const aprPools = gql`
     pools(
       where: {
         createTime_lte: $createdBefore
-        tokensList_contains: $tokens
         totalLiquidity_gte: $minTvl
         totalLiquidity_lte: $maxTvl
       }

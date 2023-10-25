@@ -4,16 +4,16 @@ import { Suspense } from "react";
 import ChartSkelton from "./(components)/(skeleton)/ChartSkelton";
 import KpisSkeleton from "./(components)/(skeleton)/KpisSkeleton";
 import TableSkeleton from "./(components)/(skeleton)/TableSkeleton";
+import Breadcrumb from "./(components)/Breadcrumb";
+import HomeOverviewCards from "./(components)/HomeOverviewCards";
+import PoolTableWrapper from "./(components)/PoolTableWrapper";
+import TopPoolsChartWrapper from "./(components)/TopPoolsChartWrapper";
 import {
   generateApiUrlWithParams,
   generatePoolPageLink,
 } from "./(utils)/getFilteredApiUrl";
 import { SECONDS_IN_DAY } from "./api/(utils)/date";
 import { QueryParamsPagesSchema } from "./api/(utils)/validate";
-import Breadcrumb from "./round/(components)/Breadcrumb";
-import PoolTableWrapper from "./round/(components)/PoolTableWrapper";
-import RoundOverviewCards from "./round/(components)/RoundOverviewCards";
-import TopPoolsChartWrapper from "./round/(components)/TopPoolsChartWrapper";
 
 export interface SearchParams {
   minTvl?: string;
@@ -25,17 +25,20 @@ export interface SearchParams {
   network?: string;
 }
 
+export const revalidate = SECONDS_IN_DAY;
 export default function Page({ searchParams }: { searchParams: SearchParams }) {
   const parsedParams = QueryParamsPagesSchema.safeParse(searchParams);
   if (!parsedParams.success) {
-    const currentDateFormated = new Date();
-    const threeDaysAgoDateFormated = new Date(
-      new Date().getTime() - 3 * SECONDS_IN_DAY * 1000,
+    const oneDayAgoFormated = new Date(
+      new Date().getTime() - SECONDS_IN_DAY * 1000,
+    );
+    const fourDaysAgoDateFormated = new Date(
+      new Date().getTime() - 4 * SECONDS_IN_DAY * 1000,
     );
     return redirect(
       generatePoolPageLink(
-        threeDaysAgoDateFormated,
-        currentDateFormated,
+        fourDaysAgoDateFormated,
+        oneDayAgoFormated,
         searchParams,
       ),
     );
@@ -51,7 +54,7 @@ export default function Page({ searchParams }: { searchParams: SearchParams }) {
     <div className="flex flex-1 flex-col gap-y-3">
       <Breadcrumb />
       <Suspense fallback={<KpisSkeleton />}>
-        <RoundOverviewCards startAt={startAtDate} endAt={endAtDate} />
+        <HomeOverviewCards startAt={startAtDate} endAt={endAtDate} />
       </Suspense>
 
       <Suspense fallback={<ChartSkelton />}>

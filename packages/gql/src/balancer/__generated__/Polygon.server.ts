@@ -5895,12 +5895,20 @@ export type PoolSnapshotInRangeQueryVariables = Exact<{
 
 export type PoolSnapshotInRangeQuery = { __typename?: 'Query', poolSnapshots: Array<{ __typename?: 'PoolSnapshot', amounts: Array<any>, totalShares: any, swapVolume: any, protocolFee?: any | null, swapFees: any, liquidity: any, swapsCount: any, holdersCount: any, timestamp: number, pool: { __typename?: 'Pool', id: string, address: any, name?: string | null, poolType?: string | null, symbol?: string | null, tokens?: Array<{ __typename?: 'PoolToken', symbol: string, balance: any }> | null } }> };
 
+export type PoolSnapshotInRangeTokenQueryVariables = Exact<{
+  poolId: Scalars['String']['input'];
+  timestamp?: InputMaybe<Array<Scalars['Int']['input']> | Scalars['Int']['input']>;
+}>;
+
+
+export type PoolSnapshotInRangeTokenQuery = { __typename?: 'Query', poolSnapshots: Array<{ __typename?: 'PoolSnapshot', timestamp: number, pool: { __typename?: 'Pool', address: any, owner?: any | null, poolType?: string | null, symbol?: string | null, swapFee: any, totalLiquidity: any, totalSwapVolume: any, totalSwapFee: any, protocolYieldFeeCache?: any | null, poolTypeVersion?: number | null, tokens?: Array<{ __typename?: 'PoolToken', address: string, symbol: string, balance: any, decimals: number, priceRate: any, weight?: any | null, isExemptFromYieldProtocolFee?: boolean | null }> | null } }> };
+
 export type PoolQueryVariables = Exact<{
   poolId: Scalars['ID']['input'];
 }>;
 
 
-export type PoolQuery = { __typename?: 'Query', pool?: { __typename?: 'Pool', address: any, owner?: any | null, poolType?: string | null, symbol?: string | null, swapFee: any, totalLiquidity: any, totalSwapVolume: any, totalSwapFee: any, amp?: any | null, c?: any | null, s?: any | null, alpha?: any | null, beta?: any | null, sqrtAlpha?: any | null, sqrtBeta?: any | null, root3Alpha?: any | null, lambda?: any | null, tauAlphaX?: any | null, tauAlphaY?: any | null, tauBetaX?: any | null, tauBetaY?: any | null, delta?: any | null, epsilon?: any | null, u?: any | null, v?: any | null, w?: any | null, z?: any | null, dSq?: any | null, tokens?: Array<{ __typename?: 'PoolToken', address: string, symbol: string, balance: any, decimals: number, priceRate: any, token: { __typename?: 'Token', fxOracleDecimals?: number | null, latestFXPrice?: any | null } }> | null } | null };
+export type PoolQuery = { __typename?: 'Query', pool?: { __typename?: 'Pool', address: any, owner?: any | null, poolType?: string | null, symbol?: string | null, swapFee: any, totalLiquidity: any, totalSwapVolume: any, totalSwapFee: any, protocolYieldFeeCache?: any | null, poolTypeVersion?: number | null, amp?: any | null, c?: any | null, s?: any | null, alpha?: any | null, beta?: any | null, sqrtAlpha?: any | null, sqrtBeta?: any | null, root3Alpha?: any | null, lambda?: any | null, tauAlphaX?: any | null, tauAlphaY?: any | null, tauBetaX?: any | null, tauBetaY?: any | null, delta?: any | null, epsilon?: any | null, u?: any | null, v?: any | null, w?: any | null, z?: any | null, dSq?: any | null, tokens?: Array<{ __typename?: 'PoolToken', address: string, symbol: string, balance: any, decimals: number, priceRate: any, weight?: any | null, isExemptFromYieldProtocolFee?: boolean | null, token: { __typename?: 'Token', fxOracleDecimals?: number | null, latestFXPrice?: any | null } }> | null } | null };
 
 export type PoolRateProvidersQueryVariables = Exact<{
   poolId: Scalars['ID']['input'];
@@ -6037,6 +6045,38 @@ export const PoolSnapshotInRangeDocument = gql`
   }
 }
     `;
+export const PoolSnapshotInRangeTokenDocument = gql`
+    query poolSnapshotInRangeToken($poolId: String!, $timestamp: [Int!]) {
+  poolSnapshots(
+    where: {pool_in: [$poolId], timestamp_in: $timestamp}
+    orderBy: timestamp
+    orderDirection: desc
+  ) {
+    pool {
+      address
+      owner
+      poolType
+      symbol
+      swapFee
+      totalLiquidity
+      totalSwapVolume
+      totalSwapFee
+      protocolYieldFeeCache
+      poolTypeVersion
+      tokens {
+        address
+        symbol
+        balance
+        decimals
+        priceRate
+        weight
+        isExemptFromYieldProtocolFee
+      }
+    }
+    timestamp
+  }
+}
+    `;
 export const PoolDocument = gql`
     query Pool($poolId: ID!) {
   pool(id: $poolId) {
@@ -6048,6 +6088,8 @@ export const PoolDocument = gql`
     totalLiquidity
     totalSwapVolume
     totalSwapFee
+    protocolYieldFeeCache
+    poolTypeVersion
     amp
     c
     s
@@ -6074,6 +6116,8 @@ export const PoolDocument = gql`
       balance
       decimals
       priceRate
+      weight
+      isExemptFromYieldProtocolFee
       token {
         fxOracleDecimals
         latestFXPrice
@@ -6142,6 +6186,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     poolSnapshotInRange(variables: PoolSnapshotInRangeQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<PoolSnapshotInRangeQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<PoolSnapshotInRangeQuery>(PoolSnapshotInRangeDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'poolSnapshotInRange', 'query');
+    },
+    poolSnapshotInRangeToken(variables: PoolSnapshotInRangeTokenQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<PoolSnapshotInRangeTokenQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<PoolSnapshotInRangeTokenQuery>(PoolSnapshotInRangeTokenDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'poolSnapshotInRangeToken', 'query');
     },
     Pool(variables: PoolQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<PoolQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<PoolQuery>(PoolDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Pool', 'query');

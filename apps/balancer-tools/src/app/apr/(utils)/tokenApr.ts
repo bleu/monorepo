@@ -32,7 +32,7 @@ export async function getPoolTokensAprForDateRange(
   chain: string,
   poolId: Address,
   timeStart: number,
-  timeEnd: number
+  timeEnd: number,
 ) {
   const rateProviders = await getPoolTokensRateProviders(chain, poolId);
   if (!rateProviders.length) {
@@ -78,8 +78,8 @@ export async function getPoolTokensAprForDateRange(
               yield: 0,
             };
           }
-        }
-      )
+        },
+      ),
   );
 }
 
@@ -101,7 +101,7 @@ async function getAPRFromRateProviderInterval({
   if (
     timeEnd >= 1692662400 && // pool vunerability was found on August 22
     vunerabilityAffecteRateProviders.some(
-      ({ address }) => address === rateProviderAddress
+      ({ address }) => address === rateProviderAddress,
     )
   ) {
     return 0;
@@ -113,7 +113,7 @@ async function getAPRFromRateProviderInterval({
       timeStart,
       timeEnd,
       chainName,
-      poolId
+      poolId,
     );
 
     Sentry.addBreadcrumb({
@@ -134,7 +134,7 @@ async function getAPRFromRateProviderInterval({
       timeStart,
       timeEnd,
       networkIdFor(chainName),
-      poolId
+      poolId,
     );
 
     const apr = await calculateTokenApr({
@@ -160,10 +160,10 @@ async function getAPRFromRateProviderInterval({
     if (apr < 0) {
       // eslint-disable-next-line no-console
       console.error(
-        `Negative APR for Pool ${poolId} ${rateProviderAddress} between ${timeStart} and ${timeEnd}: ${apr}`
+        `Negative APR for Pool ${poolId} ${rateProviderAddress} between ${timeStart} and ${timeEnd}: ${apr}`,
       );
       Sentry.captureMessage(
-        `Negative APR for ${rateProviderAddress} between ${timeStart} and ${timeEnd}: ${apr}`
+        `Negative APR for ${rateProviderAddress} between ${timeStart} and ${timeEnd}: ${apr}`,
       );
 
       return 0;
@@ -173,7 +173,7 @@ async function getAPRFromRateProviderInterval({
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(
-      `Error fetching rate for ${rateProviderAddress} between ${timeStart} and ${timeEnd} chain ${chainName} poolId ${poolId} - ${e}`
+      `Error fetching rate for ${rateProviderAddress} between ${timeStart} and ${timeEnd} chain ${chainName} poolId ${poolId} - ${e}`,
     );
     Sentry.captureException(e);
     throw e;
@@ -184,7 +184,7 @@ function getAPRFromRate(
   rateStart: number,
   rateEnd: number,
   timeStart: number,
-  timeEnd: number
+  timeEnd: number,
 ) {
   const duration = timeEnd - timeStart;
   const rateOfReturn = (rateEnd - rateStart) / rateStart;
@@ -196,7 +196,7 @@ function getAPRFromRate(
 const getPoolTokensRateProviders = withCache(
   async function getPoolTokensRateProvidersFn(
     chain: string,
-    poolId: Address
+    poolId: Address,
   ): Promise<
     { address: string; token: { address: string; symbol: string } }[]
   > {
@@ -204,7 +204,7 @@ const getPoolTokensRateProviders = withCache(
 
     if (!data.pool?.priceRateProviders?.length) {
       const poolRateProvider = manualPoolsRateProvider.find(
-        ({ poolAddress }) => poolAddress.toLowerCase() === poolId.toLowerCase()
+        ({ poolAddress }) => poolAddress.toLowerCase() === poolId.toLowerCase(),
       );
 
       if (poolRateProvider === undefined) {
@@ -223,7 +223,7 @@ const getPoolTokensRateProviders = withCache(
     }
 
     return data.pool?.priceRateProviders;
-  }
+  },
 );
 
 async function getIntervalRates(
@@ -231,7 +231,7 @@ async function getIntervalRates(
   timeStart: number,
   timeEnd: number,
   chainName: ChainName,
-  poolId: string
+  poolId: string,
 ) {
   const [blockStart, blockEnd] = await Promise.all([
     await DefiLlamaAPI.findBlockNumber(chainName, timeStart),
@@ -249,7 +249,7 @@ const getRateAtBlock = withCache(async function getRateAtBlockFn(
   chainName: ChainName,
   rateProviderAddress: Address,
   poolId: string,
-  blockNumber?: number
+  blockNumber?: number,
 ): Promise<number | undefined> {
   const args = {
     address: rateProviderAddress,
@@ -271,14 +271,14 @@ const getRateAtBlock = withCache(async function getRateAtBlockFn(
     const actualRateProvider = await getImplementationAddress(
       chainName,
       rateProviderAddress,
-      blockNumber
+      blockNumber,
     );
     if (actualRateProvider) {
       return getRateAtBlock(chainName, actualRateProvider, poolId, blockNumber);
     } else {
       // eslint-disable-next-line no-console
       console.error(
-        `Error fetching rate for ${rateProviderAddress} chain ${chainName} poolId ${poolId} on ${blockNumber}. This is probably a Linear pool and the call reverted, in which case we can assume value 0.`
+        `Error fetching rate for ${rateProviderAddress} chain ${chainName} poolId ${poolId} on ${blockNumber}. This is probably a Linear pool and the call reverted, in which case we can assume value 0.`,
       );
       return 0;
     }
@@ -288,7 +288,7 @@ const getRateAtBlock = withCache(async function getRateAtBlockFn(
 const getImplementationAddress = async (
   chainName: ChainName,
   rateProviderAddress: Address,
-  blockNumber?: number
+  blockNumber?: number,
 ): Promise<Address | undefined> => {
   try {
     const implementationContract = await publicClients[chainName].readContract({
@@ -316,7 +316,7 @@ const getImplementationAddress = async (
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error(
-      `Error fetching implementation contract for ${rateProviderAddress} - ${error}`
+      `Error fetching implementation contract for ${rateProviderAddress} - ${error}`,
     );
     return undefined;
   }
@@ -368,7 +368,7 @@ async function calculateTokenApr({
       (pool.poolTypeVersion ?? 0) >= 2)
   ) {
     const isExemptFromYieldProtocolFee = pool?.tokens.find(
-      ({ address }) => address === tokenAddress
+      ({ address }) => address === tokenAddress,
     )?.isExemptFromYieldProtocolFee;
 
     if (isExemptFromYieldProtocolFee) {
@@ -389,7 +389,7 @@ async function getTokenWeight(
   startAtTimestamp: number,
   endAtTimestamp: number,
   poolNetwork: string,
-  poolId: string
+  poolId: string,
 ): Promise<number> {
   const rangeData = await poolsWithCache
     .gql(poolNetwork)
@@ -434,16 +434,16 @@ async function getTokenWeight(
       const tokenPrice = await getTokenPriceByDate(
         endAtTimestamp,
         token.address,
-        parseInt(poolNetwork)
+        parseInt(poolNetwork),
       );
       if (tokenPrice === undefined) {
         // eslint-disable-next-line no-console
         console.warn(
-          `Failed fetching price for ${token.symbol}(network:${poolNetwork},addr:${token.address}) at ${endAtTimestamp}`
+          `Failed fetching price for ${token.symbol}(network:${poolNetwork},addr:${token.address}) at ${endAtTimestamp}`,
         );
       }
       return tokenPrice === undefined ? 1 : tokenPrice;
-    })
+    }),
   );
 
   const totalValue = poolTokenData.reduce((acc, token, idx) => {

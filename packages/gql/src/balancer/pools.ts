@@ -87,14 +87,25 @@ export const poolSnapshotInRange = gql`
       orderDirection: desc
     ) {
       pool {
-        id
         address
-        name
+        owner
         poolType
         symbol
+        swapFee
+        totalLiquidity
+        totalSwapVolume
+        totalSwapFee
+        protocolYieldFeeCache
+        protocolSwapFeeCache
+        poolTypeVersion
         tokens {
+          address
           symbol
           balance
+          decimals
+          isExemptFromYieldProtocolFee
+          priceRate
+          weight
         }
       }
       amounts
@@ -105,39 +116,6 @@ export const poolSnapshotInRange = gql`
       liquidity
       swapsCount
       holdersCount
-      timestamp
-    }
-  }
-`;
-
-export const poolSnapshotInRangeToken = gql`
-  query poolSnapshotInRangeToken($poolId: String!, $timestamp: [Int!]) {
-    poolSnapshots(
-      where: { pool_in: [$poolId], timestamp_in: $timestamp }
-      orderBy: timestamp
-      orderDirection: desc
-    ) {
-      pool {
-        address
-        owner
-        poolType
-        symbol
-        swapFee
-        totalLiquidity
-        totalSwapVolume
-        totalSwapFee
-        protocolYieldFeeCache
-        poolTypeVersion
-        tokens {
-          address
-          symbol
-          balance
-          decimals
-          priceRate
-          weight
-          isExemptFromYieldProtocolFee
-        }
-      }
       timestamp
     }
   }
@@ -155,6 +133,7 @@ export const poolById = gql`
       totalSwapVolume
       totalSwapFee
       protocolYieldFeeCache
+      protocolSwapFeeCache
       poolTypeVersion
       amp
       c

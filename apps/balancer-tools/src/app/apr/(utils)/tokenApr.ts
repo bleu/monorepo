@@ -1,4 +1,4 @@
-import { PoolSnapshotInRangeTokenQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Arbitrum.server";
+import { PoolSnapshotInRangeQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
 import { Address, networkFor, networkIdFor } from "@bleu-balancer-tools/utils";
 import * as Sentry from "@sentry/nextjs";
 import { zeroAddress } from "viem";
@@ -15,7 +15,7 @@ import { manualPoolsRateProvider } from "./poolsRateProvider";
 import { PoolTypeEnum } from "./types";
 import { vunerabilityAffecteRateProviders } from "./vunerabilityAffectedPool";
 
-type Snapshot = GetDeepProp<PoolSnapshotInRangeTokenQuery, "poolSnapshots">;
+type Snapshot = GetDeepProp<PoolSnapshotInRangeQuery, "poolSnapshots">;
 type Pool = Snapshot[number]["pool"];
 
 const rateProviderAbi = [
@@ -339,7 +339,7 @@ async function calculateTokenApr({
   timeStart: number;
   timeEnd: number;
 }) {
-  const rangeData = await poolsWithCache.gql(chain).poolSnapshotInRangeToken({
+  const rangeData = await poolsWithCache.gql(chain).poolSnapshotInRange({
     poolId,
     timestamp: generateDateRange(timeStart, timeEnd),
   });
@@ -375,9 +375,16 @@ async function calculateTokenApr({
       apr = tokenYield;
     } else {
       //source: https://github.com/balancer/balancer-sdk/blob/f4879f06289c6f5f9766ead1835f4f4b096ed7dd/balancer-js/src/modules/pools/apr/apr.ts#L134
-      apr = tokenYield * (1 - pool.protocolYieldFeeCache || 0.5) * tokenWeight;
+      apr = tokenYield * (1 - pool.protocolYieldFeeCache || 0.5);
     }
+  } else if (
+    pool.poolType === PoolTypeEnum.META_STABLE ||
+    pool.poolType?.includes("Gyro")
+  ) {
+    apr = tokenYield * (pool.protocolYieldFeeCache || 0.5);
   }
+
+  apr = (apr || 0) * tokenWeight;
 
   return apr;
 }
@@ -389,12 +396,10 @@ async function getTokenWeight(
   poolNetwork: string,
   poolId: string,
 ): Promise<number> {
-  const rangeData = await poolsWithCache
-    .gql(poolNetwork)
-    .poolSnapshotInRangeToken({
-      poolId,
-      timestamp: generateDateRange(startAtTimestamp, endAtTimestamp),
-    });
+  const rangeData = await poolsWithCache.gql(poolNetwork).poolSnapshotInRange({
+    poolId,
+    timestamp: generateDateRange(startAtTimestamp, endAtTimestamp),
+  });
 
   let poolData: Pool;
 
@@ -409,7 +414,7 @@ async function getTokenWeight(
   }
 
   const poolTokenData = poolData.tokens?.filter((token) => {
-    return token.address !== poolData.address; // Adjusted this line based on typical data structure
+    return token.address !== poolData.address;
   });
 
   if (!Array.isArray(poolTokenData)) {
@@ -429,18 +434,30 @@ async function getTokenWeight(
 
   const tokensPrices = await Promise.all(
     poolTokenData.map(async (token) => {
-      const tokenPrice = await getTokenPriceByDate(
-        endAtTimestamp,
-        token.address,
-        parseInt(poolNetwork),
-      );
-      if (tokenPrice === undefined) {
-        // eslint-disable-next-line no-console
-        console.warn(
-          `Failed fetching price for ${token.symbol}(network:${poolNetwork},addr:${token.address}) at ${endAtTimestamp}`,
+      if (
+        vunerabilityAffecteRateProviders.some(
+          ({ address }) =>
+            address.toLowerCase() === token.address.toLowerCase(),
+        )
+      ) {
+        return 1;
+      } else {
+        const tokenPrice = await getTokenPriceByDate(
+          endAtTimestamp,
+          token.address,
+          parseInt(poolNetwork),
         );
+
+        if (tokenPrice === undefined) {
+          // eslint-disable-next-line no-console
+          console.warn(
+            `Failed fetching price for ${token.symbol} (network: ${poolNetwork}, addr: ${token.address}) at ${endAtTimestamp}`,
+          );
+          return 1;
+        }
+
+        return tokenPrice;
       }
-      return tokenPrice === undefined ? 1 : tokenPrice;
     }),
   );
 

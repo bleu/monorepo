@@ -374,6 +374,7 @@ async function calculateTokenApr({
     if (isExemptFromYieldProtocolFee) {
       apr = tokenYield;
     } else {
+      //source: https://github.com/balancer/balancer-sdk/blob/f4879f06289c6f5f9766ead1835f4f4b096ed7dd/balancer-js/src/modules/pools/apr/apr.ts#L134
       apr = tokenYield * (1 - pool.protocolYieldFeeCache || 0.5) * tokenWeight;
     }
   }

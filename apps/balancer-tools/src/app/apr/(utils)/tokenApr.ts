@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { PoolSnapshotInRangeQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
 import { Address, networkFor, networkIdFor } from "@bleu-balancer-tools/utils";
 import * as Sentry from "@sentry/nextjs";
@@ -62,14 +63,14 @@ export async function getPoolTokensAprForDateRange(
             return {
               address: tokenAddress,
               symbol,
-              yield: await getAPRFromRateProviderInterval({
-                rateProviderAddress: rateProviderAddress as Address,
+              yield: await getAPRFromRateProviderInterval(
+                rateProviderAddress,
                 timeStart,
                 timeEnd,
                 chainName,
                 poolId,
-                tokenAddress: tokenAddress as Address,
-              }),
+                tokenAddress,
+              ),
             };
           } catch (error) {
             return {
@@ -83,23 +84,17 @@ export async function getPoolTokensAprForDateRange(
   );
 }
 
-async function getAPRFromRateProviderInterval({
-  rateProviderAddress,
-  timeStart,
-  timeEnd,
-  chainName,
-  poolId,
-  tokenAddress,
-}: {
-  rateProviderAddress: Address;
-  timeStart: number;
-  timeEnd: number;
-  chainName: ChainName;
-  poolId: string;
-  tokenAddress: Address;
-}) {
+async function getAPRFromRateProviderInterval(
+  rateProviderAddress: string,
+  timeStart: number,
+  timeEnd: number,
+  chainName: ChainName,
+  poolId: string,
+  tokenAddress: string,
+) {
+  const timeStampVunerabilityFound = 1629638400; // August 22
   if (
-    timeEnd >= 1692662400 && // pool vunerability was found on August 22
+    timeEnd >= timeStampVunerabilityFound &&
     vunerabilityAffecteRateProviders.some(
       ({ address }) => address === rateProviderAddress,
     )
@@ -137,15 +132,15 @@ async function getAPRFromRateProviderInterval({
       poolId,
     );
 
-    const apr = await calculateTokenApr({
+    const apr = await calculateTokenApr(
       tokenYield,
       poolId,
-      chain: networkIdFor(chainName),
+      networkIdFor(chainName),
       tokenAddress,
       tokenWeight,
       timeStart,
       timeEnd,
-    });
+    );
 
     Sentry.addBreadcrumb({
       category: "getAPRFromRateProviderInterval",
@@ -158,7 +153,6 @@ async function getAPRFromRateProviderInterval({
     }
 
     if (apr < 0) {
-      // eslint-disable-next-line no-console
       console.error(
         `Negative APR for Pool ${poolId} ${rateProviderAddress} between ${timeStart} and ${timeEnd}: ${apr}`,
       );
@@ -171,7 +165,6 @@ async function getAPRFromRateProviderInterval({
 
     return apr;
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.error(
       `Error fetching rate for ${rateProviderAddress} between ${timeStart} and ${timeEnd} chain ${chainName} poolId ${poolId} - ${e}`,
     );
@@ -227,7 +220,7 @@ const getPoolTokensRateProviders = withCache(
 );
 
 async function getIntervalRates(
-  rateProviderAddress: Address,
+  rateProviderAddress: string,
   timeStart: number,
   timeEnd: number,
   chainName: ChainName,
@@ -247,12 +240,12 @@ async function getIntervalRates(
 
 const getRateAtBlock = withCache(async function getRateAtBlockFn(
   chainName: ChainName,
-  rateProviderAddress: Address,
+  rateProviderAddress: string,
   poolId: string,
   blockNumber?: number,
 ): Promise<number | undefined> {
   const args = {
-    address: rateProviderAddress,
+    address: rateProviderAddress as Address,
     abi: rateProviderAbi,
     functionName: "getRate",
     ...(blockNumber ? { blockNumber: BigInt(blockNumber) } : {}),
@@ -263,7 +256,6 @@ const getRateAtBlock = withCache(async function getRateAtBlockFn(
     rate = await publicClients[chainName].readContract(args);
     return Number(rate);
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.error(`
       Error fetching rate for ${rateProviderAddress} at block ${blockNumber} chain ${chainName} poolId ${poolId} - ${e}.
       Maybe this is a proxy contract? Trying to get implementation to get to rate provider.
@@ -276,7 +268,6 @@ const getRateAtBlock = withCache(async function getRateAtBlockFn(
     if (actualRateProvider) {
       return getRateAtBlock(chainName, actualRateProvider, poolId, blockNumber);
     } else {
-      // eslint-disable-next-line no-console
       console.error(
         `Error fetching rate for ${rateProviderAddress} chain ${chainName} poolId ${poolId} on ${blockNumber}. This is probably a Linear pool and the call reverted, in which case we can assume value 0.`,
       );
@@ -287,12 +278,12 @@ const getRateAtBlock = withCache(async function getRateAtBlockFn(
 
 const getImplementationAddress = async (
   chainName: ChainName,
-  rateProviderAddress: Address,
+  rateProviderAddress: string,
   blockNumber?: number,
 ): Promise<Address | undefined> => {
   try {
     const implementationContract = await publicClients[chainName].readContract({
-      address: rateProviderAddress,
+      address: rateProviderAddress as Address,
       abi: [
         {
           inputs: [],
@@ -314,7 +305,6 @@ const getImplementationAddress = async (
 
     return implementationContract;
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error(
       `Error fetching implementation contract for ${rateProviderAddress} - ${error}`,
     );
@@ -322,23 +312,18 @@ const getImplementationAddress = async (
   }
 };
 
-async function calculateTokenApr({
-  tokenYield,
-  poolId,
-  chain,
-  tokenAddress,
-  tokenWeight,
-  timeStart,
-  timeEnd,
-}: {
-  tokenYield: number;
-  poolId: string;
-  chain: string;
-  tokenAddress: Address;
-  tokenWeight: number;
-  timeStart: number;
-  timeEnd: number;
-}) {
+async function calculateTokenApr(
+  tokenYield: number,
+  poolId: string,
+  chain: string,
+  tokenAddress: string,
+  tokenWeight: number,
+  timeStart: number,
+  timeEnd: number,
+) {
+  const DEFAULT_PROTOCOL_YIELD_FEE = 0.5;
+  const DEFAULT_PROTOCOL_SWAP_FEE = 0.5;
+
   const rangeData = await poolsWithCache.gql(chain).poolSnapshotInRange({
     poolId,
     timestamp: generateDateRange(timeStart, timeEnd),
@@ -362,6 +347,7 @@ async function calculateTokenApr({
 
   let apr;
 
+  //source: https://github.com/balancer/balancer-sdk/blob/f4879f06289c6f5f9766ead1835f4f4b096ed7dd/balancer-js/src/modules/pools/apr/apr.ts#L127
   if (
     pool.poolType === PoolTypeEnum.PHANTOM_STABLE ||
     (pool.poolType === PoolTypeEnum.WEIGHTED &&
@@ -375,15 +361,19 @@ async function calculateTokenApr({
       apr = tokenYield;
     } else {
       //source: https://github.com/balancer/balancer-sdk/blob/f4879f06289c6f5f9766ead1835f4f4b096ed7dd/balancer-js/src/modules/pools/apr/apr.ts#L134
-      apr = tokenYield * (1 - pool.protocolYieldFeeCache || 0.5);
+      apr =
+        tokenYield *
+        (1 - pool.protocolYieldFeeCache || DEFAULT_PROTOCOL_YIELD_FEE);
     }
   } else if (
     pool.poolType === PoolTypeEnum.META_STABLE ||
     pool.poolType?.includes("Gyro")
   ) {
-    apr = tokenYield * (pool.protocolYieldFeeCache || 0.5);
+    //source: https://github.com/balancer/balancer-sdk/blob/f4879f06289c6f5f9766ead1835f4f4b096ed7dd/balancer-js/src/modules/pools/apr/apr.ts#L124
+    apr = tokenYield * (pool.protocolSwapFeeCache || DEFAULT_PROTOCOL_SWAP_FEE);
   }
 
+  //source: https://github.com/balancer/balancer-sdk/blob/f4879f06289c6f5f9766ead1835f4f4b096ed7dd/balancer-js/src/modules/pools/apr/apr.ts#L192
   apr = (apr || 0) * tokenWeight;
 
   return apr;
@@ -413,17 +403,16 @@ async function getTokenWeight(
     poolData = currentPoolData.pool;
   }
 
-  const poolTokenData = poolData.tokens?.filter((token) => {
-    return token.address !== poolData.address;
-  });
+  const relevantTokens =
+    poolData.tokens?.filter((token) => token.address !== poolData.address) ||
+    [];
 
-  if (!Array.isArray(poolTokenData)) {
+  if (!Array.isArray(relevantTokens)) {
     return 0;
   }
 
-  const token = poolTokenData.find((t) => t.address === tokenAddress);
+  const token = relevantTokens.find((t) => t.address === tokenAddress);
   if (!token) {
-    // eslint-disable-next-line no-console
     console.warn(`Token not found in pool for address: ${tokenAddress}`);
     return 0;
   }
@@ -433,7 +422,7 @@ async function getTokenWeight(
   }
 
   const tokensPrices = await Promise.all(
-    poolTokenData.map(async (token) => {
+    relevantTokens.map(async (token) => {
       if (
         vunerabilityAffecteRateProviders.some(
           ({ address }) =>
@@ -449,7 +438,6 @@ async function getTokenWeight(
         );
 
         if (tokenPrice === undefined) {
-          // eslint-disable-next-line no-console
           console.warn(
             `Failed fetching price for ${token.symbol} (network: ${poolNetwork}, addr: ${token.address}) at ${endAtTimestamp}`,
           );
@@ -461,7 +449,7 @@ async function getTokenWeight(
     }),
   );
 
-  const totalValue = poolTokenData.reduce((acc, token, idx) => {
+  const totalValue = relevantTokens.reduce((acc, token, idx) => {
     const balance = parseFloat(token.balance);
     if (!isNaN(balance)) {
       return acc + tokensPrices[idx] * balance;
@@ -469,7 +457,7 @@ async function getTokenWeight(
     return acc;
   }, 0);
 
-  const tokenIdx = poolTokenData.findIndex((t) => t.address === tokenAddress);
+  const tokenIdx = relevantTokens.findIndex((t) => t.address === tokenAddress);
   const tokenPrice = tokensPrices[tokenIdx];
 
   const tokenValue = tokenPrice * parseFloat(token.balance);

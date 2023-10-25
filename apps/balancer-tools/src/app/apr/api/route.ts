@@ -11,41 +11,44 @@ import { limitPoolStats, Order, sortPoolStats } from "./(utils)/sort";
 import { QueryParamsSchema } from "./(utils)/validate";
 
 export const maxDuration = 300;
-
-export interface tokenAPR {
+export interface TokenAPR {
   address: string;
   symbol: string;
   yield: number;
 }
 
-export interface rewardAPR {
+export interface RewardAPR {
   address: string;
   symbol: string;
   value: number;
 }
+
 export interface PoolTokens {
   address: string;
   symbol: string;
   weight: number | null;
   logoSrc?: string;
 }
+interface APRBreakdown {
+  veBAL: number;
+  swapFee: number;
+  tokens: {
+    total: number;
+    breakdown: TokenAPR[];
+  };
+  rewards: {
+    total: number;
+    breakdown: RewardAPR[];
+  };
+}
+
+export interface APR {
+  total: number;
+  breakdown: APRBreakdown;
+}
 
 export interface PoolStats {
-  apr: {
-    total: number;
-    breakdown: {
-      veBAL: number;
-      swapFee: number;
-      tokens: {
-        total: number;
-        breakdown: tokenAPR[];
-      };
-      rewards: {
-        total: number;
-        breakdown: rewardAPR[];
-      };
-    };
-  };
+  apr: APR;
   balPriceUSD: number;
   volume: number;
   tvl: number;

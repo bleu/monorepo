@@ -1,5 +1,9 @@
-import { redirect } from "next/navigation";
+"use client";
+
+import { useAccount } from "wagmi";
 
 export default function Page() {
-  return <div className="text-white">oi</div>;
+  const { address } = useAccount();
+
+  return <div className="text-white">Test {address?.toLowerCase()}</div>;
 }

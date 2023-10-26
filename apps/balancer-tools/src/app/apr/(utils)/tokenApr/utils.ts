@@ -80,7 +80,7 @@ export async function fetchTokenPrices(
             address.toLowerCase() === token.address.toLowerCase(),
         )
       ) {
-        return 1;
+        return 0;
       } else {
         const tokenPrice = await getTokenPriceByDate(
           endAtTimestamp,

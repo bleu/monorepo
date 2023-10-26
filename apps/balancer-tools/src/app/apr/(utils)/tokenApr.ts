@@ -122,25 +122,27 @@ async function getAPRFromRateProviderInterval(
       level: "info",
     });
 
+    const poolData = await fetchPoolData(
+      networkIdFor(chainName),
+      poolId,
+      timeStart,
+      timeEnd,
+    );
+
     const tokenYield = getAPRFromRate(startRate, endRate, timeStart, timeEnd);
 
-    const tokenWeight = await getTokenWeight(
-      tokenAddress,
-      timeStart,
-      timeEnd,
-      networkIdFor(chainName),
-      poolId,
-    );
+    const tokenWeight = poolData
+      ? await getTokenWeight(
+          tokenAddress,
+          timeEnd,
+          networkIdFor(chainName),
+          poolData,
+        )
+      : 0;
 
-    const apr = await calculateTokenApr(
-      tokenYield,
-      poolId,
-      networkIdFor(chainName),
-      tokenAddress,
-      tokenWeight,
-      timeStart,
-      timeEnd,
-    );
+    const apr = poolData
+      ? await calculateTokenApr(tokenYield, poolData, tokenAddress, tokenWeight)
+      : 0;
 
     Sentry.addBreadcrumb({
       category: "getAPRFromRateProviderInterval",
@@ -314,46 +316,29 @@ const getImplementationAddress = async (
 
 async function calculateTokenApr(
   tokenYield: number,
-  poolId: string,
-  chain: string,
+  poolData: Pool,
   tokenAddress: string,
   tokenWeight: number,
-  timeStart: number,
-  timeEnd: number,
 ) {
   const DEFAULT_PROTOCOL_YIELD_FEE = 0.5;
   const DEFAULT_PROTOCOL_SWAP_FEE = 0.5;
 
-  const rangeData = await poolsWithCache.gql(chain).poolSnapshotInRange({
-    poolId,
-    timestamp: generateDateRange(timeStart, timeEnd),
-  });
-
-  let pool: Pool;
-
-  if (rangeData.poolSnapshots.length > 0) {
-    pool = rangeData.poolSnapshots[0].pool;
-  } else {
-    const currentPoolData = await pools.gql(chain).Pool({ poolId });
-    if (!currentPoolData || !currentPoolData.pool) {
-      throw new Error("Pool data is not found or is invalid.");
-    }
-    pool = currentPoolData.pool;
-  }
-
-  if (!pool || !pool.tokens) {
-    return 0;
-  }
+  const {
+    tokens,
+    poolType,
+    poolTypeVersion,
+    protocolYieldFeeCache,
+    protocolSwapFeeCache,
+  } = poolData ?? {};
 
   let apr;
 
   //source: https://github.com/balancer/balancer-sdk/blob/f4879f06289c6f5f9766ead1835f4f4b096ed7dd/balancer-js/src/modules/pools/apr/apr.ts#L127
   if (
-    pool.poolType === PoolTypeEnum.PHANTOM_STABLE ||
-    (pool.poolType === PoolTypeEnum.WEIGHTED &&
-      (pool.poolTypeVersion ?? 0) >= 2)
+    poolType === PoolTypeEnum.PHANTOM_STABLE ||
+    (poolType === PoolTypeEnum.WEIGHTED && (poolTypeVersion ?? 0) >= 2)
   ) {
-    const isExemptFromYieldProtocolFee = pool?.tokens.find(
+    const isExemptFromYieldProtocolFee = tokens?.find(
       ({ address }) => address === tokenAddress,
     )?.isExemptFromYieldProtocolFee;
 
@@ -363,14 +348,14 @@ async function calculateTokenApr(
       //source: https://github.com/balancer/balancer-sdk/blob/f4879f06289c6f5f9766ead1835f4f4b096ed7dd/balancer-js/src/modules/pools/apr/apr.ts#L134
       apr =
         tokenYield *
-        (1 - pool.protocolYieldFeeCache || DEFAULT_PROTOCOL_YIELD_FEE);
+        (1 - (protocolYieldFeeCache ?? DEFAULT_PROTOCOL_YIELD_FEE));
     }
   } else if (
-    pool.poolType === PoolTypeEnum.META_STABLE ||
-    pool.poolType?.includes("Gyro")
+    poolType === PoolTypeEnum.META_STABLE ||
+    poolType?.includes("Gyro")
   ) {
     //source: https://github.com/balancer/balancer-sdk/blob/f4879f06289c6f5f9766ead1835f4f4b096ed7dd/balancer-js/src/modules/pools/apr/apr.ts#L124
-    apr = tokenYield * (pool.protocolSwapFeeCache || DEFAULT_PROTOCOL_SWAP_FEE);
+    apr = tokenYield * (protocolSwapFeeCache ?? DEFAULT_PROTOCOL_SWAP_FEE);
   }
 
   //source: https://github.com/balancer/balancer-sdk/blob/f4879f06289c6f5f9766ead1835f4f4b096ed7dd/balancer-js/src/modules/pools/apr/apr.ts#L192
@@ -381,47 +366,66 @@ async function calculateTokenApr(
 
 async function getTokenWeight(
   tokenAddress: string,
-  startAtTimestamp: number,
   endAtTimestamp: number,
   poolNetwork: string,
-  poolId: string,
+  poolData: Pool,
 ): Promise<number> {
-  const rangeData = await poolsWithCache.gql(poolNetwork).poolSnapshotInRange({
-    poolId,
-    timestamp: generateDateRange(startAtTimestamp, endAtTimestamp),
-  });
-
-  let poolData: Pool;
-
-  if (rangeData.poolSnapshots.length > 0) {
-    poolData = rangeData.poolSnapshots[0].pool;
-  } else {
-    const currentPoolData = await pools.gql(poolNetwork).Pool({ poolId });
-    if (!currentPoolData || !currentPoolData.pool) {
-      throw new Error("Pool data is not found or is invalid.");
-    }
-    poolData = currentPoolData.pool;
-  }
+  const { tokens, poolType, address: poolAddress } = poolData ?? {};
 
   const relevantTokens =
-    poolData.tokens?.filter((token) => token.address !== poolData.address) ||
-    [];
+    tokens?.filter(({ address }) => address !== poolAddress) || [];
 
-  if (!Array.isArray(relevantTokens)) {
+  const targetToken = relevantTokens.find(
+    ({ address }) => address === tokenAddress,
+  );
+
+  if (!targetToken) {
+    console.warn(`Token not found: ${tokenAddress}`);
     return 0;
   }
 
-  const token = relevantTokens.find((t) => t.address === tokenAddress);
-  if (!token) {
-    console.warn(`Token not found in pool for address: ${tokenAddress}`);
-    return 0;
-  }
+  if (poolType === "WEIGHTED" && targetToken.weight)
+    return parseFloat(targetToken.weight);
 
-  if (poolData.poolType === PoolTypeEnum.WEIGHTED && token.weight) {
-    return parseFloat(token.weight);
-  }
+  const tokenPrices = await fetchTokenPrices(
+    relevantTokens,
+    endAtTimestamp,
+    poolNetwork,
+  );
+  const totalValue = relevantTokens
+    .map(({ balance }, idx) => parseFloat(balance) * tokenPrices[idx])
+    .filter((val) => !isNaN(val))
+    .reduce((acc, val) => acc + val, 0);
 
-  const tokensPrices = await Promise.all(
+  const tokenIdx = relevantTokens.findIndex(
+    ({ address }) => address === tokenAddress,
+  );
+  return (parseFloat(targetToken.balance) * tokenPrices[tokenIdx]) / totalValue;
+}
+
+async function fetchPoolData(
+  chain: string,
+  poolId: string,
+  timeStart: number,
+  timeEnd: number,
+): Promise<Pool | null> {
+  const rangeData = await poolsWithCache.gql(chain).poolSnapshotInRange({
+    poolId,
+    timestamp: generateDateRange(timeStart, timeEnd),
+  });
+  if (rangeData.poolSnapshots.length > 0) {
+    return rangeData.poolSnapshots[0].pool;
+  }
+  const currentPoolData = await pools.gql(chain).Pool({ poolId });
+  return currentPoolData?.pool || null;
+}
+
+async function fetchTokenPrices(
+  relevantTokens: { address: string; symbol: string }[],
+  endAtTimestamp: number,
+  poolNetwork: string,
+): Promise<number[]> {
+  return Promise.all(
     relevantTokens.map(async (token) => {
       if (
         vunerabilityAffecteRateProviders.some(
@@ -448,20 +452,4 @@ async function getTokenWeight(
       }
     }),
   );
-
-  const totalValue = relevantTokens.reduce((acc, token, idx) => {
-    const balance = parseFloat(token.balance);
-    if (!isNaN(balance)) {
-      return acc + tokensPrices[idx] * balance;
-    }
-    return acc;
-  }, 0);
-
-  const tokenIdx = relevantTokens.findIndex((t) => t.address === tokenAddress);
-  const tokenPrice = tokensPrices[tokenIdx];
-
-  const tokenValue = tokenPrice * parseFloat(token.balance);
-  const tokenWeight = tokenValue / totalValue;
-
-  return tokenWeight;
 }

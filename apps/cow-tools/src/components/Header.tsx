@@ -40,7 +40,7 @@ export function Header({
           <>
             {imageSrc && <Image src={imageSrc} height={50} width={50} alt="" />}
             <div className="hidden sm:block text-xl font-thin text-slate12">
-              Balancer <p className="font-medium">{title}</p>
+              CoW Swap <p className="font-medium">{title}</p>
             </div>
           </>
         </Link>

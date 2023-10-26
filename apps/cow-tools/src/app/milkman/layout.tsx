@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import * as React from "react";
 
+import { CustomConnectButton } from "#/components/CustomConnectButton";
 import { Header } from "#/components/Header";
 
 const APP_DISPLAY_NAME = "Milkman orders";
@@ -17,6 +18,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         linkUrl={"/milkman"}
         title={APP_DISPLAY_NAME}
         imageSrc={"/favicon.ico"}
+        endButton={<CustomConnectButton showNetworkSelector={false} />}
       />
 
       <div className="sm:flex flex-1 gap-x-8 px-4 pt-4 text-white">

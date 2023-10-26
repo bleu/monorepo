@@ -2,12 +2,10 @@ import dynamic from "next/dynamic";
 
 import { OrdersTable } from "./components/OrdersTable";
 
-
 const AddressComponentWithNoSSR = dynamic(
   () => import("./components/WalletAddress"),
-  { ssr: false }
+  { ssr: false },
 );
-
 
 export default async function Page() {
   return (

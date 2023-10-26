@@ -25,7 +25,7 @@ gql(`
 `);
 
 export async function OrdersTable() {
-  const {swaps: orders} = await sdk.AllSwaps();
+  const { swaps: orders } = await sdk.AllSwaps();
 
   if (!orders.length) {
     return null;

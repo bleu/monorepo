@@ -87,14 +87,25 @@ export const poolSnapshotInRange = gql`
       orderDirection: desc
     ) {
       pool {
-        id
         address
-        name
+        owner
         poolType
         symbol
+        swapFee
+        totalLiquidity
+        totalSwapVolume
+        totalSwapFee
+        protocolYieldFeeCache
+        protocolSwapFeeCache
+        poolTypeVersion
         tokens {
+          address
           symbol
           balance
+          decimals
+          isExemptFromYieldProtocolFee
+          priceRate
+          weight
         }
       }
       amounts
@@ -121,6 +132,9 @@ export const poolById = gql`
       totalLiquidity
       totalSwapVolume
       totalSwapFee
+      protocolYieldFeeCache
+      protocolSwapFeeCache
+      poolTypeVersion
       amp
       c
       s
@@ -147,6 +161,8 @@ export const poolById = gql`
         balance
         decimals
         priceRate
+        weight
+        isExemptFromYieldProtocolFee
         token {
           fxOracleDecimals
           latestFXPrice

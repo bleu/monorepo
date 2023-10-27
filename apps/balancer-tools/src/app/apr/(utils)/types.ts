@@ -1,11 +1,11 @@
 // The enum namings should be human-readable and are based on what Balancer shows on their FE
 export enum PoolTypeEnum {
-  PHANTOM_STABLE = "ComposableStable",
   WEIGHTED = "Weighted",
   GYROE = "GyroE",
   STABLE = "Stable",
   META_STABLE = "MetaStable",
   UNKNOWN = "FX",
+  COMPOSABLE_STABLE = "ComposableStable",
 }
 
 export const BASE_URL =

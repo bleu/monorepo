@@ -1,6 +1,7 @@
 import { networkIdFor } from "@bleu-balancer-tools/utils";
 import { z } from "zod";
 
+import { PoolTypeEnum } from "../../(utils)/types";
 import { PoolStatsData } from "../route";
 import { QueryParamsSchema } from "./validate";
 
@@ -56,9 +57,10 @@ const conditions: ConditionTypes = {
   tokens: (pool, value) =>
     pool.tokens.some((token) => value!.includes(token.symbol)),
   types: (pool, value) =>
-    value!
-      .map((pType) => pType.toLowerCase())
-      .includes(pool.type.toLowerCase()),
+    value!.some(
+      (pType) =>
+        PoolTypeEnum[pool.type]?.toLowerCase() === pType!.toLowerCase(),
+    ),
   minTvl: (pool, value) => pool.tvl >= value!,
   maxTvl: (pool, value) => pool.tvl <= value!,
 };

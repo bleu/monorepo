@@ -8,6 +8,7 @@ import { poolsWithCache } from "#/lib/gql/server";
 import { fetcher } from "#/utils/fetcher";
 
 import { BASE_URL } from "../../(utils)/types";
+import { vunerabilityAffecteRateProviders } from "../../(utils)/vunerabilityAffectedPool";
 import { PoolStatsData, PoolStatsResults } from "../route";
 import { dateToEpoch, formatDateToMMDDYYYY } from "./date";
 import { QueryParamsSchema } from "./validate";
@@ -46,6 +47,9 @@ const fetchPoolsFromNetwork = async (
       minTvl,
       maxTvl,
       block,
+      tokensAsVunerabilityAffectedPools: vunerabilityAffecteRateProviders.map(
+        (p) => p.address,
+      ),
       ...tokensList,
     });
   } catch (e) {
@@ -66,7 +70,6 @@ const fetchPoolsFromNetwork = async (
       ...(await fetchPoolsFromNetwork(network, params, skip + limit)),
     ];
   }
-
   return fetchedPools;
 };
 

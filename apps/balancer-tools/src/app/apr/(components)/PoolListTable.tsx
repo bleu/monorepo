@@ -166,7 +166,7 @@ export function PoolListTable({
                 <Table.BodyRow>
                   <Table.BodyCell colSpan={6}>
                     <Button
-                      className="w-[calc(100vw-2.5rem)] sticky left-0 sm:w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
+                      className="py-3 sticky left-0 sm:w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
                       shade="medium"
                       disabled={isLoadingMore || !hasMorePools}
                       onClick={loadMorePools}

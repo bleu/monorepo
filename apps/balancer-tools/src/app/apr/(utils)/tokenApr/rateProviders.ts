@@ -36,7 +36,7 @@ export async function getAPRFromRateProviderInterval(
   poolId: string,
   tokenAddress: string,
 ) {
-  const timeStampVunerabilityFound = 1629638400; // August 22 of 2023
+  const timeStampVunerabilityFound = 1692662400; // August 22 of 2023
   if (
     timeEnd >= timeStampVunerabilityFound &&
     vunerabilityAffecteRateProviders.some(

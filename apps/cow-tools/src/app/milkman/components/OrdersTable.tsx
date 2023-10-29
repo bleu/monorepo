@@ -4,11 +4,13 @@ import { buildBlockExplorerTxUrl } from "@bleu-balancer-tools/utils";
 import { formatNumber } from "@bleu-balancer-tools/utils/formatNumber";
 import { ArrowTopRightIcon, TrashIcon } from "@radix-ui/react-icons";
 import cn from "clsx";
+import Image from "next/image";
 import Link from "next/link";
 import { formatUnits } from "viem";
 
 import Table from "#/components/Table";
 import { AllSwapsQuery } from "#/gql/generated";
+import { truncateAddress } from "#/utils/truncate";
 
 import { TransactionStatus } from "../utils/type";
 
@@ -58,13 +60,13 @@ function TableRow({ order }: { order: AllSwapsQuery["swaps"][0] }) {
   return (
     <Table.BodyRow key={order.id}>
       <Table.BodyCell>
-        {order.tokenIn?.symbol ?? order.tokenIn?.id}
+        <TokenInfo id={order.tokenIn?.id} symbol={order.tokenIn?.symbol} />
       </Table.BodyCell>
       <Table.BodyCell>
         {formatNumber(tokenInAmount, 4, "decimal", "standard", 0.0001)}
       </Table.BodyCell>
       <Table.BodyCell>
-        {order.tokenOut?.symbol ?? order.tokenOut?.id}
+        <TokenInfo id={order.tokenOut?.id} symbol={order.tokenOut?.symbol} />
       </Table.BodyCell>
       <Table.BodyCell>
         <div className="flex items-center gap-x-1">
@@ -96,5 +98,27 @@ function CancelButton({ status }: { status: string }) {
         )}
       />
     </button>
+  );
+}
+
+function TokenInfo({ symbol, id }: { symbol?: string | null; id?: string }) {
+  return (
+    <div className="flex items-center gap-x-1">
+      <div className="w-12">
+        <div className="flex items-center justify-center">
+          <div className="rounded-full bg-white p-1">
+            <Image
+              src={"/assets/generic-token-logo.png"}
+              className="rounded-full"
+              alt="Token Logo"
+              height={28}
+              width={28}
+              quality={100}
+            />
+          </div>
+        </div>
+      </div>
+      {symbol ?? truncateAddress(id)}
+    </div>
   );
 }

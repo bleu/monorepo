@@ -15,7 +15,6 @@ import { CustomConnectButton } from "./CustomConnectButton";
 interface IHeader {
   linkUrl: string;
   imageSrc?: string;
-  title: string;
   children?: ReactNode;
   endButton?: ReactNode;
   onLinkClick?: () => void;
@@ -24,7 +23,6 @@ interface IHeader {
 export function Header({
   linkUrl,
   imageSrc,
-  title,
   children,
   endButton = <CustomConnectButton />,
   onLinkClick,
@@ -38,10 +36,9 @@ export function Header({
           className="flex items-center gap-3 justify-self-start"
         >
           <>
-            {imageSrc && <Image src={imageSrc} height={50} width={50} alt="" />}
-            <div className="hidden sm:block text-xl font-thin text-slate12">
-              CoW Swap <p className="font-medium">{title}</p>
-            </div>
+            {imageSrc && (
+              <Image src={imageSrc} height={50} width={150} alt="" />
+            )}
           </>
         </Link>
       </div>

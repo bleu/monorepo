@@ -53,17 +53,19 @@ function TableRow({ order }: { order: AllSwapsQuery["swaps"][0] }) {
     txHash: order.transactionHash,
   });
 
-  //TODO: use token decimals from the order subgraph
-  // const tokenInDecimals = order.tokenIn?.decimals || 18;
-  const tokenInDecimals = 18;
+  const tokenInDecimals = order.tokenIn?.decimals || 18;
   const tokenInAmount = formatUnits(order.tokenAmountIn, tokenInDecimals);
   return (
     <Table.BodyRow key={order.id}>
-      <Table.BodyCell>{order.tokenIn?.id}</Table.BodyCell>
+      <Table.BodyCell>
+        {order.tokenIn?.symbol ?? order.tokenIn?.id}
+      </Table.BodyCell>
       <Table.BodyCell>
         {formatNumber(tokenInAmount, 4, "decimal", "standard", 0.0001)}
       </Table.BodyCell>
-      <Table.BodyCell>{order.tokenOut?.id}</Table.BodyCell>
+      <Table.BodyCell>
+        {order.tokenOut?.symbol ?? order.tokenOut?.id}
+      </Table.BodyCell>
       <Table.BodyCell>
         <div className="flex items-center gap-x-1">
           <span>{transactionStatus}</span>

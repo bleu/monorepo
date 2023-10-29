@@ -19,9 +19,15 @@ gql(`
       }
       tokenIn {
         id
+        name
+        symbol
+        decimals
       }
       tokenOut {
         id
+        name
+        symbol
+        decimals
       }
     }
   }

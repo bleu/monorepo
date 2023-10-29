@@ -258,7 +258,7 @@ export type UserFilter = {
 export type AllSwapsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AllSwapsQuery = { __typename?: 'Query', swaps: Array<{ __typename?: 'Swap', id: string, chainId: number, transactionHash: string, priceChecker: string, user?: { __typename?: 'User', id: string } | null, tokenIn?: { __typename?: 'Token', id: string } | null, tokenOut?: { __typename?: 'Token', id: string } | null }> };
+export type AllSwapsQuery = { __typename?: 'Query', swaps: Array<{ __typename?: 'Swap', id: string, chainId: number, transactionHash: string, tokenAmountIn: any, priceChecker: string, user?: { __typename?: 'User', id: string } | null, tokenIn?: { __typename?: 'Token', id: string } | null, tokenOut?: { __typename?: 'Token', id: string } | null }> };
 
 
 export const AllSwapsDocument = gql`
@@ -267,6 +267,7 @@ export const AllSwapsDocument = gql`
     id
     chainId
     transactionHash
+    tokenAmountIn
     priceChecker
     user {
       id

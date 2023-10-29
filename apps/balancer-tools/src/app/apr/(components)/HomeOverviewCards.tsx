@@ -1,5 +1,6 @@
+import { formatNumber } from "@bleu-balancer-tools/utils/formatNumber";
+
 import * as balEmissions from "#/lib/balancer/emissions";
-import { formatNumber } from "#/utils/formatNumber";
 
 import { getBALPriceForDateRange } from "../(utils)/getBALPriceForDateRange";
 import { dateToEpoch } from "../api/(utils)/date";

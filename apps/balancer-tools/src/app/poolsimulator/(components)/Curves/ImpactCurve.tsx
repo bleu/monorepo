@@ -1,12 +1,12 @@
 "use client";
 
+import { formatNumber } from "@bleu-balancer-tools/utils/formatNumber";
 import { PlotType } from "plotly.js";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 import Plot from "#/components/Plot";
 import { Spinner } from "#/components/Spinner";
 import { usePoolSimulator } from "#/contexts/PoolSimulatorContext";
-import { formatNumber } from "#/utils/formatNumber";
 
 import { PoolTypeEnum } from "../../(types)";
 import { POOL_TYPES_TO_ADD_LIMIT } from "../../(utils)";

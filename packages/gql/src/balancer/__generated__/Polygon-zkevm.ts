@@ -5918,7 +5918,6 @@ export type AprPoolsQueryVariables = Exact<{
   minTvl?: InputMaybe<Scalars['BigDecimal']['input']>;
   maxTvl?: InputMaybe<Scalars['BigDecimal']['input']>;
   block?: InputMaybe<Scalars['Int']['input']>;
-  tokensAsVunerabilityAffectedPools?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
 }>;
 
 
@@ -6116,9 +6115,9 @@ export const PoolRateProvidersDocument = gql`
 }
     `;
 export const AprPoolsDocument = gql`
-    query APRPools($skip: Int!, $createdBefore: Int, $limit: Int, $minTvl: BigDecimal, $maxTvl: BigDecimal, $block: Int, $tokensAsVunerabilityAffectedPools: [String!]) {
+    query APRPools($skip: Int!, $createdBefore: Int, $limit: Int, $minTvl: BigDecimal, $maxTvl: BigDecimal, $block: Int) {
   pools(
-    where: {createTime_lte: $createdBefore, totalLiquidity_gte: $minTvl, totalLiquidity_lte: $maxTvl, tokens_: {address_not_in: $tokensAsVunerabilityAffectedPools}}
+    where: {createTime_lte: $createdBefore, totalLiquidity_gte: $minTvl, totalLiquidity_lte: $maxTvl}
     first: $limit
     skip: $skip
     block: {number: $block}

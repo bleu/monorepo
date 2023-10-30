@@ -1,6 +1,7 @@
 "use client";
 
 import { networkFor } from "@bleu-balancer-tools/utils";
+import { formatNumber } from "@bleu-balancer-tools/utils/formatNumber";
 import {
   ChevronDownIcon,
   DashIcon,
@@ -25,7 +26,6 @@ import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
 import { TooltipMobile } from "#/components/TooltipMobile";
 import { fetcher } from "#/utils/fetcher";
-import { formatNumber } from "#/utils/formatNumber";
 
 import { formatAPR, formatTVL } from "../(utils)/formatPoolStats";
 import {

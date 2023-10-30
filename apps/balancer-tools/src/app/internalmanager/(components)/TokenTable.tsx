@@ -1,6 +1,7 @@
 "use client";
 import { InternalBalanceQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
 import { Address } from "@bleu-balancer-tools/utils";
+import { formatNumber } from "@bleu-balancer-tools/utils/formatNumber";
 import {
   MinusCircledIcon,
   PlusCircledIcon,
@@ -18,7 +19,6 @@ import { Toast } from "#/components/Toast";
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
 import { getNetwork } from "#/contexts/networks";
 import { internalBalances } from "#/lib/gql";
-import { formatNumber } from "#/utils/formatNumber";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 import { refetchRequest } from "#/utils/refetchRequest";
 

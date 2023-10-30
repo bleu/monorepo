@@ -2,6 +2,7 @@
 
 import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
 import { PoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/types";
+import { formatNumber } from "@bleu-balancer-tools/utils/formatNumber";
 import { PlotType } from "plotly.js";
 
 import { AlertCard } from "#/components/AlertCard";
@@ -11,7 +12,6 @@ import {
   AnalysisData,
   usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
-import { formatNumber } from "#/utils/formatNumber";
 
 import { PoolTypeEnum, TokensData } from "../(types)";
 import { BetaLimits } from "../(utils)/getBetaLimits";

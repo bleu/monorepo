@@ -76,7 +76,7 @@ export function buildBlockExplorerTxUrl({
   txHash,
 }: {
   chainId?: NetworkChainId;
-  txHash: Address;
+  txHash: string;
 }) {
   if (!chainId) return undefined;
   const networkUrl = networkUrls[chainId as keyof typeof networkUrls];

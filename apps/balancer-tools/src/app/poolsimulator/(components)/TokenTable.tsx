@@ -1,5 +1,6 @@
 "use client";
 
+import { formatNumber } from "@bleu-balancer-tools/utils/formatNumber";
 import {
   MinusCircledIcon,
   Pencil1Icon,
@@ -13,7 +14,6 @@ import {
   AnalysisData,
   usePoolSimulator,
 } from "#/contexts/PoolSimulatorContext";
-import { formatNumber } from "#/utils/formatNumber";
 
 import { PoolTypeEnum, TokensData } from "../(types)";
 import TokenForm from "./TokenForm";

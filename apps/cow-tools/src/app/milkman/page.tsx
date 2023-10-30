@@ -1,17 +1,6 @@
-import dynamic from "next/dynamic";
+import { redirect } from "next/navigation";
 
-import { OrdersTable } from "./components/OrdersTable";
-
-const AddressComponentWithNoSSR = dynamic(
-  () => import("./components/WalletAddress"),
-  { ssr: false },
-);
-
-export default async function Page() {
-  return (
-    <div className="flex flex-col w-full">
-      <AddressComponentWithNoSSR />
-      <OrdersTable />
-    </div>
-  );
+export default function Page() {
+  //TODO: change redirect to default network BLEU-366
+  redirect("/milkman/goerli");
 }

@@ -52,7 +52,7 @@ export function createAprStrategy(
 
   if (
     //source: https://github.com/balancer/balancer-sdk/blob/f4879f06289c6f5f9766ead1835f4f4b096ed7dd/balancer-js/src/modules/pools/apr/apr.ts#L127
-    poolType === PoolTypeEnum.PHANTOM_STABLE ||
+    poolType === PoolTypeEnum.COMPOSABLE_STABLE ||
     (poolType === PoolTypeEnum.WEIGHTED && (poolTypeVersion ?? 0) >= 2)
   ) {
     //source: https://github.com/balancer/balancer-sdk/blob/f4879f06289c6f5f9766ead1835f4f4b096ed7dd/balancer-js/src/modules/pools/apr/apr.ts#L134

@@ -59,7 +59,7 @@ export function HomePageWrapper({
           <div className="flex gap-4">
             <Button
               className="flex items-center gap-1 py-3 px-6"
-              title="New deposit"
+              title="New order"
             >
               <PlusIcon />
               New order

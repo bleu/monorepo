@@ -99,6 +99,7 @@ export async function GET(request: NextRequest) {
     poolId,
     startAt,
     endAt,
+    network,
     sort = "apr",
     order = "desc",
     limit = Infinity,
@@ -112,11 +113,11 @@ export async function GET(request: NextRequest) {
     );
   } else if (startAt && endAt) {
     const cachedData = withCache(
-      (...args: [typeof startAt, typeof endAt, typeof parsedParams]) =>
+      (...args: [typeof startAt, typeof endAt, string]) =>
         fetchDataForDateRange(...args),
     );
 
-    responseData = await cachedData(startAt, endAt, parsedParams);
+    responseData = await cachedData(startAt, endAt, network as string);
   }
 
   if (responseData === null || !responseData) {

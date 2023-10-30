@@ -8,24 +8,19 @@ import { poolsWithCache } from "#/lib/gql/server";
 import { fetcher } from "#/utils/fetcher";
 
 import { BASE_URL } from "../../(utils)/types";
-import { vunerabilityAffecteRateProviders } from "../../(utils)/vunerabilityAffectedPool";
 import { PoolStatsData, PoolStatsResults } from "../route";
 import { dateToEpoch, formatDateToMMDDYYYY } from "./date";
-import { QueryParamsSchema } from "./validate";
 
 const fetchPoolsFromNetwork = async (
   network: string,
-  params: ReturnType<typeof QueryParamsSchema.safeParse>,
+  endAt: Date,
+  maxTvl = 10_000_000_000,
+  minTvl = 10_000,
   skip = 0,
 ) => {
-  if (!params.success) return [];
-
-  const maxTvl = params.data.maxTvl || 10_000_000_000;
-  const minTvl = params.data.minTvl || 10_000;
   const limit = 1_000;
 
-  const createdBefore = dateToEpoch(params.data.endAt);
-  const tokens = params.data.tokens || [];
+  const createdBefore = dateToEpoch(endAt);
 
   let block;
 
@@ -36,8 +31,6 @@ const fetchPoolsFromNetwork = async (
     return [];
   }
   let response;
-  const tokensList =
-    tokens.length > 0 ? { tokens_: { symbol_in: tokens } } : {};
   try {
     //TODO: not cache if createdBefore is today
     response = await poolsWithCache.gql(networkIdFor(network)).APRPools({
@@ -47,11 +40,8 @@ const fetchPoolsFromNetwork = async (
       minTvl,
       maxTvl,
       block,
-      tokensAsVunerabilityAffectedPools: vunerabilityAffecteRateProviders.map(
-        (p) => p.address,
-      ),
-      ...tokensList,
     });
+    console.log(response);
   } catch (e) {
     // If this errors out, probably the subgraph hadn't been deployed yet at this block
     return [];
@@ -67,25 +57,33 @@ const fetchPoolsFromNetwork = async (
   if (response.pools.length > limit) {
     fetchedPools = [
       ...fetchedPools,
-      ...(await fetchPoolsFromNetwork(network, params, skip + limit)),
+      ...(await fetchPoolsFromNetwork(
+        network,
+        endAt,
+        maxTvl,
+        minTvl,
+        skip + limit,
+      )),
     ];
   }
   return fetchedPools;
 };
 
 const fetchPools = async (
-  params: ReturnType<typeof QueryParamsSchema.safeParse>,
+  network: string,
+  endDate: Date,
+  maxTvl = 10_000_000_000,
+  minTvl = 10_000,
 ) => {
-  if (!params.success) return [];
-
-  const networks = params.data.network
-    ? [params.data.network]
+  const networks = network
+    ? [network]
     : Object.values(Network).filter(
         (network) => network !== Network.Sepolia && network !== Network.Goerli,
       );
   const allFetchedPools = await Promise.all(
     networks.map(
-      async (network) => await fetchPoolsFromNetwork(network, params),
+      async (network) =>
+        await fetchPoolsFromNetwork(network, endDate, maxTvl, minTvl),
     ),
   );
 
@@ -96,14 +94,16 @@ const fetchPools = async (
 export async function fetchDataForDateRange(
   startDate: Date,
   endDate: Date,
-  parsedParams: ReturnType<typeof QueryParamsSchema.safeParse>,
+  network: string,
+  maxTvl = 10_000_000_000,
+  minTvl = 10_000,
 ): Promise<{ [key: string]: PoolStatsData[] }> {
-  if (!parsedParams.success) {
-    console.log(parsedParams.error);
-    return {};
-  }
-
-  const existingPoolForDate = await fetchPools(parsedParams);
+  const existingPoolForDate = await fetchPools(
+    network,
+    endDate,
+    maxTvl,
+    minTvl,
+  );
   console.log(`fetched ${existingPoolForDate.length} pools`);
   const perDayData: { [key: string]: PoolStatsData[] } = {};
 

@@ -3,6 +3,7 @@
 import { Network, networkIdFor } from "@bleu-balancer-tools/utils";
 import * as Sentry from "@sentry/nextjs";
 
+import { withCache } from "#/lib/cache";
 import { DefiLlamaAPI } from "#/lib/defillama";
 import { poolsWithCache } from "#/lib/gql/server";
 import { fetcher } from "#/utils/fetcher";
@@ -41,7 +42,6 @@ const fetchPoolsFromNetwork = async (
       maxTvl,
       block,
     });
-    console.log(response);
   } catch (e) {
     // If this errors out, probably the subgraph hadn't been deployed yet at this block
     return [];
@@ -90,52 +90,53 @@ const fetchPools = async (
   // Flatten the array of arrays into a single array.
   return allFetchedPools.flat();
 };
+export const fetchDataForDateRange = withCache(
+  async function fetchDataForDateRangeFn(
+    startDate: Date,
+    endDate: Date,
+    network: string,
+    maxTvl: number = 10_000_000_000,
+    minTvl: number = 10_000,
+  ): Promise<{ [key: string]: PoolStatsData[] }> {
+    const existingPoolForDate = await fetchPools(
+      network,
+      endDate,
+      maxTvl,
+      minTvl,
+    );
+    console.log(`fetched ${existingPoolForDate.length} pools`);
+    const perDayData: { [key: string]: PoolStatsData[] } = {};
 
-export async function fetchDataForDateRange(
-  startDate: Date,
-  endDate: Date,
-  network: string,
-  maxTvl = 10_000_000_000,
-  minTvl = 10_000,
-): Promise<{ [key: string]: PoolStatsData[] }> {
-  const existingPoolForDate = await fetchPools(
-    network,
-    endDate,
-    maxTvl,
-    minTvl,
-  );
-  console.log(`fetched ${existingPoolForDate.length} pools`);
-  const perDayData: { [key: string]: PoolStatsData[] } = {};
+    await Promise.all(
+      existingPoolForDate.map(async (pool) => {
+        let gaugesData;
+        try {
+          gaugesData = await fetcher<PoolStatsResults>(
+            `${BASE_URL}/apr/api?startAt=${formatDateToMMDDYYYY(
+              startDate,
+            )}&endAt=${formatDateToMMDDYYYY(endDate)}&poolId=${pool.id}`,
+          );
+        } catch (error) {
+          console.log(error);
+          console.log(
+            `${BASE_URL}/apr/api?startAt=${formatDateToMMDDYYYY(
+              startDate,
+            )}&endAt=${formatDateToMMDDYYYY(endDate)}&poolId=${pool.id}`,
+          );
+          Sentry.captureException(error);
+        }
 
-  await Promise.all(
-    existingPoolForDate.map(async (pool) => {
-      let gaugesData;
-      try {
-        gaugesData = await fetcher<PoolStatsResults>(
-          `${BASE_URL}/apr/api?startAt=${formatDateToMMDDYYYY(
-            startDate,
-          )}&endAt=${formatDateToMMDDYYYY(endDate)}&poolId=${pool.id}`,
-        );
-      } catch (error) {
-        console.log(error);
-        console.log(
-          `${BASE_URL}/apr/api?startAt=${formatDateToMMDDYYYY(
-            startDate,
-          )}&endAt=${formatDateToMMDDYYYY(endDate)}&poolId=${pool.id}`,
-        );
-        Sentry.captureException(error);
-      }
-
-      if (gaugesData) {
-        Object.entries(gaugesData.perDay).forEach(([dayStr, poolData]) => {
-          if (perDayData[dayStr]) {
-            perDayData[dayStr].push(poolData[0]);
-          } else {
-            perDayData[dayStr] = [poolData[0]];
-          }
-        });
-      }
-    }),
-  );
-  return perDayData;
-}
+        if (gaugesData) {
+          Object.entries(gaugesData.perDay).forEach(([dayStr, poolData]) => {
+            if (perDayData[dayStr]) {
+              perDayData[dayStr].push(poolData[0]);
+            } else {
+              perDayData[dayStr] = [poolData[0]];
+            }
+          });
+        }
+      }),
+    );
+    return perDayData;
+  },
+);

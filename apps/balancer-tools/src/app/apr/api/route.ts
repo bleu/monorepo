@@ -1,9 +1,10 @@
 /* eslint-disable no-console */
 import { NextRequest, NextResponse } from "next/server";
 
+import { withCache } from "#/lib/cache";
+
 import { PoolTypeEnum } from "../(utils)/types";
 import { computeAverages } from "./(utils)/computeAverages";
-import { fetchDataForPoolId } from "./(utils)/fetchDataForPoolId";
 import { fetchDataForPoolIdDateRange } from "./(utils)/fetchDataForPoolIdDateRange";
 import { fetchDataForDateRange } from "./(utils)/fetchForDateRange";
 import { filterPoolStats } from "./(utils)/filter";
@@ -109,10 +110,13 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       await fetchDataForPoolIdDateRange(poolId, startAt, endAt),
     );
-  } else if (poolId) {
-    responseData = await fetchDataForPoolId(poolId);
   } else if (startAt && endAt) {
-    responseData = await fetchDataForDateRange(startAt, endAt, parsedParams);
+    const cachedData = withCache(
+      (...args: [typeof startAt, typeof endAt, typeof parsedParams]) =>
+        fetchDataForDateRange(...args),
+    );
+
+    responseData = await cachedData(startAt, endAt, parsedParams);
   }
 
   if (responseData === null || !responseData) {

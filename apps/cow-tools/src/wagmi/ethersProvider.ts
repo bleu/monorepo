@@ -17,15 +17,17 @@ export function publicClientToProvider(publicClient: PublicClient) {
   if (transport.type === "fallback")
     return new providers.FallbackProvider(
       (transport.transports as ReturnType<HttpTransport>[]).map(
-        ({ value }) => new providers.JsonRpcProvider(value?.url, network)
-      )
+        ({ value }) => new providers.JsonRpcProvider(value?.url, network),
+      ),
     );
   return new providers.JsonRpcProvider(transport.url, network);
 }
 
 export async function createMilkmanSimpleOrder(
-  publicClient: PublicClient,
-  safeAddress: Address
+  //TODO fix this any type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  publicClient: any,
+  safeAddress: Address,
 ) {
   const provider = publicClientToProvider(publicClient);
 

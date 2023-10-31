@@ -4,6 +4,7 @@ import {
   avalanche,
   base,
   gnosis,
+  goerli,
   mainnet,
   optimism,
   polygon,
@@ -18,7 +19,8 @@ type ChainType =
   | typeof avalanche
   | typeof gnosis
   | typeof optimism
-  | typeof base;
+  | typeof base
+  | typeof goerli;
 
 export type ChainName =
   | "ethereum"
@@ -28,12 +30,13 @@ export type ChainName =
   | "avalanche"
   | "gnosis"
   | "optimism"
-  | "base";
+  | "base"
+  | "goerli";
 
 export function createClientForChain(chain: ChainType) {
   return createPublicClient({
     chain,
-    transport: http(chain.rpcUrls.public[0]),
+    transport: http(chain.rpcUrls.public.http[0]),
   });
 }
 
@@ -46,4 +49,5 @@ export const publicClients = {
   avalanche: createClientForChain(avalanche),
   gnosis: createClientForChain(gnosis),
   base: createClientForChain(base),
+  goerli: createClientForChain(goerli),
 };

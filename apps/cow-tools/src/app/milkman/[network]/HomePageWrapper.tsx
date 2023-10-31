@@ -2,7 +2,7 @@
 
 import { Address, Network } from "@bleu-balancer-tools/utils";
 import { PlusIcon } from "@radix-ui/react-icons";
-import { useAccount, useNetwork, usePublicClient } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 
 import { Button } from "#/components";
 import { Spinner } from "#/components/Spinner";
@@ -12,6 +12,7 @@ import { AllSwapsQuery } from "#/gql/generated";
 import { createMilkmanSimpleOrder } from "#/wagmi/ethersProvider";
 
 import { OrderTable } from "../components/OrdersTable";
+import { publicClients } from "../utils/chainsPublicClients";
 
 export function HomePageWrapper({
   params,
@@ -29,7 +30,10 @@ export function HomePageWrapper({
     isConnecting,
     address: safeAddress,
   } = useAccount();
-  const publicClient = usePublicClient();
+
+  //according to chain
+
+  const publicClient = publicClients.goerli;
 
   if (!isConnected && !isReconnecting && !isConnecting) {
     return <WalletNotConnected />;
@@ -69,8 +73,9 @@ export function HomePageWrapper({
               onClick={async () => {
                 const data = await createMilkmanSimpleOrder(
                   publicClient,
-                  safeAddress as Address
+                  safeAddress as Address,
                 );
+                // eslint-disable-next-line no-console
                 console.log(data);
               }}
             >

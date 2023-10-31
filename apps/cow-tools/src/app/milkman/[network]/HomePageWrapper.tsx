@@ -1,14 +1,15 @@
 "use client";
 
-import { Network } from "@bleu-balancer-tools/utils";
+import { Address, Network } from "@bleu-balancer-tools/utils";
 import { PlusIcon } from "@radix-ui/react-icons";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useNetwork, usePublicClient } from "wagmi";
 
 import { Button } from "#/components";
 import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { getNetwork } from "#/contexts/networks";
 import { AllSwapsQuery } from "#/gql/generated";
+import { createMilkmanSimpleOrder } from "#/wagmi/ethersProvider";
 
 import { OrderTable } from "../components/OrdersTable";
 
@@ -22,8 +23,13 @@ export function HomePageWrapper({
   orders: AllSwapsQuery["swaps"];
 }) {
   const { chain } = useNetwork();
-  const { isConnected, isReconnecting, isConnecting } = useAccount();
-  const { address } = useAccount();
+  const {
+    isConnected,
+    isReconnecting,
+    isConnecting,
+    address: safeAddress,
+  } = useAccount();
+  const publicClient = usePublicClient();
 
   if (!isConnected && !isReconnecting && !isConnecting) {
     return <WalletNotConnected />;
@@ -54,12 +60,19 @@ export function HomePageWrapper({
           <div className="flex flex-col gap-1">
             <h1 className="text-3xl text-slate12">My Milkman transactions</h1>
             {chain?.name}
-            <span>{address}</span>
+            <span>{safeAddress}</span>
           </div>
           <div className="flex gap-4">
             <Button
               className="flex items-center gap-1 py-3 px-6"
               title="New order"
+              onClick={async () => {
+                const data = await createMilkmanSimpleOrder(
+                  publicClient,
+                  safeAddress as Address
+                );
+                console.log(data);
+              }}
             >
               <PlusIcon />
               New order

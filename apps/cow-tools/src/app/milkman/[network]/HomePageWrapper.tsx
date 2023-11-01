@@ -1,18 +1,23 @@
 "use client";
 
-import { Address, Network } from "@bleu-balancer-tools/utils";
+import { Network } from "@bleu-balancer-tools/utils";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { PlusIcon } from "@radix-ui/react-icons";
-import { useAccount, useNetwork } from "wagmi";
+import { Address, useAccount, useNetwork } from "wagmi";
 
 import { Button } from "#/components";
 import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { getNetwork } from "#/contexts/networks";
 import { AllSwapsQuery } from "#/gql/generated";
-import { createMilkmanSimpleOrder } from "#/wagmi/ethersProvider";
+import { getERC20ApproveTx } from "#/transactions/erc20Approve";
+import {
+  getRequestSwapExactTokensForTokensTx,
+  MILKMAN_ADDRESS,
+} from "#/transactions/milkmanOrder";
+import { readTokenDecimals } from "#/wagmi/readTokenDecimals";
 
 import { OrderTable } from "../components/OrdersTable";
-import { publicClients } from "../utils/chainsPublicClients";
 
 export function HomePageWrapper({
   params,
@@ -24,17 +29,9 @@ export function HomePageWrapper({
   orders: AllSwapsQuery["swaps"];
 }) {
   const { chain } = useNetwork();
-  const {
-    isConnected,
-    isReconnecting,
-    isConnecting,
-    address: safeAddress,
-  } = useAccount();
+  const { isConnected, isReconnecting, isConnecting } = useAccount();
 
-  //according to chain
-
-  const publicClient = publicClients.goerli;
-
+  const { safe, sdk } = useSafeAppsSDK();
   if (!isConnected && !isReconnecting && !isConnecting) {
     return <WalletNotConnected />;
   }
@@ -64,23 +61,43 @@ export function HomePageWrapper({
           <div className="flex flex-col gap-1">
             <h1 className="text-3xl text-slate12">My Milkman transactions</h1>
             {chain?.name}
-            <span>{safeAddress}</span>
+            <span>{safe.safeAddress}</span>
           </div>
           <div className="flex gap-4">
             <Button
               className="flex items-center gap-1 py-3 px-6"
               title="New order"
-              onClick={async () => {
-                const data = await createMilkmanSimpleOrder(
-                  publicClient,
-                  safeAddress as Address,
-                );
-                // eslint-disable-next-line no-console
-                console.log(data);
-              }}
             >
               <PlusIcon />
               New order
+            </Button>
+            <Button
+              className="flex items-center gap-1 py-3 px-6"
+              title="Send hardcoded tx"
+              onClick={async () => {
+                const tokenIn = "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6";
+                const tokenOut = "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984";
+                const decimalsIn = await readTokenDecimals(tokenIn);
+                const decimalsOut = await readTokenDecimals(tokenOut);
+                const amount = BigInt(0.4 * 10 ** decimalsIn);
+                const minOut = BigInt((2000 / 4) * 10 ** decimalsOut);
+                const txs = [
+                  getERC20ApproveTx(tokenIn, MILKMAN_ADDRESS, amount),
+                  getRequestSwapExactTokensForTokensTx(
+                    tokenIn,
+                    tokenOut,
+                    safe.safeAddress as Address,
+                    amount,
+                    minOut,
+                  ),
+                ];
+                await sdk.txs.send({
+                  txs,
+                });
+              }}
+            >
+              <PlusIcon />
+              Send HardCoded Tx
             </Button>
           </div>
         </div>

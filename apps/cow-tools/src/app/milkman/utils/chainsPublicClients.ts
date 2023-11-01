@@ -10,6 +10,7 @@ import {
   polygon,
   polygonZkEvm,
 } from "viem/chains";
+import { type PublicClient } from "wagmi";
 
 type ChainType =
   | typeof mainnet
@@ -37,7 +38,7 @@ export function createClientForChain(chain: ChainType) {
   return createPublicClient({
     chain,
     transport: http(chain.rpcUrls.public.http[0]),
-  });
+  }) as PublicClient;
 }
 
 export const publicClients = {

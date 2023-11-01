@@ -102,6 +102,7 @@ CREATE TABLE IF NOT EXISTS "pool_token_rate_providers_snapshot" (
 CREATE TABLE IF NOT EXISTS "pool_tokens" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"weight" numeric,
+	"token_index" integer,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	"pool_external_id" varchar,

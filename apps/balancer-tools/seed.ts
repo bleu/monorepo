@@ -328,22 +328,24 @@ async function transformPoolData() {
 
   // -- Insert data into pool_tokens table using a subquery
   await db.execute(sql`
-      INSERT INTO pool_tokens (weight, pool_external_id, token_address, network_slug)
-      SELECT DISTINCT ON (sub.external_id, tokens.address)
-            sub.weight,
-            sub.external_id,
-            tokens.address,
-            LOWER(raw_data->>'network')
-      FROM (
-          SELECT (jsonb_array_elements(raw_data::jsonb->'tokens')->>'weight')::NUMERIC as weight,
-                raw_data->>'id' as external_id,
-                jsonb_array_elements(raw_data::jsonb->'tokens')->>'address' as address
-          FROM pools
-      ) as sub
-      JOIN tokens ON sub.address = tokens.address
-      ON CONFLICT (pool_external_id, token_address) DO UPDATE
-      SET weight = excluded.weight;
-`);
+  INSERT INTO pool_tokens (weight, pool_external_id, token_address, network_slug, token_index)
+  SELECT DISTINCT ON (sub.external_id, tokens.address)
+        sub.weight,
+        sub.external_id,
+        tokens.address,
+        LOWER(raw_data->>'network'),
+        sub.ordinality
+  FROM (
+      SELECT (jsonb_array_elements(raw_data::jsonb->'tokens')->>'weight')::NUMERIC as weight,
+            raw_data->>'id' as external_id,
+            jsonb_array_elements(raw_data::jsonb->'tokens')->>'address' as address,
+            ordinality
+      FROM pools, jsonb_array_elements(raw_data::jsonb->'tokens') WITH ORDINALITY
+  ) as sub
+  JOIN tokens ON sub.address = tokens.address
+  ON CONFLICT (pool_external_id, token_address) DO UPDATE
+  SET weight = excluded.weight;
+  `);
 }
 
 async function transformGauges() {

@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "f6416b64-25f4-48e6-8098-46ea238f7711",
+  "id": "ab0f7146-27f4-46dd-8fbf-0d7ef0e53abd",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "blocks": {
@@ -703,6 +703,12 @@
         "weight": {
           "name": "weight",
           "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "token_index": {
+          "name": "token_index",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false
         },

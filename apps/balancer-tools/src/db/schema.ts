@@ -132,6 +132,7 @@ export const poolTokens = pgTable(
   {
     id: serial("id").primaryKey(),
     weight: decimal("weight"),
+    tokenIndex: integer("token_index"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
     poolExternalId: varchar("pool_external_id").references(

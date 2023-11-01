@@ -1,6 +1,7 @@
 "use client";
 
 import { networkFor } from "@bleu-balancer-tools/utils";
+import { formatNumber } from "@bleu-balancer-tools/utils/formatNumber";
 import {
   ChevronDownIcon,
   DashIcon,
@@ -25,7 +26,6 @@ import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
 import { TooltipMobile } from "#/components/TooltipMobile";
 import { fetcher } from "#/utils/fetcher";
-import { formatNumber } from "#/utils/formatNumber";
 
 import { formatAPR, formatTVL } from "../(utils)/formatPoolStats";
 import {
@@ -166,7 +166,7 @@ export function PoolListTable({
                 <Table.BodyRow>
                   <Table.BodyCell colSpan={6}>
                     <Button
-                      className="w-[calc(100vw-2.5rem)] sticky left-0 sm:w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
+                      className="py-3 sticky left-0 sm:w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
                       shade="medium"
                       disabled={isLoadingMore || !hasMorePools}
                       onClick={loadMorePools}

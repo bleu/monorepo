@@ -36,7 +36,7 @@ const isValidTokenSymbol = (_symbols: string[] | null) => {
 
 const isValidPoolType = (types: string[] | null) => {
   if (!types) return true;
-  const validTypes = Object.keys(PoolTypeEnum).map((pType) =>
+  const validTypes = Object.values(PoolTypeEnum).map((pType) =>
     pType.toLowerCase(),
   );
   return types.every((type) => validTypes.includes(type.toLowerCase()));

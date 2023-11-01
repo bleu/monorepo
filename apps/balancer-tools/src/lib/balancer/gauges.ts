@@ -31,6 +31,12 @@ const UPPER_CASE_TO_NETWORK = {
   AVALANCHE: NetworkChainId.AVALANCHE,
 } as const;
 
+const typeMap: { [key: string]: string } = {
+  PHANTOM_STABLE: "COMPOSABLE_STABLE",
+  COMPOSABLESTABLE: "COMPOSABLE_STABLE",
+  METASTABLE: "META_STABLE",
+};
+
 export class Pool {
   id!: string;
   address!: string;
@@ -67,7 +73,7 @@ export class Pool {
       throw new Error(`Pool with ID ${id} not found`);
     }
 
-    this.poolType = data.type;
+    this.poolType = typeMap[data.type] || data.type;
     this.network =
       UPPER_CASE_TO_NETWORK[data.chain as keyof typeof UPPER_CASE_TO_NETWORK];
     this.id = data.id;

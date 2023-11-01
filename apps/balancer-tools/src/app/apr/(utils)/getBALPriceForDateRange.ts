@@ -2,7 +2,7 @@ import { networkFor } from "@bleu-balancer-tools/utils";
 import { eq } from "drizzle-orm";
 
 import { db } from "#/db";
-import { networks, tokenPrices } from "#/db/schema";
+import { tokenPrices } from "#/db/schema";
 import { withCache } from "#/lib/cache";
 import { DefiLlamaAPI } from "#/lib/defillama";
 
@@ -51,15 +51,16 @@ export const getTokenPriceByDate = withCache(async function getTokenPriceByDate(
 ) {
   let networkName = networkFor(tokenNetwork).toLowerCase();
 
+
+  if (networkName === "polygon-zkevm") {
+    networkName = networkName.replace("-", "_");
+  }
+
   const dbTokenPrice = await db.select().from(tokenPrices)
   .where(eq(tokenPrices.networkSlug, networkName))
   .where(eq(tokenPrices.tokenAddress, tokenAddress))
 
   if (dbTokenPrice.length > 0) return dbTokenPrice[0].priceUSD
-
-  if (networkName === "polygon-zkevm") {
-    networkName = networkName.replace("-", "_");
-  }
 
   const token = `${networkName}:${tokenAddress}`;
   const relevantDateForPrice = Math.min(dateToEpoch(new Date()), dateTimestamp);
@@ -74,15 +75,12 @@ export const getTokenPriceByDate = withCache(async function getTokenPriceByDate(
     throw new Error(`No price found for token ${token} at ${relevantDateForPrice}`);
   }
 
-  await db.insert(networks).values({
-    slug: networkName,
-  })
-
   const insertedTokenPrice = await db.insert(tokenPrices).values({
     tokenAddress,
     timestamp: new Date(relevantDateForPrice * 1000),
     priceUSD: String(priceUSD),
     networkSlug: networkName,
+    rawData: response
   }).onConflictDoNothing().returning();
 
   return insertedTokenPrice[0].priceUSD;

@@ -1,11 +1,9 @@
-import { PoolSnapshotInRangeQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum.server";
-import { eq } from "drizzle-orm";
+import { between, eq } from "drizzle-orm";
 
 import { db } from "#/db";
-import { pools as dbPools, poolSnapshots } from "#/db/schema";
-import { pools, poolsWithCache } from "#/lib/gql/server";
+import { poolSnapshots } from "#/db/schema";
 
-import { dateToEpoch, generateDateRange } from "../api/(utils)/date";
+import { dateToEpoch } from "../api/(utils)/date";
 
 export function isTimestampToday(timestamp: number): boolean {
   const now = new Date();
@@ -36,27 +34,30 @@ export async function fetchPoolSnapshots({
   from: number;
   network: string;
   poolId: string;
-}): Promise<PoolSnapshotInRangeQuery> {
-  const strategy = isTimestampToday(to) ? pools : poolsWithCache;
-  const res = await strategy.gql(network).poolSnapshotInRange({
-    poolId,
-    timestamp: generateDateRange(from, to),
-  });
+// }): Promise<PoolSnapshotInRangeQuery> {
+}) {
+  return await db.select().from(poolSnapshots).where(eq(poolSnapshots.poolExternalId, poolId)).where(between(poolSnapshots.timestamp, new Date(from),new Date(to)))
 
-  if (!res.poolSnapshots.length) {
-    return res;
-  }
+  // const strategy = isTimestampToday(to) ? pools : poolsWithCache;
+  // const res = await strategy.gql(network).poolSnapshotInRange({
+  //   poolId,
+  //   timestamp: generateDateRange(from, to),
+  // });
 
-  const pool = await db.select().from(dbPools).where(eq(dbPools.poolId, poolId));
-  await db.insert(poolSnapshots).values(
-    res.poolSnapshots.map((poolSnapshot) => ({
-      poolId: pool[0].id,
-      timestamp: new Date(poolSnapshot.timestamp * 1000),
-      liquidity: poolSnapshot.liquidity,
-      swapVolume: poolSnapshot.swapVolume,
-      swapFees: poolSnapshot.swapFees,
-    })),
-  )
+  // if (!res.poolSnapshots.length) {
+  //   return res;
+  // }
 
-  return res;
+  // const pool = await db.select().from(dbPools).where(eq(dbPools.poolId, poolId));
+  // await db.insert(poolSnapshots).values(
+  //   res.poolSnapshots.map((poolSnapshot) => ({
+  //     poolId: pool[0].id,
+  //     timestamp: new Date(poolSnapshot.timestamp * 1000),
+  //     liquidity: poolSnapshot.liquidity,
+  //     swapVolume: poolSnapshot.swapVolume,
+  //     swapFees: poolSnapshot.swapFees,
+  //   })),
+  // )
+
+  // return res;
 }

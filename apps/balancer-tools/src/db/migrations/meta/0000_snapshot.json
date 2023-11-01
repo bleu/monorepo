@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "ab0f7146-27f4-46dd-8fbf-0d7ef0e53abd",
+  "id": "567eca1c-c4ba-4c1d-87c4-78d19394e966",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "blocks": {
@@ -160,11 +160,11 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "gauge_snapshots_block_number_gauge_address_network_slug_unique": {
-          "name": "gauge_snapshots_block_number_gauge_address_network_slug_unique",
+        "gauge_snapshots_timestamp_gauge_address_network_slug_unique": {
+          "name": "gauge_snapshots_timestamp_gauge_address_network_slug_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "block_number",
+            "timestamp",
             "gauge_address",
             "network_slug"
           ]
@@ -465,14 +465,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "is_exempt_from_yield_protocol_fee": {
-          "name": "is_exempt_from_yield_protocol_fee",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "protocol_fee_cache": {
-          "name": "protocol_fee_cache",
+        "protocol_yield_fee_cache": {
+          "name": "protocol_yield_fee_cache",
           "type": "numeric",
           "primaryKey": false,
           "notNull": false
@@ -709,6 +703,12 @@
         "token_index": {
           "name": "token_index",
           "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_exempt_from_yield_protocol_fee": {
+          "name": "is_exempt_from_yield_protocol_fee",
+          "type": "boolean",
           "primaryKey": false,
           "notNull": false
         },

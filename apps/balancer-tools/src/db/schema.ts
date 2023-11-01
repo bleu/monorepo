@@ -2,15 +2,35 @@ import { relations } from "drizzle-orm";
 import {
   bigint,
   boolean,
+  customType,
   decimal,
   integer,
-  json,
   pgTable,
   serial,
   timestamp,
   unique,
   varchar,
 } from "drizzle-orm/pg-core";
+
+const jsonb = customType<{ data: unknown }>({
+  dataType() {
+    return "jsonb";
+  },
+  toDriver(val) {
+    return val as unknown;
+  },
+  fromDriver(value) {
+    if (typeof value === "string") {
+      try {
+        return JSON.parse(value) as unknown;
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error("Error parsing JSON", err);
+      }
+    }
+    return value as unknown;
+  },
+});
 
 export const pools = pgTable(
   "pools",
@@ -26,7 +46,7 @@ export const pools = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
     networkSlug: varchar("network_slug").references(() => networks.slug),
-    rawData: json("raw_data"),
+    rawData: jsonb("raw_data"),
   },
   (t) => ({
     unq: unique().on(t.address, t.networkSlug),
@@ -51,7 +71,7 @@ export const blocks = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
     networkSlug: varchar("network_slug").references(() => networks.slug),
-    rawData: json("raw_data"),
+    rawData: jsonb("raw_data"),
   },
   (t) => ({
     unq: unique().on(t.number, t.networkSlug),
@@ -74,7 +94,7 @@ export const tokens = pgTable(
     networkSlug: varchar("network_slug").references(() => networks.slug),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
-    rawData: json("raw_data"),
+    rawData: jsonb("raw_data"),
   },
   (t) => ({
     unq: unique().on(t.address, t.networkSlug),
@@ -86,32 +106,39 @@ export const tokenRelations = relations(tokens, ({ many }) => ({
   poolTokens: many(poolTokens),
 }));
 
-export const tokenPrices = pgTable("token_prices", {
-  id: serial("id").primaryKey(),
-  priceUSD: decimal("price_usd"),
-  timestamp: timestamp("timestamp"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  tokenId: integer("token_id").references(() => tokens.id),
-  tokenAddress: varchar("token_address"),
-  networkSlug: varchar("network_slug").references(() => networks.slug),
-  rawData: json("raw_data"),
-},
-(t) => ({
-  unq: unique().on(t.tokenAddress, t.networkSlug, t.timestamp),
-})
+export const tokenPrices = pgTable(
+  "token_prices",
+  {
+    id: serial("id").primaryKey(),
+    priceUSD: decimal("price_usd"),
+    timestamp: timestamp("timestamp"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    tokenId: integer("token_id").references(() => tokens.id),
+    tokenAddress: varchar("token_address"),
+    networkSlug: varchar("network_slug").references(() => networks.slug),
+    rawData: jsonb("raw_data"),
+  },
+  (t) => ({
+    unq: unique().on(t.tokenAddress, t.networkSlug, t.timestamp),
+  })
 );
 
-export const poolTokens = pgTable("pool_tokens", {
-  id: serial("id").primaryKey(),
-  weight: decimal("weight"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  poolExternalId: varchar("pool_external_id").references(() => pools.externalId),
-  tokenId: integer("token_id").references(() => tokens.id),
-  tokenAddress: varchar("token_address"),
-  networkSlug: varchar("network_slug").references(() => networks.slug),
-  rawData: json("raw_data")},
+export const poolTokens = pgTable(
+  "pool_tokens",
+  {
+    id: serial("id").primaryKey(),
+    weight: decimal("weight"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    poolExternalId: varchar("pool_external_id").references(
+      () => pools.externalId
+    ),
+    tokenId: integer("token_id").references(() => tokens.id),
+    tokenAddress: varchar("token_address"),
+    networkSlug: varchar("network_slug").references(() => networks.slug),
+    rawData: jsonb("raw_data"),
+  },
   (t) => ({
     unq: unique().on(t.poolExternalId, t.tokenId),
   })
@@ -120,7 +147,7 @@ export const poolTokens = pgTable("pool_tokens", {
 export const networks = pgTable("networks", {
   id: serial("id").primaryKey(),
   name: varchar("name"),
-  slug: varchar("slug").unique(),
+  slug: varchar("slug").unique().notNull(),
   chainId: varchar("chain_id").unique(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -134,7 +161,7 @@ export const networkRelations = relations(networks, ({ many }) => ({
 
 export const poolSnapshots = pgTable("pool_snapshots", {
   id: serial("id").primaryKey(),
-  amounts: json("amounts"),
+  amounts: jsonb("amounts"),
   totalShares: decimal("total_shares"),
   swapVolume: decimal("swap_volume"),
   swapFees: decimal("swap_fees"),
@@ -143,8 +170,10 @@ export const poolSnapshots = pgTable("pool_snapshots", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   externalId: varchar("external_id").unique(),
-  poolExternalId: varchar("pool_external_id").references(() => pools.externalId),
-  rawData: json("raw_data"),
+  poolExternalId: varchar("pool_external_id").references(
+    () => pools.externalId
+  ),
+  rawData: jsonb("raw_data"),
 });
 
 export const poolSnapshotRelations = relations(poolSnapshots, ({ one }) => ({
@@ -162,7 +191,7 @@ export const poolTokenRateProviders = pgTable("pool_rate_providers", {
   poolTokenId: integer("pool_token_id").references(() => poolTokens.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  rawData: json("raw_data"),
+  rawData: jsonb("raw_data"),
 });
 
 export const poolTokenRateProviderRelations = relations(
@@ -184,19 +213,25 @@ export const vebalRounds = pgTable("vebal_rounds", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const gauges = pgTable("gauges", {
-  id: serial("id").primaryKey(),
-  address: varchar("address"),
-  isKilled: boolean("is_killed"),
-  externalCreatedAt: timestamp("external_created_at"),
-  poolExternalId: varchar("pool_external_id").references(() => pools.externalId),
-  networkSlug: varchar("network_slug").references(() => networks.slug),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  rawData: json("raw_data"),
-}, (t) => ({
-  unq: unique().on(t.address, t.poolExternalId),
-}))
+export const gauges = pgTable(
+  "gauges",
+  {
+    id: serial("id").primaryKey(),
+    address: varchar("address"),
+    isKilled: boolean("is_killed"),
+    externalCreatedAt: timestamp("external_created_at"),
+    poolExternalId: varchar("pool_external_id").references(
+      () => pools.externalId
+    ),
+    networkSlug: varchar("network_slug").references(() => networks.slug),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    rawData: jsonb("raw_data"),
+  },
+  (t) => ({
+    unq: unique().on(t.address, t.poolExternalId),
+  })
+);
 
 export const gaugeRelations = relations(gauges, ({ many }) => ({
   gaugeSnapshots: many(gaugeSnapshots),
@@ -210,5 +245,5 @@ export const gaugeSnapshots = pgTable("gauge_relative_weights", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   blockId: integer("block_id").references(() => blocks.id),
   gaugeId: integer("gauge_id").references(() => gauges.id),
-  rawData: json("raw_data"),
+  rawData: jsonb("raw_data"),
 });

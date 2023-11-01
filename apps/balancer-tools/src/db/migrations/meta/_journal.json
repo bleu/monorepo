@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1698158544914,
-      "tag": "0000_last_mystique",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1698158769257,
-      "tag": "0001_clear_skrulls",
+      "when": 1698852122921,
+      "tag": "0000_yielding_warpath",
       "breakpoints": true
     }
   ]

@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "00daa3fb-c00e-4943-97f6-22833175f275",
+  "id": "9eb37fd8-0af0-4d37-8fb1-7e747715666f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "blocks": {
@@ -48,7 +48,7 @@
         },
         "raw_data": {
           "name": "raw_data",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         }
@@ -131,7 +131,7 @@
         },
         "raw_data": {
           "name": "raw_data",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         }
@@ -224,7 +224,7 @@
         },
         "raw_data": {
           "name": "raw_data",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         }
@@ -290,7 +290,7 @@
           "name": "slug",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "chain_id": {
           "name": "chain_id",
@@ -345,7 +345,7 @@
         },
         "amounts": {
           "name": "amounts",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         },
@@ -407,7 +407,7 @@
         },
         "raw_data": {
           "name": "raw_data",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         }
@@ -489,7 +489,7 @@
         },
         "raw_data": {
           "name": "raw_data",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         }
@@ -569,7 +569,7 @@
         },
         "raw_data": {
           "name": "raw_data",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         }
@@ -618,12 +618,12 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "pool_tokens_pool_external_id_token_address_unique": {
-          "name": "pool_tokens_pool_external_id_token_address_unique",
+        "pool_tokens_pool_external_id_token_id_unique": {
+          "name": "pool_tokens_pool_external_id_token_id_unique",
           "nullsNotDistinct": false,
           "columns": [
             "pool_external_id",
-            "token_address"
+            "token_id"
           ]
         }
       }
@@ -702,7 +702,7 @@
         },
         "raw_data": {
           "name": "raw_data",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         }
@@ -798,7 +798,7 @@
         },
         "raw_data": {
           "name": "raw_data",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         }
@@ -907,7 +907,7 @@
         },
         "raw_data": {
           "name": "raw_data",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         }

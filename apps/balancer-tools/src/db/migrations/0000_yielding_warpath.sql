@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS "blocks" (
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	"network_slug" varchar,
-	"raw_data" json,
+	"raw_data" jsonb,
 	CONSTRAINT "blocks_number_network_slug_unique" UNIQUE("number","network_slug")
 );
 --> statement-breakpoint
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS "gauge_relative_weights" (
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	"block_id" integer,
 	"gauge_id" integer,
-	"raw_data" json
+	"raw_data" jsonb
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "gauges" (
@@ -29,14 +29,14 @@ CREATE TABLE IF NOT EXISTS "gauges" (
 	"network_slug" varchar,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
-	"raw_data" json,
+	"raw_data" jsonb,
 	CONSTRAINT "gauges_address_pool_external_id_unique" UNIQUE("address","pool_external_id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "networks" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"name" varchar,
-	"slug" varchar,
+	"slug" varchar NOT NULL,
 	"chain_id" varchar,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS "networks" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "pool_snapshots" (
 	"id" serial PRIMARY KEY NOT NULL,
-	"amounts" json,
+	"amounts" jsonb,
 	"total_shares" numeric,
 	"swap_volume" numeric,
 	"swap_fees" numeric,
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS "pool_snapshots" (
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	"external_id" varchar,
 	"pool_external_id" varchar,
-	"raw_data" json,
+	"raw_data" jsonb,
 	CONSTRAINT "pool_snapshots_external_id_unique" UNIQUE("external_id")
 );
 --> statement-breakpoint
@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS "pool_rate_providers" (
 	"pool_token_id" integer,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
-	"raw_data" json
+	"raw_data" jsonb
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "pool_tokens" (
@@ -80,8 +80,8 @@ CREATE TABLE IF NOT EXISTS "pool_tokens" (
 	"token_id" integer,
 	"token_address" varchar,
 	"network_slug" varchar,
-	"raw_data" json,
-	CONSTRAINT "pool_tokens_pool_external_id_token_address_unique" UNIQUE("pool_external_id","token_address")
+	"raw_data" jsonb,
+	CONSTRAINT "pool_tokens_pool_external_id_token_id_unique" UNIQUE("pool_external_id","token_id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "pools" (
@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS "pools" (
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	"network_slug" varchar,
-	"raw_data" json,
+	"raw_data" jsonb,
 	CONSTRAINT "pools_external_id_unique" UNIQUE("external_id"),
 	CONSTRAINT "pools_address_network_slug_unique" UNIQUE("address","network_slug")
 );
@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS "token_prices" (
 	"token_id" integer,
 	"token_address" varchar,
 	"network_slug" varchar,
-	"raw_data" json,
+	"raw_data" jsonb,
 	CONSTRAINT "token_prices_token_address_network_slug_timestamp_unique" UNIQUE("token_address","network_slug","timestamp")
 );
 --> statement-breakpoint
@@ -124,7 +124,7 @@ CREATE TABLE IF NOT EXISTS "tokens" (
 	"network_slug" varchar,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
-	"raw_data" json,
+	"raw_data" jsonb,
 	CONSTRAINT "tokens_address_network_slug_unique" UNIQUE("address","network_slug")
 );
 --> statement-breakpoint

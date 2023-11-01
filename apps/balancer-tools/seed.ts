@@ -328,20 +328,22 @@ async function transformPoolData() {
 
   // -- Insert data into pool_tokens table using a subquery
   await db.execute(sql`
-      INSERT INTO pool_tokens (weight, pool_external_id, token_id)
-      SELECT sub.weight,
-             sub.external_id,
-             tokens.id
+      INSERT INTO pool_tokens (weight, pool_external_id, token_address, network_slug)
+      SELECT DISTINCT ON (sub.external_id, tokens.address)
+            sub.weight,
+            sub.external_id,
+            tokens.address,
+            LOWER(raw_data->>'network')
       FROM (
           SELECT (jsonb_array_elements(raw_data::jsonb->'tokens')->>'weight')::NUMERIC as weight,
-                 raw_data->>'id' as external_id,
-                 jsonb_array_elements(raw_data::jsonb->'tokens')->>'address' as address
+                raw_data->>'id' as external_id,
+                jsonb_array_elements(raw_data::jsonb->'tokens')->>'address' as address
           FROM pools
       ) as sub
       JOIN tokens ON sub.address = tokens.address
-      ON CONFLICT (pool_external_id, token_id) DO UPDATE
+      ON CONFLICT (pool_external_id, token_address) DO UPDATE
       SET weight = excluded.weight;
-  `);
+`);
 }
 
 async function transformGauges() {

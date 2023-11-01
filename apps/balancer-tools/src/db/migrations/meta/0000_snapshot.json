@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "9eb37fd8-0af0-4d37-8fb1-7e747715666f",
+  "id": "f6416b64-25f4-48e6-8098-46ea238f7711",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "blocks": {
@@ -81,8 +81,8 @@
         }
       }
     },
-    "gauge_relative_weights": {
-      "name": "gauge_relative_weights",
+    "gauge_snapshots": {
+      "name": "gauge_snapshots",
       "schema": "",
       "columns": {
         "id": {
@@ -93,7 +93,7 @@
         },
         "relative_weight": {
           "name": "relative_weight",
-          "type": "bigint",
+          "type": "numeric",
           "primaryKey": false,
           "notNull": false
         },
@@ -117,15 +117,21 @@
           "notNull": true,
           "default": "now()"
         },
-        "block_id": {
-          "name": "block_id",
+        "block_number": {
+          "name": "block_number",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
-        "gauge_id": {
-          "name": "gauge_id",
-          "type": "integer",
+        "gauge_address": {
+          "name": "gauge_address",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "network_slug": {
+          "name": "network_slug",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
@@ -138,35 +144,32 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "gauge_relative_weights_block_id_blocks_id_fk": {
-          "name": "gauge_relative_weights_block_id_blocks_id_fk",
-          "tableFrom": "gauge_relative_weights",
-          "tableTo": "blocks",
+        "gauge_snapshots_network_slug_networks_slug_fk": {
+          "name": "gauge_snapshots_network_slug_networks_slug_fk",
+          "tableFrom": "gauge_snapshots",
+          "tableTo": "networks",
           "columnsFrom": [
-            "block_id"
+            "network_slug"
           ],
           "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "gauge_relative_weights_gauge_id_gauges_id_fk": {
-          "name": "gauge_relative_weights_gauge_id_gauges_id_fk",
-          "tableFrom": "gauge_relative_weights",
-          "tableTo": "gauges",
-          "columnsFrom": [
-            "gauge_id"
-          ],
-          "columnsTo": [
-            "id"
+            "slug"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "gauge_snapshots_block_number_gauge_address_network_slug_unique": {
+          "name": "gauge_snapshots_block_number_gauge_address_network_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "block_number",
+            "gauge_address",
+            "network_slug"
+          ]
+        }
+      }
     },
     "gauges": {
       "name": "gauges",
@@ -333,6 +336,101 @@
         }
       }
     },
+    "pool_rewards": {
+      "name": "pool_rewards",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "token_address": {
+          "name": "token_address",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "network_slug": {
+          "name": "network_slug",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "start_at": {
+          "name": "start_at",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "end_at": {
+          "name": "end_at",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "yearly_amount": {
+          "name": "yearly_amount",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "total_supply": {
+          "name": "total_supply",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pool_external_id": {
+          "name": "pool_external_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "pool_rewards_network_slug_networks_slug_fk": {
+          "name": "pool_rewards_network_slug_networks_slug_fk",
+          "tableFrom": "pool_rewards",
+          "tableTo": "networks",
+          "columnsFrom": [
+            "network_slug"
+          ],
+          "columnsTo": [
+            "slug"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "pool_rewards_pool_external_id_pools_external_id_fk": {
+          "name": "pool_rewards_pool_external_id_pools_external_id_fk",
+          "tableFrom": "pool_rewards",
+          "tableTo": "pools",
+          "columnsFrom": [
+            "pool_external_id"
+          ],
+          "columnsTo": [
+            "external_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "pool_rewards_pool_external_id_token_address_network_slug_unique": {
+          "name": "pool_rewards_pool_external_id_token_address_network_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "pool_external_id",
+            "token_address",
+            "network_slug"
+          ]
+        }
+      }
+    },
     "pool_snapshots": {
       "name": "pool_snapshots",
       "schema": "",
@@ -363,6 +461,24 @@
         },
         "swap_fees": {
           "name": "swap_fees",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_exempt_from_yield_protocol_fee": {
+          "name": "is_exempt_from_yield_protocol_fee",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "protocol_fee_cache": {
+          "name": "protocol_fee_cache",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "protocol_swap_fee_cache": {
+          "name": "protocol_swap_fee_cache",
           "type": "numeric",
           "primaryKey": false,
           "notNull": false
@@ -449,9 +565,9 @@
           "primaryKey": true,
           "notNull": true
         },
-        "rate": {
-          "name": "rate",
-          "type": "numeric",
+        "address": {
+          "name": "address",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
@@ -513,6 +629,67 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "pool_token_rate_providers_snapshot": {
+      "name": "pool_token_rate_providers_snapshot",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "rate": {
+          "name": "rate",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "block_start": {
+          "name": "block_start",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "block_end": {
+          "name": "block_end",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "external_created_at": {
+          "name": "external_created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "pool_tokens": {
       "name": "pool_tokens",
       "schema": "",
@@ -546,12 +723,6 @@
         "pool_external_id": {
           "name": "pool_external_id",
           "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "token_id": {
-          "name": "token_id",
-          "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
@@ -589,19 +760,6 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "pool_tokens_token_id_tokens_id_fk": {
-          "name": "pool_tokens_token_id_tokens_id_fk",
-          "tableFrom": "pool_tokens",
-          "tableTo": "tokens",
-          "columnsFrom": [
-            "token_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
         "pool_tokens_network_slug_networks_slug_fk": {
           "name": "pool_tokens_network_slug_networks_slug_fk",
           "tableFrom": "pool_tokens",
@@ -618,12 +776,12 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "pool_tokens_pool_external_id_token_id_unique": {
-          "name": "pool_tokens_pool_external_id_token_id_unique",
+        "pool_tokens_pool_external_id_token_address_unique": {
+          "name": "pool_tokens_pool_external_id_token_address_unique",
           "nullsNotDistinct": false,
           "columns": [
             "pool_external_id",
-            "token_id"
+            "token_address"
           ]
         }
       }
@@ -742,6 +900,127 @@
         }
       }
     },
+    "rewards_token_apr": {
+      "name": "rewards_token_apr",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "token_address": {
+          "name": "token_address",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "value": {
+          "name": "value",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pool_external_id": {
+          "name": "pool_external_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "rewards_token_apr_pool_external_id_pools_external_id_fk": {
+          "name": "rewards_token_apr_pool_external_id_pools_external_id_fk",
+          "tableFrom": "rewards_token_apr",
+          "tableTo": "pools",
+          "columnsFrom": [
+            "pool_external_id"
+          ],
+          "columnsTo": [
+            "external_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "rewards_token_apr_timestamp_token_address_pool_external_id_unique": {
+          "name": "rewards_token_apr_timestamp_token_address_pool_external_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "timestamp",
+            "token_address",
+            "pool_external_id"
+          ]
+        }
+      }
+    },
+    "swap_fee_apr": {
+      "name": "swap_fee_apr",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "value": {
+          "name": "value",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pool_external_id": {
+          "name": "pool_external_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "swap_fee_apr_pool_external_id_pools_external_id_fk": {
+          "name": "swap_fee_apr_pool_external_id_pools_external_id_fk",
+          "tableFrom": "swap_fee_apr",
+          "tableTo": "pools",
+          "columnsFrom": [
+            "pool_external_id"
+          ],
+          "columnsTo": [
+            "external_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "swap_fee_apr_timestamp_pool_external_id_unique": {
+          "name": "swap_fee_apr_timestamp_pool_external_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "timestamp",
+            "pool_external_id"
+          ]
+        }
+      }
+    },
     "token_prices": {
       "name": "token_prices",
       "schema": "",
@@ -778,12 +1057,6 @@
           "notNull": true,
           "default": "now()"
         },
-        "token_id": {
-          "name": "token_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
         "token_address": {
           "name": "token_address",
           "type": "varchar",
@@ -805,19 +1078,6 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "token_prices_token_id_tokens_id_fk": {
-          "name": "token_prices_token_id_tokens_id_fk",
-          "tableFrom": "token_prices",
-          "tableTo": "tokens",
-          "columnsFrom": [
-            "token_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
         "token_prices_network_slug_networks_slug_fk": {
           "name": "token_prices_network_slug_networks_slug_fk",
           "tableFrom": "token_prices",
@@ -940,6 +1200,54 @@
         }
       }
     },
+    "vebal_apr": {
+      "name": "vebal_apr",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "value": {
+          "name": "value",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pool_external_id": {
+          "name": "pool_external_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "vebal_apr_pool_external_id_pools_external_id_fk": {
+          "name": "vebal_apr_pool_external_id_pools_external_id_fk",
+          "tableFrom": "vebal_apr",
+          "tableTo": "pools",
+          "columnsFrom": [
+            "pool_external_id"
+          ],
+          "columnsTo": [
+            "external_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "vebal_rounds": {
       "name": "vebal_rounds",
       "schema": "",
@@ -964,7 +1272,7 @@
         },
         "round_number": {
           "name": "round_number",
-          "type": "varchar",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
@@ -987,6 +1295,70 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
+    },
+    "yield_token_apr": {
+      "name": "yield_token_apr",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "token_address": {
+          "name": "token_address",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "value": {
+          "name": "value",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pool_external_id": {
+          "name": "pool_external_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "yield_token_apr_pool_external_id_pools_external_id_fk": {
+          "name": "yield_token_apr_pool_external_id_pools_external_id_fk",
+          "tableFrom": "yield_token_apr",
+          "tableTo": "pools",
+          "columnsFrom": [
+            "pool_external_id"
+          ],
+          "columnsTo": [
+            "external_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "yield_token_apr_timestamp_token_address_pool_external_id_unique": {
+          "name": "yield_token_apr_timestamp_token_address_pool_external_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "timestamp",
+            "token_address",
+            "pool_external_id"
+          ]
+        }
+      }
     }
   },
   "enums": {},

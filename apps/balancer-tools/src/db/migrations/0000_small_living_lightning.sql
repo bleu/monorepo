@@ -9,15 +9,17 @@ CREATE TABLE IF NOT EXISTS "blocks" (
 	CONSTRAINT "blocks_number_network_slug_unique" UNIQUE("number","network_slug")
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "gauge_relative_weights" (
+CREATE TABLE IF NOT EXISTS "gauge_snapshots" (
 	"id" serial PRIMARY KEY NOT NULL,
-	"relative_weight" bigint,
+	"relative_weight" numeric,
 	"timestamp" timestamp,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
-	"block_id" integer,
-	"gauge_id" integer,
-	"raw_data" jsonb
+	"block_number" integer,
+	"gauge_address" varchar,
+	"network_slug" varchar,
+	"raw_data" jsonb,
+	CONSTRAINT "gauge_snapshots_block_number_gauge_address_network_slug_unique" UNIQUE("block_number","gauge_address","network_slug")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "gauges" (
@@ -44,12 +46,27 @@ CREATE TABLE IF NOT EXISTS "networks" (
 	CONSTRAINT "networks_chain_id_unique" UNIQUE("chain_id")
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "pool_rewards" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"token_address" varchar,
+	"network_slug" varchar,
+	"start_at" numeric,
+	"end_at" numeric,
+	"yearly_amount" numeric,
+	"total_supply" numeric,
+	"pool_external_id" varchar,
+	CONSTRAINT "pool_rewards_pool_external_id_token_address_network_slug_unique" UNIQUE("pool_external_id","token_address","network_slug")
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "pool_snapshots" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"amounts" jsonb,
 	"total_shares" numeric,
 	"swap_volume" numeric,
 	"swap_fees" numeric,
+	"is_exempt_from_yield_protocol_fee" boolean,
+	"protocol_fee_cache" numeric,
+	"protocol_swap_fee_cache" numeric,
 	"liquidity" numeric,
 	"timestamp" timestamp,
 	"created_at" timestamp DEFAULT now() NOT NULL,
@@ -62,7 +79,7 @@ CREATE TABLE IF NOT EXISTS "pool_snapshots" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "pool_rate_providers" (
 	"id" serial PRIMARY KEY NOT NULL,
-	"rate" numeric,
+	"address" varchar,
 	"vulnerability_affected" boolean,
 	"external_created_at" timestamp,
 	"pool_token_id" integer,
@@ -71,17 +88,27 @@ CREATE TABLE IF NOT EXISTS "pool_rate_providers" (
 	"raw_data" jsonb
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "pool_token_rate_providers_snapshot" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"rate" numeric,
+	"block_start" integer,
+	"block_end" integer,
+	"external_created_at" timestamp,
+	"timestamp" timestamp DEFAULT now() NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "pool_tokens" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"weight" numeric,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	"pool_external_id" varchar,
-	"token_id" integer,
 	"token_address" varchar,
 	"network_slug" varchar,
 	"raw_data" jsonb,
-	CONSTRAINT "pool_tokens_pool_external_id_token_id_unique" UNIQUE("pool_external_id","token_id")
+	CONSTRAINT "pool_tokens_pool_external_id_token_address_unique" UNIQUE("pool_external_id","token_address")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "pools" (
@@ -101,13 +128,29 @@ CREATE TABLE IF NOT EXISTS "pools" (
 	CONSTRAINT "pools_address_network_slug_unique" UNIQUE("address","network_slug")
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "rewards_token_apr" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"timestamp" timestamp,
+	"token_address" varchar,
+	"value" numeric,
+	"pool_external_id" varchar,
+	CONSTRAINT "rewards_token_apr_timestamp_token_address_pool_external_id_unique" UNIQUE("timestamp","token_address","pool_external_id")
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "swap_fee_apr" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"timestamp" timestamp,
+	"value" numeric,
+	"pool_external_id" varchar,
+	CONSTRAINT "swap_fee_apr_timestamp_pool_external_id_unique" UNIQUE("timestamp","pool_external_id")
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "token_prices" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"price_usd" numeric,
 	"timestamp" timestamp,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
-	"token_id" integer,
 	"token_address" varchar,
 	"network_slug" varchar,
 	"raw_data" jsonb,
@@ -128,13 +171,29 @@ CREATE TABLE IF NOT EXISTS "tokens" (
 	CONSTRAINT "tokens_address_network_slug_unique" UNIQUE("address","network_slug")
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "vebal_apr" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"timestamp" timestamp,
+	"value" numeric,
+	"pool_external_id" varchar
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "vebal_rounds" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"end_date" timestamp,
 	"start_date" timestamp,
-	"round_number" varchar,
+	"round_number" integer,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "yield_token_apr" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"timestamp" timestamp,
+	"token_address" varchar,
+	"value" numeric,
+	"pool_external_id" varchar,
+	CONSTRAINT "yield_token_apr_timestamp_token_address_pool_external_id_unique" UNIQUE("timestamp","token_address","pool_external_id")
 );
 --> statement-breakpoint
 DO $$ BEGIN
@@ -144,13 +203,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "gauge_relative_weights" ADD CONSTRAINT "gauge_relative_weights_block_id_blocks_id_fk" FOREIGN KEY ("block_id") REFERENCES "blocks"("id") ON DELETE no action ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
- ALTER TABLE "gauge_relative_weights" ADD CONSTRAINT "gauge_relative_weights_gauge_id_gauges_id_fk" FOREIGN KEY ("gauge_id") REFERENCES "gauges"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "gauge_snapshots" ADD CONSTRAINT "gauge_snapshots_network_slug_networks_slug_fk" FOREIGN KEY ("network_slug") REFERENCES "networks"("slug") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -163,6 +216,18 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "gauges" ADD CONSTRAINT "gauges_network_slug_networks_slug_fk" FOREIGN KEY ("network_slug") REFERENCES "networks"("slug") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "pool_rewards" ADD CONSTRAINT "pool_rewards_network_slug_networks_slug_fk" FOREIGN KEY ("network_slug") REFERENCES "networks"("slug") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "pool_rewards" ADD CONSTRAINT "pool_rewards_pool_external_id_pools_external_id_fk" FOREIGN KEY ("pool_external_id") REFERENCES "pools"("external_id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -186,12 +251,6 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "pool_tokens" ADD CONSTRAINT "pool_tokens_token_id_tokens_id_fk" FOREIGN KEY ("token_id") REFERENCES "tokens"("id") ON DELETE no action ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
  ALTER TABLE "pool_tokens" ADD CONSTRAINT "pool_tokens_network_slug_networks_slug_fk" FOREIGN KEY ("network_slug") REFERENCES "networks"("slug") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -204,7 +263,13 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "token_prices" ADD CONSTRAINT "token_prices_token_id_tokens_id_fk" FOREIGN KEY ("token_id") REFERENCES "tokens"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "rewards_token_apr" ADD CONSTRAINT "rewards_token_apr_pool_external_id_pools_external_id_fk" FOREIGN KEY ("pool_external_id") REFERENCES "pools"("external_id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "swap_fee_apr" ADD CONSTRAINT "swap_fee_apr_pool_external_id_pools_external_id_fk" FOREIGN KEY ("pool_external_id") REFERENCES "pools"("external_id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -217,6 +282,18 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "tokens" ADD CONSTRAINT "tokens_network_slug_networks_slug_fk" FOREIGN KEY ("network_slug") REFERENCES "networks"("slug") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "vebal_apr" ADD CONSTRAINT "vebal_apr_pool_external_id_pools_external_id_fk" FOREIGN KEY ("pool_external_id") REFERENCES "pools"("external_id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "yield_token_apr" ADD CONSTRAINT "yield_token_apr_pool_external_id_pools_external_id_fk" FOREIGN KEY ("pool_external_id") REFERENCES "pools"("external_id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

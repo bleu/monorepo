@@ -1,6 +1,5 @@
 import { relations } from "drizzle-orm";
 import {
-  bigint,
   boolean,
   customType,
   decimal,
@@ -60,6 +59,11 @@ export const poolRelations = relations(pools, ({ one, many }) => ({
     fields: [pools.externalId],
     references: [gauges.poolExternalId],
   }),
+  vebalAprs: many(vebalApr),
+  poolRewards: many(poolRewards),
+  swapFeeAprs: many(swapFeeApr),
+  rewardsTokenAprs: many(rewardsTokenApr),
+  yieldTokenAprs: many(yieldTokenApr),
 }));
 
 export const blocks = pgTable(
@@ -114,7 +118,6 @@ export const tokenPrices = pgTable(
     timestamp: timestamp("timestamp"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
-    tokenId: integer("token_id").references(() => tokens.id),
     tokenAddress: varchar("token_address"),
     networkSlug: varchar("network_slug").references(() => networks.slug),
     rawData: jsonb("raw_data"),
@@ -134,13 +137,12 @@ export const poolTokens = pgTable(
     poolExternalId: varchar("pool_external_id").references(
       () => pools.externalId
     ),
-    tokenId: integer("token_id").references(() => tokens.id),
     tokenAddress: varchar("token_address"),
     networkSlug: varchar("network_slug").references(() => networks.slug),
     rawData: jsonb("raw_data"),
   },
   (t) => ({
-    unq: unique().on(t.poolExternalId, t.tokenId),
+    unq: unique().on(t.poolExternalId, t.tokenAddress),
   })
 );
 
@@ -165,6 +167,9 @@ export const poolSnapshots = pgTable("pool_snapshots", {
   totalShares: decimal("total_shares"),
   swapVolume: decimal("swap_volume"),
   swapFees: decimal("swap_fees"),
+  isExemptFromYieldProtocolFee: boolean("is_exempt_from_yield_protocol_fee"),
+  protocolFeeCache: decimal("protocol_fee_cache"),
+  protocolSwapFeeCache: decimal("protocol_swap_fee_cache"),
   liquidity: decimal("liquidity"),
   timestamp: timestamp("timestamp"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -185,7 +190,7 @@ export const poolSnapshotRelations = relations(poolSnapshots, ({ one }) => ({
 
 export const poolTokenRateProviders = pgTable("pool_rate_providers", {
   id: serial("id").primaryKey(),
-  rate: decimal("rate"),
+  address: varchar("address"),
   vulnerabilityAffected: boolean("vulnerability_affected"),
   externalCreatedAt: timestamp("external_created_at"),
   poolTokenId: integer("pool_token_id").references(() => poolTokens.id),
@@ -193,6 +198,20 @@ export const poolTokenRateProviders = pgTable("pool_rate_providers", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   rawData: jsonb("raw_data"),
 });
+
+export const poolTokenRateProvidersSnapshot = pgTable(
+  "pool_token_rate_providers_snapshot",
+  {
+    id: serial("id").primaryKey(),
+    rate: decimal("rate"),
+    blockStart: integer("block_start"),
+    blockEnd: integer("block_end"),
+    externalCreatedAt: timestamp("external_created_at"),
+    timestamp: timestamp("timestamp").defaultNow().notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  }
+);
 
 export const poolTokenRateProviderRelations = relations(
   poolTokenRateProviders,
@@ -208,7 +227,7 @@ export const vebalRounds = pgTable("vebal_rounds", {
   id: serial("id").primaryKey(),
   endDate: timestamp("end_date"),
   startDate: timestamp("start_date"),
-  roundNumber: varchar("round_number"),
+  roundNumber: integer("round_number"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -237,13 +256,83 @@ export const gaugeRelations = relations(gauges, ({ many }) => ({
   gaugeSnapshots: many(gaugeSnapshots),
 }));
 
-export const gaugeSnapshots = pgTable("gauge_relative_weights", {
+export const gaugeSnapshots = pgTable(
+  "gauge_snapshots",
+  {
+    id: serial("id").primaryKey(),
+    relativeWeight: decimal("relative_weight"),
+    timestamp: timestamp("timestamp"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    blockNumber: integer("block_number"),
+    gaugeAddress: varchar("gauge_address"),
+    networkSlug: varchar("network_slug").references(() => networks.slug),
+    rawData: jsonb("raw_data"),
+  },
+  (t) => ({
+    unq: unique().on(t.blockNumber, t.gaugeAddress, t.networkSlug),
+  })
+);
+
+export const vebalApr = pgTable("vebal_apr", {
   id: serial("id").primaryKey(),
-  relativeWeight: bigint("relative_weight", { mode: "number" }),
   timestamp: timestamp("timestamp"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  blockId: integer("block_id").references(() => blocks.id),
-  gaugeId: integer("gauge_id").references(() => gauges.id),
-  rawData: jsonb("raw_data"),
+  value: decimal("value"),
+  poolExternalId: varchar("pool_external_id").references(
+    () => pools.externalId
+  ),
 });
+
+export const poolRewards = pgTable(
+  "pool_rewards",
+  {
+    id: serial("id").primaryKey(),
+    tokenAddress: varchar("token_address"),
+    networkSlug: varchar("network_slug").references(() => networks.slug),
+    startAt: decimal("start_at"),
+    endAt: decimal("end_at"),
+    yearlyAmount: decimal("yearly_amount"),
+    totalSupply: decimal("total_supply"),
+    poolExternalId: varchar("pool_external_id").references(
+      () => pools.externalId
+    ),
+  },
+  (t) => ({
+    unq: unique().on(t.poolExternalId, t.tokenAddress, t.networkSlug),
+  })
+);
+
+export const swapFeeApr = pgTable("swap_fee_apr", {
+  id: serial("id").primaryKey(),
+  timestamp: timestamp("timestamp"),
+  value: decimal("value"),
+  poolExternalId: varchar("pool_external_id").references(
+    () => pools.externalId
+  ),
+}, (t) => ({
+  unq: unique().on(t.timestamp, t.poolExternalId)
+}));
+
+export const rewardsTokenApr = pgTable("rewards_token_apr", {
+  id: serial("id").primaryKey(),
+  timestamp: timestamp("timestamp"),
+  tokenAddress: varchar("token_address"),
+  value: decimal("value"),
+  poolExternalId: varchar("pool_external_id").references(
+    () => pools.externalId
+  ),
+}, (t) => ({
+  unq: unique().on(t.timestamp, t.tokenAddress, t.poolExternalId)
+}));
+
+export const yieldTokenApr = pgTable("yield_token_apr", {
+  id: serial("id").primaryKey(),
+  timestamp: timestamp("timestamp"),
+  tokenAddress: varchar("token_address"),
+  value: decimal("value"),
+  poolExternalId: varchar("pool_external_id").references(
+    () => pools.externalId
+  ),
+}, (t) => ({
+  unq: unique().on(t.timestamp, t.tokenAddress, t.poolExternalId)
+}));

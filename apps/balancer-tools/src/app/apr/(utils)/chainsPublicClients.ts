@@ -33,7 +33,7 @@ export type ChainName =
 export function createClientForChain(chain: ChainType) {
   return createPublicClient({
     chain,
-    transport: http(chain.rpcUrls.public[0]),
+    transport: http(),
   });
 }
 

@@ -79,8 +79,8 @@ export function HomePageWrapper({
                 const tokenOut = "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984";
                 const decimalsIn = await readTokenDecimals(tokenIn);
                 const decimalsOut = await readTokenDecimals(tokenOut);
-                const amount = BigInt(0.4 * 10 ** decimalsIn);
-                const minOut = BigInt((2000 / 4) * 10 ** decimalsOut);
+                const amount = BigInt(0.004 * 10 ** decimalsIn);
+                const minOut = BigInt(1 * 10 ** decimalsOut);
                 const txs = [
                   getERC20ApproveTx(tokenIn, MILKMAN_ADDRESS, amount),
                   getRequestSwapExactTokensForTokensTx(

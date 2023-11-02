@@ -106,9 +106,9 @@ function TransactionCard({
   }, [formData]);
 
   function handleOnSubmit(data: FieldValues) {
+    //TODO trigger order BLEU-374
     // eslint-disable-next-line no-console
     console.log(data);
-    alert("submited");
   }
 
   function handleBack() {
@@ -126,13 +126,11 @@ function TransactionCard({
   }
 
   const FORM_CONTENTS: { [key in TransactionStatus]?: JSX.Element } = {
-    [TransactionStatus.DRAFT_SELECT_TOKENS]: (
-      <FormSelectToken form={form} userAddress={userAddress} />
+    [TransactionStatus.ORDER_OVERVIEW]: (
+      <FormSelectTokens form={form} userAddress={userAddress} />
     ),
-    [TransactionStatus.DRAFT_SELECT_PRICE_CHECKER]: (
-      <FormSelectPriceChecker form={form} />
-    ),
-    [TransactionStatus.DRAFT_RESUME]: (
+    [TransactionStatus.ORDER_STRATEGY]: <FormSelectPriceChecker form={form} />,
+    [TransactionStatus.ORDER_RESUME]: (
       <div className="flex flex-col gap-y-6 p-9">
         <OrderResume data={formData} handleBack={handleBack} />
       </div>
@@ -173,8 +171,8 @@ function FormHeader({
   onClick: () => void;
 }) {
   const isDraftSelectTokens =
-    transactionStatus === TransactionStatus.DRAFT_SELECT_TOKENS;
-  const isDraftResume = transactionStatus === TransactionStatus.DRAFT_RESUME;
+    transactionStatus === TransactionStatus.ORDER_OVERVIEW;
+  const isDraftResume = transactionStatus === TransactionStatus.ORDER_RESUME;
 
   function ArrowIcon() {
     return (
@@ -215,7 +213,7 @@ function FormHeader({
   );
 }
 
-function FormSelectToken({
+function FormSelectTokens({
   form,
   userAddress,
 }: {
@@ -234,16 +232,16 @@ function FormSelectToken({
             type="string"
             label="Token sell"
             placeholder="0x.."
-            {...register("tokenSell")}
+            {...register("tokenSellAddress")}
           />
         </div>
         <div className="flex w-1/2 items-end gap-2">
           <div className="w-full">
             <Input
               type="string"
-              label="Amount"
+              label="Amount to sell"
               placeholder="0.0"
-              {...register("tokenAmount")}
+              {...register("tokenSellAmount")}
             />
           </div>
         </div>
@@ -253,7 +251,7 @@ function FormSelectToken({
           type="string"
           label="Token buy"
           placeholder="0x.."
-          {...register("tokenBuy")}
+          {...register("tokenBuyAddress")}
         />
       </div>
       <div>
@@ -333,7 +331,7 @@ function FormSelectPriceChecker({ form }: { form: UseFormReturn }) {
           )}
         />
       </div>
-      {/* //TODO get this when the priceChecker is selected */}
+      {/* //TODO get all args when the priceChecker is selected  BLEU-374*/}
       <Input
         type="string"
         label="Token to buy minimum amount"
@@ -351,9 +349,9 @@ function OrderResume({
   handleBack: () => void;
 }) {
   const fieldsToDisplay = [
-    { label: "Token to sell", key: "tokenSell" },
-    { label: "Token to buy", key: "tokenBuy" },
-    { label: "Amount to sell", key: "tokenAmount" },
+    { label: "Token to sell", key: "tokenSellAddress" },
+    { label: "Token to buy", key: "tokenBuyAddress" },
+    { label: "Amount to sell", key: "tokenSellAmount" },
     { label: "Price checker", key: "priceChecker" },
     { label: "Token to buy minimum amount", key: "tokenBuyMinimumAmount" },
     { label: "Valid from", key: "validFrom" },
@@ -396,7 +394,7 @@ function FormFooter({
   transactionStatus: TransactionStatus;
   onClick: () => void;
 }) {
-  const isDraftResume = transactionStatus === TransactionStatus.DRAFT_RESUME;
+  const isDraftResume = transactionStatus === TransactionStatus.ORDER_RESUME;
   return (
     <div className="flex flex-col px-10 gap-y-5 mb-5">
       {!isDraftResume && (

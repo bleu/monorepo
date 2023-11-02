@@ -1,7 +1,7 @@
 export enum TransactionStatus {
-  DRAFT_SELECT_TOKENS = "Draft: Select tokens",
-  DRAFT_SELECT_PRICE_CHECKER = "Draft: Select price checker",
-  DRAFT_RESUME = "Draft: Resume",
+  ORDER_OVERVIEW = "Order overview",
+  ORDER_STRATEGY = "Order strategy",
+  ORDER_RESUME = "Order resume",
   TO_BE_EXECUTED = "To be executed",
   MILKMAN_CREATED = "Milkman created",
   ORDER_PLACED = "Order placed",

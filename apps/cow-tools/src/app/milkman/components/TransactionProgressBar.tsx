@@ -18,53 +18,44 @@ type Stage = {
   previousStage?: TransactionStatus;
 };
 
+function createStage(
+  name: TransactionStatus,
+  stepNumber: number,
+  nextStage?: TransactionStatus,
+  previousStage?: TransactionStatus,
+) {
+  return {
+    name,
+    stepNumber,
+    defaultStepClass: "border-slate10 text-slate12",
+    activeStepClass: "border-amber10 text-amber10",
+    completedStepClass: "border-green10 text-green10",
+    defaultLineColor: "bg-slate10",
+    activeLineColor: "bg-amber10",
+    completedLineColor: "bg-green10",
+    nextStage,
+    previousStage,
+  };
+}
+
 export const stages: Stage[] = [
-  {
-    name: TransactionStatus.DRAFT_SELECT_TOKENS,
-    stepNumber: 1,
-    defaultStepClass: "border-slate10 text-slate12",
-    activeStepClass: "border-amber10 text-amber10",
-    completedStepClass: "border-green10 text-green10",
-    defaultLineColor: "bg-slate10",
-    activeLineColor: "bg-amber10",
-    completedLineColor: "bg-green10",
-    nextStage: TransactionStatus.DRAFT_SELECT_PRICE_CHECKER,
-  },
-  {
-    name: TransactionStatus.DRAFT_SELECT_PRICE_CHECKER,
-    stepNumber: 2,
-    defaultStepClass: "border-slate10 text-slate12",
-    activeStepClass: "border-amber10 text-amber10",
-    completedStepClass: "border-green10 text-green10",
-    defaultLineColor: "bg-slate10",
-    activeLineColor: "bg-amber10",
-    completedLineColor: "bg-green10",
-    nextStage: TransactionStatus.DRAFT_RESUME,
-    previousStage: TransactionStatus.DRAFT_SELECT_TOKENS,
-  },
-  {
-    name: TransactionStatus.DRAFT_RESUME,
-    stepNumber: 3,
-    defaultStepClass: "border-slate10 text-slate12",
-    activeStepClass: "border-amber10 text-amber10",
-    completedStepClass: "border-green10 text-green10",
-    defaultLineColor: "bg-slate10",
-    activeLineColor: "bg-amber10",
-    completedLineColor: "bg-green10",
-    nextStage: TransactionStatus.ORDER_PLACED,
-    previousStage: TransactionStatus.DRAFT_SELECT_PRICE_CHECKER,
-  },
-  {
-    name: TransactionStatus.ORDER_PLACED,
-    stepNumber: 4,
-    defaultStepClass: "border-slate10 text-slate12",
-    activeStepClass: "border-amber10 text-amber10",
-    completedStepClass: "border-green10 text-green10",
-    defaultLineColor: "bg-slate10",
-    activeLineColor: "bg-amber10",
-    completedLineColor: "bg-green10",
-    previousStage: TransactionStatus.DRAFT_SELECT_PRICE_CHECKER,
-  },
+  createStage(
+    TransactionStatus.ORDER_OVERVIEW,
+    1,
+    TransactionStatus.ORDER_STRATEGY,
+  ),
+  createStage(
+    TransactionStatus.ORDER_STRATEGY,
+    2,
+    TransactionStatus.ORDER_RESUME,
+    TransactionStatus.ORDER_OVERVIEW,
+  ),
+  createStage(
+    TransactionStatus.ORDER_RESUME,
+    3,
+    TransactionStatus.ORDER_PLACED,
+    TransactionStatus.ORDER_STRATEGY,
+  ),
 ];
 
 function StepCircle({
@@ -99,12 +90,9 @@ export function TransactionProgressBar({
 
   if (!currentStage) return <></>;
 
-  const elements = [];
-
-  for (let i = 0; i < totalSteps; i++) {
-    const stepStage = Object.values(stages).find(
-      (stage) => stage.stepNumber === i + 1,
-    );
+  const elements = Array.from({ length: totalSteps }, (_, i) => {
+    const stepNumber = i + 1;
+    const stepStage = stages.find((stage) => stage.stepNumber === stepNumber);
     let stepClass = stepStage?.defaultStepClass || "";
     let lineColor = stepStage?.defaultLineColor || "";
 
@@ -121,12 +109,18 @@ export function TransactionProgressBar({
       }
     }
 
-    elements.push(<StepCircle classNames={stepClass}>{i + 1}</StepCircle>);
+    const stepCircle = (
+      <StepCircle classNames={stepClass}>{stepNumber}</StepCircle>
+    );
+    const line = i < totalSteps - 1 ? <Line classNames={lineColor} /> : null;
 
-    if (i < totalSteps - 1) {
-      elements.push(<Line classNames={lineColor} />);
-    }
-  }
+    return (
+      <>
+        {stepCircle}
+        {line}
+      </>
+    );
+  });
 
   return <div className="flex items-center justify-center">{elements}</div>;
 }

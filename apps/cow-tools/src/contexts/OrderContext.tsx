@@ -13,7 +13,7 @@ export const OrderContext = createContext({} as OrderContextType);
 
 export function OrderProvider({ children }: PropsWithChildren) {
   const [transactionStatus, setTransactionStatus] = useState<TransactionStatus>(
-    TransactionStatus.DRAFT_SELECT_TOKENS,
+    TransactionStatus.ORDER_OVERVIEW,
   );
 
   return (

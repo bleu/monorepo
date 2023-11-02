@@ -7,7 +7,7 @@ import { poolSnapshots, swapFeeApr } from "#/db/schema";
 export async function calculateAPRForDateRange(
   startAtTimestamp: number,
   endAtTimestamp: number,
-  poolId: string
+  poolId: string,
 ) {
   // const [votingShare, [feeAPR, collectedFeesUSD], tokensAPR, rewardsAPR] =
   const [[feeAPR, collectedFeesUSD]] = await Promise.all([
@@ -128,7 +128,7 @@ export async function calculateAPRForDateRange(
 async function getFeeAprForDateRange(
   poolId: string,
   from: number,
-  to: number
+  to: number,
 ): Promise<[number, number]> {
   const feeApre = await db
     .select()
@@ -136,8 +136,8 @@ async function getFeeAprForDateRange(
     .where(
       and(
         eq(swapFeeApr.poolExternalId, poolId),
-        eq(swapFeeApr.timestamp, epochToDate(to))
-      )
+        eq(swapFeeApr.timestamp, epochToDate(to)),
+      ),
     );
 
   if (feeApre.length === 0) {
@@ -148,8 +148,8 @@ async function getFeeAprForDateRange(
         and(
           eq(poolSnapshots.poolExternalId, poolId),
           gte(poolSnapshots.timestamp, epochToDate(from)),
-          lte(poolSnapshots.timestamp, epochToDate(to))
-        )
+          lte(poolSnapshots.timestamp, epochToDate(to)),
+        ),
       );
 
     if (poolSnapshotsRange.length === 1) {

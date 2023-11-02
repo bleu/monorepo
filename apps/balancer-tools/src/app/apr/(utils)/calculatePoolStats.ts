@@ -82,7 +82,7 @@ export async function calculatePoolStats({
   const { apr, collectedFeesUSD } = await calculateAPRForDateRange(
     startAtTimestamp,
     endAtTimestamp,
-    poolId
+    poolId,
   );
 
   return {

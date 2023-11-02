@@ -15,9 +15,9 @@ export function isTimestampToday(timestamp: number): boolean {
         0,
         0,
         0,
-        0
-      )
-    )
+        0,
+      ),
+    ),
   );
 
   return timestamp === utcMidnightTimestampOfCurrentDay;

@@ -19,14 +19,14 @@ const calculateAverage = (arr: number[]) =>
 export const getBALPriceForDateRange = withCache(
   async function getBALPriceByRoundFn(
     startAtTimestamp: number,
-    endAtTimestamp: number
+    endAtTimestamp: number,
   ) {
     const numberOfDays = calculateDaysBetween(startAtTimestamp, endAtTimestamp);
     const pricePromises = Array.from({ length: numberOfDays }, (_) => {
       return getTokenPriceByDate(
         endAtTimestamp,
         BAL_TOKEN_ADDRESS,
-        BAL_TOKEN_NETWORK
+        BAL_TOKEN_NETWORK,
       );
     });
     try {
@@ -36,17 +36,17 @@ export const getBALPriceForDateRange = withCache(
       // TODO: BAL-782 - Add sentry here
       // eslint-disable-next-line no-console
       console.error(
-        `Error fetching BAL price between ${startAtTimestamp} and ${endAtTimestamp} - ${error}`
+        `Error fetching BAL price between ${startAtTimestamp} and ${endAtTimestamp} - ${error}`,
       );
       throw error;
     }
-  }
+  },
 );
 
 export const getTokenPriceByDate = withCache(async function getTokenPriceByDate(
   dateTimestamp: number,
   tokenAddress: string,
-  tokenNetwork: number
+  tokenNetwork: number,
 ) {
   let networkName = networkFor(tokenNetwork).toLowerCase();
 
@@ -66,14 +66,14 @@ export const getTokenPriceByDate = withCache(async function getTokenPriceByDate(
   const relevantDateForPrice = Math.min(dateToEpoch(new Date()), dateTimestamp);
   const response = await DefiLlamaAPI.getHistoricalPrice(
     new Date(relevantDateForPrice * 1000),
-    [token]
+    [token],
   );
 
   const priceUSD = response.coins[token]?.price;
 
   if (!priceUSD) {
     throw new Error(
-      `No price found for token ${token} at ${relevantDateForPrice}`
+      `No price found for token ${token} at ${relevantDateForPrice}`,
     );
   }
 

@@ -37,7 +37,7 @@ async function readContract(gaugeAddress: Address, time: number) {
 // Main Function
 export const getPoolRelativeWeight = async (
   poolId: string,
-  time: number = dateToEpoch(new Date())
+  time: number = dateToEpoch(new Date()),
 ) => {
   const gaugeAddress = await getGaugeAddressFromDB(poolId);
 
@@ -62,7 +62,7 @@ export const getPoolRelativeWeight = async (
       : 0;
   } catch (error) {
     throw new Error(
-      `Error fetching relative weight for pools ${poolId}, ${time} - ${error}`
+      `Error fetching relative weight for pools ${poolId}, ${time} - ${error}`,
     );
   }
 };

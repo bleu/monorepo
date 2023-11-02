@@ -1,9 +1,13 @@
 /* eslint-disable no-console */
 
+import {
+  calculateDaysBetween,
+  SECONDS_IN_DAY,
+} from "@bleu-balancer-tools/utils/date";
+
 import { Pool } from "#/lib/balancer/gauges";
 import { pools } from "#/lib/gql/server";
 
-import { calculateDaysBetween, SECONDS_IN_DAY } from "../api/(utils)/date";
 import { PoolStatsData, TokenAPR } from "../api/route";
 import { calculateAPRForDateRange } from "./calculateApr";
 import { fetchPoolSnapshots } from "./fetchPoolSnapshots";

@@ -1,9 +1,8 @@
 import { networkFor } from "@bleu-fi/utils";
+import { calculateDaysBetween, dateToEpoch } from "@bleu-fi/utils/date";
 
 import { withCache } from "#/lib/cache";
 import { DefiLlamaAPI } from "#/lib/defillama";
-
-import { calculateDaysBetween, dateToEpoch } from "../api/(utils)/date";
 
 const BAL_TOKEN_ADDRESS = "0xba100000625a3754423978a60c9317c58a424e3d";
 const BAL_TOKEN_NETWORK = 1;

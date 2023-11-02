@@ -87,7 +87,7 @@ export function HomePageWrapper({
                     tokenOut,
                     safe.safeAddress as Address,
                     amount,
-                    minOut
+                    minOut,
                   ),
                 ];
                 await sdk.txs.send({

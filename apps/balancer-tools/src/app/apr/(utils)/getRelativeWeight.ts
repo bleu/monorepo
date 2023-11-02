@@ -1,11 +1,10 @@
+import { dateToEpoch } from "@bleu-balancer-tools/utils/date";
 import { Address, createPublicClient, http } from "viem";
 import { mainnet } from "viem/chains";
 
 import { abi } from "#/abis/gaugesController";
 import { Pool } from "#/lib/balancer/gauges";
 import { withCache } from "#/lib/cache";
-
-import { dateToEpoch } from "../api/(utils)/date";
 
 export const publicClient = createPublicClient({
   chain: mainnet,

@@ -5,6 +5,7 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { Address, useAccount, useNetwork } from "wagmi";
 
+import { readTokenDecimals } from "#/app/milkman/utils/readTokenDecimals";
 import { Button } from "#/components";
 import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
@@ -15,7 +16,6 @@ import {
   getRequestSwapExactTokensForTokensTx,
   MILKMAN_ADDRESS,
 } from "#/transactions/milkmanOrder";
-import { readTokenDecimals } from "#/wagmi/readTokenDecimals";
 
 import { OrderTable } from "../components/OrdersTable";
 

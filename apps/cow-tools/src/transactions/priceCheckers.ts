@@ -39,7 +39,7 @@ export const priceCheckerInfoMapping: PriceCheckerType = {
 export function encodePriceCheckerData(
   priceChecker: PRICE_CHECKERS,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  args: any[]
+  args: any[],
 ): `0x${string}` {
   const { arguments: priceCheckerArgs } = priceCheckerInfoMapping[priceChecker];
   if (priceCheckerArgs.length !== args.length) {
@@ -47,6 +47,6 @@ export function encodePriceCheckerData(
   }
   return encodePacked(
     priceCheckerArgs.map((arg) => arg.type),
-    args
+    args,
   );
 }

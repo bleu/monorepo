@@ -6,7 +6,7 @@ import { encodeFunctionData } from "viem";
 export function getERC20ApproveRawTx(
   tokenAddress: Address,
   spender: Address,
-  amount: bigint
+  amount: bigint,
 ): BaseTransaction {
   return {
     to: tokenAddress,

@@ -42,6 +42,29 @@ export function HomePageWrapper({
 
   const network = getNetwork(chain?.name);
 
+  const handleUniV2Tx = async () => {
+    const tokenAddressToSell = "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6"; //WETH
+    const tokenAddressToBuy = "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"; //UNI
+    const tokenDecimals = 18;
+    const bpsDecimals = 2;
+    const amount = BigInt(0.004 * 10 ** tokenDecimals);
+    const allowedSlippageBps = BigInt(5 * 10 ** bpsDecimals);
+    const txs = [
+      getERC20ApproveRawTx(tokenAddressToSell, MILKMAN_ADDRESS, amount),
+      getRequestSwapExactTokensForTokensRawTx({
+        tokenAddressToSell,
+        tokenAddressToBuy,
+        toAddress: safe.safeAddress as Address,
+        amount,
+        priceChecker: PRICE_CHECKERS.UNIV2,
+        args: [allowedSlippageBps],
+      }),
+    ];
+    await sdk.txs.send({
+      txs,
+    });
+  };
+
   if (network !== params.network) {
     return (
       <div className="flex h-full w-full flex-col items-center rounded-3xl px-12 py-16 md:py-20">
@@ -73,34 +96,8 @@ export function HomePageWrapper({
             </Button>
             <Button
               className="flex items-center gap-1 py-3 px-6"
-              title="Send MIN_OUT tx"
-              onClick={async () => {
-                const tokenAddressToSell =
-                  "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6"; //WETH
-                const tokenAddressToBuy =
-                  "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"; //UNI
-                const decimals = 18;
-                const amount = BigInt(0.004 * 10 ** decimals);
-                const minOut = BigInt(1 * 10 ** decimals);
-                const txs = [
-                  getERC20ApproveRawTx(
-                    tokenAddressToSell,
-                    MILKMAN_ADDRESS,
-                    amount
-                  ),
-                  getRequestSwapExactTokensForTokensRawTx({
-                    tokenAddressToSell,
-                    tokenAddressToBuy,
-                    toAddress: safe.safeAddress as Address,
-                    amount,
-                    priceChecker: PRICE_CHECKERS.FIXED_MIN_OUT,
-                    args: [minOut],
-                  }),
-                ];
-                await sdk.txs.send({
-                  txs,
-                });
-              }}
+              title="Send Hardcoded tx"
+              onClick={handleUniV2Tx}
             >
               <PlusIcon />
               Send HardCoded Tx

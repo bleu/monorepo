@@ -1,9 +1,8 @@
+import { dateToEpoch } from "@bleu-fi/utils/date";
 import { between, eq } from "drizzle-orm";
 
 import { db } from "#/db";
 import { poolSnapshots } from "#/db/schema";
-
-import { dateToEpoch } from "../api/(utils)/date";
 
 export function isTimestampToday(timestamp: number): boolean {
   const now = new Date();
@@ -16,9 +15,9 @@ export function isTimestampToday(timestamp: number): boolean {
         0,
         0,
         0,
-        0,
-      ),
-    ),
+        0
+      )
+    )
   );
 
   return timestamp === utcMidnightTimestampOfCurrentDay;
@@ -27,16 +26,20 @@ export function isTimestampToday(timestamp: number): boolean {
 export async function fetchPoolSnapshots({
   to,
   from,
-  network,
+  // network,
   poolId,
 }: {
   to: number;
   from: number;
-  network: string;
+  // network: string;
   poolId: string;
-// }): Promise<PoolSnapshotInRangeQuery> {
+  // }): Promise<PoolSnapshotInRangeQuery> {
 }) {
-  return await db.select().from(poolSnapshots).where(eq(poolSnapshots.poolExternalId, poolId)).where(between(poolSnapshots.timestamp, new Date(from),new Date(to)))
+  return await db
+    .select()
+    .from(poolSnapshots)
+    .where(eq(poolSnapshots.poolExternalId, poolId))
+    .where(between(poolSnapshots.timestamp, new Date(from), new Date(to)));
 
   // const strategy = isTimestampToday(to) ? pools : poolsWithCache;
   // const res = await strategy.gql(network).poolSnapshotInRange({

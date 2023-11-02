@@ -1,12 +1,11 @@
-import { networkFor } from "@bleu-balancer-tools/utils";
+import { networkFor } from "@bleu-fi/utils";
+import { calculateDaysBetween, dateToEpoch } from "@bleu-fi/utils/date";
 import { eq } from "drizzle-orm";
 
 import { db } from "#/db";
 import { tokenPrices } from "#/db/schema";
 import { withCache } from "#/lib/cache";
 import { DefiLlamaAPI } from "#/lib/defillama";
-
-import { calculateDaysBetween, dateToEpoch } from "../api/(utils)/date";
 
 const BAL_TOKEN_ADDRESS = "0xba100000625a3754423978a60c9317c58a424e3d";
 const BAL_TOKEN_NETWORK = 1;
@@ -20,14 +19,14 @@ const calculateAverage = (arr: number[]) =>
 export const getBALPriceForDateRange = withCache(
   async function getBALPriceByRoundFn(
     startAtTimestamp: number,
-    endAtTimestamp: number,
+    endAtTimestamp: number
   ) {
     const numberOfDays = calculateDaysBetween(startAtTimestamp, endAtTimestamp);
     const pricePromises = Array.from({ length: numberOfDays }, (_) => {
       return getTokenPriceByDate(
         endAtTimestamp,
         BAL_TOKEN_ADDRESS,
-        BAL_TOKEN_NETWORK,
+        BAL_TOKEN_NETWORK
       );
     });
     try {
@@ -37,51 +36,58 @@ export const getBALPriceForDateRange = withCache(
       // TODO: BAL-782 - Add sentry here
       // eslint-disable-next-line no-console
       console.error(
-        `Error fetching BAL price between ${startAtTimestamp} and ${endAtTimestamp} - ${error}`,
+        `Error fetching BAL price between ${startAtTimestamp} and ${endAtTimestamp} - ${error}`
       );
       throw error;
     }
-  },
+  }
 );
 
 export const getTokenPriceByDate = withCache(async function getTokenPriceByDate(
   dateTimestamp: number,
   tokenAddress: string,
-  tokenNetwork: number,
+  tokenNetwork: number
 ) {
   let networkName = networkFor(tokenNetwork).toLowerCase();
-
 
   if (networkName === "polygon-zkevm") {
     networkName = networkName.replace("-", "_");
   }
 
-  const dbTokenPrice = await db.select().from(tokenPrices)
-  .where(eq(tokenPrices.networkSlug, networkName))
-  .where(eq(tokenPrices.tokenAddress, tokenAddress))
+  const dbTokenPrice = await db
+    .select()
+    .from(tokenPrices)
+    .where(eq(tokenPrices.networkSlug, networkName))
+    .where(eq(tokenPrices.tokenAddress, tokenAddress));
 
-  if (dbTokenPrice.length > 0) return dbTokenPrice[0].priceUSD
+  if (dbTokenPrice.length > 0) return dbTokenPrice[0].priceUSD;
 
   const token = `${networkName}:${tokenAddress}`;
   const relevantDateForPrice = Math.min(dateToEpoch(new Date()), dateTimestamp);
   const response = await DefiLlamaAPI.getHistoricalPrice(
     new Date(relevantDateForPrice * 1000),
-    [token],
+    [token]
   );
 
-  const priceUSD =  response.coins[token]?.price;
+  const priceUSD = response.coins[token]?.price;
 
   if (!priceUSD) {
-    throw new Error(`No price found for token ${token} at ${relevantDateForPrice}`);
+    throw new Error(
+      `No price found for token ${token} at ${relevantDateForPrice}`
+    );
   }
 
-  const insertedTokenPrice = await db.insert(tokenPrices).values({
-    tokenAddress,
-    timestamp: new Date(relevantDateForPrice * 1000),
-    priceUSD: String(priceUSD),
-    networkSlug: networkName,
-    rawData: response
-  }).onConflictDoNothing().returning();
+  const insertedTokenPrice = await db
+    .insert(tokenPrices)
+    .values({
+      tokenAddress,
+      timestamp: new Date(relevantDateForPrice * 1000),
+      priceUSD: String(priceUSD),
+      networkSlug: networkName,
+      rawData: response,
+    })
+    .onConflictDoNothing()
+    .returning();
 
   return insertedTokenPrice[0].priceUSD;
 });

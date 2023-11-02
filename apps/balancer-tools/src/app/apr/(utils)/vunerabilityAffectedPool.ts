@@ -1,4 +1,4 @@
-import { Address } from "@bleu-balancer-tools/utils";
+import { Address } from "@bleu-fi/utils";
 
 export const vunerabilityAffecteRateProviders: {
   token: string;

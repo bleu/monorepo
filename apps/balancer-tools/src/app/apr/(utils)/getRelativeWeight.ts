@@ -1,3 +1,4 @@
+import { dateToEpoch } from "@bleu-fi/utils/date";
 import { eq } from "drizzle-orm";
 import { Address, createPublicClient, http } from "viem";
 import { mainnet } from "viem/chains";
@@ -5,8 +6,6 @@ import { mainnet } from "viem/chains";
 import { abi } from "#/abis/gaugesController";
 import { db } from "#/db";
 import { gauges, gaugeSnapshots, pools } from "#/db/schema";
-
-import { dateToEpoch } from "../api/(utils)/date";
 
 export const publicClient = createPublicClient({
   chain: mainnet,
@@ -36,32 +35,34 @@ async function readContract(gaugeAddress: Address, time: number) {
 }
 
 // Main Function
-export const getPoolRelativeWeight =
-  async (poolId: string, time: number = dateToEpoch(new Date())) => {
-    const gaugeAddress = await getGaugeAddressFromDB(poolId);
+export const getPoolRelativeWeight = async (
+  poolId: string,
+  time: number = dateToEpoch(new Date())
+) => {
+  const gaugeAddress = await getGaugeAddressFromDB(poolId);
 
-    if (!gaugeAddress) return 0;
+  if (!gaugeAddress) return 0;
 
-    try {
-      const data = await readContract(gaugeAddress as Address, time);
-      if (!data) return 0;
+  try {
+    const data = await readContract(gaugeAddress as Address, time);
+    if (!data) return 0;
 
-      const [gaugeSnapshot] = await db
-        .insert(gaugeSnapshots)
-        .values({
-          gaugeAddress: gaugeAddress,
-          timestamp: new Date(time),
-          relativeWeight: String(Number(data) / 1e18),
-        })
-        .onConflictDoNothing()
-        .returning();
+    const [gaugeSnapshot] = await db
+      .insert(gaugeSnapshots)
+      .values({
+        gaugeAddress: gaugeAddress,
+        timestamp: new Date(time),
+        relativeWeight: String(Number(data) / 1e18),
+      })
+      .onConflictDoNothing()
+      .returning();
 
-      return gaugeSnapshot.relativeWeight
-        ? gaugeSnapshot.relativeWeight / 1e18
-        : 0;
-    } catch (error) {
-      throw new Error(
-        `Error fetching relative weight for pools ${poolId}, ${time} - ${error}`
-      );
-    }
+    return gaugeSnapshot.relativeWeight
+      ? gaugeSnapshot.relativeWeight / 1e18
+      : 0;
+  } catch (error) {
+    throw new Error(
+      `Error fetching relative weight for pools ${poolId}, ${time} - ${error}`
+    );
   }
+};

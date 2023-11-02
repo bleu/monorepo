@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
-import { PoolSnapshotInRangeQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
+import { PoolSnapshotInRangeQuery } from "@bleu-fi/gql/src/balancer/__generated__/Ethereum";
+import { generateDateRange } from "@bleu-fi/utils/date";
 
 import { pools, poolsWithCache } from "#/lib/gql/server";
 import { GetDeepProp } from "#/utils/getTypes";
 
-import { generateDateRange } from "../../api/(utils)/date";
 import { getTokenPriceByDate } from "../getBALPriceForDateRange";
 import { vunerabilityAffecteRateProviders } from "../vunerabilityAffectedPool";
 

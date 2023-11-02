@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 
-import { Network, networkIdFor } from "@bleu-balancer-tools/utils";
+import { Network, networkIdFor } from "@bleu-fi/utils";
+import { dateToEpoch, formatDateToMMDDYYYY } from "@bleu-fi/utils/date";
 import * as Sentry from "@sentry/nextjs";
 
 import { withCache } from "#/lib/cache";
@@ -10,7 +11,6 @@ import { fetcher } from "#/utils/fetcher";
 
 import { BASE_URL } from "../../(utils)/types";
 import { PoolStatsData, PoolStatsResults } from "../route";
-import { dateToEpoch, formatDateToMMDDYYYY } from "./date";
 
 const fetchPoolsFromNetwork = async (
   network: string,

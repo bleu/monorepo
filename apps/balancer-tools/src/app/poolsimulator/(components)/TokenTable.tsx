@@ -1,6 +1,6 @@
 "use client";
 
-import { formatNumber } from "@bleu-balancer-tools/utils/formatNumber";
+import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import {
   MinusCircledIcon,
   Pencil1Icon,

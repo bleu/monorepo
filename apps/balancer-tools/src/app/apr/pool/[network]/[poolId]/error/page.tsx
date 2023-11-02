@@ -1,7 +1,8 @@
 "use client";
 
+import { formatDateToMMDDYYYY } from "@bleu-fi/utils/date";
+
 import ErrorTemplate from "#/app/apr/(components)/ErrorTemplate";
-import { formatDateToMMDDYYYY } from "#/app/apr/api/(utils)/date";
 import { QueryParamsPagesSchema } from "#/app/apr/api/(utils)/validate";
 import { SearchParams } from "#/app/apr/page";
 import { Pool } from "#/lib/balancer/gauges";

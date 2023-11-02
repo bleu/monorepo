@@ -8,5 +8,5 @@
     "strictNullChecks": true
   },
   "exclude": ["src/types", "node_modules"],
-  "extends": "@bleu-balancer-tools/tsconfig/base.json"
+  "extends": "@bleu-fi/tsconfig/base.json"
 }

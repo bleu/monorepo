@@ -1,9 +1,9 @@
-import { formatNumber } from "@bleu-balancer-tools/utils/formatNumber";
+import { dateToEpoch } from "@bleu-fi/utils/date";
+import { formatNumber } from "@bleu-fi/utils/formatNumber";
 
 import * as balEmissions from "#/lib/balancer/emissions";
 
 import { getBALPriceForDateRange } from "../(utils)/getBALPriceForDateRange";
-import { dateToEpoch } from "../api/(utils)/date";
 import OverviewCards, { getDatesDetails } from "./OverviewCards";
 
 export default async function HomeOverviewCards({

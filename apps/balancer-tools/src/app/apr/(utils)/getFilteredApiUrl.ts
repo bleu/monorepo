@@ -1,8 +1,8 @@
-import { networkFor } from "@bleu-balancer-tools/utils";
+import { networkFor } from "@bleu-fi/utils";
+import { formatDateToMMDDYYYY } from "@bleu-fi/utils/date";
 
 import { Pool } from "#/lib/balancer/gauges";
 
-import { formatDateToMMDDYYYY } from "../api/(utils)/date";
 import { SearchParams } from "../page";
 import { BASE_URL } from "./types";
 

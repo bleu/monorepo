@@ -1,12 +1,7 @@
 "use client";
 
-import {
-  Address,
-  Network,
-  NetworkChainId,
-  networkFor,
-} from "@bleu-balancer-tools/utils";
-import { formatDateToLocalDatetime } from "@bleu-balancer-tools/utils/date";
+import { Address, Network, NetworkChainId, networkFor } from "@bleu-fi/utils";
+import { formatDateToLocalDatetime } from "@bleu-fi/utils/date";
 import { ArrowLeftIcon, Pencil1Icon } from "@radix-ui/react-icons";
 import { useEffect } from "react";
 import {

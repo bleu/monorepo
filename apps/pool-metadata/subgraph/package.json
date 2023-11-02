@@ -1,6 +1,6 @@
 {
-  "name": "@bleu/balancer-pools-metadata-subgraph",
-  "version": "1.0.0",
+  "name": "@bleu-fi/balancer-pools-metadata-subgraph",
+  "version": "0.0.0",
   "scripts": {
     "codegen:all": "pnpm generate-manifests && for file in $(ls | grep 'subgraph\\..*\\.yaml'); do graph codegen $file --output-dir src/types/; done",
     "codegen:goerli": "pnpm generate-manifests && graph codegen subgraph.goerli.yaml --output-dir src/types/",
@@ -14,8 +14,8 @@
     "test": "graph test"
   },
   "devDependencies": {
-    "@bleu/utils": "workspace:^",
-    "@bleu/tsconfig": "workspace:*",
+    "@bleu-fi/utils": "workspace:^",
+    "@bleu-fi/tsconfig": "workspace:*",
     "@graphprotocol/graph-cli": "0.60.0",
     "@graphprotocol/graph-ts": "0.31.0",
     "@types/fs-extra": "^11.0.3",

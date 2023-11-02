@@ -1,4 +1,4 @@
-import { Address } from "@bleu/utils";
+import { Address } from "@bleu-fi/utils";
 import { erc20ABI, prepareWriteContract, writeContract } from "@wagmi/core";
 
 import { vaultAddress } from "./generated";

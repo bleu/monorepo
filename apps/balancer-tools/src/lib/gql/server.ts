@@ -1,15 +1,15 @@
-import { Subgraph, SUBGRAPHS } from "@bleu/gql/codegen";
-import balancerSdks from "@bleu/gql/src/balancer/index.server";
-import gaugesSdks from "@bleu/gql/src/balancer-gauges/index.server";
-import poolMetadataSdks from "@bleu/gql/src/balancer-pools-metadata/index.server";
-import rewardsSdks from "@bleu/gql/src/balancer-rewards/index.server";
+import { Subgraph, SUBGRAPHS } from "@bleu-fi/gql/codegen";
+import balancerSdks from "@bleu-fi/gql/src/balancer/index.server";
+import gaugesSdks from "@bleu-fi/gql/src/balancer-gauges/index.server";
+import poolMetadataSdks from "@bleu-fi/gql/src/balancer-pools-metadata/index.server";
+import rewardsSdks from "@bleu-fi/gql/src/balancer-rewards/index.server";
 import {
-  Address,
-  DELEGATE_OWNER,
-  Network,
-  networkFor,
-  networkMultisigs,
-} from "@bleu/utils";
+    Address,
+    DELEGATE_OWNER,
+    Network,
+    networkFor,
+    networkMultisigs,
+} from "@bleu-fi/utils";
 import { GraphQLClient } from "graphql-request";
 
 import { withCache } from "../cache";

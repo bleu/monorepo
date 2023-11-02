@@ -1,4 +1,4 @@
-import { Network } from "@bleu/utils";
+import { Network } from "@bleu-fi/utils";
 import { gql } from "graphql-tag";
 import * as React from "react";
 

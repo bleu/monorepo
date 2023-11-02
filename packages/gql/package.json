@@ -1,5 +1,5 @@
 {
-  "name": "@bleu/gql",
+  "name": "@bleu-fi/gql",
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
@@ -11,8 +11,8 @@
     "graphql:update-types": "graphql-codegen --config codegen.ts"
   },
   "devDependencies": {
-    "@bleu/utils": "workspace:^",
-    "@bleu/tsconfig": "workspace:*",
+    "@bleu-fi/utils": "workspace:^",
+    "@bleu-fi/tsconfig": "workspace:*",
     "@graphql-codegen/cli": "5.0.0",
     "@graphql-codegen/client-preset": "^4.1.0",
     "@graphql-codegen/typescript": "4.0.1",

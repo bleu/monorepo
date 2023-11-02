@@ -1,6 +1,6 @@
 "use client";
 
-import { SingleInternalBalanceQuery } from "@bleu/gql/src/balancer/__generated__/Ethereum";
+import { SingleInternalBalanceQuery } from "@bleu-fi/gql/src/balancer/__generated__/Ethereum";
 import {
   Address,
   addressRegex,
@@ -8,7 +8,7 @@ import {
   Network,
   NetworkChainId,
   networkFor,
-} from "@bleu/utils";
+} from "@bleu-fi/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";

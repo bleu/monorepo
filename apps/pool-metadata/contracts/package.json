@@ -1,6 +1,6 @@
 {
-  "name": "@bleu/balancer-pools-metadata-contracts",
-  "version": "1.0.0",
+  "name": "@bleu-fi/balancer-pools-metadata-contracts",
+  "version": "0.0.0",
   "directories": {
     "lib": "lib",
     "test": "test"
@@ -18,8 +18,8 @@
     "postinstall": "make patch"
   },
   "devDependencies": {
-    "@bleu/utils": "workspace:^",
-    "@bleu/tsconfig": "workspace:*",
+    "@bleu-fi/utils": "workspace:^",
+    "@bleu-fi/tsconfig": "workspace:*",
     "typescript": "^5.2.2"
   }
 }

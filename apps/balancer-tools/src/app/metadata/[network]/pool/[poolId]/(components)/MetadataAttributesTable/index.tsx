@@ -1,6 +1,6 @@
 "use client";
 
-import { Address, Network } from "@bleu/utils";
+import { Address, Network } from "@bleu-fi/utils";
 import {
   ArrowTopRightIcon,
   Pencil2Icon,

@@ -81,7 +81,7 @@ module.exports = withSentryConfig(
     // Suppresses source map uploading logs during build
     silent: true,
     org: "bleu",
-    project: "balancer-tools",
+    project: "cowswap-tools",
   },
   {
     // For all available options, see:

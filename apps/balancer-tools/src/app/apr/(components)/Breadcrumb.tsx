@@ -1,6 +1,6 @@
 "use client";
 
-import { Network } from "@bleu-balancer-tools/utils";
+import { Network } from "@bleu-fi/utils";
 import {
   ChevronRightIcon,
   ClipboardIcon,

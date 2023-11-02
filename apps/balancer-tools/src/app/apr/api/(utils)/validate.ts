@@ -1,4 +1,4 @@
-import { Network, networksOnBalancer } from "@bleu-balancer-tools/utils";
+import { Network, networksOnBalancer } from "@bleu-fi/utils";
 import { z } from "zod";
 
 import POOLS_WITHOUT_GAUGES from "#/data/pools-without-gauge.json";

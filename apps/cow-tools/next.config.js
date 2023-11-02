@@ -23,7 +23,7 @@ const moduleExports = {
     // Add the "@sentry/profiling-node" to serverComponentsExternalPackages.
     serverComponentsExternalPackages: ["@sentry/profiling-node"],
   },
-  transpilePackages: ["@bleu-balancer-tools/gql"],
+  transpilePackages: ["@bleu-fi/gql"],
   reactStrictMode: true,
   swcMinify: true,
   /**
@@ -81,7 +81,7 @@ module.exports = withSentryConfig(
     // Suppresses source map uploading logs during build
     silent: true,
     org: "bleu",
-    project: "balancer-tools",
+    project: "cowswap-tools",
   },
   {
     // For all available options, see:

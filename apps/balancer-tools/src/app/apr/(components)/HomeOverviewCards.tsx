@@ -1,4 +1,4 @@
-import { formatNumber } from "@bleu-balancer-tools/utils/formatNumber";
+import { formatNumber } from "@bleu-fi/utils/formatNumber";
 
 import * as balEmissions from "#/lib/balancer/emissions";
 

@@ -1,5 +1,5 @@
-import { PoolRewardsQuery } from "@bleu-balancer-tools/gql/src/balancer-rewards/__generated__/Ethereum";
-import { NetworkChainId } from "@bleu-balancer-tools/utils";
+import { PoolRewardsQuery } from "@bleu-fi/gql/src/balancer-rewards/__generated__/Ethereum";
+import { NetworkChainId } from "@bleu-fi/utils";
 
 import { rewards } from "#/lib/gql/server";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";

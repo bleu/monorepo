@@ -1,8 +1,8 @@
 "use client";
 
-import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
-import { PoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/types";
-import { NetworkChainId } from "@bleu-balancer-tools/utils";
+import { AMM } from "@bleu-fi/math-poolsimulator/src";
+import { PoolPairData } from "@bleu-fi/math-poolsimulator/src/types";
+import { NetworkChainId } from "@bleu-fi/utils";
 import {
   createContext,
   PropsWithChildren,

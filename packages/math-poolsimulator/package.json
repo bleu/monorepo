@@ -1,5 +1,5 @@
 {
-  "name": "@bleu-balancer-tools/math-poolsimulator",
+  "name": "@bleu-fi/math-poolsimulator",
   "version": "0.0.0",
   "main": "index.ts",
   "license": "MIT",
@@ -13,13 +13,13 @@
   },
   "dependencies": {
     "@balancer-labs/sor": "4.1.1-beta.16",
-    "@bleu-balancer-tools/utils": "workspace:^",
+    "@bleu-fi/utils": "workspace:^",
     "@ethersproject/bignumber": "^5.7.0",
     "@ethersproject/constants": "^5.7.0",
     "bignumber.js": "^9.1.2"
   },
   "devDependencies": {
-    "@bleu-balancer-tools/tsconfig": "workspace:^",
+    "@bleu-fi/tsconfig": "workspace:^",
     "jest": "^29.7.0",
     "@jest/globals": "^29.7.0",
     "ts-jest": "^29.1.1",

@@ -13,7 +13,7 @@ export function Footer({
         developed by&nbsp;
         <a
           target="_blank"
-          href="https://github.com/bleu-studio"
+          href="https://github.com/bleu-fi"
           className="font-bold text-blue8"
         >
           bleu

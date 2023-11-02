@@ -16,6 +16,7 @@ import {
   getRequestSwapExactTokensForTokensTx,
   MILKMAN_ADDRESS,
 } from "#/transactions/milkmanOrder";
+import { PRICE_CHECKERS } from "#/transactions/priceCheckers";
 
 import { OrderTable } from "../components/OrdersTable";
 
@@ -73,23 +74,30 @@ export function HomePageWrapper({
             </Button>
             <Button
               className="flex items-center gap-1 py-3 px-6"
-              title="Send hardcoded tx"
+              title="Send MIN_OUT tx"
               onClick={async () => {
-                const tokenIn = "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6";
-                const tokenOut = "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984";
-                const decimalsIn = await readTokenDecimals(tokenIn);
-                const decimalsOut = await readTokenDecimals(tokenOut);
+                const tokenAddressToSell =
+                  "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6";
+                const tokenAddressToBuy =
+                  "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984";
+                const decimalsIn = await readTokenDecimals(tokenAddressToSell);
+                const decimalsOut = await readTokenDecimals(tokenAddressToBuy);
                 const amount = BigInt(0.004 * 10 ** decimalsIn);
                 const minOut = BigInt(1 * 10 ** decimalsOut);
                 const txs = [
-                  getERC20ApproveTx(tokenIn, MILKMAN_ADDRESS, amount),
-                  getRequestSwapExactTokensForTokensTx(
-                    tokenIn,
-                    tokenOut,
-                    safe.safeAddress as Address,
-                    amount,
-                    minOut,
+                  getERC20ApproveTx(
+                    tokenAddressToSell,
+                    MILKMAN_ADDRESS,
+                    amount
                   ),
+                  getRequestSwapExactTokensForTokensTx({
+                    tokenAddressToSell,
+                    tokenAddressToBuy,
+                    toAddress: safe.safeAddress as Address,
+                    amount,
+                    priceChecker: PRICE_CHECKERS.FIXED_MIN_OUT,
+                    args: [minOut],
+                  }),
                 ];
                 await sdk.txs.send({
                   txs,

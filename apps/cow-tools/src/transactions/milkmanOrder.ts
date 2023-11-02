@@ -6,7 +6,7 @@ import { goerli } from "viem/chains";
 import { milkmanAbi } from "#/abis/milkman";
 import { FIXED_MIN_OUT_PRICE_CHECKER_MAP } from "#/utils/addressesMap";
 
-// MIlkman Address is the same for all chains supported chains
+// Milkman's address is the same across supported chains
 export const MILKMAN_ADDRESS = "0x11C76AD590ABDFFCD980afEC9ad951B160F02797";
 
 function encodeFixedMinOutPriceChecker(minOut: bigint) {

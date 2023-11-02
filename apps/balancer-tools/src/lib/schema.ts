@@ -1,4 +1,4 @@
-import parseFixed from "@bleu/utils/parseFixed";
+import parseFixed from "@bleu-fi/utils/parseFixed";
 import { isAddress } from "viem";
 import { z } from "zod";
 

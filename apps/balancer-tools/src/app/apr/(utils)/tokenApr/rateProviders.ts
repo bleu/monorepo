@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
-import { PoolSnapshotInRangeQuery } from "@bleu/gql/src/balancer/__generated__/Ethereum";
-import { Address, networkIdFor } from "@bleu/utils";
+import { PoolSnapshotInRangeQuery } from "@bleu-fi/gql/src/balancer/__generated__/Ethereum";
+import { Address, networkIdFor } from "@bleu-fi/utils";
 import * as Sentry from "@sentry/nextjs";
 
 import { withCache } from "#/lib/cache";

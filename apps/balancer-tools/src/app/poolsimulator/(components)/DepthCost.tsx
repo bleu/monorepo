@@ -1,8 +1,8 @@
 "use client";
 
-import { AMM } from "@bleu/math-poolsimulator/src";
-import { PoolPairData } from "@bleu/math-poolsimulator/src/types";
-import { formatNumber } from "@bleu/utils/formatNumber";
+import { AMM } from "@bleu-fi/math-poolsimulator/src";
+import { PoolPairData } from "@bleu-fi/math-poolsimulator/src/types";
+import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import { PlotType } from "plotly.js";
 
 import { AlertCard } from "#/components/AlertCard";

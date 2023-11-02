@@ -1,4 +1,4 @@
-import { networkIdFor } from "@bleu/utils";
+import { networkIdFor } from "@bleu-fi/utils";
 import { z } from "zod";
 
 import { PoolTypeEnum } from "../../(utils)/types";

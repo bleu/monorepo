@@ -1,4 +1,4 @@
-import { Network } from "@bleu/utils";
+import { Network } from "@bleu-fi/utils";
 
 import { getSdk as arbitrumSdk } from "./__generated__/Arbitrum.server";
 import { getSdk as avalancheSdk } from "./__generated__/Avalanche.server";

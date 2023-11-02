@@ -1,4 +1,4 @@
-import { Address } from "@bleu/utils";
+import { Address } from "@bleu-fi/utils";
 import { useEffect } from "react";
 
 export function refetchRequest({

@@ -1,4 +1,4 @@
-import { Address, networkFor } from "@bleu/utils";
+import { Address, networkFor } from "@bleu-fi/utils";
 import { waitForTransaction } from "@wagmi/core";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -9,9 +9,9 @@ import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
 import { writeManageUserBalance } from "#/wagmi/writeManageUserBalance";
 
 import {
-  NotificationVariant,
-  SubmitData,
-  TransactionStatus,
+    NotificationVariant,
+    SubmitData,
+    TransactionStatus,
 } from "../useTransaction";
 import { useTokenApproval } from "./useTokenApproval";
 import { useTransactionStatus } from "./useTransactionStatus";

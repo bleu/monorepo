@@ -1,6 +1,6 @@
 "use client";
 
-import { formatNumber } from "@bleu/utils/formatNumber";
+import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import { PlotType } from "plotly.js";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 

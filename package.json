@@ -1,5 +1,5 @@
 {
-  "name": "bleu-tools",
+  "name": "@bleu-fi/monorepo",
   "version": "1.0.0",
   "private": true,
   "description": "",
@@ -36,7 +36,7 @@
   },
   "homepage": "https://github.com/bleu-studio/bleu-tools#readme",
   "devDependencies": {
-    "@bleu/eslint-config": "workspace:*",
+    "@bleu-fi/eslint-config": "workspace:*",
     "@types/node": "^18.18.5",
     "concurrently": "^8.2.2",
     "ghooks": "^2.0.4",

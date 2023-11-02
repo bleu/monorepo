@@ -1,4 +1,4 @@
-import { networkIdEnumMap } from "@bleu/utils";
+import { networkIdEnumMap } from "@bleu-fi/utils";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useNetwork } from "wagmi";

@@ -1,7 +1,7 @@
 "use client";
 
-import { networkFor } from "@bleu/utils";
-import { formatNumber } from "@bleu/utils/formatNumber";
+import { networkFor } from "@bleu-fi/utils";
+import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import {
   ChevronDownIcon,
   DashIcon,

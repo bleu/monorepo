@@ -7,7 +7,7 @@
     "resolveJsonModule": true
   },
   "exclude": ["node_modules"],
-  "extends": "@bleu/tsconfig/base.json",
+  "extends": "@bleu-fi/tsconfig/base.json",
   "include": ["**/*.ts", "**/*.tsx"],
   "references": []
 }

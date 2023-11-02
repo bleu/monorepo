@@ -5,15 +5,14 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { Address, useAccount, useNetwork } from "wagmi";
 
-import { readTokenDecimals } from "#/app/milkman/utils/readTokenDecimals";
 import { Button } from "#/components";
 import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { getNetwork } from "#/contexts/networks";
 import { AllSwapsQuery } from "#/gql/generated";
-import { getERC20ApproveTx } from "#/transactions/erc20Approve";
+import { getERC20ApproveRawTx } from "#/transactions/erc20Approve";
 import {
-  getRequestSwapExactTokensForTokensTx,
+  getRequestSwapExactTokensForTokensRawTx,
   MILKMAN_ADDRESS,
 } from "#/transactions/milkmanOrder";
 import { PRICE_CHECKERS } from "#/transactions/priceCheckers";
@@ -77,20 +76,19 @@ export function HomePageWrapper({
               title="Send MIN_OUT tx"
               onClick={async () => {
                 const tokenAddressToSell =
-                  "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6";
+                  "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6"; //WETH
                 const tokenAddressToBuy =
-                  "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984";
-                const decimalsIn = await readTokenDecimals(tokenAddressToSell);
-                const decimalsOut = await readTokenDecimals(tokenAddressToBuy);
-                const amount = BigInt(0.004 * 10 ** decimalsIn);
-                const minOut = BigInt(1 * 10 ** decimalsOut);
+                  "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"; //UNI
+                const decimals = 18;
+                const amount = BigInt(0.004 * 10 ** decimals);
+                const minOut = BigInt(1 * 10 ** decimals);
                 const txs = [
-                  getERC20ApproveTx(
+                  getERC20ApproveRawTx(
                     tokenAddressToSell,
                     MILKMAN_ADDRESS,
                     amount
                   ),
-                  getRequestSwapExactTokensForTokensTx({
+                  getRequestSwapExactTokensForTokensRawTx({
                     tokenAddressToSell,
                     tokenAddressToBuy,
                     toAddress: safe.safeAddress as Address,

@@ -1,5 +1,5 @@
 import { Address } from "@bleu-balancer-tools/utils";
-import { ethers } from "ethers";
+import { encodePacked } from "viem";
 import { goerli } from "viem/chains";
 
 export type argType = "uint256";
@@ -40,12 +40,12 @@ export function encodePriceCheckerData(
   priceChecker: PRICE_CHECKERS,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   args: any[]
-): string {
+): `0x${string}` {
   const { arguments: priceCheckerArgs } = priceCheckerInfoMapping[priceChecker];
   if (priceCheckerArgs.length !== args.length) {
     throw new Error(`Invalid number of arguments for ${priceChecker}`);
   }
-  return ethers.utils.defaultAbiCoder.encode(
+  return encodePacked(
     priceCheckerArgs.map((arg) => arg.type),
     args
   );

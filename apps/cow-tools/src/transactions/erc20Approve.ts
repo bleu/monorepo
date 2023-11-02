@@ -3,10 +3,10 @@ import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
 import { erc20ABI } from "@wagmi/core";
 import { encodeFunctionData } from "viem";
 
-function getERC20ApproveTx(
+export function getERC20ApproveRawTx(
   tokenAddress: Address,
   spender: Address,
-  amount: bigint,
+  amount: bigint
 ): BaseTransaction {
   return {
     to: tokenAddress,
@@ -18,5 +18,3 @@ function getERC20ApproveTx(
     }),
   };
 }
-
-export { getERC20ApproveTx };

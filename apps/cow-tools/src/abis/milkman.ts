@@ -112,4 +112,4 @@ export const milkmanAbi = [
     stateMutability: "view",
     type: "function",
   },
-];
+] as const;

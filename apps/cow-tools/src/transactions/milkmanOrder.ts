@@ -14,7 +14,7 @@ import {
 // MIlkman Address is the same for all chains supported chains
 export const MILKMAN_ADDRESS = "0x11C76AD590ABDFFCD980afEC9ad951B160F02797";
 
-export function getRequestSwapExactTokensForTokensTx({
+export function getRequestSwapExactTokensForTokensRawTx({
   tokenAddressToSell,
   tokenAddressToBuy,
   toAddress,

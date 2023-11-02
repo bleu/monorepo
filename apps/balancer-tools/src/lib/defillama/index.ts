@@ -1,10 +1,10 @@
+import { desc, eq, lte } from "drizzle-orm";
 import invariant from "tiny-invariant";
 
 import { dateToEpoch } from "#/app/apr/api/(utils)/date";
 import { db } from "#/db";
 import { blocks, networks } from "#/db/schema";
 import { fetcher } from "#/utils/fetcher";
-import { desc, eq, lte } from "drizzle-orm";
 
 type HistoricalPriceResponse = {
   coins: {
@@ -33,18 +33,18 @@ export class DefiLlamaAPI {
   public static async getHistoricalPrice(
     date: Date,
     coins: string[],
-    searchWidth: string = "6h"
+    searchWidth: string = "6h",
   ): Promise<HistoricalPriceResponse> {
     const self = this.getInstance();
     invariant(coins.length > 0, "coins must not be empty");
     invariant(
       coins.every((coin) => coin.split(":").length === 2),
-      'coins must be in format "chain:address"'
+      'coins must be in format "chain:address"',
     );
     invariant(date <= new Date(), "date must be in the past");
 
     const url = `${self.baseURL}/prices/historical/${dateToEpoch(
-      date
+      date,
     )}/${coins.join(",")}?searchWidth=${searchWidth}`;
     return await fetcher<HistoricalPriceResponse>(url);
   }
@@ -59,7 +59,7 @@ export class DefiLlamaAPI {
       .orderBy(desc(blocks.timestamp))
       .limit(1);
 
-      if (dbBlock.length > 0) return dbBlock[0].blocks.number;
+    if (dbBlock.length > 0) return dbBlock[0].blocks.number;
 
     const self = this.getInstance();
     const response = await fetcher<{ height: number; timestamp: number }>(
@@ -67,7 +67,7 @@ export class DefiLlamaAPI {
         .toLowerCase()
         .replace("-", "_")
         .replace("gnosis", "xdai")
-        .replace("avalanche", "avax")}/${timestamp}`
+        .replace("avalanche", "avax")}/${timestamp}`,
     );
 
     const dbNetwork = await db

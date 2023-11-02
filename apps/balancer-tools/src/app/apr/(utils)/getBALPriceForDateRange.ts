@@ -51,11 +51,13 @@ export const getTokenPriceByDate = withCache(async function getTokenPriceByDate(
 ) {
   let networkName = networkFor(tokenNetwork).toLowerCase();
 
-  const dbTokenPrice = await db.select().from(tokenPrices)
-  .where(eq(tokenPrices.networkSlug, networkName))
-  .where(eq(tokenPrices.tokenAddress, tokenAddress))
+  const dbTokenPrice = await db
+    .select()
+    .from(tokenPrices)
+    .where(eq(tokenPrices.networkSlug, networkName))
+    .where(eq(tokenPrices.tokenAddress, tokenAddress));
 
-  if (dbTokenPrice.length > 0) return dbTokenPrice[0].priceUSD
+  if (dbTokenPrice.length > 0) return dbTokenPrice[0].priceUSD;
 
   if (networkName === "polygon-zkevm") {
     networkName = networkName.replace("-", "_");
@@ -68,22 +70,28 @@ export const getTokenPriceByDate = withCache(async function getTokenPriceByDate(
     [token],
   );
 
-  const priceUSD =  response.coins[token]?.price;
+  const priceUSD = response.coins[token]?.price;
 
   if (!priceUSD) {
-    throw new Error(`No price found for token ${token} at ${relevantDateForPrice}`);
+    throw new Error(
+      `No price found for token ${token} at ${relevantDateForPrice}`,
+    );
   }
 
   await db.insert(networks).values({
     slug: networkName,
-  })
+  });
 
-  const insertedTokenPrice = await db.insert(tokenPrices).values({
-    tokenAddress,
-    timestamp: new Date(relevantDateForPrice * 1000),
-    priceUSD: String(priceUSD),
-    networkSlug: networkName,
-  }).onConflictDoNothing().returning();
+  const insertedTokenPrice = await db
+    .insert(tokenPrices)
+    .values({
+      tokenAddress,
+      timestamp: new Date(relevantDateForPrice * 1000),
+      priceUSD: String(priceUSD),
+      networkSlug: networkName,
+    })
+    .onConflictDoNothing()
+    .returning();
 
   return insertedTokenPrice[0].priceUSD;
 });

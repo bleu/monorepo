@@ -1,14 +1,9 @@
 /* eslint-disable no-console */
 
-import { Pool } from "#/lib/balancer/gauges";
-import { pools } from "#/lib/gql/server";
-
 import { calculateDaysBetween, SECONDS_IN_DAY } from "../api/(utils)/date";
 import { PoolStatsData, TokenAPR } from "../api/route";
 import { calculateAPRForDateRange } from "./calculateApr";
 import { fetchPoolSnapshots } from "./fetchPoolSnapshots";
-import { getBALPriceForDateRange } from "./getBALPriceForDateRange";
-import { PoolTypeEnum } from "./types";
 
 export interface calculatePoolData extends Omit<PoolStatsData, "apr"> {
   apr: {
@@ -83,63 +78,23 @@ export async function calculatePoolStats({
   endAtTimestamp: number;
   poolId: string;
 }): Promise<calculatePoolData> {
-  const pool = new Pool(poolId);
-  const network = String(pool.network);
-  const results = await Promise.allSettled([
-    // TODO: what if the pool doesn't exist during that range?
-    pools.gql(network).Pool({ poolId }),
-    getBALPriceForDateRange(startAtTimestamp, endAtTimestamp),
-    fetchPoolAveragesForDateRange(
-      poolId,
-      network,
-      startAtTimestamp,
-      endAtTimestamp,
-    ),
-  ]);
-
-  if (results[0].status === "fulfilled" && !results[0].value?.pool) {
-    throw new Error(
-      `No pool with ID ${poolId}(${network}) in range ${startAtTimestamp} - ${endAtTimestamp}`,
-    );
-  }
-
-  if (results.some((p) => p.status === "rejected")) {
-    const errors = results
-      .filter((p) => p.status === "rejected")
-      // @ts-ignore
-      .map((p) => p.reason);
-    throw new Error(
-      `Error fetching data for pool ${poolId}(${network}) in range ${startAtTimestamp} - ${endAtTimestamp}: ${errors}, function ${errors[0]?.stack}}`,
-    );
-  }
-
-  const [
-    _,
-    balPriceUSD,
-    [tvl, volume, symbol],
-    // @ts-ignore
-  ] = results.filter((p) => p.status === "fulfilled").map((p) => p.value);
-
-  const { apr, votingShare, collectedFeesUSD } = await calculateAPRForDateRange(
+  const { apr, collectedFeesUSD } = await calculateAPRForDateRange(
     startAtTimestamp,
     endAtTimestamp,
-    tvl,
-    balPriceUSD,
     poolId,
-    network,
   );
 
   return {
     poolId,
     apr,
-    balPriceUSD,
-    tvl,
-    tokens: pool.tokens,
-    volume,
-    votingShare,
-    symbol,
-    network,
+    balPriceUSD: 0,
+    tvl: 0,
+    tokens: [],
+    volume: 0,
+    votingShare: 0,
+    symbol: "",
+    network: "",
     collectedFeesUSD,
-    type: pool.poolType as keyof typeof PoolTypeEnum,
+    type: "WEIGHTED",
   };
 }

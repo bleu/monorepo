@@ -25,7 +25,7 @@ async function gql(
   endpoint: string,
   query: string,
   variables = {},
-  headers = {}
+  headers = {},
 ) {
   logIfVerbose(`Running GraphQL query on ${endpoint}`);
 
@@ -145,7 +145,7 @@ function* chunks(arr: unknown[], n: number) {
 async function paginate<T>(
   initialSkip: number,
   step: number,
-  fetchFn: (skip: number) => Promise<T | null>
+  fetchFn: (skip: number) => Promise<T | null>,
 ): Promise<void> {
   logIfVerbose(`Paginating from initialSkip=${initialSkip}, step=${step}`);
 
@@ -169,7 +169,7 @@ async function paginatedFetch<T>(
   query: string,
   processFn: ProcessFn<T>,
   initialSkip = 0,
-  step = BATCH_SIZE
+  step = BATCH_SIZE,
 ): Promise<void> {
   await paginate(initialSkip, step, async (skip: number) => {
     const response = await gql(networkEndpoint, query, { skip });
@@ -192,7 +192,7 @@ async function processPoolSnapshots(data: any, network: string) {
       data.poolSnapshots.map((snapshot: any) => ({
         externalId: snapshot.id,
         rawData: { ...snapshot, network },
-      }))
+      })),
     );
   }
 }
@@ -206,7 +206,7 @@ async function processPools(data: any, network: string) {
       data.pools.map((pool: any) => ({
         externalId: pool.id,
         rawData: { ...pool, network },
-      }))
+      })),
     );
   }
 }
@@ -220,26 +220,26 @@ async function processGauges(data: any) {
       data.veBalGetVotingList.map((gauge: any) => ({
         address: gauge.gauge.address,
         rawData: { ...gauge },
-      }))
+      })),
     );
   }
 }
 
 async function extractPoolSnapshotsForNetwork(
   networkEndpoint: string,
-  network: string
+  network: string,
 ) {
   await paginatedFetch(networkEndpoint, POOLS_SNAPSHOTS, (data) =>
-    processPoolSnapshots(data, network)
+    processPoolSnapshots(data, network),
   );
 }
 
 async function extractPoolsForNetwork(
   networkEndpoint: string,
-  network: string
+  network: string,
 ) {
   await paginatedFetch(networkEndpoint, POOLS_WITHOUT_GAUGE_QUERY, (data) =>
-    processPools(data, network)
+    processPools(data, network),
   );
 }
 
@@ -253,7 +253,7 @@ async function addToTable(table: any, items: any) {
   return await Promise.all(
     chunkedItems.map(async (items) => {
       return await db.insert(table).values(items).onConflictDoNothing();
-    })
+    }),
   );
 }
 
@@ -382,7 +382,7 @@ async function transformGauges() {
     SELECT 1 FROM gauges g
     WHERE g.address = gauges.address
     AND g.pool_external_id = gauges.pool_external_id
-  );`
+  );`,
   );
 }
 
@@ -394,7 +394,7 @@ async function ETLGauges() {
 }
 
 const networkNames = Object.keys(
-  NETWORK_TO_BALANCER_ENDPOINT_MAP
+  NETWORK_TO_BALANCER_ENDPOINT_MAP,
 ) as (keyof typeof NETWORK_TO_BALANCER_ENDPOINT_MAP)[];
 
 async function ETLPools() {
@@ -404,7 +404,7 @@ async function ETLPools() {
     networkNames.map(async (networkName) => {
       const networkEndpoint = NETWORK_TO_BALANCER_ENDPOINT_MAP[networkName];
       await extractPoolsForNetwork(networkEndpoint, networkName);
-    })
+    }),
   );
   logIfVerbose("Starting Pools Transformation");
   await transformPoolData();
@@ -416,7 +416,7 @@ async function ETLSnapshots() {
     networkNames.map(async (networkName) => {
       const networkEndpoint = NETWORK_TO_BALANCER_ENDPOINT_MAP[networkName];
       await extractPoolSnapshotsForNetwork(networkEndpoint, networkName);
-    })
+    }),
   );
 
   logIfVerbose("Starting Pool Snapshots Extraction");

@@ -47,7 +47,10 @@ export async function fetchPoolSnapshots({
     return res;
   }
 
-  const pool = await db.select().from(dbPools).where(eq(dbPools.poolId, poolId));
+  const pool = await db
+    .select()
+    .from(dbPools)
+    .where(eq(dbPools.poolId, poolId));
   await db.insert(poolSnapshots).values(
     res.poolSnapshots.map((poolSnapshot) => ({
       poolId: pool[0].id,
@@ -56,7 +59,7 @@ export async function fetchPoolSnapshots({
       swapVolume: poolSnapshot.swapVolume,
       swapFees: poolSnapshot.swapFees,
     })),
-  )
+  );
 
   return res;
 }

@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "f6416b64-25f4-48e6-8098-46ea238f7711",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "6147a5a8-19d5-4869-a486-a8f799ba0077",
+  "prevId": "f6416b64-25f4-48e6-8098-46ea238f7711",
   "tables": {
     "blocks": {
       "name": "blocks",
@@ -902,6 +902,12 @@
         },
         "value": {
           "name": "value",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "collected_fees_usd": {
+          "name": "collected_fees_usd",
           "type": "numeric",
           "primaryKey": false,
           "notNull": false

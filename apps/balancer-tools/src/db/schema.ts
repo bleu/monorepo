@@ -49,7 +49,7 @@ export const pools = pgTable(
   },
   (t) => ({
     unq: unique().on(t.address, t.networkSlug),
-  })
+  }),
 );
 
 export const poolRelations = relations(pools, ({ one, many }) => ({
@@ -79,7 +79,7 @@ export const blocks = pgTable(
   },
   (t) => ({
     unq: unique().on(t.number, t.networkSlug),
-  })
+  }),
 );
 
 export const blockRelations = relations(blocks, ({ many }) => ({
@@ -102,7 +102,7 @@ export const tokens = pgTable(
   },
   (t) => ({
     unq: unique().on(t.address, t.networkSlug),
-  })
+  }),
 );
 
 export const tokenRelations = relations(tokens, ({ many }) => ({
@@ -124,7 +124,7 @@ export const tokenPrices = pgTable(
   },
   (t) => ({
     unq: unique().on(t.tokenAddress, t.networkSlug, t.timestamp),
-  })
+  }),
 );
 
 export const poolTokens = pgTable(
@@ -135,7 +135,7 @@ export const poolTokens = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
     poolExternalId: varchar("pool_external_id").references(
-      () => pools.externalId
+      () => pools.externalId,
     ),
     tokenAddress: varchar("token_address"),
     networkSlug: varchar("network_slug").references(() => networks.slug),
@@ -143,7 +143,7 @@ export const poolTokens = pgTable(
   },
   (t) => ({
     unq: unique().on(t.poolExternalId, t.tokenAddress),
-  })
+  }),
 );
 
 export const networks = pgTable("networks", {
@@ -176,7 +176,7 @@ export const poolSnapshots = pgTable("pool_snapshots", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   externalId: varchar("external_id").unique(),
   poolExternalId: varchar("pool_external_id").references(
-    () => pools.externalId
+    () => pools.externalId,
   ),
   rawData: jsonb("raw_data"),
 });
@@ -210,7 +210,7 @@ export const poolTokenRateProvidersSnapshot = pgTable(
     timestamp: timestamp("timestamp").defaultNow().notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  }
+  },
 );
 
 export const poolTokenRateProviderRelations = relations(
@@ -220,7 +220,7 @@ export const poolTokenRateProviderRelations = relations(
       fields: [poolTokenRateProviders.id],
       references: [poolTokens.poolExternalId],
     }),
-  })
+  }),
 );
 
 export const vebalRounds = pgTable("vebal_rounds", {
@@ -240,7 +240,7 @@ export const gauges = pgTable(
     isKilled: boolean("is_killed"),
     externalCreatedAt: timestamp("external_created_at"),
     poolExternalId: varchar("pool_external_id").references(
-      () => pools.externalId
+      () => pools.externalId,
     ),
     networkSlug: varchar("network_slug").references(() => networks.slug),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -249,7 +249,7 @@ export const gauges = pgTable(
   },
   (t) => ({
     unq: unique().on(t.address, t.poolExternalId),
-  })
+  }),
 );
 
 export const gaugeRelations = relations(gauges, ({ many }) => ({
@@ -271,7 +271,7 @@ export const gaugeSnapshots = pgTable(
   },
   (t) => ({
     unq: unique().on(t.blockNumber, t.gaugeAddress, t.networkSlug),
-  })
+  }),
 );
 
 export const vebalApr = pgTable("vebal_apr", {
@@ -279,7 +279,7 @@ export const vebalApr = pgTable("vebal_apr", {
   timestamp: timestamp("timestamp"),
   value: decimal("value"),
   poolExternalId: varchar("pool_external_id").references(
-    () => pools.externalId
+    () => pools.externalId,
   ),
 });
 
@@ -294,45 +294,58 @@ export const poolRewards = pgTable(
     yearlyAmount: decimal("yearly_amount"),
     totalSupply: decimal("total_supply"),
     poolExternalId: varchar("pool_external_id").references(
-      () => pools.externalId
+      () => pools.externalId,
     ),
   },
   (t) => ({
     unq: unique().on(t.poolExternalId, t.tokenAddress, t.networkSlug),
-  })
+  }),
 );
 
-export const swapFeeApr = pgTable("swap_fee_apr", {
-  id: serial("id").primaryKey(),
-  timestamp: timestamp("timestamp"),
-  value: decimal("value"),
-  poolExternalId: varchar("pool_external_id").references(
-    () => pools.externalId
-  ),
-}, (t) => ({
-  unq: unique().on(t.timestamp, t.poolExternalId)
-}));
+export const swapFeeApr = pgTable(
+  "swap_fee_apr",
+  {
+    id: serial("id").primaryKey(),
+    timestamp: timestamp("timestamp"),
+    value: decimal("value"),
+    collectedFeesUSD: decimal("collected_fees_usd"),
+    poolExternalId: varchar("pool_external_id").references(
+      () => pools.externalId,
+    ),
+  },
+  (t) => ({
+    unq: unique().on(t.timestamp, t.poolExternalId),
+  }),
+);
 
-export const rewardsTokenApr = pgTable("rewards_token_apr", {
-  id: serial("id").primaryKey(),
-  timestamp: timestamp("timestamp"),
-  tokenAddress: varchar("token_address"),
-  value: decimal("value"),
-  poolExternalId: varchar("pool_external_id").references(
-    () => pools.externalId
-  ),
-}, (t) => ({
-  unq: unique().on(t.timestamp, t.tokenAddress, t.poolExternalId)
-}));
+export const rewardsTokenApr = pgTable(
+  "rewards_token_apr",
+  {
+    id: serial("id").primaryKey(),
+    timestamp: timestamp("timestamp"),
+    tokenAddress: varchar("token_address"),
+    value: decimal("value"),
+    poolExternalId: varchar("pool_external_id").references(
+      () => pools.externalId,
+    ),
+  },
+  (t) => ({
+    unq: unique().on(t.timestamp, t.tokenAddress, t.poolExternalId),
+  }),
+);
 
-export const yieldTokenApr = pgTable("yield_token_apr", {
-  id: serial("id").primaryKey(),
-  timestamp: timestamp("timestamp"),
-  tokenAddress: varchar("token_address"),
-  value: decimal("value"),
-  poolExternalId: varchar("pool_external_id").references(
-    () => pools.externalId
-  ),
-}, (t) => ({
-  unq: unique().on(t.timestamp, t.tokenAddress, t.poolExternalId)
-}));
+export const yieldTokenApr = pgTable(
+  "yield_token_apr",
+  {
+    id: serial("id").primaryKey(),
+    timestamp: timestamp("timestamp"),
+    tokenAddress: varchar("token_address"),
+    value: decimal("value"),
+    poolExternalId: varchar("pool_external_id").references(
+      () => pools.externalId,
+    ),
+  },
+  (t) => ({
+    unq: unique().on(t.timestamp, t.tokenAddress, t.poolExternalId),
+  }),
+);

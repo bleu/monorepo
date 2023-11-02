@@ -8,6 +8,13 @@
       "when": 1698857808540,
       "tag": "0000_small_living_lightning",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1698872385719,
+      "tag": "0001_youthful_silverclaw",
+      "breakpoints": true
     }
   ]
 }

@@ -75,6 +75,10 @@ export function getWeeksBetweenDates(
 export const dateToEpoch = (date?: Date | null): number =>
   date ? Math.floor(date.getTime() / 1000) : 0;
 
+export const epochToDate = (epoch: number): Date => {
+  return new Date(epoch * 1000);
+};
+
 type Timestamp = number;
 
 export function doIntervalsIntersect(

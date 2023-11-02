@@ -1,6 +1,6 @@
-# bleu's Balancer Tools
+# bleu's Tools
 
-The Balancer Tools repository serves as a hub for open-source projects aimed at empowering Balancer users with additional functionalities, analytics, and ease of use. Here, you will find a variety of tools and utilities that can be used to augment your experience as a Balancer user, whether you're a liquidity provider, trader, Maxi or developer.
+The Bleu Tools repository serves as a hub for open-source projects aimed at empowering Balancer users with additional functionalities, analytics, and ease of use. Here, you will find a variety of tools and utilities that can be used to augment your experience as user of different protocols. Currently, we have tools about the CoW and Balancer protocols.
 
 The tools are live at https://tools.balancer.blue and https://balancer-tools.bleu.studio.
 
@@ -24,9 +24,15 @@ _👷👷👷 Under development 👷👷👷_
 
 A visual guide to Balancer pools' historical APR.
 
+### MilkmApp
+
+_👷👷👷 Under development 👷👷👷_
+
+A Safe App to interact to create milkman orders on CoW Protocol.
+
 ## Repository Structure
 
-The project uses a monorepo structure. See the repo's [wiki](https://github.com/bleu-studio/balancer-tools/wiki) to find more detail about each project structure.
+The project uses a monorepo structure. See the repo's [wiki](https://github.com/bleu-studio/bleu-tools/wiki) to find more detail about each project structure.
 
 ## Pre-requisites
 
@@ -72,8 +78,8 @@ foundryup
 
 If you encounter any issues or need assistance:
 
-1. Review our [wiki](https://github.com/bleu-studio/balancer-tools/wiki)
-2. Check [open issues](https://github.com/bleu-studio/balancer-tools/issues) or create a new one.
+1. Review our [wiki](https://github.com/bleu-studio/bleu-tools/wiki)
+2. Check [open issues](https://github.com/bleu-studio/bleu-tools/issues) or create a new one.
 3. Reach out to us at [balancer@bleu.studio](mailto:balancer@bleu.studio).
 
 ## Contributors
@@ -82,7 +88,7 @@ A heartfelt thanks to all who've contributed:
 
 - **Nichollas Rennah** and **Marcos Tullyo**: Initial designs and development of for the metadata app.
 
-Wish to be listed? Make a contribution and [open an issue](https://github.com/bleu-studio/balancer-tools/issues/new) or send a pull request.
+Wish to be listed? Make a contribution and [open an issue](https://github.com/bleu-studio/bleu-tools/issues/new) or send a pull request.
 
 ## Contributing
 
@@ -100,4 +106,4 @@ The predominant license is the GNU General Public License Version 3 (GPL v3), re
 
 @ribeirojose, @mendesfabio, @devjoaov, @luizakp, @yvesfracari
 
-Heartily crafted by Bleu, with immense gratitude to the Balancer Grants committee for their financial endorsement.
+Heartily crafted by Bleu, with immense gratitude to the protocols Grants committee for their financial endorsement.

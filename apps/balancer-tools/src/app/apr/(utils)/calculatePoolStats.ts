@@ -1,9 +1,6 @@
 /* eslint-disable no-console */
 
-import {
-  calculateDaysBetween,
-  SECONDS_IN_DAY,
-} from "@bleu-balancer-tools/utils/date";
+import { calculateDaysBetween, SECONDS_IN_DAY } from "@bleu-fi/utils/date";
 
 import { Pool } from "#/lib/balancer/gauges";
 import { pools } from "#/lib/gql/server";

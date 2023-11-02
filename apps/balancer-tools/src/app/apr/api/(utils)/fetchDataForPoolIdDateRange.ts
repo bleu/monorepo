@@ -3,7 +3,7 @@ import {
   formatDateToMMDDYYYY,
   generateDateRange,
   SECONDS_IN_DAY,
-} from "@bleu-balancer-tools/utils/date";
+} from "@bleu-fi/utils/date";
 
 import { Pool } from "#/lib/balancer/gauges";
 

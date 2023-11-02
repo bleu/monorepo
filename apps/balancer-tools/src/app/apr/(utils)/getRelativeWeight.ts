@@ -1,4 +1,4 @@
-import { dateToEpoch } from "@bleu-balancer-tools/utils/date";
+import { dateToEpoch } from "@bleu-fi/utils/date";
 import { Address, createPublicClient, http } from "viem";
 import { mainnet } from "viem/chains";
 

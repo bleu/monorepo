@@ -1,6 +1,6 @@
 "use client";
 
-import { formatDateToMMDDYYYY } from "@bleu-balancer-tools/utils/date";
+import { formatDateToMMDDYYYY } from "@bleu-fi/utils/date";
 
 import ErrorTemplate from "#/app/apr/(components)/ErrorTemplate";
 import { QueryParamsPagesSchema } from "#/app/apr/api/(utils)/validate";

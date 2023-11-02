@@ -109,6 +109,7 @@ query PoolsWherePoolType($skip: Int!) {
     createTime
     protocolYieldFeeCache
     protocolSwapFeeCache
+    poolTypeVersion
     tokens {
       isExemptFromYieldProtocolFee
       address
@@ -303,21 +304,32 @@ async function transformPoolData() {
 
   // Insert data into the pools table
   await db.execute(sql`
-    INSERT INTO pools (external_id, address, symbol, pool_type, external_created_at, network_slug)
-    SELECT raw_data->>'id',
-           raw_data->>'address',
-           raw_data->>'symbol',
-           raw_data->>'poolType',
-           to_timestamp((raw_data->>'createTime')::BIGINT),
-           LOWER(raw_data->>'network')
-    FROM pools
-    ON CONFLICT (external_id) DO UPDATE
-    SET address = excluded.address,
-        symbol = excluded.symbol,
-        pool_type = excluded.pool_type,
-        external_created_at = excluded.external_created_at,
-        network_slug = LOWER(excluded.network_slug);
-  `);
+  INSERT INTO pools (
+    external_id, address, symbol, pool_type, external_created_at, network_slug,
+    protocol_yield_fee_cache, protocol_swap_fee_cache, pool_type_version
+  )
+  SELECT 
+    raw_data->>'id',
+    raw_data->>'address',
+    raw_data->>'symbol',
+    raw_data->>'poolType',
+    to_timestamp((raw_data->>'createTime')::BIGINT),
+    LOWER(raw_data->>'network'),
+    (raw_data->>'protocolYieldFeeCache')::NUMERIC, 
+    (raw_data->>'protocolSwapFeeCache')::NUMERIC,
+    (raw_data->>'poolTypeVersion')::NUMERIC
+  FROM pools
+  ON CONFLICT (external_id) DO UPDATE
+  SET 
+    address = excluded.address,
+    symbol = excluded.symbol,
+    pool_type = excluded.pool_type,
+    external_created_at = excluded.external_created_at,
+    network_slug = LOWER(excluded.network_slug),
+    protocol_yield_fee_cache = excluded.protocol_yield_fee_cache,
+    protocol_swap_fee_cache = excluded.protocol_swap_fee_cache,
+    pool_type_version = excluded.pool_type_version;
+`);
 
   // Insert data into the tokens table from the 'tokens' array in raw_data
   await db.execute(sql`
@@ -497,23 +509,24 @@ ORDER BY
     }
 
     dedupedTokens[day].add(
-      `${remappings[row.network_slug] ?? row.network_slug}:${row.token_address}`
+      `${remappings[row.network_slug] ?? row.network_slug}:${
+        row.token_address
+      }`,
     );
   }
-
 
   // Step 3: Fetch token prices
   for (const [day, tokens] of Object.entries(dedupedTokens)) {
     const dateTimestamp = Date.UTC(
       Number(day.split("-")[0]),
       Number(day.split("-")[1]) - 1,
-      Number(day.split("-")[2].split("T")[0])
+      Number(day.split("-")[2].split("T")[0]),
     );
     const tokenAddresses = Array.from(tokens);
     try {
       const prices = await DefiLlamaAPI.getHistoricalPrice(
         new Date(dateTimestamp),
-        tokenAddresses
+        tokenAddresses,
       );
 
       const entries = Object.entries(prices.coins);
@@ -524,14 +537,15 @@ ORDER BY
           tokenAddress: entry[0].split(":")[1],
           priceUSD: entry[1].price,
           timestamp: new Date(entry[1].timestamp * 1000),
-          networkSlug: inverseRemapping[entry[0].split(":")[0]] ?? entry[0].split(":")[0],
-        }))
+          networkSlug:
+            inverseRemapping[entry[0].split(":")[0]] ?? entry[0].split(":")[0],
+        })),
       );
 
       console.log(`Fetched prices for tokens on ${day}:`, prices);
     } catch (e) {
       console.error(
-        `Failed to fetch prices for tokens on ${day}: ${e.message}`
+        `Failed to fetch prices for tokens on ${day}: ${e.message}`,
       );
     }
   }

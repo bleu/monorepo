@@ -39,9 +39,12 @@ export const pools = pgTable(
     poolType: varchar("pool_type"),
     name: varchar("name"),
     address: varchar("address"),
-    totalLiquidity: decimal("total_liquidity"),
+    totalLiquidity: varchar("total_liquidity"),
     symbol: varchar("symbol"),
     externalCreatedAt: timestamp("external_created_at"),
+    protocolYieldFeeCache: decimal("protocol_yield_fee_cache"),
+    protocolSwapFeeCache: decimal("protocol_swap_fee_cache"),
+    poolTypeVersion: decimal("pool_type_version"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
     networkSlug: varchar("network_slug").references(() => networks.slug),
@@ -169,8 +172,6 @@ export const poolSnapshots = pgTable("pool_snapshots", {
   totalShares: decimal("total_shares"),
   swapVolume: decimal("swap_volume"),
   swapFees: decimal("swap_fees"),
-  protocolYieldFeeCache: decimal("protocol_yield_fee_cache"),
-  protocolSwapFeeCache: decimal("protocol_swap_fee_cache"),
   liquidity: decimal("liquidity"),
   timestamp: timestamp("timestamp"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -272,7 +273,7 @@ export const gaugeSnapshots = pgTable(
   },
   (t) => ({
     unq: unique().on(t.timestamp, t.gaugeAddress, t.networkSlug),
-  })
+  }),
 );
 
 export const vebalApr = pgTable("vebal_apr", {

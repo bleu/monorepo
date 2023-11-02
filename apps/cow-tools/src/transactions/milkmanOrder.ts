@@ -1,7 +1,6 @@
 import { Address } from "@bleu-balancer-tools/utils";
 import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
-import { ethers } from "ethers";
-import { encodeFunctionData } from "viem";
+import { encodeFunctionData, encodePacked } from "viem";
 import { goerli } from "viem/chains";
 
 import { milkmanAbi } from "#/abis/milkman";
@@ -11,22 +10,22 @@ import { FIXED_MIN_OUT_PRICE_CHECKER_MAP } from "#/utils/addressesMap";
 export const MILKMAN_ADDRESS = "0x11C76AD590ABDFFCD980afEC9ad951B160F02797";
 
 function encodeFixedMinOutPriceChecker(minOut: bigint) {
-  return ethers.utils.defaultAbiCoder.encode(["uint256"], [minOut]);
+  return encodePacked(["uint256"], [minOut]);
 }
 
-export function getRequestSwapExactTokensForTokensTx(
+export function getRequestSwapExactTokensForTokensRawTx(
   tokenAddressToSell: Address,
   tokenAddressToBuy: Address,
   toAddress: Address,
   amount: bigint,
   minOut: bigint,
 ): BaseTransaction {
-  // TODO: Handle multiple price checkers when implement the second one
+  // TODO BLEU-349: Handle multiple price checkers when implement the second one
   // and multiple networks
   const priceChecker = FIXED_MIN_OUT_PRICE_CHECKER_MAP[goerli.id];
   const priceCheckerData = encodeFixedMinOutPriceChecker(minOut);
   return {
-    to: "0x11C76AD590ABDFFCD980afEC9ad951B160F02797",
+    to: MILKMAN_ADDRESS,
     value: "0",
     data: encodeFunctionData({
       abi: milkmanAbi,

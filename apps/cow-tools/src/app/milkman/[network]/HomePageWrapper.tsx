@@ -5,15 +5,14 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { Address, useAccount, useNetwork } from "wagmi";
 
-import { readTokenDecimals } from "#/app/milkman/utils/readTokenDecimals";
 import { Button } from "#/components";
 import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { getNetwork } from "#/contexts/networks";
 import { AllSwapsQuery } from "#/gql/generated";
-import { getERC20ApproveTx } from "#/transactions/erc20Approve";
+import { getERC20ApproveRawTx } from "#/transactions/erc20Approve";
 import {
-  getRequestSwapExactTokensForTokensTx,
+  getRequestSwapExactTokensForTokensRawTx,
   MILKMAN_ADDRESS,
 } from "#/transactions/milkmanOrder";
 
@@ -75,15 +74,14 @@ export function HomePageWrapper({
               className="flex items-center gap-1 py-3 px-6"
               title="Send hardcoded tx"
               onClick={async () => {
-                const tokenIn = "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6";
-                const tokenOut = "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984";
-                const decimalsIn = await readTokenDecimals(tokenIn);
-                const decimalsOut = await readTokenDecimals(tokenOut);
-                const amount = BigInt(0.004 * 10 ** decimalsIn);
-                const minOut = BigInt(1 * 10 ** decimalsOut);
+                const tokenIn = "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6"; //WETH
+                const tokenOut = "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"; //UNI
+                const decimals = 18;
+                const amount = BigInt(0.004 * 10 ** decimals);
+                const minOut = BigInt(1 * 10 ** decimals);
                 const txs = [
-                  getERC20ApproveTx(tokenIn, MILKMAN_ADDRESS, amount),
-                  getRequestSwapExactTokensForTokensTx(
+                  getERC20ApproveRawTx(tokenIn, MILKMAN_ADDRESS, amount),
+                  getRequestSwapExactTokensForTokensRawTx(
                     tokenIn,
                     tokenOut,
                     safe.safeAddress as Address,

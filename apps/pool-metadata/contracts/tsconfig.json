@@ -15,5 +15,5 @@
     "./test"
   ],
   "exclude": ["node_modules"],
-  "extends": "@bleu-balancer-tools/tsconfig/base.json"
+  "extends": "@bleu-fi/tsconfig/base.json"
 }

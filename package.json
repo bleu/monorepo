@@ -1,6 +1,6 @@
 {
-  "name": "bleu-balancer-tools",
-  "version": "1.0.0",
+  "name": "@bleu-fi/monorepo",
+  "version": "0.0.0",
   "private": true,
   "description": "",
   "workspaces": [
@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/bleu-studio/balancer-tools.git"
+    "url": "https://github.com/bleu-fi/monorepo.git"
   },
   "config": {
     "ghooks": {
@@ -32,11 +32,11 @@
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/bleu-studio/balancer-tools/issues"
+    "url": "https://github.com/bleu-fi/monorepo/issues"
   },
-  "homepage": "https://github.com/bleu-studio/balancer-tools#readme",
+  "homepage": "https://github.com/bleu-fi/monorepo#readme",
   "devDependencies": {
-    "@bleu-balancer-tools/eslint-config": "workspace:*",
+    "@bleu-fi/eslint-config": "workspace:*",
     "@types/node": "^18.18.5",
     "concurrently": "^8.2.2",
     "ghooks": "^2.0.4",

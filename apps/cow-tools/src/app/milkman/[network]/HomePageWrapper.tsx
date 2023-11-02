@@ -1,6 +1,6 @@
 "use client";
 
-import { Network } from "@bleu-balancer-tools/utils";
+import { Network } from "@bleu-fi/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { Address, useAccount, useNetwork } from "wagmi";

@@ -1,7 +1,7 @@
 "use client";
-import { InternalBalanceQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
-import { Address } from "@bleu-balancer-tools/utils";
-import { formatNumber } from "@bleu-balancer-tools/utils/formatNumber";
+import { InternalBalanceQuery } from "@bleu-fi/gql/src/balancer/__generated__/Ethereum";
+import { Address } from "@bleu-fi/utils";
+import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import {
   MinusCircledIcon,
   PlusCircledIcon,

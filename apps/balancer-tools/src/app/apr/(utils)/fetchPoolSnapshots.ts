@@ -1,4 +1,4 @@
-import { PoolSnapshotInRangeQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum.server";
+import { PoolSnapshotInRangeQuery } from "@bleu-fi/gql/src/balancer/__generated__/Ethereum.server";
 
 import { pools, poolsWithCache } from "#/lib/gql/server";
 

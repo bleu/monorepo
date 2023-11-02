@@ -1,4 +1,4 @@
-import { formatDate } from "@bleu-balancer-tools/utils";
+import { formatDate } from "@bleu-fi/utils";
 
 import { KPI } from "./KPI";
 

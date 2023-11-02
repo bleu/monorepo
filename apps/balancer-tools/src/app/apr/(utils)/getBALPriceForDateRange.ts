@@ -1,4 +1,4 @@
-import { networkFor } from "@bleu-balancer-tools/utils";
+import { networkFor } from "@bleu-fi/utils";
 
 import { withCache } from "#/lib/cache";
 import { DefiLlamaAPI } from "#/lib/defillama";

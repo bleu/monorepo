@@ -1,4 +1,4 @@
-import { Network } from "@bleu-balancer-tools/utils";
+import { Network } from "@bleu-fi/utils";
 
 export function CheckSupportedChains({
   children,

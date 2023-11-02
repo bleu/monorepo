@@ -1,6 +1,6 @@
 {
-  "name": "@bleu/cow-tools",
-  "version": "0.0.1",
+  "name": "@bleu-fi/cow-tools",
+  "version": "0.0.0",
   "private": true,
   "scripts": {
     "build": "next build",
@@ -19,8 +19,8 @@
     "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
-    "@bleu-balancer-tools/gql": "workspace:*",
-    "@bleu-balancer-tools/tsconfig": "workspace:*",
+    "@bleu-fi/gql": "workspace:*",
+    "@bleu-fi/tsconfig": "workspace:*",
     "@gnosis.pm/safe-apps-react-sdk": "^4.6.2",
     "@gnosis.pm/safe-apps-sdk": "^7.8.0",
     "@hookform/resolvers": "3.1.0",
@@ -74,8 +74,8 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@bleu-balancer-tools/eslint-config": "workspace:^",
-    "@bleu-balancer-tools/utils": "workspace:^",
+    "@bleu-fi/eslint-config": "workspace:^",
+    "@bleu-fi/utils": "workspace:^",
     "@graphql-codegen/cli": "5.0.0",
     "@graphql-codegen/typescript-graphql-request": "6.0.0",
     "@testing-library/jest-dom": "6.1.4",

@@ -1,5 +1,5 @@
-import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
-import { PoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/types";
+import { AMM } from "@bleu/math-poolsimulator/src";
+import { PoolPairData } from "@bleu/math-poolsimulator/src/types";
 
 import { AnalysisData } from "#/contexts/PoolSimulatorContext";
 import { trimTrailingValues } from "#/lib/utils";

@@ -16,7 +16,7 @@ importers:
 
   .:
     devDependencies:
-      '@bleu-balancer-tools/eslint-config':
+      '@bleu/eslint-config':
         specifier: workspace:*
         version: link:packages/eslint-config
       '@types/node':
@@ -40,13 +40,13 @@ importers:
 
   apps/balancer-tools:
     dependencies:
-      '@bleu-balancer-tools/gql':
+      '@bleu/gql':
         specifier: workspace:*
         version: link:../../packages/gql
-      '@bleu-balancer-tools/math-poolsimulator':
+      '@bleu/math-poolsimulator':
         specifier: workspace:*
         version: link:../../packages/math-poolsimulator
-      '@bleu-balancer-tools/tsconfig':
+      '@bleu/tsconfig':
         specifier: workspace:*
         version: link:../../packages/tsconfig
       '@hookform/resolvers':
@@ -191,10 +191,10 @@ importers:
         specifier: ^3.22.4
         version: 3.22.4
     devDependencies:
-      '@bleu-balancer-tools/eslint-config':
+      '@bleu/eslint-config':
         specifier: workspace:^
         version: link:../../packages/eslint-config
-      '@bleu-balancer-tools/utils':
+      '@bleu/utils':
         specifier: workspace:^
         version: link:../../packages/utils
       '@testing-library/jest-dom':
@@ -260,10 +260,10 @@ importers:
 
   apps/cow-tools:
     dependencies:
-      '@bleu-balancer-tools/gql':
+      '@bleu/gql':
         specifier: workspace:*
         version: link:../../packages/gql
-      '@bleu-balancer-tools/tsconfig':
+      '@bleu/tsconfig':
         specifier: workspace:*
         version: link:../../packages/tsconfig
       '@hookform/resolvers':
@@ -405,10 +405,10 @@ importers:
         specifier: ^3.22.4
         version: 3.22.4
     devDependencies:
-      '@bleu-balancer-tools/eslint-config':
+      '@bleu/eslint-config':
         specifier: workspace:^
         version: link:../../packages/eslint-config
-      '@bleu-balancer-tools/utils':
+      '@bleu/utils':
         specifier: workspace:^
         version: link:../../packages/utils
       '@graphql-codegen/cli':
@@ -480,10 +480,10 @@ importers:
 
   apps/pool-metadata/contracts:
     devDependencies:
-      '@bleu-balancer-tools/tsconfig':
+      '@bleu/tsconfig':
         specifier: workspace:*
         version: link:../../../packages/tsconfig
-      '@bleu-balancer-tools/utils':
+      '@bleu/utils':
         specifier: workspace:^
         version: link:../../../packages/utils
       typescript:
@@ -492,10 +492,10 @@ importers:
 
   apps/pool-metadata/subgraph:
     devDependencies:
-      '@bleu-balancer-tools/tsconfig':
+      '@bleu/tsconfig':
         specifier: workspace:*
         version: link:../../../packages/tsconfig
-      '@bleu-balancer-tools/utils':
+      '@bleu/utils':
         specifier: workspace:^
         version: link:../../../packages/utils
       '@graphprotocol/graph-cli':
@@ -525,7 +525,7 @@ importers:
 
   packages/eslint-config:
     devDependencies:
-      '@bleu-balancer-tools/utils':
+      '@bleu/utils':
         specifier: workspace:^
         version: link:../utils
       '@next/eslint-plugin-next':
@@ -592,10 +592,10 @@ importers:
         specifier: '>=2'
         version: 2.2.4(react@18.2.0)
     devDependencies:
-      '@bleu-balancer-tools/tsconfig':
+      '@bleu/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
-      '@bleu-balancer-tools/utils':
+      '@bleu/utils':
         specifier: workspace:^
         version: link:../utils
       '@graphql-codegen/cli':
@@ -649,7 +649,7 @@ importers:
       '@balancer-labs/sor':
         specifier: 4.1.1-beta.16
         version: 4.1.1-beta.16(@ethersproject/abi@5.7.0)(@ethersproject/address@5.7.0)(@ethersproject/bignumber@5.7.0)(@ethersproject/constants@5.7.0)(@ethersproject/contracts@5.7.0)(@ethersproject/providers@5.7.2)
-      '@bleu-balancer-tools/utils':
+      '@bleu/utils':
         specifier: workspace:^
         version: link:../utils
       '@ethersproject/bignumber':
@@ -662,7 +662,7 @@ importers:
         specifier: ^9.1.2
         version: 9.1.2
     devDependencies:
-      '@bleu-balancer-tools/tsconfig':
+      '@bleu/tsconfig':
         specifier: workspace:^
         version: link:../tsconfig
       '@jest/globals':
@@ -686,7 +686,7 @@ importers:
 
   packages/utils:
     devDependencies:
-      '@bleu-balancer-tools/tsconfig':
+      '@bleu/tsconfig':
         specifier: workspace:^
         version: link:../tsconfig
       '@jest/globals':

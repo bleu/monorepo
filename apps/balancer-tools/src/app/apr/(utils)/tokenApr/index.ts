@@ -1,4 +1,4 @@
-import { Address, networkFor } from "@bleu-balancer-tools/utils";
+import { Address, networkFor } from "@bleu/utils";
 import * as Sentry from "@sentry/nextjs";
 import { zeroAddress } from "viem";
 

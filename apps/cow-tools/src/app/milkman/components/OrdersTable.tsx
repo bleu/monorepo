@@ -1,7 +1,7 @@
 "use client";
 
-import { buildBlockExplorerTxUrl } from "@bleu-balancer-tools/utils";
-import { formatNumber } from "@bleu-balancer-tools/utils/formatNumber";
+import { buildBlockExplorerTxUrl } from "@bleu/utils";
+import { formatNumber } from "@bleu/utils/formatNumber";
 import { ArrowTopRightIcon, TrashIcon } from "@radix-ui/react-icons";
 import cn from "clsx";
 import Image from "next/image";

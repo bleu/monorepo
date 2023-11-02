@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  capitalize,
-  networkIdFor,
-  networksOnBalancer,
-} from "@bleu-balancer-tools/utils";
+import { capitalize, networkIdFor, networksOnBalancer } from "@bleu/utils";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import {
   useParams,

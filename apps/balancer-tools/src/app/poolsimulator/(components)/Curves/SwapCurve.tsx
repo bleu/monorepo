@@ -1,6 +1,6 @@
 "use client";
 
-import { formatNumber } from "@bleu-balancer-tools/utils/formatNumber";
+import { formatNumber } from "@bleu/utils/formatNumber";
 import { PlotType } from "plotly.js";
 
 import Plot from "#/components/Plot";

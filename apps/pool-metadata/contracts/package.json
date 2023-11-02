@@ -18,8 +18,8 @@
     "postinstall": "make patch"
   },
   "devDependencies": {
-    "@bleu-balancer-tools/utils": "workspace:^",
-    "@bleu-balancer-tools/tsconfig": "workspace:*",
+    "@bleu/utils": "workspace:^",
+    "@bleu/tsconfig": "workspace:*",
     "typescript": "^5.2.2"
   }
 }

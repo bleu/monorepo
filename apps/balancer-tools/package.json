@@ -19,9 +19,9 @@
     "test:watch": "pnpm exec jest --watchAll --verbose"
   },
   "dependencies": {
-    "@bleu-balancer-tools/gql": "workspace:*",
-    "@bleu-balancer-tools/math-poolsimulator": "workspace:*",
-    "@bleu-balancer-tools/tsconfig": "workspace:*",
+    "@bleu/gql": "workspace:*",
+    "@bleu/math-poolsimulator": "workspace:*",
+    "@bleu/tsconfig": "workspace:*",
     "@hookform/resolvers": "3.1.0",
     "@radix-ui/colors": "^3.0.0",
     "@radix-ui/react-accordion": "^1.1.2",
@@ -71,8 +71,8 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@bleu-balancer-tools/eslint-config": "workspace:^",
-    "@bleu-balancer-tools/utils": "workspace:^",
+    "@bleu/eslint-config": "workspace:^",
+    "@bleu/utils": "workspace:^",
     "@testing-library/jest-dom": "6.1.4",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "14.5.1",

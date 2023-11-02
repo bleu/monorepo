@@ -1,4 +1,4 @@
-import { networkFor } from "@bleu-balancer-tools/utils";
+import { networkFor } from "@bleu/utils";
 
 import { Pool } from "#/lib/balancer/gauges";
 

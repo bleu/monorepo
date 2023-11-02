@@ -1,4 +1,4 @@
-import { DerivedGyroEParamsFromSubgraph } from "@bleu-balancer-tools/math-poolsimulator/src/gyroE";
+import { DerivedGyroEParamsFromSubgraph } from "@bleu/math-poolsimulator/src/gyroE";
 
 import { AnalysisData } from "#/contexts/PoolSimulatorContext";
 

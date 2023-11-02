@@ -1,6 +1,6 @@
 "use client";
 
-import { Network } from "@bleu-balancer-tools/utils";
+import { Network } from "@bleu/utils";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { useAccount, useNetwork } from "wagmi";
 

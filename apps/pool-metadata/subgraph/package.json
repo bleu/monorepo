@@ -14,8 +14,8 @@
     "test": "graph test"
   },
   "devDependencies": {
-    "@bleu-balancer-tools/utils": "workspace:^",
-    "@bleu-balancer-tools/tsconfig": "workspace:*",
+    "@bleu/utils": "workspace:^",
+    "@bleu/tsconfig": "workspace:*",
     "@graphprotocol/graph-cli": "0.60.0",
     "@graphprotocol/graph-ts": "0.31.0",
     "@types/fs-extra": "^11.0.3",

@@ -1,6 +1,6 @@
 "use client";
 
-import { capitalize, networksOnBalancer } from "@bleu-balancer-tools/utils";
+import { capitalize, networksOnBalancer } from "@bleu/utils";
 import * as Accordion from "@radix-ui/react-accordion";
 import { MixerHorizontalIcon } from "@radix-ui/react-icons";
 import * as Popover from "@radix-ui/react-popover";

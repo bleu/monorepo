@@ -1,6 +1,6 @@
 "use client";
 
-import { Address, Network } from "@bleu-balancer-tools/utils";
+import { Address, Network } from "@bleu/utils";
 import {
   ArrowTopRightIcon,
   Pencil2Icon,

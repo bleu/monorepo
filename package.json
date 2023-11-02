@@ -1,5 +1,5 @@
 {
-  "name": "bleu-balancer-tools",
+  "name": "bleu-tools",
   "version": "1.0.0",
   "private": true,
   "description": "",
@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/bleu-studio/balancer-tools.git"
+    "url": "https://github.com/bleu-studio/bleu-tools.git"
   },
   "config": {
     "ghooks": {
@@ -32,11 +32,11 @@
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/bleu-studio/balancer-tools/issues"
+    "url": "https://github.com/bleu-studio/bleu-tools/issues"
   },
-  "homepage": "https://github.com/bleu-studio/balancer-tools#readme",
+  "homepage": "https://github.com/bleu-studio/bleu-tools#readme",
   "devDependencies": {
-    "@bleu-balancer-tools/eslint-config": "workspace:*",
+    "@bleu/eslint-config": "workspace:*",
     "@types/node": "^18.18.5",
     "concurrently": "^8.2.2",
     "ghooks": "^2.0.4",

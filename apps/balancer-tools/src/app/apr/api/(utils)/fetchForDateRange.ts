@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import { Network, networkIdFor } from "@bleu-balancer-tools/utils";
+import { Network, networkIdFor } from "@bleu/utils";
 import * as Sentry from "@sentry/nextjs";
 
 import { withCache } from "#/lib/cache";

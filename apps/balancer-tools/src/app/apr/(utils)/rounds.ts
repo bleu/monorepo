@@ -1,4 +1,4 @@
-import { formatDate } from "@bleu-balancer-tools/utils";
+import { formatDate } from "@bleu/utils";
 
 export class Round {
   public static FIRST_ROUND_END_DATE = new Date("2022-04-14T00:00:00.000Z");

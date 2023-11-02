@@ -1,4 +1,4 @@
-import { Network } from "@bleu-balancer-tools/utils";
+import { Network } from "@bleu/utils";
 
 import { getSdkWithHooks as arbitrumSdk } from "./__generated__/Arbitrum";
 import { getSdkWithHooks as avalancheSdk } from "./__generated__/Avalanche";

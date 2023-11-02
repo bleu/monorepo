@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { PoolSnapshotInRangeQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
+import { PoolSnapshotInRangeQuery } from "@bleu/gql/src/balancer/__generated__/Ethereum";
 
 import { pools, poolsWithCache } from "#/lib/gql/server";
 import { GetDeepProp } from "#/utils/getTypes";

@@ -23,7 +23,7 @@ const moduleExports = {
     // Add the "@sentry/profiling-node" to serverComponentsExternalPackages.
     serverComponentsExternalPackages: ["@sentry/profiling-node"],
   },
-  transpilePackages: ["@bleu-balancer-tools/gql"],
+  transpilePackages: ["@bleu/gql"],
   reactStrictMode: true,
   swcMinify: true,
   /**

@@ -1,4 +1,4 @@
-import { capitalize, Network } from "@bleu-balancer-tools/utils";
+import { capitalize, Network } from "@bleu/utils";
 import { CodegenConfig } from "@graphql-codegen/cli";
 
 export enum Subgraph {

@@ -1,4 +1,4 @@
-import { Network } from "@bleu-balancer-tools/utils";
+import { Network } from "@bleu/utils";
 import { gql } from "graphql-tag";
 import * as React from "react";
 

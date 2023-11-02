@@ -66,13 +66,6 @@ export function HomePageWrapper({
           <div className="flex gap-4">
             <Button
               className="flex items-center gap-1 py-3 px-6"
-              title="New order"
-            >
-              <PlusIcon />
-              New order
-            </Button>
-            <Button
-              className="flex items-center gap-1 py-3 px-6"
               title="Send hardcoded tx"
               onClick={async () => {
                 const tokenIn = "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6"; //WETH

@@ -1,6 +1,6 @@
-import { AMM } from "@bleu-balancer-tools/math-poolsimulator/src";
-import { PoolPairData } from "@bleu-balancer-tools/math-poolsimulator/src/types";
-import { formatNumber } from "@bleu-balancer-tools/utils/formatNumber";
+import { AMM } from "@bleu-fi/math-poolsimulator/src";
+import { PoolPairData } from "@bleu-fi/math-poolsimulator/src/types";
+import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@radix-ui/react-label";
 import { useEffect, useState } from "react";

@@ -1,6 +1,7 @@
 "use client";
 
-import { Network } from "@bleu-balancer-tools/utils";
+import { Network } from "@bleu-fi/utils";
+import { parseMMDDYYYYToDate } from "@bleu-fi/utils/date";
 import {
   ChevronRightIcon,
   ClipboardIcon,
@@ -15,7 +16,6 @@ import { Toast } from "#/components/Toast";
 import { Pool } from "#/lib/balancer/gauges";
 
 import { generatePoolPageLink } from "../(utils)/getFilteredApiUrl";
-import { parseMMDDYYYYToDate } from "../api/(utils)/date";
 
 function getPoolExternalUrl({
   network,

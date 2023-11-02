@@ -1,4 +1,4 @@
-import { Address } from "@bleu-balancer-tools/utils";
+import { Address } from "@bleu-fi/utils";
 import { prepareWriteContract, writeContract } from "@wagmi/core";
 import { parseUnits } from "viem";
 

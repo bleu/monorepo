@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "f6416b64-25f4-48e6-8098-46ea238f7711",
+  "id": "a3ad86d2-10f5-495e-b84e-7eef547badc1",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "blocks": {
@@ -59,8 +59,12 @@
           "name": "blocks_network_slug_networks_slug_fk",
           "tableFrom": "blocks",
           "tableTo": "networks",
-          "columnsFrom": ["network_slug"],
-          "columnsTo": ["slug"],
+          "columnsFrom": [
+            "network_slug"
+          ],
+          "columnsTo": [
+            "slug"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -70,7 +74,10 @@
         "blocks_number_network_slug_unique": {
           "name": "blocks_number_network_slug_unique",
           "nullsNotDistinct": false,
-          "columns": ["number", "network_slug"]
+          "columns": [
+            "number",
+            "network_slug"
+          ]
         }
       }
     },
@@ -141,18 +148,26 @@
           "name": "gauge_snapshots_network_slug_networks_slug_fk",
           "tableFrom": "gauge_snapshots",
           "tableTo": "networks",
-          "columnsFrom": ["network_slug"],
-          "columnsTo": ["slug"],
+          "columnsFrom": [
+            "network_slug"
+          ],
+          "columnsTo": [
+            "slug"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "gauge_snapshots_block_number_gauge_address_network_slug_unique": {
-          "name": "gauge_snapshots_block_number_gauge_address_network_slug_unique",
+        "gauge_snapshots_timestamp_gauge_address_network_slug_unique": {
+          "name": "gauge_snapshots_timestamp_gauge_address_network_slug_unique",
           "nullsNotDistinct": false,
-          "columns": ["block_number", "gauge_address", "network_slug"]
+          "columns": [
+            "timestamp",
+            "gauge_address",
+            "network_slug"
+          ]
         }
       }
     },
@@ -223,8 +238,12 @@
           "name": "gauges_pool_external_id_pools_external_id_fk",
           "tableFrom": "gauges",
           "tableTo": "pools",
-          "columnsFrom": ["pool_external_id"],
-          "columnsTo": ["external_id"],
+          "columnsFrom": [
+            "pool_external_id"
+          ],
+          "columnsTo": [
+            "external_id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -232,8 +251,12 @@
           "name": "gauges_network_slug_networks_slug_fk",
           "tableFrom": "gauges",
           "tableTo": "networks",
-          "columnsFrom": ["network_slug"],
-          "columnsTo": ["slug"],
+          "columnsFrom": [
+            "network_slug"
+          ],
+          "columnsTo": [
+            "slug"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -243,7 +266,10 @@
         "gauges_address_pool_external_id_unique": {
           "name": "gauges_address_pool_external_id_unique",
           "nullsNotDistinct": false,
-          "columns": ["address", "pool_external_id"]
+          "columns": [
+            "address",
+            "pool_external_id"
+          ]
         }
       }
     },
@@ -297,12 +323,16 @@
         "networks_slug_unique": {
           "name": "networks_slug_unique",
           "nullsNotDistinct": false,
-          "columns": ["slug"]
+          "columns": [
+            "slug"
+          ]
         },
         "networks_chain_id_unique": {
           "name": "networks_chain_id_unique",
           "nullsNotDistinct": false,
-          "columns": ["chain_id"]
+          "columns": [
+            "chain_id"
+          ]
         }
       }
     },
@@ -365,8 +395,12 @@
           "name": "pool_rewards_network_slug_networks_slug_fk",
           "tableFrom": "pool_rewards",
           "tableTo": "networks",
-          "columnsFrom": ["network_slug"],
-          "columnsTo": ["slug"],
+          "columnsFrom": [
+            "network_slug"
+          ],
+          "columnsTo": [
+            "slug"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -374,8 +408,12 @@
           "name": "pool_rewards_pool_external_id_pools_external_id_fk",
           "tableFrom": "pool_rewards",
           "tableTo": "pools",
-          "columnsFrom": ["pool_external_id"],
-          "columnsTo": ["external_id"],
+          "columnsFrom": [
+            "pool_external_id"
+          ],
+          "columnsTo": [
+            "external_id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -385,7 +423,11 @@
         "pool_rewards_pool_external_id_token_address_network_slug_unique": {
           "name": "pool_rewards_pool_external_id_token_address_network_slug_unique",
           "nullsNotDistinct": false,
-          "columns": ["pool_external_id", "token_address", "network_slug"]
+          "columns": [
+            "pool_external_id",
+            "token_address",
+            "network_slug"
+          ]
         }
       }
     },
@@ -423,14 +465,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "is_exempt_from_yield_protocol_fee": {
-          "name": "is_exempt_from_yield_protocol_fee",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "protocol_fee_cache": {
-          "name": "protocol_fee_cache",
+        "protocol_yield_fee_cache": {
+          "name": "protocol_yield_fee_cache",
           "type": "numeric",
           "primaryKey": false,
           "notNull": false
@@ -492,8 +528,12 @@
           "name": "pool_snapshots_pool_external_id_pools_external_id_fk",
           "tableFrom": "pool_snapshots",
           "tableTo": "pools",
-          "columnsFrom": ["pool_external_id"],
-          "columnsTo": ["external_id"],
+          "columnsFrom": [
+            "pool_external_id"
+          ],
+          "columnsTo": [
+            "external_id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -503,7 +543,9 @@
         "pool_snapshots_external_id_unique": {
           "name": "pool_snapshots_external_id_unique",
           "nullsNotDistinct": false,
-          "columns": ["external_id"]
+          "columns": [
+            "external_id"
+          ]
         }
       }
     },
@@ -568,8 +610,12 @@
           "name": "pool_rate_providers_pool_token_id_pool_tokens_id_fk",
           "tableFrom": "pool_rate_providers",
           "tableTo": "pool_tokens",
-          "columnsFrom": ["pool_token_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "pool_token_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -654,6 +700,18 @@
           "primaryKey": false,
           "notNull": false
         },
+        "token_index": {
+          "name": "token_index",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_exempt_from_yield_protocol_fee": {
+          "name": "is_exempt_from_yield_protocol_fee",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -699,8 +757,12 @@
           "name": "pool_tokens_pool_external_id_pools_external_id_fk",
           "tableFrom": "pool_tokens",
           "tableTo": "pools",
-          "columnsFrom": ["pool_external_id"],
-          "columnsTo": ["external_id"],
+          "columnsFrom": [
+            "pool_external_id"
+          ],
+          "columnsTo": [
+            "external_id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -708,8 +770,12 @@
           "name": "pool_tokens_network_slug_networks_slug_fk",
           "tableFrom": "pool_tokens",
           "tableTo": "networks",
-          "columnsFrom": ["network_slug"],
-          "columnsTo": ["slug"],
+          "columnsFrom": [
+            "network_slug"
+          ],
+          "columnsTo": [
+            "slug"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -719,7 +785,10 @@
         "pool_tokens_pool_external_id_token_address_unique": {
           "name": "pool_tokens_pool_external_id_token_address_unique",
           "nullsNotDistinct": false,
-          "columns": ["pool_external_id", "token_address"]
+          "columns": [
+            "pool_external_id",
+            "token_address"
+          ]
         }
       }
     },
@@ -808,8 +877,12 @@
           "name": "pools_network_slug_networks_slug_fk",
           "tableFrom": "pools",
           "tableTo": "networks",
-          "columnsFrom": ["network_slug"],
-          "columnsTo": ["slug"],
+          "columnsFrom": [
+            "network_slug"
+          ],
+          "columnsTo": [
+            "slug"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -819,12 +892,17 @@
         "pools_external_id_unique": {
           "name": "pools_external_id_unique",
           "nullsNotDistinct": false,
-          "columns": ["external_id"]
+          "columns": [
+            "external_id"
+          ]
         },
         "pools_address_network_slug_unique": {
           "name": "pools_address_network_slug_unique",
           "nullsNotDistinct": false,
-          "columns": ["address", "network_slug"]
+          "columns": [
+            "address",
+            "network_slug"
+          ]
         }
       }
     },
@@ -869,8 +947,12 @@
           "name": "rewards_token_apr_pool_external_id_pools_external_id_fk",
           "tableFrom": "rewards_token_apr",
           "tableTo": "pools",
-          "columnsFrom": ["pool_external_id"],
-          "columnsTo": ["external_id"],
+          "columnsFrom": [
+            "pool_external_id"
+          ],
+          "columnsTo": [
+            "external_id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -880,7 +962,11 @@
         "rewards_token_apr_timestamp_token_address_pool_external_id_unique": {
           "name": "rewards_token_apr_timestamp_token_address_pool_external_id_unique",
           "nullsNotDistinct": false,
-          "columns": ["timestamp", "token_address", "pool_external_id"]
+          "columns": [
+            "timestamp",
+            "token_address",
+            "pool_external_id"
+          ]
         }
       }
     },
@@ -906,6 +992,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "collected_fees_usd": {
+          "name": "collected_fees_usd",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
         "pool_external_id": {
           "name": "pool_external_id",
           "type": "varchar",
@@ -919,8 +1011,12 @@
           "name": "swap_fee_apr_pool_external_id_pools_external_id_fk",
           "tableFrom": "swap_fee_apr",
           "tableTo": "pools",
-          "columnsFrom": ["pool_external_id"],
-          "columnsTo": ["external_id"],
+          "columnsFrom": [
+            "pool_external_id"
+          ],
+          "columnsTo": [
+            "external_id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -930,7 +1026,10 @@
         "swap_fee_apr_timestamp_pool_external_id_unique": {
           "name": "swap_fee_apr_timestamp_pool_external_id_unique",
           "nullsNotDistinct": false,
-          "columns": ["timestamp", "pool_external_id"]
+          "columns": [
+            "timestamp",
+            "pool_external_id"
+          ]
         }
       }
     },
@@ -995,8 +1094,12 @@
           "name": "token_prices_network_slug_networks_slug_fk",
           "tableFrom": "token_prices",
           "tableTo": "networks",
-          "columnsFrom": ["network_slug"],
-          "columnsTo": ["slug"],
+          "columnsFrom": [
+            "network_slug"
+          ],
+          "columnsTo": [
+            "slug"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1006,7 +1109,11 @@
         "token_prices_token_address_network_slug_timestamp_unique": {
           "name": "token_prices_token_address_network_slug_timestamp_unique",
           "nullsNotDistinct": false,
-          "columns": ["token_address", "network_slug", "timestamp"]
+          "columns": [
+            "token_address",
+            "network_slug",
+            "timestamp"
+          ]
         }
       }
     },
@@ -1083,8 +1190,12 @@
           "name": "tokens_network_slug_networks_slug_fk",
           "tableFrom": "tokens",
           "tableTo": "networks",
-          "columnsFrom": ["network_slug"],
-          "columnsTo": ["slug"],
+          "columnsFrom": [
+            "network_slug"
+          ],
+          "columnsTo": [
+            "slug"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1094,7 +1205,10 @@
         "tokens_address_network_slug_unique": {
           "name": "tokens_address_network_slug_unique",
           "nullsNotDistinct": false,
-          "columns": ["address", "network_slug"]
+          "columns": [
+            "address",
+            "network_slug"
+          ]
         }
       }
     },
@@ -1133,8 +1247,12 @@
           "name": "vebal_apr_pool_external_id_pools_external_id_fk",
           "tableFrom": "vebal_apr",
           "tableTo": "pools",
-          "columnsFrom": ["pool_external_id"],
-          "columnsTo": ["external_id"],
+          "columnsFrom": [
+            "pool_external_id"
+          ],
+          "columnsTo": [
+            "external_id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1231,8 +1349,12 @@
           "name": "yield_token_apr_pool_external_id_pools_external_id_fk",
           "tableFrom": "yield_token_apr",
           "tableTo": "pools",
-          "columnsFrom": ["pool_external_id"],
-          "columnsTo": ["external_id"],
+          "columnsFrom": [
+            "pool_external_id"
+          ],
+          "columnsTo": [
+            "external_id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1242,7 +1364,11 @@
         "yield_token_apr_timestamp_token_address_pool_external_id_unique": {
           "name": "yield_token_apr_timestamp_token_address_pool_external_id_unique",
           "nullsNotDistinct": false,
-          "columns": ["timestamp", "token_address", "pool_external_id"]
+          "columns": [
+            "timestamp",
+            "token_address",
+            "pool_external_id"
+          ]
         }
       }
     }

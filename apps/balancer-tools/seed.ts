@@ -7,7 +7,8 @@ import "dotenv/config";
 import { sql } from "drizzle-orm";
 import { PgTable } from "drizzle-orm/pg-core";
 
-import { gauges, pools, poolSnapshots } from "#/db/schema";
+import { gauges, pools, poolSnapshots, tokenPrices } from "#/db/schema";
+import { DefiLlamaAPI } from "#/lib/defillama";
 
 import { db } from "./src/db/index";
 
@@ -106,7 +107,10 @@ query PoolsWherePoolType($skip: Int!) {
     symbol
     poolType
     createTime
+    protocolYieldFeeCache
+    protocolSwapFeeCache
     tokens {
+      isExemptFromYieldProtocolFee
       address
       symbol
       weight
@@ -173,7 +177,6 @@ async function paginatedFetch<T>(
 ): Promise<void> {
   await paginate(initialSkip, step, async (skip: number) => {
     const response = await gql(networkEndpoint, query, { skip });
-
     if (response.data) {
       await processFn(response.data);
       return response.data;
@@ -328,22 +331,26 @@ async function transformPoolData() {
 
   // -- Insert data into pool_tokens table using a subquery
   await db.execute(sql`
-      INSERT INTO pool_tokens (weight, pool_external_id, token_address, network_slug)
-      SELECT DISTINCT ON (sub.external_id, tokens.address)
-            sub.weight,
-            sub.external_id,
-            tokens.address,
-            LOWER(raw_data->>'network')
-      FROM (
-          SELECT (jsonb_array_elements(raw_data::jsonb->'tokens')->>'weight')::NUMERIC as weight,
-                raw_data->>'id' as external_id,
-                jsonb_array_elements(raw_data::jsonb->'tokens')->>'address' as address
-          FROM pools
-      ) as sub
-      JOIN tokens ON sub.address = tokens.address
-      ON CONFLICT (pool_external_id, token_address) DO UPDATE
-      SET weight = excluded.weight;
-`);
+    INSERT INTO pool_tokens (weight, pool_external_id, token_address, network_slug, token_index, is_exempt_from_yield_protocol_fee)
+    SELECT DISTINCT ON (sub.external_id, tokens.address)
+          sub.weight,
+          sub.external_id,
+          tokens.address,
+          tokens.network_slug,
+          sub.ordinality,
+          sub.is_exempt_from_yield_protocol_fee
+    FROM (
+        SELECT (jsonb_array_elements(raw_data::jsonb->'tokens')->>'weight')::NUMERIC as weight,
+              raw_data->>'id' as external_id,
+              jsonb_array_elements(raw_data::jsonb->'tokens')->>'address' as address,
+              (jsonb_array_elements(raw_data::jsonb->'tokens')->>'isExemptFromYieldProtocolFee')::BOOLEAN as is_exempt_from_yield_protocol_fee,
+              ordinality
+        FROM pools, jsonb_array_elements(raw_data::jsonb->'tokens') WITH ORDINALITY
+    ) as sub
+    JOIN tokens ON sub.address = tokens.address
+    ON CONFLICT (pool_external_id, token_address) DO UPDATE
+    SET weight = excluded.weight;
+    `);
 }
 
 async function transformGauges() {
@@ -351,10 +358,17 @@ async function transformGauges() {
 
   // First, update the 'pools' table to make sure all the external_id values are there.
   await db.execute(sql`
-    INSERT INTO pools (external_id, network_slug)
-    SELECT raw_data->>'id', LOWER(raw_data->>'chain')
-    FROM gauges
-    ON CONFLICT (external_id) DO NOTHING;
+  INSERT INTO pools (external_id, network_slug)
+  SELECT
+    raw_data ->> 'id',
+    CASE WHEN LOWER(raw_data ->> 'chain') = 'zkevm' THEN
+      'polygon_zkevm'
+    ELSE
+      LOWER(raw_data ->> 'chain')
+    END
+  FROM
+    gauges ON CONFLICT (external_id)
+    DO NOTHING;
   `);
 
   // Then, insert or update the 'gauges' table.
@@ -444,6 +458,85 @@ DO UPDATE SET chain_id = EXCLUDED.chain_id, updated_at = NOW();
 `);
 }
 
+async function fetchTokenPrices() {
+  const remappings = {
+    mainnet: "ethereum",
+    avalanche: "avax",
+  };
+
+  const inverseRemapping = {
+    ethereum: "mainnet",
+    avax: "avalanche",
+  };
+  // Step 1: Fetch distinct tokens for each day
+  const result = await db.execute(sql`
+  SELECT DISTINCT
+	pt.token_address,
+	pt.network_slug,
+	date_trunc('day', ps.timestamp) AS day
+FROM
+	pool_tokens pt
+	INNER JOIN pool_snapshots ps ON pt.pool_external_id = ps.pool_external_id
+	LEFT JOIN token_prices tp ON pt.token_address = tp.token_address
+		AND pt.network_slug = tp.network_slug
+		AND date_trunc('day', ps.timestamp) = date_trunc('day', tp.timestamp)
+WHERE
+	tp.id IS NULL
+ORDER BY
+	day,
+	pt.token_address;
+  `);
+
+  // Step 2: Deduplicate tokens for the same day
+  const dedupedTokens: { [day: string]: Set<string> } = {};
+
+  for (const row of result) {
+    const day = row.day.toISOString();
+    if (!dedupedTokens[day]) {
+      dedupedTokens[day] = new Set();
+    }
+
+    dedupedTokens[day].add(
+      `${remappings[row.network_slug] ?? row.network_slug}:${row.token_address}`
+    );
+  }
+
+
+  // Step 3: Fetch token prices
+  for (const [day, tokens] of Object.entries(dedupedTokens)) {
+    const dateTimestamp = Date.UTC(
+      Number(day.split("-")[0]),
+      Number(day.split("-")[1]) - 1,
+      Number(day.split("-")[2].split("T")[0])
+    );
+    const tokenAddresses = Array.from(tokens);
+    try {
+      const prices = await DefiLlamaAPI.getHistoricalPrice(
+        new Date(dateTimestamp),
+        tokenAddresses
+      );
+
+      const entries = Object.entries(prices.coins);
+
+      await addToTable(
+        tokenPrices,
+        entries.map((entry) => ({
+          tokenAddress: entry[0].split(":")[1],
+          priceUSD: entry[1].price,
+          timestamp: new Date(entry[1].timestamp * 1000),
+          networkSlug: inverseRemapping[entry[0].split(":")[0]] ?? entry[0].split(":")[0],
+        }))
+      );
+
+      console.log(`Fetched prices for tokens on ${day}:`, prices);
+    } catch (e) {
+      console.error(
+        `Failed to fetch prices for tokens on ${day}: ${e.message}`
+      );
+    }
+  }
+}
+
 async function runETLs() {
   logIfVerbose("Starting ETL processes");
 
@@ -451,7 +544,8 @@ async function runETLs() {
   await ETLPools();
   await ETLSnapshots();
   await ETLGauges();
-
+  await fetchTokenPrices();
+  // await fetchBlocks();
   logIfVerbose("Ended ETL processes");
 
   process.exit(0);

@@ -1,4 +1,4 @@
-import { PoolsWherePoolTypeQuery } from "@bleu-balancer-tools/gql/src/balancer/__generated__/Ethereum";
+import { PoolsWherePoolTypeQuery } from "@bleu-fi/gql/src/balancer/__generated__/Ethereum";
 
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 

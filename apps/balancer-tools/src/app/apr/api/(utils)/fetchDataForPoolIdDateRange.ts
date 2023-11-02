@@ -1,3 +1,10 @@
+import {
+  dateToEpoch,
+  formatDateToMMDDYYYY,
+  generateDateRange,
+  SECONDS_IN_DAY,
+} from "@bleu-fi/utils/date";
+
 import { Pool } from "#/lib/balancer/gauges";
 
 import {
@@ -5,12 +12,6 @@ import {
   calculatePoolStats,
 } from "../../(utils)/calculatePoolStats";
 import { computeAverages } from "./computeAverages";
-import {
-  dateToEpoch,
-  formatDateToMMDDYYYY,
-  generateDateRange,
-  SECONDS_IN_DAY,
-} from "./date";
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;

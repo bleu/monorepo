@@ -1,1 +1,0 @@
-ALTER TABLE "swap_fee_apr" ADD COLUMN "collected_fees_usd" numeric;

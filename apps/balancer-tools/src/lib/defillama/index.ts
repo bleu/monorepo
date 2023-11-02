@@ -1,7 +1,7 @@
+import { dateToEpoch } from "@bleu-fi/utils/date";
 import { desc, eq, lte } from "drizzle-orm";
 import invariant from "tiny-invariant";
 
-import { dateToEpoch } from "#/app/apr/api/(utils)/date";
 import { db } from "#/db";
 import { blocks, networks } from "#/db/schema";
 import { fetcher } from "#/utils/fetcher";

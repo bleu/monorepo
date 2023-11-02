@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS "gauge_snapshots" (
 	"gauge_address" varchar,
 	"network_slug" varchar,
 	"raw_data" jsonb,
-	CONSTRAINT "gauge_snapshots_block_number_gauge_address_network_slug_unique" UNIQUE("block_number","gauge_address","network_slug")
+	CONSTRAINT "gauge_snapshots_timestamp_gauge_address_network_slug_unique" UNIQUE("timestamp","gauge_address","network_slug")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "gauges" (
@@ -64,8 +64,7 @@ CREATE TABLE IF NOT EXISTS "pool_snapshots" (
 	"total_shares" numeric,
 	"swap_volume" numeric,
 	"swap_fees" numeric,
-	"is_exempt_from_yield_protocol_fee" boolean,
-	"protocol_fee_cache" numeric,
+	"protocol_yield_fee_cache" numeric,
 	"protocol_swap_fee_cache" numeric,
 	"liquidity" numeric,
 	"timestamp" timestamp,
@@ -102,6 +101,8 @@ CREATE TABLE IF NOT EXISTS "pool_token_rate_providers_snapshot" (
 CREATE TABLE IF NOT EXISTS "pool_tokens" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"weight" numeric,
+	"token_index" integer,
+	"is_exempt_from_yield_protocol_fee" boolean,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	"pool_external_id" varchar,
@@ -141,6 +142,7 @@ CREATE TABLE IF NOT EXISTS "swap_fee_apr" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"timestamp" timestamp,
 	"value" numeric,
+	"collected_fees_usd" numeric,
 	"pool_external_id" varchar,
 	CONSTRAINT "swap_fee_apr_timestamp_pool_external_id_unique" UNIQUE("timestamp","pool_external_id")
 );

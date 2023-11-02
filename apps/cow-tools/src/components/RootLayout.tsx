@@ -1,5 +1,6 @@
 "use client";
 
+import SafeProvider from "@gnosis.pm/safe-apps-react-sdk";
 import { darkTheme, RainbowKitProvider, Theme } from "@rainbow-me/rainbowkit";
 import merge from "lodash.merge";
 import React from "react";
@@ -17,8 +18,10 @@ export function RootLayout({ children }: React.PropsWithChildren) {
         modalSize="compact"
         theme={CustomTheme}
       >
-        <Fathom />
-        <div className="h-full w-full bg-blue1">{children}</div>
+        <SafeProvider loader={<>Waiting for Safe...</>}>
+          <Fathom />
+          <div className="h-full w-full bg-blue1">{children}</div>
+        </SafeProvider>
       </RainbowKitProvider>
     </WagmiConfig>
   );

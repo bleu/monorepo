@@ -132,6 +132,8 @@ export const poolTokens = pgTable(
   {
     id: serial("id").primaryKey(),
     weight: decimal("weight"),
+    tokenIndex: integer("token_index"),
+    isExemptFromYieldProtocolFee: boolean("is_exempt_from_yield_protocol_fee"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
     poolExternalId: varchar("pool_external_id").references(
@@ -167,8 +169,7 @@ export const poolSnapshots = pgTable("pool_snapshots", {
   totalShares: decimal("total_shares"),
   swapVolume: decimal("swap_volume"),
   swapFees: decimal("swap_fees"),
-  isExemptFromYieldProtocolFee: boolean("is_exempt_from_yield_protocol_fee"),
-  protocolFeeCache: decimal("protocol_fee_cache"),
+  protocolYieldFeeCache: decimal("protocol_yield_fee_cache"),
   protocolSwapFeeCache: decimal("protocol_swap_fee_cache"),
   liquidity: decimal("liquidity"),
   timestamp: timestamp("timestamp"),
@@ -183,7 +184,7 @@ export const poolSnapshots = pgTable("pool_snapshots", {
 
 export const poolSnapshotRelations = relations(poolSnapshots, ({ one }) => ({
   pool: one(pools, {
-    fields: [poolSnapshots.id],
+    fields: [poolSnapshots.poolExternalId],
     references: [pools.externalId],
   }),
 }));
@@ -270,8 +271,8 @@ export const gaugeSnapshots = pgTable(
     rawData: jsonb("raw_data"),
   },
   (t) => ({
-    unq: unique().on(t.blockNumber, t.gaugeAddress, t.networkSlug),
-  }),
+    unq: unique().on(t.timestamp, t.gaugeAddress, t.networkSlug),
+  })
 );
 
 export const vebalApr = pgTable("vebal_apr", {

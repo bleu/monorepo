@@ -1,12 +1,12 @@
 {
-  "name": "@bleu-balancer-tools/eslint-config",
+  "name": "@bleu-fi/eslint-config",
   "version": "0.0.0",
   "license": "MIT",
   "files": [
     "eslint-preset.js"
   ],
   "devDependencies": {
-    "@bleu-balancer-tools/utils": "workspace:^",
+    "@bleu-fi/utils": "workspace:^",
     "@next/eslint-plugin-next": "^13.5.6",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.8.0",

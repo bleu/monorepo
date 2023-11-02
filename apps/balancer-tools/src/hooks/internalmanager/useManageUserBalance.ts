@@ -9,9 +9,9 @@ import { UserBalanceOpKind } from "#/lib/internal-balance-helper";
 import { writeManageUserBalance } from "#/wagmi/writeManageUserBalance";
 
 import {
-    NotificationVariant,
-    SubmitData,
-    TransactionStatus,
+  NotificationVariant,
+  SubmitData,
+  TransactionStatus,
 } from "../useTransaction";
 import { useTokenApproval } from "./useTokenApproval";
 import { useTransactionStatus } from "./useTransactionStatus";

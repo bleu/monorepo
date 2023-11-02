@@ -1,7 +1,11 @@
 "use client";
 
 import { SingleInternalBalanceQuery } from "@bleu-fi/gql/src/balancer/__generated__/Ethereum";
-import { Address, addressRegex, buildBlockExplorerTokenURL } from "@bleu-fi/utils";
+import {
+  Address,
+  addressRegex,
+  buildBlockExplorerTokenURL,
+} from "@bleu-fi/utils";
 import { ChevronDownIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { erc20ABI, fetchBalance, multicall } from "@wagmi/core";
 import Image from "next/image";

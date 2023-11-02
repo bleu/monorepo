@@ -4,11 +4,11 @@ import gaugesSdks from "@bleu-fi/gql/src/balancer-gauges";
 import poolMetadataSdks from "@bleu-fi/gql/src/balancer-pools-metadata";
 import rewardsSdks from "@bleu-fi/gql/src/balancer-rewards";
 import {
-    Address,
-    DELEGATE_OWNER,
-    Network,
-    networkFor,
-    networkMultisigs,
+  Address,
+  DELEGATE_OWNER,
+  Network,
+  networkFor,
+  networkMultisigs,
 } from "@bleu-fi/utils";
 import { GraphQLClient } from "graphql-request";
 

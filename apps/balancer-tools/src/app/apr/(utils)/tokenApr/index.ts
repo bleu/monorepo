@@ -4,8 +4,8 @@ import { zeroAddress } from "viem";
 
 import { ChainName } from "../chainsPublicClients";
 import {
-    getAPRFromRateProviderInterval,
-    getPoolTokensRateProviders,
+  getAPRFromRateProviderInterval,
+  getPoolTokensRateProviders,
 } from "./rateProviders";
 
 export async function getPoolTokensAprForDateRange(

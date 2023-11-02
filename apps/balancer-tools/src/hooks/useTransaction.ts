@@ -5,8 +5,8 @@ import { PoolMetadataAttribute } from "#/contexts/PoolMetadataContext";
 import { pinJSON } from "#/lib/ipfs";
 import { useNetwork, useWaitForTransaction } from "#/wagmi";
 import {
-    usePoolMetadataRegistrySetPoolMetadata,
-    usePreparePoolMetadataRegistrySetPoolMetadata,
+  usePoolMetadataRegistrySetPoolMetadata,
+  usePreparePoolMetadataRegistrySetPoolMetadata,
 } from "#/wagmi/generated";
 
 export enum TransactionStatus {

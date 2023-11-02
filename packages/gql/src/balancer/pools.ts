@@ -195,14 +195,12 @@ export const aprPools = gql`
     $minTvl: BigDecimal
     $maxTvl: BigDecimal
     $block: Int
-    $tokensAsVunerabilityAffectedPools: [String!]
   ) {
     pools(
       where: {
         createTime_lte: $createdBefore
         totalLiquidity_gte: $minTvl
         totalLiquidity_lte: $maxTvl
-        tokens_: { address_not_in: $tokensAsVunerabilityAffectedPools }
       }
       first: $limit
       skip: $skip

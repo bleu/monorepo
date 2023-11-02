@@ -6,48 +6,66 @@ import { PropsWithChildren } from "react";
 import { TransactionStatus } from "../utils/type";
 
 type Stage = {
-  pinningStep: string;
-  transitionLine: string;
-  writingOnChainStep: string;
+  name: TransactionStatus;
+  stepNumber: number;
+  defaultStepClass: string;
+  activeStepClass: string;
+  completedStepClass: string;
+  defaultLineColor: string;
+  activeLineColor: string;
+  completedLineColor: string;
+  nextStage?: TransactionStatus;
+  previousStage?: TransactionStatus;
 };
 
-export const STAGE_CN_MAPPING: Record<TransactionStatus, Stage> = {
-  [TransactionStatus.ORDER_PLACED]: {
-    pinningStep: "border-amber10 text-amber10",
-    transitionLine: "bg-slate10",
-    writingOnChainStep: "border-slate10 text-slate12",
+export const stages: Stage[] = [
+  {
+    name: TransactionStatus.DRAFT_SELECT_TOKENS,
+    stepNumber: 1,
+    defaultStepClass: "border-slate10 text-slate12",
+    activeStepClass: "border-amber10 text-amber10",
+    completedStepClass: "border-green10 text-green10",
+    defaultLineColor: "bg-slate10",
+    activeLineColor: "bg-amber10",
+    completedLineColor: "bg-green10",
+    nextStage: TransactionStatus.DRAFT_SELECT_PRICE_CHECKER,
   },
-  [TransactionStatus.MILKMAN_CREATED]: {
-    pinningStep: "border-green10 text-green10",
-    transitionLine: "bg-green10",
-    writingOnChainStep: "border-amber10 text-amber10",
+  {
+    name: TransactionStatus.DRAFT_SELECT_PRICE_CHECKER,
+    stepNumber: 2,
+    defaultStepClass: "border-slate10 text-slate12",
+    activeStepClass: "border-amber10 text-amber10",
+    completedStepClass: "border-green10 text-green10",
+    defaultLineColor: "bg-slate10",
+    activeLineColor: "bg-amber10",
+    completedLineColor: "bg-green10",
+    nextStage: TransactionStatus.DRAFT_RESUME,
+    previousStage: TransactionStatus.DRAFT_SELECT_TOKENS,
   },
-  [TransactionStatus.TO_BE_EXECUTED]: {
-    pinningStep: "border-green10 text-green10",
-    transitionLine: "bg-green10",
-    writingOnChainStep: "border-amber10 text-amber10",
+  {
+    name: TransactionStatus.DRAFT_RESUME,
+    stepNumber: 3,
+    defaultStepClass: "border-slate10 text-slate12",
+    activeStepClass: "border-amber10 text-amber10",
+    completedStepClass: "border-green10 text-green10",
+    defaultLineColor: "bg-slate10",
+    activeLineColor: "bg-amber10",
+    completedLineColor: "bg-green10",
+    nextStage: TransactionStatus.ORDER_PLACED,
+    previousStage: TransactionStatus.DRAFT_SELECT_PRICE_CHECKER,
   },
-  [TransactionStatus.EXECUTING]: {
-    pinningStep: "border-green10 text-green10",
-    transitionLine: "bg-green10",
-    writingOnChainStep: "border-amber10 text-amber10",
+  {
+    name: TransactionStatus.ORDER_PLACED,
+    stepNumber: 4,
+    defaultStepClass: "border-slate10 text-slate12",
+    activeStepClass: "border-amber10 text-amber10",
+    completedStepClass: "border-green10 text-green10",
+    defaultLineColor: "bg-slate10",
+    activeLineColor: "bg-amber10",
+    completedLineColor: "bg-green10",
+    previousStage: TransactionStatus.DRAFT_SELECT_PRICE_CHECKER,
   },
-  [TransactionStatus.EXECUTED]: {
-    pinningStep: "border-green10 text-green10",
-    transitionLine: "bg-green10",
-    writingOnChainStep: "border-green10 text-green10",
-  },
-  [TransactionStatus.CANCELATION_TO_BE_EXECUTED]: {
-    pinningStep: "border-tomato10 text-tomato10",
-    transitionLine: "bg-slate10",
-    writingOnChainStep: "border-slate10 text-slate12",
-  },
-  [TransactionStatus.CANCELED]: {
-    pinningStep: "border-tomato10 text-tomato10",
-    transitionLine: "bg-slate10",
-    writingOnChainStep: "border-slate10 text-slate12",
-  },
-};
+];
 
 function StepCircle({
   classNames,
@@ -70,12 +88,45 @@ function Line({ classNames }: { classNames: string }) {
   return <div className={cn("h-[1px] w-20", classNames)} />;
 }
 
-export function TransactionProgressBar({ stage }: { stage: Stage }) {
-  return (
-    <div className="flex items-center justify-center">
-      <StepCircle classNames={stage.pinningStep}>1</StepCircle>
-      <Line classNames={stage.transitionLine} />
-      <StepCircle classNames={stage.writingOnChainStep}>2</StepCircle>
-    </div>
-  );
+export function TransactionProgressBar({
+  currentStageName,
+  totalSteps,
+}: {
+  currentStageName: TransactionStatus;
+  totalSteps: number;
+}) {
+  const currentStage = stages.find((stage) => stage.name === currentStageName);
+
+  if (!currentStage) return <></>;
+
+  const elements = [];
+
+  for (let i = 0; i < totalSteps; i++) {
+    const stepStage = Object.values(stages).find(
+      (stage) => stage.stepNumber === i + 1,
+    );
+    let stepClass = stepStage?.defaultStepClass || "";
+    let lineColor = stepStage?.defaultLineColor || "";
+
+    if (stepStage) {
+      if (stepStage.name === currentStageName) {
+        stepClass = stepStage.activeStepClass;
+        lineColor = stepStage.activeLineColor;
+      } else if (
+        currentStage.previousStage &&
+        stepStage.name === currentStage.previousStage
+      ) {
+        stepClass = stepStage.completedStepClass;
+        lineColor = stepStage.completedLineColor;
+      }
+    }
+
+    elements.push(<StepCircle classNames={stepClass}>{i + 1}</StepCircle>);
+
+    if (i < totalSteps - 1) {
+      elements.push(<Line classNames={lineColor} />);
+    }
+  }
+
+  return <div className="flex items-center justify-center">{elements}</div>;
 }

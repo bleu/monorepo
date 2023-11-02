@@ -1,6 +1,6 @@
 {
   "name": "@bleu-fi/balancer-pools-metadata-subgraph",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "scripts": {
     "codegen:all": "pnpm generate-manifests && for file in $(ls | grep 'subgraph\\..*\\.yaml'); do graph codegen $file --output-dir src/types/; done",
     "codegen:goerli": "pnpm generate-manifests && graph codegen subgraph.goerli.yaml --output-dir src/types/",

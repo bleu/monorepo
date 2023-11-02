@@ -1,6 +1,6 @@
 {
   "name": "@bleu-fi/balancer-tools",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "private": true,
   "scripts": {
     "build": "node pre-build.js && next build",

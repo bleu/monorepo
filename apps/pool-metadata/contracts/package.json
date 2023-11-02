@@ -1,6 +1,6 @@
 {
   "name": "@bleu-fi/balancer-pools-metadata-contracts",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "directories": {
     "lib": "lib",
     "test": "test"

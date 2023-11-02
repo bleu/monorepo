@@ -361,9 +361,6 @@ importers:
       downshift:
         specifier: ^8.2.2
         version: 8.2.2(react@18.2.0)
-      ethers:
-        specifier: ^5.7.0
-        version: 5.7.0
       fathom-client:
         specifier: ^3.5.0
         version: 3.5.0

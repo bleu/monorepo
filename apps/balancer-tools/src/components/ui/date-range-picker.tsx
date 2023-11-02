@@ -1,5 +1,6 @@
 "use client";
 
+import { formatDateToMMDDYYYY } from "@bleu-fi/utils/date";
 import {
   CheckIcon,
   ChevronDownIcon,
@@ -7,7 +8,6 @@ import {
 } from "@radix-ui/react-icons";
 import React, { type FC, useEffect, useRef, useState } from "react";
 
-import { formatDateToMMDDYYYY } from "#/app/apr/api/(utils)/date";
 import { cn } from "#/lib/utils";
 
 import Button from "../Button";

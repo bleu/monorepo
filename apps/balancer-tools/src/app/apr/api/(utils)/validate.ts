@@ -1,11 +1,11 @@
 import { Network, networksOnBalancer } from "@bleu-fi/utils";
+import { parseMMDDYYYYToDate } from "@bleu-fi/utils/date";
 import { z } from "zod";
 
 import POOLS_WITHOUT_GAUGES from "#/data/pools-without-gauge.json";
 import POOLS_WITH_LIVE_GAUGES from "#/data/voting-gauges.json";
 
 import { PoolTypeEnum } from "../../(utils)/types";
-import { parseMMDDYYYYToDate } from "./date";
 import { Order } from "./sort";
 
 const currentDate = new Date();

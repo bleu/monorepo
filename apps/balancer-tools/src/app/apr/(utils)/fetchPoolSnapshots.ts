@@ -1,8 +1,7 @@
 import { PoolSnapshotInRangeQuery } from "@bleu-fi/gql/src/balancer/__generated__/Ethereum.server";
+import { dateToEpoch, generateDateRange } from "@bleu-fi/utils/date";
 
 import { pools, poolsWithCache } from "#/lib/gql/server";
-
-import { dateToEpoch, generateDateRange } from "../api/(utils)/date";
 
 export function isTimestampToday(timestamp: number): boolean {
   const now = new Date();

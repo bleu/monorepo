@@ -1,3 +1,4 @@
+import { SECONDS_IN_DAY } from "@bleu-fi/utils/date";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
@@ -12,7 +13,6 @@ import {
   generateApiUrlWithParams,
   generatePoolPageLink,
 } from "./(utils)/getFilteredApiUrl";
-import { SECONDS_IN_DAY } from "./api/(utils)/date";
 import { QueryParamsPagesSchema } from "./api/(utils)/validate";
 
 export interface SearchParams {

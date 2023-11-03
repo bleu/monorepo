@@ -9,10 +9,18 @@ import Link from "next/link";
 import { formatUnits } from "viem";
 
 import Table from "#/components/Table";
-import { AllSwapsQuery } from "#/gql/generated";
+import { AllSwapsQuery } from "#/lib/gql/generated";
 import { truncateAddress } from "#/utils/truncate";
 
-import { TransactionStatus } from "../utils/type";
+export enum TransactionStatus {
+  TO_BE_EXECUTED = "To be executed",
+  MILKMAN_CREATED = "Milkman created",
+  ORDER_PLACED = "Order placed",
+  EXECUTING = "Executing",
+  EXECUTED = "Executed",
+  CANCELATION_TO_BE_EXECUTED = "Cancelation to be executed",
+  CANCELED = "Canceled",
+}
 
 export function OrderTable({ orders }: { orders: AllSwapsQuery["swaps"] }) {
   return (

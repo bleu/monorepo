@@ -1,7 +1,6 @@
 "use client";
 
 import { Network } from "@bleu-fi/utils";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { Address, useAccount, useNetwork } from "wagmi";
 
@@ -10,14 +9,12 @@ import { LinkComponent } from "#/components/Link";
 import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { getNetwork } from "#/contexts/networks";
-import { AllSwapsQuery } from "#/gql/generated";
-import { getERC20ApproveRawTx } from "#/transactions/erc20Approve";
-import {
-  getRequestSwapExactTokensForTokensRawTx,
-  MILKMAN_ADDRESS,
-} from "#/transactions/milkmanOrder";
+import { useRawTxData } from "#/hooks/useRawTxData";
+import { AllSwapsQuery } from "#/lib/gql/generated";
+import { PRICE_CHECKERS } from "#/lib/priceCheckers";
+import { MILKMAN_ADDRESS, TRANSACTION_TYPES } from "#/lib/transactionFactory";
 
-import { OrderTable } from "../components/OrdersTable";
+import { OrderTable } from "../(components)/OrdersTable";
 
 export function HomePageWrapper({
   params,
@@ -31,7 +28,6 @@ export function HomePageWrapper({
   const { chain } = useNetwork();
   const { isConnected, isReconnecting, isConnecting } = useAccount();
 
-  const { safe, sdk } = useSafeAppsSDK();
   if (!isConnected && !isReconnecting && !isConnecting) {
     return <WalletNotConnected />;
   }
@@ -41,6 +37,35 @@ export function HomePageWrapper({
   }
 
   const network = getNetwork(chain?.name);
+
+  const { safe, sendTransactions } = useRawTxData();
+
+  const handleUniV2Tx = async () => {
+    const tokenAddressToSell = "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6"; //WETH
+    const tokenAddressToBuy = "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"; //UNI
+    const tokenDecimals = 18;
+    const bpsDecimals = 2;
+    const amount = BigInt(0.004 * 10 ** tokenDecimals);
+    const allowedSlippageBps = BigInt(5 * 10 ** bpsDecimals);
+
+    await sendTransactions([
+      {
+        type: TRANSACTION_TYPES.ERC20_APPROVE,
+        tokenAddress: tokenAddressToSell,
+        spender: MILKMAN_ADDRESS,
+        amount,
+      },
+      {
+        type: TRANSACTION_TYPES.MILKMAN_ORDER,
+        tokenAddressToSell,
+        tokenAddressToBuy,
+        toAddress: safe.safeAddress as Address,
+        amount,
+        priceChecker: PRICE_CHECKERS.UNI_V2,
+        args: [allowedSlippageBps],
+      },
+    ]);
+  };
 
   if (network !== params.network) {
     return (
@@ -66,27 +91,8 @@ export function HomePageWrapper({
           <div className="flex gap-4">
             <Button
               className="flex items-center gap-1 py-3 px-6"
-              title="Send hardcoded tx"
-              onClick={async () => {
-                const tokenIn = "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6"; //WETH
-                const tokenOut = "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"; //UNI
-                const decimals = 18;
-                const amount = BigInt(0.004 * 10 ** decimals);
-                const minOut = BigInt(1 * 10 ** decimals);
-                const txs = [
-                  getERC20ApproveRawTx(tokenIn, MILKMAN_ADDRESS, amount),
-                  getRequestSwapExactTokensForTokensRawTx(
-                    tokenIn,
-                    tokenOut,
-                    safe.safeAddress as Address,
-                    amount,
-                    minOut,
-                  ),
-                ];
-                await sdk.txs.send({
-                  txs,
-                });
-              }}
+              title="Send Hardcoded tx"
+              onClick={handleUniV2Tx}
             >
               <PlusIcon />
               Send HardCoded Tx

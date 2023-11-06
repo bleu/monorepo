@@ -1,7 +1,14 @@
+enum Status {
+  REQUESTED
+  CANCELLED
+  EXECUTED
+}
+
 type Swap @entity {
   id: String!
   user: User!
   chainId: Int!
+  status: Status!
   tokenIn: Token!
   tokenAmountIn: BigInt!
   tokenOut: Token!

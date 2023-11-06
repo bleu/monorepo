@@ -13,14 +13,30 @@ export const priceCheckerInfoMapping = {
     addresses: {
       [goerli.id]: "0xEB2bD2818F7CF1D92D81810b0d45852bE48E1502",
     },
-    arguments: [{ name: "minOut", type: "uint256" }],
+    arguments: [
+      {
+        name: "minOut",
+        type: "uint256",
+        label: "Token to buy minimum amount",
+        inputType: "number",
+        convertInput: (input: number) => BigInt(input * 1e18), // TODO: use decimals from token
+      },
+    ],
     name: PRICE_CHECKERS.FIXED_MIN_OUT,
   },
   [PRICE_CHECKERS.UNI_V2]: {
     addresses: {
       [goerli.id]: "0x5d74aFFFd2a0250ABA74D6703Bd8e140534b3F36",
     },
-    arguments: [{ name: "allowedSlippageInBps", type: "uint256" }],
+    arguments: [
+      {
+        name: "allowedSlippageInBps",
+        type: "uint256",
+        label: "Allowed slippage (%)",
+        inputType: "number",
+        convertInput: (input: number) => BigInt(input * 100),
+      },
+    ],
     name: PRICE_CHECKERS.UNI_V2,
   },
 } as const;

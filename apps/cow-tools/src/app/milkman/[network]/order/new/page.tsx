@@ -110,7 +110,6 @@ function TransactionCard({
   }, [formData]);
 
   async function handleOnSubmit(data: FieldValues) {
-    // console.log(data);
     const decimals = 18;
     const sellAmountBigInt = BigInt(
       Number(data.tokenSellAmount) * 10 ** decimals,

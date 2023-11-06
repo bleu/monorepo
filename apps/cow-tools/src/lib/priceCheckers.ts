@@ -19,7 +19,8 @@ export const priceCheckerInfoMapping = {
         type: "uint256",
         label: "Token to buy minimum amount",
         inputType: "number",
-        convertInput: (input: number) => BigInt(input * 1e18), // TODO: BLEU-333
+        convertInput: (input: number, decimals: number) =>
+          BigInt(input * 10 ** decimals),
       },
     ],
     name: PRICE_CHECKERS.FIXED_MIN_OUT,

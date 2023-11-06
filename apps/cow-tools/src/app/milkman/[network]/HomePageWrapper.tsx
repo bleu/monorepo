@@ -1,6 +1,7 @@
 "use client";
 
 import { Network } from "@bleu-fi/utils";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { useAccount, useNetwork } from "wagmi";
 
@@ -9,7 +10,6 @@ import { LinkComponent } from "#/components/Link";
 import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { getNetwork } from "#/contexts/networks";
-import { useRawTxData } from "#/hooks/useRawTxData";
 import { AllSwapsQuery } from "#/lib/gql/generated";
 
 import { OrderTable } from "../(components)/OrdersTable";

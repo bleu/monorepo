@@ -28,6 +28,9 @@ import { Label } from "#/components/ui/label";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { getNetwork } from "#/contexts/networks";
 import { useOrder } from "#/contexts/OrderContext";
+import { useRawTxData } from "#/hooks/useRawTxData";
+import { PRICE_CHECKERS, priceCheckerInfoMapping } from "#/lib/priceCheckers";
+import { MILKMAN_ADDRESS, TRANSACTION_TYPES } from "#/lib/transactionFactory";
 import { truncateAddress } from "#/utils/truncate";
 
 export default function Page({
@@ -89,11 +92,12 @@ function TransactionCard({
   const network = networkFor(chainId);
 
   const form = useForm();
+  const { sendTransactions } = useRawTxData();
+
   const { register, setValue, watch, clearErrors } = form;
 
   useEffect(() => {
     register("receiverAddress");
-    setValue("tokenAddress", "0x768788EB28d25C351E502cd7c5882C63C0876237");
   }, []);
 
   const formData = watch();
@@ -105,10 +109,32 @@ function TransactionCard({
     }
   }, [formData]);
 
-  function handleOnSubmit(data: FieldValues) {
-    //TODO trigger order BLEU-374
-    // eslint-disable-next-line no-console
-    console.log(data);
+  async function handleOnSubmit(data: FieldValues) {
+    const decimals = 18; // TODO: BLEU-333
+    const sellAmountBigInt = BigInt(
+      Number(data.tokenSellAmount) * 10 ** decimals,
+    );
+    const priceCheckersArgs = priceCheckerInfoMapping[
+      data.priceChecker as PRICE_CHECKERS
+    ].arguments.map((arg) => arg.convertInput(data[arg.name]));
+
+    await sendTransactions([
+      {
+        type: TRANSACTION_TYPES.ERC20_APPROVE,
+        tokenAddress: data.tokenSellAddress,
+        spender: MILKMAN_ADDRESS,
+        amount: sellAmountBigInt,
+      },
+      {
+        type: TRANSACTION_TYPES.MILKMAN_ORDER,
+        tokenAddressToSell: data.tokenSellAddress,
+        tokenAddressToBuy: data.tokenBuyAddress,
+        toAddress: data.receiverAddress,
+        amount: sellAmountBigInt,
+        priceChecker: data.priceChecker,
+        args: priceCheckersArgs,
+      },
+    ]);
   }
 
   function handleBack() {
@@ -238,7 +264,7 @@ function FormSelectTokens({
         <div className="flex w-1/2 items-end gap-2">
           <div className="w-full">
             <Input
-              type="string"
+              type="number"
               label="Amount to sell"
               placeholder="0.0"
               {...register("tokenSellAmount")}
@@ -310,7 +336,8 @@ function FormSelectTokens({
 }
 
 function FormSelectPriceChecker({ form }: { form: UseFormReturn }) {
-  const { register, control } = form;
+  const { register, control, watch } = form;
+  const priceCheckerSelected = watch("priceChecker");
   return (
     <div className="flex flex-col gap-y-6 p-9">
       <div className="mb-2">
@@ -324,19 +351,25 @@ function FormSelectPriceChecker({ form }: { form: UseFormReturn }) {
               value={value}
               className="w-full mt-2"
             >
-              <SelectItem value="0xEB2bD2818F7CF1D92D81810b0d45852bE48E1502">
-                FixedMinOutPriceChecker
-              </SelectItem>
+              {Object.values(PRICE_CHECKERS).map((priceChecker) => (
+                <SelectItem value={priceChecker} key={priceChecker}>
+                  {priceChecker}
+                </SelectItem>
+              ))}
             </Select>
           )}
         />
       </div>
-      {/* //TODO get all args when the priceChecker is selected  BLEU-374*/}
-      <Input
-        type="string"
-        label="Token to buy minimum amount"
-        {...register("tokenBuyMinimumAmount")}
-      />
+      {priceCheckerSelected &&
+        priceCheckerInfoMapping[
+          priceCheckerSelected as PRICE_CHECKERS
+        ].arguments.map((arg) => (
+          <Input
+            type={arg.inputType}
+            label={arg.label}
+            {...register(arg.name)}
+          />
+        ))}
     </div>
   );
 }
@@ -355,6 +388,12 @@ function OrderResume({
     { label: "Price checker", key: "priceChecker" },
     { label: "Token to buy minimum amount", key: "tokenBuyMinimumAmount" },
     { label: "Valid from", key: "validFrom" },
+    ...priceCheckerInfoMapping[
+      data.priceChecker as PRICE_CHECKERS
+    ].arguments.map((arg) => ({
+      label: arg.label,
+      key: arg.name,
+    })),
   ];
 
   return (

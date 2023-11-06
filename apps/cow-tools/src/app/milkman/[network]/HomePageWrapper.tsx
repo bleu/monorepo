@@ -36,7 +36,7 @@ export function HomePageWrapper({
 
   const network = getNetwork(chain?.name);
 
-  const { safe } = useRawTxData();
+  const { safe } = useSafeAppsSDK();
 
   if (network !== params.network) {
     return (

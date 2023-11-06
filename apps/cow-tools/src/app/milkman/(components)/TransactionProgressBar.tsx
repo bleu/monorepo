@@ -22,7 +22,7 @@ function createStage(
   name: TransactionStatus,
   stepNumber: number,
   nextStage?: TransactionStatus,
-  previousStage?: TransactionStatus
+  previousStage?: TransactionStatus,
 ) {
   return {
     name,
@@ -42,19 +42,19 @@ export const stages: Stage[] = [
   createStage(
     TransactionStatus.ORDER_OVERVIEW,
     1,
-    TransactionStatus.ORDER_STRATEGY
+    TransactionStatus.ORDER_STRATEGY,
   ),
   createStage(
     TransactionStatus.ORDER_STRATEGY,
     2,
     TransactionStatus.ORDER_RESUME,
-    TransactionStatus.ORDER_OVERVIEW
+    TransactionStatus.ORDER_OVERVIEW,
   ),
   createStage(
     TransactionStatus.ORDER_RESUME,
     3,
     TransactionStatus.ORDER_PLACED,
-    TransactionStatus.ORDER_STRATEGY
+    TransactionStatus.ORDER_STRATEGY,
   ),
 ];
 
@@ -67,7 +67,7 @@ function StepCircle({
       className={cn(
         "w-8 h-8 rounded-full flex items-center justify-center",
         "font-bold text-lg border-[1px]",
-        classNames
+        classNames,
       )}
     >
       {children}

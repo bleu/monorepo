@@ -110,7 +110,7 @@ function TransactionCard({
   }, [formData]);
 
   async function handleOnSubmit(data: FieldValues) {
-    const decimals = 18; // TODO: BLEU-390
+    const decimals = 18; // TODO: BLEU-333
     const sellAmountBigInt = BigInt(
       Number(data.tokenSellAmount) * 10 ** decimals,
     );

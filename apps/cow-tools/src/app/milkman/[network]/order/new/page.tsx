@@ -15,7 +15,7 @@ import { useAccount, useNetwork } from "wagmi";
 import {
   stages,
   TransactionProgressBar,
-} from "#/app/milkman/components/TransactionProgressBar";
+} from "#/app/milkman/(components)/TransactionProgressBar";
 import { TransactionStatus } from "#/app/milkman/utils/type";
 import { Button } from "#/components";
 import { Checkbox } from "#/components/Checkbox";

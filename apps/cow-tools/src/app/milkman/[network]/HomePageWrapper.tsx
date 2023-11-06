@@ -91,13 +91,6 @@ export function HomePageWrapper({
           <div className="flex gap-4">
             <Button
               className="flex items-center gap-1 py-3 px-6"
-              title="New order"
-            >
-              <PlusIcon />
-              New order
-            </Button>
-            <Button
-              className="flex items-center gap-1 py-3 px-6"
               title="Send Hardcoded tx"
               onClick={handleUniV2Tx}
             >

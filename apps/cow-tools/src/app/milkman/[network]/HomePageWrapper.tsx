@@ -2,7 +2,7 @@
 
 import { Network } from "@bleu-fi/utils";
 import { PlusIcon } from "@radix-ui/react-icons";
-import { Address, useAccount, useNetwork } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 
 import { Button } from "#/components";
 import { LinkComponent } from "#/components/Link";
@@ -11,8 +11,6 @@ import WalletNotConnected from "#/components/WalletNotConnected";
 import { getNetwork } from "#/contexts/networks";
 import { useRawTxData } from "#/hooks/useRawTxData";
 import { AllSwapsQuery } from "#/lib/gql/generated";
-import { PRICE_CHECKERS } from "#/lib/priceCheckers";
-import { MILKMAN_ADDRESS, TRANSACTION_TYPES } from "#/lib/transactionFactory";
 
 import { OrderTable } from "../(components)/OrdersTable";
 
@@ -38,34 +36,7 @@ export function HomePageWrapper({
 
   const network = getNetwork(chain?.name);
 
-  const { safe, sendTransactions } = useRawTxData();
-
-  const handleUniV2Tx = async () => {
-    const tokenAddressToSell = "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6"; //WETH
-    const tokenAddressToBuy = "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"; //UNI
-    const tokenDecimals = 18;
-    const bpsDecimals = 2;
-    const amount = BigInt(0.004 * 10 ** tokenDecimals);
-    const allowedSlippageBps = BigInt(5 * 10 ** bpsDecimals);
-
-    await sendTransactions([
-      {
-        type: TRANSACTION_TYPES.ERC20_APPROVE,
-        tokenAddress: tokenAddressToSell,
-        spender: MILKMAN_ADDRESS,
-        amount,
-      },
-      {
-        type: TRANSACTION_TYPES.MILKMAN_ORDER,
-        tokenAddressToSell,
-        tokenAddressToBuy,
-        toAddress: safe.safeAddress as Address,
-        amount,
-        priceChecker: PRICE_CHECKERS.UNI_V2,
-        args: [allowedSlippageBps],
-      },
-    ]);
-  };
+  const { safe } = useRawTxData();
 
   if (network !== params.network) {
     return (
@@ -89,14 +60,6 @@ export function HomePageWrapper({
             <span>{safe.safeAddress}</span>
           </div>
           <div className="flex gap-4">
-            <Button
-              className="flex items-center gap-1 py-3 px-6"
-              title="Send Hardcoded tx"
-              onClick={handleUniV2Tx}
-            >
-              <PlusIcon />
-              Send HardCoded Tx
-            </Button>
             <LinkComponent
               loaderColor="amber"
               href={`/milkman/${network}/order/new`}

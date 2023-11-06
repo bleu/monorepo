@@ -1,6 +1,6 @@
+import { dateToEpoch } from "@bleu-fi/utils/date";
 import invariant from "tiny-invariant";
 
-import { dateToEpoch } from "#/app/apr/api/(utils)/date";
 import { fetcher } from "#/utils/fetcher";
 
 type HistoricalPriceResponse = {

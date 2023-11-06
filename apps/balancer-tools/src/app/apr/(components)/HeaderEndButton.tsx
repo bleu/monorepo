@@ -1,6 +1,7 @@
 "use client";
 
 import { capitalize, networkIdFor, networksOnBalancer } from "@bleu-fi/utils";
+import { formatDateToMMDDYYYY, parseMMDDYYYYToDate } from "@bleu-fi/utils/date";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import {
   useParams,
@@ -15,7 +16,6 @@ import { SearchPoolForm } from "#/components/SearchPoolForm";
 import { DateRangePicker } from "#/components/ui/date-range-picker";
 
 import { generatePoolPageLink } from "../(utils)/getFilteredApiUrl";
-import { formatDateToMMDDYYYY, parseMMDDYYYYToDate } from "../api/(utils)/date";
 
 export default function HeaderEndButton() {
   const { network } = useParams();

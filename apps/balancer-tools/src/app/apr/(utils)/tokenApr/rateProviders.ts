@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import { PoolSnapshotInRangeQuery } from "@bleu-fi/gql/src/balancer/__generated__/Ethereum";
 import { Address, networkIdFor } from "@bleu-fi/utils";
+import { SECONDS_IN_YEAR } from "@bleu-fi/utils/date";
 import * as Sentry from "@sentry/nextjs";
 
 import { withCache } from "#/lib/cache";
@@ -8,7 +9,6 @@ import { DefiLlamaAPI } from "#/lib/defillama";
 import { pools } from "#/lib/gql/server";
 import { GetDeepProp } from "#/utils/getTypes";
 
-import { SECONDS_IN_YEAR } from "../../api/(utils)/date";
 import { ChainName, publicClients } from "../chainsPublicClients";
 import { manualPoolsRateProvider } from "../poolsRateProvider";
 import { vunerabilityAffecteRateProviders } from "../vunerabilityAffectedPool";

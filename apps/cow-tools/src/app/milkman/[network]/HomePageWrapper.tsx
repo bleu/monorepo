@@ -5,6 +5,7 @@ import { PlusIcon } from "@radix-ui/react-icons";
 import { Address, useAccount, useNetwork } from "wagmi";
 
 import { Button } from "#/components";
+import { LinkComponent } from "#/components/Link";
 import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { getNetwork } from "#/contexts/networks";
@@ -103,6 +104,19 @@ export function HomePageWrapper({
               <PlusIcon />
               Send HardCoded Tx
             </Button>
+            <LinkComponent
+              loaderColor="amber"
+              href={`/milkman/${network}/order/new`}
+              content={
+                <Button
+                  className="flex items-center gap-1 py-3 px-6"
+                  title="New order"
+                >
+                  <PlusIcon />
+                  New order
+                </Button>
+              }
+            />
           </div>
         </div>
         <OrderTable orders={orders} />

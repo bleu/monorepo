@@ -3,6 +3,7 @@
 import { Address, Network, NetworkChainId, networkFor } from "@bleu-fi/utils";
 import { formatDateToLocalDatetime } from "@bleu-fi/utils/date";
 import { ArrowLeftIcon, Pencil1Icon } from "@radix-ui/react-icons";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import {
   Controller,
@@ -90,6 +91,7 @@ function TransactionCard({
 }) {
   const { transactionStatus, setTransactionStatus } = useOrder();
   const network = networkFor(chainId);
+  const router = useRouter();
 
   const form = useForm();
   const { sendTransactions } = useRawTxData();
@@ -135,6 +137,7 @@ function TransactionCard({
         args: priceCheckersArgs,
       },
     ]);
+    router.push(`/milkman/${network}`);
   }
 
   function handleBack() {

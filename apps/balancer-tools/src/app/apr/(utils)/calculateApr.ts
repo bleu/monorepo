@@ -2,7 +2,7 @@ import { dateToEpoch, epochToDate, SECONDS_IN_YEAR } from "@bleu-fi/utils/date";
 import { and, eq, gte, lte } from "drizzle-orm";
 
 import { db } from "#/db";
-import { poolSnapshots, swapFeeApr } from "#/db/schema";
+import { pools, poolSnapshots, swapFeeApr } from "#/db/schema";
 
 export async function calculateAPRForDateRange(
   startAtTimestamp: number,
@@ -125,7 +125,7 @@ export async function calculateAPRForDateRange(
   };
 }
 
-async function getFeeAprForDateRange(
+export async function getFeeAprForDateRange(
   poolId: string,
   from: number,
   to: number,
@@ -152,6 +152,11 @@ async function getFeeAprForDateRange(
         ),
       );
 
+    const poolProtrocolSwapFee = await db
+      .select({ protocolSwapFeeCache: pools.protocolSwapFeeCache })
+      .from(pools)
+      .where(eq(pools.externalId, poolId));
+
     if (poolSnapshotsRange.length === 1) {
       return [0, 0];
     }
@@ -161,8 +166,14 @@ async function getFeeAprForDateRange(
 
     const feeDiff = Number(endData.swapFees) - Number(startData.swapFees);
 
+    const poolProtocolSwapFee = Number(
+      poolProtrocolSwapFee[0].protocolSwapFeeCache ?? 0,
+    );
+
     // reference for 10_000 https://github.com/balancer/balancer-sdk/blob/f4879f06289c6f5f9766ead1835f4f4b096ed7dd/balancer-js/src/modules/pools/apr/apr.ts#L85
-    const feeApr = 10_000 * (feeDiff / Number(endData.liquidity));
+    const feeApr =
+      10_000 *
+      ((feeDiff * (1 - poolProtocolSwapFee)) / Number(endData.liquidity));
 
     const annualizedFeeApr =
       feeApr *

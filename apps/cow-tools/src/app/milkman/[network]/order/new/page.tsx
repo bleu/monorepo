@@ -2,6 +2,7 @@
 
 import { Address, Network, NetworkChainId, networkFor } from "@bleu-fi/utils";
 import { formatDateToLocalDatetime } from "@bleu-fi/utils/date";
+import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import { ArrowLeftIcon, Pencil1Icon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -11,8 +12,13 @@ import {
   useForm,
   UseFormReturn,
 } from "react-hook-form";
+import { formatUnits } from "viem";
 import { useAccount, useNetwork } from "wagmi";
 
+import {
+  TokenSelect,
+  TokenWalletBalance,
+} from "#/app/milkman/(components)/TokenSelect";
 import {
   stages,
   TransactionProgressBar,
@@ -30,6 +36,7 @@ import WalletNotConnected from "#/components/WalletNotConnected";
 import { getNetwork } from "#/contexts/networks";
 import { useOrder } from "#/contexts/OrderContext";
 import { useRawTxData } from "#/hooks/useRawTxData";
+import { useSafeBalances } from "#/hooks/useSafeBalances";
 import { PRICE_CHECKERS, priceCheckerInfoMapping } from "#/lib/priceCheckers";
 import { MILKMAN_ADDRESS, TRANSACTION_TYPES } from "#/lib/transactionFactory";
 import { truncateAddress } from "#/utils/truncate";
@@ -100,6 +107,8 @@ function TransactionCard({
 
   useEffect(() => {
     register("receiverAddress");
+    register("tokenBuy");
+    register("tokenSell");
   }, []);
 
   const formData = watch();
@@ -112,25 +121,26 @@ function TransactionCard({
   }, [formData]);
 
   async function handleOnSubmit(data: FieldValues) {
-    const decimals = 18; // TODO: BLEU-333
     const sellAmountBigInt = BigInt(
-      Number(data.tokenSellAmount) * 10 ** decimals,
+      Number(data.tokenSellAmount) * 10 ** data.tokenSell.decimals,
     );
     const priceCheckersArgs = priceCheckerInfoMapping[
       data.priceChecker as PRICE_CHECKERS
-    ].arguments.map((arg) => arg.convertInput(data[arg.name]));
+    ].arguments.map((arg) =>
+      arg.convertInput(data[arg.name], data.tokenBuy.decimals),
+    );
 
     await sendTransactions([
       {
         type: TRANSACTION_TYPES.ERC20_APPROVE,
-        tokenAddress: data.tokenSellAddress,
+        tokenAddress: data.tokenSell.address,
         spender: MILKMAN_ADDRESS,
         amount: sellAmountBigInt,
       },
       {
         type: TRANSACTION_TYPES.MILKMAN_ORDER,
-        tokenAddressToSell: data.tokenSellAddress,
-        tokenAddressToBuy: data.tokenBuyAddress,
+        tokenAddressToSell: data.tokenSell.address,
+        tokenAddressToBuy: data.tokenBuy.address,
         toAddress: data.receiverAddress,
         amount: sellAmountBigInt,
         priceChecker: data.priceChecker,
@@ -252,35 +262,69 @@ function FormSelectTokens({
   const { register, setValue, control, watch } = form;
   const formData = watch();
   const isValidFromNeeded = formData.isValidFromNeeded;
+  const { assets } = useSafeBalances();
+
+  const tokenSell = assets.find(
+    (asset) => asset.tokenInfo.address === formData.tokenSell?.address,
+  );
+
+  const walletAmount = !tokenSell
+    ? 0
+    : formatUnits(BigInt(tokenSell?.balance), tokenSell?.tokenInfo.decimals);
+
+  function handleSelectTokenBuy(token: TokenWalletBalance) {
+    setValue("tokenBuy", token);
+  }
+
+  function handleSelectTokenSell(token: TokenWalletBalance) {
+    setValue("tokenSell", token);
+  }
 
   return (
     <div className="flex flex-col gap-y-6 p-9">
-      <div className="flex h-fit justify-between gap-7">
-        <div className="w-1/2">
-          <Input
-            type="string"
-            label="Token sell"
-            placeholder="0x.."
-            {...register("tokenSellAddress")}
-          />
-        </div>
-        <div className="flex w-1/2 items-end gap-2">
-          <div className="w-full">
-            <Input
-              type="number"
-              label="Amount to sell"
-              placeholder="0.0"
-              {...register("tokenSellAmount")}
+      <div>
+        <div className="flex h-fit justify-between gap-x-7">
+          <div className="w-1/2">
+            <TokenSelect
+              onSelectToken={handleSelectTokenSell}
+              tokenType="sell"
+              selectedToken={formData.tokenSell ?? undefined}
             />
           </div>
+          <div className="flex w-1/2 items-end gap-2">
+            <div className="w-full">
+              <Input
+                type="number"
+                label="Amount to sell"
+                placeholder="0.0"
+                {...register("tokenSellAmount")}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="mt-2 flex gap-x-1 text-xs">
+          <span className="text-slate10">
+            <span>
+              Wallet Balance:{" "}
+              {formatNumber(walletAmount, 4, "decimal", "standard", 0.0001)}
+            </span>
+          </span>
+          <button
+            type="button"
+            className="text-blue9 outline-none hover:text-amber9"
+            onClick={() => {
+              setValue("tokenSellAmount", walletAmount);
+            }}
+          >
+            Max
+          </button>
         </div>
       </div>
       <div className="w-full">
-        <Input
-          type="string"
-          label="Token buy"
-          placeholder="0x.."
-          {...register("tokenBuyAddress")}
+        <TokenSelect
+          onSelectToken={handleSelectTokenBuy}
+          tokenType="buy"
+          selectedToken={formData.tokenBuy ?? undefined}
         />
       </div>
       <div>
@@ -385,8 +429,8 @@ function OrderResume({
   handleBack: () => void;
 }) {
   const fieldsToDisplay = [
-    { label: "Token to sell", key: "tokenSellAddress" },
-    { label: "Token to buy", key: "tokenBuyAddress" },
+    { label: "Token to sell", key: "tokenSell" },
+    { label: "Token to buy", key: "tokenBuy" },
     { label: "Amount to sell", key: "tokenSellAmount" },
     { label: "Price checker", key: "priceChecker" },
     { label: "Token to buy minimum amount", key: "tokenBuyMinimumAmount" },
@@ -402,8 +446,8 @@ function OrderResume({
   return (
     <div>
       <div className="font-semibold text-2xl flex justify-between">
-        Order #1 - {truncateAddress(data.tokenSell)} for{" "}
-        {truncateAddress(data.tokenBuy)}
+        Order #1 - {truncateAddress(data.tokenSell.symbol)} for{" "}
+        {data.tokenBuy.symbol}
         <Button
           type="button"
           className="bg-transparent border-0 hover:bg-transparent"
@@ -416,6 +460,26 @@ function OrderResume({
       <div className="flex flex-col">
         {fieldsToDisplay.map((field) => {
           const value = data[field.key];
+          if (field.key === "tokenSell") {
+            return (
+              value && (
+                <span key={field.key}>
+                  {field.label}: {value.symbol} (
+                  {truncateAddress(data.tokenSell.address)})
+                </span>
+              )
+            );
+          }
+          if (field.key === "tokenBuy") {
+            return (
+              value && (
+                <span key={field.key}>
+                  {field.label}: {value.symbol} (
+                  {truncateAddress(data.tokenBuy.address)})
+                </span>
+              )
+            );
+          }
           return (
             value && (
               <span key={field.key}>

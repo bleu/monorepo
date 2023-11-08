@@ -6,6 +6,7 @@ export type argType = "uint256";
 export enum PRICE_CHECKERS {
   FIXED_MIN_OUT = "Fixed Minimum Out Amount",
   UNI_V2 = "Uniswap V2",
+  SUSHI_SWAP = "SushiSwap",
 }
 
 export const priceCheckerInfoMapping = {
@@ -39,6 +40,21 @@ export const priceCheckerInfoMapping = {
       },
     ],
     name: PRICE_CHECKERS.UNI_V2,
+  },
+  [PRICE_CHECKERS.SUSHI_SWAP]: {
+    addresses: {
+      [goerli.id]: "0x5A5633909060c75e5B7cB4952eFad918c711F587",
+    },
+    arguments: [
+      {
+        name: "allowedSlippageInBps",
+        type: "uint256",
+        label: "Allowed slippage (%)",
+        inputType: "number",
+        convertInput: (input: number) => BigInt(input * 100),
+      },
+    ],
+    name: PRICE_CHECKERS.SUSHI_SWAP,
   },
 } as const;
 

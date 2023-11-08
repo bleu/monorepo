@@ -122,12 +122,12 @@ function TransactionCard({
 
   async function handleOnSubmit(data: FieldValues) {
     const sellAmountBigInt = BigInt(
-      Number(data.tokenSellAmount) * 10 ** data.tokenSell.decimals,
+      Number(data.tokenSellAmount) * 10 ** data.tokenSell.decimals
     );
     const priceCheckersArgs = priceCheckerInfoMapping[
       data.priceChecker as PRICE_CHECKERS
     ].arguments.map((arg) =>
-      arg.convertInput(data[arg.name], data.tokenBuy.decimals),
+      arg.convertInput(data[arg.name], data.tokenBuy.decimals)
     );
 
     await sendTransactions([
@@ -152,14 +152,14 @@ function TransactionCard({
 
   function handleBack() {
     const currentStage = stages.find(
-      (stage) => stage.name === transactionStatus,
+      (stage) => stage.name === transactionStatus
     );
     setTransactionStatus(currentStage?.previousStage ?? transactionStatus);
   }
 
   function handleContinue() {
     const currentStage = stages.find(
-      (stage) => stage.name === transactionStatus,
+      (stage) => stage.name === transactionStatus
     );
     setTransactionStatus(currentStage?.nextStage ?? transactionStatus);
   }
@@ -265,7 +265,7 @@ function FormSelectTokens({
   const { assets } = useSafeBalances();
 
   const tokenSell = assets.find(
-    (asset) => asset.tokenInfo.address === formData.tokenSell?.address,
+    (asset) => asset.tokenInfo.address === formData.tokenSell?.address
   );
 
   const walletAmount = !tokenSell

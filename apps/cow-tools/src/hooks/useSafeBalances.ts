@@ -12,7 +12,12 @@ export function useSafeBalances(): { assets: TokenBalance[]; loaded: boolean } {
     async function loadBalances() {
       const balances = await sdk.safe.experimental_getBalances();
 
-      setAssets(balances.items.filter((item) => parseInt(item.balance) > 0));
+      setAssets(
+        balances.items.filter(
+          (item) =>
+            parseInt(item.balance) > 0 && item.tokenInfo.type === "ERC20",
+        ),
+      );
       setLoaded(true);
     }
 

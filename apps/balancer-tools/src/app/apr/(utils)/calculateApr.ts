@@ -1,13 +1,12 @@
-import { dateToEpoch, epochToDate, SECONDS_IN_YEAR } from "@bleu-fi/utils/date";
-import { and, eq, gte, lte } from "drizzle-orm";
+import { epochToDate } from "@bleu-fi/utils/date";
+import { sql } from "drizzle-orm";
 
 import { db } from "#/db";
-import { pools, poolSnapshots, swapFeeApr } from "#/db/schema";
 
 export async function calculateAPRForDateRange(
   startAtTimestamp: number,
   endAtTimestamp: number,
-  poolId: string,
+  poolId: string
 ) {
   // const [votingShare, [feeAPR, collectedFeesUSD], tokensAPR, rewardsAPR] =
   const [[feeAPR, collectedFeesUSD]] = await Promise.all([
@@ -128,67 +127,45 @@ export async function calculateAPRForDateRange(
 export async function getFeeAprForDateRange(
   poolId: string,
   from: number,
-  to: number,
-): Promise<[number, number]> {
-  const feeApre = await db
-    .select()
-    .from(swapFeeApr)
-    .where(
-      and(
-        eq(swapFeeApr.poolExternalId, poolId),
-        eq(swapFeeApr.timestamp, epochToDate(to)),
-      ),
-    );
-
-  if (feeApre.length === 0) {
-    const poolSnapshotsRange = await db
-      .select()
-      .from(poolSnapshots)
-      .where(
-        and(
-          eq(poolSnapshots.poolExternalId, poolId),
-          gte(poolSnapshots.timestamp, epochToDate(from)),
-          lte(poolSnapshots.timestamp, epochToDate(to)),
-        ),
-      );
-
-    const poolProtrocolSwapFee = await db
-      .select({ protocolSwapFeeCache: pools.protocolSwapFeeCache })
-      .from(pools)
-      .where(eq(pools.externalId, poolId));
-
-    if (poolSnapshotsRange.length === 1) {
-      return [0, 0];
-    }
-
-    const startData = poolSnapshotsRange[0];
-    const endData = poolSnapshotsRange[poolSnapshotsRange.length - 1];
-
-    const feeDiff = Number(endData.swapFees) - Number(startData.swapFees);
-
-    const poolProtocolSwapFee = Number(
-      poolProtrocolSwapFee[0].protocolSwapFeeCache ?? 0,
-    );
-
-    // reference for 10_000 https://github.com/balancer/balancer-sdk/blob/f4879f06289c6f5f9766ead1835f4f4b096ed7dd/balancer-js/src/modules/pools/apr/apr.ts#L85
-    const feeApr =
-      10_000 *
-      ((feeDiff * (1 - poolProtocolSwapFee)) / Number(endData.liquidity));
-
-    const annualizedFeeApr =
-      feeApr *
-      (SECONDS_IN_YEAR /
-        (dateToEpoch(endData?.timestamp) - dateToEpoch(startData?.timestamp)));
-
-    await db.insert(swapFeeApr).values({
-      poolExternalId: poolId,
-      timestamp: epochToDate(to),
-      value: String(annualizedFeeApr / 100),
-      collectedFeesUSD: String(feeDiff),
-    });
-
-    return [isNaN(annualizedFeeApr) ? 0 : annualizedFeeApr / 100, feeDiff];
-  }
-
-  return [Number(feeApre[0].value), Number(feeApre[0].collectedFeesUSD)];
+  to: number
+) {
+  const result= await db.execute(sql`
+  WITH SnapshotDiffs AS (
+    SELECT
+      FIRST_VALUE(ps.swap_fees) OVER w AS start_swap_fees,
+      LAST_VALUE(ps.swap_fees) OVER w AS end_swap_fees,
+      LAST_VALUE(ps.liquidity) OVER w AS end_liquidity,
+      LAST_VALUE(p.protocol_swap_fee_cache) OVER w AS protocol_swap_fee_cache,
+      MIN(ps.timestamp) OVER w AS start_timestamp,
+      MAX(ps.timestamp) OVER w AS end_timestamp
+    FROM
+      pool_snapshots ps
+      JOIN pools p ON p.external_id = ps.pool_external_id
+    WHERE
+      ps.pool_external_id = '${sql.raw(poolId)}'
+      AND ps.timestamp BETWEEN '${sql.raw(
+        epochToDate(from).toISOString()
+      )}' AND '${sql.raw(epochToDate(to).toISOString())}'
+    WINDOW w AS (ORDER BY ps.timestamp RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
+  ), Calculations AS (
+    SELECT
+      (CAST(end_swap_fees AS NUMERIC) - CAST(start_swap_fees AS NUMERIC)) AS fee_diff,
+      CAST(end_liquidity AS NUMERIC) AS liquidity,
+      CAST(protocol_swap_fee_cache AS NUMERIC) AS protocol_swap_fee,
+      EXTRACT(EPOCH FROM end_timestamp) - EXTRACT(EPOCH FROM start_timestamp) AS time_diff_secs
+    FROM
+      SnapshotDiffs
+  )
+  SELECT
+    fee_diff,
+    CASE
+      WHEN time_diff_secs = 0 THEN 0
+      ELSE ((fee_diff * (1 - protocol_swap_fee)) / liquidity) *
+           (365 * 24 * 3600 / time_diff_secs)
+    END AS annualized_fee_apr
+  FROM
+    Calculations
+  LIMIT 1;`);
+  const { fee_diff: feeDiff, annualized_fee_apr: apr } = result[0];
+  return [Number(apr), Number(feeDiff)];
 }

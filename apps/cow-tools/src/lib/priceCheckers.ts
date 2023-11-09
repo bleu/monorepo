@@ -1,5 +1,6 @@
 import { encodePacked } from "viem";
 import { goerli } from "viem/chains";
+import { fixedMinOutSchema, sushiSwapSchema, uniV2Schema } from "./schema";
 
 export type argType = "uint256";
 
@@ -25,6 +26,7 @@ export const priceCheckerInfoMapping = {
       },
     ],
     name: PRICE_CHECKERS.FIXED_MIN_OUT,
+    schema: fixedMinOutSchema,
   },
   [PRICE_CHECKERS.UNI_V2]: {
     addresses: {
@@ -40,6 +42,7 @@ export const priceCheckerInfoMapping = {
       },
     ],
     name: PRICE_CHECKERS.UNI_V2,
+    schema: uniV2Schema,
   },
   [PRICE_CHECKERS.SUSHI_SWAP]: {
     addresses: {
@@ -55,12 +58,13 @@ export const priceCheckerInfoMapping = {
       },
     ],
     name: PRICE_CHECKERS.SUSHI_SWAP,
+    schema: sushiSwapSchema,
   },
 } as const;
 
 export function encodePriceCheckerData(
   priceChecker: PRICE_CHECKERS,
-  args: bigint[],
+  args: bigint[]
 ): `0x${string}` {
   const { arguments: priceCheckerArgs } = priceCheckerInfoMapping[priceChecker];
   if (priceCheckerArgs.length !== args.length) {
@@ -68,6 +72,6 @@ export function encodePriceCheckerData(
   }
   return encodePacked(
     priceCheckerArgs.map((arg) => arg.type),
-    args,
+    args
   );
 }

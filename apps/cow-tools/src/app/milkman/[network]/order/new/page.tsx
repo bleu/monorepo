@@ -477,7 +477,10 @@ function FormSelectPriceChecker({
             {...register(arg.name)}
           />
         ))}
-      <FormFooter transactionStatus={TransactionStatus.ORDER_STRATEGY} />
+      <FormFooter
+        transactionStatus={TransactionStatus.ORDER_STRATEGY}
+        disabled={!selectedPriceChecker}
+      />
     </Form>
   );
 }
@@ -599,9 +602,11 @@ function OrderResume({
 function FormFooter({
   transactionStatus,
   onClick,
+  disabled = false,
 }: {
   transactionStatus: TransactionStatus;
   onClick?: () => void;
+  disabled?: boolean;
 }) {
   const isDraftResume = transactionStatus === TransactionStatus.ORDER_RESUME;
   return (
@@ -623,7 +628,12 @@ function FormFooter({
             </Button>
           </>
         ) : (
-          <Button type="submit" className="w-full" onClick={onClick}>
+          <Button
+            type="submit"
+            className="w-full"
+            onClick={onClick}
+            disabled={disabled}
+          >
             <span>Continue</span>
           </Button>
         )}

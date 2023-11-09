@@ -1,15 +1,17 @@
 "use client";
 
-import { TokenInfo } from "@gnosis.pm/safe-apps-sdk";
+import { TokenInfo, TokenType } from "@gnosis.pm/safe-apps-sdk";
 import { ChevronDownIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import { tokenLogoUri } from "public/tokens/logoUri";
 import React, { useEffect, useState } from "react";
 import { formatUnits } from "viem";
+import { useNetwork } from "wagmi";
 
 import { Dialog } from "#/components/Dialog";
 import Table from "#/components/Table";
 import { useSafeBalances } from "#/hooks/useSafeBalances";
+import { cowTokenList } from "#/utils/cowTokenList";
 
 export interface TokenWalletBalance extends TokenInfo {
   balance: bigint;
@@ -41,7 +43,9 @@ export function TokenSelect({
 
   return (
     <Dialog
-      content={<TokenModal onSelectToken={handleSelectToken} />}
+      content={
+        <TokenModal onSelectToken={handleSelectToken} tokenType={tokenType} />
+      }
       isOpen={open}
       setIsOpen={setOpen}
     >
@@ -79,14 +83,31 @@ export function TokenSelect({
 
 function TokenModal({
   onSelectToken,
+  tokenType,
 }: {
   onSelectToken: (token: TokenWalletBalance) => void;
+  tokenType: "sell" | "buy";
 }) {
-  const [tokens, setTokens] = useState<(TokenWalletBalance | undefined)[]>([]);
-  const [tokenSearchQuery, setTokenSearchQuery] = useState("");
+  const { chain } = useNetwork();
+  const [tokens, setTokens] = useState<(TokenWalletBalance | undefined)[]>(
+    tokenType === "buy"
+      ? cowTokenList
+          .filter((token) => token.chainId === chain?.id)
+          .map((token) => {
+            return {
+              address: token.address,
+              decimals: token.decimals,
+              name: token.name,
+              symbol: token.symbol,
+              logoUri: token.logoURI,
+              balance: BigInt(0),
+              type: TokenType.ERC20,
+            };
+          })
+      : [],
+  );
 
   const { assets, loaded } = useSafeBalances();
-
   useEffect(() => {
     if (loaded) {
       const tokens = assets.map((asset) => {
@@ -95,9 +116,25 @@ function TokenModal({
           balance: BigInt(asset.balance),
         };
       });
-      setTokens(tokens);
+
+      setTokens((prevTokens) => {
+        const combinedTokens = [...prevTokens, ...tokens].reduce<{
+          [key: string]: TokenWalletBalance;
+        }>((acc, token) => {
+          const balanceBigInt = BigInt(token?.balance ?? 0);
+          const address = token?.address ?? "";
+
+          if (!acc[address] || balanceBigInt > acc[address].balance) {
+            acc[address] = token as TokenWalletBalance;
+          }
+          return acc;
+        }, {});
+        return Object.values(combinedTokens);
+      });
     }
-  }, [loaded]);
+  }, [loaded, assets]);
+
+  const [tokenSearchQuery, setTokenSearchQuery] = useState("");
 
   function filterTokenInput({
     tokenSearchQuery,

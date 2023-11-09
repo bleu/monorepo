@@ -100,14 +100,14 @@ function TransactionCard({
 
   function handleBack() {
     const currentStage = stages.find(
-      (stage) => stage.name === transactionStatus,
+      (stage) => stage.name === transactionStatus
     );
     setTransactionStatus(currentStage?.previousStage ?? transactionStatus);
   }
 
   function handleContinue() {
     const currentStage = stages.find(
-      (stage) => stage.name === transactionStatus,
+      (stage) => stage.name === transactionStatus
     );
     setTransactionStatus(currentStage?.nextStage ?? transactionStatus);
   }
@@ -130,6 +130,8 @@ function TransactionCard({
           handleContinue();
         }}
         defaultValues={priceCheckerData}
+        tokenSellAddress={orderOverviewData?.tokenSell.address}
+        tokenBuyAddress={orderOverviewData?.tokenBuy.address}
       />
     ),
     [TransactionStatus.ORDER_RESUME]: (
@@ -242,12 +244,12 @@ function FormOrderOverview({
   function getTokenBalanceFromAddress(address: string | undefined) {
     if (!address) return;
     return assets.find(
-      (tokenBalance) => tokenBalance.tokenInfo.address === address,
+      (tokenBalance) => tokenBalance.tokenInfo.address === address
     );
   }
 
   const [isValidFromNeeded, setIsValidFromNeeded] = useState(
-    !!defaultValues?.validFrom,
+    !!defaultValues?.validFrom
   );
   const [tokenBuy, setTokenBuy] = useState<TokenBalance | undefined>();
   const [tokenSell, setTokenSell] = useState<TokenBalance | undefined>();
@@ -260,7 +262,7 @@ function FormOrderOverview({
     ) {
       setTokenBuy(getTokenBalanceFromAddress(defaultValues?.tokenBuy?.address));
       setTokenSell(
-        getTokenBalanceFromAddress(defaultValues?.tokenSell?.address),
+        getTokenBalanceFromAddress(defaultValues?.tokenSell?.address)
       );
       setValue("tokenBuy", defaultValues?.tokenBuy);
       setValue("tokenSell", defaultValues?.tokenSell);
@@ -318,7 +320,7 @@ function FormOrderOverview({
                       4,
                       "decimal",
                       "standard",
-                      0.0001,
+                      0.0001
                     )}
                   </span>
                 </span>
@@ -415,23 +417,37 @@ function FormOrderOverview({
 function FormSelectPriceChecker({
   onSubmit,
   defaultValues,
+  tokenSellAddress,
+  tokenBuyAddress,
 }: {
   onSubmit: (data: FieldValues) => void;
   defaultValues?: FieldValues;
+  tokenSellAddress: Address;
+  tokenBuyAddress: Address;
 }) {
   const [selectedPriceChecker, setSelectedPriceChecker] =
     useState<PRICE_CHECKERS>(defaultValues?.priceChecker);
 
+  const schema =
+    selectedPriceChecker &&
+    priceCheckerInfoMapping[selectedPriceChecker].getSchema({
+      tokenSellAddress,
+      tokenBuyAddress,
+    });
+
   const form = useForm(
     selectedPriceChecker && {
-      resolver: zodResolver(
-        priceCheckerInfoMapping[selectedPriceChecker].schema,
-      ),
+      resolver: zodResolver(schema),
       mode: "onSubmit",
-    },
+    }
   );
 
-  const { register, clearErrors, setValue } = form;
+  const {
+    register,
+    clearErrors,
+    setValue,
+    formState: { errors },
+  } = form;
 
   useEffect(() => {
     clearErrors();
@@ -443,7 +459,7 @@ function FormSelectPriceChecker({
     setValue("priceChecker", selectedPriceChecker);
     setValue(
       "priceCheckerAddress",
-      priceCheckerInfoMapping[selectedPriceChecker].addresses[goerli.id],
+      priceCheckerInfoMapping[selectedPriceChecker].addresses[goerli.id]
     );
   }, [selectedPriceChecker]);
 
@@ -464,6 +480,11 @@ function FormSelectPriceChecker({
             </SelectItem>
           ))}
         </Select>
+        {errors.priceChecker && (
+          <FormMessage className="h-6 text-sm text-tomato10">
+            <span>{errors.priceChecker.message as string}</span>
+          </FormMessage>
+        )}
       </div>
       {selectedPriceChecker &&
         priceCheckerInfoMapping[
@@ -515,12 +536,12 @@ function OrderResume({
 
   async function handleButtonClick() {
     const sellAmountBigInt = BigInt(
-      Number(data.tokenSellAmount) * 10 ** data.tokenSell.decimals,
+      Number(data.tokenSellAmount) * 10 ** data.tokenSell.decimals
     );
     const priceCheckersArgs = priceCheckerInfoMapping[
       data.priceChecker as PRICE_CHECKERS
     ].arguments.map((arg) =>
-      arg.convertInput(data[arg.name], data.tokenBuy.decimals),
+      arg.convertInput(data[arg.name], data.tokenBuy.decimals)
     );
 
     await sendTransactions([

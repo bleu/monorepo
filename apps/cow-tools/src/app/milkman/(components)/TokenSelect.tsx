@@ -11,17 +11,19 @@ import { Dialog } from "#/components/Dialog";
 import Table from "#/components/Table";
 import { useSafeBalances } from "#/hooks/useSafeBalances";
 
+import { tokenPriceChecker } from "../[network]/order/new/page";
+
 export function TokenSelect({
   onSelectToken,
   tokenType,
   selectedToken,
 }: {
-  onSelectToken: (token: TokenBalance) => void;
+  onSelectToken: (token: tokenPriceChecker) => void;
   tokenType: "sell" | "buy";
-  selectedToken?: TokenBalance;
+  selectedToken?: tokenPriceChecker;
 }) {
   const [open, setOpen] = useState(false);
-  const [token, setToken] = useState<TokenBalance | undefined>(undefined);
+  const [token, setToken] = useState<tokenPriceChecker | undefined>(undefined);
 
   useEffect(() => {
     if (selectedToken) {
@@ -30,8 +32,13 @@ export function TokenSelect({
   }, [selectedToken]);
 
   function handleSelectToken(token: TokenBalance) {
-    onSelectToken(token);
-    setToken(token);
+    const tokenForPriceChecker = {
+      address: token.tokenInfo.address,
+      symbol: token.tokenInfo.symbol,
+      decimals: token.tokenInfo.decimals,
+    };
+    onSelectToken(tokenForPriceChecker);
+    setToken(tokenForPriceChecker);
     setOpen(false);
   }
 
@@ -54,9 +61,8 @@ export function TokenSelect({
             <div className="rounded-full bg-white p-[3px]">
               <Image
                 src={
-                  tokenLogoUri[
-                    token?.tokenInfo.symbol as keyof typeof tokenLogoUri
-                  ] || "/assets/generic-token-logo.png"
+                  tokenLogoUri[token?.symbol as keyof typeof tokenLogoUri] ||
+                  "/assets/generic-token-logo.png"
                 }
                 className="rounded-full"
                 alt="Token Logo"
@@ -65,7 +71,7 @@ export function TokenSelect({
                 quality={100}
               />
             </div>
-            <div>{token?.tokenInfo.symbol}</div>
+            <div>{token?.symbol}</div>
           </div>
           <ChevronDownIcon />
         </button>

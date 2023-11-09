@@ -1,6 +1,6 @@
 "use client";
 
-import { TokenInfo } from "@gnosis.pm/safe-apps-sdk";
+import { TokenBalance } from "@gnosis.pm/safe-apps-sdk";
 import { ChevronDownIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import { tokenLogoUri } from "public/tokens/logoUri";
@@ -11,21 +11,17 @@ import { Dialog } from "#/components/Dialog";
 import Table from "#/components/Table";
 import { useSafeBalances } from "#/hooks/useSafeBalances";
 
-export interface TokenWalletBalance extends TokenInfo {
-  balance: bigint;
-}
-
 export function TokenSelect({
   onSelectToken,
   tokenType,
   selectedToken,
 }: {
-  onSelectToken: (token: TokenWalletBalance) => void;
+  onSelectToken: (token: TokenBalance) => void;
   tokenType: "sell" | "buy";
-  selectedToken?: TokenWalletBalance;
+  selectedToken?: TokenBalance;
 }) {
   const [open, setOpen] = useState(false);
-  const [token, setToken] = useState<TokenWalletBalance | undefined>(undefined);
+  const [token, setToken] = useState<TokenBalance | undefined>(undefined);
 
   useEffect(() => {
     if (selectedToken) {
@@ -33,7 +29,7 @@ export function TokenSelect({
     }
   }, [selectedToken]);
 
-  function handleSelectToken(token: TokenWalletBalance) {
+  function handleSelectToken(token: TokenBalance) {
     onSelectToken(token);
     setToken(token);
     setOpen(false);
@@ -58,8 +54,9 @@ export function TokenSelect({
             <div className="rounded-full bg-white p-[3px]">
               <Image
                 src={
-                  tokenLogoUri[token?.symbol as keyof typeof tokenLogoUri] ||
-                  "/assets/generic-token-logo.png"
+                  tokenLogoUri[
+                    token?.tokenInfo.symbol as keyof typeof tokenLogoUri
+                  ] || "/assets/generic-token-logo.png"
                 }
                 className="rounded-full"
                 alt="Token Logo"
@@ -68,7 +65,7 @@ export function TokenSelect({
                 quality={100}
               />
             </div>
-            <div>{token?.symbol}</div>
+            <div>{token?.tokenInfo.symbol}</div>
           </div>
           <ChevronDownIcon />
         </button>
@@ -80,22 +77,16 @@ export function TokenSelect({
 function TokenModal({
   onSelectToken,
 }: {
-  onSelectToken: (token: TokenWalletBalance) => void;
+  onSelectToken: (token: TokenBalance) => void;
 }) {
-  const [tokens, setTokens] = useState<(TokenWalletBalance | undefined)[]>([]);
+  const [tokens, setTokens] = useState<(TokenBalance | undefined)[]>([]);
   const [tokenSearchQuery, setTokenSearchQuery] = useState("");
 
   const { assets, loaded } = useSafeBalances();
 
   useEffect(() => {
     if (loaded) {
-      const tokens = assets.map((asset) => {
-        return {
-          ...asset.tokenInfo,
-          balance: BigInt(asset.balance),
-        };
-      });
-      setTokens(tokens);
+      setTokens(assets);
     }
   }, [loaded]);
 
@@ -104,7 +95,7 @@ function TokenModal({
     token,
   }: {
     tokenSearchQuery: string;
-    token?: TokenInfo;
+    token?: TokenBalance;
   }) {
     {
       if (!token) return false;
@@ -148,16 +139,22 @@ function TokenModal({
           {tokens
             .filter((token) => filterTokenInput({ tokenSearchQuery, token }))
             .sort((a, b) =>
-              formatUnits(a!.balance, a!.decimals ? a!.decimals : 0) <
-              formatUnits(b!.balance, b!.decimals ? b!.decimals : 0)
+              formatUnits(
+                BigInt(a!.balance),
+                a!.tokenInfo.decimals ? a!.tokenInfo.decimals : 0
+              ) <
+              formatUnits(
+                BigInt(b!.balance),
+                b!.tokenInfo.decimals ? b!.tokenInfo.decimals : 0
+              )
                 ? 1
-                : -1,
+                : -1
             )
             .map((token) => {
               if (token) {
                 return (
                   <TokenRow
-                    key={token.address}
+                    key={token.tokenInfo.address}
                     token={token}
                     onSelectToken={onSelectToken}
                   />
@@ -174,12 +171,12 @@ function TokenRow({
   token,
   onSelectToken,
 }: {
-  token: TokenWalletBalance;
-  onSelectToken: (token: TokenWalletBalance) => void;
+  token: TokenBalance;
+  onSelectToken: (token: TokenBalance) => void;
 }) {
   return (
     <Table.BodyRow
-      key={token.address}
+      key={token.tokenInfo.address}
       classNames="hover:bg-blue4 hover:cursor-pointer"
       onClick={() => onSelectToken(token)}
     >
@@ -188,8 +185,9 @@ function TokenRow({
           <div className="rounded-full bg-white p-1">
             <Image
               src={
-                tokenLogoUri[token.symbol as keyof typeof tokenLogoUri] ||
-                "/assets/generic-token-logo.png"
+                tokenLogoUri[
+                  token.tokenInfo.symbol as keyof typeof tokenLogoUri
+                ] || "/assets/generic-token-logo.png"
               }
               className="rounded-full"
               alt="Token Logo"
@@ -200,10 +198,13 @@ function TokenRow({
           </div>
         </div>
       </Table.BodyCell>
-      <Table.BodyCell>{token.symbol}</Table.BodyCell>
+      <Table.BodyCell>{token.tokenInfo.symbol}</Table.BodyCell>
       <Table.BodyCell>
         {token.balance
-          ? formatUnits(token.balance, token.decimals ? token.decimals : 0)
+          ? formatUnits(
+              BigInt(token.balance),
+              token.tokenInfo.decimals ? token.tokenInfo.decimals : 0
+            )
           : ""}
       </Table.BodyCell>
     </Table.BodyRow>

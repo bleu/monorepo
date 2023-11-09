@@ -1,5 +1,6 @@
 import { encodePacked } from "viem";
 import { goerli } from "viem/chains";
+
 import { fixedMinOutSchema, sushiSwapSchema, uniV2Schema } from "./schema";
 
 export type argType = "uint256";

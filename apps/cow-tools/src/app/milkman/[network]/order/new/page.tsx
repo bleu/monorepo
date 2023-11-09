@@ -236,7 +236,7 @@ function FormOrderOverview({
     setValue,
     clearErrors,
     formState: { errors },
-    getValues,
+    watch,
   } = form;
 
   useEffect(() => {
@@ -247,7 +247,7 @@ function FormOrderOverview({
 
   const { assets, loaded } = useSafeBalances();
 
-  const formData = getValues();
+  const formData = watch();
 
   const tokenSell = assets.find(
     (asset) => asset.tokenInfo.address === formData.tokenSell?.address,

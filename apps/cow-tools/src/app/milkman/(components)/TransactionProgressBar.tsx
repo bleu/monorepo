@@ -115,10 +115,10 @@ export function TransactionProgressBar({
     const line = i < totalSteps - 1 ? <Line classNames={lineColor} /> : null;
 
     return (
-      <>
+      <div key={stepNumber} className="flex items-center">
         {stepCircle}
         {line}
-      </>
+      </div>
     );
   });
 

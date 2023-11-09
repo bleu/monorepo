@@ -100,14 +100,14 @@ function TransactionCard({
 
   function handleBack() {
     const currentStage = stages.find(
-      (stage) => stage.name === transactionStatus
+      (stage) => stage.name === transactionStatus,
     );
     setTransactionStatus(currentStage?.previousStage ?? transactionStatus);
   }
 
   function handleContinue() {
     const currentStage = stages.find(
-      (stage) => stage.name === transactionStatus
+      (stage) => stage.name === transactionStatus,
     );
     setTransactionStatus(currentStage?.nextStage ?? transactionStatus);
   }
@@ -242,12 +242,12 @@ function FormOrderOverview({
   function getTokenBalanceFromAddress(address: string | undefined) {
     if (!address) return;
     return assets.find(
-      (tokenBalance) => tokenBalance.tokenInfo.address === address
+      (tokenBalance) => tokenBalance.tokenInfo.address === address,
     );
   }
 
   const [isValidFromNeeded, setIsValidFromNeeded] = useState(
-    !!defaultValues?.validFrom
+    !!defaultValues?.validFrom,
   );
   const [tokenBuy, setTokenBuy] = useState<TokenBalance | undefined>();
   const [tokenSell, setTokenSell] = useState<TokenBalance | undefined>();
@@ -260,7 +260,7 @@ function FormOrderOverview({
     ) {
       setTokenBuy(getTokenBalanceFromAddress(defaultValues?.tokenBuy?.address));
       setTokenSell(
-        getTokenBalanceFromAddress(defaultValues?.tokenSell?.address)
+        getTokenBalanceFromAddress(defaultValues?.tokenSell?.address),
       );
       setValue("tokenBuy", defaultValues?.tokenBuy);
       setValue("tokenSell", defaultValues?.tokenSell);
@@ -318,7 +318,7 @@ function FormOrderOverview({
                       4,
                       "decimal",
                       "standard",
-                      0.0001
+                      0.0001,
                     )}
                   </span>
                 </span>
@@ -425,10 +425,10 @@ function FormSelectPriceChecker({
   const form = useForm(
     selectedPriceChecker && {
       resolver: zodResolver(
-        priceCheckerInfoMapping[selectedPriceChecker].schema
+        priceCheckerInfoMapping[selectedPriceChecker].schema,
       ),
       mode: "onSubmit",
-    }
+    },
   );
 
   const { register, clearErrors, setValue } = form;
@@ -443,7 +443,7 @@ function FormSelectPriceChecker({
     setValue("priceChecker", selectedPriceChecker);
     setValue(
       "priceCheckerAddress",
-      priceCheckerInfoMapping[selectedPriceChecker].addresses[goerli.id]
+      priceCheckerInfoMapping[selectedPriceChecker].addresses[goerli.id],
     );
   }, [selectedPriceChecker]);
 
@@ -512,12 +512,12 @@ function OrderResume({
 
   async function handleButtonClick() {
     const sellAmountBigInt = BigInt(
-      Number(data.tokenSellAmount) * 10 ** data.tokenSell.decimals
+      Number(data.tokenSellAmount) * 10 ** data.tokenSell.decimals,
     );
     const priceCheckersArgs = priceCheckerInfoMapping[
       data.priceChecker as PRICE_CHECKERS
     ].arguments.map((arg) =>
-      arg.convertInput(data[arg.name], data.tokenBuy.decimals)
+      arg.convertInput(data[arg.name], data.tokenBuy.decimals),
     );
 
     await sendTransactions([

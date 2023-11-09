@@ -29,7 +29,7 @@ export const orderOverviewSchema = z
     {
       path: ["tokenBuy"],
       message: "Tokens sell and buy must be different",
-    }
+    },
   );
 
 const basicPriceCheckerSchema = z.object({

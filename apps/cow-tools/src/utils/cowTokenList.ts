@@ -1,3 +1,5 @@
+//source: https://tokenlists.org/token-list?url=https://files.cow.fi/tokens/CowSwap.json
+//https://files.cow.fi/tokens/CowSwap.json
 export const cowTokenList = [
   {
     symbol: "SPELL",

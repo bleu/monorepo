@@ -1,4 +1,4 @@
-import { encodePacked } from "viem";
+import { encodeAbiParameters } from "viem";
 import { goerli } from "viem/chains";
 
 import {
@@ -31,9 +31,11 @@ export const priceCheckerInfoMapping = {
         inputType: "number",
         convertInput: (input: number, decimals: number) =>
           BigInt(input * 10 ** decimals),
+        toExpectedOutCalculator: false,
       },
     ],
     name: PRICE_CHECKERS.FIXED_MIN_OUT,
+    hasExpectedOutCalculator: false,
     schema: fixedMinOutSchema,
     getSchema: getFixedMinOutSchema,
   },
@@ -48,9 +50,12 @@ export const priceCheckerInfoMapping = {
         label: "Allowed slippage (%)",
         inputType: "number",
         convertInput: (input: number) => BigInt(input * 100),
+        toExpectedOutCalculator: false,
       },
     ],
     name: PRICE_CHECKERS.UNI_V2,
+    hasExpectedOutCalculator: true,
+
     schema: uniV2Schema,
     getSchema: getUniV2Schema,
   },
@@ -65,9 +70,12 @@ export const priceCheckerInfoMapping = {
         label: "Allowed slippage (%)",
         inputType: "number",
         convertInput: (input: number) => BigInt(input * 100),
+        toExpectedOutCalculator: false,
       },
     ],
     name: PRICE_CHECKERS.SUSHI_SWAP,
+    hasExpectedOutCalculator: true,
+
     schema: sushiSwapSchema,
     getSchema: getSushiSwapSchema,
   },
@@ -77,12 +85,59 @@ export function encodePriceCheckerData(
   priceChecker: PRICE_CHECKERS,
   args: bigint[],
 ): `0x${string}` {
-  const { arguments: priceCheckerArgs } = priceCheckerInfoMapping[priceChecker];
-  if (priceCheckerArgs.length !== args.length) {
+  const { arguments: priceCheckerArgs, hasExpectedOutCalculator } =
+    priceCheckerInfoMapping[priceChecker];
+  if (priceCheckerArgs.length !== args.length || !args.length) {
     throw new Error(`Invalid number of arguments for ${priceChecker}`);
   }
-  return encodePacked(
-    priceCheckerArgs.map((arg) => arg.type),
-    args,
+
+  if (!hasExpectedOutCalculator) {
+    return encodeAbiParameters(
+      priceCheckerArgs.map((arg) => {
+        return {
+          name: arg.name,
+          type: arg.type,
+        };
+      }),
+      args,
+    );
+  }
+
+  const firstExpectedOutArgIndex = priceCheckerArgs.findIndex(
+    (arg) => arg.toExpectedOutCalculator,
+  );
+
+  const expectedOutData =
+    firstExpectedOutArgIndex == -1
+      ? encodeAbiParameters([{ name: "_data", type: "bytes" }], ["0x"])
+      : encodeAbiParameters(
+          priceCheckerArgs.slice(firstExpectedOutArgIndex).map((arg) => {
+            return {
+              name: arg.name,
+              type: arg.type,
+            };
+          }),
+          args.slice(firstExpectedOutArgIndex),
+        );
+
+  const priceCheckerArgsToEncode =
+    firstExpectedOutArgIndex == -1
+      ? priceCheckerArgs
+      : priceCheckerArgs.slice(0, firstExpectedOutArgIndex);
+  const argsToEncode =
+    firstExpectedOutArgIndex == -1
+      ? args
+      : args.slice(0, firstExpectedOutArgIndex);
+  return encodeAbiParameters(
+    priceCheckerArgsToEncode
+      .map((arg) => {
+        return {
+          name: arg.name as string,
+          type: arg.type as string,
+        };
+      })
+      .concat([{ name: "_data", type: "bytes" }]),
+    // @ts-ignore
+    argsToEncode.concat([expectedOutData]),
   );
 }

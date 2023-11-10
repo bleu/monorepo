@@ -1,4 +1,4 @@
-import { PublicClient, encodePacked, isAddress, keccak256 } from "viem";
+import { PublicClient, encodeAbiParameters, isAddress } from "viem";
 import { z } from "zod";
 import { dynamicSlippagePriceCheckerAbi } from "./abis/dynamicSlippagePriceChecker";
 import { Address } from "@bleu-fi/utils";
@@ -15,8 +15,6 @@ const baseTokenAddress = z.object({
   decimals: z.number().positive(),
   symbol: z.string(),
 });
-
-const dummyBytes = ("0x" + "0".repeat(128)) as Address;
 
 const priceCheckerRevertedMessage =
   "The price checker reverted. Please select another one.";
@@ -73,9 +71,18 @@ const getBasicDynamicSlippageSchema = ({
               tokenSellAddress,
               0, // this value isn't used by this price checker
               0, // this value will depend on the order, so it's not important here
-              encodePacked(
-                ["uint256", "bytes"],
-                [bigIntAllowedSlippageInBps, dummyBytes],
+              encodeAbiParameters(
+                [
+                  {
+                    type: "uint256",
+                    name: "allowedSlippageInBps",
+                  },
+                  {
+                    type: "bytes",
+                    name: "_data",
+                  },
+                ],
+                [bigIntAllowedSlippageInBps, "0x"],
               ),
             ],
           });
@@ -118,9 +125,18 @@ export const getFixedMinOutSchema = ({
               tokenBuyAddress,
               BigInt(0), // this value isn't used by this price checker
               BigInt(0), // this value will depend on the order, so it's not important here
-              encodePacked(
-                ["uint256", "bytes"],
-                [BigInt(data.minOut), dummyBytes],
+              encodeAbiParameters(
+                [
+                  {
+                    type: "uint256",
+                    name: "allowedSlippageInBps",
+                  },
+                  {
+                    type: "bytes",
+                    name: "_data",
+                  },
+                ],
+                [BigInt(data.minOut), "0x"],
               ),
             ],
           });

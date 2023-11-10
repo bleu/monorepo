@@ -7,9 +7,9 @@ import { TransactionStatus } from "#/app/milkman/utils/type";
 import { useOrder } from "#/contexts/OrderContext";
 
 import { FormHeader } from "./orderForm/Header";
-import { FormOrderOverview } from "./orderForm/overview";
-import { FormSelectPriceChecker } from "./orderForm/priceChecker";
-import { OrderResume } from "./orderForm/resume";
+import { FormOrderOverview } from "./orderForm/Overview";
+import { FormSelectPriceChecker } from "./orderForm/PriceChecker";
+import { OrderResume } from "./orderForm/Resume";
 
 export function TransactionCard({
   userAddress,

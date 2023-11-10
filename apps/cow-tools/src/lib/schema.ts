@@ -16,8 +16,7 @@ const baseTokenAddress = z.object({
   symbol: z.string(),
 });
 
-const dummyBytes =
-  "0x00000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000";
+const dummyBytes = ("0x" + "0".repeat(128)) as Address;
 
 const priceCheckerRevertedMessage =
   "The price checker reverted. Please select another one.";

@@ -9,7 +9,7 @@ import { ArrowLeftIcon, Pencil1Icon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import { formatUnits } from "viem";
+import { createPublicClient, formatUnits, http } from "viem";
 import { goerli } from "viem/chains";
 import { useAccount, useNetwork } from "wagmi";
 
@@ -100,14 +100,14 @@ function TransactionCard({
 
   function handleBack() {
     const currentStage = stages.find(
-      (stage) => stage.name === transactionStatus
+      (stage) => stage.name === transactionStatus,
     );
     setTransactionStatus(currentStage?.previousStage ?? transactionStatus);
   }
 
   function handleContinue() {
     const currentStage = stages.find(
-      (stage) => stage.name === transactionStatus
+      (stage) => stage.name === transactionStatus,
     );
     setTransactionStatus(currentStage?.nextStage ?? transactionStatus);
   }
@@ -244,12 +244,12 @@ function FormOrderOverview({
   function getTokenBalanceFromAddress(address: string | undefined) {
     if (!address) return;
     return assets.find(
-      (tokenBalance) => tokenBalance.tokenInfo.address === address
+      (tokenBalance) => tokenBalance.tokenInfo.address === address,
     );
   }
 
   const [isValidFromNeeded, setIsValidFromNeeded] = useState(
-    !!defaultValues?.validFrom
+    !!defaultValues?.validFrom,
   );
   const [tokenBuy, setTokenBuy] = useState<TokenBalance | undefined>();
   const [tokenSell, setTokenSell] = useState<TokenBalance | undefined>();
@@ -262,7 +262,7 @@ function FormOrderOverview({
     ) {
       setTokenBuy(getTokenBalanceFromAddress(defaultValues?.tokenBuy?.address));
       setTokenSell(
-        getTokenBalanceFromAddress(defaultValues?.tokenSell?.address)
+        getTokenBalanceFromAddress(defaultValues?.tokenSell?.address),
       );
       setValue("tokenBuy", defaultValues?.tokenBuy);
       setValue("tokenSell", defaultValues?.tokenSell);
@@ -320,7 +320,7 @@ function FormOrderOverview({
                       4,
                       "decimal",
                       "standard",
-                      0.0001
+                      0.0001,
                     )}
                   </span>
                 </span>
@@ -428,18 +428,24 @@ function FormSelectPriceChecker({
   const [selectedPriceChecker, setSelectedPriceChecker] =
     useState<PRICE_CHECKERS>(defaultValues?.priceChecker);
 
+  const publicClient = createPublicClient({
+    chain: goerli,
+    transport: http(),
+  });
+
   const schema =
     selectedPriceChecker &&
     priceCheckerInfoMapping[selectedPriceChecker].getSchema({
       tokenSellAddress,
       tokenBuyAddress,
+      publicClient,
     });
 
   const form = useForm(
     selectedPriceChecker && {
       resolver: zodResolver(schema),
       mode: "onSubmit",
-    }
+    },
   );
 
   const {
@@ -459,7 +465,7 @@ function FormSelectPriceChecker({
     setValue("priceChecker", selectedPriceChecker);
     setValue(
       "priceCheckerAddress",
-      priceCheckerInfoMapping[selectedPriceChecker].addresses[goerli.id]
+      priceCheckerInfoMapping[selectedPriceChecker].addresses[goerli.id],
     );
   }, [selectedPriceChecker]);
 
@@ -481,7 +487,7 @@ function FormSelectPriceChecker({
           ))}
         </Select>
         {errors.priceChecker && (
-          <FormMessage className="h-6 text-sm text-tomato10">
+          <FormMessage className="h-6 text-sm text-tomato10 w-full">
             <span>{errors.priceChecker.message as string}</span>
           </FormMessage>
         )}
@@ -536,12 +542,12 @@ function OrderResume({
 
   async function handleButtonClick() {
     const sellAmountBigInt = BigInt(
-      Number(data.tokenSellAmount) * 10 ** data.tokenSell.decimals
+      Number(data.tokenSellAmount) * 10 ** data.tokenSell.decimals,
     );
     const priceCheckersArgs = priceCheckerInfoMapping[
       data.priceChecker as PRICE_CHECKERS
     ].arguments.map((arg) =>
-      arg.convertInput(data[arg.name], data.tokenBuy.decimals)
+      arg.convertInput(data[arg.name], data.tokenBuy.decimals),
     );
 
     await sendTransactions([

@@ -75,7 +75,7 @@ export const priceCheckerInfoMapping = {
 
 export function encodePriceCheckerData(
   priceChecker: PRICE_CHECKERS,
-  args: bigint[]
+  args: bigint[],
 ): `0x${string}` {
   const { arguments: priceCheckerArgs } = priceCheckerInfoMapping[priceChecker];
   if (priceCheckerArgs.length !== args.length) {
@@ -83,6 +83,6 @@ export function encodePriceCheckerData(
   }
   return encodePacked(
     priceCheckerArgs.map((arg) => arg.type),
-    args
+    args,
   );
 }

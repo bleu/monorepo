@@ -1,7 +1,6 @@
-import { encodePacked, isAddress } from "viem";
+import { PublicClient, encodePacked, isAddress, keccak256 } from "viem";
 import { z } from "zod";
 import { dynamicSlippagePriceCheckerAbi } from "./abis/dynamicSlippagePriceChecker";
-import { readContract } from "@wagmi/core";
 import { Address } from "@bleu-fi/utils";
 
 const basicAddressSchema = z
@@ -16,6 +15,12 @@ const baseTokenAddress = z.object({
   decimals: z.number().positive(),
   symbol: z.string(),
 });
+
+const dummyBytes =
+  "0x00000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000";
+
+const priceCheckerRevertedMessage =
+  "The price checker reverted. Please select another one.";
 
 export const orderOverviewSchema = z
   .object({
@@ -32,7 +37,7 @@ export const orderOverviewSchema = z
     {
       path: ["tokenBuy"],
       message: "Tokens sell and buy must be different",
-    }
+    },
   );
 
 const basicPriceCheckerSchema = z.object({
@@ -43,9 +48,11 @@ const basicPriceCheckerSchema = z.object({
 const getBasicDynamicSlippageSchema = ({
   tokenSellAddress,
   tokenBuyAddress,
+  publicClient,
 }: {
   tokenSellAddress: Address;
   tokenBuyAddress: Address;
+  publicClient: PublicClient;
 }) => {
   return basicPriceCheckerSchema
     .extend({
@@ -54,50 +61,46 @@ const getBasicDynamicSlippageSchema = ({
     .refine(
       async (data) => {
         const bigIntAllowedSlippageInBps = BigInt(
-          data.allowedSlippageInBps * 100
+          data.allowedSlippageInBps * 100,
         );
         try {
-          console.log(data);
-          console.log(tokenBuyAddress);
-          console.log(tokenSellAddress);
-          console.log(bigIntAllowedSlippageInBps);
-          const priceCheckerData = encodePacked(
-            ["uint256", "bytes"],
-            [bigIntAllowedSlippageInBps, "0x0"]
-          );
-          console.log(priceCheckerData);
-          await readContract({
+          await publicClient.readContract({
             address: data.priceCheckerAddress as Address,
             abi: dynamicSlippagePriceCheckerAbi,
             functionName: "checkPrice",
             args: [
-              BigInt(1), // we're just interested in call revert or not, so this value is not important
-              tokenSellAddress,
+              1, // we're just interested in call revert or not, so this value is not important
               tokenBuyAddress,
-              BigInt(0), // this value isn't used by this price checker
-              BigInt(0), // this value will depend on the order, so it's not important here
-              priceCheckerData,
+              tokenSellAddress,
+              0, // this value isn't used by this price checker
+              0, // this value will depend on the order, so it's not important here
+              encodePacked(
+                ["uint256", "bytes"],
+                [bigIntAllowedSlippageInBps, dummyBytes],
+              ),
             ],
           });
           return true;
         } catch (e) {
+          console.log(e);
           return false;
         }
       },
       {
         path: ["priceChecker"],
-        message:
-          "The price checker reverted. Usually, this means that the price checker doesn't support the trade that you are trying to make.",
-      }
+        message: priceCheckerRevertedMessage,
+      },
     );
 };
 
 export const getFixedMinOutSchema = ({
   tokenSellAddress,
   tokenBuyAddress,
+  publicClient,
 }: {
   tokenSellAddress: Address;
   tokenBuyAddress: Address;
+  publicClient: PublicClient;
 }) => {
   return basicPriceCheckerSchema
     .extend({
@@ -106,7 +109,7 @@ export const getFixedMinOutSchema = ({
     .refine(
       async (data) => {
         try {
-          await readContract({
+          await publicClient.readContract({
             address: data.priceCheckerAddress as Address,
             abi: dynamicSlippagePriceCheckerAbi,
             functionName: "checkPrice",
@@ -116,7 +119,10 @@ export const getFixedMinOutSchema = ({
               tokenBuyAddress,
               BigInt(0), // this value isn't used by this price checker
               BigInt(0), // this value will depend on the order, so it's not important here
-              encodePacked(["uint256"], [BigInt(data.minOut)]),
+              encodePacked(
+                ["uint256", "bytes"],
+                [BigInt(data.minOut), dummyBytes],
+              ),
             ],
           });
           return true;
@@ -126,9 +132,8 @@ export const getFixedMinOutSchema = ({
       },
       {
         path: ["priceChecker"],
-        message:
-          "The price checker reverted. Usually, this means that the price checker doesn't support the trade that you are trying to make.",
-      }
+        message: priceCheckerRevertedMessage,
+      },
     );
 };
 

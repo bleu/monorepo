@@ -100,9 +100,6 @@ function TransactionCard({
   const { transactionStatus, setTransactionStatus } = useOrder();
   const network = networkFor(chainId);
 
-  // const form1 = useForm();
-  // const form2 = useForm();
-
   const [orderOverviewData, setOrderOverviewData] = useState<FieldValues>();
   const [priceCheckerData, setPriceCheckerData] = useState<FieldValues>();
 

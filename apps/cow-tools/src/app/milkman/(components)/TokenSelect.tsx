@@ -1,17 +1,23 @@
 "use client";
 
-import { TokenBalance } from "@gnosis.pm/safe-apps-sdk";
+import { TokenInfo, TokenType } from "@gnosis.pm/safe-apps-sdk";
 import { ChevronDownIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import { tokenLogoUri } from "public/tokens/logoUri";
 import React, { useEffect, useState } from "react";
 import { formatUnits } from "viem";
+import { useNetwork } from "wagmi";
 
 import { Dialog } from "#/components/Dialog";
 import Table from "#/components/Table";
 import { useSafeBalances } from "#/hooks/useSafeBalances";
+import { cowTokenList } from "#/utils/cowTokenList";
 
 import { tokenPriceChecker } from "../[network]/order/new/page";
+
+export interface TokenWalletBalance extends TokenInfo {
+  balance: bigint;
+}
 
 export function TokenSelect({
   onSelectToken,
@@ -31,11 +37,11 @@ export function TokenSelect({
     }
   }, [selectedToken]);
 
-  function handleSelectToken(token: TokenBalance) {
+  function handleSelectToken(token: TokenWalletBalance) {
     const tokenForPriceChecker = {
-      address: token.tokenInfo.address,
-      symbol: token.tokenInfo.symbol,
-      decimals: token.tokenInfo.decimals,
+      address: token.address,
+      symbol: token.symbol,
+      decimals: token.decimals,
     };
     onSelectToken(tokenForPriceChecker);
     setToken(tokenForPriceChecker);
@@ -44,7 +50,9 @@ export function TokenSelect({
 
   return (
     <Dialog
-      content={<TokenModal onSelectToken={handleSelectToken} />}
+      content={
+        <TokenModal onSelectToken={handleSelectToken} tokenType={tokenType} />
+      }
       isOpen={open}
       setIsOpen={setOpen}
     >
@@ -82,26 +90,65 @@ export function TokenSelect({
 
 function TokenModal({
   onSelectToken,
+  tokenType,
 }: {
-  onSelectToken: (token: TokenBalance) => void;
+  onSelectToken: (token: TokenWalletBalance) => void;
+  tokenType: "sell" | "buy";
 }) {
-  const [tokens, setTokens] = useState<(TokenBalance | undefined)[]>([]);
-  const [tokenSearchQuery, setTokenSearchQuery] = useState("");
+  const { chain } = useNetwork();
+  const [tokens, setTokens] = useState<(TokenWalletBalance | undefined)[]>(
+    tokenType === "buy"
+      ? cowTokenList
+          .filter((token) => token.chainId === chain?.id)
+          .map((token) => {
+            return {
+              address: token.address,
+              decimals: token.decimals,
+              name: token.name,
+              symbol: token.symbol,
+              logoUri: token.logoURI,
+              balance: BigInt(0),
+              type: TokenType.ERC20,
+            };
+          })
+      : [],
+  );
 
   const { assets, loaded } = useSafeBalances();
-
   useEffect(() => {
     if (loaded) {
-      setTokens(assets);
+      const tokens = assets.map((asset) => {
+        return {
+          ...asset.tokenInfo,
+          balance: BigInt(asset.balance),
+        };
+      });
+
+      setTokens((prevTokens) => {
+        const combinedTokens = [...prevTokens, ...tokens].reduce<{
+          [key: string]: TokenWalletBalance;
+        }>((acc, token) => {
+          const balanceBigInt = BigInt(token?.balance ?? 0);
+          const address = token?.address ?? "";
+
+          if (!acc[address] || balanceBigInt > acc[address].balance) {
+            acc[address] = token as TokenWalletBalance;
+          }
+          return acc;
+        }, {});
+        return Object.values(combinedTokens);
+      });
     }
-  }, [loaded]);
+  }, [loaded, assets]);
+
+  const [tokenSearchQuery, setTokenSearchQuery] = useState("");
 
   function filterTokenInput({
     tokenSearchQuery,
     token,
   }: {
     tokenSearchQuery: string;
-    token?: TokenBalance;
+    token?: TokenWalletBalance;
   }) {
     {
       if (!token) return false;
@@ -145,14 +192,8 @@ function TokenModal({
           {tokens
             .filter((token) => filterTokenInput({ tokenSearchQuery, token }))
             .sort((a, b) =>
-              formatUnits(
-                BigInt(a!.balance),
-                a!.tokenInfo.decimals ? a!.tokenInfo.decimals : 0,
-              ) <
-              formatUnits(
-                BigInt(b!.balance),
-                b!.tokenInfo.decimals ? b!.tokenInfo.decimals : 0,
-              )
+              formatUnits(BigInt(a!.balance), a!.decimals ? a!.decimals : 0) <
+              formatUnits(BigInt(b!.balance), b!.decimals ? b!.decimals : 0)
                 ? 1
                 : -1,
             )
@@ -160,7 +201,7 @@ function TokenModal({
               if (token) {
                 return (
                   <TokenRow
-                    key={token.tokenInfo.address}
+                    key={token.address}
                     token={token}
                     onSelectToken={onSelectToken}
                   />
@@ -177,12 +218,12 @@ function TokenRow({
   token,
   onSelectToken,
 }: {
-  token: TokenBalance;
-  onSelectToken: (token: TokenBalance) => void;
+  token: TokenWalletBalance;
+  onSelectToken: (token: TokenWalletBalance) => void;
 }) {
   return (
     <Table.BodyRow
-      key={token.tokenInfo.address}
+      key={token.address}
       classNames="hover:bg-blue4 hover:cursor-pointer"
       onClick={() => onSelectToken(token)}
     >
@@ -191,9 +232,8 @@ function TokenRow({
           <div className="rounded-full bg-white p-1">
             <Image
               src={
-                tokenLogoUri[
-                  token.tokenInfo.symbol as keyof typeof tokenLogoUri
-                ] || "/assets/generic-token-logo.png"
+                tokenLogoUri[token.symbol as keyof typeof tokenLogoUri] ||
+                "/assets/generic-token-logo.png"
               }
               className="rounded-full"
               alt="Token Logo"
@@ -204,12 +244,12 @@ function TokenRow({
           </div>
         </div>
       </Table.BodyCell>
-      <Table.BodyCell>{token.tokenInfo.symbol}</Table.BodyCell>
+      <Table.BodyCell>{token.symbol}</Table.BodyCell>
       <Table.BodyCell>
         {token.balance
           ? formatUnits(
               BigInt(token.balance),
-              token.tokenInfo.decimals ? token.tokenInfo.decimals : 0,
+              token.decimals ? token.decimals : 0,
             )
           : ""}
       </Table.BodyCell>

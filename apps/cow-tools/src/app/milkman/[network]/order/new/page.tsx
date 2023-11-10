@@ -3,7 +3,6 @@
 import { Address, Network, NetworkChainId, networkFor } from "@bleu-fi/utils";
 import { formatDateToLocalDatetime } from "@bleu-fi/utils/date";
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
-import { TokenBalance } from "@gnosis.pm/safe-apps-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon, Pencil1Icon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
@@ -36,6 +35,12 @@ import { PRICE_CHECKERS, priceCheckerInfoMapping } from "#/lib/priceCheckers";
 import { orderOverviewSchema } from "#/lib/schema";
 import { MILKMAN_ADDRESS, TRANSACTION_TYPES } from "#/lib/transactionFactory";
 import { truncateAddress } from "#/utils/truncate";
+
+export type tokenPriceChecker = {
+  symbol: string;
+  address: string;
+  decimals: number;
+};
 
 export default function Page({
   params,
@@ -94,6 +99,9 @@ function TransactionCard({
 }) {
   const { transactionStatus, setTransactionStatus } = useOrder();
   const network = networkFor(chainId);
+
+  // const form1 = useForm();
+  // const form2 = useForm();
 
   const [orderOverviewData, setOrderOverviewData] = useState<FieldValues>();
   const [priceCheckerData, setPriceCheckerData] = useState<FieldValues>();
@@ -222,13 +230,13 @@ function FormOrderOverview({
 }) {
   const form = useForm<typeof orderOverviewSchema._type>({
     resolver: zodResolver(orderOverviewSchema),
-    mode: "onSubmit",
   });
   const {
     register,
     setValue,
     clearErrors,
     formState: { errors },
+    watch,
   } = form;
 
   useEffect(() => {
@@ -239,18 +247,19 @@ function FormOrderOverview({
 
   const { assets, loaded } = useSafeBalances();
 
-  function getTokenBalanceFromAddress(address: string | undefined) {
-    if (!address) return;
-    return assets.find(
-      (tokenBalance) => tokenBalance.tokenInfo.address === address,
-    );
-  }
+  const formData = watch();
+
+  const tokenSell = assets.find(
+    (asset) => asset.tokenInfo.address === formData.tokenSell?.address,
+  );
+
+  const walletAmount = !tokenSell
+    ? 0
+    : formatUnits(BigInt(tokenSell?.balance), tokenSell?.tokenInfo.decimals);
 
   const [isValidFromNeeded, setIsValidFromNeeded] = useState(
     !!defaultValues?.validFrom,
   );
-  const [tokenBuy, setTokenBuy] = useState<TokenBalance | undefined>();
-  const [tokenSell, setTokenSell] = useState<TokenBalance | undefined>();
 
   useEffect(() => {
     if (
@@ -258,10 +267,6 @@ function FormOrderOverview({
       defaultValues?.tokenBuy?.address &&
       defaultValues?.tokenSell?.address
     ) {
-      setTokenBuy(getTokenBalanceFromAddress(defaultValues?.tokenBuy?.address));
-      setTokenSell(
-        getTokenBalanceFromAddress(defaultValues?.tokenSell?.address),
-      );
       setValue("tokenBuy", defaultValues?.tokenBuy);
       setValue("tokenSell", defaultValues?.tokenSell);
     }
@@ -274,23 +279,20 @@ function FormOrderOverview({
     }
   }, [isValidFromNeeded]);
 
-  const walletAmount = !tokenSell
-    ? 0
-    : formatUnits(BigInt(tokenSell?.balance), tokenSell?.tokenInfo.decimals);
+  function handleSelectTokenBuy(token: tokenPriceChecker) {
+    setValue("tokenBuy", {
+      symbol: token.symbol,
+      address: token.address,
+      decimals: token.decimals,
+    });
+  }
 
-  function getHandleSelectToken(variable: "tokenBuy" | "tokenSell") {
-    return (token: TokenBalance) => {
-      setValue(variable, {
-        decimals: token.tokenInfo.decimals,
-        address: token.tokenInfo.address,
-        symbol: token.tokenInfo.symbol,
-      });
-      if (variable === "tokenBuy") {
-        setTokenBuy(token);
-      } else {
-        setTokenSell(token);
-      }
-    };
+  function handleSelectTokenSell(token: tokenPriceChecker) {
+    setValue("tokenSell", {
+      symbol: token.symbol,
+      address: token.address,
+      decimals: token.decimals,
+    });
   }
 
   return (
@@ -299,9 +301,9 @@ function FormOrderOverview({
         <div className="flex h-fit justify-between gap-x-7">
           <div className="w-1/2 flex flex-col">
             <TokenSelect
-              onSelectToken={getHandleSelectToken("tokenSell")}
+              onSelectToken={handleSelectTokenSell}
               tokenType="sell"
-              selectedToken={tokenSell}
+              selectedToken={formData.tokenSell ?? undefined}
             />
             <div className="mt-1 flex flex-col">
               {errors.tokenSell && (
@@ -340,6 +342,7 @@ function FormOrderOverview({
                 type="number"
                 label="Amount to sell"
                 placeholder="0.0"
+                step={10 ** formData.tokenSell?.decimals}
                 defaultValue={defaultValues?.tokenSellAmount}
                 {...register("tokenSellAmount")}
               />
@@ -349,9 +352,9 @@ function FormOrderOverview({
       </div>
       <div className="w-full flex flex-col">
         <TokenSelect
-          onSelectToken={getHandleSelectToken("tokenBuy")}
+          onSelectToken={handleSelectTokenBuy}
           tokenType="buy"
-          selectedToken={tokenBuy}
+          selectedToken={formData.tokenBuy ?? undefined}
         />
         {errors.tokenBuy && (
           <FormMessage className="mt-1 h-6 text-sm text-tomato10">

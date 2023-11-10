@@ -1,6 +1,6 @@
 "use client";
 
-import { TokenInfo, TokenType } from "@gnosis.pm/safe-apps-sdk";
+import { TokenBalance, TokenType } from "@gnosis.pm/safe-apps-sdk";
 import { ChevronDownIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import { tokenLogoUri } from "public/tokens/logoUri";
@@ -14,10 +14,6 @@ import { useSafeBalances } from "#/hooks/useSafeBalances";
 import { cowTokenList } from "#/utils/cowTokenList";
 
 import { tokenPriceChecker } from "../[network]/order/new/page";
-
-export interface TokenWalletBalance extends TokenInfo {
-  balance: bigint;
-}
 
 export function TokenSelect({
   onSelectToken,
@@ -37,11 +33,11 @@ export function TokenSelect({
     }
   }, [selectedToken]);
 
-  function handleSelectToken(token: TokenWalletBalance) {
+  function handleSelectToken(token: TokenBalance) {
     const tokenForPriceChecker = {
-      address: token.address,
-      symbol: token.symbol,
-      decimals: token.decimals,
+      address: token.tokenInfo.address,
+      symbol: token.tokenInfo.symbol,
+      decimals: token.tokenInfo.decimals,
     };
     onSelectToken(tokenForPriceChecker);
     setToken(tokenForPriceChecker);
@@ -92,26 +88,30 @@ function TokenModal({
   onSelectToken,
   tokenType,
 }: {
-  onSelectToken: (token: TokenWalletBalance) => void;
+  onSelectToken: (token: TokenBalance) => void;
   tokenType: "sell" | "buy";
 }) {
   const { chain } = useNetwork();
-  const [tokens, setTokens] = useState<(TokenWalletBalance | undefined)[]>(
+  const [tokens, setTokens] = useState<(TokenBalance | undefined)[]>(
     tokenType === "buy"
       ? cowTokenList
           .filter((token) => token.chainId === chain?.id)
           .map((token) => {
             return {
-              address: token.address,
-              decimals: token.decimals,
-              name: token.name,
-              symbol: token.symbol,
-              logoUri: token.logoURI,
-              balance: BigInt(0),
-              type: TokenType.ERC20,
+              balance: "0",
+              fiatBalance: "0",
+              fiatConversion: "0",
+              tokenInfo: {
+                address: token.address,
+                decimals: token.decimals,
+                name: token.name,
+                symbol: token.symbol,
+                logoUri: token.logoURI,
+                type: TokenType.ERC20,
+              },
             };
           })
-      : [],
+      : []
   );
 
   const { assets, loaded } = useSafeBalances();
@@ -119,20 +119,19 @@ function TokenModal({
     if (loaded) {
       const tokens = assets.map((asset) => {
         return {
-          ...asset.tokenInfo,
-          balance: BigInt(asset.balance),
+          ...asset,
         };
       });
 
       setTokens((prevTokens) => {
         const combinedTokens = [...prevTokens, ...tokens].reduce<{
-          [key: string]: TokenWalletBalance;
+          [key: string]: TokenBalance;
         }>((acc, token) => {
           const balanceBigInt = BigInt(token?.balance ?? 0);
-          const address = token?.address ?? "";
+          const address = token?.tokenInfo?.address ?? "";
 
-          if (!acc[address] || balanceBigInt > acc[address].balance) {
-            acc[address] = token as TokenWalletBalance;
+          if (!acc[address] || balanceBigInt > BigInt(acc[address].balance)) {
+            acc[address] = token as TokenBalance;
           }
           return acc;
         }, {});
@@ -148,7 +147,7 @@ function TokenModal({
     token,
   }: {
     tokenSearchQuery: string;
-    token?: TokenWalletBalance;
+    token?: TokenBalance;
   }) {
     {
       if (!token) return false;
@@ -192,16 +191,22 @@ function TokenModal({
           {tokens
             .filter((token) => filterTokenInput({ tokenSearchQuery, token }))
             .sort((a, b) =>
-              formatUnits(BigInt(a!.balance), a!.decimals ? a!.decimals : 0) <
-              formatUnits(BigInt(b!.balance), b!.decimals ? b!.decimals : 0)
+              formatUnits(
+                BigInt(a!.balance),
+                a!.tokenInfo.decimals ? a!.tokenInfo.decimals : 0
+              ) <
+              formatUnits(
+                BigInt(b!.balance),
+                b!.tokenInfo.decimals ? b!.tokenInfo.decimals : 0
+              )
                 ? 1
-                : -1,
+                : -1
             )
             .map((token) => {
               if (token) {
                 return (
                   <TokenRow
-                    key={token.address}
+                    key={token.tokenInfo.address}
                     token={token}
                     onSelectToken={onSelectToken}
                   />
@@ -218,12 +223,12 @@ function TokenRow({
   token,
   onSelectToken,
 }: {
-  token: TokenWalletBalance;
-  onSelectToken: (token: TokenWalletBalance) => void;
+  token: TokenBalance;
+  onSelectToken: (token: TokenBalance) => void;
 }) {
   return (
     <Table.BodyRow
-      key={token.address}
+      key={token.tokenInfo.address}
       classNames="hover:bg-blue4 hover:cursor-pointer"
       onClick={() => onSelectToken(token)}
     >
@@ -232,8 +237,9 @@ function TokenRow({
           <div className="rounded-full bg-white p-1">
             <Image
               src={
-                tokenLogoUri[token.symbol as keyof typeof tokenLogoUri] ||
-                "/assets/generic-token-logo.png"
+                tokenLogoUri[
+                  token.tokenInfo.symbol as keyof typeof tokenLogoUri
+                ] || "/assets/generic-token-logo.png"
               }
               className="rounded-full"
               alt="Token Logo"
@@ -244,12 +250,12 @@ function TokenRow({
           </div>
         </div>
       </Table.BodyCell>
-      <Table.BodyCell>{token.symbol}</Table.BodyCell>
+      <Table.BodyCell>{token.tokenInfo.symbol}</Table.BodyCell>
       <Table.BodyCell>
         {token.balance
           ? formatUnits(
               BigInt(token.balance),
-              token.decimals ? token.decimals : 0,
+              token.tokenInfo.decimals ? token.tokenInfo.decimals : 0
             )
           : ""}
       </Table.BodyCell>

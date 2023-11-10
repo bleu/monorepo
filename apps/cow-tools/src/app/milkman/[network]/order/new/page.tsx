@@ -3,22 +3,16 @@
 import { Address, Network, NetworkChainId, networkFor } from "@bleu-fi/utils";
 import { formatDateToLocalDatetime } from "@bleu-fi/utils/date";
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon, Pencil1Icon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import {
-  Controller,
-  FieldValues,
-  useForm,
-  UseFormReturn,
-} from "react-hook-form";
+import { useEffect, useState } from "react";
+import { FieldValues, useForm } from "react-hook-form";
 import { formatUnits } from "viem";
+import { goerli } from "viem/chains";
 import { useAccount, useNetwork } from "wagmi";
 
-import {
-  TokenSelect,
-  TokenWalletBalance,
-} from "#/app/milkman/(components)/TokenSelect";
+import { TokenSelect } from "#/app/milkman/(components)/TokenSelect";
 import {
   stages,
   TransactionProgressBar,
@@ -30,7 +24,7 @@ import { Input } from "#/components/Input";
 import { LinkComponent } from "#/components/Link";
 import { Select, SelectItem } from "#/components/Select";
 import { Spinner } from "#/components/Spinner";
-import { Form } from "#/components/ui/form";
+import { Form, FormMessage } from "#/components/ui/form";
 import { Label } from "#/components/ui/label";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { getNetwork } from "#/contexts/networks";
@@ -38,8 +32,15 @@ import { useOrder } from "#/contexts/OrderContext";
 import { useRawTxData } from "#/hooks/useRawTxData";
 import { useSafeBalances } from "#/hooks/useSafeBalances";
 import { PRICE_CHECKERS, priceCheckerInfoMapping } from "#/lib/priceCheckers";
+import { orderOverviewSchema } from "#/lib/schema";
 import { MILKMAN_ADDRESS, TRANSACTION_TYPES } from "#/lib/transactionFactory";
 import { truncateAddress } from "#/utils/truncate";
+
+export type tokenPriceChecker = {
+  symbol: string;
+  address: string;
+  decimals: number;
+};
 
 export default function Page({
   params,
@@ -98,57 +99,9 @@ function TransactionCard({
 }) {
   const { transactionStatus, setTransactionStatus } = useOrder();
   const network = networkFor(chainId);
-  const router = useRouter();
 
-  const form = useForm();
-  const { sendTransactions } = useRawTxData();
-
-  const { register, setValue, watch, clearErrors } = form;
-
-  useEffect(() => {
-    register("receiverAddress");
-    register("tokenBuy");
-    register("tokenSell");
-  }, []);
-
-  const formData = watch();
-
-  useEffect(() => {
-    if (formData.isValidFromNeeded === false) {
-      setValue("validFrom", null);
-      clearErrors("validFrom");
-    }
-  }, [formData]);
-
-  async function handleOnSubmit(data: FieldValues) {
-    const sellAmountBigInt = BigInt(
-      Number(data.tokenSellAmount) * 10 ** data.tokenSell.decimals,
-    );
-    const priceCheckersArgs = priceCheckerInfoMapping[
-      data.priceChecker as PRICE_CHECKERS
-    ].arguments.map((arg) =>
-      arg.convertInput(data[arg.name], data.tokenBuy.decimals),
-    );
-
-    await sendTransactions([
-      {
-        type: TRANSACTION_TYPES.ERC20_APPROVE,
-        tokenAddress: data.tokenSell.address,
-        spender: MILKMAN_ADDRESS,
-        amount: sellAmountBigInt,
-      },
-      {
-        type: TRANSACTION_TYPES.MILKMAN_ORDER,
-        tokenAddressToSell: data.tokenSell.address,
-        tokenAddressToBuy: data.tokenBuy.address,
-        toAddress: data.receiverAddress,
-        amount: sellAmountBigInt,
-        priceChecker: data.priceChecker,
-        args: priceCheckersArgs,
-      },
-    ]);
-    router.push(`/milkman/${network}`);
-  }
+  const [orderOverviewData, setOrderOverviewData] = useState<FieldValues>();
+  const [priceCheckerData, setPriceCheckerData] = useState<FieldValues>();
 
   function handleBack() {
     const currentStage = stages.find(
@@ -166,23 +119,38 @@ function TransactionCard({
 
   const FORM_CONTENTS: { [key in TransactionStatus]?: JSX.Element } = {
     [TransactionStatus.ORDER_OVERVIEW]: (
-      <FormSelectTokens form={form} userAddress={userAddress} />
+      <FormOrderOverview
+        onSubmit={(data: FieldValues) => {
+          setOrderOverviewData(data);
+          handleContinue();
+        }}
+        userAddress={userAddress}
+        defaultValues={orderOverviewData}
+      />
     ),
-    [TransactionStatus.ORDER_STRATEGY]: <FormSelectPriceChecker form={form} />,
+    [TransactionStatus.ORDER_STRATEGY]: (
+      <FormSelectPriceChecker
+        onSubmit={(data: FieldValues) => {
+          setPriceCheckerData(data);
+          handleContinue();
+        }}
+        defaultValues={priceCheckerData}
+      />
+    ),
     [TransactionStatus.ORDER_RESUME]: (
       <div className="flex flex-col gap-y-6 p-9">
-        <OrderResume data={formData} handleBack={handleBack} />
+        <OrderResume
+          data={{ ...orderOverviewData, ...priceCheckerData }}
+          handleBack={handleBack}
+          network={network}
+        />
       </div>
     ),
   };
 
   return (
     <div className="flex h-full items-center justify-center w-full mt-20">
-      <Form
-        {...form}
-        onSubmit={handleOnSubmit}
-        className="my-4 flex h-fit w-fit flex-col  rounded-lg border border-slate7 bg-blue3 text-white"
-      >
+      <div className="my-4 flex h-fit w-fit flex-col  rounded-lg border border-slate7 bg-blue3 text-white">
         <div className="divide-y divide-slate7">
           <FormHeader
             transactionStatus={transactionStatus}
@@ -191,11 +159,7 @@ function TransactionCard({
           />
           {FORM_CONTENTS[transactionStatus]}
         </div>
-        <FormFooter
-          transactionStatus={transactionStatus}
-          onClick={handleContinue}
-        />
-      </Form>
+      </div>
     </div>
   );
 }
@@ -252,17 +216,35 @@ function FormHeader({
   );
 }
 
-function FormSelectTokens({
-  form,
+function FormOrderOverview({
+  onSubmit,
   userAddress,
+  defaultValues,
 }: {
-  form: UseFormReturn;
+  onSubmit: (data: FieldValues) => void;
   userAddress: string;
+  defaultValues?: FieldValues;
 }) {
-  const { register, setValue, control, watch } = form;
+  const form = useForm<typeof orderOverviewSchema._type>({
+    resolver: zodResolver(orderOverviewSchema),
+  });
+  const {
+    register,
+    setValue,
+    clearErrors,
+    formState: { errors },
+    watch,
+  } = form;
+
+  useEffect(() => {
+    register("tokenBuy");
+    register("tokenSell");
+    register("validFrom");
+  }, []);
+
+  const { assets, loaded } = useSafeBalances();
+
   const formData = watch();
-  const isValidFromNeeded = formData.isValidFromNeeded;
-  const { assets } = useSafeBalances();
 
   const tokenSell = assets.find(
     (asset) => asset.tokenInfo.address === formData.tokenSell?.address,
@@ -272,66 +254,117 @@ function FormSelectTokens({
     ? 0
     : formatUnits(BigInt(tokenSell?.balance), tokenSell?.tokenInfo.decimals);
 
-  function handleSelectTokenBuy(token: TokenWalletBalance) {
-    setValue("tokenBuy", token);
+  const [isValidFromNeeded, setIsValidFromNeeded] = useState(
+    !!defaultValues?.validFrom,
+  );
+
+  useEffect(() => {
+    if (
+      loaded &&
+      defaultValues?.tokenBuy?.address &&
+      defaultValues?.tokenSell?.address
+    ) {
+      setValue("tokenBuy", defaultValues?.tokenBuy);
+      setValue("tokenSell", defaultValues?.tokenSell);
+    }
+  }, [loaded]);
+
+  useEffect(() => {
+    if (isValidFromNeeded === false) {
+      setValue("validFrom", undefined);
+      clearErrors("validFrom");
+    }
+  }, [isValidFromNeeded]);
+
+  function handleSelectTokenBuy(token: tokenPriceChecker) {
+    setValue("tokenBuy", {
+      symbol: token.symbol,
+      address: token.address,
+      decimals: token.decimals,
+    });
   }
 
-  function handleSelectTokenSell(token: TokenWalletBalance) {
-    setValue("tokenSell", token);
+  function handleSelectTokenSell(token: tokenPriceChecker) {
+    setValue("tokenSell", {
+      symbol: token.symbol,
+      address: token.address,
+      decimals: token.decimals,
+    });
   }
 
   return (
-    <div className="flex flex-col gap-y-6 p-9">
+    <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-6 p-9">
       <div>
         <div className="flex h-fit justify-between gap-x-7">
-          <div className="w-1/2">
+          <div className="w-1/2 flex flex-col">
             <TokenSelect
               onSelectToken={handleSelectTokenSell}
               tokenType="sell"
               selectedToken={formData.tokenSell ?? undefined}
             />
+            <div className="mt-1 flex flex-col">
+              {errors.tokenSell && (
+                <FormMessage className="h-6 text-sm text-tomato10">
+                  <span>{errors.tokenSell.message}</span>
+                </FormMessage>
+              )}
+              <div className="flex gap-x-1 text-xs">
+                <span className="text-slate10">
+                  <span>
+                    Wallet Balance:{" "}
+                    {formatNumber(
+                      walletAmount,
+                      4,
+                      "decimal",
+                      "standard",
+                      0.0001,
+                    )}
+                  </span>
+                </span>
+                <button
+                  type="button"
+                  className="text-blue9 outline-none hover:text-amber9"
+                  onClick={() => {
+                    setValue("tokenSellAmount", Number(walletAmount));
+                  }}
+                >
+                  Max
+                </button>
+              </div>
+            </div>
           </div>
-          <div className="flex w-1/2 items-end gap-2">
+          <div className="flex w-1/2 items-start gap-2">
             <div className="w-full">
               <Input
                 type="number"
                 label="Amount to sell"
                 placeholder="0.0"
+                step={10 ** formData.tokenSell?.decimals}
+                defaultValue={defaultValues?.tokenSellAmount}
                 {...register("tokenSellAmount")}
               />
             </div>
           </div>
         </div>
-        <div className="mt-2 flex gap-x-1 text-xs">
-          <span className="text-slate10">
-            <span>
-              Wallet Balance:{" "}
-              {formatNumber(walletAmount, 4, "decimal", "standard", 0.0001)}
-            </span>
-          </span>
-          <button
-            type="button"
-            className="text-blue9 outline-none hover:text-amber9"
-            onClick={() => {
-              setValue("tokenSellAmount", walletAmount);
-            }}
-          >
-            Max
-          </button>
-        </div>
       </div>
-      <div className="w-full">
+      <div className="w-full flex flex-col">
         <TokenSelect
           onSelectToken={handleSelectTokenBuy}
           tokenType="buy"
           selectedToken={formData.tokenBuy ?? undefined}
         />
+        {errors.tokenBuy && (
+          <FormMessage className="mt-1 h-6 text-sm text-tomato10">
+            <span>{errors.tokenBuy.message}</span>
+          </FormMessage>
+        )}
       </div>
       <div>
         <Input
           type="string"
           label="Recipient"
           placeholder={userAddress}
+          defaultValue={defaultValues?.receiverAddress}
           {...register("receiverAddress")}
         />
         <div className="mt-2 flex gap-x-1 text-xs">
@@ -346,23 +379,19 @@ function FormSelectTokens({
           </button>
         </div>
       </div>
-      <Controller
-        control={control}
-        name="isValidFromNeeded"
-        render={({ field: { onChange, value } }) => (
-          <Checkbox
-            id="isValidFromNeeded"
-            checked={value}
-            onChange={() => onChange(!value)}
-            label="Order will need valid from"
-          />
-        )}
+
+      <Checkbox
+        id="isValidFromNeeded"
+        checked={isValidFromNeeded}
+        onChange={() => setIsValidFromNeeded(!isValidFromNeeded)}
+        label="Order will need valid from"
       />
       {isValidFromNeeded && (
         <div>
           <Input
             type="datetime-local"
             label="Valid from"
+            defaultValue={defaultValues?.validFrom}
             {...register("validFrom")}
           />
           <div className="mt-2 flex gap-x-1 text-xs">
@@ -378,55 +407,92 @@ function FormSelectTokens({
           </div>
         </div>
       )}
-    </div>
+      <FormFooter transactionStatus={TransactionStatus.ORDER_OVERVIEW} />
+    </Form>
   );
 }
 
-function FormSelectPriceChecker({ form }: { form: UseFormReturn }) {
-  const { register, control, watch } = form;
-  const priceCheckerSelected = watch("priceChecker");
+function FormSelectPriceChecker({
+  onSubmit,
+  defaultValues,
+}: {
+  onSubmit: (data: FieldValues) => void;
+  defaultValues?: FieldValues;
+}) {
+  const [selectedPriceChecker, setSelectedPriceChecker] =
+    useState<PRICE_CHECKERS>(defaultValues?.priceChecker);
+
+  const form = useForm(
+    selectedPriceChecker && {
+      resolver: zodResolver(
+        priceCheckerInfoMapping[selectedPriceChecker].schema,
+      ),
+      mode: "onSubmit",
+    },
+  );
+
+  const { register, clearErrors, setValue } = form;
+
+  useEffect(() => {
+    clearErrors();
+    register("priceChecker");
+    register("priceCheckerAddress");
+    if (!selectedPriceChecker) {
+      return;
+    }
+    setValue("priceChecker", selectedPriceChecker);
+    setValue(
+      "priceCheckerAddress",
+      priceCheckerInfoMapping[selectedPriceChecker].addresses[goerli.id],
+    );
+  }, [selectedPriceChecker]);
+
   return (
-    <div className="flex flex-col gap-y-6 p-9">
+    <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-6 p-9">
       <div className="mb-2">
         <Label>Price checker</Label>
-        <Controller
-          control={control}
-          name="priceChecker"
-          render={({ field: { onChange, value } }) => (
-            <Select
-              onValueChange={onChange}
-              value={value}
-              className="w-full mt-2"
-            >
-              {Object.values(PRICE_CHECKERS).map((priceChecker) => (
-                <SelectItem value={priceChecker} key={priceChecker}>
-                  {priceChecker}
-                </SelectItem>
-              ))}
-            </Select>
-          )}
-        />
+        <Select
+          onValueChange={(priceChecker) => {
+            setSelectedPriceChecker(priceChecker as PRICE_CHECKERS);
+          }}
+          className="w-full mt-2"
+          defaultValue={defaultValues?.priceChecker}
+        >
+          {Object.values(PRICE_CHECKERS).map((priceChecker) => (
+            <SelectItem value={priceChecker} key={priceChecker}>
+              {priceChecker}
+            </SelectItem>
+          ))}
+        </Select>
       </div>
-      {priceCheckerSelected &&
+      {selectedPriceChecker &&
         priceCheckerInfoMapping[
-          priceCheckerSelected as PRICE_CHECKERS
+          selectedPriceChecker as PRICE_CHECKERS
         ].arguments.map((arg) => (
           <Input
             type={arg.inputType}
             label={arg.label}
+            key={arg.name}
+            defaultValue={defaultValues?.[arg.name]}
             {...register(arg.name)}
           />
         ))}
-    </div>
+      <FormFooter
+        transactionStatus={TransactionStatus.ORDER_STRATEGY}
+        disabled={!selectedPriceChecker}
+      />
+    </Form>
   );
 }
 
 function OrderResume({
   data,
   handleBack,
+  network,
 }: {
   data: FieldValues;
   handleBack: () => void;
+  network: Network;
 }) {
   const fieldsToDisplay = [
     { label: "Token to sell", key: "tokenSell" },
@@ -442,6 +508,40 @@ function OrderResume({
       key: arg.name,
     })),
   ];
+
+  const router = useRouter();
+
+  const { sendTransactions } = useRawTxData();
+
+  async function handleButtonClick() {
+    const sellAmountBigInt = BigInt(
+      Number(data.tokenSellAmount) * 10 ** data.tokenSell.decimals,
+    );
+    const priceCheckersArgs = priceCheckerInfoMapping[
+      data.priceChecker as PRICE_CHECKERS
+    ].arguments.map((arg) =>
+      arg.convertInput(data[arg.name], data.tokenBuy.decimals),
+    );
+
+    await sendTransactions([
+      {
+        type: TRANSACTION_TYPES.ERC20_APPROVE,
+        tokenAddress: data.tokenSell.address,
+        spender: MILKMAN_ADDRESS,
+        amount: sellAmountBigInt,
+      },
+      {
+        type: TRANSACTION_TYPES.MILKMAN_ORDER,
+        tokenAddressToSell: data.tokenSell.address,
+        tokenAddressToBuy: data.tokenBuy.address,
+        toAddress: data.receiverAddress,
+        amount: sellAmountBigInt,
+        priceChecker: data.priceChecker,
+        args: priceCheckersArgs,
+      },
+    ]);
+    router.push(`/milkman/${network}`);
+  }
 
   return (
     <div>
@@ -489,6 +589,12 @@ function OrderResume({
           );
         })}
       </div>
+      <div className="mt-5">
+        <FormFooter
+          transactionStatus={TransactionStatus.ORDER_RESUME}
+          onClick={handleButtonClick}
+        />
+      </div>
     </div>
   );
 }
@@ -496,13 +602,15 @@ function OrderResume({
 function FormFooter({
   transactionStatus,
   onClick,
+  disabled = false,
 }: {
   transactionStatus: TransactionStatus;
-  onClick: () => void;
+  onClick?: () => void;
+  disabled?: boolean;
 }) {
   const isDraftResume = transactionStatus === TransactionStatus.ORDER_RESUME;
   return (
-    <div className="flex flex-col px-10 gap-y-5 mb-5">
+    <div className="flex flex-col gap-y-5">
       {!isDraftResume && (
         <TransactionProgressBar
           currentStageName={transactionStatus}
@@ -515,12 +623,17 @@ function FormFooter({
             <Button type="button" className="w-full" color="slate" disabled>
               <span>Add one more order</span>
             </Button>
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" onClick={onClick}>
               <span>Build transaction</span>
             </Button>
           </>
         ) : (
-          <Button type="button" className="w-full" onClick={onClick}>
+          <Button
+            type="submit"
+            className="w-full"
+            onClick={onClick}
+            disabled={disabled}
+          >
             <span>Continue</span>
           </Button>
         )}

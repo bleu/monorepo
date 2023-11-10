@@ -1,6 +1,5 @@
 import { formatDateToLocalDatetime } from "@bleu-fi/utils/date";
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
-import { TokenBalance } from "@gnosis.pm/safe-apps-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
@@ -14,6 +13,7 @@ import { Form, FormMessage } from "#/components/ui/form";
 import { useSafeBalances } from "#/hooks/useSafeBalances";
 import { orderOverviewSchema } from "#/lib/schema";
 
+import { tokenPriceChecker } from "../../[network]/order/new/page";
 import { FormFooter } from "./Footer";
 
 export function FormOrderOverview({
@@ -34,6 +34,7 @@ export function FormOrderOverview({
     setValue,
     clearErrors,
     formState: { errors },
+    watch,
   } = form;
 
   useEffect(() => {
@@ -44,18 +45,19 @@ export function FormOrderOverview({
 
   const { assets, loaded } = useSafeBalances();
 
-  function getTokenBalanceFromAddress(address: string | undefined) {
-    if (!address) return;
-    return assets.find(
-      (tokenBalance) => tokenBalance.tokenInfo.address === address,
-    );
-  }
+  const tokenSellData = watch("tokenSell");
+  const tokenBuyData = watch("tokenBuy");
+  const tokenSell = assets.find(
+    (asset) => asset.tokenInfo.address === tokenSellData?.address,
+  );
+
+  const walletAmount = !tokenSell
+    ? 0
+    : formatUnits(BigInt(tokenSell?.balance), tokenSell?.tokenInfo.decimals);
 
   const [isValidFromNeeded, setIsValidFromNeeded] = useState(
     !!defaultValues?.validFrom,
   );
-  const [tokenBuy, setTokenBuy] = useState<TokenBalance | undefined>();
-  const [tokenSell, setTokenSell] = useState<TokenBalance | undefined>();
 
   useEffect(() => {
     if (
@@ -63,10 +65,6 @@ export function FormOrderOverview({
       defaultValues?.tokenBuy?.address &&
       defaultValues?.tokenSell?.address
     ) {
-      setTokenBuy(getTokenBalanceFromAddress(defaultValues?.tokenBuy?.address));
-      setTokenSell(
-        getTokenBalanceFromAddress(defaultValues?.tokenSell?.address),
-      );
       setValue("tokenBuy", defaultValues?.tokenBuy);
       setValue("tokenSell", defaultValues?.tokenSell);
     }
@@ -79,22 +77,13 @@ export function FormOrderOverview({
     }
   }, [isValidFromNeeded]);
 
-  const walletAmount = !tokenSell
-    ? 0
-    : formatUnits(BigInt(tokenSell?.balance), tokenSell?.tokenInfo.decimals);
-
   function getHandleSelectToken(variable: "tokenBuy" | "tokenSell") {
-    return (token: TokenBalance) => {
+    return (token: tokenPriceChecker) => {
       setValue(variable, {
-        decimals: token.tokenInfo.decimals,
-        address: token.tokenInfo.address,
-        symbol: token.tokenInfo.symbol,
+        decimals: token.decimals,
+        address: token.address,
+        symbol: token.symbol,
       });
-      if (variable === "tokenBuy") {
-        setTokenBuy(token);
-      } else {
-        setTokenSell(token);
-      }
     };
   }
 
@@ -106,7 +95,7 @@ export function FormOrderOverview({
             <TokenSelect
               onSelectToken={getHandleSelectToken("tokenSell")}
               tokenType="sell"
-              selectedToken={tokenSell}
+              selectedToken={tokenSellData ?? undefined}
             />
             <div className="mt-1 flex flex-col">
               {errors.tokenSell && (
@@ -156,7 +145,7 @@ export function FormOrderOverview({
         <TokenSelect
           onSelectToken={getHandleSelectToken("tokenBuy")}
           tokenType="buy"
-          selectedToken={tokenBuy}
+          selectedToken={tokenBuyData ?? undefined}
         />
         {errors.tokenBuy && (
           <FormMessage className="mt-1 h-6 text-sm text-tomato10">

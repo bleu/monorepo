@@ -1,27 +1,31 @@
 "use client";
 
-import { TokenBalance } from "@gnosis.pm/safe-apps-sdk";
+import { TokenBalance, TokenType } from "@gnosis.pm/safe-apps-sdk";
 import { ChevronDownIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import { tokenLogoUri } from "public/tokens/logoUri";
 import React, { useEffect, useState } from "react";
 import { formatUnits } from "viem";
+import { useNetwork } from "wagmi";
 
 import { Dialog } from "#/components/Dialog";
 import Table from "#/components/Table";
 import { useSafeBalances } from "#/hooks/useSafeBalances";
+import { cowTokenList } from "#/utils/cowTokenList";
+
+import { tokenPriceChecker } from "../[network]/order/new/page";
 
 export function TokenSelect({
   onSelectToken,
   tokenType,
   selectedToken,
 }: {
-  onSelectToken: (token: TokenBalance) => void;
+  onSelectToken: (token: tokenPriceChecker) => void;
   tokenType: "sell" | "buy";
-  selectedToken?: TokenBalance;
+  selectedToken?: tokenPriceChecker;
 }) {
   const [open, setOpen] = useState(false);
-  const [token, setToken] = useState<TokenBalance | undefined>(undefined);
+  const [token, setToken] = useState<tokenPriceChecker | undefined>(undefined);
 
   useEffect(() => {
     if (selectedToken) {
@@ -30,14 +34,21 @@ export function TokenSelect({
   }, [selectedToken]);
 
   function handleSelectToken(token: TokenBalance) {
-    onSelectToken(token);
-    setToken(token);
+    const tokenForPriceChecker = {
+      address: token.tokenInfo.address,
+      symbol: token.tokenInfo.symbol,
+      decimals: token.tokenInfo.decimals,
+    };
+    onSelectToken(tokenForPriceChecker);
+    setToken(tokenForPriceChecker);
     setOpen(false);
   }
 
   return (
     <Dialog
-      content={<TokenModal onSelectToken={handleSelectToken} />}
+      content={
+        <TokenModal onSelectToken={handleSelectToken} tokenType={tokenType} />
+      }
       isOpen={open}
       setIsOpen={setOpen}
     >
@@ -54,9 +65,8 @@ export function TokenSelect({
             <div className="rounded-full bg-white p-[3px]">
               <Image
                 src={
-                  tokenLogoUri[
-                    token?.tokenInfo.symbol as keyof typeof tokenLogoUri
-                  ] || "/assets/generic-token-logo.png"
+                  tokenLogoUri[token?.symbol as keyof typeof tokenLogoUri] ||
+                  "/assets/generic-token-logo.png"
                 }
                 className="rounded-full"
                 alt="Token Logo"
@@ -65,7 +75,7 @@ export function TokenSelect({
                 quality={100}
               />
             </div>
-            <div>{token?.tokenInfo.symbol}</div>
+            <div>{token?.symbol}</div>
           </div>
           <ChevronDownIcon />
         </button>
@@ -76,19 +86,61 @@ export function TokenSelect({
 
 function TokenModal({
   onSelectToken,
+  tokenType,
 }: {
   onSelectToken: (token: TokenBalance) => void;
+  tokenType: "sell" | "buy";
 }) {
-  const [tokens, setTokens] = useState<(TokenBalance | undefined)[]>([]);
-  const [tokenSearchQuery, setTokenSearchQuery] = useState("");
+  const { chain } = useNetwork();
+  const [tokens, setTokens] = useState<(TokenBalance | undefined)[]>(
+    tokenType === "buy"
+      ? cowTokenList
+          .filter((token) => token.chainId === chain?.id)
+          .map((token) => {
+            return {
+              balance: "0",
+              fiatBalance: "0",
+              fiatConversion: "0",
+              tokenInfo: {
+                address: token.address,
+                decimals: token.decimals,
+                name: token.name,
+                symbol: token.symbol,
+                logoUri: token.logoURI,
+                type: TokenType.ERC20,
+              },
+            };
+          })
+      : [],
+  );
 
   const { assets, loaded } = useSafeBalances();
-
   useEffect(() => {
     if (loaded) {
-      setTokens(assets);
+      const tokens = assets.map((asset) => {
+        return {
+          ...asset,
+        };
+      });
+
+      setTokens((prevTokens) => {
+        const combinedTokens = [...prevTokens, ...tokens].reduce<{
+          [key: string]: TokenBalance;
+        }>((acc, token) => {
+          const balanceBigInt = BigInt(token?.balance ?? 0);
+          const address = token?.tokenInfo?.address ?? "";
+
+          if (!acc[address] || balanceBigInt > BigInt(acc[address].balance)) {
+            acc[address] = token as TokenBalance;
+          }
+          return acc;
+        }, {});
+        return Object.values(combinedTokens);
+      });
     }
-  }, [loaded]);
+  }, [loaded, assets]);
+
+  const [tokenSearchQuery, setTokenSearchQuery] = useState("");
 
   function filterTokenInput({
     tokenSearchQuery,

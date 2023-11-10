@@ -8,6 +8,12 @@ import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { getNetwork } from "#/contexts/networks";
 
+export type tokenPriceChecker = {
+  symbol: string;
+  address: string;
+  decimals: number;
+};
+
 export default function Page({
   params,
 }: {

@@ -10,13 +10,13 @@ import { TokenSelect } from "#/app/milkman/(components)/TokenSelect";
 import { TransactionStatus } from "#/app/milkman/utils/type";
 import { Checkbox } from "#/components/Checkbox";
 import { Input } from "#/components/Input";
+import { Tooltip } from "#/components/Tooltip";
 import { Form, FormMessage } from "#/components/ui/form";
 import { useSafeBalances } from "#/hooks/useSafeBalances";
 import { orderOverviewSchema } from "#/lib/schema";
 
 import { tokenPriceChecker } from "../../[network]/order/new/page";
 import { FormFooter } from "./Footer";
-import { Tooltip } from "#/components/Tooltip";
 
 export function FormOrderOverview({
   onSubmit,

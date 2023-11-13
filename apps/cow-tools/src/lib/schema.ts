@@ -1,7 +1,8 @@
-import { PublicClient, encodeAbiParameters, isAddress } from "viem";
-import { z } from "zod";
-import { dynamicSlippagePriceCheckerAbi } from "./abis/dynamicSlippagePriceChecker";
 import { Address } from "@bleu-fi/utils";
+import { encodeAbiParameters, isAddress, PublicClient } from "viem";
+import { z } from "zod";
+
+import { dynamicSlippagePriceCheckerAbi } from "./abis/dynamicSlippagePriceChecker";
 
 const basicAddressSchema = z
   .string()
@@ -88,7 +89,6 @@ const getBasicDynamicSlippageSchema = ({
           });
           return true;
         } catch (e) {
-          console.log(e);
           return false;
         }
       },

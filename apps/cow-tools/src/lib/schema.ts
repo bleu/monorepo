@@ -26,6 +26,7 @@ export const orderOverviewSchema = z
     tokenSellAmount: z.coerce.number().positive(),
     tokenBuy: baseTokenAddress,
     receiverAddress: basicAddressSchema,
+    isValidFromNeeded: z.coerce.boolean(),
     validFrom: z.coerce.string().optional(),
   })
   .refine(

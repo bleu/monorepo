@@ -1,8 +1,7 @@
 import { formatDateToLocalDatetime } from "@bleu-fi/utils/date";
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { formatUnits } from "viem";
 
@@ -10,7 +9,6 @@ import { TokenSelect } from "#/app/milkman/(components)/TokenSelect";
 import { TransactionStatus } from "#/app/milkman/utils/type";
 import { Checkbox } from "#/components/Checkbox";
 import { Input } from "#/components/Input";
-import { Tooltip } from "#/components/Tooltip";
 import { Form, FormMessage } from "#/components/ui/form";
 import { useSafeBalances } from "#/hooks/useSafeBalances";
 import { orderOverviewSchema } from "#/lib/schema";
@@ -34,7 +32,6 @@ export function FormOrderOverview({
   const {
     register,
     setValue,
-    clearErrors,
     formState: { errors },
     watch,
   } = form;
@@ -56,10 +53,6 @@ export function FormOrderOverview({
     ? 0
     : formatUnits(BigInt(tokenSell?.balance), tokenSell?.tokenInfo.decimals);
 
-  const [isValidFromNeeded, setIsValidFromNeeded] = useState(
-    !!defaultValues?.validFrom,
-  );
-
   useEffect(() => {
     if (
       loaded &&
@@ -70,13 +63,6 @@ export function FormOrderOverview({
       setValue("tokenSell", defaultValues?.tokenSell);
     }
   }, [loaded]);
-
-  useEffect(() => {
-    if (isValidFromNeeded === false) {
-      setValue("validFrom", undefined);
-      clearErrors("validFrom");
-    }
-  }, [isValidFromNeeded]);
 
   function getHandleSelectToken(variable: "tokenBuy" | "tokenSell") {
     return (token: tokenPriceChecker) => {
@@ -130,19 +116,20 @@ export function FormOrderOverview({
             </div>
           </div>
           <div className="flex w-1/2 items-start gap-2">
-            <div className="w-full flex items-end">
+            <div className="w-full flex flex-col">
               <Input
                 type="number"
                 label="Amount to sell"
                 placeholder="0.0"
+                step={10 ** -defaultValues?.tokenSellAmount.decimals || 10e-18}
                 defaultValue={defaultValues?.tokenSellAmount}
                 {...register("tokenSellAmount")}
               />
               {formData.tokenSellAmount > Number(walletAmount) && (
-                <div className="m-2">
-                  <Tooltip content="You don't have enough funds of this token.">
-                    <ExclamationTriangleIcon className="h-5 w-5 text-amber9 hover:text-amber9" />
-                  </Tooltip>
+                <div className="mt-1">
+                  <FormMessage className="h-6 text-sm text-amber9">
+                    <span>Insufficient funds of this token.</span>
+                  </FormMessage>
                 </div>
               )}
             </div>
@@ -150,13 +137,11 @@ export function FormOrderOverview({
         </div>
       </div>
       <div className="w-full flex flex-col">
-        <div className="w-full flex">
-          <TokenSelect
-            onSelectToken={getHandleSelectToken("tokenBuy")}
-            tokenType="buy"
-            selectedToken={formData.tokenBuy ?? undefined}
-          />
-        </div>
+        <TokenSelect
+          onSelectToken={getHandleSelectToken("tokenBuy")}
+          tokenType="buy"
+          selectedToken={formData.tokenBuy ?? undefined}
+        />
         {errors.tokenBuy && (
           <FormMessage className="mt-1 h-6 text-sm text-tomato10">
             <span>{errors.tokenBuy.message}</span>
@@ -186,11 +171,13 @@ export function FormOrderOverview({
 
       <Checkbox
         id="isValidFromNeeded"
-        checked={isValidFromNeeded}
-        onChange={() => setIsValidFromNeeded(!isValidFromNeeded)}
+        checked={formData.isValidFromNeeded}
         label="Order will need valid from"
+        onChange={() =>
+          setValue("isValidFromNeeded", !formData.isValidFromNeeded)
+        }
       />
-      {isValidFromNeeded && (
+      {formData.isValidFromNeeded && (
         <div>
           <Input
             type="datetime-local"

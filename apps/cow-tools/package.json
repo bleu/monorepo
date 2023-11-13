@@ -48,7 +48,7 @@
     "@sentry/profiling-node": "^1.2.1",
     "@vercel/kv": "^0.2.3",
     "@wagmi/cli": "1.5.2",
-    "@wagmi/core": "^1.4.5",
+    "@wagmi/core": "^1.4.6",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "copy-to-clipboard": "^3.3.3",

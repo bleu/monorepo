@@ -1,6 +1,7 @@
 import { formatDateToLocalDatetime } from "@bleu-fi/utils/date";
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { formatUnits } from "viem";
@@ -15,6 +16,7 @@ import { orderOverviewSchema } from "#/lib/schema";
 
 import { tokenPriceChecker } from "../../[network]/order/new/page";
 import { FormFooter } from "./Footer";
+import { Tooltip } from "#/components/Tooltip";
 
 export function FormOrderOverview({
   onSubmit,
@@ -45,10 +47,9 @@ export function FormOrderOverview({
 
   const { assets, loaded } = useSafeBalances();
 
-  const tokenSellData = watch("tokenSell");
-  const tokenBuyData = watch("tokenBuy");
+  const formData = watch();
   const tokenSell = assets.find(
-    (asset) => asset.tokenInfo.address === tokenSellData?.address,
+    (asset) => asset.tokenInfo.address === formData.tokenSell?.address,
   );
 
   const walletAmount = !tokenSell
@@ -95,7 +96,7 @@ export function FormOrderOverview({
             <TokenSelect
               onSelectToken={getHandleSelectToken("tokenSell")}
               tokenType="sell"
-              selectedToken={tokenSellData ?? undefined}
+              selectedToken={formData.tokenSell ?? undefined}
             />
             <div className="mt-1 flex flex-col">
               {errors.tokenSell && (
@@ -129,7 +130,7 @@ export function FormOrderOverview({
             </div>
           </div>
           <div className="flex w-1/2 items-start gap-2">
-            <div className="w-full">
+            <div className="w-full flex items-end">
               <Input
                 type="number"
                 label="Amount to sell"
@@ -137,16 +138,25 @@ export function FormOrderOverview({
                 defaultValue={defaultValues?.tokenSellAmount}
                 {...register("tokenSellAmount")}
               />
+              {formData.tokenSellAmount > Number(walletAmount) && (
+                <div className="m-2">
+                  <Tooltip content="You don't have enough funds of this token.">
+                    <ExclamationTriangleIcon className="h-5 w-5 text-amber9 hover:text-amber9" />
+                  </Tooltip>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
       <div className="w-full flex flex-col">
-        <TokenSelect
-          onSelectToken={getHandleSelectToken("tokenBuy")}
-          tokenType="buy"
-          selectedToken={tokenBuyData ?? undefined}
-        />
+        <div className="w-full flex">
+          <TokenSelect
+            onSelectToken={getHandleSelectToken("tokenBuy")}
+            tokenType="buy"
+            selectedToken={formData.tokenBuy ?? undefined}
+          />
+        </div>
         {errors.tokenBuy && (
           <FormMessage className="mt-1 h-6 text-sm text-tomato10">
             <span>{errors.tokenBuy.message}</span>

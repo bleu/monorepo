@@ -76,12 +76,19 @@ export type QueryUsersArgs = {
   where?: InputMaybe<UserFilter>;
 };
 
+export enum Status {
+  Cancelled = 'CANCELLED',
+  Executed = 'EXECUTED',
+  Requested = 'REQUESTED'
+}
+
 export type Swap = {
   __typename?: 'Swap';
   chainId: Scalars['Int']['output'];
   id: Scalars['String']['output'];
   priceChecker: Scalars['String']['output'];
   priceCheckerData: Scalars['String']['output'];
+  status: Status;
   tokenAmountIn: Scalars['BigInt']['output'];
   tokenIn?: Maybe<Token>;
   tokenOut?: Maybe<Token>;
@@ -128,6 +135,10 @@ export type SwapFilter = {
   priceChecker_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   priceChecker_not_starts_with?: InputMaybe<Scalars['String']['input']>;
   priceChecker_starts_with?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<Status>;
+  status_in?: InputMaybe<Array<InputMaybe<Status>>>;
+  status_not?: InputMaybe<Status>;
+  status_not_in?: InputMaybe<Array<InputMaybe<Status>>>;
   tokenAmountIn?: InputMaybe<Scalars['BigInt']['input']>;
   tokenAmountIn_gt?: InputMaybe<Scalars['BigInt']['input']>;
   tokenAmountIn_gte?: InputMaybe<Scalars['BigInt']['input']>;
@@ -258,7 +269,7 @@ export type UserFilter = {
 export type AllSwapsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AllSwapsQuery = { __typename?: 'Query', swaps: Array<{ __typename?: 'Swap', id: string, chainId: number, transactionHash: string, tokenAmountIn: any, priceChecker: string, user?: { __typename?: 'User', id: string } | null, tokenIn?: { __typename?: 'Token', id: string, name?: string | null, symbol?: string | null, decimals?: number | null } | null, tokenOut?: { __typename?: 'Token', id: string, name?: string | null, symbol?: string | null, decimals?: number | null } | null }> };
+export type AllSwapsQuery = { __typename?: 'Query', swaps: Array<{ __typename?: 'Swap', id: string, chainId: number, transactionHash: string, tokenAmountIn: any, priceChecker: string, priceCheckerData: string, user?: { __typename?: 'User', id: string } | null, tokenIn?: { __typename?: 'Token', id: string, name?: string | null, symbol?: string | null, decimals?: number | null } | null, tokenOut?: { __typename?: 'Token', id: string, name?: string | null, symbol?: string | null, decimals?: number | null } | null }> };
 
 
 export const AllSwapsDocument = gql`
@@ -269,6 +280,7 @@ export const AllSwapsDocument = gql`
     transactionHash
     tokenAmountIn
     priceChecker
+    priceCheckerData
     user {
       id
     }

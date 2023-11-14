@@ -59,9 +59,9 @@ const BASE_ENDPOINT_V2 =
   "https://api.thegraph.com/subgraphs/name/balancer-labs";
 
 const NETWORK_TO_BALANCER_ENDPOINT_MAP = {
-  mainnet: `${BASE_ENDPOINT_V2}/balancer-v2`,
+  ethereum: `${BASE_ENDPOINT_V2}/balancer-v2`,
   polygon: `${BASE_ENDPOINT_V2}/balancer-polygon-v2`,
-  polygon_zkevm:
+  "polygon-zkevm":
     "https://api.studio.thegraph.com/query/24660/balancer-polygon-zk-v2/version/latest",
   arbitrum: `${BASE_ENDPOINT_V2}/balancer-arbitrum-v2`,
   gnosis: `${BASE_ENDPOINT_V2}/balancer-gnosis-chain-v2`,
@@ -266,7 +266,8 @@ async function transformNetworks(table: PgTable, key = "network") {
 INSERT INTO networks (slug)
 SELECT
   CASE
-    WHEN LOWER(raw_data->>'${sql.raw(key)}') = 'zkevm' THEN 'polygon_zkevm'
+    WHEN LOWER(raw_data->>'${sql.raw(key)}') = 'zkevm' THEN 'polygon-zkevm'
+    WHEN LOWER(raw_data->>'${sql.raw(key)}') = 'mainnet' THEN 'ethereum'
     ELSE LOWER(raw_data->>'${sql.raw(key)}')
   END
 FROM ${table}
@@ -280,7 +281,9 @@ async function transformPoolSnapshotsData() {
 
   await db.execute(sql`
   INSERT INTO pools (external_id, network_slug)
-SELECT raw_data->'pool'->>'id', LOWER(raw_data->>'network') FROM pool_snapshots
+SELECT raw_data->'pool'->>'id', 
+LOWER(raw_data->>'network') 
+FROM pool_snapshots
 ON CONFLICT (external_id) DO NOTHING;
   `);
 
@@ -373,8 +376,8 @@ async function transformGauges() {
   INSERT INTO pools (external_id, network_slug)
   SELECT
     raw_data ->> 'id',
-    CASE WHEN LOWER(raw_data ->> 'chain') = 'zkevm' THEN
-      'polygon_zkevm'
+    CASE WHEN LOWER(raw_data ->> 'chain') = 'zkevm' THEN 'polygon-zkevm'
+    WHEN LOWER(raw_data ->> 'chain') = 'mainnet' THEN 'ethereum'
     ELSE
       LOWER(raw_data ->> 'chain')
     END
@@ -392,7 +395,8 @@ async function transformGauges() {
       to_timestamp((raw_data->'gauge'->>'addedTimestamp')::BIGINT),
       raw_data->>'id',
       CASE
-          WHEN LOWER(raw_data->>'chain') = 'zkevm' THEN 'polygon_zkevm'
+          WHEN LOWER(raw_data->>'chain') = 'zkevm' THEN 'polygon-zkevm'
+          WHEN LOWER(raw_data->>'chain') = 'mainnet' THEN 'ethereum'
           ELSE LOWER(raw_data->>'chain')
       END
   FROM gauges
@@ -455,14 +459,14 @@ async function seedNetworks() {
   return await db.execute(sql`
   -- SQL Script to populate networks
 INSERT INTO networks (name, slug, chain_id) VALUES
-('Mainnet', 'mainnet', 1),
+('Ethereum', 'ethereum', 1),
 ('Polygon', 'polygon', 137),
 ('Arbitrum', 'arbitrum', 42161),
 ('Gnosis', 'gnosis', 100),
 ('Optimism', 'optimism', 10),
 ('Goerli', 'goerli', 5),
 ('Sepolia', 'sepolia', 11155111),
-('PolygonZKEVM', 'polygon_zkevm', 1101),
+('PolygonZKEVM', 'polygon-zkevm', 1101),
 ('Base', 'base', 8453),
 ('Avalanche', 'avalanche', 43114)
 ON CONFLICT (slug)
@@ -472,12 +476,10 @@ DO UPDATE SET chain_id = EXCLUDED.chain_id, updated_at = NOW();
 
 async function fetchTokenPrices() {
   const remappings = {
-    mainnet: "ethereum",
     avalanche: "avax",
   };
 
   const inverseRemapping = {
-    ethereum: "mainnet",
     avax: "avalanche",
   };
   // Step 1: Fetch distinct tokens for each day

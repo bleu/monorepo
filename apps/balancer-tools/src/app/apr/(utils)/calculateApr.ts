@@ -6,7 +6,7 @@ import { db } from "#/db";
 export async function calculateAPRForDateRange(
   startAtTimestamp: number,
   endAtTimestamp: number,
-  poolId: string
+  poolId: string,
 ) {
   // const [votingShare, [feeAPR, collectedFeesUSD], tokensAPR, rewardsAPR] =
   const [[feeAPR, collectedFeesUSD]] = await Promise.all([
@@ -127,9 +127,9 @@ export async function calculateAPRForDateRange(
 export async function getFeeAprForDateRange(
   poolId: string,
   from: number,
-  to: number
+  to: number,
 ) {
-  const result= await db.execute(sql`
+  const result = await db.execute(sql`
   WITH SnapshotDiffs AS (
     SELECT
       FIRST_VALUE(ps.swap_fees) OVER w AS start_swap_fees,
@@ -144,14 +144,14 @@ export async function getFeeAprForDateRange(
     WHERE
       ps.pool_external_id = '${sql.raw(poolId)}'
       AND ps.timestamp BETWEEN '${sql.raw(
-        epochToDate(from).toISOString()
+        epochToDate(from).toISOString(),
       )}' AND '${sql.raw(epochToDate(to).toISOString())}'
     WINDOW w AS (ORDER BY ps.timestamp RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
   ), Calculations AS (
     SELECT
       (CAST(end_swap_fees AS NUMERIC) - CAST(start_swap_fees AS NUMERIC)) AS fee_diff,
       CAST(end_liquidity AS NUMERIC) AS liquidity,
-      CAST(protocol_swap_fee_cache AS NUMERIC) AS protocol_swap_fee,
+      COALESCE(CAST(protocol_swap_fee_cache AS NUMERIC), 0.5) AS protocol_swap_fee,
       EXTRACT(EPOCH FROM end_timestamp) - EXTRACT(EPOCH FROM start_timestamp) AS time_diff_secs
     FROM
       SnapshotDiffs
@@ -160,12 +160,12 @@ export async function getFeeAprForDateRange(
     fee_diff,
     CASE
       WHEN time_diff_secs = 0 THEN 0
-      ELSE ((fee_diff * (1 - protocol_swap_fee)) / liquidity) *
-           (365 * 24 * 3600 / time_diff_secs)
+      ELSE ((fee_diff * (1 - protocol_swap_fee)) / liquidity) * 365 *100
     END AS annualized_fee_apr
   FROM
     Calculations
   LIMIT 1;`);
   const { fee_diff: feeDiff, annualized_fee_apr: apr } = result[0];
+
   return [Number(apr), Number(feeDiff)];
 }

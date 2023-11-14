@@ -1,5 +1,8 @@
-import { isAddress } from "viem";
+import { Address } from "@bleu-fi/utils";
+import { encodeAbiParameters, isAddress, PublicClient } from "viem";
 import { z } from "zod";
+
+import { dynamicSlippagePriceCheckerAbi } from "./abis/dynamicSlippagePriceChecker";
 
 const basicAddressSchema = z
   .string()
@@ -14,12 +17,16 @@ const baseTokenAddress = z.object({
   symbol: z.string(),
 });
 
+const priceCheckerRevertedMessage =
+  "The price checker reverted. Please select another one.";
+
 export const orderOverviewSchema = z
   .object({
     tokenSell: baseTokenAddress,
     tokenSellAmount: z.coerce.number().positive(),
     tokenBuy: baseTokenAddress,
     receiverAddress: basicAddressSchema,
+    isValidFromNeeded: z.coerce.boolean(),
     validFrom: z.coerce.string().optional(),
   })
   .refine(
@@ -37,7 +44,119 @@ const basicPriceCheckerSchema = z.object({
   priceCheckerAddress: basicAddressSchema,
 });
 
-const basicDynamicSlippageSchema = basicPriceCheckerSchema.extend({
+const getBasicDynamicSlippageSchema = ({
+  tokenSellAddress,
+  tokenBuyAddress,
+  publicClient,
+}: {
+  tokenSellAddress: Address;
+  tokenBuyAddress: Address;
+  publicClient: PublicClient;
+}) => {
+  return basicPriceCheckerSchema
+    .extend({
+      allowedSlippageInBps: z.coerce.number().positive(),
+    })
+    .refine(
+      async (data) => {
+        const bigIntAllowedSlippageInBps = BigInt(
+          data.allowedSlippageInBps * 100,
+        );
+        try {
+          await publicClient.readContract({
+            address: data.priceCheckerAddress as Address,
+            abi: dynamicSlippagePriceCheckerAbi,
+            functionName: "checkPrice",
+            args: [
+              1, // we're just interested in call revert or not, so this value is not important
+              tokenBuyAddress,
+              tokenSellAddress,
+              0, // this value isn't used by this price checker
+              0, // this value will depend on the order, so it's not important here
+              encodeAbiParameters(
+                [
+                  {
+                    type: "uint256",
+                    name: "allowedSlippageInBps",
+                  },
+                  {
+                    type: "bytes",
+                    name: "_data",
+                  },
+                ],
+                [bigIntAllowedSlippageInBps, "0x"],
+              ),
+            ],
+          });
+          return true;
+        } catch (e) {
+          return false;
+        }
+      },
+      {
+        path: ["priceChecker"],
+        message: priceCheckerRevertedMessage,
+      },
+    );
+};
+
+export const getFixedMinOutSchema = ({
+  tokenSellAddress,
+  tokenBuyAddress,
+  publicClient,
+}: {
+  tokenSellAddress: Address;
+  tokenBuyAddress: Address;
+  publicClient: PublicClient;
+}) => {
+  return basicPriceCheckerSchema
+    .extend({
+      minOut: z.coerce.number().positive(),
+    })
+    .refine(
+      async (data) => {
+        try {
+          await publicClient.readContract({
+            address: data.priceCheckerAddress as Address,
+            abi: dynamicSlippagePriceCheckerAbi,
+            functionName: "checkPrice",
+            args: [
+              BigInt(1), // we're just interested in call revert or not, so this value is not important
+              tokenSellAddress,
+              tokenBuyAddress,
+              BigInt(0), // this value isn't used by this price checker
+              BigInt(0), // this value will depend on the order, so it's not important here
+              encodeAbiParameters(
+                [
+                  {
+                    type: "uint256",
+                    name: "allowedSlippageInBps",
+                  },
+                  {
+                    type: "bytes",
+                    name: "_data",
+                  },
+                ],
+                [BigInt(data.minOut), "0x"],
+              ),
+            ],
+          });
+          return true;
+        } catch (e) {
+          return false;
+        }
+      },
+      {
+        path: ["priceChecker"],
+        message: priceCheckerRevertedMessage,
+      },
+    );
+};
+
+export const getUniV2Schema = getBasicDynamicSlippageSchema;
+export const getSushiSwapSchema = getBasicDynamicSlippageSchema;
+
+export const basicDynamicSlippageSchema = basicPriceCheckerSchema.extend({
   allowedSlippageInBps: z.coerce.number().positive(),
 });
 

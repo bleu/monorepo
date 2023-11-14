@@ -60,7 +60,7 @@ export interface PoolStatsData extends PoolStats {
   network: string;
   poolId: string;
   tokens: PoolTokens[];
-  type: keyof typeof PoolTypeEnum;
+  type: PoolTypeEnum;
 }
 
 export interface PoolStatsResults {
@@ -97,7 +97,6 @@ export async function GET(request: NextRequest) {
     poolId,
     startAt,
     endAt,
-    network,
     sort = "apr",
     order = "desc",
     limit = Infinity,
@@ -110,11 +109,7 @@ export async function GET(request: NextRequest) {
       await fetchDataForPoolIdDateRange(poolId, startAt, endAt),
     );
   } else if (startAt && endAt) {
-    responseData = await fetchDataForDateRange(
-      startAt,
-      endAt,
-      network as string,
-    );
+    responseData = await fetchDataForDateRange(startAt, endAt);
   }
 
   if (responseData === null || !responseData) {

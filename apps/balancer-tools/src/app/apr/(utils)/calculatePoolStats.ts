@@ -1,10 +1,13 @@
 /* eslint-disable no-console */
 
-import { calculateDaysBetween, SECONDS_IN_DAY } from "@bleu-fi/utils/date";
+import { epochToDate } from "@bleu-fi/utils/date";
+import { sql } from "drizzle-orm";
 
-import { PoolStatsData, TokenAPR } from "../api/route";
+import { db } from "#/db";
+
+import { PoolStatsData, PoolTokens, TokenAPR } from "../api/route";
 import { calculateAPRForDateRange } from "./calculateApr";
-import { fetchPoolSnapshots } from "./fetchPoolSnapshots";
+import { PoolTypeEnum } from "./types";
 
 export interface calculatePoolData extends Omit<PoolStatsData, "apr"> {
   apr: {
@@ -20,55 +23,80 @@ export interface calculatePoolData extends Omit<PoolStatsData, "apr"> {
   };
 }
 
-// export async function fetchPoolAveragesForDateRange(
-//   poolId: string,
-//   network: string,
-//   from: number,
-//   to: number,
-// ): Promise<[number, number, string, number]> {
-//   // Determine if the initial date range is less than 2 days
-//   const initialRangeInDays = calculateDaysBetween(from, to);
-//   const extendedFrom = initialRangeInDays < 2 ? from - SECONDS_IN_DAY : from;
+export async function fetchPoolData(poolId: string, to: number) {
+  const result = await db.execute(sql`
+  WITH Snapshot AS (
+    SELECT
+    p.symbol AS pool_symbol,
+    p.pool_type AS pool_type,
+    p.network_slug AS network,
+    ps.liquidity AS liquidity,
+    ps.swap_volume AS swapVolume,
+    ps.total_shares AS totalShares,
+    ps.timestamp AS timestamp
+    FROM
+      pool_snapshots ps
+      JOIN pools p ON p.external_id = ps.pool_external_id
+    WHERE
+      ps.pool_external_id = '${sql.raw(poolId)}'
+      AND ps.timestamp = '${sql.raw(epochToDate(to).toISOString())}'
+  ), Calculations AS (
+    SELECT
+      pool_symbol,
+      pool_type,
+      network,
+      CAST(liquidity AS NUMERIC) AS liquidity,
+      CAST(swapVolume AS NUMERIC) AS volume,
+      (CAST(liquidity AS NUMERIC) / CAST(totalShares AS NUMERIC)) AS bpt_price
+    FROM
+      Snapshot
+  )
+  SELECT
+    network,
+    pool_type,
+    pool_symbol,
+    liquidity,
+    volume,
+    bpt_price
+  FROM
+    Calculations
+  LIMIT 1;`);
+  const {
+    network,
+    liquidity,
+    volume,
+    bpt_price: bptPrice,
+    pool_symbol: symbol,
+    pool_type: poolType,
+  } = result[0];
 
-//   // Fetch snapshots within the (potentially extended) date range
-//   const res = await fetchPoolSnapshots({
-//     to,
-//     from: extendedFrom,
-//     network,
-//     poolId,
-//   });
+  return [network, poolType, liquidity, volume, symbol ?? "", bptPrice];
+}
 
-//   let chosenData = res.poolSnapshots[0];
+export async function fetchPoolTokens(poolId: string) {
+  const result = await db.execute(sql`
+  SELECT
+    pt.token_address AS address,
+    pt.weight AS weight,
+    t.symbol AS symbol
+  FROM
+    pool_tokens pt
+    JOIN tokens t ON t.address = pt.token_address
+  WHERE
+  pool_external_id = '${sql.raw(poolId)}'
+  ORDER BY
+    pt.weight DESC;
+  `);
 
-//   if (res.poolSnapshots.length == 0) {
-//     const retryGQL = await fetchPoolSnapshots({
-//       to: to - SECONDS_IN_DAY,
-//       from: from - SECONDS_IN_DAY * 7,
-//       network,
-//       poolId,
-//     });
-
-//     if (retryGQL.poolSnapshots.length === 0) {
-//       // TODO: Throw error here and handle outside of it.
-//       return [0, 0, "", 0];
-//     }
-//     chosenData = retryGQL.poolSnapshots
-//       .sort((a, b) => a.timestamp - b.timestamp)
-//       .slice(-1)[0];
-
-//     // if the retry was needed then the volume on that day is 0
-//     chosenData.swapVolume = 0;
-//   }
-
-//   const liquidity = Number(chosenData.liquidity);
-
-//   const volume = Number(chosenData.swapVolume);
-
-//   const bptPrice =
-//     Number(chosenData.liquidity) / Number(chosenData.totalShares);
-
-//   return [liquidity, volume, chosenData.pool.symbol ?? "", bptPrice];
-// }
+  return result.map(
+    (token) =>
+      ({
+        address: token.address,
+        symbol: token.symbol,
+        weight: Number(token.weight),
+      }) as PoolTokens,
+  );
+}
 
 export async function calculatePoolStats({
   startAtTimestamp,
@@ -85,17 +113,24 @@ export async function calculatePoolStats({
     poolId,
   );
 
+  const [network, poolType, liquidity, volume, symbol] = await fetchPoolData(
+    poolId,
+    endAtTimestamp,
+  );
+
+  const tokens = await fetchPoolTokens(poolId);
+
   return {
     poolId,
     apr,
     balPriceUSD: 0,
-    tvl: 0,
-    tokens: [],
-    volume: 0,
+    tvl: Number(liquidity),
+    tokens: tokens,
+    volume: Number(volume),
     votingShare: 0,
-    symbol: "",
-    network: "",
+    symbol: String(symbol),
+    network: String(network),
     collectedFeesUSD,
-    type: "WEIGHTED",
+    type: poolType as PoolTypeEnum,
   };
 }

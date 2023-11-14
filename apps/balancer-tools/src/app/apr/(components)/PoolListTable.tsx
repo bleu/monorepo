@@ -1,6 +1,5 @@
 "use client";
 
-import { networkFor } from "@bleu-fi/utils";
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import {
   ChevronDownIcon,
@@ -215,7 +214,7 @@ function TableRow({
   poolId: string;
   network: string;
   tokens: PoolTokens[];
-  poolType: keyof typeof PoolTypeEnum;
+  poolType: PoolTypeEnum;
   tvl: number;
   votingShare: number;
   apr: APR;
@@ -230,10 +229,10 @@ function TableRow({
         tdClassNames="flex justify-center items-start sm:items-center h-full w-full"
       >
         <Image
-          src={`/assets/network/${networkFor(network)}.svg`}
+          src={`/assets/network/${network}.svg`}
           height={25}
           width={25}
-          alt={`Logo for ${networkFor(network)}`}
+          alt={`Logo for ${network}`}
         />
       </Table.BodyCellLink>
       <Table.BodyCellLink
@@ -244,7 +243,7 @@ function TableRow({
         {tokens.map((token) => (
           <Badge color="blue" classNames="w-fit" key={token.address}>
             {token.symbol}
-            {PoolTypeEnum[poolType] == PoolTypeEnum.WEIGHTED ? (
+            {poolType == PoolTypeEnum.WEIGHTED ? (
               <span className="text-xs ml-1 text-slate-400">
                 {(token.weight! * 100).toFixed()}%
               </span>
@@ -256,7 +255,7 @@ function TableRow({
       </Table.BodyCellLink>
 
       <Table.BodyCellLink linkClassNames="float-right" href={poolRedirectURL}>
-        {PoolTypeEnum[poolType]}
+        {poolType}
       </Table.BodyCellLink>
 
       <Table.BodyCellLink linkClassNames="float-right" href={poolRedirectURL}>

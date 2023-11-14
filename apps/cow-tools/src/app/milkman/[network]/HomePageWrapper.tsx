@@ -1,7 +1,6 @@
 "use client";
 
 import { Network } from "@bleu-fi/utils";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { useAccount, useNetwork } from "wagmi";
 
@@ -36,8 +35,6 @@ export function HomePageWrapper({
 
   const network = getNetwork(chain?.name);
 
-  const { safe } = useSafeAppsSDK();
-
   if (network !== params.network) {
     return (
       <div className="flex h-full w-full flex-col items-center rounded-3xl px-12 py-16 md:py-20">
@@ -55,9 +52,10 @@ export function HomePageWrapper({
       <div className="my-10 flex w-9/12 flex-col gap-y-5">
         <div className="flex items-center justify-between gap-x-8">
           <div className="flex flex-col gap-1">
-            <h1 className="text-3xl text-slate12">My Milkman transactions</h1>
-            {chain?.name}
-            <span>{safe.safeAddress}</span>
+            <h1 className="text-3xl text-slate12">Milkman transactions</h1>
+            <span>
+              Here is a list of your Milkman transaction with its status.
+            </span>
           </div>
           <div className="flex gap-4">
             <LinkComponent

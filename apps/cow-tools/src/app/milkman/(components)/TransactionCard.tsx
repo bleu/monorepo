@@ -62,7 +62,7 @@ export function TransactionCard({
         tokenBuyAddress={orderOverviewData?.tokenBuy.address}
       />
     ),
-    [TransactionStatus.ORDER_RESUME]: (
+    [TransactionStatus.ORDER_SUMMARY]: (
       <div className="flex flex-col gap-y-6 p-9">
         <OrderResume
           data={{ ...orderOverviewData, ...priceCheckerData }}

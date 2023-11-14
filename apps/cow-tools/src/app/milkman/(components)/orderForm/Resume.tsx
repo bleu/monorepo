@@ -140,7 +140,7 @@ export function OrderResume({
       </div>
       <div className="mt-5">
         <FormFooter
-          transactionStatus={TransactionStatus.ORDER_RESUME}
+          transactionStatus={TransactionStatus.ORDER_SUMMARY}
           onClick={handleButtonClick}
         />
       </div>

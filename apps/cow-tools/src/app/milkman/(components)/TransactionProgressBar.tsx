@@ -47,11 +47,11 @@ export const stages: Stage[] = [
   createStage(
     TransactionStatus.ORDER_STRATEGY,
     2,
-    TransactionStatus.ORDER_RESUME,
+    TransactionStatus.ORDER_SUMMARY,
     TransactionStatus.ORDER_OVERVIEW,
   ),
   createStage(
-    TransactionStatus.ORDER_RESUME,
+    TransactionStatus.ORDER_SUMMARY,
     3,
     TransactionStatus.ORDER_PLACED,
     TransactionStatus.ORDER_STRATEGY,

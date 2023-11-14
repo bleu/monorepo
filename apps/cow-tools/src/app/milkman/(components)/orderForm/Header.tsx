@@ -16,7 +16,7 @@ export function FormHeader({
 }) {
   const isDraftSelectTokens =
     transactionStatus === TransactionStatus.ORDER_OVERVIEW;
-  const isDraftResume = transactionStatus === TransactionStatus.ORDER_RESUME;
+  const isDraftResume = transactionStatus === TransactionStatus.ORDER_SUMMARY;
 
   function ArrowIcon() {
     return (

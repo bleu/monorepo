@@ -2,20 +2,34 @@ import { encodeAbiParameters } from "viem";
 import { goerli } from "viem/chains";
 
 import {
-  fixedMinOutSchema,
+  getChainlinkSchema,
   getFixedMinOutSchema,
   getSushiSwapSchema,
   getUniV2Schema,
-  sushiSwapSchema,
-  uniV2Schema,
 } from "./schema";
 
-export type argType = "uint256";
+export type argTypeName =
+  | "uint256"
+  | "address"
+  | "bool"
+  | "address[]"
+  | "bool[]";
+export type argType = string | bigint | boolean | string[] | boolean[];
+
+export interface PriceCheckerArgument {
+  name: string;
+  type: argTypeName;
+  label: string;
+  inputType: "number" | "text" | "checkbox";
+  toExpectedOutCalculator: boolean;
+  convertInput: (input: argType | number, decimals?: number) => argType;
+}
 
 export enum PRICE_CHECKERS {
   FIXED_MIN_OUT = "Fixed Minimum Out Amount",
   UNI_V2 = "Uniswap V2",
   SUSHI_SWAP = "SushiSwap",
+  CHAINLINK = "Chainlink",
 }
 
 export const priceCheckerInfoMapping = {
@@ -33,10 +47,9 @@ export const priceCheckerInfoMapping = {
           BigInt(input * 10 ** decimals),
         toExpectedOutCalculator: false,
       },
-    ],
+    ] as PriceCheckerArgument[],
     name: PRICE_CHECKERS.FIXED_MIN_OUT,
     hasExpectedOutCalculator: false,
-    schema: fixedMinOutSchema,
     getSchema: getFixedMinOutSchema,
   },
   [PRICE_CHECKERS.UNI_V2]: {
@@ -52,11 +65,9 @@ export const priceCheckerInfoMapping = {
         convertInput: (input: number) => BigInt(input * 100),
         toExpectedOutCalculator: false,
       },
-    ],
+    ] as PriceCheckerArgument[],
     name: PRICE_CHECKERS.UNI_V2,
     hasExpectedOutCalculator: true,
-
-    schema: uniV2Schema,
     getSchema: getUniV2Schema,
   },
   [PRICE_CHECKERS.SUSHI_SWAP]: {
@@ -72,64 +83,118 @@ export const priceCheckerInfoMapping = {
         convertInput: (input: number) => BigInt(input * 100),
         toExpectedOutCalculator: false,
       },
-    ],
+    ] as PriceCheckerArgument[],
     name: PRICE_CHECKERS.SUSHI_SWAP,
     hasExpectedOutCalculator: true,
-
-    schema: sushiSwapSchema,
     getSchema: getSushiSwapSchema,
+  },
+  [PRICE_CHECKERS.CHAINLINK]: {
+    addresses: {
+      [goerli.id]: "0x81909582e1Ab8a0f8f98C948537528E29a98f116",
+    },
+    arguments: [
+      {
+        name: "allowedSlippageInBps",
+        type: "uint256",
+        label: "Allowed slippage (%)",
+        inputType: "number",
+        convertInput: (input: number) => BigInt(input * 100),
+        toExpectedOutCalculator: false,
+      },
+      {
+        name: "addressesPriceFeeds",
+        type: "address[]",
+        label: "Price feeds",
+        inputType: "text",
+        toExpectedOutCalculator: false,
+        convertInput: (input: string) => input,
+      },
+      {
+        name: "revertPriceFeeds",
+        type: "bool[]",
+        label: "Revert price feeds",
+        inputType: "checkbox",
+        toExpectedOutCalculator: false,
+        convertInput: (input: boolean) => input,
+      },
+    ] as PriceCheckerArgument[],
+    name: PRICE_CHECKERS.CHAINLINK,
+    hasExpectedOutCalculator: true,
+    getSchema: getChainlinkSchema,
   },
 } as const;
 
 export function encodePriceCheckerData(
   priceChecker: PRICE_CHECKERS,
-  args: bigint[],
+  args: argType[],
 ): `0x${string}` {
-  const { arguments: priceCheckerArgs, hasExpectedOutCalculator } =
-    priceCheckerInfoMapping[priceChecker];
-  if (priceCheckerArgs.length !== args.length || !args.length) {
-    throw new Error(`Invalid number of arguments for ${priceChecker}`);
+  const priceCheckerInfo = priceCheckerInfoMapping[priceChecker];
+
+  validateArguments(priceCheckerInfo.arguments, args);
+
+  if (!priceCheckerInfo.hasExpectedOutCalculator) {
+    return encodeArguments(priceCheckerInfo.arguments, args);
   }
 
-  if (!hasExpectedOutCalculator) {
-    return encodeAbiParameters(
-      priceCheckerArgs.map((arg) => {
-        return {
-          name: arg.name,
-          type: arg.type,
-        };
-      }),
-      args,
-    );
-  }
+  return encodeWithExpectedOutCalculator(priceCheckerInfo.arguments, args);
+}
 
-  const firstExpectedOutArgIndex = priceCheckerArgs.findIndex(
+function validateArguments(
+  expectedArgs: PriceCheckerArgument[],
+  args: argType[],
+) {
+  if (expectedArgs.length !== args.length || !args.length) {
+    throw new Error(`Invalid number of arguments`);
+  }
+}
+
+function encodeArguments(
+  expectedArgs: PriceCheckerArgument[],
+  args: argType[],
+): `0x${string}` {
+  return encodeAbiParameters(
+    expectedArgs.map((arg) => ({ name: arg.name, type: arg.type })),
+    args,
+  );
+}
+
+function encodeWithExpectedOutCalculator(
+  expectedArgs: PriceCheckerArgument[],
+  args: argType[],
+): `0x${string}` {
+  const firstExpectedOutArgIndex = expectedArgs.findIndex(
     (arg) => arg.toExpectedOutCalculator,
   );
 
-  const expectedOutData =
-    firstExpectedOutArgIndex == -1
-      ? encodeAbiParameters([{ name: "_data", type: "bytes" }], ["0x"])
-      : encodeAbiParameters(
-          priceCheckerArgs.slice(firstExpectedOutArgIndex).map((arg) => {
-            return {
-              name: arg.name,
-              type: arg.type,
-            };
-          }),
-          args.slice(firstExpectedOutArgIndex),
-        );
+  if (firstExpectedOutArgIndex === -1) {
+    encodeWithExpectedOutCalculatorWithoutParameters(expectedArgs, args);
+  }
 
-  const priceCheckerArgsToEncode =
-    firstExpectedOutArgIndex == -1
-      ? priceCheckerArgs
-      : priceCheckerArgs.slice(0, firstExpectedOutArgIndex);
-  const argsToEncode =
-    firstExpectedOutArgIndex == -1
-      ? args
-      : args.slice(0, firstExpectedOutArgIndex);
+  const mainArgs = expectedArgs.slice(0, firstExpectedOutArgIndex);
+  const mainEncoded = encodeArguments(
+    mainArgs,
+    args.slice(0, firstExpectedOutArgIndex),
+  );
+
+  const expectedOutArgs = expectedArgs.slice(firstExpectedOutArgIndex);
+  const expectedOutEncoded = encodeArguments(
+    expectedOutArgs,
+    args.slice(firstExpectedOutArgIndex),
+  );
+
+  return `0x${mainEncoded.slice(2)}${expectedOutEncoded.slice(2)}`;
+}
+
+function encodeWithExpectedOutCalculatorWithoutParameters(
+  expectedArgs: PriceCheckerArgument[],
+  args: argType[],
+): `0x${string}` {
+  const expectedOutData = encodeAbiParameters(
+    [{ name: "_data", type: "bytes" }],
+    ["0x"],
+  );
   return encodeAbiParameters(
-    priceCheckerArgsToEncode
+    expectedArgs
       .map((arg) => {
         return {
           name: arg.name as string,
@@ -137,7 +202,6 @@ export function encodePriceCheckerData(
         };
       })
       .concat([{ name: "_data", type: "bytes" }]),
-    // @ts-ignore
-    argsToEncode.concat([expectedOutData]),
+    args.concat([expectedOutData]),
   );
 }

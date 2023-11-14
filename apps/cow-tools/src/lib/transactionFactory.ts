@@ -7,6 +7,7 @@ import { goerli } from "viem/chains";
 import { milkmanAbi } from "#/lib/abis/milkman";
 
 import {
+  argType,
   encodePriceCheckerData,
   PRICE_CHECKERS,
   priceCheckerInfoMapping,
@@ -37,7 +38,7 @@ export interface MilkmanOrderArgs extends BaseArgs {
   toAddress: Address;
   amount: bigint;
   priceChecker: PRICE_CHECKERS;
-  args: bigint[];
+  args: argType[];
 }
 
 interface ITransaction<T> {

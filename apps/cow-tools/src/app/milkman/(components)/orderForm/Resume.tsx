@@ -47,6 +47,7 @@ export function OrderResume({
     const priceCheckersArgs = priceCheckerInfoMapping[
       data.priceChecker as PRICE_CHECKERS
     ].arguments.map((arg) =>
+      // @ts-ignore
       arg.convertInput(data[arg.name], data.tokenBuy.decimals),
     );
 
@@ -87,33 +88,54 @@ export function OrderResume({
       <div className="flex flex-col">
         {fieldsToDisplay.map((field) => {
           const value = data[field.key];
-          if (field.key === "tokenSell") {
-            return (
-              value && (
-                <span key={field.key}>
-                  {field.label}: {value.symbol} (
-                  {truncateAddress(data.tokenSell.address)})
-                </span>
-              )
-            );
+          switch (field.key) {
+            case "tokenSell":
+              return (
+                value && (
+                  <span key={field.key}>
+                    {field.label}: {value.symbol} (
+                    {truncateAddress(data.tokenSell.address)})
+                  </span>
+                )
+              );
+            case "tokenBuy":
+              return (
+                value && (
+                  <span key={field.key}>
+                    {field.label}: {value.symbol} (
+                    {truncateAddress(data.tokenBuy.address)})
+                  </span>
+                )
+              );
+            case "addressesPriceFeeds":
+              return (
+                value && (
+                  <span key={field.key}>
+                    {field.label}:{" "}
+                    {value.map(
+                      (address: string) => truncateAddress(address)?.toString(),
+                    )}
+                  </span>
+                )
+              );
+
+            case "revertPriceFeeds":
+              return (
+                value && (
+                  <span key={field.key}>
+                    {field.label}: {value.toString()}
+                  </span>
+                )
+              );
+            default:
+              return (
+                value && (
+                  <span key={field.key}>
+                    {field.label}: {value}
+                  </span>
+                )
+              );
           }
-          if (field.key === "tokenBuy") {
-            return (
-              value && (
-                <span key={field.key}>
-                  {field.label}: {value.symbol} (
-                  {truncateAddress(data.tokenBuy.address)})
-                </span>
-              )
-            );
-          }
-          return (
-            value && (
-              <span key={field.key}>
-                {field.label}: {value}
-              </span>
-            )
-          );
         })}
       </div>
       <div className="mt-5">

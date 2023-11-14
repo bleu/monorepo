@@ -166,8 +166,8 @@ function TransactionInfo({ order }: { order: AllSwapsQuery["swaps"][0] }) {
       <div className="flex flex-col">
         <div className="flex items-center gap-x-1">
           <span>
-            Price Checker: {priceCheckerInfo?.name || "Not found"} (
-            {truncateAddress(priceCheckerInfo?.addresses[order.chainId as 5])})
+            Price Checker: {priceCheckerInfo?.name || "Not found"}{" "}
+            {`(${truncateAddress(order.priceChecker as Address)})`}
           </span>
           {priceCheckerUrl && (
             <Link href={priceCheckerUrl.url} target="_blank">

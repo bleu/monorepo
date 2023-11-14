@@ -1,3 +1,4 @@
+import { Address } from "@bleu-fi/utils";
 import { decodeAbiParameters, encodeAbiParameters } from "viem";
 import { goerli } from "viem/chains";
 
@@ -7,7 +8,6 @@ import {
   getSushiSwapSchema,
   getUniV2Schema,
 } from "./schema";
-import { Address } from "@bleu-fi/utils";
 
 export type argTypeName =
   | "uint256"
@@ -240,13 +240,13 @@ export function decodePriceCheckerData(
 export function getPriceCheckerInfoFromAddressAndChain(
   chainId: 5,
   priceCheckerAddress: Address,
-) {
+): (typeof priceCheckerInfoMapping)[PRICE_CHECKERS] | null {
   const priceCheckerInfo = Object.values(priceCheckerInfoMapping).find(
     (info) => info.addresses[chainId] === priceCheckerAddress,
   );
 
   if (!priceCheckerInfo) {
-    throw new Error(`Invalid price checker address`);
+    return null;
   }
 
   return priceCheckerInfo;

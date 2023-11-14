@@ -144,10 +144,12 @@ function TransactionInfo({ order }: { order: AllSwapsQuery["swaps"][0] }) {
 
   const expecetedArguments = priceCheckerInfo?.arguments;
 
-  const decodedArgs = decodePriceCheckerData(
-    priceCheckerInfo,
-    order.priceCheckerData as `0x${string}`,
-  );
+  const decodedArgs = priceCheckerInfo
+    ? decodePriceCheckerData(
+        priceCheckerInfo,
+        order.priceCheckerData as `0x${string}`,
+      )
+    : [];
 
   const priceCheckerUrl = buildBlockExplorerAddressURL({
     chainId: order.chainId,
@@ -164,8 +166,8 @@ function TransactionInfo({ order }: { order: AllSwapsQuery["swaps"][0] }) {
       <div className="flex flex-col">
         <div className="flex items-center gap-x-1">
           <span>
-            Price Checker: {priceCheckerInfo.name || "Not found"} (
-            {truncateAddress(priceCheckerInfo.addresses[order.chainId as 5])})
+            Price Checker: {priceCheckerInfo?.name || "Not found"} (
+            {truncateAddress(priceCheckerInfo?.addresses[order.chainId as 5])})
           </span>
           {priceCheckerUrl && (
             <Link href={priceCheckerUrl.url} target="_blank">

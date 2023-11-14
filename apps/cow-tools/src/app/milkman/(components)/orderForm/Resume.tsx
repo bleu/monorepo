@@ -47,7 +47,6 @@ export function OrderResume({
     const priceCheckersArgs = priceCheckerInfoMapping[
       data.priceChecker as PRICE_CHECKERS
     ].arguments.map((arg) =>
-      // @ts-ignore
       arg.convertInput(data[arg.name], data.tokenBuy.decimals),
     );
 

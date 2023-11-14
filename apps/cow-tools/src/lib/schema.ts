@@ -237,17 +237,6 @@ export const getChainlinkSchema = ({
 export const getUniV2Schema = getBasicDynamicSlippageSchema;
 export const getSushiSwapSchema = getBasicDynamicSlippageSchema;
 
-export const basicDynamicSlippageSchema = basicPriceCheckerSchema.extend({
-  allowedSlippageInBps: z.coerce.number().positive(),
-});
-
-export const fixedMinOutSchema = basicPriceCheckerSchema.extend({
-  minOut: z.coerce.number().positive(),
-});
-
-export const uniV2Schema = basicDynamicSlippageSchema;
-export const sushiSwapSchema = basicDynamicSlippageSchema;
-
 export const getPriceFeedChainlinkSchema = (publicClient: PublicClient) => {
   return z
     .object({

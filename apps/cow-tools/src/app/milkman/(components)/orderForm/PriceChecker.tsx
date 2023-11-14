@@ -1,6 +1,6 @@
 import { Address } from "@bleu-fi/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PlusIcon, TrashIcon } from "@radix-ui/react-icons";
+import { Pencil1Icon, PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import { FieldValues, useForm, UseFormReturn } from "react-hook-form";
 import { createPublicClient, http } from "viem";
@@ -101,7 +101,11 @@ export function FormSelectPriceChecker({
         )}
       </div>
       {selectedPriceChecker && (
-        <PriceCheckerInputs form={form} priceChecker={selectedPriceChecker} />
+        <PriceCheckerInputs
+          form={form}
+          priceChecker={selectedPriceChecker}
+          defaultValues={defaultValues}
+        />
       )}
       <FormFooter
         transactionStatus={TransactionStatus.ORDER_STRATEGY}
@@ -114,15 +118,19 @@ export function FormSelectPriceChecker({
 function PriceCheckerInputs({
   priceChecker,
   form,
+  defaultValues,
 }: {
   priceChecker: PRICE_CHECKERS;
   form: UseFormReturn;
+  defaultValues?: FieldValues;
 }) {
   const priceCheckerInfo = priceCheckerInfoMapping[priceChecker];
   const { register } = form;
   switch (priceChecker) {
     case PRICE_CHECKERS.CHAINLINK:
-      return <ChainlinkPriceCheckerInput form={form} />;
+      return (
+        <ChainlinkPriceCheckerInput form={form} defaultValues={defaultValues} />
+      );
     default:
       return (
         <>
@@ -131,6 +139,7 @@ function PriceCheckerInputs({
               type={arg.inputType}
               label={arg.label}
               key={arg.name}
+              defaultValue={defaultValues?.[arg.name]}
               {...register(arg.name)}
             />
           ))}
@@ -139,7 +148,13 @@ function PriceCheckerInputs({
   }
 }
 
-function ChainlinkPriceCheckerInput({ form }: { form: UseFormReturn }) {
+function ChainlinkPriceCheckerInput({
+  form,
+  defaultValues,
+}: {
+  form: UseFormReturn;
+  defaultValues?: FieldValues;
+}) {
   const {
     register,
     setValue,
@@ -147,14 +162,15 @@ function ChainlinkPriceCheckerInput({ form }: { form: UseFormReturn }) {
     formState: { errors },
   } = form;
   const [isOpen, setIsOpen] = useState(false);
+  const [indexToEdit, setIndexToEdit] = useState(-1);
 
   useEffect(() => {
     register("priceFeeds");
-    setValue("priceFeeds", []);
+    setValue("priceFeeds", defaultValues?.priceFeeds || []);
     register("addressesPriceFeeds");
-    setValue("addressesPriceFeeds", []);
+    setValue("addressesPriceFeeds", defaultValues?.addressesPriceFeeds || []);
     register("revertPriceFeeds");
-    setValue("revertPriceFeeds", []);
+    setValue("revertPriceFeeds", defaultValues?.revertPriceFeeds || []);
   }, []);
 
   const priceFeeds = watch("priceFeeds") as {
@@ -168,6 +184,7 @@ function ChainlinkPriceCheckerInput({ form }: { form: UseFormReturn }) {
       <Input
         type="number"
         label="Allowed slippage (%)"
+        defaultValue={defaultValues?.allowedSlippageInBps}
         {...register("allowedSlippageInBps")}
       />
       <FormLabel className="my-2 block text-sm text-slate12">
@@ -187,10 +204,17 @@ function ChainlinkPriceCheckerInput({ form }: { form: UseFormReturn }) {
                 <ChainlinkAddModal
                   setIsOpen={setIsOpen}
                   priceCheckerForm={form}
+                  indexToEdit={indexToEdit}
                 />
               }
             >
-              <Button type="button" className="p-2">
+              <Button
+                type="button"
+                className="px-5 py-2"
+                onClick={() => {
+                  setIndexToEdit(-1);
+                }}
+              >
                 <PlusIcon className="w-5 h-5 items-end" />
               </Button>
             </Dialog>
@@ -208,9 +232,19 @@ function ChainlinkPriceCheckerInput({ form }: { form: UseFormReturn }) {
                   {priceFeed.reversed ? "Yes" : "No"}
                 </Table.BodyCell>
                 <Table.BodyCell>
-                  <div className="flex items-center justify-center">
+                  <div className="flex items-center justify-center gap-x-2">
                     <button
-                      className="ustify-self-center text-tomato9 hover:text-tomato10 "
+                      className="justify-self-center text-amber9 hover:text-amber10 "
+                      type="button"
+                      onClick={() => {
+                        setIndexToEdit(index);
+                        setIsOpen(true);
+                      }}
+                    >
+                      <Pencil1Icon className="w-5 h-5" />
+                    </button>
+                    <button
+                      className="justify-self-center text-tomato9 hover:text-tomato10 "
                       type="button"
                       onClick={() => {
                         setValue("priceFeeds", [
@@ -239,9 +273,11 @@ function ChainlinkPriceCheckerInput({ form }: { form: UseFormReturn }) {
 function ChainlinkAddModal({
   priceCheckerForm,
   setIsOpen,
+  indexToEdit = -1,
 }: {
   priceCheckerForm: UseFormReturn;
   setIsOpen: (open: boolean) => void;
+  indexToEdit?: number;
 }) {
   const {
     setValue: setValuePriceCheckerForm,
@@ -254,19 +290,26 @@ function ChainlinkAddModal({
   });
   const priceFeedChainlinkSchema = getPriceFeedChainlinkSchema(publicClient);
 
+  useEffect(() => {
+    if (indexToEdit !== -1) {
+      const priceFeeds = getValuesPriceCheckerForm("priceFeeds") as {
+        address: Address;
+        description: string;
+        reversed: boolean;
+      }[];
+      const priceFeed = priceFeeds[indexToEdit];
+      setValue("priceFeedAddress", priceFeed.address);
+      setValue("reversed", priceFeed.reversed);
+    }
+  }, []);
+
   const newPriceFeedForm = useForm<typeof priceFeedChainlinkSchema._type>({
     resolver: zodResolver(priceFeedChainlinkSchema),
   });
   const { register, watch, setValue } = newPriceFeedForm;
   const formData = watch();
 
-  const onSubmit = async (data: FieldValues) => {
-    const description = await publicClient.readContract({
-      address: data.priceFeedAddress as Address,
-      abi: chainlinkPriceFeeAbi,
-      functionName: "description",
-      args: [],
-    });
+  function addPriceFeed(data: FieldValues, description: string) {
     setValuePriceCheckerForm("priceFeeds", [
       ...getValuesPriceCheckerForm("priceFeeds"),
       {
@@ -283,6 +326,45 @@ function ChainlinkAddModal({
       ...getValuesPriceCheckerForm("revertPriceFeeds"),
       data.reversed,
     ]);
+  }
+  function editPriceFeed(
+    data: FieldValues,
+    description: string,
+    index: number,
+  ) {
+    const priceFeeds = getValuesPriceCheckerForm("priceFeeds") as {
+      address: Address;
+      description: string;
+      reversed: boolean;
+    }[];
+    priceFeeds[index] = {
+      address: data.priceFeedAddress,
+      description,
+      reversed: data.reversed,
+    };
+    setValuePriceCheckerForm("priceFeeds", priceFeeds);
+    setValuePriceCheckerForm(
+      "addressesPriceFeeds",
+      priceFeeds.map((priceFeed) => priceFeed.address),
+    );
+    setValuePriceCheckerForm(
+      "revertPriceFeeds",
+      priceFeeds.map((priceFeed) => priceFeed.reversed),
+    );
+  }
+
+  const onSubmit = async (data: FieldValues) => {
+    const description = (await publicClient.readContract({
+      address: data.priceFeedAddress as Address,
+      abi: chainlinkPriceFeeAbi,
+      functionName: "description",
+      args: [],
+    })) as string;
+    if (indexToEdit === -1) {
+      addPriceFeed(data, description);
+    } else {
+      editPriceFeed(data, description, indexToEdit);
+    }
     setIsOpen(false);
   };
 

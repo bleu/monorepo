@@ -42,12 +42,12 @@ export function OrderSummary({
 
   async function handleButtonClick() {
     const sellAmountBigInt = BigInt(
-      Number(data.tokenSellAmount) * 10 ** data.tokenSell.decimals
+      Number(data.tokenSellAmount) * 10 ** data.tokenSell.decimals,
     );
     const priceCheckersArgs = priceCheckerInfoMapping[
       data.priceChecker as PRICE_CHECKERS
     ].arguments.map((arg) =>
-      arg.convertInput(data[arg.name], data.tokenBuy.decimals)
+      arg.convertInput(data[arg.name], data.tokenBuy.decimals),
     );
 
     await sendTransactions([

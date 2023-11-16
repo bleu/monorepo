@@ -12,7 +12,7 @@ import { truncateAddress } from "#/utils/truncate";
 
 import { FormFooter } from "./Footer";
 
-export function OrderResume({
+export function OrderSummary({
   data,
   handleBack,
   network,
@@ -42,12 +42,12 @@ export function OrderResume({
 
   async function handleButtonClick() {
     const sellAmountBigInt = BigInt(
-      Number(data.tokenSellAmount) * 10 ** data.tokenSell.decimals,
+      Number(data.tokenSellAmount) * 10 ** data.tokenSell.decimals
     );
     const priceCheckersArgs = priceCheckerInfoMapping[
       data.priceChecker as PRICE_CHECKERS
     ].arguments.map((arg) =>
-      arg.convertInput(data[arg.name], data.tokenBuy.decimals),
+      arg.convertInput(data[arg.name], data.tokenBuy.decimals)
     );
 
     await sendTransactions([
@@ -111,9 +111,7 @@ export function OrderResume({
                 value && (
                   <span key={field.key}>
                     {field.label}:{" "}
-                    {value.map(
-                      (address: string) => truncateAddress(address)?.toString(),
-                    )}
+                    {value.map((address: string) => truncateAddress(address))}
                   </span>
                 )
               );

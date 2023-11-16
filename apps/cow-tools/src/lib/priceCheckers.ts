@@ -28,7 +28,7 @@ export interface PriceCheckerArgument {
   convertInput: (input: argType | number, decimals?: number) => argType;
   convertOutput: (
     output: argType,
-    decimals?: number,
+    decimals?: number
   ) => Exclude<argType, bigint> | number;
 }
 
@@ -140,7 +140,7 @@ export const priceCheckerInfoMapping = {
 
 export function encodePriceCheckerData(
   priceChecker: PRICE_CHECKERS,
-  args: argType[],
+  args: argType[]
 ): `0x${string}` {
   const priceCheckerInfo = priceCheckerInfoMapping[priceChecker];
 
@@ -155,7 +155,7 @@ export function encodePriceCheckerData(
 
 function validateArguments(
   expectedArgs: PriceCheckerArgument[],
-  args: argType[],
+  args: argType[]
 ) {
   if (expectedArgs.length !== args.length || !args.length) {
     throw new Error(`Invalid number of arguments`);
@@ -164,20 +164,20 @@ function validateArguments(
 
 function encodeArguments(
   expectedArgs: PriceCheckerArgument[],
-  args: argType[],
+  args: argType[]
 ): `0x${string}` {
   return encodeAbiParameters(
     expectedArgs.map((arg) => ({ name: arg.name, type: arg.type })),
-    args,
+    args
   );
 }
 
 function encodeWithExpectedOutCalculator(
   expectedArgs: PriceCheckerArgument[],
-  args: argType[],
+  args: argType[]
 ): `0x${string}` {
   const firstExpectedOutArgIndex = expectedArgs.findIndex(
-    (arg) => arg.toExpectedOutCalculator,
+    (arg) => arg.toExpectedOutCalculator
   );
 
   if (firstExpectedOutArgIndex === -1) {
@@ -187,13 +187,13 @@ function encodeWithExpectedOutCalculator(
   const mainArgs = expectedArgs.slice(0, firstExpectedOutArgIndex);
   const mainEncoded = encodeArguments(
     mainArgs,
-    args.slice(0, firstExpectedOutArgIndex),
+    args.slice(0, firstExpectedOutArgIndex)
   );
 
   const expectedOutArgs = expectedArgs.slice(firstExpectedOutArgIndex);
   const expectedOutEncoded = encodeArguments(
     expectedOutArgs,
-    args.slice(firstExpectedOutArgIndex),
+    args.slice(firstExpectedOutArgIndex)
   );
 
   return `0x${mainEncoded.slice(2)}${expectedOutEncoded.slice(2)}`;
@@ -201,11 +201,11 @@ function encodeWithExpectedOutCalculator(
 
 function encodeWithExpectedOutCalculatorWithoutParameters(
   expectedArgs: PriceCheckerArgument[],
-  args: argType[],
+  args: argType[]
 ): `0x${string}` {
   const expectedOutData = encodeAbiParameters(
     [{ name: "_data", type: "bytes" }],
-    ["0x"],
+    ["0x"]
   );
   return encodeAbiParameters(
     expectedArgs
@@ -216,13 +216,13 @@ function encodeWithExpectedOutCalculatorWithoutParameters(
         };
       })
       .concat([{ name: "_data", type: "bytes" }]),
-    args.concat([expectedOutData]),
+    args.concat([expectedOutData])
   );
 }
 
 export function decodePriceCheckerData(
   priceCheckerInfo: (typeof priceCheckerInfoMapping)[PRICE_CHECKERS],
-  data: `0x${string}`,
+  data: `0x${string}`
 ): argType[] {
   try {
     const expectedArgs = priceCheckerInfo.arguments;
@@ -239,14 +239,14 @@ export function decodePriceCheckerData(
 
 export function getPriceCheckerInfoFromAddressAndChain(
   chainId: 5,
-  priceCheckerAddress: Address,
+  priceCheckerAddress: Address
 ): (typeof priceCheckerInfoMapping)[PRICE_CHECKERS] | null {
   // Find Price checker info dict from priceCheckerInfoMapping constant
   // using the address and chainId provided
   // Those two keys combination should be unique
   // If not found, return null
   const priceCheckerInfo = Object.values(priceCheckerInfoMapping).find(
-    (info) => info.addresses[chainId] === priceCheckerAddress,
+    (info) => info.addresses[chainId] === priceCheckerAddress
   );
 
   if (!priceCheckerInfo) {
@@ -258,26 +258,26 @@ export function getPriceCheckerInfoFromAddressAndChain(
 
 function decodeArguments(
   expectedArgs: (PriceCheckerArgument | { name: string; type: argTypeName })[],
-  data: `0x${string}`,
+  data: `0x${string}`
 ): argType[] {
   return decodeAbiParameters(
     expectedArgs.map((arg) => ({ name: arg.name, type: arg.type })),
-    data,
+    data
   ) as argType[];
 }
 
 function decodeWithExpectedOutCalculator(
   expectedArgs: PriceCheckerArgument[],
-  data: `0x${string}`,
+  data: `0x${string}`
 ): argType[] {
   const firstExpectedOutArgIndex = expectedArgs.findIndex(
-    (arg) => arg.toExpectedOutCalculator,
+    (arg) => arg.toExpectedOutCalculator
   );
 
   if (firstExpectedOutArgIndex === -1) {
     return decodeArguments(
       [...expectedArgs, { name: "_data", type: "bytes" }],
-      data,
+      data
     ).slice(0, -1);
   }
 
@@ -285,13 +285,13 @@ function decodeWithExpectedOutCalculator(
 
   const mainDecoded = decodeArguments(
     [...mainArgs, { name: "_data", type: "bytes" }],
-    data,
+    data
   );
 
   const expectedOutArgs = expectedArgs.slice(firstExpectedOutArgIndex);
   const expectedOutDecoded = decodeArguments(
     expectedOutArgs,
-    mainDecoded[mainDecoded.length - 1] as `0x${string}`,
+    mainDecoded[mainDecoded.length - 1] as `0x${string}`
   );
 
   return mainDecoded.concat(expectedOutDecoded);

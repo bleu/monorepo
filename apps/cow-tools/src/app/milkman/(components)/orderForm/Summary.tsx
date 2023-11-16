@@ -12,7 +12,7 @@ import { truncateAddress } from "#/utils/truncate";
 
 import { FormFooter } from "./Footer";
 
-export function OrderResume({
+export function OrderSummary({
   data,
   handleBack,
   network,
@@ -87,38 +87,57 @@ export function OrderResume({
       <div className="flex flex-col">
         {fieldsToDisplay.map((field) => {
           const value = data[field.key];
-          if (field.key === "tokenSell") {
-            return (
-              value && (
-                <span key={field.key}>
-                  {field.label}: {value.symbol} (
-                  {truncateAddress(data.tokenSell.address)})
-                </span>
-              )
-            );
+          switch (field.key) {
+            case "tokenSell":
+              return (
+                value && (
+                  <span key={field.key}>
+                    {field.label}: {value.symbol} (
+                    {truncateAddress(data.tokenSell.address)})
+                  </span>
+                )
+              );
+            case "tokenBuy":
+              return (
+                value && (
+                  <span key={field.key}>
+                    {field.label}: {value.symbol} (
+                    {truncateAddress(data.tokenBuy.address)})
+                  </span>
+                )
+              );
+            case "addressesPriceFeeds":
+              return (
+                value && (
+                  <span key={field.key}>
+                    {field.label}:{" "}
+                    {value.map((address: string) => truncateAddress(address))}
+                  </span>
+                )
+              );
+
+            case "revertPriceFeeds":
+              return (
+                value && (
+                  <span key={field.key}>
+                    {field.label}: {value.toString()}
+                  </span>
+                )
+              );
+            default:
+              return (
+                value && (
+                  <span key={field.key}>
+                    {field.label}: {value}
+                  </span>
+                )
+              );
           }
-          if (field.key === "tokenBuy") {
-            return (
-              value && (
-                <span key={field.key}>
-                  {field.label}: {value.symbol} (
-                  {truncateAddress(data.tokenBuy.address)})
-                </span>
-              )
-            );
-          }
-          return (
-            value && (
-              <span key={field.key}>
-                {field.label}: {value}
-              </span>
-            )
-          );
         })}
       </div>
       <div className="mt-5">
         <FormFooter
-          transactionStatus={TransactionStatus.ORDER_RESUME}
+          transactionStatus={TransactionStatus.ORDER_SUMMARY}
           onClick={handleButtonClick}
         />
       </div>

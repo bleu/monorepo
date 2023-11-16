@@ -9,7 +9,7 @@ import { useOrder } from "#/contexts/OrderContext";
 import { FormHeader } from "./orderForm/Header";
 import { FormOrderOverview } from "./orderForm/Overview";
 import { FormSelectPriceChecker } from "./orderForm/PriceChecker";
-import { OrderResume } from "./orderForm/Resume";
+import { OrderSummary } from "./orderForm/Summary";
 
 export function TransactionCard({
   userAddress,
@@ -62,9 +62,9 @@ export function TransactionCard({
         tokenBuyAddress={orderOverviewData?.tokenBuy.address}
       />
     ),
-    [TransactionStatus.ORDER_RESUME]: (
+    [TransactionStatus.ORDER_SUMMARY]: (
       <div className="flex flex-col gap-y-6 p-9">
-        <OrderResume
+        <OrderSummary
           data={{ ...orderOverviewData, ...priceCheckerData }}
           handleBack={handleBack}
           network={network}

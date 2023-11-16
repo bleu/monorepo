@@ -11,7 +11,7 @@ export function FormFooter({
   onClick?: () => void;
   disabled?: boolean;
 }) {
-  const isDraftResume = transactionStatus === TransactionStatus.ORDER_RESUME;
+  const isDraftResume = transactionStatus === TransactionStatus.ORDER_SUMMARY;
   return (
     <div className="flex flex-col gap-y-5">
       {!isDraftResume && (

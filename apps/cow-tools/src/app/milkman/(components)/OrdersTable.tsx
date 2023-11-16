@@ -164,6 +164,7 @@ function TransactionInfo({ order }: { order: AllSwapsQuery["swaps"][0] }) {
     address: order.priceChecker as Address,
   });
 
+  const decodedDataSuccess = decodedArgs && expecetedArguments;
   return (
     <div className="text-white">
       <div className="font-semibold text-2xl flex justify-between">
@@ -184,8 +185,7 @@ function TransactionInfo({ order }: { order: AllSwapsQuery["swaps"][0] }) {
             </Link>
           )}
         </div>
-        {decodedArgs &&
-          expecetedArguments &&
+        {decodedDataSuccess &&
           decodedArgs.map((argument, index) => (
             <div key={index}>
               {expecetedArguments[index].label} :{" "}
@@ -195,7 +195,7 @@ function TransactionInfo({ order }: { order: AllSwapsQuery["swaps"][0] }) {
               )}
             </div>
           ))}
-        {!decodedArgs.length && (
+        {!decodedDataSuccess && (
           <span>Price Checker Data: Error decoding data</span>
         )}
       </div>

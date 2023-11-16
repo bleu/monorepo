@@ -241,6 +241,10 @@ export function getPriceCheckerInfoFromAddressAndChain(
   chainId: 5,
   priceCheckerAddress: Address,
 ): (typeof priceCheckerInfoMapping)[PRICE_CHECKERS] | null {
+  // Find Price checker info dict from priceCheckerInfoMapping constant
+  // using the address and chainId provided
+  // Those two keys combination should be unique
+  // If not found, return null
   const priceCheckerInfo = Object.values(priceCheckerInfoMapping).find(
     (info) => info.addresses[chainId] === priceCheckerAddress,
   );

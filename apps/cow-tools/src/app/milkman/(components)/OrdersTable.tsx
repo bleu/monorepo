@@ -14,7 +14,6 @@ import {
 import cn from "clsx";
 import Image from "next/image";
 import Link from "next/link";
-import { tokenLogoUri } from "public/tokens/logoUri";
 import { formatUnits } from "viem";
 
 import { Dialog } from "#/components/Dialog";
@@ -24,6 +23,7 @@ import {
   decodePriceCheckerData,
   getPriceCheckerInfoFromAddressAndChain,
 } from "#/lib/priceCheckers";
+import { cowTokenList } from "#/utils/cowTokenList";
 import { truncateAddress } from "#/utils/truncate";
 
 export enum TransactionStatus {
@@ -95,13 +95,21 @@ function TableRow({ order }: { order: AllSwapsQuery["swaps"][0] }) {
         </Dialog>
       </Table.BodyCell>
       <Table.BodyCell>
-        <TokenInfo id={order.tokenIn?.id} symbol={order.tokenIn?.symbol} />
+        <TokenInfo
+          id={order.tokenIn?.id}
+          symbol={order.tokenIn?.symbol}
+          chainId={order.chainId}
+        />
       </Table.BodyCell>
       <Table.BodyCell>
         {formatNumber(tokenInAmount, 4, "decimal", "standard", 0.0001)}
       </Table.BodyCell>
       <Table.BodyCell>
-        <TokenInfo id={order.tokenOut?.id} symbol={order.tokenOut?.symbol} />
+        <TokenInfo
+          id={order.tokenOut?.id}
+          symbol={order.tokenOut?.symbol}
+          chainId={order.chainId}
+        />
       </Table.BodyCell>
       <Table.BodyCell>
         <div className="flex items-center gap-x-1">
@@ -147,11 +155,11 @@ function TransactionInfo({ order }: { order: AllSwapsQuery["swaps"][0] }) {
   const decodedArgs = priceCheckerInfo
     ? decodePriceCheckerData(
         priceCheckerInfo,
-        order.priceCheckerData as `0x${string}`,
+        order.priceCheckerData as Address,
       )
     : [];
 
-  const priceCheckerUrl = buildBlockExplorerAddressURL({
+  const priceCheckerExplorerUrl = buildBlockExplorerAddressURL({
     chainId: order.chainId,
     address: order.priceChecker as Address,
   });
@@ -159,8 +167,9 @@ function TransactionInfo({ order }: { order: AllSwapsQuery["swaps"][0] }) {
   return (
     <div className="text-white">
       <div className="font-semibold text-2xl flex justify-between">
-        Price Checker Data - {truncateAddress(order.tokenIn?.symbol)} for{" "}
-        {truncateAddress(order.tokenOut?.symbol)}
+        Price Checker Data -{" "}
+        {order.tokenIn?.symbol || truncateAddress(order.tokenIn?.id)} for{" "}
+        {order.tokenOut?.symbol || truncateAddress(order.tokenOut?.id)}
       </div>
       <hr className="mb-2" />
       <div className="flex flex-col">
@@ -169,8 +178,8 @@ function TransactionInfo({ order }: { order: AllSwapsQuery["swaps"][0] }) {
             Price Checker: {priceCheckerInfo?.name || "Not found"}{" "}
             {`(${truncateAddress(order.priceChecker as Address)})`}
           </span>
-          {priceCheckerUrl && (
-            <Link href={priceCheckerUrl.url} target="_blank">
+          {priceCheckerExplorerUrl && (
+            <Link href={priceCheckerExplorerUrl.url} target="_blank">
               <ArrowTopRightIcon className="hover:text-slate11" />
             </Link>
           )}
@@ -194,17 +203,25 @@ function TransactionInfo({ order }: { order: AllSwapsQuery["swaps"][0] }) {
   );
 }
 
-function TokenInfo({ symbol, id }: { symbol?: string | null; id?: string }) {
+function TokenInfo({
+  symbol,
+  id,
+  chainId,
+}: {
+  symbol?: string | null;
+  id?: string;
+  chainId?: number;
+}) {
+  const tokenLogoUri = cowTokenList.find(
+    (token) => token.address === id && token.chainId === chainId,
+  )?.logoURI;
   return (
     <div className="flex items-center gap-x-1">
       <div className="w-12">
         <div className="flex items-center justify-center">
           <div className="rounded-full bg-white p-1">
             <Image
-              src={
-                tokenLogoUri[symbol as keyof typeof tokenLogoUri] ||
-                "/assets/generic-token-logo.png"
-              }
+              src={tokenLogoUri || "/assets/generic-token-logo.png"}
               className="rounded-full"
               alt="Token Logo"
               height={28}

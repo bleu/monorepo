@@ -12,7 +12,7 @@ import { truncateAddress } from "#/utils/truncate";
 
 import { FormFooter } from "./Footer";
 
-export function OrderResume({
+export function OrderSummary({
   data,
   handleBack,
   network,
@@ -111,9 +111,7 @@ export function OrderResume({
                 value && (
                   <span key={field.key}>
                     {field.label}:{" "}
-                    {value.map(
-                      (address: string) => truncateAddress(address)?.toString(),
-                    )}
+                    {value.map((address: string) => truncateAddress(address))}
                   </span>
                 )
               );

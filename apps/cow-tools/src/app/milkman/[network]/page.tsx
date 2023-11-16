@@ -13,6 +13,7 @@ gql(`
       transactionHash
       tokenAmountIn
       priceChecker
+      priceCheckerData
       user {
         id
       }

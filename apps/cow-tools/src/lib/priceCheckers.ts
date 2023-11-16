@@ -1,4 +1,5 @@
-import { encodeAbiParameters } from "viem";
+import { Address } from "@bleu-fi/utils";
+import { decodeAbiParameters, encodeAbiParameters } from "viem";
 import { goerli } from "viem/chains";
 
 import {
@@ -13,7 +14,9 @@ export type argTypeName =
   | "address"
   | "bool"
   | "address[]"
-  | "bool[]";
+  | "bool[]"
+  | "bytes";
+
 export type argType = string | bigint | boolean | string[] | boolean[];
 
 export interface PriceCheckerArgument {
@@ -23,6 +26,10 @@ export interface PriceCheckerArgument {
   inputType: "number" | "text" | "checkbox";
   toExpectedOutCalculator: boolean;
   convertInput: (input: argType | number, decimals?: number) => argType;
+  convertOutput: (
+    output: argType,
+    decimals?: number,
+  ) => Exclude<argType, bigint> | number;
 }
 
 export enum PRICE_CHECKERS {
@@ -45,6 +52,8 @@ export const priceCheckerInfoMapping = {
         inputType: "number",
         convertInput: (input: number, decimals: number) =>
           BigInt(input * 10 ** decimals),
+        convertOutput: (output: bigint, decimals: number) =>
+          Number(output) / 10 ** decimals,
         toExpectedOutCalculator: false,
       },
     ] as PriceCheckerArgument[],
@@ -63,6 +72,7 @@ export const priceCheckerInfoMapping = {
         label: "Allowed slippage (%)",
         inputType: "number",
         convertInput: (input: number) => BigInt(input * 100),
+        convertOutput: (output: bigint) => Number(output) / 100,
         toExpectedOutCalculator: false,
       },
     ] as PriceCheckerArgument[],
@@ -81,6 +91,7 @@ export const priceCheckerInfoMapping = {
         label: "Allowed slippage (%)",
         inputType: "number",
         convertInput: (input: number) => BigInt(input * 100),
+        convertOutput: (output: bigint) => Number(output) / 100,
         toExpectedOutCalculator: false,
       },
     ] as PriceCheckerArgument[],
@@ -99,6 +110,7 @@ export const priceCheckerInfoMapping = {
         label: "Allowed slippage (%)",
         inputType: "number",
         convertInput: (input: number) => BigInt(input * 100),
+        convertOutput: (output: bigint) => Number(output) / 100,
         toExpectedOutCalculator: false,
       },
       {
@@ -108,6 +120,7 @@ export const priceCheckerInfoMapping = {
         inputType: "text",
         toExpectedOutCalculator: false,
         convertInput: (input: string) => input,
+        convertOutput: (output: string) => output,
       },
       {
         name: "revertPriceFeeds",
@@ -116,6 +129,7 @@ export const priceCheckerInfoMapping = {
         inputType: "checkbox",
         toExpectedOutCalculator: false,
         convertInput: (input: boolean) => input,
+        convertOutput: (output: boolean) => output,
       },
     ] as PriceCheckerArgument[],
     name: PRICE_CHECKERS.CHAINLINK,
@@ -204,4 +218,81 @@ function encodeWithExpectedOutCalculatorWithoutParameters(
       .concat([{ name: "_data", type: "bytes" }]),
     args.concat([expectedOutData]),
   );
+}
+
+export function decodePriceCheckerData(
+  priceCheckerInfo: (typeof priceCheckerInfoMapping)[PRICE_CHECKERS],
+  data: `0x${string}`,
+): argType[] {
+  try {
+    const expectedArgs = priceCheckerInfo.arguments;
+
+    if (!priceCheckerInfo.hasExpectedOutCalculator) {
+      return decodeArguments(expectedArgs, data);
+    }
+
+    return decodeWithExpectedOutCalculator(expectedArgs, data);
+  } catch {
+    return [];
+  }
+}
+
+export function getPriceCheckerInfoFromAddressAndChain(
+  chainId: 5,
+  priceCheckerAddress: Address,
+): (typeof priceCheckerInfoMapping)[PRICE_CHECKERS] | null {
+  // Find Price checker info dict from priceCheckerInfoMapping constant
+  // using the address and chainId provided
+  // Those two keys combination should be unique
+  // If not found, return null
+  const priceCheckerInfo = Object.values(priceCheckerInfoMapping).find(
+    (info) => info.addresses[chainId] === priceCheckerAddress,
+  );
+
+  if (!priceCheckerInfo) {
+    return null;
+  }
+
+  return priceCheckerInfo;
+}
+
+function decodeArguments(
+  expectedArgs: (PriceCheckerArgument | { name: string; type: argTypeName })[],
+  data: `0x${string}`,
+): argType[] {
+  return decodeAbiParameters(
+    expectedArgs.map((arg) => ({ name: arg.name, type: arg.type })),
+    data,
+  ) as argType[];
+}
+
+function decodeWithExpectedOutCalculator(
+  expectedArgs: PriceCheckerArgument[],
+  data: `0x${string}`,
+): argType[] {
+  const firstExpectedOutArgIndex = expectedArgs.findIndex(
+    (arg) => arg.toExpectedOutCalculator,
+  );
+
+  if (firstExpectedOutArgIndex === -1) {
+    return decodeArguments(
+      [...expectedArgs, { name: "_data", type: "bytes" }],
+      data,
+    ).slice(0, -1);
+  }
+
+  const mainArgs = expectedArgs.slice(0, firstExpectedOutArgIndex);
+
+  const mainDecoded = decodeArguments(
+    [...mainArgs, { name: "_data", type: "bytes" }],
+    data,
+  );
+
+  const expectedOutArgs = expectedArgs.slice(firstExpectedOutArgIndex);
+  const expectedOutDecoded = decodeArguments(
+    expectedOutArgs,
+    mainDecoded[mainDecoded.length - 1] as `0x${string}`,
+  );
+
+  return mainDecoded.concat(expectedOutDecoded);
 }

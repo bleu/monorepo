@@ -1,7 +1,7 @@
 import { networkFor } from "@bleu-fi/utils";
 import { dateToEpoch } from "@bleu-fi/utils/date";
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
-import { eq, sql } from "drizzle-orm";
+import { and, between, eq, sql } from "drizzle-orm";
 
 import { db } from "#/db";
 import { tokenPrices } from "#/db/schema";
@@ -14,24 +14,23 @@ const BAL_TOKEN_ADDRESS = "0xba100000625a3754423978a60c9317c58a424e3d";
  * Calculates the average of an array of numbers.
  */
 export async function getBALPriceForDateRange(startAt: Date, endAt: Date) {
-  const result = await db.execute(sql`
+  const result = await db
+    .select({
+      averagePriceUSD: sql<number>`cast(avg(${tokenPrices.priceUSD}) as decimal)`,
+    })
+    .from(tokenPrices)
+    .where(
+      and(
+        eq(tokenPrices.tokenAddress, BAL_TOKEN_ADDRESS),
+        between(tokenPrices.timestamp, startAt, endAt),
+      ),
+    )
+    .groupBy(tokenPrices.tokenAddress)
+    .execute();
 
-      SELECT
-      AVG(price_usd) AS average_price_usd
-    FROM
-      (SELECT
-        price_usd
-       FROM
-        token_prices
-       WHERE
-       token_address = '${sql.raw(BAL_TOKEN_ADDRESS)}'
-       AND timestamp >= '${sql.raw(startAt.toISOString())}'
-       AND timestamp <= '${sql.raw(endAt.toISOString())}'
-      ) AS subquery
-  `);
   //TODO when there is no price on db
-  const { average_price_usd: priceUSD } = result[0];
-  return `$ ${formatNumber((priceUSD as string) ?? "", 2)}`;
+  const { averagePriceUSD } = result[0];
+  return `$ ${formatNumber(averagePriceUSD ?? "", 2)}`;
 }
 
 export const getTokenPriceByDate = withCache(async function getTokenPriceByDate(
@@ -48,8 +47,12 @@ export const getTokenPriceByDate = withCache(async function getTokenPriceByDate(
   const dbTokenPrice = await db
     .select()
     .from(tokenPrices)
-    .where(eq(tokenPrices.networkSlug, networkName))
-    .where(eq(tokenPrices.tokenAddress, tokenAddress));
+    .where(
+      and(
+        eq(tokenPrices.networkSlug, networkName),
+        eq(tokenPrices.tokenAddress, tokenAddress),
+      ),
+    );
 
   if (dbTokenPrice.length > 0) return dbTokenPrice[0].priceUSD;
 

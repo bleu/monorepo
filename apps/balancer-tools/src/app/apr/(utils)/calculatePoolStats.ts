@@ -1,9 +1,10 @@
 /* eslint-disable no-console */
 
 import { epochToDate } from "@bleu-fi/utils/date";
-import { sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 
 import { db } from "#/db";
+import { pools, poolSnapshots } from "#/db/schema";
 
 import { PoolStatsData, PoolTokens, TokenAPR } from "../api/route";
 import { calculateAPRForDateRange } from "./calculateApr";
@@ -24,53 +25,30 @@ export interface calculatePoolData extends Omit<PoolStatsData, "apr"> {
 }
 
 export async function fetchPoolData(poolId: string, to: number) {
-  const result = await db.execute(sql`
-  WITH Snapshot AS (
-    SELECT
-    p.symbol AS pool_symbol,
-    p.pool_type AS pool_type,
-    p.network_slug AS network,
-    ps.liquidity AS liquidity,
-    ps.swap_volume AS swapVolume,
-    ps.total_shares AS totalShares,
-    ps.timestamp AS timestamp
-    FROM
-      pool_snapshots ps
-      JOIN pools p ON p.external_id = ps.pool_external_id
-    WHERE
-      ps.pool_external_id = '${sql.raw(poolId)}'
-      AND ps.timestamp = '${sql.raw(epochToDate(to).toISOString())}'
-  ), Calculations AS (
-    SELECT
-      pool_symbol,
-      pool_type,
-      network,
-      CAST(liquidity AS NUMERIC) AS liquidity,
-      CAST(swapVolume AS NUMERIC) AS volume,
-      (CAST(liquidity AS NUMERIC) / CAST(totalShares AS NUMERIC)) AS bpt_price
-    FROM
-      Snapshot
-  )
-  SELECT
-    network,
-    pool_type,
-    pool_symbol,
-    liquidity,
-    volume,
-    bpt_price
-  FROM
-    Calculations
-  LIMIT 1;`);
-  const {
-    network,
-    liquidity,
-    volume,
-    bpt_price: bptPrice,
-    pool_symbol: symbol,
-    pool_type: poolType,
-  } = result[0];
+  const snapshots = await db
+    .select({
+      network: pools.networkSlug,
+      poolType: pools.poolType,
+      poolSymbol: pools.symbol,
+      liquidity: poolSnapshots.liquidity,
+      volume: poolSnapshots.swapVolume,
+      bptPrice: sql`CAST(${poolSnapshots.liquidity} AS NUMERIC) / CAST(${poolSnapshots.totalShares} AS NUMERIC)`,
+    })
+    .from(poolSnapshots)
+    .leftJoin(pools, eq(pools.externalId, poolSnapshots.poolExternalId))
+    .where(
+      and(
+        eq(poolSnapshots.poolExternalId, poolId),
+        eq(poolSnapshots.timestamp, epochToDate(to)),
+      ),
+    )
+    .limit(1)
+    .execute();
 
-  return [network, poolType, liquidity, volume, symbol ?? "", bptPrice];
+  const { network, liquidity, volume, bptPrice, poolSymbol, poolType } =
+    snapshots[0];
+
+  return [network, poolType, liquidity, volume, poolSymbol ?? "", bptPrice];
 }
 
 export async function fetchPoolTokens(poolId: string) {

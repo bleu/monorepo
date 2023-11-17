@@ -2,9 +2,10 @@
 
 import { formatDateToMMDDYYYY } from "@bleu-fi/utils/date";
 import * as Sentry from "@sentry/nextjs";
-import { sql } from "drizzle-orm";
+import { and, between, eq } from "drizzle-orm";
 
 import { db } from "#/db";
+import { pools, poolSnapshots } from "#/db/schema";
 import { fetcher } from "#/utils/fetcher";
 
 import { BASE_URL } from "../../(utils)/types";
@@ -16,20 +17,23 @@ export async function fetchDataForDateRange(
   maxTvl: number = 10_000_000_000,
   minTvl: number = 10_000,
 ): Promise<{ [key: string]: PoolStatsData[] }> {
-  const existingPoolForDate = await db.execute(sql`
-    SELECT
-      p.external_id AS id,
-      p.symbol AS symbol,
-      p.pool_type AS pool_type,
-      p.network_slug AS network
-    FROM
-      pool_snapshots ps
-      JOIN pools p ON p.external_id = ps.pool_external_id
-    WHERE
-      ps.timestamp = '${sql.raw(endDate.toISOString())}'
-      AND ps.liquidity > ${sql.raw(minTvl.toString())}
-      AND ps.liquidity < ${sql.raw(maxTvl.toString())}
-  `);
+  const existingPoolForDate = await db
+    .select({
+      id: pools.id,
+      poolExternalId: pools.externalId,
+      symbol: pools.symbol,
+      poolType: pools.poolType,
+      network: pools.networkSlug,
+    })
+    .from(pools)
+    .fullJoin(poolSnapshots, eq(poolSnapshots.poolExternalId, pools.externalId))
+    .where(
+      and(
+        eq(poolSnapshots.timestamp, endDate),
+        between(poolSnapshots.liquidity, String(minTvl), String(maxTvl)),
+      ),
+    );
+
   console.log(`fetched ${existingPoolForDate.length} pools`);
   const perDayData: { [key: string]: PoolStatsData[] } = {};
 
@@ -40,14 +44,18 @@ export async function fetchDataForDateRange(
         gaugesData = await fetcher<PoolStatsResults>(
           `${BASE_URL}/apr/api?startAt=${formatDateToMMDDYYYY(
             startDate,
-          )}&endAt=${formatDateToMMDDYYYY(endDate)}&poolId=${pool.id}`,
+          )}&endAt=${formatDateToMMDDYYYY(endDate)}&poolId=${
+            pool.poolExternalId
+          }`,
         );
       } catch (error) {
         console.log(error);
         console.log(
           `${BASE_URL}/apr/api?startAt=${formatDateToMMDDYYYY(
             startDate,
-          )}&endAt=${formatDateToMMDDYYYY(endDate)}&poolId=${pool.id}`,
+          )}&endAt=${formatDateToMMDDYYYY(endDate)}&poolId=${
+            pool.poolExternalId
+          }`,
         );
         Sentry.captureException(error);
       }

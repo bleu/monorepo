@@ -78,6 +78,36 @@ export const priceCheckersArgumentsMapping = {
       convertOutput: (output: boolean) => output,
     },
   ] as PriceCheckerArgument[],
+  [PRICE_CHECKERS.UNI_V3]: [
+    {
+      name: "allowedSlippageInBps",
+      type: "uint256",
+      label: "Allowed slippage (%)",
+      inputType: "number",
+      convertInput: (input: number) => BigInt(input * 100),
+      convertOutput: (output: bigint) => Number(output) / 100,
+      toExpectedOutCalculator: false,
+    },
+    {
+      name: "swapPath",
+      type: "address[]",
+      label: "Token path",
+      inputType: "text",
+      toExpectedOutCalculator: true,
+      convertInput: (input: string) => input,
+      convertOutput: (output: string) => output,
+    },
+    {
+      name: "fees",
+      type: "uint24[]",
+      label: "Fees",
+      inputType: "number",
+      step: 0.01,
+      toExpectedOutCalculator: true,
+      convertInput: (input: number) => BigInt(input * 100),
+      convertOutput: (output: string) => Number(output) / 100,
+    },
+  ] as PriceCheckerArgument[],
 } as const;
 
 export const priceCheckerAddressesMapping = {
@@ -96,6 +126,9 @@ export const priceCheckerAddressesMapping = {
   [PRICE_CHECKERS.CHAINLINK]: {
     [goerli.id]: "0x81909582e1Ab8a0f8f98C948537528E29a98f116",
   },
+  [PRICE_CHECKERS.UNI_V3]: {
+    [goerli.id]: "0xb560a403F8450164b8B745EccA41D8cED93C50a1",
+  },
 } as const;
 
 export const priceCheckerHasExpectedOutCalculatorMapping = {
@@ -104,4 +137,5 @@ export const priceCheckerHasExpectedOutCalculatorMapping = {
   [PRICE_CHECKERS.BALANCER]: true,
   [PRICE_CHECKERS.SUSHI_SWAP]: true,
   [PRICE_CHECKERS.CHAINLINK]: true,
+  [PRICE_CHECKERS.UNI_V3]: true,
 } as const;

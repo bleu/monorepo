@@ -19,6 +19,7 @@ export interface PriceCheckerArgument {
     output: argType,
     decimals?: number,
   ) => Exclude<argType, bigint> | number;
+  step?: number;
 }
 
 export enum PRICE_CHECKERS {
@@ -27,4 +28,5 @@ export enum PRICE_CHECKERS {
   SUSHI_SWAP = "SushiSwap",
   CHAINLINK = "Chainlink",
   BALANCER = "Balancer BAL WETH Single Sided",
+  UNI_V3 = "Uniswap V3",
 }

@@ -22,7 +22,7 @@ import { AllSwapsQuery } from "#/lib/gql/generated";
 import {
   decodePriceCheckerData,
   getPriceCheckerInfoFromAddressAndChain,
-} from "#/lib/priceCheckers";
+} from "#/lib/priceCheckersMappings";
 import { cowTokenList } from "#/utils/cowTokenList";
 import { truncateAddress } from "#/utils/truncate";
 

@@ -16,8 +16,15 @@ import Table from "#/components/Table";
 import { Form, FormLabel, FormMessage } from "#/components/ui/form";
 import { Label } from "#/components/ui/label";
 import { chainlinkPriceFeeAbi } from "#/lib/abis/chainlinkPriceFeed";
-import { PRICE_CHECKERS, priceCheckerInfoMapping } from "#/lib/priceCheckers";
-import { getPriceFeedChainlinkSchema } from "#/lib/schema";
+import {
+  priceCheckerAddressesMapping,
+  priceCheckersArgumentsMapping,
+} from "#/lib/priceCheckersMappings";
+import {
+  generatePriceCheckerSchema,
+  getPriceFeedChainlinkSchema,
+} from "#/lib/schema";
+import { PRICE_CHECKERS, PriceCheckerArgument } from "#/lib/types";
 import { truncateAddress } from "#/utils/truncate";
 
 import { FormFooter } from "./Footer";
@@ -43,7 +50,10 @@ export function FormSelectPriceChecker({
 
   const schema =
     selectedPriceChecker &&
-    priceCheckerInfoMapping[selectedPriceChecker].getSchema({
+    generatePriceCheckerSchema({
+      priceChecker: selectedPriceChecker,
+      expectedArgs: priceCheckersArgumentsMapping[selectedPriceChecker],
+    })({
       tokenSellAddress,
       tokenBuyAddress,
       publicClient,
@@ -73,7 +83,7 @@ export function FormSelectPriceChecker({
     setValue("priceChecker", selectedPriceChecker);
     setValue(
       "priceCheckerAddress",
-      priceCheckerInfoMapping[selectedPriceChecker].addresses[goerli.id],
+      priceCheckerAddressesMapping[selectedPriceChecker][goerli.id],
     );
   }, [selectedPriceChecker]);
 
@@ -124,34 +134,45 @@ function PriceCheckerInputs({
   form: UseFormReturn;
   defaultValues?: FieldValues;
 }) {
-  const priceCheckerInfo = priceCheckerInfoMapping[priceChecker];
+  const priceCheckerAguments = priceCheckersArgumentsMapping[priceChecker];
+  const nonArrayArguments = priceCheckerAguments.filter(
+    (arg) => !arg.type.includes("[]"),
+  );
+
+  const arrayArguments = priceCheckerAguments.filter((arg) =>
+    arg.type.includes("[]"),
+  );
+
   const { register } = form;
-  switch (priceChecker) {
-    case PRICE_CHECKERS.CHAINLINK:
-      return (
-        <ChainlinkPriceCheckerInput form={form} defaultValues={defaultValues} />
-      );
-    default:
-      return (
-        <>
-          {priceCheckerInfo.arguments.map((arg) => (
-            <Input
-              type={arg.inputType}
-              label={arg.label}
-              key={arg.name}
-              defaultValue={defaultValues?.[arg.name]}
-              {...register(arg.name)}
-            />
-          ))}
-        </>
-      );
-  }
+
+  return (
+    <div className="flex flex-col w-full gap-y-2">
+      {nonArrayArguments.map((arg) => (
+        <Input
+          type={arg.inputType}
+          label={arg.label}
+          key={arg.name}
+          defaultValue={defaultValues?.[arg.name]}
+          {...register(arg.name)}
+        />
+      ))}
+      {arrayArguments.length > 0 && (
+        <ArrayPriceCheckerInput
+          arrayArguments={arrayArguments}
+          form={form}
+          defaultValues={defaultValues}
+        />
+      )}
+    </div>
+  );
 }
 
-function ChainlinkPriceCheckerInput({
+function ArrayPriceCheckerInput({
+  arrayArguments,
   form,
   defaultValues,
 }: {
+  arrayArguments: PriceCheckerArgument[];
   form: UseFormReturn;
   defaultValues?: FieldValues;
 }) {
@@ -165,12 +186,10 @@ function ChainlinkPriceCheckerInput({
   const [indexToEdit, setIndexToEdit] = useState(-1);
 
   useEffect(() => {
-    register("priceFeeds");
-    setValue("priceFeeds", defaultValues?.priceFeeds || []);
-    register("addressesPriceFeeds");
-    setValue("addressesPriceFeeds", defaultValues?.addressesPriceFeeds || []);
-    register("revertPriceFeeds");
-    setValue("revertPriceFeeds", defaultValues?.revertPriceFeeds || []);
+    arrayArguments.forEach((arg) => {
+      register(arg.name);
+      setValue(arg.name, defaultValues?.[arg.name] || []);
+    });
   }, []);
 
   const priceFeeds = watch("priceFeeds") as {

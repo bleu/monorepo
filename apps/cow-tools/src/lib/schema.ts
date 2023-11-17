@@ -4,6 +4,8 @@ import { z } from "zod";
 
 import { chainlinkPriceFeeAbi } from "./abis/chainlinkPriceFeed";
 import { dynamicSlippagePriceCheckerAbi } from "./abis/dynamicSlippagePriceChecker";
+import { PRICE_CHECKERS, PriceCheckerArgument } from "./types";
+import { encodePriceCheckerData } from "./encode";
 
 const basicAddressSchema = z
   .string()
@@ -45,7 +47,7 @@ const basicPriceCheckerSchema = z.object({
   priceCheckerAddress: basicAddressSchema,
 });
 
-const getBasicDynamicSlippageSchema = ({
+export const getBasicDynamicSlippageSchema = ({
   tokenSellAddress,
   tokenBuyAddress,
   publicClient,
@@ -62,6 +64,21 @@ const getBasicDynamicSlippageSchema = ({
       async (data) => {
         const bigIntAllowedSlippageInBps = BigInt(
           data.allowedSlippageInBps * 100,
+        );
+        console.log(
+          encodeAbiParameters(
+            [
+              {
+                type: "uint256",
+                name: "allowedSlippageInBps",
+              },
+              {
+                type: "bytes",
+                name: "_data",
+              },
+            ],
+            [bigIntAllowedSlippageInBps, "0x"],
+          ),
         );
         try {
           await publicClient.readContract({
@@ -122,11 +139,11 @@ export const getFixedMinOutSchema = ({
             abi: dynamicSlippagePriceCheckerAbi,
             functionName: "checkPrice",
             args: [
-              BigInt(1), // we're just interested in call revert or not, so this value is not important
+              1, // we're just interested in call revert or not, so this value is not important
               tokenSellAddress,
               tokenBuyAddress,
-              BigInt(0), // this value isn't used by this price checker
-              BigInt(0), // this value will depend on the order, so it's not important here
+              0, // this value isn't used by this price checker
+              0, // this value will depend on the order, so it's not important here
               encodeAbiParameters(
                 [
                   {
@@ -234,9 +251,6 @@ export const getChainlinkSchema = ({
     );
 };
 
-export const getUniV2Schema = getBasicDynamicSlippageSchema;
-export const getSushiSwapSchema = getBasicDynamicSlippageSchema;
-
 export const getPriceFeedChainlinkSchema = (publicClient: PublicClient) => {
   return z
     .object({
@@ -264,4 +278,88 @@ export const getPriceFeedChainlinkSchema = (publicClient: PublicClient) => {
         message: "This address isn't a Chainlink price feed",
       },
     );
+};
+
+export const basicDynamicSlippageSchema = basicPriceCheckerSchema.extend({
+  allowedSlippageInBps: z.coerce.number().positive(),
+});
+
+export const priceCheckingBaseSchemaMapping = {
+  [PRICE_CHECKERS.FIXED_MIN_OUT]: basicPriceCheckerSchema.extend({
+    minOut: z.coerce.number().positive(),
+  }),
+  [PRICE_CHECKERS.UNI_V2]: basicDynamicSlippageSchema,
+  [PRICE_CHECKERS.SUSHI_SWAP]: basicDynamicSlippageSchema,
+  [PRICE_CHECKERS.CHAINLINK]: basicDynamicSlippageSchema.extend({
+    priceFeeds: z
+      .array(
+        z.object({
+          address: basicAddressSchema,
+          description: z.string(),
+          reversed: z.boolean(),
+        }),
+      )
+      .nonempty(),
+    revertPriceFeeds: z.array(z.boolean()).nonempty(),
+    addressesPriceFeeds: z.array(basicAddressSchema).nonempty(),
+  }),
+  [PRICE_CHECKERS.BALANCER]: basicDynamicSlippageSchema,
+} as const;
+
+export const generatePriceCheckerSchema = ({
+  priceChecker,
+  expectedArgs,
+}: {
+  priceChecker: PRICE_CHECKERS;
+  expectedArgs: PriceCheckerArgument[];
+}) => {
+  const priceCheckerBase = priceCheckingBaseSchemaMapping[priceChecker];
+  return ({
+    tokenSellAddress,
+    tokenBuyAddress,
+    publicClient,
+  }: {
+    tokenSellAddress: Address;
+    tokenBuyAddress: Address;
+    publicClient: PublicClient;
+  }) => {
+    // @ts-ignore
+    return priceCheckerBase.refine(
+      // @ts-ignore
+      async (data) => {
+        const argsToEncode = expectedArgs.map((arg) => {
+          // @ts-ignore
+          return arg.convertInput(data[arg.name], 18);
+        });
+
+        const priceCheckerData = encodePriceCheckerData(
+          priceChecker,
+          argsToEncode,
+        );
+
+        try {
+          await publicClient.readContract({
+            address: data.priceCheckerAddress as Address,
+            abi: dynamicSlippagePriceCheckerAbi,
+            functionName: "checkPrice",
+            args: [
+              1, // we're just interested in call revert or not, so this value is not important
+              tokenBuyAddress,
+              tokenSellAddress,
+              0, // this value isn't used by this price checker
+              0, // this value will depend on the order, so it's not important here
+              priceCheckerData,
+            ],
+          });
+          return true;
+        } catch (e) {
+          return false;
+        }
+      },
+      {
+        path: ["priceChecker"],
+        message: priceCheckerRevertedMessage,
+      },
+    );
+  };
 };

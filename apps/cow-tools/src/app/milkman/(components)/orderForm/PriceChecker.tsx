@@ -207,13 +207,25 @@ function ArrayPriceCheckerInput({
                   const argName = `${arg.name}.${index}`;
                   return (
                     <Table.BodyCell key={arg.name}>
-                      <Input
-                        type={arg.inputType}
-                        key={argName}
-                        defaultValue={defaultValues?.[argName]}
-                        step={arg.step}
-                        {...register(argName)}
-                      />
+                      {arg.type.includes("bool") ? (
+                        <div className="flex items-center justify-center gap-x-2">
+                          <input
+                            className="h-5 w-5"
+                            type="checkbox"
+                            key={argName}
+                            defaultChecked={defaultValues?.[argName]}
+                            {...register(argName)}
+                          />
+                        </div>
+                      ) : (
+                        <Input
+                          type={arg.inputType}
+                          key={argName}
+                          defaultValue={defaultValues?.[argName]}
+                          step={arg.step}
+                          {...register(argName)}
+                        />
+                      )}
                       {errors[arg.name] && (
                         <FormMessage className="mt-1 h-6 text-sm text-tomato10">
                           <span>

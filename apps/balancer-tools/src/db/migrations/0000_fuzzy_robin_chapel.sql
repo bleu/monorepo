@@ -163,6 +163,8 @@ CREATE TABLE IF NOT EXISTS "swap_fee_apr" (
 	"value" numeric,
 	"collected_fees_usd" numeric,
 	"pool_external_id" varchar,
+	"external_id" varchar,
+	CONSTRAINT "swap_fee_apr_external_id_unique" UNIQUE("external_id"),
 	CONSTRAINT "swap_fee_apr_timestamp_pool_external_id_unique" UNIQUE("timestamp","pool_external_id")
 );
 --> statement-breakpoint

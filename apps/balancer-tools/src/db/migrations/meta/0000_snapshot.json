@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "9e1e2427-e065-4c86-ab8c-7590ef4536f9",
+  "id": "9a79b0dc-ba0c-4c1c-8e64-50945b454368",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "blocks": {
@@ -1041,6 +1041,12 @@
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
+        },
+        "external_id": {
+          "name": "external_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -1057,6 +1063,11 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
+        "swap_fee_apr_external_id_unique": {
+          "name": "swap_fee_apr_external_id_unique",
+          "nullsNotDistinct": false,
+          "columns": ["external_id"]
+        },
         "swap_fee_apr_timestamp_pool_external_id_unique": {
           "name": "swap_fee_apr_timestamp_pool_external_id_unique",
           "nullsNotDistinct": false,

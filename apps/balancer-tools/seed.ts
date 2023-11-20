@@ -601,6 +601,58 @@ ORDER BY
     }
   }
 }
+async function fetchBalPrices() {
+  try {
+    // Get unique timestamps from pool_snapshots table
+    const result = await db.execute(sql`
+      SELECT DISTINCT
+      date_trunc('day', ps.timestamp) AS day
+      FROM
+        pool_snapshots ps
+      ORDER BY
+        day;
+    `);
+
+    // Iterate over each timestamp
+    for (const row of result) {
+      const day = row.day as Date;
+
+      const utcMidnightTimestampOfCurrentDay = new Date(
+        Date.UTC(
+          day.getUTCFullYear(),
+          day.getUTCMonth(),
+          day.getUTCDate(),
+          0,
+          0,
+          0,
+          0,
+        ),
+      );
+
+      // Fetch BAL price for the timestamp
+      const prices = await DefiLlamaAPI.getHistoricalPrice(new Date(day), [
+        "ethereum:0xba100000625a3754423978a60c9317c58a424e3d",
+      ]);
+
+      const entries = Object.entries(prices.coins);
+
+      // Save prices to the tokenPrices table
+      await addToTable(
+        tokenPrices,
+        entries.map((entry) => ({
+          tokenAddress: entry[0].split(":")[1],
+          priceUSD: entry[1].price,
+          timestamp: utcMidnightTimestampOfCurrentDay,
+          networkSlug: entry[0].split(":")[0],
+        })),
+      );
+
+      console.log(`Fetched prices for tokens on ${day}:`, prices);
+    }
+  } catch (e) {
+    console.error(`Failed to fetch prices: ${e.message}`);
+  }
+}
 
 async function runETLs() {
   logIfVerbose("Starting ETL processes");
@@ -609,7 +661,8 @@ async function runETLs() {
   await ETLPools();
   await ETLSnapshots();
   // await ETLGauges();
-  await fetchTokenPrices();
+  // await fetchTokenPrices(); -> this is not necessary for every pool, just for the ones that haev token rewards and token yield
+  await fetchBalPrices();
   // await fetchBlocks();
   logIfVerbose("Ended ETL processes");
   process.exit(0);

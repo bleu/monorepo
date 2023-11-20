@@ -33,12 +33,24 @@ export const orderOverviewSchema = z
   })
   .refine(
     (data) => {
+      if (!data.isValidFromNeeded) {
+        return true;
+      }
+      return data.validFrom;
+    },
+    {
+      path: ["validFrom"],
+      message: "Valid from is needed",
+    }
+  )
+  .refine(
+    (data) => {
       return data.tokenSell.address != data.tokenBuy.address;
     },
     {
       path: ["tokenBuy"],
       message: "Tokens sell and buy must be different",
-    },
+    }
   );
 
 const basicPriceCheckerSchema = z.object({
@@ -75,14 +87,14 @@ export const priceCheckingBaseSchemaMapping = {
               return true;
             }
             return token === data.tokenOut[index - 1];
-          },
+          }
         );
         return previousTokenOutIsNextTokenIn;
       },
       {
         path: ["tokenIn"],
         message: "The token out must be the token in of the next line",
-      },
+      }
     ),
 } as const;
 
@@ -97,10 +109,12 @@ export const generatePriceCheckerSchema = ({
   return ({
     tokenSellAddress,
     tokenBuyAddress,
+    tokenBuyDecimals,
     publicClient,
   }: {
     tokenSellAddress: Address;
     tokenBuyAddress: Address;
+    tokenBuyDecimals: number;
     publicClient: PublicClient;
   }) => {
     // @ts-ignore
@@ -109,11 +123,11 @@ export const generatePriceCheckerSchema = ({
       async (data) => {
         try {
           const argsToEncode = expectedArgs.map((arg) => {
-            return arg.convertInput(data[arg.name]);
+            return arg.convertInput(data[arg.name], tokenBuyDecimals);
           });
           const priceCheckerData = encodePriceCheckerData(
             priceChecker,
-            argsToEncode,
+            argsToEncode
           );
           await publicClient.readContract({
             address: data.priceCheckerAddress as Address,
@@ -136,7 +150,7 @@ export const generatePriceCheckerSchema = ({
       {
         path: ["priceChecker"],
         message: priceCheckerRevertedMessage,
-      },
+      }
     );
   };
 };

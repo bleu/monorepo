@@ -63,6 +63,8 @@ export function OrderSummary({
         toAddress: data.receiverAddress,
         amount: sellAmountBigInt,
         priceChecker: data.priceChecker,
+        validFrom: data.validFrom,
+        isValidFromNeeded: data.isValidFromNeeded,
         args: priceCheckersArgs,
       },
     ]);

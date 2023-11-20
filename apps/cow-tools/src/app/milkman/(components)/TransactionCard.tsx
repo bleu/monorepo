@@ -60,6 +60,7 @@ export function TransactionCard({
         defaultValues={priceCheckerData}
         tokenSellAddress={orderOverviewData?.tokenSell.address}
         tokenBuyAddress={orderOverviewData?.tokenBuy.address}
+        tokenBuyDecimals={orderOverviewData?.tokenBuy.decimals}
       />
     ),
     [TransactionStatus.ORDER_SUMMARY]: (

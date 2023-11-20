@@ -1,3 +1,4 @@
+import { Address } from "@bleu-fi/utils";
 import { encodeAbiParameters } from "viem";
 
 import {
@@ -5,6 +6,32 @@ import {
   priceCheckersArgumentsMapping,
 } from "./priceCheckersMappings";
 import { argType, PRICE_CHECKERS, PriceCheckerArgument } from "./types";
+
+export function encodePriceCheckerDataWithValidFromDecorator(
+  priceCheckerAddress: Address,
+  priceCheckerData: `0x${string}`,
+  validFrom: string,
+) {
+  const validFromDate = new Date(validFrom);
+  const validFromTimestamp = BigInt(validFromDate.getTime() / 1000);
+  return encodeAbiParameters(
+    [
+      {
+        name: "validFrom",
+        type: "uint256",
+      },
+      {
+        name: "_priceChecker",
+        type: "address",
+      },
+      {
+        name: "_data",
+        type: "bytes",
+      },
+    ],
+    [validFromTimestamp, priceCheckerAddress, priceCheckerData],
+  );
+}
 
 export function encodePriceCheckerData(
   priceChecker: PRICE_CHECKERS,

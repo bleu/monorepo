@@ -142,6 +142,10 @@ export const priceCheckerAddressesMapping = {
   },
 } as const;
 
+export const validFromDecorator = {
+  [goerli.id]: "0x51c911323B12c0c7A5dB0381505dA23B2fd00061" as const,
+};
+
 export const priceCheckerHasExpectedOutCalculatorMapping = {
   [PRICE_CHECKERS.FIXED_MIN_OUT]: false,
   [PRICE_CHECKERS.UNI_V2]: true,

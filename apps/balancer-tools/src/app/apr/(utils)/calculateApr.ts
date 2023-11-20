@@ -1,7 +1,8 @@
 import { epochToDate } from "@bleu-fi/utils/date";
-import { sql } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 import { db } from "#/db";
+import { swapFeeApr } from "#/db/schema";
 
 export async function calculateAPRForDateRange(
   startAtTimestamp: number,
@@ -11,7 +12,7 @@ export async function calculateAPRForDateRange(
   // const [votingShare, [feeAPR, collectedFeesUSD], tokensAPR, rewardsAPR] =
   const [[feeAPR, collectedFeesUSD]] = await Promise.all([
     // getPoolRelativeWeight(poolId, endAtTimestamp),
-    getFeeAprForDateRange(poolId, startAtTimestamp, endAtTimestamp),
+    getFeeAprForDate(poolId, endAtTimestamp),
     // getPoolTokensAprForDateRange(
     //   network,
     //   poolId as Address,
@@ -124,48 +125,17 @@ export async function calculateAPRForDateRange(
   };
 }
 
-export async function getFeeAprForDateRange(
-  poolId: string,
-  from: number,
-  to: number,
-) {
-  const result = await db.execute(sql`
-  WITH SnapshotDiffs AS (
-    SELECT
-      FIRST_VALUE(ps.swap_fees) OVER w AS start_swap_fees,
-      LAST_VALUE(ps.swap_fees) OVER w AS end_swap_fees,
-      LAST_VALUE(ps.liquidity) OVER w AS end_liquidity,
-      LAST_VALUE(p.protocol_swap_fee_cache) OVER w AS protocol_swap_fee_cache,
-      MIN(ps.timestamp) OVER w AS start_timestamp,
-      MAX(ps.timestamp) OVER w AS end_timestamp
-    FROM
-      pool_snapshots ps
-      JOIN pools p ON p.external_id = ps.pool_external_id
-    WHERE
-      ps.pool_external_id = '${sql.raw(poolId)}'
-      AND ps.timestamp BETWEEN '${sql.raw(
-        epochToDate(from).toISOString(),
-      )}' AND '${sql.raw(epochToDate(to).toISOString())}'
-    WINDOW w AS (ORDER BY ps.timestamp RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
-  ), Calculations AS (
-    SELECT
-      (CAST(end_swap_fees AS NUMERIC) - CAST(start_swap_fees AS NUMERIC)) AS fee_diff,
-      CAST(end_liquidity AS NUMERIC) AS liquidity,
-      COALESCE(CAST(protocol_swap_fee_cache AS NUMERIC), 0.5) AS protocol_swap_fee,
-      EXTRACT(EPOCH FROM end_timestamp) - EXTRACT(EPOCH FROM start_timestamp) AS time_diff_secs
-    FROM
-      SnapshotDiffs
-  )
-  SELECT
-    fee_diff,
-    CASE
-      WHEN time_diff_secs = 0 THEN 0
-      ELSE ((fee_diff * (1 - protocol_swap_fee)) / liquidity) * 365 *100
-    END AS annualized_fee_apr
-  FROM
-    Calculations
-  LIMIT 1;`);
-  const { fee_diff: feeDiff, annualized_fee_apr: apr } = result[0];
+export async function getFeeAprForDate(poolId: string, date: number) {
+  const result = await db
+    .select()
+    .from(swapFeeApr)
+    .where(
+      and(
+        eq(swapFeeApr.poolExternalId, poolId),
+        eq(swapFeeApr.timestamp, epochToDate(date)),
+      ),
+    );
+  const { value: apr, collectedFeesUSD } = result[0];
 
-  return [Number(apr), Number(feeDiff)];
+  return [Number(apr), Number(collectedFeesUSD)];
 }

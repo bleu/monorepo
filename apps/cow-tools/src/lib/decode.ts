@@ -28,23 +28,23 @@ export function decodePriceCheckerData(
   }
 }
 
-export function getPriceCheckerInfoFromAddressAndChain(
+export function getPriceCheckerFromAddressAndChain(
   chainId: 5,
   priceCheckerAddress: Address,
-): (typeof priceCheckerAddressesMapping)[PRICE_CHECKERS] | null {
+): PRICE_CHECKERS | null {
   // Find Price checker info dict from priceCheckerAddressesMapping constant
   // using the address and chainId provided
   // Those two keys combination should be unique
   // If not found, return null
-  const priceCheckerInfo = Object.values(priceCheckerAddressesMapping).find(
-    (mapping) => mapping[chainId] === priceCheckerAddress,
+  const priceCheckerInfo = Object.entries(priceCheckerAddressesMapping).find(
+    ([_key, mapping]) => mapping[chainId] === priceCheckerAddress,
   );
 
   if (!priceCheckerInfo) {
     return null;
   }
 
-  return priceCheckerInfo;
+  return priceCheckerInfo[0] as PRICE_CHECKERS;
 }
 
 function decodeArguments(

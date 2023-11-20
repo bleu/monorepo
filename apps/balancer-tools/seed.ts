@@ -523,84 +523,83 @@ DO UPDATE SET chain_id = EXCLUDED.chain_id, updated_at = NOW();
 `);
 }
 
-async function fetchTokenPrices() {
-  const remappings = {
-    avalanche: "avax",
-  };
+// async function fetchTokenPrices() {
+//   const remappings = {
+//     avalanche: "avax",
+//   };
 
-  const inverseRemapping = {
-    avax: "avalanche",
-  };
-  // Step 1: Fetch distinct tokens for each day
-  const result = await db.execute(sql`
-  SELECT DISTINCT
-	pt.token_address,
-	pt.network_slug,
-	date_trunc('day', ps.timestamp) AS day
-FROM
-	pool_tokens pt
-	INNER JOIN pool_snapshots ps ON pt.pool_external_id = ps.pool_external_id
-	LEFT JOIN token_prices tp ON pt.token_address = tp.token_address
-		AND pt.network_slug = tp.network_slug
-		AND date_trunc('day', ps.timestamp) = date_trunc('day', tp.timestamp)
-WHERE
-	tp.id IS NULL
-ORDER BY
-	day,
-	pt.token_address;
-  `);
+//   const inverseRemapping = {
+//     avax: "avalanche",
+//   };
+//   // Step 1: Fetch distinct tokens for each day
+//   const result = await db.execute(sql`
+//   SELECT DISTINCT
+// 	pt.token_address,
+// 	pt.network_slug,
+// 	date_trunc('day', ps.timestamp) AS day
+// FROM
+// 	pool_tokens pt
+// 	INNER JOIN pool_snapshots ps ON pt.pool_external_id = ps.pool_external_id
+// 	LEFT JOIN token_prices tp ON pt.token_address = tp.token_address
+// 		AND pt.network_slug = tp.network_slug
+// 		AND date_trunc('day', ps.timestamp) = date_trunc('day', tp.timestamp)
+// WHERE
+// 	tp.id IS NULL
+// ORDER BY
+// 	day,
+// 	pt.token_address;
+//   `);
 
-  // Step 2: Deduplicate tokens for the same day
-  const dedupedTokens: { [day: string]: Set<string> } = {};
+//   // Step 2: Deduplicate tokens for the same day
+//   const dedupedTokens: { [day: string]: Set<string> } = {};
 
-  for (const row of result) {
-    const day = row.day.toISOString();
-    if (!dedupedTokens[day]) {
-      dedupedTokens[day] = new Set();
-    }
+//   for (const row of result) {
+//     const day = row.day.toISOString();
+//     if (!dedupedTokens[day]) {
+//       dedupedTokens[day] = new Set();
+//     }
 
-    dedupedTokens[day].add(
-      `${remappings[row.network_slug] ?? row.network_slug}:${
-        row.token_address
-      }`,
-    );
-  }
+//     dedupedTokens[day].add(
+//       `${remappings[row.network_slug] ?? row.network_slug}:${row.token_address}`
+//     );
+//   }
 
-  // Step 3: Fetch token prices
-  for (const [day, tokens] of Object.entries(dedupedTokens)) {
-    const dateTimestamp = Date.UTC(
-      Number(day.split("-")[0]),
-      Number(day.split("-")[1]) - 1,
-      Number(day.split("-")[2].split("T")[0]),
-    );
-    const tokenAddresses = Array.from(tokens);
-    try {
-      const prices = await DefiLlamaAPI.getHistoricalPrice(
-        new Date(dateTimestamp),
-        tokenAddresses,
-      );
+//   // Step 3: Fetch token prices
+//   for (const [day, tokens] of Object.entries(dedupedTokens)) {
+//     const dateTimestamp = Date.UTC(
+//       Number(day.split("-")[0]),
+//       Number(day.split("-")[1]) - 1,
+//       Number(day.split("-")[2].split("T")[0])
+//     );
+//     const tokenAddresses = Array.from(tokens);
+//     try {
+//       const prices = await DefiLlamaAPI.getHistoricalPrice(
+//         new Date(dateTimestamp),
+//         tokenAddresses
+//       );
 
-      const entries = Object.entries(prices.coins);
+//       const entries = Object.entries(prices.coins);
 
-      await addToTable(
-        tokenPrices,
-        entries.map((entry) => ({
-          tokenAddress: entry[0].split(":")[1],
-          priceUSD: entry[1].price,
-          timestamp: new Date(entry[1].timestamp * 1000),
-          networkSlug:
-            inverseRemapping[entry[0].split(":")[0]] ?? entry[0].split(":")[0],
-        })),
-      );
+//       await addToTable(
+//         tokenPrices,
+//         entries.map((entry) => ({
+//           tokenAddress: entry[0].split(":")[1],
+//           priceUSD: entry[1].price,
+//           timestamp: new Date(entry[1].timestamp * 1000),
+//           networkSlug:
+//             // @ts-ignore
+//             inverseRemapping[entry[0].split(":")[0]] ?? entry[0].split(":")[0],
+//         }))
+//       );
 
-      console.log(`Fetched prices for tokens on ${day}:`, prices);
-    } catch (e) {
-      console.error(
-        `Failed to fetch prices for tokens on ${day}: ${e.message}`,
-      );
-    }
-  }
-}
+//       console.log(`Fetched prices for tokens on ${day}:`, prices);
+//     } catch (e) {
+//       console.error(
+//         `Failed to fetch prices for tokens on ${day}: ${e.message}`
+//       );
+//     }
+//   }
+// }
 async function fetchBalPrices() {
   try {
     // Get unique timestamps from pool_snapshots table
@@ -650,6 +649,7 @@ async function fetchBalPrices() {
       console.log(`Fetched prices for tokens on ${day}:`, prices);
     }
   } catch (e) {
+    // @ts-ignore
     console.error(`Failed to fetch prices: ${e.message}`);
   }
 }
@@ -660,7 +660,7 @@ async function runETLs() {
   await seedNetworks();
   await ETLPools();
   await ETLSnapshots();
-  // await ETLGauges();
+  await ETLGauges();
   // await fetchTokenPrices(); -> this is not necessary for every pool, just for the ones that haev token rewards and token yield
   await fetchBalPrices();
   // await fetchBlocks();

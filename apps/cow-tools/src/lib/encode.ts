@@ -1,9 +1,10 @@
 import { encodeAbiParameters } from "viem";
+
 import {
   priceCheckerHasExpectedOutCalculatorMapping,
   priceCheckersArgumentsMapping,
 } from "./priceCheckersMappings";
-import { PRICE_CHECKERS, PriceCheckerArgument, argType } from "./types";
+import { argType, PRICE_CHECKERS, PriceCheckerArgument } from "./types";
 
 export function encodePriceCheckerData(
   priceChecker: PRICE_CHECKERS,
@@ -13,10 +14,70 @@ export function encodePriceCheckerData(
 
   validateArguments(priceCheckerArguments, args);
 
+  if (priceChecker === PRICE_CHECKERS.UNI_V3) {
+    return encodeUniV3PriceCheckerData(priceCheckerArguments, args);
+  }
+
   if (!priceCheckerHasExpectedOutCalculatorMapping[priceChecker]) {
     return encodeArguments(priceCheckerArguments, args);
   }
   return encodeWithExpectedOutCalculator(priceCheckerArguments, args);
+}
+
+function encodeUniV3PriceCheckerData(
+  expectedArgs: PriceCheckerArgument[],
+  args: argType[],
+): `0x${string}` {
+  const tokenIn = args[1] as string[];
+  const tokenOut = args[2] as string[];
+  const fees = args[3] as bigint[];
+
+  if (tokenIn.length !== tokenOut.length || tokenIn.length !== fees.length) {
+    throw new Error(`Invalid number of arguments`);
+  }
+
+  const swapPath = tokenIn
+    .map((token, index) => {
+      if (index === 0) {
+        return token;
+      }
+      return tokenOut[index - 1];
+    })
+    .concat([tokenOut[tokenOut.length - 1]]);
+
+  const expectedOutArgs = [
+    {
+      name: "swapPath",
+      type: "address[]",
+    },
+    {
+      name: "fees",
+      type: "uint24[]",
+    },
+  ];
+
+  const expectedOutEncoded = encodeAbiParameters(expectedOutArgs, [
+    swapPath,
+    fees,
+  ]);
+
+  return encodeAbiParameters(
+    expectedArgs
+      .slice(0, 1)
+      .map((arg) => {
+        return {
+          name: arg.name as string,
+          type: arg.type as string,
+        };
+      })
+      .concat([
+        {
+          name: "_data",
+          type: "bytes",
+        },
+      ]),
+    args.slice(0, 1).concat([expectedOutEncoded]),
+  );
 }
 
 function validateArguments(
@@ -50,19 +111,31 @@ function encodeWithExpectedOutCalculator(
     return encodeWithExpectedOutCalculatorWithoutParameters(expectedArgs, args);
   }
 
-  const mainArgs = expectedArgs.slice(0, firstExpectedOutArgIndex);
-  const mainEncoded = encodeArguments(
-    mainArgs,
-    args.slice(0, firstExpectedOutArgIndex),
-  );
-
   const expectedOutArgs = expectedArgs.slice(firstExpectedOutArgIndex);
   const expectedOutEncoded = encodeArguments(
     expectedOutArgs,
     args.slice(firstExpectedOutArgIndex),
   );
 
-  return `0x${mainEncoded.slice(2)}${expectedOutEncoded.slice(2)}`;
+  const mainArgs = expectedArgs
+    .slice(0, firstExpectedOutArgIndex)
+    .map((arg) => {
+      return {
+        name: arg.name as string,
+        type: arg.type as string,
+      };
+    })
+    .concat([
+      {
+        name: "_data",
+        type: "bytes",
+      },
+    ]);
+
+  return encodeAbiParameters(
+    mainArgs,
+    args.slice(0, firstExpectedOutArgIndex).concat([expectedOutEncoded]),
+  );
 }
 
 function encodeWithExpectedOutCalculatorWithoutParameters(

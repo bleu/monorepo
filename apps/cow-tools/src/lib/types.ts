@@ -6,7 +6,13 @@ export type argTypeName =
   | "bool[]"
   | "bytes";
 
-export type argType = string | bigint | boolean | string[] | boolean[];
+export type argType =
+  | string
+  | bigint
+  | boolean
+  | string[]
+  | boolean[]
+  | bigint[];
 
 export interface PriceCheckerArgument {
   name: string;

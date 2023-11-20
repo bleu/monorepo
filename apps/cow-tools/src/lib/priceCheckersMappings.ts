@@ -89,9 +89,18 @@ export const priceCheckersArgumentsMapping = {
       toExpectedOutCalculator: false,
     },
     {
-      name: "swapPath",
+      name: "tokenIn",
       type: "address[]",
-      label: "Token path",
+      label: "Token In",
+      inputType: "text",
+      toExpectedOutCalculator: true,
+      convertInput: (input: string) => input,
+      convertOutput: (output: string) => output,
+    },
+    {
+      name: "tokenOut",
+      type: "address[]",
+      label: "Token Out",
       inputType: "text",
       toExpectedOutCalculator: true,
       convertInput: (input: string) => input,
@@ -100,12 +109,14 @@ export const priceCheckersArgumentsMapping = {
     {
       name: "fees",
       type: "uint24[]",
-      label: "Fees",
+      label: "Fees (%)",
       inputType: "number",
       step: 0.01,
       toExpectedOutCalculator: true,
-      convertInput: (input: number) => BigInt(input * 100),
-      convertOutput: (output: string) => Number(output) / 100,
+      convertInput: (inputs: number[]) =>
+        inputs.map((input) => BigInt(input * 100)),
+      convertOutput: (outputs: string[]) =>
+        outputs.map((output) => Number(output) / 100),
     },
   ] as PriceCheckerArgument[],
 } as const;

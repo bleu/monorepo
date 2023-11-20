@@ -8,8 +8,6 @@ import { goerli } from "viem/chains";
 
 import { TransactionStatus } from "#/app/milkman/utils/type";
 import Button from "#/components/Button";
-// import { Checkbox } from "#/components/Checkbox";
-// import { Dialog } from "#/components/Dialog";
 import { Input } from "#/components/Input";
 import { Select, SelectItem } from "#/components/Select";
 import Table from "#/components/Table";
@@ -180,6 +178,8 @@ function ArrayPriceCheckerInput({
   const [lengthOfArguments, setLengthOfArguments] = useState(1);
   const formData = watch();
 
+  useEffect(() => {}), [formData];
+
   return (
     <div className="flex flex-col w-full gap-y-2 mt-2">
       <Table color="blue" shade="darkWithBorder">
@@ -240,7 +240,7 @@ function ArrayPriceCheckerInput({
                 <Table.BodyCell>
                   <div className="flex items-center justify-center gap-x-2">
                     <button
-                      className="justify-self-center text-tomato9 hover:text-tomato10 "
+                      className="justify-self-center text-tomato9 hover:text-tomato10"
                       type="button"
                       onClick={() => {
                         arrayArguments.forEach((arg) => {

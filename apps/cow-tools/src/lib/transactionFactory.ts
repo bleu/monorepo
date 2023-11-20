@@ -5,9 +5,10 @@ import { encodeFunctionData } from "viem";
 import { goerli } from "viem/chains";
 
 import { milkmanAbi } from "#/lib/abis/milkman";
-import { PRICE_CHECKERS, argType } from "./types";
-import { priceCheckerAddressesMapping } from "./priceCheckersMappings";
+
 import { encodePriceCheckerData } from "./encode";
+import { priceCheckerAddressesMapping } from "./priceCheckersMappings";
+import { argType, PRICE_CHECKERS } from "./types";
 
 // Milkman's address is the same for all chains supported chains (Gnosis, etc...)
 export const MILKMAN_ADDRESS = "0x11C76AD590ABDFFCD980afEC9ad951B160F02797";

@@ -1,11 +1,10 @@
 import { Address } from "@bleu-fi/utils";
-import { encodeAbiParameters, isAddress, PublicClient } from "viem";
+import { isAddress, PublicClient } from "viem";
 import { z } from "zod";
 
-import { chainlinkPriceFeeAbi } from "./abis/chainlinkPriceFeed";
 import { dynamicSlippagePriceCheckerAbi } from "./abis/dynamicSlippagePriceChecker";
-import { PRICE_CHECKERS, PriceCheckerArgument } from "./types";
 import { encodePriceCheckerData } from "./encode";
+import { PRICE_CHECKERS, PriceCheckerArgument } from "./types";
 
 const basicAddressSchema = z
   .string()
@@ -62,10 +61,29 @@ export const priceCheckingBaseSchemaMapping = {
     addressesPriceFeeds: basicAddressSchema.array().nonempty(),
   }),
   [PRICE_CHECKERS.BALANCER]: basicDynamicSlippageSchema,
-  [PRICE_CHECKERS.UNI_V3]: basicDynamicSlippageSchema.extend({
-    swapPath: z.array(basicAddressSchema).nonempty(),
-    fees: z.array(z.number().positive()).nonempty(),
-  }),
+  [PRICE_CHECKERS.UNI_V3]: basicDynamicSlippageSchema
+    .extend({
+      tokenIn: z.array(basicAddressSchema).nonempty(),
+      tokenOut: z.array(basicAddressSchema).nonempty(),
+      fees: z.array(z.coerce.number().positive()).nonempty(),
+    })
+    .refine(
+      (data) => {
+        const previousTokenOutIsNextTokenIn = data.tokenIn.every(
+          (token, index) => {
+            if (index === 0) {
+              return true;
+            }
+            return token === data.tokenOut[index - 1];
+          },
+        );
+        return previousTokenOutIsNextTokenIn;
+      },
+      {
+        path: ["tokenIn"],
+        message: "The token out must be the token in of the next line",
+      },
+    ),
 } as const;
 
 export const generatePriceCheckerSchema = ({
@@ -93,7 +111,6 @@ export const generatePriceCheckerSchema = ({
           const argsToEncode = expectedArgs.map((arg) => {
             return arg.convertInput(data[arg.name]);
           });
-
           const priceCheckerData = encodePriceCheckerData(
             priceChecker,
             argsToEncode,

@@ -1,14 +1,15 @@
 import { Address, decodeAbiParameters } from "viem";
+
 import {
   priceCheckerAddressesMapping,
   priceCheckerHasExpectedOutCalculatorMapping,
   priceCheckersArgumentsMapping,
 } from "./priceCheckersMappings";
 import {
-  PRICE_CHECKERS,
-  PriceCheckerArgument,
   argType,
   argTypeName,
+  PRICE_CHECKERS,
+  PriceCheckerArgument,
 } from "./types";
 
 export function decodePriceCheckerData(

@@ -66,12 +66,32 @@ CREATE TABLE IF NOT EXISTS "pool_snapshots" (
 	"swap_fees" numeric,
 	"liquidity" numeric,
 	"timestamp" timestamp,
+	"protocol_yield_fee_cache" numeric,
+	"protocol_swap_fee_cache" numeric,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	"external_id" varchar,
 	"pool_external_id" varchar,
 	"raw_data" jsonb,
 	CONSTRAINT "pool_snapshots_external_id_unique" UNIQUE("external_id")
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "pool_snapshots_temp" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"amounts" jsonb,
+	"total_shares" numeric,
+	"swap_volume" numeric,
+	"swap_fees" numeric,
+	"liquidity" numeric,
+	"timestamp" timestamp,
+	"protocol_yield_fee_cache" numeric,
+	"protocol_swap_fee_cache" numeric,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL,
+	"external_id" varchar,
+	"pool_external_id" varchar,
+	"raw_data" jsonb,
+	CONSTRAINT "pool_snapshots_temp_external_id_unique" UNIQUE("external_id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "pool_rate_providers" (
@@ -119,8 +139,6 @@ CREATE TABLE IF NOT EXISTS "pools" (
 	"total_liquidity" varchar,
 	"symbol" varchar,
 	"external_created_at" timestamp,
-	"protocol_yield_fee_cache" numeric,
-	"protocol_swap_fee_cache" numeric,
 	"pool_type_version" numeric,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
@@ -237,6 +255,12 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "pool_snapshots" ADD CONSTRAINT "pool_snapshots_pool_external_id_pools_external_id_fk" FOREIGN KEY ("pool_external_id") REFERENCES "pools"("external_id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "pool_snapshots_temp" ADD CONSTRAINT "pool_snapshots_temp_pool_external_id_pools_external_id_fk" FOREIGN KEY ("pool_external_id") REFERENCES "pools"("external_id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

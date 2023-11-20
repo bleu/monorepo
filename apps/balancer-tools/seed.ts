@@ -7,7 +7,13 @@ import "dotenv/config";
 import { sql } from "drizzle-orm";
 import { PgTable } from "drizzle-orm/pg-core";
 
-import { gauges, pools, poolSnapshots, tokenPrices } from "#/db/schema";
+import {
+  gauges,
+  pools,
+  poolSnapshots,
+  poolSnapshotsTemp,
+  tokenPrices,
+} from "#/db/schema";
 import { DefiLlamaAPI } from "#/lib/defillama";
 
 import { db } from "./src/db/index";
@@ -33,25 +39,22 @@ async function gql(
   const defaultHeaders = {
     "Content-Type": "application/json",
   };
-
-  const response = await fetch(endpoint, {
-    method: "POST",
-    headers: {
-      ...defaultHeaders,
-      ...headers,
-    },
-    body: JSON.stringify({
-      query,
-      variables,
-    }),
-  });
-
-  if (!response.ok) {
-    console.log(response);
-    throw new Error("Network response was not ok");
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        ...defaultHeaders,
+        ...headers,
+      },
+      body: JSON.stringify({
+        query,
+        variables,
+      }),
+    });
+    return response.json();
+  } catch (e) {
+    console.log("err", e);
   }
-
-  return response.json();
 }
 
 const ENDPOINT_V3 = "https://api-v3.balancer.fi/graphql";
@@ -59,15 +62,15 @@ const BASE_ENDPOINT_V2 =
   "https://api.thegraph.com/subgraphs/name/balancer-labs";
 
 const NETWORK_TO_BALANCER_ENDPOINT_MAP = {
-  ethereum: `${BASE_ENDPOINT_V2}/balancer-v2`,
-  polygon: `${BASE_ENDPOINT_V2}/balancer-polygon-v2`,
+  // ethereum: `${BASE_ENDPOINT_V2}/balancer-v2`,
+  // polygon: `${BASE_ENDPOINT_V2}/balancer-polygon-v2`,
   "polygon-zkevm":
     "https://api.studio.thegraph.com/query/24660/balancer-polygon-zk-v2/version/latest",
-  arbitrum: `${BASE_ENDPOINT_V2}/balancer-arbitrum-v2`,
-  gnosis: `${BASE_ENDPOINT_V2}/balancer-gnosis-chain-v2`,
-  optimism: `${BASE_ENDPOINT_V2}/balancer-optimism-v2`,
-  base: "https://api.studio.thegraph.com/query/24660/balancer-base-v2/version/latest",
-  avalanche: `${BASE_ENDPOINT_V2}/balancer-avalanche-v2`,
+  // arbitrum: `${BASE_ENDPOINT_V2}/balancer-arbitrum-v2`,
+  // gnosis: `${BASE_ENDPOINT_V2}/balancer-gnosis-chain-v2`,
+  // optimism: `${BASE_ENDPOINT_V2}/balancer-optimism-v2`,
+  // base: "https://api.studio.thegraph.com/query/24660/balancer-base-v2/version/latest",
+  // avalanche: `${BASE_ENDPOINT_V2}/balancer-avalanche-v2`,
 } as const;
 
 const VOTING_GAUGES_QUERY = `
@@ -95,20 +98,18 @@ query VeBalGetVotingList {
 `;
 
 const POOLS_WITHOUT_GAUGE_QUERY = `
-query PoolsWherePoolType($skip: Int!) {
+query PoolsWherePoolType($latestId: String!) {
   pools(
-    orderBy: totalLiquidity
-    orderDirection: desc
     first: 1000,
-    skip: $skip
+    where: {
+      id_gt: $latestId,
+    }
   ) {
     id
     address
     symbol
     poolType
     createTime
-    protocolYieldFeeCache
-    protocolSwapFeeCache
     poolTypeVersion
     tokens {
       isExemptFromYieldProtocolFee
@@ -121,14 +122,18 @@ query PoolsWherePoolType($skip: Int!) {
 `;
 
 const POOLS_SNAPSHOTS = `
-query PoolSnapshots($skip: Int!) {
+query PoolSnapshots($latestId: String!) {
   poolSnapshots(
     first: 1000,
-    skip: $skip
+    where: {
+      id_gt: $latestId,
+    }
   ) {
     id
     pool {
       id
+      protocolYieldFeeCache
+      protocolSwapFeeCache
     }
     amounts
     totalShares
@@ -148,22 +153,27 @@ function* chunks(arr: unknown[], n: number) {
 }
 
 async function paginate<T>(
-  initialSkip: number,
+  initialId: string,
   step: number,
-  fetchFn: (skip: number) => Promise<T | null>,
+  fetchFn: (id: string) => Promise<T | null>,
 ): Promise<void> {
-  logIfVerbose(`Paginating from initialSkip=${initialSkip}, step=${step}`);
+  logIfVerbose(`Paginating from initialId=${initialId}, step=${step}`);
 
-  let skipValue = initialSkip;
+  let idValue = initialId;
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    const data = await fetchFn(skipValue);
+    const data = await fetchFn(idValue);
 
-    if (!data || Object.keys(data).length === 0) {
+    // @ts-ignore  this comes as unknown type, but it is an array
+    const dataArray = Object.values(data)[0];
+
+    // @ts-ignore  this comes as unknown type, but it is an array
+    if (!data || dataArray.length < BATCH_SIZE) {
       break;
     }
-
-    skipValue += step;
+    // @ts-ignore  this comes as unknown type, but it is an array
+    idValue = dataArray[dataArray.length - 1].id;
+    console.log(idValue);
   }
 }
 
@@ -173,11 +183,11 @@ async function paginatedFetch<T>(
   networkEndpoint: string,
   query: string,
   processFn: ProcessFn<T>,
-  initialSkip = 0,
+  initialId = "",
   step = BATCH_SIZE,
 ): Promise<void> {
-  await paginate(initialSkip, step, async (skip: number) => {
-    const response = await gql(networkEndpoint, query, { skip });
+  await paginate(initialId, step, async (latestId: string) => {
+    const response = await gql(networkEndpoint, query, { latestId });
     if (response.data) {
       await processFn(response.data);
       return response.data;
@@ -192,7 +202,7 @@ async function processPoolSnapshots(data: any, network: string) {
 
   if (data.poolSnapshots) {
     await addToTable(
-      poolSnapshots,
+      poolSnapshotsTemp,
       data.poolSnapshots.map((snapshot: any) => ({
         externalId: snapshot.id,
         rawData: { ...snapshot, network },
@@ -282,13 +292,13 @@ async function transformPoolSnapshotsData() {
   await db.execute(sql`
   INSERT INTO pools (external_id, network_slug)
 SELECT raw_data->'pool'->>'id', 
-LOWER(raw_data->>'network') 
-FROM pool_snapshots
+LOWER(raw_data->>'network')
+FROM pool_snapshots_temp
 ON CONFLICT (external_id) DO NOTHING;
   `);
 
   await db.execute(sql`
-  UPDATE pool_snapshots
+  UPDATE pool_snapshots_temp
 SET
     amounts = raw_data->'amounts',
     total_shares = (raw_data->>'totalShares')::NUMERIC,
@@ -297,7 +307,51 @@ SET
     liquidity = (raw_data->>'liquidity')::NUMERIC,
     timestamp = to_timestamp((raw_data->>'timestamp')::BIGINT),
     external_id = raw_data->>'id',
-    pool_external_id = raw_data->'pool'->>'id';
+    pool_external_id = raw_data->'pool'->>'id',
+    protocol_yield_fee_cache = (raw_data->'pool'->>'protocolYieldFeeCache')::NUMERIC,
+    protocol_swap_fee_cache = (raw_data->'pool'->>'protocolSwapFeeCache')::NUMERIC;
+`);
+
+  await db.execute(sql`
+INSERT INTO pool_snapshots (amounts, total_shares, swap_volume, swap_fees, liquidity, timestamp, protocol_yield_fee_cache, protocol_swap_fee_cache, external_id, pool_external_id, raw_data)
+WITH calendar AS (
+  SELECT generate_series('2021-04-21' :: timestamp, CURRENT_DATE, '1 day' :: INTERVAL) AS "timestamp"
+),
+
+pool_snapshots AS (
+  SELECT
+    *,
+    LEAD("timestamp", 1, NOW()) OVER (PARTITION BY pool_external_id ORDER BY "timestamp") AS timestamp_next_change
+  FROM pool_snapshots_temp
+)
+
+SELECT amounts, total_shares, swap_volume, swap_fees, liquidity, c.timestamp, protocol_yield_fee_cache, protocol_swap_fee_cache, pool_external_id || '-' || c.timestamp AS external_id, pool_external_id, raw_data
+FROM 
+    pool_snapshots b
+LEFT JOIN 
+    calendar c 
+ON 
+    b.timestamp <= c.timestamp 
+    AND (c.timestamp < b.timestamp_next_change OR b.timestamp_next_change IS NULL)
+ON CONFLICT (external_id) DO NOTHING;
+`);
+
+  await db.execute(sql`
+  INSERT INTO swap_fee_apr (timestamp, pool_external_id, collected_fees_usd, value, external_id)
+  SELECT
+	p1.timestamp,
+	p1.pool_external_id,
+	p1.swap_fees - p2.swap_fees AS collected_fees_usd,
+    CASE 
+        WHEN p1.liquidity = 0 THEN 0
+        ELSE ((p1.swap_fees - p2.swap_fees) * (1 - COALESCE(p1.protocol_swap_fee_cache, 0.5)) / p1.liquidity) * 365 * 100 
+    END AS "value",
+  p1.external_id
+FROM pool_snapshots p1
+LEFT JOIN pool_snapshots p2 
+ON p1. "timestamp" = p2. "timestamp" + INTERVAL '1 day'
+AND p1.pool_external_id = p2.pool_external_id
+ON CONFLICT (external_id) DO NOTHING;
 `);
 }
 
@@ -308,8 +362,7 @@ async function transformPoolData() {
   // Insert data into the pools table
   await db.execute(sql`
   INSERT INTO pools (
-    external_id, address, symbol, pool_type, external_created_at, network_slug,
-    protocol_yield_fee_cache, protocol_swap_fee_cache, pool_type_version
+    external_id, address, symbol, pool_type, external_created_at, network_slug, pool_type_version
   )
   SELECT 
     raw_data->>'id',
@@ -318,8 +371,6 @@ async function transformPoolData() {
     raw_data->>'poolType',
     to_timestamp((raw_data->>'createTime')::BIGINT),
     LOWER(raw_data->>'network'),
-    (raw_data->>'protocolYieldFeeCache')::NUMERIC, 
-    (raw_data->>'protocolSwapFeeCache')::NUMERIC,
     (raw_data->>'poolTypeVersion')::NUMERIC
   FROM pools
   ON CONFLICT (external_id) DO UPDATE
@@ -329,8 +380,6 @@ async function transformPoolData() {
     pool_type = excluded.pool_type,
     external_created_at = excluded.external_created_at,
     network_slug = LOWER(excluded.network_slug),
-    protocol_yield_fee_cache = excluded.protocol_yield_fee_cache,
-    protocol_swap_fee_cache = excluded.protocol_swap_fee_cache,
     pool_type_version = excluded.pool_type_version;
 `);
 
@@ -559,11 +608,10 @@ async function runETLs() {
   await seedNetworks();
   await ETLPools();
   await ETLSnapshots();
-  await ETLGauges();
+  // await ETLGauges();
   await fetchTokenPrices();
   // await fetchBlocks();
   logIfVerbose("Ended ETL processes");
-
   process.exit(0);
 }
 

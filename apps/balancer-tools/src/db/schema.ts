@@ -42,8 +42,6 @@ export const pools = pgTable(
     totalLiquidity: varchar("total_liquidity"),
     symbol: varchar("symbol"),
     externalCreatedAt: timestamp("external_created_at"),
-    protocolYieldFeeCache: decimal("protocol_yield_fee_cache"),
-    protocolSwapFeeCache: decimal("protocol_swap_fee_cache"),
     poolTypeVersion: decimal("pool_type_version"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -58,6 +56,7 @@ export const pools = pgTable(
 export const poolRelations = relations(pools, ({ one, many }) => ({
   tokens: many(poolTokens),
   poolSnapshots: many(poolSnapshots),
+  poolSnapshotsTemp: many(poolSnapshotsTemp),
   gauge: one(gauges, {
     fields: [pools.externalId],
     references: [gauges.poolExternalId],
@@ -174,6 +173,27 @@ export const poolSnapshots = pgTable("pool_snapshots", {
   swapFees: decimal("swap_fees"),
   liquidity: decimal("liquidity"),
   timestamp: timestamp("timestamp"),
+  protocolYieldFeeCache: decimal("protocol_yield_fee_cache"),
+  protocolSwapFeeCache: decimal("protocol_swap_fee_cache"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  externalId: varchar("external_id").unique(),
+  poolExternalId: varchar("pool_external_id").references(
+    () => pools.externalId,
+  ),
+  rawData: jsonb("raw_data"),
+});
+
+export const poolSnapshotsTemp = pgTable("pool_snapshots_temp", {
+  id: serial("id").primaryKey(),
+  amounts: jsonb("amounts"),
+  totalShares: decimal("total_shares"),
+  swapVolume: decimal("swap_volume"),
+  swapFees: decimal("swap_fees"),
+  liquidity: decimal("liquidity"),
+  timestamp: timestamp("timestamp"),
+  protocolYieldFeeCache: decimal("protocol_yield_fee_cache"),
+  protocolSwapFeeCache: decimal("protocol_swap_fee_cache"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   externalId: varchar("external_id").unique(),
@@ -314,6 +334,7 @@ export const swapFeeApr = pgTable(
     poolExternalId: varchar("pool_external_id").references(
       () => pools.externalId,
     ),
+    externalId: varchar("external_id").unique(),
   },
   (t) => ({
     unq: unique().on(t.timestamp, t.poolExternalId),

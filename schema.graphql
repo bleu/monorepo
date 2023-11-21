@@ -18,6 +18,13 @@ type Swap @entity {
   transactionHash: Bytes!
 }
 
+type TransactionHash @entity {
+  id: String!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  swaps: [Swap!]! @derivedFrom(field: "transactionHash")
+}
+
 type Token @entity {
   id: String!
   name: String

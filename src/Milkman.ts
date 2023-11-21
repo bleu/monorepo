@@ -6,6 +6,11 @@ ponder.on("Milkman:SwapRequested", async ({ event, context }) => {
   const tokenIn = await context.entities.Token.upsert({id: event.params.fromToken})
   const tokenOut = await context.entities.Token.upsert({id: event.params.toToken})
 
+  let transaction = await context.entities.TransactionHash.findUnique({id: event.transaction.hash})
+  if (!transaction) {
+    transaction = await context.entities.TransactionHash.create({id: event.transaction.hash, data: {blockNumber: event.block.number, blockTimestamp: event.block.timestamp}})
+  }
+
   await context.entities.Swap.create({
     id: event.log.id,
     data: {
@@ -18,7 +23,7 @@ ponder.on("Milkman:SwapRequested", async ({ event, context }) => {
       priceChecker: event.params.priceChecker,
       priceCheckerData: event.params.priceCheckerData,
       orderContract: event.params.orderContract,
-      transactionHash: event.transaction.hash,
+      transactionHash: transaction.id,
     }
   })
 });

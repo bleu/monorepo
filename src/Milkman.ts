@@ -8,14 +8,13 @@ ponder.on("Milkman:SwapRequested", async ({ event, context }) => {
 
   let transaction = await context.entities.TransactionHash.findUnique({id: event.transaction.hash})
   if (!transaction) {
-    transaction = await context.entities.TransactionHash.create({id: event.transaction.hash, data: {blockNumber: event.block.number, blockTimestamp: event.block.timestamp}})
+    transaction = await context.entities.TransactionHash.create({id: event.transaction.hash, data: {user: user.id, blockNumber: event.block.number, blockTimestamp: event.block.timestamp}})
   }
 
   await context.entities.Swap.create({
     id: event.log.id,
     data: {
       chainId: 5, // only tracking goerli currently, waiting ponder to expose chainId in event object
-      user: user.id,
       status: "REQUESTED",
       tokenIn: tokenIn.id,
       tokenOut: tokenOut.id,

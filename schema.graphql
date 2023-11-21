@@ -6,7 +6,6 @@ enum Status {
 
 type Swap @entity {
   id: String!
-  user: User!
   chainId: Int!
   status: Status!
   tokenIn: Token!
@@ -20,6 +19,7 @@ type Swap @entity {
 
 type TransactionHash @entity {
   id: String!
+  user: User!
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   swaps: [Swap!]! @derivedFrom(field: "transactionHash")
@@ -34,5 +34,5 @@ type Token @entity {
 
 type User @entity {
   id: String!
-  swaps: [Swap!]! @derivedFrom(field: "user")
+  transactions: [TransactionHash!]! @derivedFrom(field: "user")
 }

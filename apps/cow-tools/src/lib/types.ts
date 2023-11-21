@@ -24,7 +24,7 @@ export interface PriceCheckerArgument {
   convertOutput: (
     output: argType,
     decimals?: number,
-  ) => Exclude<argType, bigint> | number;
+  ) => Exclude<argType, bigint | bigint[]> | number;
   step?: number;
 }
 

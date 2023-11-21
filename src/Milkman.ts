@@ -17,6 +17,7 @@ ponder.on("Milkman:SwapRequested", async ({ event, context }) => {
       tokenAmountIn: event.params.amountIn,
       priceChecker: event.params.priceChecker,
       priceCheckerData: event.params.priceCheckerData,
+      orderContract: event.params.orderContract,
       transactionHash: event.transaction.hash,
     }
   })

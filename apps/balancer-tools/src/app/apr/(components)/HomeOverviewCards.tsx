@@ -13,12 +13,7 @@ export default async function HomeOverviewCards({
   startAt: Date;
   endAt: Date;
 }) {
-  const balInUSD = (
-    await getBALPriceForDateRange(dateToEpoch(startAt), dateToEpoch(endAt))
-  ).toLocaleString("en-US", {
-    style: "currency",
-    currency: "USD",
-  });
+  const balInUSD = await getBALPriceForDateRange(startAt, endAt);
   const cardsDetails = [
     { title: "BAL Price", content: balInUSD },
     {

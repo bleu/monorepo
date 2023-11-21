@@ -1,128 +1,101 @@
-import { Address } from "@bleu-fi/utils";
-import {
-  calculateDaysBetween,
-  dateToEpoch,
-  getWeeksBetweenDates,
-  SECONDS_IN_DAY,
-  SECONDS_IN_YEAR,
-  WEEKS_IN_YEAR,
-} from "@bleu-fi/utils/date";
-import * as Sentry from "@sentry/nextjs";
+import { epochToDate } from "@bleu-fi/utils/date";
+import { and, eq } from "drizzle-orm";
 
-import * as balEmissions from "#/lib/balancer/emissions";
-import { pools } from "#/lib/gql/server";
-
-import { fetchPoolSnapshots } from "./fetchPoolSnapshots";
-import { getPoolRelativeWeight } from "./getRelativeWeight";
-import { getRewardsAprForDateRange } from "./rewardsApr";
-import { getPoolTokensAprForDateRange } from "./tokenApr";
-
-type PoolSnapshot = {
-  timestamp: number;
-  liquidity: string;
-  swapVolume: string;
-  pool: {
-    symbol?: string | null;
-    tokens?: { symbol: string; balance: string }[] | null;
-  };
-  swapFees?: string;
-};
+import { db } from "#/db";
+import { swapFeeApr } from "#/db/schema";
 
 export async function calculateAPRForDateRange(
   startAtTimestamp: number,
   endAtTimestamp: number,
-  tvl: number,
-  balPriceUSD: number,
   poolId: string,
-  network: string,
 ) {
-  const [votingShare, [feeAPR, collectedFeesUSD], tokensAPR, rewardsAPR] =
-    await Promise.all([
-      getPoolRelativeWeight(poolId, endAtTimestamp),
-      getFeeAprForDateRange(poolId, network, startAtTimestamp, endAtTimestamp),
-      getPoolTokensAprForDateRange(
-        network,
-        poolId as Address,
-        startAtTimestamp,
-        endAtTimestamp,
-      ),
-      getRewardsAprForDateRange(
-        poolId,
-        network,
-        startAtTimestamp,
-        endAtTimestamp,
-      ),
-    ]);
+  // const [votingShare, [feeAPR, collectedFeesUSD], tokensAPR, rewardsAPR] =
+  const [[feeAPR, collectedFeesUSD]] = await Promise.all([
+    // getPoolRelativeWeight(poolId, endAtTimestamp),
+    getFeeAprForDate(poolId, endAtTimestamp),
+    // getPoolTokensAprForDateRange(
+    //   network,
+    //   poolId as Address,
+    //   startAtTimestamp,
+    //   endAtTimestamp
+    // ),
+    // getRewardsAprForDateRange(
+    //   poolId,
+    //   network,
+    //   startAtTimestamp,
+    //   endAtTimestamp
+    // ),
+  ]);
 
-  const weeksApart = getWeeksBetweenDates(startAtTimestamp, endAtTimestamp);
-  let emissions;
-  if (weeksApart >= 1) {
-    const weekArray = Array.from({ length: weeksApart }, (_, index) => {
-      const weekStartDate = new Date(startAtTimestamp * 1000);
-      weekStartDate.setDate(weekStartDate.getDate() + index * 7);
-      const weekEndDate = new Date(weekStartDate);
-      weekEndDate.setDate(weekStartDate.getDate() + 6);
-      return { weekNumber: index + 1, weekStartDate, weekEndDate };
-    });
+  // const weeksApart = getWeeksBetweenDates(startAtTimestamp, endAtTimestamp);
+  // let emissions;
+  // if (weeksApart >= 1) {
+  //   const weekArray = Array.from({ length: weeksApart }, (_, index) => {
+  //     const weekStartDate = new Date(startAtTimestamp * 1000);
+  //     weekStartDate.setDate(weekStartDate.getDate() + index * 7);
+  //     const weekEndDate = new Date(weekStartDate);
+  //     weekEndDate.setDate(weekStartDate.getDate() + 6);
+  //     return { weekNumber: index + 1, weekStartDate, weekEndDate };
+  //   });
 
-    // Calculate the total balance emissions and count of weeks
-    const { totalBalanceEmissions, weekCount } = weekArray.reduce(
-      (acc, week) => {
-        const weeklyBalanceEmissions = balEmissions.weekly(
-          week.weekStartDate.getTime() / 1000,
-        );
-        return {
-          totalBalanceEmissions:
-            acc.totalBalanceEmissions + weeklyBalanceEmissions,
-          weekCount: acc.weekCount + 1,
-        };
-      },
-      { totalBalanceEmissions: 0, weekCount: 0 },
-    );
+  //   // Calculate the total balance emissions and count of weeks
+  //   const { totalBalanceEmissions, weekCount } = weekArray.reduce(
+  //     (acc, week) => {
+  //       const weeklyBalanceEmissions = balEmissions.weekly(
+  //         week.weekStartDate.getTime() / 1000
+  //       );
+  //       return {
+  //         totalBalanceEmissions:
+  //           acc.totalBalanceEmissions + weeklyBalanceEmissions,
+  //         weekCount: acc.weekCount + 1,
+  //       };
+  //     },
+  //     { totalBalanceEmissions: 0, weekCount: 0 }
+  //   );
 
-    // TODO: #BAL-876 - Fix calculation for big changes on year change
-    emissions = totalBalanceEmissions / weekCount;
-  } else {
-    emissions = balEmissions.weekly(endAtTimestamp);
-  }
+  //   // TODO: #BAL-876 - Fix calculation for big changes on year change
+  //   emissions = totalBalanceEmissions / weekCount;
+  // } else {
+  //   emissions = balEmissions.weekly(endAtTimestamp);
+  // }
 
-  const vebalAPR =
-    balPriceUSD && tvl && votingShare
-      ? ((WEEKS_IN_YEAR * (emissions * votingShare * balPriceUSD)) / tvl) * 100
-      : null;
+  // const vebalAPR =
+  //   balPriceUSD && tvl && votingShare
+  //     ? ((WEEKS_IN_YEAR * (emissions * votingShare * balPriceUSD)) / tvl) * 100
+  //     : null;
 
-  let tokenAPRTotal = 0;
-  if (tokensAPR != null) {
-    tokenAPRTotal = tokensAPR.reduce(
-      (acc, token) => acc + (token?.yield ?? 0),
-      0,
-    );
-  }
+  // let tokenAPRTotal = 0;
+  // if (tokensAPR != null) {
+  //   tokenAPRTotal = tokensAPR.reduce(
+  //     (acc, token) => acc + (token?.yield ?? 0),
+  //     0
+  //   );
+  // }
 
-  const totalAprSum = (vebalAPR || 0) + feeAPR + tokenAPRTotal;
+  // const totalAprSum = (vebalAPR || 0) + feeAPR + tokenAPRTotal;
 
-  if (totalAprSum === null && tokensAPR != null) {
-    Sentry.captureMessage("vebalAPR resulted in null", {
-      level: "warning",
-      extra: { balPriceUSD, tvl, votingShare, poolId },
-    });
-  }
+  // if (totalAprSum === null && tokensAPR != null) {
+  //   Sentry.captureMessage("vebalAPR resulted in null", {
+  //     level: "warning",
+  //     extra: { balPriceUSD, tvl, votingShare, poolId },
+  //   });
+  // }
 
-  const rewardsAPRTotal = rewardsAPR.reduce(
-    (acc, reward) => acc + (reward.apr ?? 0),
-    0,
-  );
+  // const rewardsAPRTotal = rewardsAPR.reduce(
+  //   (acc, reward) => acc + (reward.apr ?? 0),
+  //   0
+  // );
 
   return {
     apr: {
-      total: totalAprSum,
+      total: feeAPR,
       breakdown: {
-        veBAL: vebalAPR,
+        veBAL: 0,
         swapFee: feeAPR,
         tokens: {
-          total: tokenAPRTotal,
+          total: 0,
           breakdown: [
-            ...(tokensAPR ||
+            ...([] ||
               (
                 [{}] as { address: string; symbol: string; yield: number }[]
               ).map((token) => ({
@@ -133,95 +106,36 @@ export async function calculateAPRForDateRange(
           ],
         },
         rewards: {
-          total: rewardsAPRTotal,
+          total: 0,
           breakdown: [
-            ...rewardsAPR.map((reward) => ({
-              address: reward.token.address,
-              symbol: reward.token.symbol,
-              value: reward.apr,
-            })),
+            ...([] ||
+              (
+                [{}] as { address: string; symbol: string; yield: number }[]
+              ).map((token) => ({
+                address: token.address,
+                symbol: token.symbol,
+                yield: token.yield,
+              }))),
           ],
         },
       },
     },
     collectedFeesUSD,
-    votingShare,
+    votingShare: 0,
   };
 }
 
-async function getFeeAprForDateRange(
-  poolId: string,
-  network: string,
-  from: number,
-  to: number,
-): Promise<[number, number]> {
-  // Determine if the initial date range is less than 2 days
-  const initialRangeInDays = calculateDaysBetween(from, to);
-  const extendedFrom = initialRangeInDays < 2 ? from - SECONDS_IN_DAY : from;
-
-  const res = await fetchPoolSnapshots({
-    to,
-    from: extendedFrom,
-    network,
-    poolId,
-  });
-
-  if (res.poolSnapshots.length === 0) {
-    return [0, 0];
-  }
-
-  const sortedSnapshots: PoolSnapshot[] = res.poolSnapshots.sort(
-    (a, b) => a.timestamp - b.timestamp,
-  );
-
-  if (
-    sortedSnapshots.length <= 1 &&
-    sortedSnapshots[sortedSnapshots.length - 1].timestamp <= to
-  ) {
-    const currentData = await pools.gql(network).Pool({ poolId });
-    if (currentData.pool) {
-      sortedSnapshots.push({
-        timestamp: dateToEpoch(new Date()),
-        liquidity: currentData.pool?.totalLiquidity,
-        swapVolume: currentData.pool?.totalSwapVolume,
-        pool: {
-          symbol: currentData.pool?.symbol,
-          tokens: currentData.pool?.tokens,
-        },
-        swapFees: currentData.pool?.totalSwapFee,
-      });
-      sortedSnapshots.sort((a, b) => a.timestamp - b.timestamp);
-    }
-  }
-
-  const startRoundData = sortedSnapshots.reduce((acc, snapshot) => {
-    if (snapshot.timestamp < acc.timestamp) {
-      return snapshot;
-    }
-    return acc;
-  });
-
-  const endRoundData = sortedSnapshots.reduce((acc, snapshot) => {
-    if (snapshot.timestamp > acc.timestamp) {
-      return snapshot;
-    }
-    return acc;
-  });
-
-  if (!startRoundData?.swapFees || !endRoundData?.swapFees) {
-    throw new Error(
-      `No data found for feeAPR calculation, poolId: ${poolId}, network: ${network}, from: ${from}, to: ${to}`,
+export async function getFeeAprForDate(poolId: string, date: number) {
+  const result = await db
+    .select()
+    .from(swapFeeApr)
+    .where(
+      and(
+        eq(swapFeeApr.poolExternalId, poolId),
+        eq(swapFeeApr.timestamp, epochToDate(date)),
+      ),
     );
-  }
+  const { value: apr, collectedFeesUSD } = result[0];
 
-  const feeDiff =
-    parseInt(endRoundData?.swapFees) - parseInt(startRoundData?.swapFees);
-
-  const feeApr = 10_000 * (feeDiff / parseInt(endRoundData?.liquidity));
-  // reference for 10_000 https://github.com/balancer/balancer-sdk/blob/f4879f06289c6f5f9766ead1835f4f4b096ed7dd/balancer-js/src/modules/pools/apr/apr.ts#L85
-  const annualizedFeeApr =
-    feeApr *
-    (SECONDS_IN_YEAR / (endRoundData?.timestamp - startRoundData?.timestamp));
-
-  return [isNaN(annualizedFeeApr) ? 0 : annualizedFeeApr / 100, feeDiff];
+  return [Number(apr), Number(collectedFeesUSD)];
 }

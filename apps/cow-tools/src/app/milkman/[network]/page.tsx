@@ -1,49 +1,23 @@
-import { Network } from "@bleu-fi/utils";
-import { gql } from "graphql-tag";
+"use client";
 
-import { sdk } from "#/lib/gql/sdk";
+import { Network } from "@bleu-fi/utils";
+
+import { Spinner } from "#/components/Spinner";
+import { useUserOrders } from "#/hooks/useUserOrders";
 
 import { HomePageWrapper } from "./HomePageWrapper";
 
-gql(`
-  query AllSwaps {
-    swaps {
-      id
-      chainId
-      transactionHash
-      tokenAmountIn
-      priceChecker
-      priceCheckerData
-      user {
-        id
-      }
-      tokenIn {
-        id
-        name
-        symbol
-        decimals
-      }
-      tokenOut {
-        id
-        name
-        symbol
-        decimals
-      }
-    }
-  }
-`);
-
-export default async function Page({
+export default function Page({
   params,
 }: {
   params: {
     network: Network;
   };
 }) {
-  const { swaps: orders } = await sdk.AllSwaps();
+  const { orders, loaded } = useUserOrders();
 
-  if (!orders.length) {
-    return null;
+  if (!loaded) {
+    return <Spinner />;
   }
 
   return <HomePageWrapper params={params} orders={orders} />;

@@ -58,7 +58,7 @@ export function FormSelectPriceChecker({
   const form = useForm(
     selectedPriceChecker && {
       resolver: zodResolver(schema),
-    },
+    }
   );
 
   const {
@@ -78,7 +78,7 @@ export function FormSelectPriceChecker({
     setValue("priceChecker", selectedPriceChecker);
     setValue(
       "priceCheckerAddress",
-      priceCheckerAddressesMapping[selectedPriceChecker][goerli.id],
+      priceCheckerAddressesMapping[selectedPriceChecker][goerli.id]
     );
   }, [selectedPriceChecker]);
 
@@ -131,11 +131,11 @@ function PriceCheckerInputs({
 }) {
   const priceCheckerAguments = priceCheckersArgumentsMapping[priceChecker];
   const nonArrayArguments = priceCheckerAguments.filter(
-    (arg) => !arg.type.includes("[]"),
+    (arg) => !arg.type.includes("[]")
   );
 
   const arrayArguments = priceCheckerAguments.filter((arg) =>
-    arg.type.includes("[]"),
+    arg.type.includes("[]")
   );
 
   const { register } = form;
@@ -207,7 +207,7 @@ function ArrayPriceCheckerInput({
                 {arrayArguments.map((arg) => {
                   const argName = `${arg.name}.${index}`;
                   return (
-                    <Table.BodyCell key={arg.name}>
+                    <Table.BodyCell classNames="align-top" key={arg.name}>
                       {arg.type.includes("bool") ? (
                         <div className="flex items-center justify-center gap-x-2">
                           <input

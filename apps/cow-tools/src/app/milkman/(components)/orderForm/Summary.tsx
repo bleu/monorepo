@@ -33,7 +33,7 @@ export function OrderSummary({
       (arg) => ({
         label: arg.label,
         key: arg.name,
-      }),
+      })
     ),
   ];
 
@@ -43,7 +43,7 @@ export function OrderSummary({
 
   async function handleButtonClick() {
     const sellAmountBigInt = BigInt(
-      Number(data.tokenSellAmount) * 10 ** data.tokenSell.decimals,
+      Number(data.tokenSellAmount) * 10 ** data.tokenSell.decimals
     );
     const priceCheckersArgs = priceCheckersArgumentsMapping[
       data.priceChecker as PRICE_CHECKERS

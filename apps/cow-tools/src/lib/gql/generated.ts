@@ -266,15 +266,17 @@ export type UserFilter = {
   id_starts_with?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type AllSwapsQueryVariables = Exact<{ [key: string]: never; }>;
+export type AllSwapsFromUserQueryVariables = Exact<{
+  user: Scalars['String']['input'];
+}>;
 
 
-export type AllSwapsQuery = { __typename?: 'Query', swaps: Array<{ __typename?: 'Swap', id: string, chainId: number, transactionHash: string, tokenAmountIn: any, priceChecker: string, priceCheckerData: string, user?: { __typename?: 'User', id: string } | null, tokenIn?: { __typename?: 'Token', id: string, name?: string | null, symbol?: string | null, decimals?: number | null } | null, tokenOut?: { __typename?: 'Token', id: string, name?: string | null, symbol?: string | null, decimals?: number | null } | null }> };
+export type AllSwapsFromUserQuery = { __typename?: 'Query', swaps: Array<{ __typename?: 'Swap', id: string, chainId: number, transactionHash: string, tokenAmountIn: any, priceChecker: string, priceCheckerData: string, user?: { __typename?: 'User', id: string } | null, tokenIn?: { __typename?: 'Token', id: string, name?: string | null, symbol?: string | null, decimals?: number | null } | null, tokenOut?: { __typename?: 'Token', id: string, name?: string | null, symbol?: string | null, decimals?: number | null } | null }> };
 
 
-export const AllSwapsDocument = gql`
-    query AllSwaps {
-  swaps {
+export const AllSwapsFromUserDocument = gql`
+    query AllSwapsFromUser($user: String!) {
+  swaps(where: {user: $user}) {
     id
     chainId
     transactionHash
@@ -307,8 +309,8 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationTy
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
-    AllSwaps(variables?: AllSwapsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AllSwapsQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<AllSwapsQuery>(AllSwapsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'AllSwaps', 'query');
+    AllSwapsFromUser(variables: AllSwapsFromUserQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AllSwapsFromUserQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<AllSwapsFromUserQuery>(AllSwapsFromUserDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'AllSwapsFromUser', 'query');
     }
   };
 }

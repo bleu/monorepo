@@ -22,7 +22,7 @@ import {
   decodePriceCheckerData,
   getPriceCheckerFromAddressAndChain,
 } from "#/lib/decode";
-import { AllSwapsQuery } from "#/lib/gql/generated";
+import { AllSwapsFromUserQuery } from "#/lib/gql/generated";
 import { priceCheckersArgumentsMapping } from "#/lib/priceCheckersMappings";
 import { cowTokenList } from "#/utils/cowTokenList";
 import { truncateAddress } from "#/utils/truncate";
@@ -37,7 +37,11 @@ export enum TransactionStatus {
   CANCELED = "Canceled",
 }
 
-export function OrderTable({ orders }: { orders: AllSwapsQuery["swaps"] }) {
+export function OrderTable({
+  orders,
+}: {
+  orders: AllSwapsFromUserQuery["swaps"];
+}) {
   return (
     <Table color="blue" shade="darkWithBorder">
       <Table.HeaderRow>
@@ -56,25 +60,21 @@ export function OrderTable({ orders }: { orders: AllSwapsQuery["swaps"] }) {
         {orders.map((order) => (
           <TableRow key={order.id} order={order} />
         ))}
-        <Table.BodyRow>
-          <Table.BodyCell>Test</Table.BodyCell>
-          <Table.BodyCell>5</Table.BodyCell>
-          <Table.BodyCell>Test 2</Table.BodyCell>
-          <Table.BodyCell>
-            {TransactionStatus.CANCELATION_TO_BE_EXECUTED}
-          </Table.BodyCell>
-          <Table.BodyCell>
-            <CancelButton
-              status={TransactionStatus.CANCELATION_TO_BE_EXECUTED}
-            />
-          </Table.BodyCell>
-        </Table.BodyRow>
+        {orders.length === 0 && (
+          <Table.BodyRow>
+            <Table.BodyCell colSpan={6}>
+              <h1 className="text-md text-slate12 m-2 text-center w-full">
+                This address didn't made any order on Milkman yet
+              </h1>
+            </Table.BodyCell>
+          </Table.BodyRow>
+        )}
       </Table.Body>
     </Table>
   );
 }
 
-function TableRow({ order }: { order: AllSwapsQuery["swaps"][0] }) {
+function TableRow({ order }: { order: AllSwapsFromUserQuery["swaps"][0] }) {
   const transactionStatus = TransactionStatus.MILKMAN_CREATED;
   const txUrl = buildBlockExplorerTxUrl({
     chainId: order.chainId,
@@ -138,17 +138,21 @@ function CancelButton({ status }: { status: string }) {
           "h-5 w-5",
           !isTransactionCancelled
             ? "text-tomato9 hover:text-tomato10"
-            : "text-slate10 hover:text-slate11",
+            : "text-slate10 hover:text-slate11"
         )}
       />
     </button>
   );
 }
 
-function TransactionInfo({ order }: { order: AllSwapsQuery["swaps"][0] }) {
+function TransactionInfo({
+  order,
+}: {
+  order: AllSwapsFromUserQuery["swaps"][0];
+}) {
   const priceChecker = getPriceCheckerFromAddressAndChain(
     order.chainId as 5,
-    order.priceChecker as Address,
+    order.priceChecker as Address
   );
 
   const expecetedArguments = priceChecker
@@ -191,7 +195,7 @@ function TransactionInfo({ order }: { order: AllSwapsQuery["swaps"][0] }) {
               {expecetedArguments[index].label} :{" "}
               {expecetedArguments[index].convertOutput(
                 argument,
-                order.tokenOut?.decimals || 18,
+                order.tokenOut?.decimals || 18
               )}
             </div>
           ))}
@@ -213,7 +217,7 @@ function TokenInfo({
   chainId?: number;
 }) {
   const tokenLogoUri = cowTokenList.find(
-    (token) => token.address === id && token.chainId === chainId,
+    (token) => token.address === id && token.chainId === chainId
   )?.logoURI;
   return (
     <div className="flex items-center gap-x-1">

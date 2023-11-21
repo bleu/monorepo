@@ -6,6 +6,7 @@ import {
   priceCheckersArgumentsMapping,
 } from "./priceCheckersMappings";
 import { argType, PRICE_CHECKERS, PriceCheckerArgument } from "./types";
+import { dateToEpoch } from "@bleu-fi/utils/date";
 
 export function encodePriceCheckerDataWithValidFromDecorator(
   priceCheckerAddress: Address,
@@ -13,7 +14,7 @@ export function encodePriceCheckerDataWithValidFromDecorator(
   validFrom: string,
 ) {
   const validFromDate = new Date(validFrom);
-  const validFromTimestamp = BigInt(validFromDate.getTime() / 1000);
+  const validFromTimestamp = BigInt(dateToEpoch(validFromDate));
   return encodeAbiParameters(
     [
       {

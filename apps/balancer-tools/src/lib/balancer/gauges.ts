@@ -1,41 +1,32 @@
-import { NetworkChainId } from "@bleu-fi/utils";
+import { networkIdFor } from "@bleu-fi/utils";
+import { eq } from "drizzle-orm";
 
-import POOLS_WITHOUT_GAUGES from "#/data/pools-without-gauge.json";
 import POOLS_WITH_GAUGES from "#/data/voting-gauges.json";
+import { db } from "#/db";
+import { pools, poolTokens, tokens } from "#/db/schema";
 
 const GAUGE_CACHE: { [address: string]: Gauge } = {};
 const POOL_CACHE: { [id: string]: Pool } = {};
 
+interface TokenData {
+  poolExternalId: string | null;
+  address: string | null;
+  weight: string | null;
+  symbol: string | null;
+}
 class Token {
-  logoSrc: string;
-  address: string;
+  poolExternalId: string | null;
+  address: string | null;
   weight: number | null;
-  symbol: string;
+  symbol: string | null;
 
-  constructor(data: (typeof POOLS_WITH_GAUGES)[0]["tokens"][0]) {
-    this.logoSrc = data.logoURI;
+  constructor(data: TokenData) {
+    this.poolExternalId = data.poolExternalId;
     this.address = data.address;
     this.weight = Number(data.weight);
     this.symbol = data.symbol;
   }
 }
-
-const UPPER_CASE_TO_NETWORK = {
-  MAINNET: NetworkChainId.ETHEREUM,
-  POLYGON: NetworkChainId.POLYGON,
-  ZKEVM: NetworkChainId.POLYGONZKEVM,
-  OPTIMISM: NetworkChainId.OPTIMISM,
-  GNOSIS: NetworkChainId.GNOSIS,
-  ARBITRUM: NetworkChainId.ARBITRUM,
-  BASE: NetworkChainId.BASE,
-  AVALANCHE: NetworkChainId.AVALANCHE,
-} as const;
-
-const typeMap: { [key: string]: string } = {
-  PHANTOM_STABLE: "COMPOSABLE_STABLE",
-  COMPOSABLESTABLE: "COMPOSABLE_STABLE",
-  METASTABLE: "META_STABLE",
-};
 
 export class Pool {
   id!: string;
@@ -52,36 +43,44 @@ export class Pool {
       return POOL_CACHE[id];
     }
 
-    let data;
-    data = POOLS_WITH_GAUGES.find(
-      (g: { id: string }) => g.id.toLowerCase() === id.toLowerCase(),
-    );
-    if (data) {
-      this.createdAt = data.gauge.addedTimestamp;
-      this.gauge = new Gauge(data.gauge.address);
-    } else {
-      data = POOLS_WITHOUT_GAUGES.find(
-        (g: { id: string }) => g.id.toLowerCase() === id.toLowerCase(),
-      );
-      if (data) {
-        this.createdAt = data.addedTimestamp;
-        this.gauge = null;
-      }
+    this.initialize(id);
+  }
+
+  async initialize(id: string): Promise<void> {
+    const poolDataList = await db
+      .select({
+        poolExternalId: pools.externalId,
+        address: pools.address,
+        network: pools.networkSlug,
+        type: pools.poolType,
+        symbol: pools.symbol,
+      })
+      .from(pools)
+      .where(eq(pools.externalId, id));
+
+    if (!poolDataList) {
+      throw new Error(`Pool with ID ${id} not found in the database`);
     }
 
-    if (!data) {
-      throw new Error(`Pool with ID ${id} not found`);
-    }
+    const poolData = poolDataList[0];
 
-    this.poolType = typeMap[data.type] || data.type;
-    this.network =
-      UPPER_CASE_TO_NETWORK[data.chain as keyof typeof UPPER_CASE_TO_NETWORK];
-    this.id = data.id;
-    this.address = data.address;
-    this.symbol = data.symbol;
-    this.tokens = data.tokens.map(
-      (t) => new Token(t as (typeof POOLS_WITH_GAUGES)[0]["tokens"][0]),
-    );
+    const poolsTokens = await db
+      .select({
+        poolExternalId: poolTokens.poolExternalId,
+        address: poolTokens.tokenAddress,
+        weight: poolTokens.weight,
+        symbol: tokens.symbol,
+      })
+      .from(poolTokens)
+      .leftJoin(tokens, eq(tokens.address, poolTokens.tokenAddress))
+      .where(eq(poolTokens.poolExternalId, id));
+
+    this.poolType = poolData.type ?? "";
+    this.network = Number(networkIdFor(poolData.network ?? undefined));
+    this.id = poolData.poolExternalId ?? "";
+    this.address = poolData.address ?? "";
+    this.symbol = poolData.symbol ?? "";
+    this.tokens = poolsTokens.map((t) => new Token(t));
     POOL_CACHE[this.id] = this;
   }
 }

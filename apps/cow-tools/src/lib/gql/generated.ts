@@ -24,6 +24,8 @@ export type Query = {
   swaps: Array<Swap>;
   token?: Maybe<Token>;
   tokens: Array<Token>;
+  transactionHash?: Maybe<TransactionHash>;
+  transactionHashs: Array<TransactionHash>;
   user?: Maybe<User>;
   users: Array<User>;
 };
@@ -61,6 +63,22 @@ export type QueryTokensArgs = {
 };
 
 
+export type QueryTransactionHashArgs = {
+  id: Scalars['String']['input'];
+  timestamp?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryTransactionHashsArgs = {
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  timestamp?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<TransactionHashFilter>;
+};
+
+
 export type QueryUserArgs = {
   id: Scalars['String']['input'];
   timestamp?: InputMaybe<Scalars['Int']['input']>;
@@ -86,6 +104,7 @@ export type Swap = {
   __typename?: 'Swap';
   chainId: Scalars['Int']['output'];
   id: Scalars['String']['output'];
+  orderContract: Scalars['String']['output'];
   priceChecker: Scalars['String']['output'];
   priceCheckerData: Scalars['String']['output'];
   status: Status;
@@ -93,7 +112,6 @@ export type Swap = {
   tokenIn?: Maybe<Token>;
   tokenOut?: Maybe<Token>;
   transactionHash: Scalars['String']['output'];
-  user?: Maybe<User>;
 };
 
 export type SwapFilter = {
@@ -115,6 +133,16 @@ export type SwapFilter = {
   id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   id_not_starts_with?: InputMaybe<Scalars['String']['input']>;
   id_starts_with?: InputMaybe<Scalars['String']['input']>;
+  orderContract?: InputMaybe<Scalars['String']['input']>;
+  orderContract_contains?: InputMaybe<Scalars['String']['input']>;
+  orderContract_ends_with?: InputMaybe<Scalars['String']['input']>;
+  orderContract_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  orderContract_not?: InputMaybe<Scalars['String']['input']>;
+  orderContract_not_contains?: InputMaybe<Scalars['String']['input']>;
+  orderContract_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  orderContract_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  orderContract_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  orderContract_starts_with?: InputMaybe<Scalars['String']['input']>;
   priceChecker?: InputMaybe<Scalars['String']['input']>;
   priceCheckerData?: InputMaybe<Scalars['String']['input']>;
   priceCheckerData_contains?: InputMaybe<Scalars['String']['input']>;
@@ -177,16 +205,6 @@ export type SwapFilter = {
   transactionHash_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   transactionHash_not_starts_with?: InputMaybe<Scalars['String']['input']>;
   transactionHash_starts_with?: InputMaybe<Scalars['String']['input']>;
-  user?: InputMaybe<Scalars['String']['input']>;
-  user_contains?: InputMaybe<Scalars['String']['input']>;
-  user_ends_with?: InputMaybe<Scalars['String']['input']>;
-  user_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  user_not?: InputMaybe<Scalars['String']['input']>;
-  user_not_contains?: InputMaybe<Scalars['String']['input']>;
-  user_not_ends_with?: InputMaybe<Scalars['String']['input']>;
-  user_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  user_not_starts_with?: InputMaybe<Scalars['String']['input']>;
-  user_starts_with?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Token = {
@@ -238,14 +256,71 @@ export type TokenFilter = {
   symbol_starts_with?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type User = {
-  __typename?: 'User';
+export type TransactionHash = {
+  __typename?: 'TransactionHash';
+  blockNumber: Scalars['BigInt']['output'];
+  blockTimestamp: Scalars['BigInt']['output'];
   id: Scalars['String']['output'];
   swaps: Array<Swap>;
+  user?: Maybe<User>;
 };
 
 
-export type UserSwapsArgs = {
+export type TransactionHashSwapsArgs = {
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  timestamp?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type TransactionHashFilter = {
+  blockNumber?: InputMaybe<Scalars['BigInt']['input']>;
+  blockNumber_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  blockNumber_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  blockNumber_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  blockNumber_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  blockNumber_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  blockNumber_not?: InputMaybe<Scalars['BigInt']['input']>;
+  blockNumber_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  blockTimestamp?: InputMaybe<Scalars['BigInt']['input']>;
+  blockTimestamp_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  blockTimestamp_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  blockTimestamp_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  blockTimestamp_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  blockTimestamp_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  blockTimestamp_not?: InputMaybe<Scalars['BigInt']['input']>;
+  blockTimestamp_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  id_contains?: InputMaybe<Scalars['String']['input']>;
+  id_ends_with?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  id_not?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  id_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  id_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  id_starts_with?: InputMaybe<Scalars['String']['input']>;
+  user?: InputMaybe<Scalars['String']['input']>;
+  user_contains?: InputMaybe<Scalars['String']['input']>;
+  user_ends_with?: InputMaybe<Scalars['String']['input']>;
+  user_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  user_not?: InputMaybe<Scalars['String']['input']>;
+  user_not_contains?: InputMaybe<Scalars['String']['input']>;
+  user_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  user_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  user_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  user_starts_with?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type User = {
+  __typename?: 'User';
+  id: Scalars['String']['output'];
+  transactions: Array<TransactionHash>;
+};
+
+
+export type UserTransactionsArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Scalars['String']['input']>;
   orderDirection?: InputMaybe<Scalars['String']['input']>;
@@ -266,37 +341,43 @@ export type UserFilter = {
   id_starts_with?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type AllSwapsFromUserQueryVariables = Exact<{
+export type AllTransactionFromUserQueryVariables = Exact<{
   user: Scalars['String']['input'];
 }>;
 
 
-export type AllSwapsFromUserQuery = { __typename?: 'Query', swaps: Array<{ __typename?: 'Swap', id: string, chainId: number, transactionHash: string, tokenAmountIn: any, priceChecker: string, priceCheckerData: string, user?: { __typename?: 'User', id: string } | null, tokenIn?: { __typename?: 'Token', id: string, name?: string | null, symbol?: string | null, decimals?: number | null } | null, tokenOut?: { __typename?: 'Token', id: string, name?: string | null, symbol?: string | null, decimals?: number | null } | null }> };
+export type AllTransactionFromUserQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, transactions: Array<{ __typename?: 'TransactionHash', id: string, blockNumber: any, blockTimestamp: any, swaps: Array<{ __typename?: 'Swap', id: string, chainId: number, transactionHash: string, tokenAmountIn: any, priceChecker: string, orderContract: string, priceCheckerData: string, tokenIn?: { __typename?: 'Token', id: string, name?: string | null, symbol?: string | null, decimals?: number | null } | null, tokenOut?: { __typename?: 'Token', id: string, name?: string | null, symbol?: string | null, decimals?: number | null } | null }> }> }> };
 
 
-export const AllSwapsFromUserDocument = gql`
-    query AllSwapsFromUser($user: String!) {
-  swaps(where: {user: $user}) {
+export const AllTransactionFromUserDocument = gql`
+    query AllTransactionFromUser($user: String!) {
+  users(where: {id: $user}) {
     id
-    chainId
-    transactionHash
-    tokenAmountIn
-    priceChecker
-    priceCheckerData
-    user {
+    transactions {
       id
-    }
-    tokenIn {
-      id
-      name
-      symbol
-      decimals
-    }
-    tokenOut {
-      id
-      name
-      symbol
-      decimals
+      blockNumber
+      blockTimestamp
+      swaps {
+        id
+        chainId
+        transactionHash
+        tokenAmountIn
+        priceChecker
+        orderContract
+        priceCheckerData
+        tokenIn {
+          id
+          name
+          symbol
+          decimals
+        }
+        tokenOut {
+          id
+          name
+          symbol
+          decimals
+        }
+      }
     }
   }
 }
@@ -309,8 +390,8 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationTy
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
-    AllSwapsFromUser(variables: AllSwapsFromUserQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AllSwapsFromUserQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<AllSwapsFromUserQuery>(AllSwapsFromUserDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'AllSwapsFromUser', 'query');
+    AllTransactionFromUser(variables: AllTransactionFromUserQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AllTransactionFromUserQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<AllTransactionFromUserQuery>(AllTransactionFromUserDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'AllTransactionFromUser', 'query');
     }
   };
 }

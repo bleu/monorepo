@@ -2,9 +2,6 @@
 
 import { Network } from "@bleu-fi/utils";
 
-import { Spinner } from "#/components/Spinner";
-import { useUserOrders } from "#/hooks/useUserOrders";
-
 import { HomePageWrapper } from "./HomePageWrapper";
 
 export default function Page({
@@ -14,11 +11,5 @@ export default function Page({
     network: Network;
   };
 }) {
-  const { orders, loaded } = useUserOrders();
-
-  if (!loaded) {
-    return <Spinner />;
-  }
-
-  return <HomePageWrapper params={params} orders={orders} />;
+  return <HomePageWrapper params={params} />;
 }

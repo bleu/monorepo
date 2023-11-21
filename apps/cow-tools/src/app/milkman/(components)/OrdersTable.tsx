@@ -7,6 +7,7 @@ import {
 } from "@bleu-fi/utils";
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import {
+  ArrowDownIcon,
   ArrowTopRightIcon,
   InfoCircledIcon,
   TrashIcon,
@@ -17,12 +18,14 @@ import Link from "next/link";
 import { formatUnits } from "viem";
 
 import { Dialog } from "#/components/Dialog";
+import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
+import { useUserMilkmanTransactions } from "#/hooks/useUserMilkmanTransactions";
 import {
   decodePriceCheckerData,
   getPriceCheckerFromAddressAndChain,
 } from "#/lib/decode";
-import { AllSwapsFromUserQuery } from "#/lib/gql/generated";
+import { AllTransactionFromUserQuery } from "#/lib/gql/generated";
 import { priceCheckersArgumentsMapping } from "#/lib/priceCheckersMappings";
 import { cowTokenList } from "#/utils/cowTokenList";
 import { truncateAddress } from "#/utils/truncate";
@@ -37,11 +40,12 @@ export enum TransactionStatus {
   CANCELED = "Canceled",
 }
 
-export function OrderTable({
-  orders,
-}: {
-  orders: AllSwapsFromUserQuery["swaps"];
-}) {
+export function OrderTable() {
+  const { transactions, loaded } = useUserMilkmanTransactions();
+
+  if (!loaded) {
+    return <Spinner />;
+  }
   return (
     <Table color="blue" shade="darkWithBorder">
       <Table.HeaderRow>
@@ -57,10 +61,10 @@ export function OrderTable({
         </Table.HeaderCell>
       </Table.HeaderRow>
       <Table.Body classNames="max-h-80 overflow-y-auto">
-        {orders.map((order) => (
-          <TableRow key={order.id} order={order} />
+        {transactions?.map((transaction) => (
+          <TableRowTransaction key={transaction.id} transaction={transaction} />
         ))}
-        {orders.length === 0 && (
+        {transactions?.length === 0 && (
           <Table.BodyRow>
             <Table.BodyCell colSpan={6}>
               <h1 className="text-md text-slate12 m-2 text-center w-full">
@@ -74,7 +78,11 @@ export function OrderTable({
   );
 }
 
-function TableRow({ order }: { order: AllSwapsFromUserQuery["swaps"][0] }) {
+function TableRowOrder({
+  order,
+}: {
+  order: AllTransactionFromUserQuery["users"][0]["transactions"][0]["swaps"][0];
+}) {
   const transactionStatus = TransactionStatus.MILKMAN_CREATED;
   const txUrl = buildBlockExplorerTxUrl({
     chainId: order.chainId,
@@ -84,7 +92,7 @@ function TableRow({ order }: { order: AllSwapsFromUserQuery["swaps"][0] }) {
   const tokenInDecimals = order.tokenIn?.decimals || 18;
   const tokenInAmount = formatUnits(order.tokenAmountIn, tokenInDecimals);
   return (
-    <Table.BodyRow key={order.id}>
+    <Table.BodyRow key={order.id} classNames="bg-gray">
       <Table.BodyCell>
         <Dialog
           customWidth="w-[100vw] max-w-[550px]"
@@ -123,9 +131,92 @@ function TableRow({ order }: { order: AllSwapsFromUserQuery["swaps"][0] }) {
         </div>
       </Table.BodyCell>
       <Table.BodyCell>
-        <CancelButton status={transactionStatus} />
+        <span className="sr-only">Cancel</span>
       </Table.BodyCell>
     </Table.BodyRow>
+  );
+}
+
+function TableRowTransaction({
+  transaction,
+}: {
+  transaction: AllTransactionFromUserQuery["users"][0]["transactions"][0];
+}) {
+  const transactionStatus = TransactionStatus.MILKMAN_CREATED;
+  const txUrl = buildBlockExplorerTxUrl({
+    chainId: transaction.swaps[0].chainId,
+    txHash: transaction.id,
+  });
+
+  const equalTokensIn = transaction.swaps.every(
+    (swap) => swap.tokenIn?.id == transaction.swaps[0].tokenIn?.id,
+  );
+
+  const equalTokensOut = transaction.swaps.every(
+    (swap) => swap.tokenOut?.id == transaction.swaps[0].tokenOut?.id,
+  );
+
+  const decimalsTokenIn = transaction.swaps[0].tokenIn?.decimals || 18;
+
+  const totalAmountTokenIn = transaction.swaps.reduce(
+    (acc, swap) =>
+      acc + Number(formatUnits(swap.tokenAmountIn, decimalsTokenIn)),
+    0,
+  );
+
+  return (
+    <>
+      <Table.BodyRow key={transaction.id}>
+        <Table.BodyCell>
+          <button>
+            <ArrowDownIcon className="h-5 w-5 text-blue9 hover:text-blue10" />
+          </button>
+        </Table.BodyCell>
+        <Table.BodyCell>
+          {equalTokensIn ? (
+            <TokenInfo
+              id={transaction.swaps[0].tokenIn?.id}
+              symbol={transaction.swaps[0].tokenIn?.symbol}
+              chainId={transaction.swaps[0].chainId}
+            />
+          ) : (
+            "Multiple Tokens"
+          )}
+        </Table.BodyCell>
+        <Table.BodyCell>
+          {equalTokensIn
+            ? formatNumber(totalAmountTokenIn, 4, "decimal", "standard", 0.0001)
+            : "Multiple Tokens"}
+        </Table.BodyCell>
+        <Table.BodyCell>
+          {equalTokensOut ? (
+            <TokenInfo
+              id={transaction.swaps[0].tokenOut?.id}
+              symbol={transaction.swaps[0].tokenOut?.symbol}
+              chainId={transaction.swaps[0].chainId}
+            />
+          ) : (
+            "Multiple Tokens"
+          )}
+        </Table.BodyCell>
+        <Table.BodyCell>
+          <div className="flex items-center gap-x-1">
+            <span>{transactionStatus}</span>
+            {txUrl && (
+              <Link href={txUrl} target="_blank">
+                <ArrowTopRightIcon className="hover:text-slate11" />
+              </Link>
+            )}
+          </div>
+        </Table.BodyCell>
+        <Table.BodyCell>
+          <CancelButton status={transactionStatus} />
+        </Table.BodyCell>
+      </Table.BodyRow>
+      {transaction.swaps.map((order) => (
+        <TableRowOrder key={order.id} order={order} />
+      ))}
+    </>
   );
 }
 
@@ -138,7 +229,7 @@ function CancelButton({ status }: { status: string }) {
           "h-5 w-5",
           !isTransactionCancelled
             ? "text-tomato9 hover:text-tomato10"
-            : "text-slate10 hover:text-slate11"
+            : "text-slate10 hover:text-slate11",
         )}
       />
     </button>
@@ -148,11 +239,11 @@ function CancelButton({ status }: { status: string }) {
 function TransactionInfo({
   order,
 }: {
-  order: AllSwapsFromUserQuery["swaps"][0];
+  order: AllTransactionFromUserQuery["users"][0]["transactions"][0]["swaps"][0];
 }) {
   const priceChecker = getPriceCheckerFromAddressAndChain(
     order.chainId as 5,
-    order.priceChecker as Address
+    order.priceChecker as Address,
   );
 
   const expecetedArguments = priceChecker
@@ -195,7 +286,7 @@ function TransactionInfo({
               {expecetedArguments[index].label} :{" "}
               {expecetedArguments[index].convertOutput(
                 argument,
-                order.tokenOut?.decimals || 18
+                order.tokenOut?.decimals || 18,
               )}
             </div>
           ))}
@@ -217,7 +308,7 @@ function TokenInfo({
   chainId?: number;
 }) {
   const tokenLogoUri = cowTokenList.find(
-    (token) => token.address === id && token.chainId === chainId
+    (token) => token.address === id && token.chainId === chainId,
   )?.logoURI;
   return (
     <div className="flex items-center gap-x-1">

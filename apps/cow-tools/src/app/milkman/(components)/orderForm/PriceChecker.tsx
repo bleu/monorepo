@@ -1,6 +1,6 @@
 import { Address } from "@bleu-fi/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Pencil1Icon, PlusIcon, TrashIcon } from "@radix-ui/react-icons";
+import { PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import { FieldValues, useForm, UseFormReturn } from "react-hook-form";
 import { createPublicClient, http } from "viem";
@@ -8,17 +8,17 @@ import { goerli } from "viem/chains";
 
 import { TransactionStatus } from "#/app/milkman/utils/type";
 import Button from "#/components/Button";
-import { Checkbox } from "#/components/Checkbox";
-import { Dialog } from "#/components/Dialog";
 import { Input } from "#/components/Input";
 import { Select, SelectItem } from "#/components/Select";
 import Table from "#/components/Table";
-import { Form, FormLabel, FormMessage } from "#/components/ui/form";
+import { Form, FormMessage } from "#/components/ui/form";
 import { Label } from "#/components/ui/label";
-import { chainlinkPriceFeeAbi } from "#/lib/abis/chainlinkPriceFeed";
-import { PRICE_CHECKERS, priceCheckerInfoMapping } from "#/lib/priceCheckers";
-import { getPriceFeedChainlinkSchema } from "#/lib/schema";
-import { truncateAddress } from "#/utils/truncate";
+import {
+  priceCheckerAddressesMapping,
+  priceCheckersArgumentsMapping,
+} from "#/lib/priceCheckersMappings";
+import { generatePriceCheckerSchema } from "#/lib/schema";
+import { PRICE_CHECKERS, PriceCheckerArgument } from "#/lib/types";
 
 import { FormFooter } from "./Footer";
 
@@ -43,7 +43,10 @@ export function FormSelectPriceChecker({
 
   const schema =
     selectedPriceChecker &&
-    priceCheckerInfoMapping[selectedPriceChecker].getSchema({
+    generatePriceCheckerSchema({
+      priceChecker: selectedPriceChecker,
+      expectedArgs: priceCheckersArgumentsMapping[selectedPriceChecker],
+    })({
       tokenSellAddress,
       tokenBuyAddress,
       publicClient,
@@ -52,7 +55,6 @@ export function FormSelectPriceChecker({
   const form = useForm(
     selectedPriceChecker && {
       resolver: zodResolver(schema),
-      mode: "onSubmit",
     },
   );
 
@@ -73,7 +75,7 @@ export function FormSelectPriceChecker({
     setValue("priceChecker", selectedPriceChecker);
     setValue(
       "priceCheckerAddress",
-      priceCheckerInfoMapping[selectedPriceChecker].addresses[goerli.id],
+      priceCheckerAddressesMapping[selectedPriceChecker][goerli.id],
     );
   }, [selectedPriceChecker]);
 
@@ -124,34 +126,46 @@ function PriceCheckerInputs({
   form: UseFormReturn;
   defaultValues?: FieldValues;
 }) {
-  const priceCheckerInfo = priceCheckerInfoMapping[priceChecker];
+  const priceCheckerAguments = priceCheckersArgumentsMapping[priceChecker];
+  const nonArrayArguments = priceCheckerAguments.filter(
+    (arg) => !arg.type.includes("[]"),
+  );
+
+  const arrayArguments = priceCheckerAguments.filter((arg) =>
+    arg.type.includes("[]"),
+  );
+
   const { register } = form;
-  switch (priceChecker) {
-    case PRICE_CHECKERS.CHAINLINK:
-      return (
-        <ChainlinkPriceCheckerInput form={form} defaultValues={defaultValues} />
-      );
-    default:
-      return (
-        <>
-          {priceCheckerInfo.arguments.map((arg) => (
-            <Input
-              type={arg.inputType}
-              label={arg.label}
-              key={arg.name}
-              defaultValue={defaultValues?.[arg.name]}
-              {...register(arg.name)}
-            />
-          ))}
-        </>
-      );
-  }
+
+  return (
+    <div className="flex flex-col w-full gap-y-2">
+      {nonArrayArguments.map((arg) => (
+        <Input
+          type={arg.inputType}
+          label={arg.label}
+          key={arg.name}
+          defaultValue={defaultValues?.[arg.name]}
+          step={arg.step}
+          {...register(arg.name)}
+        />
+      ))}
+      {arrayArguments.length > 0 && (
+        <ArrayPriceCheckerInput
+          arrayArguments={arrayArguments}
+          form={form}
+          defaultValues={defaultValues}
+        />
+      )}
+    </div>
+  );
 }
 
-function ChainlinkPriceCheckerInput({
+function ArrayPriceCheckerInput({
+  arrayArguments,
   form,
   defaultValues,
 }: {
+  arrayArguments: PriceCheckerArgument[];
   form: UseFormReturn;
   defaultValues?: FieldValues;
 }) {
@@ -161,236 +175,97 @@ function ChainlinkPriceCheckerInput({
     watch,
     formState: { errors },
   } = form;
-  const [isOpen, setIsOpen] = useState(false);
-  const [indexToEdit, setIndexToEdit] = useState(-1);
+  const [lengthOfArguments, setLengthOfArguments] = useState(1);
+  const formData = watch();
 
-  useEffect(() => {
-    register("priceFeeds");
-    setValue("priceFeeds", defaultValues?.priceFeeds || []);
-    register("addressesPriceFeeds");
-    setValue("addressesPriceFeeds", defaultValues?.addressesPriceFeeds || []);
-    register("revertPriceFeeds");
-    setValue("revertPriceFeeds", defaultValues?.revertPriceFeeds || []);
-  }, []);
-
-  const priceFeeds = watch("priceFeeds") as {
-    address: Address;
-    description: string;
-    reversed: boolean;
-  }[];
+  useEffect(() => {}), [formData];
 
   return (
-    <div className="flex flex-col w-full gap-y-2">
-      <Input
-        type="number"
-        label="Allowed slippage (%)"
-        defaultValue={defaultValues?.allowedSlippageInBps}
-        {...register("allowedSlippageInBps")}
-      />
-      <FormLabel className="my-2 block text-sm text-slate12">
-        Chainlink Price Feed Path
-      </FormLabel>
+    <div className="flex flex-col w-full gap-y-2 mt-2">
       <Table color="blue" shade="darkWithBorder">
         <Table.HeaderRow>
-          <Table.HeaderCell>Price Feed Address</Table.HeaderCell>
-          <Table.HeaderCell>Description</Table.HeaderCell>
-          <Table.HeaderCell>Reversed</Table.HeaderCell>
+          {arrayArguments.map((arg) => (
+            <Table.HeaderCell key={arg.name}>{arg.label}</Table.HeaderCell>
+          ))}
           <Table.HeaderCell>
-            <Dialog
-              isOpen={isOpen}
-              customWidth="w-[100vw] max-w-[550px]"
-              setIsOpen={setIsOpen}
-              content={
-                <ChainlinkAddModal
-                  setIsOpen={setIsOpen}
-                  priceCheckerForm={form}
-                  indexToEdit={indexToEdit}
-                />
-              }
+            <Button
+              type="button"
+              className="px-5 py-2"
+              onClick={() => {
+                setLengthOfArguments(lengthOfArguments + 1);
+              }}
             >
-              <Button
-                type="button"
-                className="px-5 py-2"
-                onClick={() => {
-                  setIndexToEdit(-1);
-                }}
-              >
-                <PlusIcon className="w-5 h-5 items-end" />
-              </Button>
-            </Dialog>
+              <PlusIcon className="w-5 h-5 items-end" />
+            </Button>
           </Table.HeaderCell>
         </Table.HeaderRow>
         <Table.Body>
-          {priceFeeds &&
-            priceFeeds.map((priceFeed, index) => (
+          {[...Array(lengthOfArguments).keys()].map((index) => {
+            return (
               <Table.BodyRow key={index}>
-                <Table.BodyCell>
-                  {truncateAddress(priceFeed.address)}
-                </Table.BodyCell>
-                <Table.BodyCell>{priceFeed.description}</Table.BodyCell>
-                <Table.BodyCell>
-                  {priceFeed.reversed ? "Yes" : "No"}
-                </Table.BodyCell>
+                {arrayArguments.map((arg) => {
+                  const argName = `${arg.name}.${index}`;
+                  return (
+                    <Table.BodyCell key={arg.name}>
+                      {arg.type.includes("bool") ? (
+                        <div className="flex items-center justify-center gap-x-2">
+                          <input
+                            className="h-5 w-5"
+                            type="checkbox"
+                            key={argName}
+                            defaultChecked={defaultValues?.[argName]}
+                            {...register(argName)}
+                          />
+                        </div>
+                      ) : (
+                        <Input
+                          type={arg.inputType}
+                          key={argName}
+                          defaultValue={defaultValues?.[argName]}
+                          step={arg.step}
+                          {...register(argName)}
+                        />
+                      )}
+                      {errors[arg.name] && (
+                        <FormMessage className="mt-1 h-6 text-sm text-tomato10">
+                          <span>
+                            {/* @ts-ignore */}
+                            {errors[arg.name][index]?.message as string}
+                          </span>
+                        </FormMessage>
+                      )}
+                    </Table.BodyCell>
+                  );
+                })}
                 <Table.BodyCell>
                   <div className="flex items-center justify-center gap-x-2">
                     <button
-                      className="justify-self-center text-amber9 hover:text-amber10 "
+                      className="justify-self-center text-tomato9 hover:text-tomato10"
                       type="button"
                       onClick={() => {
-                        setIndexToEdit(index);
-                        setIsOpen(true);
+                        arrayArguments.forEach((arg) => {
+                          setValue(arg.name, [
+                            ...formData[arg.name].slice(0, index),
+                            ...formData[arg.name].slice(index + 1),
+                          ]);
+                          setLengthOfArguments(lengthOfArguments - 1);
+                        });
                       }}
                     >
-                      <Pencil1Icon className="w-5 h-5" />
-                    </button>
-                    <button
-                      className="justify-self-center text-tomato9 hover:text-tomato10 "
-                      type="button"
-                      onClick={() => {
-                        setValue("priceFeeds", [
-                          ...priceFeeds.slice(0, index),
-                          ...priceFeeds.slice(index + 1),
-                        ]);
-                      }}
-                    >
-                      <TrashIcon className="w-5 h-5" />
+                      <TrashIcon className="w-7 h-7" />
                     </button>
                   </div>
                 </Table.BodyCell>
               </Table.BodyRow>
-            ))}
+            );
+          })}
         </Table.Body>
       </Table>
-      {errors.priceFeeds && (
+      {errors[arrayArguments[0].name] && (
         <FormMessage className="h-6 text-sm text-tomato10 w-full">
-          <span>{errors.priceFeeds.message as string}</span>
+          <span>{errors[arrayArguments[0].name]?.message as string}</span>
         </FormMessage>
       )}
     </div>
-  );
-}
-
-function ChainlinkAddModal({
-  priceCheckerForm,
-  setIsOpen,
-  indexToEdit = -1,
-}: {
-  priceCheckerForm: UseFormReturn;
-  setIsOpen: (open: boolean) => void;
-  indexToEdit?: number;
-}) {
-  const {
-    setValue: setValuePriceCheckerForm,
-    getValues: getValuesPriceCheckerForm,
-  } = priceCheckerForm;
-
-  const publicClient = createPublicClient({
-    chain: goerli,
-    transport: http(),
-  });
-  const priceFeedChainlinkSchema = getPriceFeedChainlinkSchema(publicClient);
-
-  useEffect(() => {
-    if (indexToEdit !== -1) {
-      const priceFeeds = getValuesPriceCheckerForm("priceFeeds") as {
-        address: Address;
-        description: string;
-        reversed: boolean;
-      }[];
-      const priceFeed = priceFeeds[indexToEdit];
-      setValue("priceFeedAddress", priceFeed.address);
-      setValue("reversed", priceFeed.reversed);
-    }
-  }, []);
-
-  const newPriceFeedForm = useForm<typeof priceFeedChainlinkSchema._type>({
-    resolver: zodResolver(priceFeedChainlinkSchema),
-  });
-  const { register, watch, setValue } = newPriceFeedForm;
-  const formData = watch();
-
-  function addPriceFeed(data: FieldValues, description: string) {
-    setValuePriceCheckerForm("priceFeeds", [
-      ...getValuesPriceCheckerForm("priceFeeds"),
-      {
-        address: data.priceFeedAddress,
-        description,
-        reversed: data.reversed,
-      },
-    ]);
-    setValuePriceCheckerForm("addressesPriceFeeds", [
-      ...getValuesPriceCheckerForm("addressesPriceFeeds"),
-      data.priceFeedAddress,
-    ]);
-    setValuePriceCheckerForm("revertPriceFeeds", [
-      ...getValuesPriceCheckerForm("revertPriceFeeds"),
-      data.reversed,
-    ]);
-  }
-  function editPriceFeed(
-    data: FieldValues,
-    description: string,
-    index: number,
-  ) {
-    const priceFeeds = getValuesPriceCheckerForm("priceFeeds") as {
-      address: Address;
-      description: string;
-      reversed: boolean;
-    }[];
-    priceFeeds[index] = {
-      address: data.priceFeedAddress,
-      description,
-      reversed: data.reversed,
-    };
-    setValuePriceCheckerForm("priceFeeds", priceFeeds);
-    setValuePriceCheckerForm(
-      "addressesPriceFeeds",
-      priceFeeds.map((priceFeed) => priceFeed.address),
-    );
-    setValuePriceCheckerForm(
-      "revertPriceFeeds",
-      priceFeeds.map((priceFeed) => priceFeed.reversed),
-    );
-  }
-
-  const onSubmit = async (data: FieldValues) => {
-    const description = (await publicClient.readContract({
-      address: data.priceFeedAddress as Address,
-      abi: chainlinkPriceFeeAbi,
-      functionName: "description",
-      args: [],
-    })) as string;
-    if (indexToEdit === -1) {
-      addPriceFeed(data, description);
-    } else {
-      editPriceFeed(data, description, indexToEdit);
-    }
-    setIsOpen(false);
-  };
-
-  return (
-    <Form
-      {...newPriceFeedForm}
-      onSubmit={onSubmit}
-      className="flex flex-col w-full text-white gap-y-2"
-    >
-      <FormLabel className="mb-2 block text-md text-slate12">
-        New Chainlink Price Feed
-      </FormLabel>
-      <Input
-        label="Price Feed Address"
-        placeholder="0x..."
-        {...register("priceFeedAddress")}
-      />
-      <Checkbox
-        id="reversed"
-        checked={formData.reversed}
-        label="Reversed"
-        onChange={() => {
-          setValue("reversed", !formData.reversed);
-        }}
-      />
-      <Button type="submit">Add price feed</Button>
-    </Form>
   );
 }

@@ -6,8 +6,9 @@ import { FieldValues } from "react-hook-form";
 import { TransactionStatus } from "#/app/milkman/utils/type";
 import { Button } from "#/components";
 import { useRawTxData } from "#/hooks/useRawTxData";
-import { PRICE_CHECKERS, priceCheckerInfoMapping } from "#/lib/priceCheckers";
+import { priceCheckersArgumentsMapping } from "#/lib/priceCheckersMappings";
 import { MILKMAN_ADDRESS, TRANSACTION_TYPES } from "#/lib/transactionFactory";
+import { PRICE_CHECKERS } from "#/lib/types";
 import { truncateAddress } from "#/utils/truncate";
 
 import { FormFooter } from "./Footer";
@@ -28,12 +29,12 @@ export function OrderSummary({
     { label: "Price checker", key: "priceChecker" },
     { label: "Token to buy minimum amount", key: "tokenBuyMinimumAmount" },
     { label: "Valid from", key: "validFrom" },
-    ...priceCheckerInfoMapping[
-      data.priceChecker as PRICE_CHECKERS
-    ].arguments.map((arg) => ({
-      label: arg.label,
-      key: arg.name,
-    })),
+    ...priceCheckersArgumentsMapping[data.priceChecker as PRICE_CHECKERS].map(
+      (arg) => ({
+        label: arg.label,
+        key: arg.name,
+      }),
+    ),
   ];
 
   const router = useRouter();
@@ -44,11 +45,9 @@ export function OrderSummary({
     const sellAmountBigInt = BigInt(
       Number(data.tokenSellAmount) * 10 ** data.tokenSell.decimals,
     );
-    const priceCheckersArgs = priceCheckerInfoMapping[
+    const priceCheckersArgs = priceCheckersArgumentsMapping[
       data.priceChecker as PRICE_CHECKERS
-    ].arguments.map((arg) =>
-      arg.convertInput(data[arg.name], data.tokenBuy.decimals),
-    );
+    ].map((arg) => arg.convertInput(data[arg.name], data.tokenBuy.decimals));
 
     await sendTransactions([
       {

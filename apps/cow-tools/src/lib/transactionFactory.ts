@@ -6,12 +6,9 @@ import { goerli } from "viem/chains";
 
 import { milkmanAbi } from "#/lib/abis/milkman";
 
-import {
-  argType,
-  encodePriceCheckerData,
-  PRICE_CHECKERS,
-  priceCheckerInfoMapping,
-} from "./priceCheckers";
+import { encodePriceCheckerData } from "./encode";
+import { priceCheckerAddressesMapping } from "./priceCheckersMappings";
+import { argType, PRICE_CHECKERS } from "./types";
 
 // Milkman's address is the same for all chains supported chains (Gnosis, etc...)
 export const MILKMAN_ADDRESS = "0x11C76AD590ABDFFCD980afEC9ad951B160F02797";
@@ -72,8 +69,8 @@ class MilkmanOrderRawTx implements ITransaction<MilkmanOrderArgs> {
     priceChecker,
     args,
   }: MilkmanOrderArgs): BaseTransaction {
-    const priceCheckerInfo = priceCheckerInfoMapping[priceChecker];
-    const priceCheckerAddress = priceCheckerInfo.addresses[goerli.id];
+    const priceCheckerAddress =
+      priceCheckerAddressesMapping[priceChecker][goerli.id];
     const priceCheckerData = encodePriceCheckerData(priceChecker, args);
     return {
       to: MILKMAN_ADDRESS,

@@ -18,11 +18,12 @@ import { formatUnits } from "viem";
 
 import { Dialog } from "#/components/Dialog";
 import Table from "#/components/Table";
-import { AllSwapsQuery } from "#/lib/gql/generated";
 import {
   decodePriceCheckerData,
-  getPriceCheckerInfoFromAddressAndChain,
-} from "#/lib/priceCheckers";
+  getPriceCheckerFromAddressAndChain,
+} from "#/lib/decode";
+import { AllSwapsQuery } from "#/lib/gql/generated";
+import { priceCheckersArgumentsMapping } from "#/lib/priceCheckersMappings";
 import { cowTokenList } from "#/utils/cowTokenList";
 import { truncateAddress } from "#/utils/truncate";
 
@@ -145,18 +146,17 @@ function CancelButton({ status }: { status: string }) {
 }
 
 function TransactionInfo({ order }: { order: AllSwapsQuery["swaps"][0] }) {
-  const priceCheckerInfo = getPriceCheckerInfoFromAddressAndChain(
+  const priceChecker = getPriceCheckerFromAddressAndChain(
     order.chainId as 5,
     order.priceChecker as Address,
   );
 
-  const expecetedArguments = priceCheckerInfo?.arguments;
+  const expecetedArguments = priceChecker
+    ? priceCheckersArgumentsMapping[priceChecker]
+    : [];
 
-  const decodedArgs = priceCheckerInfo
-    ? decodePriceCheckerData(
-        priceCheckerInfo,
-        order.priceCheckerData as Address,
-      )
+  const decodedArgs = priceChecker
+    ? decodePriceCheckerData(priceChecker, order.priceCheckerData as Address)
     : [];
 
   const priceCheckerExplorerUrl = buildBlockExplorerAddressURL({
@@ -176,7 +176,7 @@ function TransactionInfo({ order }: { order: AllSwapsQuery["swaps"][0] }) {
       <div className="flex flex-col">
         <div className="flex items-center gap-x-1">
           <span>
-            Price Checker: {priceCheckerInfo?.name || "Not found"}{" "}
+            Price Checker: {priceChecker || "Not found"}{" "}
             {`(${truncateAddress(order.priceChecker as Address)})`}
           </span>
           {priceCheckerExplorerUrl && (

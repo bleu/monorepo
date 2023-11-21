@@ -1,4 +1,5 @@
 import { Address } from "@bleu-fi/utils";
+import { dateToEpoch } from "@bleu-fi/utils/date";
 import { encodeAbiParameters } from "viem";
 
 import {
@@ -6,7 +7,6 @@ import {
   priceCheckersArgumentsMapping,
 } from "./priceCheckersMappings";
 import { argType, PRICE_CHECKERS, PriceCheckerArgument } from "./types";
-import { dateToEpoch } from "@bleu-fi/utils/date";
 
 export function encodePriceCheckerDataWithValidFromDecorator(
   priceCheckerAddress: Address,

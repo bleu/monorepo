@@ -93,10 +93,10 @@ export async function GET(request: NextRequest) {
     poolId,
     startAt,
     endAt,
-    sort = "apr",
-    order = "desc",
-    limit = Infinity,
-    offset = 0,
+    // sort = "apr",
+    // order = "desc",
+    // limit = Infinity,
+    // offset = 0,
   } = parsedParams.data;
 
   let responseData;

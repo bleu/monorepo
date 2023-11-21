@@ -6,8 +6,14 @@ import { goerli } from "viem/chains";
 
 import { milkmanAbi } from "#/lib/abis/milkman";
 
-import { encodePriceCheckerData } from "./encode";
-import { priceCheckerAddressesMapping } from "./priceCheckersMappings";
+import {
+  encodePriceCheckerData,
+  encodePriceCheckerDataWithValidFromDecorator,
+} from "./encode";
+import {
+  priceCheckerAddressesMapping,
+  validFromDecorator,
+} from "./priceCheckersMappings";
 import { argType, PRICE_CHECKERS } from "./types";
 
 // Milkman's address is the same for all chains supported chains (Gnosis, etc...)
@@ -35,6 +41,8 @@ export interface MilkmanOrderArgs extends BaseArgs {
   toAddress: Address;
   amount: bigint;
   priceChecker: PRICE_CHECKERS;
+  isValidFromNeeded: boolean;
+  validFrom: string;
   args: argType[];
 }
 
@@ -67,11 +75,15 @@ class MilkmanOrderRawTx implements ITransaction<MilkmanOrderArgs> {
     toAddress,
     amount,
     priceChecker,
+    isValidFromNeeded,
+    validFrom,
     args,
   }: MilkmanOrderArgs): BaseTransaction {
-    const priceCheckerAddress =
-      priceCheckerAddressesMapping[priceChecker][goerli.id];
+    const priceCheckerAddress = priceCheckerAddressesMapping[priceChecker][
+      goerli.id
+    ] as Address;
     const priceCheckerData = encodePriceCheckerData(priceChecker, args);
+
     return {
       to: MILKMAN_ADDRESS,
       value: "0",
@@ -83,8 +95,16 @@ class MilkmanOrderRawTx implements ITransaction<MilkmanOrderArgs> {
           tokenAddressToSell,
           tokenAddressToBuy,
           toAddress,
-          priceCheckerAddress,
-          priceCheckerData,
+          isValidFromNeeded
+            ? validFromDecorator[goerli.id]
+            : priceCheckerAddress,
+          isValidFromNeeded
+            ? encodePriceCheckerDataWithValidFromDecorator(
+                priceCheckerAddress,
+                priceCheckerData,
+                validFrom,
+              )
+            : priceCheckerData,
         ],
       }),
     };

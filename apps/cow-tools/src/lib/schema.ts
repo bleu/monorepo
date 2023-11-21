@@ -33,6 +33,18 @@ export const orderOverviewSchema = z
   })
   .refine(
     (data) => {
+      if (!data.isValidFromNeeded) {
+        return true;
+      }
+      return data.validFrom;
+    },
+    {
+      path: ["validFrom"],
+      message: "Valid from is needed",
+    },
+  )
+  .refine(
+    (data) => {
       return data.tokenSell.address != data.tokenBuy.address;
     },
     {
@@ -97,10 +109,12 @@ export const generatePriceCheckerSchema = ({
   return ({
     tokenSellAddress,
     tokenBuyAddress,
+    tokenBuyDecimals,
     publicClient,
   }: {
     tokenSellAddress: Address;
     tokenBuyAddress: Address;
+    tokenBuyDecimals: number;
     publicClient: PublicClient;
   }) => {
     // @ts-ignore
@@ -109,7 +123,7 @@ export const generatePriceCheckerSchema = ({
       async (data) => {
         try {
           const argsToEncode = expectedArgs.map((arg) => {
-            return arg.convertInput(data[arg.name]);
+            return arg.convertInput(data[arg.name], tokenBuyDecimals);
           });
           const priceCheckerData = encodePriceCheckerData(
             priceChecker,

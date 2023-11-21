@@ -27,11 +27,13 @@ export function FormSelectPriceChecker({
   defaultValues,
   tokenSellAddress,
   tokenBuyAddress,
+  tokenBuyDecimals,
 }: {
   onSubmit: (data: FieldValues) => void;
   defaultValues?: FieldValues;
   tokenSellAddress: Address;
   tokenBuyAddress: Address;
+  tokenBuyDecimals: number;
 }) {
   const [selectedPriceChecker, setSelectedPriceChecker] =
     useState<PRICE_CHECKERS>(defaultValues?.priceChecker);
@@ -49,6 +51,7 @@ export function FormSelectPriceChecker({
     })({
       tokenSellAddress,
       tokenBuyAddress,
+      tokenBuyDecimals,
       publicClient,
     });
 
@@ -177,8 +180,6 @@ function ArrayPriceCheckerInput({
   } = form;
   const [lengthOfArguments, setLengthOfArguments] = useState(1);
   const formData = watch();
-
-  useEffect(() => {}), [formData];
 
   return (
     <div className="flex flex-col w-full gap-y-2 mt-2">

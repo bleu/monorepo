@@ -40,6 +40,9 @@ export function FormOrderOverview({
     register("tokenBuy");
     register("tokenSell");
     register("validFrom");
+    register("isValidFromNeeded");
+    setValue("validFrom", defaultValues?.validFrom);
+    setValue("isValidFromNeeded", defaultValues?.isValidFromNeeded);
   }, []);
 
   const { assets, loaded } = useSafeBalances();

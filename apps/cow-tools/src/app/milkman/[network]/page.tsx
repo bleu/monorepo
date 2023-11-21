@@ -1,8 +1,7 @@
 import { Network } from "@bleu-fi/utils";
 import { gql } from "graphql-tag";
-import * as React from "react";
 
-import { sdk } from "#/gql/sdk";
+import { sdk } from "#/lib/gql/sdk";
 
 import { HomePageWrapper } from "./HomePageWrapper";
 
@@ -14,6 +13,7 @@ gql(`
       transactionHash
       tokenAmountIn
       priceChecker
+      priceCheckerData
       user {
         id
       }

@@ -1,75 +1,113 @@
 /* eslint-disable no-console */
 
-import { formatDateToMMDDYYYY } from "@bleu-fi/utils/date";
-import * as Sentry from "@sentry/nextjs";
-import { and, between, eq } from "drizzle-orm";
+import { and, between, eq, gt, sql } from "drizzle-orm";
 
 import { db } from "#/db";
-import { pools, poolSnapshots } from "#/db/schema";
-import { fetcher } from "#/utils/fetcher";
-
-import { BASE_URL } from "../../(utils)/types";
-import { PoolStatsData, PoolStatsResults } from "../route";
+import {
+  pools,
+  poolSnapshots,
+  poolTokens,
+  swapFeeApr,
+  tokens,
+} from "#/db/schema";
 
 export async function fetchDataForDateRange(
   startDate: Date,
   endDate: Date,
   maxTvl: number = 10_000_000_000,
   minTvl: number = 10_000,
-): Promise<{ [key: string]: PoolStatsData[] }> {
-  const existingPoolForDate = await db
+) {
+  const poolAprForDate = await db
     .select({
-      id: pools.id,
-      poolExternalId: pools.externalId,
-      symbol: pools.symbol,
-      poolType: pools.poolType,
-      network: pools.networkSlug,
+      poolExternalId: swapFeeApr.poolExternalId,
+      avgApr: sql<number>`cast(avg(${swapFeeApr.value}) as decimal)`,
+      avgVolume: sql<number>`cast(avg(${poolSnapshots.swapVolume}) as decimal)`,
+      avgLiquidity: sql<number>`cast(avg(${poolSnapshots.liquidity}) as decimal)`,
     })
-    .from(pools)
-    .fullJoin(poolSnapshots, eq(poolSnapshots.poolExternalId, pools.externalId))
+    .from(swapFeeApr)
+    .fullJoin(
+      poolSnapshots,
+      and(
+        eq(poolSnapshots.poolExternalId, swapFeeApr.poolExternalId),
+        eq(poolSnapshots.timestamp, swapFeeApr.timestamp),
+      ),
+    )
     .where(
       and(
-        eq(poolSnapshots.timestamp, endDate),
+        gt(swapFeeApr.value, String(0)),
+        between(swapFeeApr.timestamp, startDate, endDate),
         between(poolSnapshots.liquidity, String(minTvl), String(maxTvl)),
       ),
-    );
+    )
+    .groupBy(swapFeeApr.poolExternalId);
 
-  console.log(`fetched ${existingPoolForDate.length} pools`);
-  const perDayData: { [key: string]: PoolStatsData[] } = {};
+  const poolData = await db
+    .select({
+      poolExternalId: pools.externalId,
+      netwok: pools.networkSlug,
+      type: pools.poolType,
+      symbol: pools.symbol,
+    })
+    .from(pools)
+    .fullJoin(swapFeeApr, and(eq(swapFeeApr.poolExternalId, pools.externalId)))
+    .where(and(between(swapFeeApr.timestamp, startDate, endDate)));
 
-  await Promise.all(
-    existingPoolForDate.map(async (pool) => {
-      let gaugesData;
-      try {
-        gaugesData = await fetcher<PoolStatsResults>(
-          `${BASE_URL}/apr/api?startAt=${formatDateToMMDDYYYY(
-            startDate,
-          )}&endAt=${formatDateToMMDDYYYY(endDate)}&poolId=${
-            pool.poolExternalId
-          }`,
-        );
-      } catch (error) {
-        console.log(error);
-        console.log(
-          `${BASE_URL}/apr/api?startAt=${formatDateToMMDDYYYY(
-            startDate,
-          )}&endAt=${formatDateToMMDDYYYY(endDate)}&poolId=${
-            pool.poolExternalId
-          }`,
-        );
-        Sentry.captureException(error);
-      }
+  const poolsTokens = await db
+    .select({
+      poolExternalId: poolTokens.poolExternalId,
+      address: poolTokens.tokenAddress,
+      weight: poolTokens.weight,
+      symbol: tokens.symbol,
+    })
+    .from(poolTokens)
+    .leftJoin(tokens, eq(tokens.address, poolTokens.tokenAddress));
 
-      if (gaugesData) {
-        Object.entries(gaugesData.perDay).forEach(([dayStr, poolData]) => {
-          if (perDayData[dayStr]) {
-            perDayData[dayStr].push(poolData[0]);
-          } else {
-            perDayData[dayStr] = [poolData[0]];
-          }
-        });
-      }
-    }),
-  );
-  return perDayData;
+  const returnData = poolAprForDate.map((pool) => {
+    const tokensForPool = poolsTokens
+      .filter((poolToken) => poolToken.poolExternalId === pool.poolExternalId)
+      .map((poolToken) => ({
+        address: poolToken.address,
+        symbol: poolToken.symbol,
+        weight: Number(poolToken.weight),
+      }));
+
+    return {
+      poolId: pool.poolExternalId,
+      apr: {
+        total: Number(pool.avgApr),
+        breakdown: {
+          veBAL: 0,
+          swapFee: Number(pool.avgApr),
+        },
+        tokens: {
+          total: 0,
+          breakdown: [],
+        },
+        rewards: {
+          total: 0,
+          breakdown: [],
+        },
+      },
+      balPriceUSD: 0,
+      tvl: Number(pool.avgLiquidity),
+      tokens: tokensForPool,
+      volume: Number(pool.avgVolume),
+      votingShare: 0,
+      symbol:
+        poolData.find((p) => p.poolExternalId === pool.poolExternalId)
+          ?.symbol || "",
+      network:
+        poolData.find((p) => p.poolExternalId === pool.poolExternalId)
+          ?.netwok || "",
+      type:
+        poolData.find((p) => p.poolExternalId === pool.poolExternalId)?.type ||
+        "",
+    };
+  });
+
+  return {
+    average: {
+      poolAverage: returnData,
+    },
+  };
 }

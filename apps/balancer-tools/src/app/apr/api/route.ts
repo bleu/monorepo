@@ -2,11 +2,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { PoolTypeEnum } from "../(utils)/types";
-import { computeAverages } from "./(utils)/computeAverages";
 import { fetchDataForPoolIdDateRange } from "./(utils)/fetchDataForPoolIdDateRange";
 import { fetchDataForDateRange } from "./(utils)/fetchForDateRange";
-import { filterPoolStats } from "./(utils)/filter";
-import { limitPoolStats, Order, sortPoolStats } from "./(utils)/sort";
 import { QueryParamsSchema } from "./(utils)/validate";
 
 export const maxDuration = 300;
@@ -64,7 +61,6 @@ export interface PoolStatsData extends PoolStats {
 }
 
 export interface PoolStatsResults {
-  perDay: { [key: string]: PoolStatsData[] };
   average: { poolAverage: PoolStatsData[] };
 }
 
@@ -118,22 +114,7 @@ export async function GET(request: NextRequest) {
       { status: 400 },
     );
   }
-
-  const filteredResponseData = filterPoolStats(responseData, searchParams);
-
-  const sortedResponseData = sortPoolStats(
-    {
-      perDay: filteredResponseData,
-      average: computeAverages(filteredResponseData),
-    },
-    sort as keyof PoolStatsData | undefined,
-    order as Order | undefined,
-  );
-
-  const limitedRespondeData = limitPoolStats(sortedResponseData, offset, limit);
-
   return NextResponse.json({
-    perDay: limitedRespondeData,
-    average: limitedRespondeData.average,
+    ...responseData,
   });
 }

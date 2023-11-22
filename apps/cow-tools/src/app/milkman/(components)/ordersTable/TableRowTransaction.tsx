@@ -165,6 +165,7 @@ export function TableRowTransaction({
               TransactionStatus.CANCELED,
               TransactionStatus.EXECUTED_AND_CANCELED,
             ].includes(transactionStatus)}
+            transaction={transaction}
           />
         </Table.BodyCell>
       </Table.BodyRow>

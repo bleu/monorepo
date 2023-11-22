@@ -22,6 +22,7 @@ export const MILKMAN_ADDRESS = "0x11C76AD590ABDFFCD980afEC9ad951B160F02797";
 export enum TRANSACTION_TYPES {
   ERC20_APPROVE = "ERC20_APPROVE",
   MILKMAN_ORDER = "MILKMAN_ORDER",
+  MILKMAN_CANCEL = "MILKMAN_CANCEL",
 }
 export interface BaseArgs {
   type: TRANSACTION_TYPES;
@@ -44,6 +45,17 @@ export interface MilkmanOrderArgs extends BaseArgs {
   isValidFromNeeded: boolean;
   validFrom: string;
   args: argType[];
+}
+
+export interface MilkmanCancelArgs extends BaseArgs {
+  type: TRANSACTION_TYPES.MILKMAN_CANCEL;
+  contractAddress: Address;
+  tokenAddressToSell: Address;
+  tokenAddressToBuy: Address;
+  toAddress: Address;
+  amount: bigint;
+  priceChecker: Address;
+  priceCheckerData: `0x${string}`;
 }
 
 interface ITransaction<T> {
@@ -111,9 +123,39 @@ class MilkmanOrderRawTx implements ITransaction<MilkmanOrderArgs> {
   }
 }
 
+class MilkmanCancelRawTx implements ITransaction<MilkmanCancelArgs> {
+  createRawTx({
+    contractAddress,
+    tokenAddressToSell,
+    tokenAddressToBuy,
+    toAddress,
+    amount,
+    priceChecker,
+    priceCheckerData,
+  }: MilkmanCancelArgs): BaseTransaction {
+    return {
+      to: contractAddress,
+      value: "0",
+      data: encodeFunctionData({
+        abi: milkmanAbi,
+        functionName: "cancelSwap",
+        args: [
+          amount,
+          tokenAddressToSell,
+          tokenAddressToBuy,
+          toAddress,
+          priceChecker,
+          priceCheckerData,
+        ],
+      }),
+    };
+  }
+}
+
 export interface TransactionBindings {
   [TRANSACTION_TYPES.ERC20_APPROVE]: ERC20ApproveArgs;
   [TRANSACTION_TYPES.MILKMAN_ORDER]: MilkmanOrderArgs;
+  [TRANSACTION_TYPES.MILKMAN_CANCEL]: MilkmanCancelArgs;
 }
 
 export type AllTransactionArgs = TransactionBindings[keyof TransactionBindings];
@@ -125,6 +167,7 @@ const TRANSACTION_CREATORS: {
 } = {
   [TRANSACTION_TYPES.ERC20_APPROVE]: ERC20ApproveRawTx,
   [TRANSACTION_TYPES.MILKMAN_ORDER]: MilkmanOrderRawTx,
+  [TRANSACTION_TYPES.MILKMAN_CANCEL]: MilkmanCancelRawTx,
 };
 
 export class TransactionFactory {

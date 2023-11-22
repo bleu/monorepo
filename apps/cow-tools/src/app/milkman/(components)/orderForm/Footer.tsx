@@ -1,4 +1,4 @@
-import { TransactionProgressBar } from "#/app/milkman/(components)/TransactionProgressBar";
+import { TransactionProgressBar } from "#/app/milkman/(components)/orderForm/TransactionProgressBar";
 import { TransactionStatus } from "#/app/milkman/utils/type";
 import { Button } from "#/components";
 
@@ -17,7 +17,7 @@ export function FormFooter({
       {!isDraftResume && (
         <TransactionProgressBar
           currentStageName={transactionStatus}
-          totalSteps={2}
+          totalSteps={3}
         />
       )}
       <div className="flex justify-center gap-x-5">

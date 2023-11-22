@@ -3,7 +3,7 @@
 import cn from "clsx";
 import { PropsWithChildren } from "react";
 
-import { TransactionStatus } from "../utils/type";
+import { TransactionStatus } from "../../utils/type";
 
 type Stage = {
   name: TransactionStatus;
@@ -47,12 +47,18 @@ export const stages: Stage[] = [
   createStage(
     TransactionStatus.ORDER_STRATEGY,
     2,
-    TransactionStatus.ORDER_SUMMARY,
+    TransactionStatus.ORDER_TWAP,
     TransactionStatus.ORDER_OVERVIEW,
   ),
   createStage(
-    TransactionStatus.ORDER_SUMMARY,
+    TransactionStatus.ORDER_TWAP,
     3,
+    TransactionStatus.ORDER_SUMMARY,
+    TransactionStatus.ORDER_STRATEGY,
+  ),
+  createStage(
+    TransactionStatus.ORDER_SUMMARY,
+    4,
     TransactionStatus.ORDER_PLACED,
     TransactionStatus.ORDER_STRATEGY,
   ),

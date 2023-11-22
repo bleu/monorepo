@@ -53,6 +53,12 @@ export const orderOverviewSchema = z
     },
   );
 
+export const orderTwapSchema = z.object({
+  isTwapNeeded: z.coerce.boolean(),
+  delay: z.coerce.string().optional(),
+  numberOfOrders: z.coerce.number().positive().optional(),
+});
+
 const basicPriceCheckerSchema = z.object({
   priceChecker: z.coerce.string(),
   priceCheckerAddress: basicAddressSchema,

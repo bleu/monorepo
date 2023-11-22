@@ -10,7 +10,7 @@ import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { getNetwork } from "#/contexts/networks";
 
-import { OrderTable } from "../(components)/OrdersTable";
+import { OrderTable } from "../(components)/ordersTable";
 
 export function HomePageWrapper({
   params,

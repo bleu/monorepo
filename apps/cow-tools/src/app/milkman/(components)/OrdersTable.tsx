@@ -35,6 +35,7 @@ import { priceCheckersArgumentsMapping } from "#/lib/priceCheckersMappings";
 import { cowTokenList } from "#/utils/cowTokenList";
 import { truncateAddress } from "#/utils/truncate";
 
+import { buildAccountCowExplorerUrl, chainId } from "../utils/cowExplorer";
 import { SwapStatus, TransactionStatus } from "../utils/type";
 
 export function OrderTable() {
@@ -250,10 +251,15 @@ function TableRowOrder({
   order: AllTransactionFromUserQuery["users"][0]["transactions"][0]["swaps"][0];
   orderStatus: SwapStatus;
 }) {
-  const txUrl = buildBlockExplorerTxUrl({
-    chainId: order.chainId,
-    txHash: order.transactionHash,
+  const cowExplorerUrl = buildAccountCowExplorerUrl({
+    chainId: order.chainId as chainId,
+    address: order.orderContract as Address,
   });
+
+  const contractExplorerUrl = buildBlockExplorerAddressURL({
+    chainId: order.chainId,
+    address: order.orderContract as Address,
+  })?.url;
 
   const tokenInDecimals = order.tokenIn?.decimals || 18;
   const tokenInAmount = formatUnits(order.tokenAmountIn, tokenInDecimals);
@@ -289,8 +295,16 @@ function TableRowOrder({
       <Table.BodyCell>
         <div className="flex items-center gap-x-1">
           <span>{orderStatus}</span>
-          {txUrl && (
-            <Link href={txUrl} target="_blank">
+          {cowExplorerUrl && contractExplorerUrl && (
+            <Link
+              href={
+                orderStatus == SwapStatus.MILKMAN_CREATED ||
+                orderStatus == SwapStatus.CANCELED
+                  ? contractExplorerUrl
+                  : cowExplorerUrl
+              }
+              target="_blank"
+            >
               <ArrowTopRightIcon className="hover:text-slate11" />
             </Link>
           )}

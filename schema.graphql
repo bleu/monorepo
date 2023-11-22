@@ -15,6 +15,7 @@ type Swap @entity {
   priceCheckerData: Bytes!
   orderContract: Bytes!
   transactionHash: Bytes!
+  to: Bytes!
 }
 
 type TransactionHash @entity {

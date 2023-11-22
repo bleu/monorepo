@@ -96,7 +96,7 @@ function TableRowTransaction({
     }
 
     const anyOrderWasExecuted = cowOrders.some(
-      (order) => order.status == "fulfilled"
+      (order) => order.status == "fulfilled",
     );
 
     if (anyOrderWasExecuted) {
@@ -125,7 +125,7 @@ function TableRowTransaction({
     if (
       swapStatus.every(
         (status) =>
-          status === SwapStatus.CANCELED || status === SwapStatus.EXECUTED
+          status === SwapStatus.CANCELED || status === SwapStatus.EXECUTED,
       )
     ) {
       return TransactionStatus.EXECUTED_AND_CANCELED;
@@ -135,7 +135,7 @@ function TableRowTransaction({
     }
 
     const allOrdersPlaced = swapStatus.every(
-      (status) => status === SwapStatus.ORDER_PLACED
+      (status) => status === SwapStatus.ORDER_PLACED,
     );
 
     if (allOrdersPlaced) {
@@ -146,7 +146,7 @@ function TableRowTransaction({
   }
 
   const swapStatus = transaction.swaps.map((swap, i) =>
-    getSwapStatus(hasToken?.[i], cowOrders?.[i])
+    getSwapStatus(hasToken?.[i], cowOrders?.[i]),
   );
   const transactionStatus = getTransactionStatus(swapStatus);
   const txUrl = buildBlockExplorerTxUrl({
@@ -157,11 +157,11 @@ function TableRowTransaction({
   const [showOrdersRows, setShowOrdersRows] = useState(false);
 
   const equalTokensIn = transaction.swaps.every(
-    (swap) => swap.tokenIn?.id == transaction.swaps[0].tokenIn?.id
+    (swap) => swap.tokenIn?.id == transaction.swaps[0].tokenIn?.id,
   );
 
   const equalTokensOut = transaction.swaps.every(
-    (swap) => swap.tokenOut?.id == transaction.swaps[0].tokenOut?.id
+    (swap) => swap.tokenOut?.id == transaction.swaps[0].tokenOut?.id,
   );
 
   const decimalsTokenIn = transaction.swaps[0].tokenIn?.decimals || 18;
@@ -169,7 +169,7 @@ function TableRowTransaction({
   const totalAmountTokenIn = transaction.swaps.reduce(
     (acc, swap) =>
       acc + Number(formatUnits(swap.tokenAmountIn, decimalsTokenIn)),
-    0
+    0,
   );
 
   return (
@@ -309,7 +309,7 @@ function CancelButton({ disabled }: { disabled: boolean }) {
       <TrashIcon
         className={cn(
           "h-5 w-5",
-          disabled ? "text-slate10" : "text-tomato9 hover:text-tomato10"
+          disabled ? "text-slate10" : "text-tomato9 hover:text-tomato10",
         )}
       />
     </button>
@@ -323,7 +323,7 @@ function TransactionInfo({
 }) {
   const priceChecker = getPriceCheckerFromAddressAndChain(
     order.chainId as 5,
-    order.priceChecker as Address
+    order.priceChecker as Address,
   );
 
   const expecetedArguments = priceChecker
@@ -366,7 +366,7 @@ function TransactionInfo({
               {expecetedArguments[index].label} :{" "}
               {expecetedArguments[index].convertOutput(
                 argument,
-                order.tokenOut?.decimals || 18
+                order.tokenOut?.decimals || 18,
               )}
             </div>
           ))}
@@ -388,7 +388,7 @@ function TokenInfo({
   chainId?: number;
 }) {
   const tokenLogoUri = cowTokenList.find(
-    (token) => token.address === id && token.chainId === chainId
+    (token) => token.address === id && token.chainId === chainId,
   )?.logoURI;
   return (
     <div className="flex items-center gap-x-1">

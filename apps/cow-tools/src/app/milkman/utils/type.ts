@@ -2,11 +2,17 @@ export enum TransactionStatus {
   ORDER_OVERVIEW = "Order overview",
   ORDER_STRATEGY = "Order strategy",
   ORDER_SUMMARY = "Order summary",
-  TO_BE_EXECUTED = "To be executed",
   MILKMAN_CREATED = "Milkman created",
   ORDER_PLACED = "Order placed",
-  EXECUTING = "Executing",
+  PARTIALLY_EXECUTED = "Partially executed",
+  CANCELED = "Canceled",
+  EXECUTED = "Fully executed",
+  EXECUTED_AND_CANCELED = "Partially executed and canceled",
+}
+
+export enum SwapStatus {
+  MILKMAN_CREATED = "Milkman created",
+  ORDER_PLACED = "Order placed",
   EXECUTED = "Executed",
-  CANCELATION_TO_BE_EXECUTED = "Cancelation to be executed",
   CANCELED = "Canceled",
 }

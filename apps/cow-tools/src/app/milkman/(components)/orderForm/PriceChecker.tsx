@@ -207,7 +207,7 @@ function ArrayPriceCheckerInput({
                 {arrayArguments.map((arg) => {
                   const argName = `${arg.name}.${index}`;
                   return (
-                    <Table.BodyCell key={arg.name}>
+                    <Table.BodyCell classNames="align-top" key={arg.name}>
                       {arg.type.includes("bool") ? (
                         <div className="flex items-center justify-center gap-x-2">
                           <input

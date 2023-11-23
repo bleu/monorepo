@@ -8,36 +8,43 @@ import {
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import {
   ArrowTopRightIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
   InfoCircledIcon,
   TrashIcon,
 } from "@radix-ui/react-icons";
 import cn from "clsx";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { formatUnits } from "viem";
 
 import { Dialog } from "#/components/Dialog";
+import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
+import {
+  ICowOrder,
+  IUserMilkmanTransaction,
+  useUserMilkmanTransactions,
+} from "#/hooks/useUserMilkmanTransactions";
 import {
   decodePriceCheckerData,
   getPriceCheckerFromAddressAndChain,
 } from "#/lib/decode";
-import { AllSwapsQuery } from "#/lib/gql/generated";
+import { AllTransactionFromUserQuery } from "#/lib/gql/generated";
 import { priceCheckersArgumentsMapping } from "#/lib/priceCheckersMappings";
 import { cowTokenList } from "#/utils/cowTokenList";
 import { truncateAddress } from "#/utils/truncate";
 
-export enum TransactionStatus {
-  TO_BE_EXECUTED = "To be executed",
-  MILKMAN_CREATED = "Milkman created",
-  ORDER_PLACED = "Order placed",
-  EXECUTING = "Executing",
-  EXECUTED = "Executed",
-  CANCELATION_TO_BE_EXECUTED = "Cancelation to be executed",
-  CANCELED = "Canceled",
-}
+import { buildAccountCowExplorerUrl, chainId } from "../utils/cowExplorer";
+import { SwapStatus, TransactionStatus } from "../utils/type";
 
-export function OrderTable({ orders }: { orders: AllSwapsQuery["swaps"] }) {
+export function OrderTable() {
+  const { transactions, loaded } = useUserMilkmanTransactions();
+
+  if (!loaded) {
+    return <Spinner />;
+  }
   return (
     <Table color="blue" shade="darkWithBorder">
       <Table.HeaderRow>
@@ -53,38 +60,208 @@ export function OrderTable({ orders }: { orders: AllSwapsQuery["swaps"] }) {
         </Table.HeaderCell>
       </Table.HeaderRow>
       <Table.Body classNames="max-h-80 overflow-y-auto">
-        {orders.map((order) => (
-          <TableRow key={order.id} order={order} />
+        {transactions?.map((transaction) => (
+          <TableRowTransaction key={transaction.id} transaction={transaction} />
         ))}
-        <Table.BodyRow>
-          <Table.BodyCell>Test</Table.BodyCell>
-          <Table.BodyCell>5</Table.BodyCell>
-          <Table.BodyCell>Test 2</Table.BodyCell>
-          <Table.BodyCell>
-            {TransactionStatus.CANCELATION_TO_BE_EXECUTED}
-          </Table.BodyCell>
-          <Table.BodyCell>
-            <CancelButton
-              status={TransactionStatus.CANCELATION_TO_BE_EXECUTED}
-            />
-          </Table.BodyCell>
-        </Table.BodyRow>
+        {transactions?.length === 0 && (
+          <Table.BodyRow>
+            <Table.BodyCell colSpan={6}>
+              <h1 className="text-md text-slate12 m-2 text-center w-full">
+                This address didn't made any order on Milkman yet
+              </h1>
+            </Table.BodyCell>
+          </Table.BodyRow>
+        )}
       </Table.Body>
     </Table>
   );
 }
 
-function TableRow({ order }: { order: AllSwapsQuery["swaps"][0] }) {
-  const transactionStatus = TransactionStatus.MILKMAN_CREATED;
+function TableRowTransaction({
+  transaction,
+}: {
+  transaction: IUserMilkmanTransaction;
+}) {
+  function getSwapStatus(hasToken?: boolean, cowOrders?: ICowOrder[]) {
+    if (!cowOrders || hasToken === undefined) {
+      return SwapStatus.MILKMAN_CREATED;
+    }
+
+    const anyOrderWasExecuted = cowOrders.some(
+      (order) => order.status == "fulfilled",
+    );
+
+    if (anyOrderWasExecuted) {
+      return SwapStatus.EXECUTED;
+    }
+
+    if (!anyOrderWasExecuted && !hasToken) {
+      return SwapStatus.CANCELED;
+    }
+
+    if (cowOrders.length > 0 && hasToken) {
+      return SwapStatus.ORDER_PLACED;
+    }
+
+    return SwapStatus.MILKMAN_CREATED;
+  }
+
+  function getTransactionStatus(orderStatus: SwapStatus[]) {
+    if (orderStatus.every((status) => status === SwapStatus.CANCELED)) {
+      return TransactionStatus.CANCELED;
+    }
+    if (orderStatus.every((status) => status === SwapStatus.EXECUTED)) {
+      return TransactionStatus.EXECUTED;
+    }
+
+    if (
+      orderStatus.every(
+        (status) =>
+          status === SwapStatus.CANCELED || status === SwapStatus.EXECUTED,
+      )
+    ) {
+      return TransactionStatus.EXECUTED_AND_CANCELED;
+    }
+    if (orderStatus.some((status) => status === SwapStatus.EXECUTED)) {
+      return TransactionStatus.PARTIALLY_EXECUTED;
+    }
+
+    const allOrdersPlaced = orderStatus.every(
+      (status) => status === SwapStatus.ORDER_PLACED,
+    );
+
+    if (allOrdersPlaced) {
+      return TransactionStatus.ORDER_PLACED;
+    }
+
+    return TransactionStatus.MILKMAN_CREATED;
+  }
+
+  const orderStatus = transaction.orders.map((order) =>
+    getSwapStatus(order.hasToken, order.cowOrders),
+  );
+  const transactionStatus = getTransactionStatus(orderStatus);
   const txUrl = buildBlockExplorerTxUrl({
-    chainId: order.chainId,
-    txHash: order.transactionHash,
+    chainId: transaction.orders[0].orderEvent.chainId,
+    txHash: transaction.id,
   });
+
+  const [showOrdersRows, setShowOrdersRows] = useState(false);
+
+  const equalTokensIn = transaction.orders.every(
+    (order) =>
+      order.orderEvent.tokenIn?.id ==
+      transaction.orders[0].orderEvent.tokenIn?.id,
+  );
+
+  const equalTokensOut = transaction.orders.every(
+    (order) =>
+      order.orderEvent.tokenOut?.id ==
+      transaction.orders[0].orderEvent.tokenOut?.id,
+  );
+
+  const decimalsTokenIn =
+    transaction.orders[0].orderEvent.tokenIn?.decimals || 18;
+
+  const totalAmountTokenIn = transaction.orders.reduce(
+    (acc, order) =>
+      acc +
+      Number(formatUnits(order.orderEvent.tokenAmountIn, decimalsTokenIn)),
+    0,
+  );
+
+  return (
+    <>
+      <Table.BodyRow key={transaction.id}>
+        <Table.BodyCell>
+          <button onClick={() => setShowOrdersRows(!showOrdersRows)}>
+            {showOrdersRows ? (
+              <ChevronUpIcon className="h-5 w-5 text-blue9 hover:text-blue10" />
+            ) : (
+              <ChevronDownIcon className="h-5 w-5 text-blue9 hover:text-blue10" />
+            )}
+          </button>
+        </Table.BodyCell>
+        <Table.BodyCell>
+          {equalTokensIn ? (
+            <TokenInfo
+              id={transaction.orders[0].orderEvent.tokenIn?.id}
+              symbol={transaction.orders[0].orderEvent.tokenIn?.symbol}
+              chainId={transaction.orders[0].orderEvent.chainId}
+            />
+          ) : (
+            "Multiple Tokens"
+          )}
+        </Table.BodyCell>
+        <Table.BodyCell>
+          {equalTokensIn
+            ? formatNumber(totalAmountTokenIn, 4, "decimal", "standard", 0.0001)
+            : "Multiple Tokens"}
+        </Table.BodyCell>
+        <Table.BodyCell>
+          {equalTokensOut ? (
+            <TokenInfo
+              id={transaction.orders[0].orderEvent.tokenOut?.id}
+              symbol={transaction.orders[0].orderEvent.tokenOut?.symbol}
+              chainId={transaction.orders[0].orderEvent.chainId}
+            />
+          ) : (
+            "Multiple Tokens"
+          )}
+        </Table.BodyCell>
+        <Table.BodyCell>
+          <div className="flex items-center gap-x-1">
+            <span>{transactionStatus}</span>
+            {txUrl && (
+              <Link href={txUrl} target="_blank">
+                <ArrowTopRightIcon className="hover:text-slate11" />
+              </Link>
+            )}
+          </div>
+        </Table.BodyCell>
+        <Table.BodyCell>
+          <CancelButton
+            disabled={[
+              TransactionStatus.EXECUTED,
+              TransactionStatus.CANCELED,
+              TransactionStatus.EXECUTED_AND_CANCELED,
+            ].includes(transactionStatus)}
+          />
+        </Table.BodyCell>
+      </Table.BodyRow>
+      {showOrdersRows &&
+        transaction.orders.map((order, index) => (
+          <TableRowOrder
+            key={order.orderEvent.id}
+            order={order.orderEvent}
+            orderStatus={orderStatus[index]}
+          />
+        ))}
+    </>
+  );
+}
+
+function TableRowOrder({
+  order,
+  orderStatus,
+}: {
+  order: AllTransactionFromUserQuery["users"][0]["transactions"][0]["swaps"][0];
+  orderStatus: SwapStatus;
+}) {
+  const cowExplorerUrl = buildAccountCowExplorerUrl({
+    chainId: order.chainId as chainId,
+    address: order.orderContract as Address,
+  });
+
+  const contractExplorerUrl = buildBlockExplorerAddressURL({
+    chainId: order.chainId,
+    address: order.orderContract as Address,
+  })?.url;
 
   const tokenInDecimals = order.tokenIn?.decimals || 18;
   const tokenInAmount = formatUnits(order.tokenAmountIn, tokenInDecimals);
   return (
-    <Table.BodyRow key={order.id}>
+    <Table.BodyRow key={order.id} classNames="bg-slate4">
       <Table.BodyCell>
         <Dialog
           customWidth="w-[100vw] max-w-[550px]"
@@ -114,38 +291,47 @@ function TableRow({ order }: { order: AllSwapsQuery["swaps"][0] }) {
       </Table.BodyCell>
       <Table.BodyCell>
         <div className="flex items-center gap-x-1">
-          <span>{transactionStatus}</span>
-          {txUrl && (
-            <Link href={txUrl} target="_blank">
+          <span>{orderStatus}</span>
+          {cowExplorerUrl && contractExplorerUrl && (
+            <Link
+              href={
+                orderStatus == SwapStatus.MILKMAN_CREATED ||
+                orderStatus == SwapStatus.CANCELED
+                  ? contractExplorerUrl
+                  : cowExplorerUrl
+              }
+              target="_blank"
+            >
               <ArrowTopRightIcon className="hover:text-slate11" />
             </Link>
           )}
         </div>
       </Table.BodyCell>
       <Table.BodyCell>
-        <CancelButton status={transactionStatus} />
+        <span className="sr-only">Cancel</span>
       </Table.BodyCell>
     </Table.BodyRow>
   );
 }
 
-function CancelButton({ status }: { status: string }) {
-  const isTransactionCancelled = /cancel/i.test(status);
+function CancelButton({ disabled }: { disabled: boolean }) {
   return (
-    <button type="button" className="flex items-center">
+    <button type="button" className="flex items-center" disabled={disabled}>
       <TrashIcon
         className={cn(
           "h-5 w-5",
-          !isTransactionCancelled
-            ? "text-tomato9 hover:text-tomato10"
-            : "text-slate10 hover:text-slate11",
+          disabled ? "text-slate10" : "text-tomato9 hover:text-tomato10",
         )}
       />
     </button>
   );
 }
 
-function TransactionInfo({ order }: { order: AllSwapsQuery["swaps"][0] }) {
+function TransactionInfo({
+  order,
+}: {
+  order: AllTransactionFromUserQuery["users"][0]["transactions"][0]["swaps"][0];
+}) {
   const priceChecker = getPriceCheckerFromAddressAndChain(
     order.chainId as 5,
     order.priceChecker as Address,

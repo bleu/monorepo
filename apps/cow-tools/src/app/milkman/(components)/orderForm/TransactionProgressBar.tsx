@@ -60,7 +60,7 @@ export const stages: Stage[] = [
     TransactionStatus.ORDER_SUMMARY,
     4,
     TransactionStatus.ORDER_PLACED,
-    TransactionStatus.ORDER_STRATEGY,
+    TransactionStatus.ORDER_TWAP,
   ),
 ];
 

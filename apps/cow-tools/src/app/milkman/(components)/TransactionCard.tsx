@@ -10,7 +10,7 @@ import { FormHeader } from "./orderForm/Header";
 import { FormOrderOverview } from "./orderForm/Overview";
 import { FormSelectPriceChecker } from "./orderForm/PriceChecker";
 import { OrderSummary } from "./orderForm/Summary";
-import { Twap } from "./orderForm/Twap";
+import { FormTwap } from "./orderForm/Twap";
 
 export function TransactionCard({
   userAddress,
@@ -66,7 +66,7 @@ export function TransactionCard({
       />
     ),
     [TransactionStatus.ORDER_TWAP]: (
-      <Twap
+      <FormTwap
         onSubmit={(data: FieldValues) => {
           setTwapData(data);
           handleContinue();
@@ -77,7 +77,7 @@ export function TransactionCard({
     [TransactionStatus.ORDER_SUMMARY]: (
       <div className="flex flex-col gap-y-6 p-9">
         <OrderSummary
-          data={{ ...orderOverviewData, ...priceCheckerData }}
+          data={{ ...orderOverviewData, ...priceCheckerData, ...twapData }}
           handleBack={handleBack}
           network={network}
         />

@@ -8,13 +8,19 @@ import {
 } from "./priceCheckersMappings";
 import { argType, PRICE_CHECKERS, PriceCheckerArgument } from "./types";
 
-export function encodePriceCheckerDataWithValidFromDecorator(
-  priceCheckerAddress: Address,
-  priceCheckerData: `0x${string}`,
-  validFrom: string,
-) {
+export function encodePriceCheckerDataWithValidFromDecorator({
+  priceCheckerAddress,
+  priceCheckerData,
+  validFrom,
+  twapDelay,
+}: {
+  priceCheckerAddress: Address;
+  priceCheckerData: `0x${string}`;
+  validFrom: string;
+  twapDelay: number;
+}) {
   const validFromDate = new Date(validFrom);
-  const validFromTimestamp = BigInt(dateToEpoch(validFromDate));
+  const validFromTimestamp = BigInt(dateToEpoch(validFromDate) + twapDelay);
   return encodeAbiParameters(
     [
       {

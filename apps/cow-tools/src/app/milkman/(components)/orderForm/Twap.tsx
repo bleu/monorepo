@@ -11,16 +11,25 @@ import { orderTwapSchema } from "#/lib/schema";
 import { TransactionStatus } from "../../utils/type";
 import { FormFooter } from "./Footer";
 
-const TWAP_DELAY_OPTIONS = [
-  { value: String(10 * 60), label: "10 minutes" },
-  { value: String(30 * 60), label: "30 minutes" },
-  { value: String(60 * 60), label: "1 hour" },
-  { value: String(3 * 60 * 60), label: "3 hours" },
-  { value: String(12 * 60 * 60), label: "12 hours" },
-  { value: String(24 * 60 * 60), label: "1 day" },
-];
+export enum TWAP_DELAY_OPTIONS {
+  TEN_MINUTES = "10 minutes",
+  THIRTY_MINUTES = "30 minutes",
+  ONE_HOUR = "1 hour",
+  THREE_HOURS = "3 hours",
+  TWELVE_HOURS = "12 hours",
+  ONE_DAY = "1 day",
+}
 
-export function Twap({
+export const TwapDelayValues = {
+  [TWAP_DELAY_OPTIONS.TEN_MINUTES]: 10 * 60,
+  [TWAP_DELAY_OPTIONS.THIRTY_MINUTES]: 30 * 60,
+  [TWAP_DELAY_OPTIONS.ONE_HOUR]: 60 * 60,
+  [TWAP_DELAY_OPTIONS.THREE_HOURS]: 3 * 60 * 60,
+  [TWAP_DELAY_OPTIONS.TWELVE_HOURS]: 12 * 60 * 60,
+  [TWAP_DELAY_OPTIONS.ONE_DAY]: 24 * 60 * 60,
+};
+
+export function FormTwap({
   onSubmit,
   defaultValues,
 }: {
@@ -69,9 +78,9 @@ export function Twap({
               defaultValue={defaultValues?.delay}
               render={({ field: { onChange, value, ref } }) => (
                 <Select onValueChange={onChange} value={value} ref={ref}>
-                  {TWAP_DELAY_OPTIONS.map(({ value, label }) => (
-                    <SelectItem key={`${label}-${value}`} value={value}>
-                      {label}
+                  {Object.values(TWAP_DELAY_OPTIONS).map((value) => (
+                    <SelectItem key={value} value={value}>
+                      {value}
                     </SelectItem>
                   ))}
                 </Select>

@@ -20,9 +20,8 @@ export function scale(input: BigNumber, decimalPlaces: number): BigNumber {
  */
 export function _computeScalingFactor(tokenDecimals: bigint): bigint {
   // Tokens with more than 18 decimals are not supported.
-  const decimalsDifference = BigInt(18) - tokenDecimals;
-  //@ts-ignore
-  return ONE * BigInt(10) ** decimalsDifference;
+  const decimalsDifference = 18 - Number(tokenDecimals);
+  return ONE * BigInt(10 ** decimalsDifference);
 }
 
 /**
@@ -292,9 +291,7 @@ class LogExpMath {
   static LN_36_UPPER_BOUND: bigint =
     BigInt(LogExpMath.ONE_18) + BigInt("100000000000000000");
 
-  static MILD_EXPONENT_BOUND: bigint =
-    //@ts-ignore
-    BigInt(2) ** BigInt(254) / LogExpMath.ONE_20;
+  static MILD_EXPONENT_BOUND: bigint = BigInt(2 ** 254) / LogExpMath.ONE_20;
 
   // 18 decimal constants
   static x0 = BigInt("128000000000000000000"); // 2ˆ7

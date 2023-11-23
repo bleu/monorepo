@@ -108,6 +108,7 @@ export type Swap = {
   priceChecker: Scalars['String']['output'];
   priceCheckerData: Scalars['String']['output'];
   status: Status;
+  to: Scalars['String']['output'];
   tokenAmountIn: Scalars['BigInt']['output'];
   tokenIn?: Maybe<Token>;
   tokenOut?: Maybe<Token>;
@@ -167,6 +168,16 @@ export type SwapFilter = {
   status_in?: InputMaybe<Array<InputMaybe<Status>>>;
   status_not?: InputMaybe<Status>;
   status_not_in?: InputMaybe<Array<InputMaybe<Status>>>;
+  to?: InputMaybe<Scalars['String']['input']>;
+  to_contains?: InputMaybe<Scalars['String']['input']>;
+  to_ends_with?: InputMaybe<Scalars['String']['input']>;
+  to_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  to_not?: InputMaybe<Scalars['String']['input']>;
+  to_not_contains?: InputMaybe<Scalars['String']['input']>;
+  to_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  to_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  to_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  to_starts_with?: InputMaybe<Scalars['String']['input']>;
   tokenAmountIn?: InputMaybe<Scalars['BigInt']['input']>;
   tokenAmountIn_gt?: InputMaybe<Scalars['BigInt']['input']>;
   tokenAmountIn_gte?: InputMaybe<Scalars['BigInt']['input']>;

@@ -1,3 +1,10 @@
+CREATE TABLE IF NOT EXISTS "bal_emission" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"timestamp" timestamp,
+	"week_emission" numeric,
+	CONSTRAINT "bal_emission_timestamp_week_emission_unique" UNIQUE("timestamp","week_emission")
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "blocks" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"number" integer,
@@ -17,6 +24,7 @@ CREATE TABLE IF NOT EXISTS "gauge_snapshots" (
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	"block_number" integer,
 	"gauge_address" varchar,
+	"round_number" integer,
 	"network_slug" varchar,
 	"raw_data" jsonb,
 	CONSTRAINT "gauge_snapshots_timestamp_gauge_address_network_slug_unique" UNIQUE("timestamp","gauge_address","network_slug")
@@ -207,7 +215,8 @@ CREATE TABLE IF NOT EXISTS "vebal_rounds" (
 	"start_date" timestamp,
 	"round_number" integer,
 	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL
+	"updated_at" timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "vebal_rounds_round_number_unique" UNIQUE("round_number")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "yield_token_apr" (

@@ -5,7 +5,6 @@ import { db } from "#/db";
 import { swapFeeApr } from "#/db/schema";
 
 export async function calculateAPRForDateRange(
-  startAtTimestamp: number,
   endAtTimestamp: number,
   poolId: string,
 ) {

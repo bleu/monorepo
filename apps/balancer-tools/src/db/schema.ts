@@ -249,7 +249,7 @@ export const vebalRounds = pgTable("vebal_rounds", {
   id: serial("id").primaryKey(),
   endDate: timestamp("end_date"),
   startDate: timestamp("start_date"),
-  roundNumber: integer("round_number"),
+  roundNumber: integer("round_number").unique(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -288,6 +288,7 @@ export const gaugeSnapshots = pgTable(
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
     blockNumber: integer("block_number"),
     gaugeAddress: varchar("gauge_address"),
+    roundNumber: integer("round_number"),
     networkSlug: varchar("network_slug").references(() => networks.slug),
     rawData: jsonb("raw_data"),
   },
@@ -370,5 +371,17 @@ export const yieldTokenApr = pgTable(
   },
   (t) => ({
     unq: unique().on(t.timestamp, t.tokenAddress, t.poolExternalId),
+  }),
+);
+
+export const balEmission = pgTable(
+  "bal_emission",
+  {
+    id: serial("id").primaryKey(),
+    timestamp: timestamp("timestamp"),
+    weekEmission: decimal("week_emission"),
+  },
+  (t) => ({
+    unq: unique().on(t.timestamp, t.weekEmission),
   }),
 );

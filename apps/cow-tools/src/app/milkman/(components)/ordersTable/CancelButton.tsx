@@ -16,7 +16,7 @@ export function CancelButton({
 
   async function onClick() {
     if (!transaction.orders.length) return;
-    const transactionsData = transaction.orders.map(
+    const cancelTransactionsData = transaction.orders.map(
       (order) =>
         ({
           type: TRANSACTION_TYPES.MILKMAN_CANCEL,
@@ -30,7 +30,7 @@ export function CancelButton({
         }) as MilkmanCancelArgs,
     );
 
-    await sendTransactions(transactionsData);
+    await sendTransactions(cancelTransactionsData);
   }
   return (
     <button

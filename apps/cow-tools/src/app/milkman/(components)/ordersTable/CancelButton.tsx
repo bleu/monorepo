@@ -1,7 +1,7 @@
 import { TrashIcon } from "@radix-ui/react-icons";
 
 import { useRawTxData } from "#/hooks/useRawTxData";
-import { AllTransactionFromUserQuery } from "#/lib/gql/generated";
+import { IUserMilkmanTransaction } from "#/hooks/useUserMilkmanTransactions";
 import { MilkmanCancelArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
 import { cn } from "#/lib/utils";
 
@@ -10,23 +10,23 @@ export function CancelButton({
   transaction,
 }: {
   disabled: boolean;
-  transaction: AllTransactionFromUserQuery["users"][0]["transactions"][0];
+  transaction: IUserMilkmanTransaction;
 }) {
   const { sendTransactions } = useRawTxData();
 
   async function onClick() {
-    if (!transaction.swaps) return;
-    const transactionsData = transaction.swaps.map(
-      (swap) =>
+    if (!transaction.orders.length) return;
+    const transactionsData = transaction.orders.map(
+      (order) =>
         ({
           type: TRANSACTION_TYPES.MILKMAN_CANCEL,
-          contractAddress: swap.orderContract,
-          tokenAddressToSell: swap.tokenIn?.id,
-          tokenAddressToBuy: swap.tokenOut?.id,
-          toAddress: swap.to,
-          amount: BigInt(swap.tokenAmountIn),
-          priceChecker: swap.priceChecker,
-          priceCheckerData: swap.priceCheckerData,
+          contractAddress: order.orderEvent.orderContract,
+          tokenAddressToSell: order.orderEvent.tokenIn?.id,
+          tokenAddressToBuy: order.orderEvent.tokenOut?.id,
+          toAddress: order.orderEvent.to,
+          amount: BigInt(order.orderEvent.tokenAmountIn),
+          priceChecker: order.orderEvent.priceChecker,
+          priceCheckerData: order.orderEvent.priceCheckerData,
         }) as MilkmanCancelArgs,
     );
 

@@ -6,4 +6,4 @@ export const ENDPOINT = "https://milkman-api.up.railway.app/";
 
 const client = new GraphQLClient(ENDPOINT);
 
-export const sdk = getSdk(client);
+export const milkmanSubgraph = getSdk(client);

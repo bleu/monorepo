@@ -7,8 +7,7 @@ import { useUserMilkmanTransactions } from "#/hooks/useUserMilkmanTransactions";
 import { TableRowTransaction } from "./TableRowTransaction";
 
 export function OrderTable() {
-  const { transactions, cowOrders, hasToken, loaded } =
-    useUserMilkmanTransactions();
+  const { transactions, loaded } = useUserMilkmanTransactions();
 
   if (!loaded) {
     return <Spinner />;
@@ -28,13 +27,8 @@ export function OrderTable() {
         </Table.HeaderCell>
       </Table.HeaderRow>
       <Table.Body classNames="max-h-80 overflow-y-auto">
-        {transactions?.map((transaction, index) => (
-          <TableRowTransaction
-            key={transaction.id}
-            transaction={transaction}
-            cowOrders={cowOrders?.[index]}
-            hasToken={hasToken?.[index]}
-          />
+        {transactions?.map((transaction) => (
+          <TableRowTransaction key={transaction.id} transaction={transaction} />
         ))}
         {transactions?.length === 0 && (
           <Table.BodyRow>

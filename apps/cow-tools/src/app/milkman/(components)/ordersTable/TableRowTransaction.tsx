@@ -1,17 +1,19 @@
 import { buildBlockExplorerTxUrl } from "@bleu-fi/utils";
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import {
-  ArrowDownIcon,
   ArrowTopRightIcon,
-  ArrowUpIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
 } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { useState } from "react";
 import { formatUnits } from "viem";
 
 import Table from "#/components/Table";
-import { ICowOrder } from "#/hooks/useUserMilkmanTransactions";
-import { AllTransactionFromUserQuery } from "#/lib/gql/generated";
+import {
+  ICowOrder,
+  IUserMilkmanTransaction,
+} from "#/hooks/useUserMilkmanTransactions";
 
 import { SwapStatus, TransactionStatus } from "../../utils/type";
 import { CancelButton } from "./CancelButton";
@@ -20,12 +22,8 @@ import { TokenInfo } from "./TokenInfo";
 
 export function TableRowTransaction({
   transaction,
-  hasToken,
-  cowOrders,
 }: {
-  transaction: AllTransactionFromUserQuery["users"][0]["transactions"][0];
-  hasToken?: boolean[];
-  cowOrders?: ICowOrder[][];
+  transaction: IUserMilkmanTransaction;
 }) {
   function getSwapStatus(hasToken?: boolean, cowOrders?: ICowOrder[]) {
     if (!cowOrders || hasToken === undefined) {
@@ -51,27 +49,27 @@ export function TableRowTransaction({
     return SwapStatus.MILKMAN_CREATED;
   }
 
-  function getTransactionStatus(swapStatus: SwapStatus[]) {
-    if (swapStatus.every((status) => status === SwapStatus.CANCELED)) {
+  function getTransactionStatus(orderStatus: SwapStatus[]) {
+    if (orderStatus.every((status) => status === SwapStatus.CANCELED)) {
       return TransactionStatus.CANCELED;
     }
-    if (swapStatus.every((status) => status === SwapStatus.EXECUTED)) {
+    if (orderStatus.every((status) => status === SwapStatus.EXECUTED)) {
       return TransactionStatus.EXECUTED;
     }
 
     if (
-      swapStatus.every(
+      orderStatus.every(
         (status) =>
           status === SwapStatus.CANCELED || status === SwapStatus.EXECUTED,
       )
     ) {
       return TransactionStatus.EXECUTED_AND_CANCELED;
     }
-    if (swapStatus.some((status) => status === SwapStatus.EXECUTED)) {
+    if (orderStatus.some((status) => status === SwapStatus.EXECUTED)) {
       return TransactionStatus.PARTIALLY_EXECUTED;
     }
 
-    const allOrdersPlaced = swapStatus.every(
+    const allOrdersPlaced = orderStatus.every(
       (status) => status === SwapStatus.ORDER_PLACED,
     );
 
@@ -82,30 +80,36 @@ export function TableRowTransaction({
     return TransactionStatus.MILKMAN_CREATED;
   }
 
-  const swapStatus = transaction.swaps.map((swap, i) =>
-    getSwapStatus(hasToken?.[i], cowOrders?.[i]),
+  const orderStatus = transaction.orders.map((order) =>
+    getSwapStatus(order.hasToken, order.cowOrders),
   );
-  const transactionStatus = getTransactionStatus(swapStatus);
+  const transactionStatus = getTransactionStatus(orderStatus);
   const txUrl = buildBlockExplorerTxUrl({
-    chainId: transaction.swaps[0].chainId,
+    chainId: transaction.orders[0].orderEvent.chainId,
     txHash: transaction.id,
   });
 
   const [showOrdersRows, setShowOrdersRows] = useState(false);
 
-  const equalTokensIn = transaction.swaps.every(
-    (swap) => swap.tokenIn?.id == transaction.swaps[0].tokenIn?.id,
+  const equalTokensIn = transaction.orders.every(
+    (order) =>
+      order.orderEvent.tokenIn?.id ==
+      transaction.orders[0].orderEvent.tokenIn?.id,
   );
 
-  const equalTokensOut = transaction.swaps.every(
-    (swap) => swap.tokenOut?.id == transaction.swaps[0].tokenOut?.id,
+  const equalTokensOut = transaction.orders.every(
+    (order) =>
+      order.orderEvent.tokenOut?.id ==
+      transaction.orders[0].orderEvent.tokenOut?.id,
   );
 
-  const decimalsTokenIn = transaction.swaps[0].tokenIn?.decimals || 18;
+  const decimalsTokenIn =
+    transaction.orders[0].orderEvent.tokenIn?.decimals || 18;
 
-  const totalAmountTokenIn = transaction.swaps.reduce(
-    (acc, swap) =>
-      acc + Number(formatUnits(swap.tokenAmountIn, decimalsTokenIn)),
+  const totalAmountTokenIn = transaction.orders.reduce(
+    (acc, order) =>
+      acc +
+      Number(formatUnits(order.orderEvent.tokenAmountIn, decimalsTokenIn)),
     0,
   );
 
@@ -115,18 +119,18 @@ export function TableRowTransaction({
         <Table.BodyCell>
           <button onClick={() => setShowOrdersRows(!showOrdersRows)}>
             {showOrdersRows ? (
-              <ArrowUpIcon className="h-5 w-5 text-blue9 hover:text-blue10" />
+              <ChevronUpIcon className="h-5 w-5 text-blue9 hover:text-blue10" />
             ) : (
-              <ArrowDownIcon className="h-5 w-5 text-blue9 hover:text-blue10" />
+              <ChevronDownIcon className="h-5 w-5 text-blue9 hover:text-blue10" />
             )}
           </button>
         </Table.BodyCell>
         <Table.BodyCell>
           {equalTokensIn ? (
             <TokenInfo
-              id={transaction.swaps[0].tokenIn?.id}
-              symbol={transaction.swaps[0].tokenIn?.symbol}
-              chainId={transaction.swaps[0].chainId}
+              id={transaction.orders[0].orderEvent.tokenIn?.id}
+              symbol={transaction.orders[0].orderEvent.tokenIn?.symbol}
+              chainId={transaction.orders[0].orderEvent.chainId}
             />
           ) : (
             "Multiple Tokens"
@@ -140,9 +144,9 @@ export function TableRowTransaction({
         <Table.BodyCell>
           {equalTokensOut ? (
             <TokenInfo
-              id={transaction.swaps[0].tokenOut?.id}
-              symbol={transaction.swaps[0].tokenOut?.symbol}
-              chainId={transaction.swaps[0].chainId}
+              id={transaction.orders[0].orderEvent.tokenOut?.id}
+              symbol={transaction.orders[0].orderEvent.tokenOut?.symbol}
+              chainId={transaction.orders[0].orderEvent.chainId}
             />
           ) : (
             "Multiple Tokens"
@@ -170,11 +174,11 @@ export function TableRowTransaction({
         </Table.BodyCell>
       </Table.BodyRow>
       {showOrdersRows &&
-        transaction.swaps.map((order, index) => (
+        transaction.orders.map((order, index) => (
           <TableRowOrder
-            key={order.id}
-            order={order}
-            orderStatus={swapStatus[index]}
+            key={order.orderEvent.id}
+            order={order.orderEvent}
+            orderStatus={orderStatus[index]}
           />
         ))}
     </>

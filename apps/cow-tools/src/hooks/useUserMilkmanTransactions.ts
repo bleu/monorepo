@@ -1,13 +1,13 @@
 import { Address } from "@bleu-fi/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { erc20ABI } from "@wagmi/core";
 import { gql } from "graphql-tag";
 import { useEffect, useState } from "react";
 import { createPublicClient, http, PublicClient } from "viem";
 import { goerli } from "viem/chains";
 
-import { erc20Abi } from "#/lib/abis/erc20";
 import { AllTransactionFromUserQuery } from "#/lib/gql/generated";
-import { sdk } from "#/lib/gql/sdk";
+import { milkmanSubgraph } from "#/lib/gql/sdk";
 
 gql(`
   query AllTransactionFromUser ($user: String!) {
@@ -66,15 +66,36 @@ export interface ICowOrder {
   status: string;
 }
 
+export interface IUserMilkmanTransaction {
+  id: string;
+  orders: {
+    cowOrders: ICowOrder[];
+    hasToken: boolean;
+    orderEvent: AllTransactionFromUserQuery["users"][0]["transactions"][0]["swaps"][0];
+  }[];
+}
+
 const cowApiUrl = "https://api.cow.fi/goerli";
+
+function structureMilkmanTransaction(
+  transaction: AllTransactionFromUserQuery["users"][0]["transactions"][0],
+  cowOrder: ICowOrder[][],
+  hasToken: boolean[],
+): IUserMilkmanTransaction {
+  return {
+    id: transaction.id,
+    orders: transaction.swaps.map((swap, index) => ({
+      cowOrders: cowOrder[index],
+      hasToken: hasToken[index],
+      orderEvent: swap,
+    })),
+  };
+}
 
 export function useUserMilkmanTransactions() {
   const { safe } = useSafeAppsSDK();
   const [loaded, setLoaded] = useState(false);
-  const [transactions, setTransactions] =
-    useState<AllTransactionFromUserQuery["users"][0]["transactions"]>();
-  const [cowOrders, setOrders] = useState<ICowOrder[][][]>();
-  const [hasToken, setHasToken] = useState<boolean[][]>();
+  const [transactions, setTransactions] = useState<IUserMilkmanTransaction[]>();
 
   const publicClient = createPublicClient({
     chain: goerli,
@@ -83,7 +104,7 @@ export function useUserMilkmanTransactions() {
 
   useEffect(() => {
     async function loadOrders() {
-      const { users } = await sdk.AllTransactionFromUser({
+      const { users } = await milkmanSubgraph.AllTransactionFromUser({
         user: safe.safeAddress,
       });
 
@@ -138,16 +159,22 @@ export function useUserMilkmanTransactions() {
         cowOrdersByTransaction.push(cowOrdersBySwap.splice(0, swapsLen));
       });
 
-      setOrders(cowOrdersByTransaction);
-      setHasToken(hasTokenByTransaction);
-      setTransactions(users[0]?.transactions);
+      setTransactions(
+        users[0]?.transactions.map((transaction, index) =>
+          structureMilkmanTransaction(
+            transaction,
+            cowOrdersByTransaction[index],
+            hasTokenByTransaction[index],
+          ),
+        ),
+      );
       setLoaded(true);
     }
 
     loadOrders();
   }, [safe]);
 
-  return { cowOrders, hasToken, transactions, loaded };
+  return { transactions, loaded };
 }
 
 export async function getTokenBalance(
@@ -157,7 +184,7 @@ export async function getTokenBalance(
 ) {
   return publicClient.readContract({
     address: tokenAddress,
-    abi: erc20Abi,
+    abi: erc20ABI,
     functionName: "balanceOf",
     args: [userAddress],
   });

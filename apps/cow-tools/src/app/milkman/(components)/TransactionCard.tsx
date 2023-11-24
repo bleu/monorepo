@@ -6,10 +6,10 @@ import { stages } from "#/app/milkman/(components)/TransactionProgressBar";
 import { TransactionStatus } from "#/app/milkman/utils/type";
 import { useOrder } from "#/contexts/OrderContext";
 
-import { FormHeader } from "./OrderForm/Header";
-import { FormOrderOverview } from "./OrderForm/Overview";
-import { FormSelectPriceChecker } from "./OrderForm/PriceChecker";
-import { OrderSummary } from "./OrderForm/Summary";
+import { FormHeader } from "./SingleOrderForm/Header";
+import { FormOrderOverview } from "./SingleOrderForm/Overview";
+import { FormSelectPriceChecker } from "./SingleOrderForm/PriceChecker";
+import { OrderSummary } from "./SingleOrderForm/Summary";
 
 export function TransactionCard({
   userAddress,

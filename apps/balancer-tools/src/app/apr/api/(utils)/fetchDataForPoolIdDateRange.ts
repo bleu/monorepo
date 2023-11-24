@@ -2,7 +2,6 @@ import {
   dateToEpoch,
   formatDateToMMDDYYYY,
   generateDateRange,
-  SECONDS_IN_DAY,
 } from "@bleu-fi/utils/date";
 
 import { Pool } from "#/lib/balancer/gauges";

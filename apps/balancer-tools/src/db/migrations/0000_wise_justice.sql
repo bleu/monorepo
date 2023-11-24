@@ -206,7 +206,9 @@ CREATE TABLE IF NOT EXISTS "vebal_apr" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"timestamp" timestamp,
 	"value" numeric,
-	"pool_external_id" varchar
+	"pool_external_id" varchar,
+	"external_id" varchar,
+	CONSTRAINT "vebal_apr_external_id_unique" UNIQUE("external_id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "vebal_rounds" (

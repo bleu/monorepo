@@ -17,7 +17,6 @@ import {
   poolSnapshots,
   poolSnapshotsTemp,
   tokenPrices,
-  vebalApr,
   vebalRounds,
 } from "#/db/schema";
 import * as balEmissions from "#/lib/balancer/emissions";
@@ -642,6 +641,7 @@ async function seedBalEmission() {
 
 async function calculateApr() {
   // Fee APR
+  logIfVerbose("Seeding Fee APR");
   await db.execute(sql`
   INSERT INTO swap_fee_apr (timestamp, pool_external_id, collected_fees_usd, value, external_id)
   SELECT
@@ -661,92 +661,29 @@ ON CONFLICT (external_id) DO NOTHING;
 `);
 
   // veBAL APR
-
-  // for each timestamp on veBal rounds
-  // get the bal price
-  // get the tvl
-  // get the voting share from gaugesnapshot
-  // gaugesnapshot should have round_number
-  // get the bal emission for that date
+  logIfVerbose("Seeding veBAL APR");
+  await db.execute(sql`
+INSERT INTO vebal_apr (timestamp, value, pool_external_id, external_id)
+SELECT DISTINCT
+    ps.timestamp,
+    CASE
+        WHEN ps.liquidity = 0 THEN 0
+        ELSE (52 * (be.week_emission * gs.relative_weight * tp.price_usd) / ps.liquidity) * 100
+    END AS value,
+    ps.pool_external_id,
+    ps.external_id
+FROM pool_snapshots ps
+LEFT JOIN vebal_rounds vr ON ps.timestamp BETWEEN vr.start_date AND vr.end_date
+JOIN gauges g ON g.pool_external_id = ps.pool_external_id
+JOIN gauge_snapshots gs ON g.address = gs.gauge_address
+    AND vr.round_number = gs.round_number
+LEFT JOIN token_prices tp ON tp.token_address = '0xba100000625a3754423978a60c9317c58a424e3d'
+    AND tp.timestamp = ps.timestamp
+LEFT JOIN bal_emission be ON be.timestamp = ps.timestamp
+ON CONFLICT (external_id) DO NOTHING;
+`);
 }
 
-// async function fetchTokenPrices() {
-//   const remappings = {
-//     avalanche: "avax",
-//   };
-
-//   const inverseRemapping = {
-//     avax: "avalanche",
-//   };
-//   // Step 1: Fetch distinct tokens for each day
-//   const result = await db.execute(sql`
-//   SELECT DISTINCT
-// 	pt.token_address,
-// 	pt.network_slug,
-// 	date_trunc('day', ps.timestamp) AS day
-// FROM
-// 	pool_tokens pt
-// 	INNER JOIN pool_snapshots ps ON pt.pool_external_id = ps.pool_external_id
-// 	LEFT JOIN token_prices tp ON pt.token_address = tp.token_address
-// 		AND pt.network_slug = tp.network_slug
-// 		AND date_trunc('day', ps.timestamp) = date_trunc('day', tp.timestamp)
-// WHERE
-// 	tp.id IS NULL
-// ORDER BY
-// 	day,
-// 	pt.token_address;
-//   `);
-
-//   // Step 2: Deduplicate tokens for the same day
-//   const dedupedTokens: { [day: string]: Set<string> } = {};
-
-//   for (const row of result) {
-//     const day = row.day.toISOString();
-//     if (!dedupedTokens[day]) {
-//       dedupedTokens[day] = new Set();
-//     }
-
-//     dedupedTokens[day].add(
-//       `${remappings[row.network_slug] ?? row.network_slug}:${row.token_address}`
-//     );
-//   }
-
-//   // Step 3: Fetch token prices
-//   for (const [day, tokens] of Object.entries(dedupedTokens)) {
-//     const dateTimestamp = Date.UTC(
-//       Number(day.split("-")[0]),
-//       Number(day.split("-")[1]) - 1,
-//       Number(day.split("-")[2].split("T")[0])
-//     );
-//     const tokenAddresses = Array.from(tokens);
-//     try {
-//       const prices = await DefiLlamaAPI.getHistoricalPrice(
-//         new Date(dateTimestamp),
-//         tokenAddresses
-//       );
-
-//       const entries = Object.entries(prices.coins);
-
-//       await addToTable(
-//         tokenPrices,
-//         entries.map((entry) => ({
-//           tokenAddress: entry[0].split(":")[1],
-//           priceUSD: entry[1].price,
-//           timestamp: new Date(entry[1].timestamp * 1000),
-//           networkSlug:
-//             // @ts-ignore
-//             inverseRemapping[entry[0].split(":")[0]] ?? entry[0].split(":")[0],
-//         }))
-//       );
-
-//       console.log(`Fetched prices for tokens on ${day}:`, prices);
-//     } catch (e) {
-//       console.error(
-//         `Failed to fetch prices for tokens on ${day}: ${e.message}`
-//       );
-//     }
-//   }
-// }
 async function fetchBalPrices() {
   try {
     // Get unique timestamps from pool_snapshots table
@@ -806,14 +743,12 @@ async function runETLs() {
 
   await seedNetworks();
   await seedVebalRounds();
-  // await ETLPools();
-  // await ETLSnapshots();
-  // await ETLGauges();
+  await ETLPools();
+  await ETLSnapshots();
+  await ETLGauges();
   await seedBalEmission();
-  // // await fetchTokenPrices(); -> this is not necessary for every pool, just for the ones that haev token rewards and token yield
-  // await fetchBalPrices();
-  // await fetchBlocks();
-  // await ETLGaugesSnapshot();
+  await fetchBalPrices();
+  await ETLGaugesSnapshot();
   await calculateApr();
   logIfVerbose("Ended ETL processes");
   process.exit(0);

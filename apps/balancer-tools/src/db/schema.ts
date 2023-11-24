@@ -304,6 +304,7 @@ export const vebalApr = pgTable("vebal_apr", {
   poolExternalId: varchar("pool_external_id").references(
     () => pools.externalId,
   ),
+  externalId: varchar("external_id").unique(),
 });
 
 export const poolRewards = pgTable(

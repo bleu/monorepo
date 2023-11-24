@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "3c0df4a8-ad4f-4ae6-a489-12006793ac1f",
+  "id": "9d2c2f4c-0b9e-4df8-999e-c6398e39d057",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "bal_emission": {
@@ -1306,6 +1306,12 @@
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
+        },
+        "external_id": {
+          "name": "external_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -1321,7 +1327,13 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "vebal_apr_external_id_unique": {
+          "name": "vebal_apr_external_id_unique",
+          "nullsNotDistinct": false,
+          "columns": ["external_id"]
+        }
+      }
     },
     "vebal_rounds": {
       "name": "vebal_rounds",

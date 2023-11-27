@@ -59,6 +59,17 @@ export interface MilkmanCancelArgs extends BaseArgs {
   priceCheckerData: `0x${string}`;
 }
 
+export interface MilkmanCancelArgs extends BaseArgs {
+  type: TRANSACTION_TYPES.MILKMAN_CANCEL;
+  contractAddress: Address;
+  tokenAddressToSell: Address;
+  tokenAddressToBuy: Address;
+  toAddress: Address;
+  amount: bigint;
+  priceChecker: Address;
+  priceCheckerData: `0x${string}`;
+}
+
 interface ITransaction<T> {
   createRawTx(args: T): BaseTransaction;
 }

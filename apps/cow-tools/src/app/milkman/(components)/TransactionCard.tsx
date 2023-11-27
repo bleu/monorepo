@@ -2,15 +2,15 @@ import { Address, NetworkChainId, networkFor } from "@bleu-fi/utils";
 import { useState } from "react";
 import { FieldValues } from "react-hook-form";
 
-import { stages } from "#/app/milkman/(components)/orderForm/TransactionProgressBar";
+import { stages } from "#/app/milkman/(components)/SingleOrderForm/TransactionProgressBar";
 import { TransactionStatus } from "#/app/milkman/utils/type";
 import { useOrder } from "#/contexts/OrderContext";
 
-import { FormHeader } from "./orderForm/Header";
-import { FormOrderOverview } from "./orderForm/Overview";
-import { FormSelectPriceChecker } from "./orderForm/PriceChecker";
-import { OrderSummary } from "./orderForm/Summary";
-import { FormTwap } from "./orderForm/Twap";
+import { FormHeader } from "./SingleOrderForm/Header";
+import { FormOrderOverview } from "./SingleOrderForm/Overview";
+import { FormSelectPriceChecker } from "./SingleOrderForm/PriceChecker";
+import { OrderSummary } from "./SingleOrderForm/Summary";
+import { FormTwap } from "./SingleOrderForm/Twap";
 
 export function TransactionCard({
   userAddress,

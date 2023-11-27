@@ -9,6 +9,7 @@ import {
 } from "#/lib/decode";
 import { AllTransactionFromUserQuery } from "#/lib/gql/generated";
 import { priceCheckersArgumentsMapping } from "#/lib/priceCheckersMappings";
+import { ChainId } from "#/utils/chainsPublicClients";
 import { truncateAddress } from "#/utils/truncate";
 
 export function TransactionInfo({
@@ -17,8 +18,8 @@ export function TransactionInfo({
   order: AllTransactionFromUserQuery["users"][0]["transactions"][0]["swaps"][0];
 }) {
   const priceChecker = getPriceCheckerFromAddressAndChain(
-    order.chainId as 5,
-    order.priceChecker as Address,
+    order.chainId as ChainId,
+    order.priceChecker as Address
   );
 
   const expecetedArguments = priceChecker
@@ -61,7 +62,7 @@ export function TransactionInfo({
               {expecetedArguments[index].label} :{" "}
               {expecetedArguments[index].convertOutput(
                 argument,
-                order.tokenOut?.decimals || 18,
+                order.tokenOut?.decimals || 18
               )}
             </div>
           ))}

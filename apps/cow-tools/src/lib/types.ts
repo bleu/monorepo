@@ -23,7 +23,7 @@ export interface PriceCheckerArgument {
   convertInput: (input: argType | number, decimals?: number) => argType;
   convertOutput: (
     output: argType,
-    decimals?: number,
+    decimals?: number
   ) => Exclude<argType, bigint | bigint[]> | number;
   step?: number;
 }
@@ -35,4 +35,5 @@ export enum PRICE_CHECKERS {
   CHAINLINK = "Chainlink",
   BALANCER = "Balancer BAL WETH Single Sided",
   UNI_V3 = "Uniswap V3",
+  CURVE = "Curve",
 }

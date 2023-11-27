@@ -41,7 +41,7 @@ export const orderOverviewSchema = z
     {
       path: ["validFrom"],
       message: "Valid from is needed",
-    },
+    }
   )
   .refine(
     (data) => {
@@ -50,7 +50,7 @@ export const orderOverviewSchema = z
     {
       path: ["tokenBuy"],
       message: "Tokens sell and buy must be different",
-    },
+    }
   );
 
 export const orderTwapSchema = z.object({
@@ -79,6 +79,7 @@ export const priceCheckingBaseSchemaMapping = {
     addressesPriceFeeds: basicAddressSchema.array().nonempty(),
   }),
   [PRICE_CHECKERS.BALANCER]: basicDynamicSlippageSchema,
+  [PRICE_CHECKERS.CURVE]: basicDynamicSlippageSchema,
   [PRICE_CHECKERS.UNI_V3]: basicDynamicSlippageSchema
     .extend({
       tokenIn: z.array(basicAddressSchema).nonempty(),
@@ -93,14 +94,14 @@ export const priceCheckingBaseSchemaMapping = {
               return true;
             }
             return token === data.tokenOut[index - 1];
-          },
+          }
         );
         return previousTokenOutIsNextTokenIn;
       },
       {
         path: ["tokenIn"],
         message: "The token out must be the token in of the next line",
-      },
+      }
     ),
 } as const;
 
@@ -133,7 +134,7 @@ export const generatePriceCheckerSchema = ({
           });
           const priceCheckerData = encodePriceCheckerData(
             priceChecker,
-            argsToEncode,
+            argsToEncode
           );
           await publicClient.readContract({
             address: data.priceCheckerAddress as Address,
@@ -156,7 +157,7 @@ export const generatePriceCheckerSchema = ({
       {
         path: ["priceChecker"],
         message: priceCheckerRevertedMessage,
-      },
+      }
     );
   };
 };

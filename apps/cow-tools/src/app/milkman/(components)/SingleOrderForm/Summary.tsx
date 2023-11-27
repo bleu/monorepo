@@ -1,4 +1,4 @@
-import { Network } from "@bleu-fi/utils";
+import { NetworkChainId, networkFor } from "@bleu-fi/utils";
 import { formatDateToLocalDatetime } from "@bleu-fi/utils/date";
 import { Pencil1Icon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
@@ -22,11 +22,11 @@ import { TWAP_DELAY_OPTIONS, TwapDelayValues } from "./Twap";
 export function OrderSummary({
   data,
   handleBack,
-  network,
+  chainId,
 }: {
   data: FieldValues;
   handleBack: () => void;
-  network: Network;
+  chainId: NetworkChainId;
 }) {
   const fieldsToDisplay = [
     { label: "Token to sell", key: "tokenSell" },
@@ -47,7 +47,7 @@ export function OrderSummary({
       (arg) => ({
         label: arg.label,
         key: arg.name,
-      }),
+      })
     ),
   ];
 
@@ -57,7 +57,7 @@ export function OrderSummary({
 
   async function handleButtonClick() {
     const sellAmountBigInt = BigInt(
-      Number(data.tokenSellAmount) * 10 ** data.tokenSell.decimals,
+      Number(data.tokenSellAmount) * 10 ** data.tokenSell.decimals
     );
     const priceCheckersArgs = priceCheckersArgumentsMapping[
       data.priceChecker as PRICE_CHECKERS
@@ -91,10 +91,11 @@ export function OrderSummary({
           isValidFromNeeded: data.isValidFromNeeded || data.isTwapNeeded,
           args: priceCheckersArgs,
           twapDelay: index * delay,
+          chainId: chainId,
         } as MilkmanOrderArgs;
       }),
     ]);
-    router.push(`/milkman/${network}`);
+    router.push(`/milkman/${networkFor(chainId)}`);
   }
 
   return (

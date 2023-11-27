@@ -1,10 +1,9 @@
 import { Address } from "@bleu-fi/utils";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import { FieldValues, useForm, UseFormReturn } from "react-hook-form";
-import { createPublicClient, http } from "viem";
-import { goerli } from "viem/chains";
 
 import { TransactionStatus } from "#/app/milkman/utils/type";
 import Button from "#/components/Button";
@@ -14,11 +13,13 @@ import Table from "#/components/Table";
 import { Form, FormMessage } from "#/components/ui/form";
 import { Label } from "#/components/ui/label";
 import {
+  deployedPriceCheckersByChain,
   priceCheckerAddressesMapping,
   priceCheckersArgumentsMapping,
 } from "#/lib/priceCheckersMappings";
 import { generatePriceCheckerSchema } from "#/lib/schema";
 import { PRICE_CHECKERS, PriceCheckerArgument } from "#/lib/types";
+import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 
 import { FormFooter } from "./Footer";
 
@@ -38,10 +39,11 @@ export function FormSelectPriceChecker({
   const [selectedPriceChecker, setSelectedPriceChecker] =
     useState<PRICE_CHECKERS>(defaultValues?.priceChecker);
 
-  const publicClient = createPublicClient({
-    chain: goerli,
-    transport: http(),
-  });
+  const { safe } = useSafeAppsSDK();
+
+  const chainId = safe.chainId as ChainId;
+
+  const publicClient = publicClientsFromIds[chainId];
 
   const schema =
     selectedPriceChecker &&
@@ -58,7 +60,7 @@ export function FormSelectPriceChecker({
   const form = useForm(
     selectedPriceChecker && {
       resolver: zodResolver(schema),
-    },
+    }
   );
 
   const {
@@ -78,7 +80,7 @@ export function FormSelectPriceChecker({
     setValue("priceChecker", selectedPriceChecker);
     setValue(
       "priceCheckerAddress",
-      priceCheckerAddressesMapping[selectedPriceChecker][goerli.id],
+      priceCheckerAddressesMapping[chainId][selectedPriceChecker]
     );
   }, [selectedPriceChecker]);
 
@@ -93,7 +95,7 @@ export function FormSelectPriceChecker({
           className="w-full mt-2"
           defaultValue={defaultValues?.priceChecker}
         >
-          {Object.values(PRICE_CHECKERS).map((priceChecker) => (
+          {deployedPriceCheckersByChain[chainId].map((priceChecker) => (
             <SelectItem value={priceChecker} key={priceChecker}>
               {priceChecker}
             </SelectItem>
@@ -131,11 +133,11 @@ function PriceCheckerInputs({
 }) {
   const priceCheckerAguments = priceCheckersArgumentsMapping[priceChecker];
   const nonArrayArguments = priceCheckerAguments.filter(
-    (arg) => !arg.type.includes("[]"),
+    (arg) => !arg.type.includes("[]")
   );
 
   const arrayArguments = priceCheckerAguments.filter((arg) =>
-    arg.type.includes("[]"),
+    arg.type.includes("[]")
   );
 
   const { register } = form;

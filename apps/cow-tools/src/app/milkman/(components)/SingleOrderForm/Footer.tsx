@@ -1,4 +1,4 @@
-import { TransactionProgressBar } from "#/app/milkman/(components)/orderForm/TransactionProgressBar";
+import { TransactionProgressBar } from "#/app/milkman/(components)/SingleOrderForm/TransactionProgressBar";
 import { TransactionStatus } from "#/app/milkman/utils/type";
 import { Button } from "#/components";
 

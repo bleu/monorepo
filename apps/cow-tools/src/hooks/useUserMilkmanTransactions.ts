@@ -80,7 +80,7 @@ const cowApiUrl = "https://api.cow.fi/goerli";
 function structureMilkmanTransaction(
   transaction: AllTransactionFromUserQuery["users"][0]["transactions"][0],
   cowOrder: ICowOrder[][],
-  hasToken: boolean[]
+  hasToken: boolean[],
 ): IUserMilkmanTransaction {
   return {
     id: transaction.id,
@@ -106,23 +106,23 @@ export function useUserMilkmanTransactions() {
       });
 
       const swapsLenByTransaction = users[0]?.transactions.map(
-        (transaction) => transaction.swaps.length
+        (transaction) => transaction.swaps.length,
       );
 
       const orderContractsByTransaction = users[0]?.transactions.map(
-        (transaction) => transaction.swaps.map((swap) => swap.orderContract)
+        (transaction) => transaction.swaps.map((swap) => swap.orderContract),
       );
 
       const orderContractsBySwap = ([] as string[]).concat(
-        ...orderContractsByTransaction
+        ...orderContractsByTransaction,
       );
 
       const tokenAddressesByTransactions = users[0]?.transactions.map(
-        (transaction) => transaction.swaps.map((swap) => swap.tokenIn?.id)
+        (transaction) => transaction.swaps.map((swap) => swap.tokenIn?.id),
       ) as (Address | undefined)[][];
 
       const tokenAddressesBySwap = ([] as (Address | undefined)[]).concat(
-        ...tokenAddressesByTransactions
+        ...tokenAddressesByTransactions,
       );
 
       const tokenBalances = (await Promise.all(
@@ -133,19 +133,19 @@ export function useUserMilkmanTransactions() {
           return getTokenBalance(
             tokenAddressesBySwap[index] as Address,
             orderContract as Address,
-            publicClient
+            publicClient,
           );
-        })
+        }),
       )) as number[];
 
       const hasTokenBySwap = tokenBalances.map(
-        (tokenBalance) => tokenBalance > 0
+        (tokenBalance) => tokenBalance > 0,
       );
 
       const cowOrdersBySwap = await Promise.all(
         orderContractsBySwap.map((orderContract) =>
-          getCowOrders(orderContract as Address)
-        )
+          getCowOrders(orderContract as Address),
+        ),
       );
 
       const hasTokenByTransaction = [] as boolean[][];
@@ -161,9 +161,9 @@ export function useUserMilkmanTransactions() {
           structureMilkmanTransaction(
             transaction,
             cowOrdersByTransaction[index],
-            hasTokenByTransaction[index]
-          )
-        )
+            hasTokenByTransaction[index],
+          ),
+        ),
       );
       setLoaded(true);
     }
@@ -177,7 +177,7 @@ export function useUserMilkmanTransactions() {
 export async function getTokenBalance(
   tokenAddress: Address,
   userAddress: Address,
-  publicClient: PublicClient
+  publicClient: PublicClient,
 ) {
   return publicClient.readContract({
     address: tokenAddress,

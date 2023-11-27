@@ -19,7 +19,7 @@ export function TransactionInfo({
 }) {
   const priceChecker = getPriceCheckerFromAddressAndChain(
     order.chainId as ChainId,
-    order.priceChecker as Address
+    order.priceChecker as Address,
   );
 
   const expecetedArguments = priceChecker
@@ -62,7 +62,7 @@ export function TransactionInfo({
               {expecetedArguments[index].label} :{" "}
               {expecetedArguments[index].convertOutput(
                 argument,
-                order.tokenOut?.decimals || 18
+                order.tokenOut?.decimals || 18,
               )}
             </div>
           ))}

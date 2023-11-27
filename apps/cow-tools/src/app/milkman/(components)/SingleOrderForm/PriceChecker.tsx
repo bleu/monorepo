@@ -60,7 +60,7 @@ export function FormSelectPriceChecker({
   const form = useForm(
     selectedPriceChecker && {
       resolver: zodResolver(schema),
-    }
+    },
   );
 
   const {
@@ -80,7 +80,7 @@ export function FormSelectPriceChecker({
     setValue("priceChecker", selectedPriceChecker);
     setValue(
       "priceCheckerAddress",
-      priceCheckerAddressesMapping[chainId][selectedPriceChecker]
+      priceCheckerAddressesMapping[chainId][selectedPriceChecker],
     );
   }, [selectedPriceChecker]);
 
@@ -133,11 +133,11 @@ function PriceCheckerInputs({
 }) {
   const priceCheckerAguments = priceCheckersArgumentsMapping[priceChecker];
   const nonArrayArguments = priceCheckerAguments.filter(
-    (arg) => !arg.type.includes("[]")
+    (arg) => !arg.type.includes("[]"),
   );
 
   const arrayArguments = priceCheckerAguments.filter((arg) =>
-    arg.type.includes("[]")
+    arg.type.includes("[]"),
   );
 
   const { register } = form;

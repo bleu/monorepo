@@ -16,7 +16,7 @@ import {
 
 export function decodePriceCheckerData(
   priceChecker: PRICE_CHECKERS,
-  data: `0x${string}`
+  data: `0x${string}`,
 ): argType[] {
   try {
     const expectedArgs = priceCheckersArgumentsMapping[priceChecker];
@@ -33,14 +33,14 @@ export function decodePriceCheckerData(
 
 export function getPriceCheckerFromAddressAndChain(
   chainId: ChainId,
-  priceCheckerAddress: Address
+  priceCheckerAddress: Address,
 ): PRICE_CHECKERS | null {
   // Find Price checker info dict from priceCheckerAddressesMapping constant
   // using the address and chainId provided
   // Those two keys combination should be unique
   // If not found, return null
   const priceCheckerInfo = Object.entries(
-    priceCheckerAddressesMapping[chainId]
+    priceCheckerAddressesMapping[chainId],
   ).find(([_key, address]) => address === priceCheckerAddress);
 
   if (!priceCheckerInfo) {
@@ -52,26 +52,26 @@ export function getPriceCheckerFromAddressAndChain(
 
 function decodeArguments(
   expectedArgs: (PriceCheckerArgument | { name: string; type: argTypeName })[],
-  data: `0x${string}`
+  data: `0x${string}`,
 ): argType[] {
   return decodeAbiParameters(
     expectedArgs.map((arg) => ({ name: arg.name, type: arg.type })),
-    data
+    data,
   ) as argType[];
 }
 
 function decodeWithExpectedOutCalculator(
   expectedArgs: PriceCheckerArgument[],
-  data: `0x${string}`
+  data: `0x${string}`,
 ): argType[] {
   const firstExpectedOutArgIndex = expectedArgs.findIndex(
-    (arg) => arg.toExpectedOutCalculator
+    (arg) => arg.toExpectedOutCalculator,
   );
 
   if (firstExpectedOutArgIndex === -1) {
     return decodeArguments(
       [...expectedArgs, { name: "_data", type: "bytes" }],
-      data
+      data,
     ).slice(0, -1);
   }
 
@@ -79,13 +79,13 @@ function decodeWithExpectedOutCalculator(
 
   const mainDecoded = decodeArguments(
     [...mainArgs, { name: "_data", type: "bytes" }],
-    data
+    data,
   );
 
   const expectedOutArgs = expectedArgs.slice(firstExpectedOutArgIndex);
   const expectedOutDecoded = decodeArguments(
     expectedOutArgs,
-    mainDecoded[mainDecoded.length - 1] as `0x${string}`
+    mainDecoded[mainDecoded.length - 1] as `0x${string}`,
   );
 
   return mainDecoded.concat(expectedOutDecoded);

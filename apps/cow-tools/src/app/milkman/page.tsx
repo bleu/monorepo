@@ -12,7 +12,7 @@ export default function Page() {
 
   if (chainId == goerli.id || chainId == gnosis.id) {
     redirect(
-      `/milkman/${NetworkFromNetworkChainId[chainId as NetworkChainId]}`
+      `/milkman/${NetworkFromNetworkChainId[chainId as NetworkChainId]}`,
     );
   }
   // TODO: change redirect to default network BLEU-366

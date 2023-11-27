@@ -27,6 +27,7 @@ gql(`
           priceChecker
           orderContract
           priceCheckerData
+          to
           tokenIn {
             id
             name

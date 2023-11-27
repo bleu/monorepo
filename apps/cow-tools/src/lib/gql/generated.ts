@@ -357,7 +357,7 @@ export type AllTransactionFromUserQueryVariables = Exact<{
 }>;
 
 
-export type AllTransactionFromUserQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, transactions: Array<{ __typename?: 'TransactionHash', id: string, blockNumber: any, blockTimestamp: any, swaps: Array<{ __typename?: 'Swap', id: string, chainId: number, transactionHash: string, tokenAmountIn: any, priceChecker: string, orderContract: string, priceCheckerData: string, tokenIn?: { __typename?: 'Token', id: string, name?: string | null, symbol?: string | null, decimals?: number | null } | null, tokenOut?: { __typename?: 'Token', id: string, name?: string | null, symbol?: string | null, decimals?: number | null } | null }> }> }> };
+export type AllTransactionFromUserQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, transactions: Array<{ __typename?: 'TransactionHash', id: string, blockNumber: any, blockTimestamp: any, swaps: Array<{ __typename?: 'Swap', id: string, chainId: number, transactionHash: string, tokenAmountIn: any, priceChecker: string, orderContract: string, priceCheckerData: string, to: string, tokenIn?: { __typename?: 'Token', id: string, name?: string | null, symbol?: string | null, decimals?: number | null } | null, tokenOut?: { __typename?: 'Token', id: string, name?: string | null, symbol?: string | null, decimals?: number | null } | null }> }> }> };
 
 
 export const AllTransactionFromUserDocument = gql`
@@ -376,6 +376,7 @@ export const AllTransactionFromUserDocument = gql`
         priceChecker
         orderContract
         priceCheckerData
+        to
         tokenIn {
           id
           name

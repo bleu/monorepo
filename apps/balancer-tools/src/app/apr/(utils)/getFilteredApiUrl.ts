@@ -1,10 +1,8 @@
+import { Pool } from "@bleu-fi/balancer-apr/src/lib/balancer/gauges";
 import { networkFor } from "@bleu-fi/utils";
 import { formatDateToMMDDYYYY } from "@bleu-fi/utils/date";
 
-import { Pool } from "@bleu-fi/balancer-apr/src/lib/balancer/gauges";
-
 import { SearchParams } from "../page";
-import { BASE_URL } from "./types";
 
 export const INITIAL_MIN_TVL = 10_000;
 export const INITIAL_LIMIT = 10;
@@ -73,18 +71,6 @@ function generateQueryParams(
   return `startAt=${formatDateToMMDDYYYY(startAt)}&endAt=${formatDateToMMDDYYYY(
     endAt,
   )}&${params}`;
-}
-
-export function generateApiUrlWithParams(
-  startAt: Date,
-  endAt: Date,
-  searchParams?: SearchParams | null,
-  poolId?: string,
-) {
-  const queryParams = generateQueryParams(startAt, endAt, searchParams);
-  return `${BASE_URL}/apr/api?${queryParams}${
-    poolId ? `&poolId=${poolId}` : ""
-  }`;
 }
 
 export function generatePoolPageLink(

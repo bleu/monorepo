@@ -20,8 +20,8 @@ export interface RewardAPR {
 }
 
 export interface PoolTokens {
-  address: string;
-  symbol: string;
+  address: string | null;
+  symbol: string | null;
   weight: number | null;
   logoSrc?: string;
 }
@@ -49,19 +49,18 @@ export interface PoolStats {
   volume: number;
   tvl: number;
   votingShare: number;
-  collectedFeesUSD: number;
 }
 
-export interface PoolStatsData extends PoolStats {
+export interface PoolAvgStatsData extends PoolStats {
   symbol: string;
   network: string;
-  poolId: string;
+  poolId: string | null;
   tokens: PoolTokens[];
   type: PoolTypeEnum;
 }
 
-export interface PoolStatsResults {
-  average: { poolAverage: PoolStatsData[] };
+export interface PoolAvgStatsResults {
+  poolAverage: PoolAvgStatsData[];
 }
 
 function valuesFromSearchParams(searchParams: URLSearchParams) {

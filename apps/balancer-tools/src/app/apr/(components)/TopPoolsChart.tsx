@@ -2,26 +2,27 @@
 
 import { formatDate } from "@bleu-fi/utils";
 import { greenDarkA } from "@radix-ui/colors";
-import { useRouter } from "next/navigation";
-import { Data, PlotMouseEvent, PlotType } from "plotly.js";
+// import { useRouter } from "next/navigation";
+import { Data, PlotType } from "plotly.js";
 
+// import {  PlotMouseEvent } from "plotly.js";
 import Plot from "#/components/Plot";
 
-import { generatePoolPageLink } from "../(utils)/getFilteredApiUrl";
-import { PoolStatsResults } from "../api/route";
+// import { generatePoolPageLink } from "../(utils)/getFilteredApiUrl";
+import { PoolAvgStatsData } from "../api/route";
 
 export default function TopPoolsChart({
   startAt,
   endAt,
-  ApiResult,
+  poolsData,
 }: {
   startAt: Date;
   endAt: Date;
-  ApiResult: PoolStatsResults;
+  poolsData: PoolAvgStatsData[];
 }) {
   const shades = Object.values(greenDarkA).map((color) => color.toString());
   const colors = [...shades.slice(4, 10).reverse(), ...shades.slice(4, 10)];
-  const yAxisLabels = ApiResult.average.poolAverage
+  const yAxisLabels = poolsData
     .filter((pool) => pool.apr.total > 0)
     .map((result) => [
       result.tokens
@@ -49,35 +50,30 @@ export default function TopPoolsChart({
   const chartData: Data = {
     hoverinfo: "none",
     marker: {
-      color: ApiResult.average.poolAverage.map(
-        (_, index) => colors[index % colors.length],
-      ),
+      color: poolsData.map((_, index) => colors[index % colors.length]),
     },
     orientation: "h" as const,
     type: "bar" as PlotType,
-    x: ApiResult.average.poolAverage.map((result) =>
-      result.apr.total.toFixed(2),
-    ),
+    x: poolsData.map((result) => result.apr.total.toFixed(2)),
     y: paddedYAxisLabels,
   };
 
-  const router = useRouter();
-  function onClickHandler(event: PlotMouseEvent) {
-    const clickedRoundData =
-      ApiResult.average.poolAverage[event.points[0].pointIndex];
-    const poolRedirectURL = generatePoolPageLink(
-      startAt,
-      endAt,
-      null,
-      clickedRoundData.poolId,
-    );
-    router.push(poolRedirectURL);
-  }
+  // const router = useRouter();
+  // function onClickHandler(event: PlotMouseEvent) {
+  //   const clickedRoundData = poolsData[event.points[0].pointIndex];
+  //   const poolRedirectURL = generatePoolPageLink(
+  //     startAt,
+  //     endAt,
+  //     null,
+  //     clickedRoundData.poolId
+  //   );
+  //   router.push(poolRedirectURL);
+  // }
 
   return (
     <div className="flex justify-between border border-blue6 bg-blue3 rounded p-4 cursor-pointer">
       <Plot
-        onClick={onClickHandler}
+        // onClick={onClickHandler}
         title={`Top APR Pools from ${formatDate(startAt)} to ${formatDate(
           endAt,
         )}`}

@@ -49,6 +49,8 @@ export default async function Page({
   const { poolAverage } = await fetchDataForDateRange({
     startDate,
     endDate,
+    ...searchParams,
+    filteredTokens: searchParams.tokens?.split(","),
   });
 
   return (

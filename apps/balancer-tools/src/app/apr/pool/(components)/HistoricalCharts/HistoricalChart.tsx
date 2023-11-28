@@ -31,33 +31,33 @@ function getActiveData(
 }
 
 export default function HistoricalChartWrapper({
-  apiResult,
+  results,
 }: {
-  apiResult: PoolStatsResults;
+  results: PoolStatsResults;
 }) {
   const charts = ["APR", "Weekly Swap Fees", "TVL", "Volume"];
   const [selectedTabs, setselectedTabs] = useState([0]);
 
-  const feeChartData = formatSwapFeeChartData(apiResult, "y2");
-  const tvlChartData = formatTvlChartData(apiResult, "y3");
-  const volumeChartData = formatVolumeChartData(apiResult, "y4");
-  const aprChartData = formatAPRChartData(apiResult, "y5");
-  const activeCharts = getActiveData(
-    selectedTabs,
-    aprChartData,
-    feeChartData,
-    tvlChartData,
-    volumeChartData,
-  );
+  const feeChartData = formatSwapFeeChartData(results, "y2");
+  // const tvlChartData = formatTvlChartData(results, "y3");
+  // const volumeChartData = formatVolumeChartData(results, "y4");
+  // const aprChartData = formatAPRChartData(results, "y5");
+  // const activeCharts = getActiveData(
+  //   selectedTabs,
+  //   aprChartData,
+  //   feeChartData,
+  //   tvlChartData,
+  //   volumeChartData
+  // );
 
   // This is needed to enable an axis that isn't meant to be shown
   // If the anchor axis isn't enabled the other it'll only show one trace at a time
-  activeCharts.push({
-    name: " ",
-    yaxis: "y",
-    x: [],
-    y: [],
-  });
+  // activeCharts.push({
+  //   name: " ",
+  //   yaxis: "y",
+  //   x: [],
+  //   y: [],
+  // });
 
   return (
     <div className="border border-blue6 bg-blue3 rounded p-4 w-full">
@@ -70,7 +70,7 @@ export default function HistoricalChartWrapper({
         />
       </div>
       <Plot
-        data={activeCharts}
+        data={[feeChartData]}
         config={{ displayModeBar: false }}
         layout={{
           plot_bgcolor: blueDark.blue3,
@@ -84,7 +84,7 @@ export default function HistoricalChartWrapper({
           },
           xaxis: {
             dtick: 1,
-            title: "Round Number",
+            title: "Date",
             gridcolor: blueDark.blue6,
             linecolor: blueDark.blue6,
             mirror: true,

@@ -1,0 +1,42 @@
+{
+  "name": "@bleu-fi/balancer-apr",
+  "version": "0.0.0",
+  "license": "MIT",
+  "main": "src/index.ts",
+  "scripts": {
+    "format:check": "prettier --check \"**/*.{md,html,mjml,json,graphql,yml,css,scss}\"",
+    "format": "prettier --write \"**/*.{md,html,mjml,json,graphql,yml,css,scss,ts,tsx,js,jsx}\"",
+    "lint": "eslint '**/*.{ts,tsx}' --max-warnings 0",
+    "lint:fix": "eslint '**/*.{ts,tsx}' --fix",
+    "migrations:generate": "drizzle-kit generate:pg",
+    "migrations:push": "node -r esbuild-register src/db/migrate.ts",
+    "migrations:drop": "drizzle-kit drop --config=drizzle.config.ts"
+  },
+  "devDependencies": {
+    "@bleu-fi/tsconfig": "workspace:*",
+    "@bleu-fi/utils": "workspace:^",
+    "@types/node": "18.18.5",
+    "drizzle-kit": "^0.19.13",
+    "esbuild-register": "^3.5.0",
+    "graphql": "16.8.1",
+    "micromatch": "4.0.5",
+    "typescript": "5.2.2"
+  },
+  "peerDependencies": {
+    "@types/react": ">=18",
+    "@types/react-dom": ">=18",
+    "dotenv": ">=16",
+    "graphql": ">=16",
+    "graphql-request": ">=6",
+    "graphql-tag": ">=2",
+    "react": ">=18",
+    "react-dom": ">=18",
+    "swr": ">=2"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.28.6",
+    "postgres": "^3.4.2",
+    "tiny-invariant": "^1.3.1",
+    "viem": "^1.19.1"
+  }
+}

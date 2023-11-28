@@ -13,7 +13,7 @@ import { ReactNode, useState } from "react";
 import invariant from "tiny-invariant";
 
 import { Toast } from "#/components/Toast";
-import { Pool } from "#/lib/balancer/gauges";
+import { Pool } from "@bleu-fi/balancer-apr/src/lib/balancer/gauges";
 
 import { generatePoolPageLink } from "../(utils)/getFilteredApiUrl";
 

@@ -1,4 +1,4 @@
-import { fetcher } from "#/utils/fetcher";
+import { fetcher } from "@bleu-fi/utils/fetcher";
 
 import { PoolStatsResults } from "../api/route";
 import { PoolListTable } from "./PoolListTable";

@@ -1,8 +1,8 @@
 import { dateToEpoch } from "@bleu-fi/utils/date";
 import { between, eq } from "drizzle-orm";
 
-import { db } from "#/db";
-import { poolSnapshots } from "#/db/schema";
+import { db } from "@bleu-fi/balancer-apr/src/db";
+import { poolSnapshots } from "@bleu-fi/balancer-apr/src/db/schema";
 
 export function isTimestampToday(timestamp: number): boolean {
   const now = new Date();

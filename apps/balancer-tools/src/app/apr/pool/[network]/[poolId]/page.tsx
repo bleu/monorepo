@@ -8,7 +8,7 @@ import Breadcrumb from "#/app/apr/(components)/Breadcrumb";
 import { generatePoolPageLink } from "#/app/apr/(utils)/getFilteredApiUrl";
 import { QueryParamsPagesSchema } from "#/app/apr/api/(utils)/validate";
 import { SearchParams } from "#/app/apr/page";
-import { Pool } from "#/lib/balancer/gauges";
+import { Pool } from "@bleu-fi/balancer-apr/src/lib/balancer/gauges";
 
 import HistoricalCharts from "../../(components)/HistoricalCharts";
 import PoolOverviewCards from "../../(components)/PoolOverviewCards";

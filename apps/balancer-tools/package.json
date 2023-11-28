@@ -9,9 +9,6 @@
     "build:prepare": "pnpm npm-run-all -l --parallel 'build:prepare:gql'",
     "dev": "pnpm npm-run-all -l --parallel dev:**",
     "dev:next": "next dev",
-    "migrations:generate": "drizzle-kit generate:pg",
-    "migrations:push": "node -r esbuild-register src/db/migrate.ts",
-    "migrations:drop": "drizzle-kit drop --config=drizzle.config.ts",
     "start": "next start",
     "wagmi": "wagmi generate",
     "wagmi:watch": "wagmi generate --watch",
@@ -21,6 +18,7 @@
     "test:watch": "pnpm exec jest --watchAll --verbose"
   },
   "dependencies": {
+    "@bleu-fi/balancer-apr": "workspace:^",
     "@bleu-fi/gql": "workspace:*",
     "@bleu-fi/math-poolsimulator": "workspace:*",
     "@bleu-fi/tsconfig": "workspace:*",

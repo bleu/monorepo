@@ -1,7 +1,7 @@
 import { dateToEpoch } from "@bleu-fi/utils/date";
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
+import * as balEmissions  from "@bleu-fi/balancer-apr/src/lib/balancer/emissions";
 
-import * as balEmissions from "#/lib/balancer/emissions";
 
 import { getBALPriceForDateRange } from "../(utils)/getBALPriceForDateRange";
 import OverviewCards, { getDatesDetails } from "./OverviewCards";

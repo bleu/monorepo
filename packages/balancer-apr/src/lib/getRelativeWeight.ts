@@ -2,12 +2,13 @@ import { dateToEpoch } from "@bleu-fi/utils/date";
 import { Address, createPublicClient, http } from "viem";
 import { mainnet } from "viem/chains";
 
-import { abi } from "#/abis/gaugesController";
+import { abi } from "./balancer/abis/gaugesController";
 
 export const publicClient = createPublicClient({
   chain: mainnet,
   transport: http(),
 });
+
 // Constants and Initializations
 const GAUGES_CONTROLLER_MAINNET_ADDRESS =
   "0xC128468b7Ce63eA702C1f104D55A2566b13D3ABD";

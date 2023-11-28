@@ -1,7 +1,7 @@
 import { NetworkChainId } from "@bleu-fi/utils";
 
-import POOLS_WITHOUT_GAUGES from "#/data/pools-without-gauge.json";
-import POOLS_WITH_GAUGES from "#/data/voting-gauges.json";
+import POOLS_WITHOUT_GAUGES from "./data/pools-without-gauge.json";
+import POOLS_WITH_GAUGES from "./data/voting-gauges.json";
 
 const GAUGE_CACHE: { [address: string]: Gauge } = {};
 const POOL_CACHE: { [id: string]: Pool } = {};

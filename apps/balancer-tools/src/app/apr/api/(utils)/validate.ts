@@ -2,8 +2,8 @@ import { Network, networksOnBalancer } from "@bleu-fi/utils";
 import { parseMMDDYYYYToDate } from "@bleu-fi/utils/date";
 import { z } from "zod";
 
-import POOLS_WITHOUT_GAUGES from "#/data/pools-without-gauge.json";
-import POOLS_WITH_LIVE_GAUGES from "#/data/voting-gauges.json";
+import POOLS_WITHOUT_GAUGES from "@bleu-fi/balancer-apr/src/lib/balancer/data/pools-without-gauge.json";
+import POOLS_WITH_LIVE_GAUGES from "@bleu-fi/balancer-apr/src/lib/balancer/data/voting-gauges.json";
 
 import { PoolTypeEnum } from "../../(utils)/types";
 import { Order } from "./sort";

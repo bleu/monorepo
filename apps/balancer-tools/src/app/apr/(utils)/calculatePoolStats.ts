@@ -3,8 +3,8 @@
 import { epochToDate } from "@bleu-fi/utils/date";
 import { and, eq, sql } from "drizzle-orm";
 
-import { db } from "#/db";
-import { pools, poolSnapshots } from "#/db/schema";
+import { db } from "@bleu-fi/balancer-apr/src/db";
+import { pools, poolSnapshots } from "@bleu-fi/balancer-apr/src/db/schema";
 
 import { PoolStatsData, PoolTokens, TokenAPR } from "../api/route";
 import { calculateAPRForDateRange } from "./calculateApr";

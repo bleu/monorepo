@@ -2,9 +2,9 @@ import { dateToEpoch } from "@bleu-fi/utils/date";
 import { desc, eq, lte } from "drizzle-orm";
 import invariant from "tiny-invariant";
 
-import { db } from "#/db";
-import { blocks, networks } from "#/db/schema";
-import { fetcher } from "#/utils/fetcher";
+import { db } from "../../db";
+import { blocks, networks } from "../../db/schema";
+import { fetcher } from "@bleu-fi/utils/fetcher";
 
 type HistoricalPriceResponse = {
   coins: {

@@ -24,7 +24,7 @@ import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
 import { TooltipMobile } from "#/components/TooltipMobile";
-import { fetcher } from "#/utils/fetcher";
+import { fetcher } from "@bleu-fi/utils/fetcher";
 
 import { formatAPR, formatTVL } from "../(utils)/formatPoolStats";
 import {

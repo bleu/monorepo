@@ -3,10 +3,10 @@ import { dateToEpoch } from "@bleu-fi/utils/date";
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import { and, between, eq, sql } from "drizzle-orm";
 
-import { db } from "#/db";
-import { tokenPrices } from "#/db/schema";
+import { db } from "@bleu-fi/balancer-apr/src/db";
+import { tokenPrices } from "@bleu-fi/balancer-apr/src/db/schema";
 import { withCache } from "#/lib/cache";
-import { DefiLlamaAPI } from "#/lib/defillama";
+import { DefiLlamaAPI } from "@bleu-fi/balancer-apr/src/lib/defillama";
 
 const BAL_TOKEN_ADDRESS = "0xba100000625a3754423978a60c9317c58a424e3d";
 

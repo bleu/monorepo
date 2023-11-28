@@ -2,7 +2,7 @@
 
 import { and, between, eq, sql } from "drizzle-orm";
 
-import { db } from "#/db";
+import { db } from "@bleu-fi/balancer-apr/src/db";
 import {
   pools,
   poolSnapshots,
@@ -10,7 +10,7 @@ import {
   swapFeeApr,
   tokens,
   vebalApr,
-} from "#/db/schema";
+} from "@bleu-fi/balancer-apr/src/db/schema";
 
 export async function fetchDataForDateRange(
   startDate: Date,

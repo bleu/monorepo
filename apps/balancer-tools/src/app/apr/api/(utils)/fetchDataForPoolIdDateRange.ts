@@ -4,7 +4,7 @@ import {
   generateDateRange,
 } from "@bleu-fi/utils/date";
 
-import { Pool } from "#/lib/balancer/gauges";
+import { Pool } from "@bleu-fi/balancer-apr/src/lib/balancer/gauges";
 
 import {
   calculatePoolData,

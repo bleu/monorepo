@@ -1,4 +1,4 @@
-import { fetcher } from "#/utils/fetcher";
+import { fetcher } from "@bleu-fi/utils/fetcher";
 
 import OverviewCards, {
   getDatesDetails,

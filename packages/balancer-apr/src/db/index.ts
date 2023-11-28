@@ -4,8 +4,6 @@ import postgres from "postgres";
 
 import * as schema from "./schema";
 
-export const db = drizzle(postgres(process.env.DATABASE_URL, { max: 1 }), {
+export const db = drizzle(postgres(process.env.DATABASE_URL!, { max: 1 }), {
   schema,
 });
-
-// export const db = drizzle(sql, );

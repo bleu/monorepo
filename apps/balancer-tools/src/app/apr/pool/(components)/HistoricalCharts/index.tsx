@@ -1,7 +1,7 @@
 import { generateApiUrlWithParams } from "#/app/apr/(utils)/getFilteredApiUrl";
 import { PoolStatsData, PoolStatsResults } from "#/app/apr/api/route";
 import { trimTrailingValues } from "#/lib/utils";
-import { fetcher } from "#/utils/fetcher";
+import { fetcher } from "@bleu-fi/utils/fetcher";
 
 import HistoricalChart from "./HistoricalChart";
 

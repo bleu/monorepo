@@ -5,7 +5,7 @@ import { SECONDS_IN_YEAR } from "@bleu-fi/utils/date";
 import * as Sentry from "@sentry/nextjs";
 
 import { withCache } from "#/lib/cache";
-import { DefiLlamaAPI } from "#/lib/defillama";
+import { DefiLlamaAPI } from "@bleu-fi/balancer-apr/src/lib/defillama";
 import { pools } from "#/lib/gql/server";
 import { GetDeepProp } from "#/utils/getTypes";
 

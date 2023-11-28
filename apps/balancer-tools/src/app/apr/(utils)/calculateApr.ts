@@ -1,8 +1,8 @@
 import { epochToDate } from "@bleu-fi/utils/date";
 import { and, eq } from "drizzle-orm";
 
-import { db } from "#/db";
-import { swapFeeApr, vebalApr } from "#/db/schema";
+import { db } from "@bleu-fi/balancer-apr/src/db";
+import { swapFeeApr, vebalApr } from "@bleu-fi/balancer-apr/src/db/schema";
 
 export async function calculateAPRForDateRange(
   endAtTimestamp: number,

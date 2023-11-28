@@ -1,11 +1,8 @@
-import { get } from "lodash";
-
 import {
   PoolStatsData,
   PoolStatsResults,
   PoolStatsResultsPerDay,
 } from "#/app/apr/api/route";
-import { trimTrailingValues } from "#/lib/utils";
 
 import HistoricalChart from "./HistoricalChart";
 

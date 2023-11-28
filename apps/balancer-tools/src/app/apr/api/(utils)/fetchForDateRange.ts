@@ -16,21 +16,22 @@ import { PoolTypeEnum } from "../../(utils)/types";
 interface FetchDataOptions {
   startDate: Date;
   endDate: Date;
-  minTvl?: number;
-  limit?: number;
-  sortBy?: string;
+  minTvl?: string;
+  limit?: string;
+  sort?: string;
   order?: "asc" | "desc";
-  maxTvl?: number;
+  maxTvl?: string;
+  filteredTokens?: string[];
 }
 
 export async function fetchDataForDateRange({
   startDate,
   endDate,
-  minTvl = 10_000,
-  limit = 10,
-  sortBy = "apr",
+  minTvl = "10000",
+  limit = "10",
+  sort = "apr",
   order = "desc",
-  maxTvl = 10_000_000_000,
+  maxTvl = "10000000000",
 }: FetchDataOptions) {
   const poolAprForDate = db
     .select({
@@ -72,7 +73,7 @@ export async function fetchDataForDateRange({
     .where(
       and(
         between(swapFeeApr.timestamp, startDate, endDate),
-        between(poolSnapshots.liquidity, String(minTvl), String(maxTvl)),
+        between(poolSnapshots.liquidity, minTvl, maxTvl),
       ),
     )
     .groupBy(swapFeeApr.poolExternalId)
@@ -81,8 +82,9 @@ export async function fetchDataForDateRange({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sortFieldMapping: Record<string, any> = {
     apr: poolAprForDate.avgApr,
+    tvl: poolAprForDate.avgLiquidity,
   };
-  const sortField = sortFieldMapping[sortBy];
+  const sortField = sortFieldMapping[sort];
 
   const orderBy = order === "desc" ? desc(sortField) : asc(sortField);
 
@@ -91,12 +93,12 @@ export async function fetchDataForDateRange({
     .from(poolAprForDate)
     .orderBy(orderBy)
     .where(ne(poolAprForDate.avgApr, 0))
-    .limit(limit);
+    .limit(Number(limit));
 
   const poolData = await db
     .select({
       poolExternalId: pools.externalId,
-      netwok: pools.networkSlug,
+      network: pools.networkSlug,
       type: pools.poolType,
       symbol: pools.symbol,
     })
@@ -140,7 +142,6 @@ export async function fetchDataForDateRange({
           },
         },
       },
-      balPriceUSD: 0,
       tvl: Number(pool.avgLiquidity),
       tokens: tokensForPool,
       volume: Number(pool.avgVolume),
@@ -150,7 +151,7 @@ export async function fetchDataForDateRange({
           ?.symbol || "",
       network:
         poolData.find((p) => p.poolExternalId === pool.poolExternalId)
-          ?.netwok || "",
+          ?.network || "",
       type: poolData.find((p) => p.poolExternalId === pool.poolExternalId)
         ?.type as PoolTypeEnum,
     };

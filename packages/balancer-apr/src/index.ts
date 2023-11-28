@@ -7,8 +7,9 @@ import "dotenv/config";
 import { dateToEpoch } from "@bleu-fi/utils/date";
 import { and, asc, eq, gt, isNotNull, sql } from "drizzle-orm";
 import { PgTable } from "drizzle-orm/pg-core";
+import { Address } from "viem";
 
-import { getPoolRelativeWeight } from "./lib/getRelativeWeight";
+import { db } from "./db/index";
 import {
   balEmission,
   gauges,
@@ -21,8 +22,7 @@ import {
 } from "./db/schema";
 import * as balEmissions from "./lib/balancer/emissions";
 import { DefiLlamaAPI } from "./lib/defillama";
-
-import { db } from "./db/index";
+import { getPoolRelativeWeights } from "./lib/getRelativeWeight";
 
 const BATCH_SIZE = 1_000;
 
@@ -269,78 +269,73 @@ async function extractGauges() {
 }
 
 async function extractGaugesSnapshot() {
-  //for every gauge address on every timestamp of poolsnapshot where gauge.pool_external_id joins poolsnapshot.pool_external_id
-  //get the relative weight and insert into gaugesnapshot table
-  // Fetch all distinct pool_external_id values from the poolsnapshot table
-
   try {
-    const distinctGauges = await db
+    // Fetch gauge addresses and corresponding timestamps
+    const gaugeTimestamps = await db
       .select({
         gaugeAddress: gauges.address,
+        timestamp: vebalRounds.startDate,
       })
-      .from(gauges);
+      .from(poolSnapshots)
+      .fullJoin(gauges, eq(poolSnapshots.poolExternalId, gauges.poolExternalId))
+      .fullJoin(vebalRounds, eq(poolSnapshots.timestamp, vebalRounds.startDate))
+      .where(
+        and(
+          gt(poolSnapshots.timestamp, gauges.externalCreatedAt),
+          isNotNull(vebalRounds.startDate),
+        ),
+      )
+      .orderBy(asc(vebalRounds.startDate));
 
-    for (const { gaugeAddress } of distinctGauges) {
-      const timestamps = await db
+    // Create tuples for batch processing
+    const gaugeAddressTimestampTuples: [Address, number][] =
+      gaugeTimestamps.map(({ gaugeAddress, timestamp }) => [
+        gaugeAddress as Address,
+        dateToEpoch(timestamp),
+      ]);
+
+    // Batch process to get relative weights
+    logIfVerbose(
+      `Fetching ${gaugeAddressTimestampTuples.length} relativeweight-timestamp pairs`,
+    );
+    const relativeWeights = await getPoolRelativeWeights(
+      gaugeAddressTimestampTuples,
+    );
+
+    for (const [
+      gaugeAddress,
+      epochTimestamp,
+      relativeWeight,
+    ] of relativeWeights) {
+      const timestamp = new Date(epochTimestamp * 1000); // Convert back to Date object
+
+      // Fetch the round number for each timestamp
+      const roundNumberList = await db
         .select({
-          timestamp: vebalRounds.startDate,
-          gaugeAddress: gauges.address,
+          round_number: vebalRounds.roundNumber,
         })
-        .from(poolSnapshots)
-        .fullJoin(
-          gauges,
-          eq(poolSnapshots.poolExternalId, gauges.poolExternalId),
-        )
-        .fullJoin(
-          vebalRounds,
-          eq(poolSnapshots.timestamp, vebalRounds.startDate),
-        )
-        .where(
-          and(
-            eq(gauges.address, String(gaugeAddress)),
-            gt(poolSnapshots.timestamp, gauges.externalCreatedAt),
-            isNotNull(vebalRounds.startDate),
-          ),
-        )
-        .orderBy(asc(vebalRounds.startDate));
+        .from(vebalRounds)
+        .where(eq(vebalRounds.startDate, timestamp));
 
-      for (const { timestamp } of timestamps) {
-        if (!timestamp) continue;
-        try {
-          const relativeWeight = await getPoolRelativeWeight(
+      const roundNumber = roundNumberList[0]?.round_number;
+
+      // Insert into gaugeSnapshots table
+      if (roundNumber) {
+        await db
+          .insert(gaugeSnapshots)
+          .values({
             gaugeAddress,
-            dateToEpoch(timestamp),
-          );
-
-          const roundNumberList = await db
-            .select({
-              round_number: vebalRounds.roundNumber,
-            })
-            .from(vebalRounds)
-            .where(eq(vebalRounds.startDate, timestamp));
-
-          const roundNumber = roundNumberList[0].round_number;
-
-          await db
-            .insert(gaugeSnapshots)
-            .values({
-              gaugeAddress,
-              timestamp: timestamp,
-              relativeWeight: String(relativeWeight),
-              roundNumber: roundNumber,
-            })
-            .onConflictDoNothing()
-            .execute();
-        } catch (error) {
-          console.error(`${error}`);
-        }
+            timestamp: timestamp,
+            relativeWeight: String(relativeWeight),
+            roundNumber: roundNumber,
+          })
+          .onConflictDoNothing()
+          .execute();
       }
     }
   } catch (error) {
     console.error(error);
   }
-
-  //block number and network slug and raw data are not needed
 }
 
 async function addToTable(table: any, items: any) {
@@ -635,7 +630,6 @@ async function seedBalEmission() {
       console.error(`${error}`);
     }
   }
-
 }
 
 async function calculateApr() {
@@ -753,4 +747,4 @@ export async function runETLs() {
   process.exit(0);
 }
 
-runETLs()
+runETLs();

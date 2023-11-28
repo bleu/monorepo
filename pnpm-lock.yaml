@@ -562,10 +562,10 @@ importers:
   packages/balancer-apr:
     dependencies:
       '@types/react':
-        specifier: 18.2.30
+        specifier: '>=18'
         version: 18.2.30
       '@types/react-dom':
-        specifier: 18.2.14
+        specifier: '>=18'
         version: 18.2.14
       dotenv:
         specifier: '>=16'
@@ -574,7 +574,7 @@ importers:
         specifier: ^0.28.6
         version: 0.28.6(@vercel/postgres@0.5.0)(postgres@3.4.2)
       graphql-request:
-        specifier: 6.1.0
+        specifier: '>=6'
         version: 6.1.0(graphql@16.8.1)
       graphql-tag:
         specifier: '>=2'
@@ -583,10 +583,10 @@ importers:
         specifier: ^3.4.2
         version: 3.4.2
       react:
-        specifier: 18.2.0
+        specifier: '>=18'
         version: 18.2.0
       react-dom:
-        specifier: 18.2.0
+        specifier: '>=18'
         version: 18.2.0(react@18.2.0)
       swr:
         specifier: '>=2'

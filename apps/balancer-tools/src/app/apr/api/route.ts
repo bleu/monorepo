@@ -45,22 +45,26 @@ export interface APR {
 
 export interface PoolStats {
   apr: APR;
-  balPriceUSD: number;
   volume: number;
   tvl: number;
   votingShare: number;
-}
-
-export interface PoolAvgStatsData extends PoolStats {
   symbol: string;
   network: string;
   poolId: string | null;
-  tokens: PoolTokens[];
   type: PoolTypeEnum;
+  tokens: PoolTokens[];
 }
 
-export interface PoolAvgStatsResults {
-  poolAverage: PoolAvgStatsData[];
+export interface PoolStatsData extends PoolStats {
+  collectedFeesUSD: number;
+}
+
+export interface PoolStatsResultsPerDay {
+  [date: string]: PoolStatsData;
+}
+
+export interface PoolStatsResults {
+  perDay: PoolStatsResultsPerDay[];
 }
 
 function valuesFromSearchParams(searchParams: URLSearchParams) {
@@ -104,7 +108,10 @@ export async function GET(request: NextRequest) {
       await fetchDataForPoolIdDateRange(poolId, startAt, endAt),
     );
   } else if (startAt && endAt) {
-    responseData = await fetchDataForDateRange(startAt, endAt);
+    responseData = await fetchDataForDateRange({
+      startDate: startAt,
+      endDate: endAt,
+    });
   }
 
   if (responseData === null || !responseData) {

@@ -28,7 +28,7 @@ import { TooltipMobile } from "#/components/TooltipMobile";
 import { formatAPR, formatTVL } from "../(utils)/formatPoolStats";
 import { generatePoolPageLink } from "../(utils)/getFilteredApiUrl";
 import { PoolTypeEnum } from "../(utils)/types";
-import { APR, PoolAvgStatsData, PoolTokens } from "../api/route";
+import { APR, PoolStats, PoolTokens } from "../api/route";
 import { MoreFiltersButton } from "./MoreFiltersButton";
 import { TokenFilterInput } from "./TokenFilterInput";
 
@@ -39,7 +39,7 @@ export function PoolListTable({
 }: {
   startAt: Date;
   endAt: Date;
-  initialData: PoolAvgStatsData[];
+  initialData: PoolStats[];
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -285,7 +285,7 @@ function APRHover({ apr }: { apr: APR }) {
 
 function OrderIcon(
   searchParams: ReadonlyURLSearchParams,
-  fieldName: keyof PoolAvgStatsData,
+  fieldName: keyof PoolStats,
 ) {
   if (searchParams.get("sort") !== fieldName) return <DashIcon />;
 

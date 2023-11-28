@@ -9,7 +9,7 @@ import { Data, PlotType } from "plotly.js";
 import Plot from "#/components/Plot";
 
 // import { generatePoolPageLink } from "../(utils)/getFilteredApiUrl";
-import { PoolAvgStatsData } from "../api/route";
+import { PoolStats } from "../api/route";
 
 export default function TopPoolsChart({
   startAt,
@@ -18,7 +18,7 @@ export default function TopPoolsChart({
 }: {
   startAt: Date;
   endAt: Date;
-  poolsData: PoolAvgStatsData[];
+  poolsData: PoolStats[];
 }) {
   const shades = Object.values(greenDarkA).map((color) => color.toString());
   const colors = [...shades.slice(4, 10).reverse(), ...shades.slice(4, 10)];

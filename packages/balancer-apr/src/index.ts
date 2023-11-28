@@ -8,7 +8,7 @@ import { dateToEpoch } from "@bleu-fi/utils/date";
 import { and, asc, eq, gt, isNotNull, sql } from "drizzle-orm";
 import { PgTable } from "drizzle-orm/pg-core";
 
-import { getPoolRelativeWeight } from "./lib/getRelativeWeight";
+import { db } from "./db/index";
 import {
   balEmission,
   gauges,
@@ -21,8 +21,7 @@ import {
 } from "./db/schema";
 import * as balEmissions from "./lib/balancer/emissions";
 import { DefiLlamaAPI } from "./lib/defillama";
-
-import { db } from "./db/index";
+import { getPoolRelativeWeight } from "./lib/getRelativeWeight";
 
 const BATCH_SIZE = 1_000;
 
@@ -635,7 +634,6 @@ async function seedBalEmission() {
       console.error(`${error}`);
     }
   }
-
 }
 
 async function calculateApr() {
@@ -753,4 +751,4 @@ export async function runETLs() {
   process.exit(0);
 }
 
-runETLs()
+runETLs();

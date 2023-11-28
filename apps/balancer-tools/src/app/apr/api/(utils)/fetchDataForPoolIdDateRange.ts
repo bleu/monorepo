@@ -2,7 +2,6 @@ import {
   dateToEpoch,
   formatDateToMMDDYYYY,
   generateDateRange,
-  SECONDS_IN_DAY,
 } from "@bleu-fi/utils/date";
 
 import { Pool } from "#/lib/balancer/gauges";
@@ -59,10 +58,8 @@ export async function fetchDataForPoolIdDateRange(
   const fetchPromises = allDaysBetween.map(async (dayDate, dayIdx) => {
     const data = await retryAsyncOperation(
       async () => {
-        const startAtTimestamp = Math.floor(dayDate - SECONDS_IN_DAY);
         const endAtTimestamp = Math.floor(dayDate);
         return await calculatePoolStats({
-          startAtTimestamp,
           endAtTimestamp,
           poolId,
         });

@@ -1,9 +1,43 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "9a79b0dc-ba0c-4c1c-8e64-50945b454368",
+  "id": "9d2c2f4c-0b9e-4df8-999e-c6398e39d057",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
+    "bal_emission": {
+      "name": "bal_emission",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "week_emission": {
+          "name": "week_emission",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "bal_emission_timestamp_week_emission_unique": {
+          "name": "bal_emission_timestamp_week_emission_unique",
+          "nullsNotDistinct": false,
+          "columns": ["timestamp", "week_emission"]
+        }
+      }
+    },
     "blocks": {
       "name": "blocks",
       "schema": "",
@@ -119,6 +153,12 @@
         "gauge_address": {
           "name": "gauge_address",
           "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "round_number": {
+          "name": "round_number",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
@@ -1266,6 +1306,12 @@
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
+        },
+        "external_id": {
+          "name": "external_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -1281,7 +1327,13 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "vebal_apr_external_id_unique": {
+          "name": "vebal_apr_external_id_unique",
+          "nullsNotDistinct": false,
+          "columns": ["external_id"]
+        }
+      }
     },
     "vebal_rounds": {
       "name": "vebal_rounds",
@@ -1329,7 +1381,13 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "vebal_rounds_round_number_unique": {
+          "name": "vebal_rounds_round_number_unique",
+          "nullsNotDistinct": false,
+          "columns": ["round_number"]
+        }
+      }
     },
     "yield_token_apr": {
       "name": "yield_token_apr",

@@ -2,16 +2,16 @@ import { epochToDate } from "@bleu-fi/utils/date";
 import { and, eq } from "drizzle-orm";
 
 import { db } from "#/db";
-import { swapFeeApr } from "#/db/schema";
+import { swapFeeApr, vebalApr } from "#/db/schema";
 
 export async function calculateAPRForDateRange(
-  startAtTimestamp: number,
   endAtTimestamp: number,
   poolId: string,
 ) {
   // const [votingShare, [feeAPR, collectedFeesUSD], tokensAPR, rewardsAPR] =
-  const [[feeAPR, collectedFeesUSD]] = await Promise.all([
+  const [vebalAPR, [feeAPR, collectedFeesUSD]] = await Promise.all([
     // getPoolRelativeWeight(poolId, endAtTimestamp),
+    getVebalAprForDate(poolId, endAtTimestamp),
     getFeeAprForDate(poolId, endAtTimestamp),
     // getPoolTokensAprForDateRange(
     //   network,
@@ -88,9 +88,9 @@ export async function calculateAPRForDateRange(
 
   return {
     apr: {
-      total: feeAPR,
+      total: vebalAPR + feeAPR,
       breakdown: {
-        veBAL: 0,
+        veBAL: vebalAPR,
         swapFee: feeAPR,
         tokens: {
           total: 0,
@@ -138,4 +138,19 @@ export async function getFeeAprForDate(poolId: string, date: number) {
   const { value: apr, collectedFeesUSD } = result[0];
 
   return [Number(apr), Number(collectedFeesUSD)];
+}
+
+export async function getVebalAprForDate(poolId: string, date: number) {
+  const result = await db
+    .select()
+    .from(vebalApr)
+    .where(
+      and(
+        eq(vebalApr.poolExternalId, poolId),
+        eq(vebalApr.timestamp, epochToDate(date)),
+      ),
+    );
+  const { value: apr } = result[0];
+
+  return Number(apr);
 }

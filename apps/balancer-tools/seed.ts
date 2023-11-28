@@ -4,16 +4,22 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 import "dotenv/config";
 
-import { sql } from "drizzle-orm";
+import { dateToEpoch } from "@bleu-fi/utils/date";
+import { and, asc, eq, gt, isNotNull, sql } from "drizzle-orm";
 import { PgTable } from "drizzle-orm/pg-core";
 
+import { getPoolRelativeWeight } from "#/app/apr/(utils)/getRelativeWeight";
 import {
+  balEmission,
   gauges,
+  gaugeSnapshots,
   pools,
   poolSnapshots,
   poolSnapshotsTemp,
   tokenPrices,
+  vebalRounds,
 } from "#/db/schema";
+import * as balEmissions from "#/lib/balancer/emissions";
 import { DefiLlamaAPI } from "#/lib/defillama";
 
 import { db } from "./src/db/index";
@@ -262,6 +268,81 @@ async function extractGauges() {
   await processGauges(response.data);
 }
 
+async function extractGaugesSnapshot() {
+  //for every gauge address on every timestamp of poolsnapshot where gauge.pool_external_id joins poolsnapshot.pool_external_id
+  //get the relative weight and insert into gaugesnapshot table
+  // Fetch all distinct pool_external_id values from the poolsnapshot table
+
+  try {
+    const distinctGauges = await db
+      .select({
+        gaugeAddress: gauges.address,
+      })
+      .from(gauges);
+
+    for (const { gaugeAddress } of distinctGauges) {
+      const timestamps = await db
+        .select({
+          timestamp: vebalRounds.startDate,
+          gaugeAddress: gauges.address,
+        })
+        .from(poolSnapshots)
+        .fullJoin(
+          gauges,
+          eq(poolSnapshots.poolExternalId, gauges.poolExternalId),
+        )
+        .fullJoin(
+          vebalRounds,
+          eq(poolSnapshots.timestamp, vebalRounds.startDate),
+        )
+        .where(
+          and(
+            eq(gauges.address, String(gaugeAddress)),
+            gt(poolSnapshots.timestamp, gauges.externalCreatedAt),
+            isNotNull(vebalRounds.startDate),
+          ),
+        )
+        .orderBy(asc(vebalRounds.startDate));
+
+      for (const { timestamp } of timestamps) {
+        if (!timestamp) continue;
+        try {
+          const relativeWeight = await getPoolRelativeWeight(
+            gaugeAddress,
+            dateToEpoch(timestamp),
+          );
+
+          const roundNumberList = await db
+            .select({
+              round_number: vebalRounds.roundNumber,
+            })
+            .from(vebalRounds)
+            .where(eq(vebalRounds.startDate, timestamp));
+
+          const roundNumber = roundNumberList[0].round_number;
+
+          await db
+            .insert(gaugeSnapshots)
+            .values({
+              gaugeAddress,
+              timestamp: timestamp,
+              relativeWeight: String(relativeWeight),
+              roundNumber: roundNumber,
+            })
+            .onConflictDoNothing()
+            .execute();
+        } catch (error) {
+          console.error(`${error}`);
+        }
+      }
+    }
+  } catch (error) {
+    console.error(error);
+  }
+
+  //block number and network slug and raw data are not needed
+}
+
 async function addToTable(table: any, items: any) {
   const chunkedItems = [...chunks(items, BATCH_SIZE)];
   return await Promise.all(
@@ -333,24 +414,6 @@ LEFT JOIN
 ON 
     b.timestamp <= c.timestamp 
     AND (c.timestamp < b.timestamp_next_change OR b.timestamp_next_change IS NULL)
-ON CONFLICT (external_id) DO NOTHING;
-`);
-
-  await db.execute(sql`
-  INSERT INTO swap_fee_apr (timestamp, pool_external_id, collected_fees_usd, value, external_id)
-  SELECT
-	p1.timestamp,
-	p1.pool_external_id,
-	p1.swap_fees - p2.swap_fees AS collected_fees_usd,
-    CASE 
-        WHEN p1.liquidity = 0 THEN 0
-        ELSE ((p1.swap_fees - p2.swap_fees) * (1 - COALESCE(p1.protocol_swap_fee_cache, 0.5)) / p1.liquidity) * 365 * 100 
-    END AS "value",
-  p1.external_id
-FROM pool_snapshots p1
-LEFT JOIN pool_snapshots p2 
-ON p1. "timestamp" = p2. "timestamp" + INTERVAL '1 day'
-AND p1.pool_external_id = p2.pool_external_id
 ON CONFLICT (external_id) DO NOTHING;
 `);
 }
@@ -453,6 +516,8 @@ async function transformGauges() {
   DO UPDATE SET is_killed = EXCLUDED.is_killed
   WHERE gauges.address IS DISTINCT FROM EXCLUDED.address;`);
 
+  //TODO: get raw_data to the gauges table, this is creating new rows and deleting old ones, so the id starts on 267
+
   // delete rows that are no longer needed
   await db.execute(
     sql`
@@ -470,6 +535,11 @@ async function ETLGauges() {
   await extractGauges();
   logIfVerbose("Starting Gauges Transformation");
   await transformGauges();
+}
+
+async function ETLGaugesSnapshot() {
+  logIfVerbose("Starting Gauges Snapshot Extraction");
+  await extractGaugesSnapshot();
 }
 
 const networkNames = Object.keys(
@@ -506,7 +576,6 @@ async function seedNetworks() {
   logIfVerbose("Seeding networks");
 
   return await db.execute(sql`
-  -- SQL Script to populate networks
 INSERT INTO networks (name, slug, chain_id) VALUES
 ('Ethereum', 'ethereum', 1),
 ('Polygon', 'polygon', 137),
@@ -523,83 +592,97 @@ DO UPDATE SET chain_id = EXCLUDED.chain_id, updated_at = NOW();
 `);
 }
 
-// async function fetchTokenPrices() {
-//   const remappings = {
-//     avalanche: "avax",
-//   };
+async function seedVebalRounds() {
+  logIfVerbose("Seeding veBAL rounds");
 
-//   const inverseRemapping = {
-//     avax: "avalanche",
-//   };
-//   // Step 1: Fetch distinct tokens for each day
-//   const result = await db.execute(sql`
-//   SELECT DISTINCT
-// 	pt.token_address,
-// 	pt.network_slug,
-// 	date_trunc('day', ps.timestamp) AS day
-// FROM
-// 	pool_tokens pt
-// 	INNER JOIN pool_snapshots ps ON pt.pool_external_id = ps.pool_external_id
-// 	LEFT JOIN token_prices tp ON pt.token_address = tp.token_address
-// 		AND pt.network_slug = tp.network_slug
-// 		AND date_trunc('day', ps.timestamp) = date_trunc('day', tp.timestamp)
-// WHERE
-// 	tp.id IS NULL
-// ORDER BY
-// 	day,
-// 	pt.token_address;
-//   `);
+  const startDate = new Date("2022-04-14T00:00:00.000Z");
+  let roundNumber = 1;
 
-//   // Step 2: Deduplicate tokens for the same day
-//   const dedupedTokens: { [day: string]: Set<string> } = {};
+  while (startDate <= new Date()) {
+    const endDate = new Date(startDate);
+    endDate.setUTCDate(endDate.getUTCDate() + 6);
+    endDate.setUTCHours(23, 59, 59, 999);
 
-//   for (const row of result) {
-//     const day = row.day.toISOString();
-//     if (!dedupedTokens[day]) {
-//       dedupedTokens[day] = new Set();
-//     }
+    await db.execute(sql`
+      INSERT INTO vebal_rounds (start_date, end_date, round_number)
+      VALUES (${startDate.toISOString()}, ${endDate.toISOString()}, ${roundNumber})
+      ON CONFLICT (round_number) DO NOTHING;
+    `);
+    startDate.setUTCDate(startDate.getUTCDate() + 7);
+    roundNumber++;
+  }
+}
 
-//     dedupedTokens[day].add(
-//       `${remappings[row.network_slug] ?? row.network_slug}:${row.token_address}`
-//     );
-//   }
+async function seedBalEmission() {
+  const timestamps = await db
+    .selectDistinct({ timestamp: poolSnapshots.timestamp })
+    .from(poolSnapshots);
 
-//   // Step 3: Fetch token prices
-//   for (const [day, tokens] of Object.entries(dedupedTokens)) {
-//     const dateTimestamp = Date.UTC(
-//       Number(day.split("-")[0]),
-//       Number(day.split("-")[1]) - 1,
-//       Number(day.split("-")[2].split("T")[0])
-//     );
-//     const tokenAddresses = Array.from(tokens);
-//     try {
-//       const prices = await DefiLlamaAPI.getHistoricalPrice(
-//         new Date(dateTimestamp),
-//         tokenAddresses
-//       );
+  for (const { timestamp } of timestamps) {
+    if (!timestamp) continue;
+    try {
+      const weeklyBalEmission = balEmissions.weekly(dateToEpoch(timestamp));
 
-//       const entries = Object.entries(prices.coins);
+      await db
+        .insert(balEmission)
+        .values({
+          timestamp: timestamp,
+          weekEmission: String(weeklyBalEmission),
+        })
+        .onConflictDoNothing()
+        .execute();
+    } catch (error) {
+      console.error(`${error}`);
+    }
+  }
 
-//       await addToTable(
-//         tokenPrices,
-//         entries.map((entry) => ({
-//           tokenAddress: entry[0].split(":")[1],
-//           priceUSD: entry[1].price,
-//           timestamp: new Date(entry[1].timestamp * 1000),
-//           networkSlug:
-//             // @ts-ignore
-//             inverseRemapping[entry[0].split(":")[0]] ?? entry[0].split(":")[0],
-//         }))
-//       );
+}
 
-//       console.log(`Fetched prices for tokens on ${day}:`, prices);
-//     } catch (e) {
-//       console.error(
-//         `Failed to fetch prices for tokens on ${day}: ${e.message}`
-//       );
-//     }
-//   }
-// }
+async function calculateApr() {
+  // Fee APR
+  logIfVerbose("Seeding Fee APR");
+  await db.execute(sql`
+  INSERT INTO swap_fee_apr (timestamp, pool_external_id, collected_fees_usd, value, external_id)
+  SELECT
+	p1.timestamp,
+	p1.pool_external_id,
+	p1.swap_fees - p2.swap_fees AS collected_fees_usd,
+    CASE 
+        WHEN p1.liquidity = 0 THEN 0
+        ELSE ((p1.swap_fees - p2.swap_fees) * (1 - COALESCE(p1.protocol_swap_fee_cache, 0.5)) / p1.liquidity) * 365 * 100 
+    END AS "value",
+  p1.external_id
+FROM pool_snapshots p1
+LEFT JOIN pool_snapshots p2 
+ON p1. "timestamp" = p2. "timestamp" + INTERVAL '1 day'
+AND p1.pool_external_id = p2.pool_external_id
+ON CONFLICT (external_id) DO NOTHING;
+`);
+
+  // veBAL APR
+  logIfVerbose("Seeding veBAL APR");
+  await db.execute(sql`
+INSERT INTO vebal_apr (timestamp, value, pool_external_id, external_id)
+SELECT DISTINCT
+    ps.timestamp,
+    CASE
+        WHEN ps.liquidity = 0 THEN 0
+        ELSE (52 * (be.week_emission * gs.relative_weight * tp.price_usd) / ps.liquidity) * 100
+    END AS value,
+    ps.pool_external_id,
+    ps.external_id
+FROM pool_snapshots ps
+LEFT JOIN vebal_rounds vr ON ps.timestamp BETWEEN vr.start_date AND vr.end_date
+JOIN gauges g ON g.pool_external_id = ps.pool_external_id
+JOIN gauge_snapshots gs ON g.address = gs.gauge_address
+    AND vr.round_number = gs.round_number
+LEFT JOIN token_prices tp ON tp.token_address = '0xba100000625a3754423978a60c9317c58a424e3d'
+    AND tp.timestamp = ps.timestamp
+LEFT JOIN bal_emission be ON be.timestamp = ps.timestamp
+ON CONFLICT (external_id) DO NOTHING;
+`);
+}
+
 async function fetchBalPrices() {
   try {
     // Get unique timestamps from pool_snapshots table
@@ -658,12 +741,14 @@ async function runETLs() {
   logIfVerbose("Starting ETL processes");
 
   await seedNetworks();
+  await seedVebalRounds();
   await ETLPools();
   await ETLSnapshots();
   await ETLGauges();
-  // await fetchTokenPrices(); -> this is not necessary for every pool, just for the ones that haev token rewards and token yield
+  await seedBalEmission();
   await fetchBalPrices();
-  // await fetchBlocks();
+  await ETLGaugesSnapshot();
+  await calculateApr();
   logIfVerbose("Ended ETL processes");
   process.exit(0);
 }

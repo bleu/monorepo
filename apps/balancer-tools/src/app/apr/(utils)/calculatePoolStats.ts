@@ -77,16 +77,13 @@ export async function fetchPoolTokens(poolId: string) {
 }
 
 export async function calculatePoolStats({
-  startAtTimestamp,
   endAtTimestamp,
   poolId,
 }: {
-  startAtTimestamp: number;
   endAtTimestamp: number;
   poolId: string;
 }): Promise<calculatePoolData> {
   const { apr, collectedFeesUSD } = await calculateAPRForDateRange(
-    startAtTimestamp,
     endAtTimestamp,
     poolId,
   );

@@ -636,7 +636,6 @@ async function seedBalEmission() {
     }
   }
 
-  // balEmissions.weekly(endAtTimestamp);
 }
 
 async function calculateApr() {

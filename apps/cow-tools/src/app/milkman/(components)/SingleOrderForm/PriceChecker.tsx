@@ -112,6 +112,7 @@ export function FormSelectPriceChecker({
           form={form}
           priceChecker={selectedPriceChecker}
           defaultValues={defaultValues}
+          tokenBuyDecimals={tokenBuyDecimals}
         />
       )}
       <FormFooter
@@ -126,10 +127,12 @@ function PriceCheckerInputs({
   priceChecker,
   form,
   defaultValues,
+  tokenBuyDecimals,
 }: {
   priceChecker: PRICE_CHECKERS;
   form: UseFormReturn;
   defaultValues?: FieldValues;
+  tokenBuyDecimals: number;
 }) {
   const priceCheckerAguments = priceCheckersArgumentsMapping[priceChecker];
   const nonArrayArguments = priceCheckerAguments.filter(
@@ -150,7 +153,7 @@ function PriceCheckerInputs({
           label={arg.label}
           key={arg.name}
           defaultValue={defaultValues?.[arg.name]}
-          step={arg.step}
+          step={arg.step || 10 ** -tokenBuyDecimals}
           {...register(arg.name)}
         />
       ))}
@@ -211,9 +214,9 @@ function ArrayPriceCheckerInput({
                   return (
                     <Table.BodyCell classNames="align-top" key={arg.name}>
                       {arg.type.includes("bool") ? (
-                        <div className="flex items-center justify-center gap-x-2">
+                        <div className="flex items-center justify-center gap-x-2 mt-2">
                           <input
-                            className="h-5 w-5"
+                            className="h-5 w-5 mt-2"
                             type="checkbox"
                             key={argName}
                             defaultChecked={defaultValues?.[argName]}

@@ -3,24 +3,20 @@ import { PlotType } from "plotly.js";
 
 import { PoolStatsResults } from "#/app/apr/api/route";
 
-import { generateAndTrimAprCords } from "..";
+import { generateAprCords } from "..";
 
 export default function formatTvlChartData(
-  apiResult: PoolStatsResults,
+  results: PoolStatsResults,
   yaxis: string,
 ): Plotly.Data {
-  const trimmedTotalAprData = generateAndTrimAprCords(
-    apiResult.perDay,
-    (result) => result[0].tvl,
-    0,
-  );
+  const tvlData = generateAprCords(results.perDay, (result) => result.tvl);
 
   return {
     name: "TVL",
     yaxis: yaxis,
     hovertemplate: "%{y:$,.0f}",
-    x: trimmedTotalAprData.x,
-    y: trimmedTotalAprData.y,
+    x: tvlData.x,
+    y: tvlData.y,
     marker: {
       color: amberDark.amber9,
       opacity: 0.8,

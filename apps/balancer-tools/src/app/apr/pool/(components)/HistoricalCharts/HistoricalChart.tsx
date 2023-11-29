@@ -39,25 +39,25 @@ export default function HistoricalChartWrapper({
   const [selectedTabs, setselectedTabs] = useState([0]);
 
   const feeChartData = formatSwapFeeChartData(results, "y2");
-  // const tvlChartData = formatTvlChartData(results, "y3");
-  // const volumeChartData = formatVolumeChartData(results, "y4");
-  // const aprChartData = formatAPRChartData(results, "y5");
-  // const activeCharts = getActiveData(
-  //   selectedTabs,
-  //   aprChartData,
-  //   feeChartData,
-  //   tvlChartData,
-  //   volumeChartData
-  // );
+  const tvlChartData = formatTvlChartData(results, "y3");
+  const volumeChartData = formatVolumeChartData(results, "y4");
+  const aprChartData = formatAPRChartData(results, "y5");
+  const activeCharts = getActiveData(
+    selectedTabs,
+    aprChartData,
+    feeChartData,
+    tvlChartData,
+    volumeChartData,
+  );
 
   // This is needed to enable an axis that isn't meant to be shown
   // If the anchor axis isn't enabled the other it'll only show one trace at a time
-  // activeCharts.push({
-  //   name: " ",
-  //   yaxis: "y",
-  //   x: [],
-  //   y: [],
-  // });
+  activeCharts.push({
+    name: " ",
+    yaxis: "y",
+    x: [],
+    y: [],
+  });
 
   return (
     <div className="border border-blue6 bg-blue3 rounded p-4 w-full">
@@ -70,7 +70,7 @@ export default function HistoricalChartWrapper({
         />
       </div>
       <Plot
-        data={[feeChartData]}
+        data={activeCharts}
         config={{ displayModeBar: false }}
         layout={{
           plot_bgcolor: blueDark.blue3,

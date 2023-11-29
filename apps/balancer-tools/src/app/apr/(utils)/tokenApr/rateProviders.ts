@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
+import { DefiLlamaAPI } from "@bleu-fi/balancer-apr/src/lib/defillama";
 import { PoolSnapshotInRangeQuery } from "@bleu-fi/gql/src/balancer/__generated__/Ethereum";
 import { Address, networkIdFor } from "@bleu-fi/utils";
 import { SECONDS_IN_YEAR } from "@bleu-fi/utils/date";
 import * as Sentry from "@sentry/nextjs";
 
 import { withCache } from "#/lib/cache";
-import { DefiLlamaAPI } from "@bleu-fi/balancer-apr/src/lib/defillama";
 import { pools } from "#/lib/gql/server";
 import { GetDeepProp } from "#/utils/getTypes";
 

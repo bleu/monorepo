@@ -1,9 +1,8 @@
+import POOLS_WITHOUT_GAUGES from "@bleu-fi/balancer-apr/src/lib/balancer/data/pools-without-gauge.json";
+import POOLS_WITH_LIVE_GAUGES from "@bleu-fi/balancer-apr/src/lib/balancer/data/voting-gauges.json";
 import { Network, networksOnBalancer } from "@bleu-fi/utils";
 import { parseMMDDYYYYToDate } from "@bleu-fi/utils/date";
 import { z } from "zod";
-
-import POOLS_WITHOUT_GAUGES from "@bleu-fi/balancer-apr/src/lib/balancer/data/pools-without-gauge.json";
-import POOLS_WITH_LIVE_GAUGES from "@bleu-fi/balancer-apr/src/lib/balancer/data/voting-gauges.json";
 
 import { PoolTypeEnum } from "../../(utils)/types";
 import { Order } from "./sort";
@@ -115,7 +114,9 @@ export const QueryParamsPagesSchema = z
         POOLS_WITH_LIVE_GAUGES.some(
           (g) => g.id.toLowerCase() === poolId?.toLowerCase(),
         ) ||
+        //@ts-ignore
         POOLS_WITHOUT_GAUGES.some(
+          //@ts-ignore
           (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
         ),
       { message: "Pool with ID not found" },

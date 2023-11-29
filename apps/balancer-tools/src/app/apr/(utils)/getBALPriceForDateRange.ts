@@ -1,12 +1,12 @@
+import { db } from "@bleu-fi/balancer-apr/src/db";
+import { tokenPrices } from "@bleu-fi/balancer-apr/src/db/schema";
+import { DefiLlamaAPI } from "@bleu-fi/balancer-apr/src/lib/defillama";
 import { networkFor } from "@bleu-fi/utils";
 import { dateToEpoch } from "@bleu-fi/utils/date";
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import { and, between, eq, sql } from "drizzle-orm";
 
-import { db } from "@bleu-fi/balancer-apr/src/db";
-import { tokenPrices } from "@bleu-fi/balancer-apr/src/db/schema";
 import { withCache } from "#/lib/cache";
-import { DefiLlamaAPI } from "@bleu-fi/balancer-apr/src/lib/defillama";
 
 const BAL_TOKEN_ADDRESS = "0xba100000625a3754423978a60c9317c58a424e3d";
 

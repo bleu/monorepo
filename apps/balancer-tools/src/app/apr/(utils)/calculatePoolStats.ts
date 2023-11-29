@@ -1,10 +1,9 @@
 /* eslint-disable no-console */
 
-import { epochToDate } from "@bleu-fi/utils/date";
-import { and, eq, sql } from "drizzle-orm";
-
 import { db } from "@bleu-fi/balancer-apr/src/db";
 import { pools, poolSnapshots } from "@bleu-fi/balancer-apr/src/db/schema";
+import { epochToDate } from "@bleu-fi/utils/date";
+import { and, eq, sql } from "drizzle-orm";
 
 import { PoolStatsData, PoolTokens, TokenAPR } from "../api/route";
 import { calculateAPRForDateRange } from "./calculateApr";
@@ -98,7 +97,6 @@ export async function calculatePoolStats({
   return {
     poolId,
     apr,
-    balPriceUSD: 0,
     tvl: Number(liquidity),
     tokens: tokens,
     volume: Number(volume),

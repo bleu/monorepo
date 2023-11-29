@@ -62,13 +62,13 @@ export default async function Page({
   return (
     <div className="flex flex-1 h-full w-full flex-col justify-start rounded-3xl text-white gap-y-3 mb-4">
       <Breadcrumb />
-      {/* <Suspense fallback={<KpisSkeleton />}>
+      <Suspense fallback={<KpisSkeleton />}>
         <PoolOverviewCards
           startAt={startAtDate}
           endAt={endAtDate}
           poolId={poolId}
         />
-      </Suspense>*/}
+      </Suspense>
       <Suspense fallback={<ChartSkelton />}>
         <HistoricalCharts results={poolData} />
       </Suspense>

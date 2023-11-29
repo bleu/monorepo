@@ -1,11 +1,8 @@
-import { fetcher } from "@bleu-fi/utils/fetcher";
-
 import OverviewCards, {
   getDatesDetails,
 } from "../../(components)/OverviewCards";
 import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
-import { generateApiUrlWithParams } from "../../(utils)/getFilteredApiUrl";
-import { PoolStatsResults } from "../../api/route";
+import { fetchAvgDataForPoolIdDateRange } from "../../api/(utils)/fetchAvgDataForPoolIdDateRange";
 
 export default async function PoolOverviewCards({
   startAt,
@@ -21,19 +18,18 @@ export default async function PoolOverviewCards({
     content: JSX.Element | string;
     tooltip?: string;
   }[] = [];
-  const results: PoolStatsResults = await fetcher(
-    generateApiUrlWithParams(startAt, endAt, null, poolId),
-  );
+
+  const results = await fetchAvgDataForPoolIdDateRange(poolId, startAt, endAt);
 
   cardsDetails.push(
     ...[
       {
         title: "Avg. TVL",
-        content: formatTVL(results.average.poolAverage[0].tvl),
+        content: formatTVL(results.poolAverage.avgTvl),
       },
       {
         title: "Avg. Total APR",
-        content: formatAPR(results.average.poolAverage[0].apr.total),
+        content: formatAPR(results.poolAverage.avgApr),
       },
       ...getDatesDetails(startAt, endAt),
     ],

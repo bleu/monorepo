@@ -1,4 +1,5 @@
 import { Network } from "@bleu-fi/utils";
+import { formatDateToLocalDatetime } from "@bleu-fi/utils/date";
 import { Pencil1Icon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import { FieldValues } from "react-hook-form";
@@ -7,11 +8,16 @@ import { TransactionStatus } from "#/app/milkman/utils/type";
 import { Button } from "#/components";
 import { useRawTxData } from "#/hooks/useRawTxData";
 import { priceCheckersArgumentsMapping } from "#/lib/priceCheckersMappings";
-import { MILKMAN_ADDRESS, TRANSACTION_TYPES } from "#/lib/transactionFactory";
+import {
+  MILKMAN_ADDRESS,
+  MilkmanOrderArgs,
+  TRANSACTION_TYPES,
+} from "#/lib/transactionFactory";
 import { PRICE_CHECKERS } from "#/lib/types";
 import { truncateAddress } from "#/utils/truncate";
 
 import { FormFooter } from "./Footer";
+import { TWAP_DELAY_OPTIONS, TwapDelayValues } from "./Twap";
 
 export function OrderSummary({
   data,
@@ -28,7 +34,15 @@ export function OrderSummary({
     { label: "Amount to sell", key: "tokenSellAmount" },
     { label: "Price checker", key: "priceChecker" },
     { label: "Token to buy minimum amount", key: "tokenBuyMinimumAmount" },
-    { label: "Valid from", key: "validFrom" },
+    data.isValidFromNeeded && {
+      label: "Valid from",
+      key: "validFrom",
+    },
+    data.isTwapNeeded && {
+      label: "Number of TWAP orders",
+      key: "numberOfOrders",
+    },
+    data.isTwapNeeded && { label: "TWAP delay", key: "delay" },
     ...priceCheckersArgumentsMapping[data.priceChecker as PRICE_CHECKERS].map(
       (arg) => ({
         label: arg.label,
@@ -49,6 +63,15 @@ export function OrderSummary({
       data.priceChecker as PRICE_CHECKERS
     ].map((arg) => arg.convertInput(data[arg.name], data.tokenBuy.decimals));
 
+    const ordersNumber = data.isTwapNeeded ? data.numberOfOrders : 1;
+    const delay = data.isTwapNeeded
+      ? TwapDelayValues[data.delay as TWAP_DELAY_OPTIONS]
+      : 0;
+    const validFrom =
+      !data.isValidFromNeeded && data.isTwapNeeded
+        ? formatDateToLocalDatetime(new Date())
+        : data.validFrom;
+
     await sendTransactions([
       {
         type: TRANSACTION_TYPES.ERC20_APPROVE,
@@ -56,17 +79,20 @@ export function OrderSummary({
         spender: MILKMAN_ADDRESS,
         amount: sellAmountBigInt,
       },
-      {
-        type: TRANSACTION_TYPES.MILKMAN_ORDER,
-        tokenAddressToSell: data.tokenSell.address,
-        tokenAddressToBuy: data.tokenBuy.address,
-        toAddress: data.receiverAddress,
-        amount: sellAmountBigInt,
-        priceChecker: data.priceChecker,
-        validFrom: data.validFrom,
-        isValidFromNeeded: data.isValidFromNeeded,
-        args: priceCheckersArgs,
-      },
+      ...[...Array(ordersNumber).keys()].map((index) => {
+        return {
+          type: TRANSACTION_TYPES.MILKMAN_ORDER,
+          tokenAddressToSell: data.tokenSell.address,
+          tokenAddressToBuy: data.tokenBuy.address,
+          toAddress: data.receiverAddress,
+          amount: sellAmountBigInt / BigInt(ordersNumber),
+          priceChecker: data.priceChecker,
+          validFrom: validFrom,
+          isValidFromNeeded: data.isValidFromNeeded || data.isTwapNeeded,
+          args: priceCheckersArgs,
+          twapDelay: index * delay,
+        } as MilkmanOrderArgs;
+      }),
     ]);
     router.push(`/milkman/${network}`);
   }

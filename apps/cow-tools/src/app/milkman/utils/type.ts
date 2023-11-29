@@ -1,6 +1,7 @@
 export enum TransactionStatus {
   ORDER_OVERVIEW = "Order overview",
   ORDER_STRATEGY = "Order strategy",
+  ORDER_TWAP = "Order twap",
   ORDER_SUMMARY = "Order summary",
   MILKMAN_CREATED = "Milkman created",
   ORDER_PLACED = "Order placed",

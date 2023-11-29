@@ -45,6 +45,18 @@ export interface MilkmanOrderArgs extends BaseArgs {
   isValidFromNeeded: boolean;
   validFrom: string;
   args: argType[];
+  twapDelay?: number;
+}
+
+export interface MilkmanCancelArgs extends BaseArgs {
+  type: TRANSACTION_TYPES.MILKMAN_CANCEL;
+  contractAddress: Address;
+  tokenAddressToSell: Address;
+  tokenAddressToBuy: Address;
+  toAddress: Address;
+  amount: bigint;
+  priceChecker: Address;
+  priceCheckerData: `0x${string}`;
 }
 
 export interface MilkmanCancelArgs extends BaseArgs {
@@ -89,6 +101,7 @@ class MilkmanOrderRawTx implements ITransaction<MilkmanOrderArgs> {
     priceChecker,
     isValidFromNeeded,
     validFrom,
+    twapDelay,
     args,
   }: MilkmanOrderArgs): BaseTransaction {
     const priceCheckerAddress = priceCheckerAddressesMapping[priceChecker][
@@ -111,11 +124,12 @@ class MilkmanOrderRawTx implements ITransaction<MilkmanOrderArgs> {
             ? validFromDecorator[goerli.id]
             : priceCheckerAddress,
           isValidFromNeeded
-            ? encodePriceCheckerDataWithValidFromDecorator(
+            ? encodePriceCheckerDataWithValidFromDecorator({
                 priceCheckerAddress,
                 priceCheckerData,
                 validFrom,
-              )
+                twapDelay,
+              })
             : priceCheckerData,
         ],
       }),

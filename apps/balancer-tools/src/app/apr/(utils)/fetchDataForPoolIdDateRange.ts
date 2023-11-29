@@ -10,8 +10,8 @@ import {
 import { formatDateToMMDDYYYY } from "@bleu-fi/utils/date";
 import { and, between, eq, sql } from "drizzle-orm";
 
-import { PoolTypeEnum } from "../../(utils)/types";
-import { PoolStatsResults } from "../route";
+import { PoolStatsResults } from "./fetchDataTypes";
+import { PoolTypeEnum } from "./types";
 
 export async function fetchDataForPoolIdDateRange(
   poolId: string,

@@ -4,11 +4,15 @@ import { Network, networksOnBalancer } from "@bleu-fi/utils";
 import { parseMMDDYYYYToDate } from "@bleu-fi/utils/date";
 import { z } from "zod";
 
-import { PoolTypeEnum } from "../../(utils)/types";
-import { Order } from "./sort";
+import { PoolTypeEnum } from "./types";
 
 const currentDate = new Date();
 const minDate = new Date("2020-01-01");
+
+enum Order {
+  Asc = "asc",
+  Desc = "desc",
+}
 
 const isPositiveOrNull = (value?: number | null) => !value || value >= 0;
 const isSupportedNetwork = (value?: string | null) =>

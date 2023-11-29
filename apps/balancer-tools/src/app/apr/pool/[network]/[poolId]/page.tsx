@@ -6,9 +6,9 @@ import { Suspense } from "react";
 import ChartSkelton from "#/app/apr/(components)/(skeleton)/ChartSkelton";
 import KpisSkeleton from "#/app/apr/(components)/(skeleton)/KpisSkeleton";
 import Breadcrumb from "#/app/apr/(components)/Breadcrumb";
+import { fetchDataForPoolIdDateRange } from "#/app/apr/(utils)/fetchDataForPoolIdDateRange";
 import { generatePoolPageLink } from "#/app/apr/(utils)/getFilteredApiUrl";
-import { fetchDataForPoolIdDateRange } from "#/app/apr/api/(utils)/fetchDataForPoolIdDateRange";
-import { QueryParamsPagesSchema } from "#/app/apr/api/(utils)/validate";
+import { QueryParamsPagesSchema } from "#/app/apr/(utils)/validate";
 import { SearchParams } from "#/app/apr/page";
 
 import HistoricalCharts from "../../(components)/HistoricalCharts";

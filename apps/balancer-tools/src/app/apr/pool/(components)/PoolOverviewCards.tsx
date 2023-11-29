@@ -1,8 +1,8 @@
 import OverviewCards, {
   getDatesDetails,
 } from "../../(components)/OverviewCards";
+import { fetchAvgDataForPoolIdDateRange } from "../../(utils)/fetchAvgDataForPoolIdDateRange";
 import { formatAPR, formatTVL } from "../../(utils)/formatPoolStats";
-import { fetchAvgDataForPoolIdDateRange } from "../../api/(utils)/fetchAvgDataForPoolIdDateRange";
 
 export default async function PoolOverviewCards({
   startAt,

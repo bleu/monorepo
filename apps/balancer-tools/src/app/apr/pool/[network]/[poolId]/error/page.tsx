@@ -4,7 +4,7 @@ import { Pool } from "@bleu-fi/balancer-apr/src/lib/balancer/gauges";
 import { formatDateToMMDDYYYY } from "@bleu-fi/utils/date";
 
 import ErrorTemplate from "#/app/apr/(components)/ErrorTemplate";
-import { QueryParamsPagesSchema } from "#/app/apr/api/(utils)/validate";
+import { QueryParamsPagesSchema } from "#/app/apr/(utils)/validate";
 import { SearchParams } from "#/app/apr/page";
 
 export default function PoolError({

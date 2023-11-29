@@ -4,7 +4,7 @@ import { blueDark } from "@radix-ui/colors";
 import { Data } from "plotly.js";
 import { useState } from "react";
 
-import { PoolStatsResults } from "#/app/apr/api/route";
+import { PoolStatsResults } from "#/app/apr/(utils)/fetchDataTypes";
 import Plot from "#/components/Plot";
 
 import FilterTabs from "./FilterTabs";

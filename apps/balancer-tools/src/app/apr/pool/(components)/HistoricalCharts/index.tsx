@@ -2,7 +2,7 @@ import {
   PoolStatsData,
   PoolStatsResults,
   PoolStatsResultsPerDay,
-} from "#/app/apr/api/route";
+} from "#/app/apr/(utils)/fetchDataTypes";
 
 import HistoricalChart from "./HistoricalChart";
 

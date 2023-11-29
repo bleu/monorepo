@@ -25,10 +25,10 @@ import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
 import { TooltipMobile } from "#/components/TooltipMobile";
 
+import { APR, PoolStats, PoolTokens } from "../(utils)/fetchDataTypes";
 import { formatAPR, formatTVL } from "../(utils)/formatPoolStats";
 import { generatePoolPageLink } from "../(utils)/getFilteredApiUrl";
 import { PoolTypeEnum } from "../(utils)/types";
-import { APR, PoolStats, PoolTokens } from "../api/route";
 import { MoreFiltersButton } from "./MoreFiltersButton";
 import { TokenFilterInput } from "./TokenFilterInput";
 

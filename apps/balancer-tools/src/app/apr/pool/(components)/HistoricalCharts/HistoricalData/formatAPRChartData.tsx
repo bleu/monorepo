@@ -7,7 +7,7 @@ import {
 } from "@radix-ui/colors";
 import { PlotType } from "plotly.js";
 
-import { PoolStatsResults } from "#/app/apr/api/route";
+import { PoolStatsResults } from "#/app/apr/(utils)/fetchDataTypes";
 
 import { generateAprCords } from "..";
 

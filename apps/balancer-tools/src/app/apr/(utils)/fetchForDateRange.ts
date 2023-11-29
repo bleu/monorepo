@@ -11,7 +11,7 @@ import {
 } from "@bleu-fi/balancer-apr/src/db/schema";
 import { and, asc, between, desc, eq, ne, sql } from "drizzle-orm";
 
-import { PoolTypeEnum } from "../../(utils)/types";
+import { PoolTypeEnum } from "./types";
 
 interface FetchDataOptions {
   startDate: Date;

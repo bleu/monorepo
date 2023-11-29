@@ -5,8 +5,8 @@ import { pools, poolSnapshots } from "@bleu-fi/balancer-apr/src/db/schema";
 import { epochToDate } from "@bleu-fi/utils/date";
 import { and, eq, sql } from "drizzle-orm";
 
-import { PoolStatsData, PoolTokens, TokenAPR } from "../api/route";
 import { calculateAPRForDateRange } from "./calculateApr";
+import { PoolStatsData, PoolTokens, TokenAPR } from "./fetchDataTypes";
 import { PoolTypeEnum } from "./types";
 
 export interface calculatePoolData extends Omit<PoolStatsData, "apr"> {

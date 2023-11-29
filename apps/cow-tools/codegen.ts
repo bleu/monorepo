@@ -3,9 +3,9 @@ import type { CodegenConfig } from "@graphql-codegen/cli";
 const config: CodegenConfig = {
   overwrite: true,
   schema: "https://milkman-api.up.railway.app/",
-  documents: "src/**/*.tsx",
+  documents: "src/**/*.(ts|tsx)",
   generates: {
-    "src/gql/generated.ts": {
+    "src/lib/gql/generated.ts": {
       plugins: [
         "typescript",
         "typescript-operations",

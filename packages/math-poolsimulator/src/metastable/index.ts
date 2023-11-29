@@ -4,11 +4,14 @@ import {
   OldBigNumber,
   SubgraphPoolBase,
   SubgraphToken,
+  ZERO,
 } from "@balancer-labs/sor";
 import { formatFixed, parseFixed } from "@ethersproject/bignumber";
 import { WeiPerEther as EONE } from "@ethersproject/constants";
 
 import { IAMMFunctionality } from "../types";
+import { scale } from "./utils/basicOperations";
+import { _calcOutGivenIn } from "./utils/stableMathBigInt";
 
 type MetaStablePoolToken = Pick<
   SubgraphToken,
@@ -107,6 +110,42 @@ export class ExtendedMetaStableMath
     };
 
     return poolPairData;
+  }
+
+  //This is from balancer-sor - needed to calculate _exactTokenInForTokenOut
+  _exactTokenInForTokenOut(
+    poolPairData: MetaStablePoolPairData,
+    amount: OldBigNumber,
+  ): OldBigNumber {
+    try {
+      if (amount.isZero()) return ZERO;
+      const amtWithFeeEvm = this.subtractSwapFeeAmount(
+        parseFixed(
+          amount.dp(poolPairData.decimalsIn).toString(),
+          poolPairData.decimalsIn,
+        ),
+        poolPairData.swapFee,
+      );
+      // All values should use 1e18 fixed point
+      // i.e. 1USDC => 1e18 not 1e6
+      const amtScaled = amtWithFeeEvm.mul(10 ** (18 - poolPairData.decimalsIn));
+      const amt = _calcOutGivenIn(
+        this.amp.toBigInt(),
+        poolPairData.allBalancesScaled.map((balance) => balance.toBigInt()),
+        poolPairData.tokenIndexIn,
+        poolPairData.tokenIndexOut,
+        amtScaled.toBigInt(),
+        BigInt(0),
+      );
+      // return normalised amount
+      // Using BigNumber.js decimalPlaces (dp), allows us to consider token decimal accuracy correctly,
+      // i.e. when using token with 2decimals 0.002 should be returned as 0
+      // Uses ROUND_DOWN mode (1)
+      return scale(bnum(amt.toString()), -18).dp(poolPairData.decimalsOut, 1);
+    } catch (err) {
+      // console.error(`_evmoutGivenIn: ${err.message}`);
+      return ZERO;
+    }
   }
 
   _spotPrice(poolPairData: MetaStablePoolPairData): OldBigNumber {

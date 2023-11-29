@@ -598,11 +598,14 @@ async function seedVebalRounds() {
     endDate.setUTCDate(endDate.getUTCDate() + 6);
     endDate.setUTCHours(23, 59, 59, 999);
 
-    await db.execute(sql`
-      INSERT INTO vebal_rounds (start_date, end_date, round_number)
-      VALUES (${startDate.toISOString()}, ${endDate.toISOString()}, ${roundNumber})
-      ON CONFLICT (round_number) DO NOTHING;
-    `);
+    await addToTable(vebalRounds, [
+      {
+        startDate: startDate,
+        endDate: endDate,
+        roundNumber: roundNumber,
+      },
+    ]);
+
     startDate.setUTCDate(startDate.getUTCDate() + 7);
     roundNumber++;
   }
@@ -680,18 +683,15 @@ ON CONFLICT (external_id) DO NOTHING;
 async function fetchBalPrices() {
   try {
     // Get unique timestamps from pool_snapshots table
-    const result = await db.execute(sql`
-      SELECT DISTINCT
-      date_trunc('day', ps.timestamp) AS day
-      FROM
-        pool_snapshots ps
-      ORDER BY
-        day;
-    `);
+
+    const result = await db
+      .selectDistinct({ timestamp: poolSnapshots.timestamp })
+      .from(poolSnapshots)
+      .orderBy(asc(poolSnapshots.timestamp));
 
     // Iterate over each timestamp
     for (const row of result) {
-      const day = row.day as Date;
+      const day = row.timestamp as Date;
 
       const utcMidnightTimestampOfCurrentDay = new Date(
         Date.UTC(

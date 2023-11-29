@@ -37,7 +37,7 @@ export async function fetchDataForDateRange({
     .select({
       poolExternalId: swapFeeApr.poolExternalId,
       avgApr:
-        sql<number>`cast(avg(${swapFeeApr.value} + ${vebalApr.value}) as decimal)`.as(
+        sql<number>`cast(avg(coalesce(${swapFeeApr.value},0) + coalesce(${vebalApr.value},0)) as decimal)`.as(
           "avgApr",
         ),
       avgFeeApr: sql<number>`cast(avg(${swapFeeApr.value}) as decimal)`.as(

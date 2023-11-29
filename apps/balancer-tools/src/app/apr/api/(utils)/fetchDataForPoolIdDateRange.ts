@@ -8,7 +8,7 @@ import {
   vebalApr,
 } from "@bleu-fi/balancer-apr/src/db/schema";
 import { formatDateToMMDDYYYY } from "@bleu-fi/utils/date";
-import { and, between, eq, ne, sql } from "drizzle-orm";
+import { and, between, eq, sql } from "drizzle-orm";
 
 import { PoolTypeEnum } from "../../(utils)/types";
 import { PoolStatsResults } from "../route";
@@ -21,7 +21,7 @@ export async function fetchDataForPoolIdDateRange(
   const poolStatsData = await db
     .select({
       poolExternalId: swapFeeApr.poolExternalId,
-      apr: sql<number>`cast(${swapFeeApr.value} + ${vebalApr.value} as decimal)`,
+      apr: sql<number>`cast(coalesce(${swapFeeApr.value},0) + coalesce(${vebalApr.value},0) as decimal)`,
       feeApr: swapFeeApr.value,
       vebalApr: vebalApr.value,
       volume: poolSnapshots.swapVolume,
@@ -48,10 +48,6 @@ export async function fetchDataForPoolIdDateRange(
       and(
         between(swapFeeApr.timestamp, startDate, endDate),
         eq(swapFeeApr.poolExternalId, poolId),
-        ne(
-          sql<number>`cast(${swapFeeApr.value} + ${vebalApr.value} as decimal)`,
-          0,
-        ),
       ),
     );
 

@@ -1,7 +1,7 @@
 import { SECONDS_IN_DAY } from "@bleu-fi/utils/date";
 import { redirect } from "next/navigation";
 
-import { generatePoolPageLink } from "../../(utils)/getFilteredApiUrl";
+import { generatePoolPageLink } from "../../(utils)/getFilteredUrl";
 import { QueryParamsPagesSchema } from "../../(utils)/validate";
 import { SearchParams } from "../../page";
 

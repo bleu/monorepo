@@ -27,7 +27,7 @@ import { TooltipMobile } from "#/components/TooltipMobile";
 
 import { APR, PoolStats, PoolTokens } from "../(utils)/fetchDataTypes";
 import { formatAPR, formatTVL } from "../(utils)/formatPoolStats";
-import { generatePoolPageLink } from "../(utils)/getFilteredApiUrl";
+import { generatePoolPageLink } from "../(utils)/getFilteredUrl";
 import { PoolTypeEnum } from "../(utils)/types";
 import { MoreFiltersButton } from "./MoreFiltersButton";
 import { TokenFilterInput } from "./TokenFilterInput";

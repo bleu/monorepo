@@ -15,7 +15,7 @@ import invariant from "tiny-invariant";
 
 import { Toast } from "#/components/Toast";
 
-import { generatePoolPageLink } from "../(utils)/getFilteredApiUrl";
+import { generatePoolPageLink } from "../(utils)/getFilteredUrl";
 
 function getPoolExternalUrl({
   network,

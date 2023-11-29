@@ -6,7 +6,7 @@ import HomeOverviewCards from "./(components)/HomeOverviewCards";
 import { PoolListTable } from "./(components)/PoolListTable";
 import TopPoolsChart from "./(components)/TopPoolsChart";
 import { fetchDataForDateRange } from "./(utils)/fetchForDateRange";
-import { generatePoolPageLink } from "./(utils)/getFilteredApiUrl";
+import { generatePoolPageLink } from "./(utils)/getFilteredUrl";
 import { QueryParamsPagesSchema } from "./(utils)/validate";
 
 export interface SearchParams {

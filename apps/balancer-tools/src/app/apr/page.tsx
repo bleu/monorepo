@@ -46,11 +46,16 @@ export default async function Page({
     return redirect("/apr/");
   }
 
-  const { poolAverage } = await fetchDataForDateRange({
+  const { poolAverage: poolAvgForTable } = await fetchDataForDateRange({
     startDate,
     endDate,
     ...searchParams,
     filteredTokens: searchParams.tokens?.split(","),
+  });
+
+  const { poolAverage: poolAvgForChart } = await fetchDataForDateRange({
+    startDate,
+    endDate,
   });
 
   return (
@@ -60,12 +65,12 @@ export default async function Page({
       <TopPoolsChart
         startAt={startDate}
         endAt={endDate}
-        poolsData={poolAverage}
+        poolsData={poolAvgForChart}
       />
       <PoolListTable
         startAt={startDate}
         endAt={endDate}
-        initialData={poolAverage}
+        initialData={poolAvgForTable}
       />
     </div>
   );

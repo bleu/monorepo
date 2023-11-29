@@ -7,9 +7,8 @@ export function createPoolMetadataUpdatedEvent(
   poolId: Bytes,
   metadataCID: string,
 ): PoolMetadataUpdated {
-  const poolMetadataUpdatedEvent = changetype<PoolMetadataUpdated>(
-    newMockEvent(),
-  );
+  const poolMetadataUpdatedEvent =
+    changetype<PoolMetadataUpdated>(newMockEvent());
 
   poolMetadataUpdatedEvent.parameters = [];
 

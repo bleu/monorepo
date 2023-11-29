@@ -58,8 +58,8 @@ function calculateAverageForObject(
           typeof item === "object"
             ? calculateAverageForObject(item, divisor)
             : typeof item === "number"
-            ? Number(item) / divisor
-            : item,
+              ? Number(item) / divisor
+              : item,
         );
       } else if (typeof value === "object") {
         // @ts-ignore  - Need help with this typing!

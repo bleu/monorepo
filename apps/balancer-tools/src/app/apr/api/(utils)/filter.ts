@@ -21,8 +21,8 @@ export function filterPoolStats(
           Array.isArray(poolOnDate)
             ? poolOnDate.filter((pool) => shouldIncludePool(pool, parsedParams))
             : shouldIncludePool(poolOnDate, parsedParams)
-            ? poolOnDate
-            : null,
+              ? poolOnDate
+              : null,
         ])
         .filter(([, value]) => value !== null),
     );

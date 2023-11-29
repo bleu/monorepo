@@ -11,7 +11,7 @@
     "migrations:generate": "drizzle-kit generate:pg",
     "migrations:push": "node -r esbuild-register src/db/migrate.ts",
     "migrations:drop": "drizzle-kit drop --config=drizzle.config.ts",
-    "get:pool-data": "node get-pool-data.js"
+    "build": "node get-pool-data.js"
   },
   "devDependencies": {
     "@bleu-fi/tsconfig": "workspace:*",

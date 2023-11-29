@@ -10,7 +10,7 @@ import { FormHeader } from "./SingleOrderForm/Header";
 import { FormOrderOverview } from "./SingleOrderForm/Overview";
 import { FormSelectPriceChecker } from "./SingleOrderForm/PriceChecker";
 import { OrderSummary } from "./SingleOrderForm/Summary";
-import { FormTwap } from "./SingleOrderForm/Twap";
+import { TwapForm } from "./SingleOrderForm/Twap";
 
 export function TransactionCard({
   userAddress,
@@ -66,7 +66,7 @@ export function TransactionCard({
       />
     ),
     [TransactionStatus.ORDER_TWAP]: (
-      <FormTwap
+      <TwapForm
         onSubmit={(data: FieldValues) => {
           setTwapData(data);
           handleContinue();

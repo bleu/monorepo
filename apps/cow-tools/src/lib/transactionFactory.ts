@@ -45,7 +45,7 @@ export interface MilkmanOrderArgs extends BaseArgs {
   isValidFromNeeded: boolean;
   validFrom: string;
   args: argType[];
-  twapDelay: number;
+  twapDelay?: number;
 }
 
 export interface MilkmanCancelArgs extends BaseArgs {

@@ -27,7 +27,7 @@ export function FormOrderOverview({
 }) {
   const form = useForm<typeof orderOverviewSchema._type>({
     resolver: zodResolver(orderOverviewSchema),
-    mode: "onSubmit",
+    defaultValues,
   });
   const {
     register,
@@ -39,10 +39,6 @@ export function FormOrderOverview({
   useEffect(() => {
     register("tokenBuy");
     register("tokenSell");
-    register("validFrom");
-    register("isValidFromNeeded");
-    setValue("validFrom", defaultValues?.validFrom);
-    setValue("isValidFromNeeded", defaultValues?.isValidFromNeeded);
   }, []);
 
   const { assets, loaded } = useSafeBalances();
@@ -125,7 +121,6 @@ export function FormOrderOverview({
                 label="Amount to sell"
                 placeholder="0.0"
                 step={10 ** -defaultValues?.tokenSellAmount.decimals || 10e-18}
-                defaultValue={defaultValues?.tokenSellAmount}
                 {...register("tokenSellAmount")}
               />
               {formData.tokenSellAmount > Number(walletAmount) && (
@@ -156,7 +151,6 @@ export function FormOrderOverview({
           type="string"
           label="Recipient"
           placeholder={userAddress}
-          defaultValue={defaultValues?.receiverAddress}
           {...register("receiverAddress")}
         />
         <div className="mt-2 flex gap-x-1 text-xs">
@@ -180,27 +174,26 @@ export function FormOrderOverview({
           setValue("isValidFromNeeded", !formData.isValidFromNeeded)
         }
       />
-      {formData.isValidFromNeeded && (
-        <div>
-          <Input
-            type="datetime-local"
-            label="Valid from"
-            defaultValue={defaultValues?.validFrom}
-            {...register("validFrom")}
-          />
-          <div className="mt-2 flex gap-x-1 text-xs">
-            <button
-              type="button"
-              className="text-blue9 outline-none hover:text-amber9"
-              onClick={() => {
-                setValue("validFrom", formatDateToLocalDatetime(new Date()));
-              }}
-            >
-              Use Current Date time
-            </button>
-          </div>
+      <div>
+        <Input
+          type="datetime-local"
+          label="Valid from"
+          disabled={!formData.isValidFromNeeded}
+          {...register("validFrom")}
+        />
+        <div className="mt-2 flex gap-x-1 text-xs">
+          <button
+            type="button"
+            disabled={!formData.isValidFromNeeded}
+            className="text-blue9 outline-none hover:text-amber9"
+            onClick={() => {
+              setValue("validFrom", formatDateToLocalDatetime(new Date()));
+            }}
+          >
+            Use Current Date time
+          </button>
         </div>
-      )}
+      </div>
       <FormFooter transactionStatus={TransactionStatus.ORDER_OVERVIEW} />
     </Form>
   );

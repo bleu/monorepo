@@ -12,10 +12,10 @@ export function getNetwork(chainName?: string) {
     chainName?.toLowerCase() === "arbitrum one"
       ? "arbitrum"
       : chainName?.toLowerCase() === "polygon zkevm"
-      ? "polygon-zkevm"
-      : chainName?.toLowerCase() === "op mainnet"
-      ? "optimism"
-      : chainName?.toLowerCase();
+        ? "polygon-zkevm"
+        : chainName?.toLowerCase() === "op mainnet"
+          ? "optimism"
+          : chainName?.toLowerCase();
   return network as Network;
 }
 

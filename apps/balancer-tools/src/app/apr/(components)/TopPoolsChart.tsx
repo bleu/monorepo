@@ -2,13 +2,12 @@
 
 import { formatDate } from "@bleu-fi/utils";
 import { greenDarkA } from "@radix-ui/colors";
-// import { useRouter } from "next/navigation";
-import { Data, PlotType } from "plotly.js";
+import { useRouter } from "next/navigation";
+import { Data, PlotMouseEvent, PlotType } from "plotly.js";
 
-// import {  PlotMouseEvent } from "plotly.js";
 import Plot from "#/components/Plot";
 
-// import { generatePoolPageLink } from "../(utils)/getFilteredApiUrl";
+import { generatePoolPageLink } from "../(utils)/getFilteredApiUrl";
 import { PoolStats } from "../api/route";
 
 export default function TopPoolsChart({
@@ -58,22 +57,23 @@ export default function TopPoolsChart({
     y: paddedYAxisLabels,
   };
 
-  // const router = useRouter();
-  // function onClickHandler(event: PlotMouseEvent) {
-  //   const clickedRoundData = poolsData[event.points[0].pointIndex];
-  //   const poolRedirectURL = generatePoolPageLink(
-  //     startAt,
-  //     endAt,
-  //     null,
-  //     clickedRoundData.poolId
-  //   );
-  //   router.push(poolRedirectURL);
-  // }
+  const router = useRouter();
+  function onClickHandler(event: PlotMouseEvent) {
+    const clickedRoundData = poolsData[event.points[0].pointIndex];
+    if (clickedRoundData.poolId === null) return;
+    const poolRedirectURL = generatePoolPageLink(
+      startAt,
+      endAt,
+      null,
+      clickedRoundData.poolId,
+    );
+    router.push(poolRedirectURL);
+  }
 
   return (
     <div className="flex justify-between border border-blue6 bg-blue3 rounded p-4 cursor-pointer">
       <Plot
-        // onClick={onClickHandler}
+        onClick={onClickHandler}
         title={`Top APR Pools from ${formatDate(startAt)} to ${formatDate(
           endAt,
         )}`}

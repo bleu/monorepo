@@ -26,7 +26,7 @@ export function OrderSummary({
 }: {
   data: FieldValues;
   handleBack: () => void;
-  chainId: NetworkChainId;
+  chainId?: NetworkChainId;
 }) {
   const fieldsToDisplay = [
     { label: "Token to sell", key: "tokenSell" },

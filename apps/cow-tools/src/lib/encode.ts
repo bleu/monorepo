@@ -17,10 +17,12 @@ export function encodePriceCheckerDataWithValidFromDecorator({
   priceCheckerAddress: Address;
   priceCheckerData: `0x${string}`;
   validFrom: string;
-  twapDelay: number;
+  twapDelay?: number;
 }) {
   const validFromDate = new Date(validFrom);
-  const validFromTimestamp = BigInt(dateToEpoch(validFromDate) + twapDelay);
+  const validFromTimestamp = BigInt(
+    dateToEpoch(validFromDate) + (twapDelay || 0),
+  );
   return encodeAbiParameters(
     [
       {

@@ -67,7 +67,7 @@ export function FormSelectPriceChecker({
     register,
     clearErrors,
     setValue,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = form;
 
   useEffect(() => {
@@ -118,6 +118,7 @@ export function FormSelectPriceChecker({
       <FormFooter
         transactionStatus={TransactionStatus.ORDER_STRATEGY}
         disabled={!selectedPriceChecker}
+        isLoading={isSubmitting}
       />
     </Form>
   );

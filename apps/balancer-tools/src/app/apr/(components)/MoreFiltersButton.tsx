@@ -27,8 +27,6 @@ interface SelectedAttributesType {
   maxTvl: string | null;
   minApr: string | null;
   maxApr: string | null;
-  minVotingShare: string | null;
-  maxVotingShare: string | null;
 }
 
 export function MoreFiltersButton() {
@@ -53,19 +51,10 @@ export function MoreFiltersButton() {
       maxTvl: null,
       minApr: null,
       maxApr: null,
-      minVotingShare: null,
-      maxVotingShare: null,
     });
 
   useEffect(() => {
-    const valuesAttributes = [
-      "minTvl",
-      "maxTvl",
-      "minApr",
-      "maxApr",
-      "minVotingShare",
-      "maxVotingShare",
-    ];
+    const valuesAttributes = ["minTvl", "maxTvl", "minApr", "maxApr"];
     const arrayAttributes = ["network", "types"];
     const updatedAttributes = { ...selectedAttributes };
     valuesAttributes.forEach((value) => {
@@ -206,12 +195,6 @@ export function MoreFiltersButton() {
                 <AccordionItemMinMax
                   name="Apr"
                   label="APR"
-                  onChange={handleOnMinMaxChange}
-                  selectedAttributes={selectedAttributes}
-                />
-                <AccordionItemMinMax
-                  name="VotingShare"
-                  label="Voting Share (%)"
                   onChange={handleOnMinMaxChange}
                   selectedAttributes={selectedAttributes}
                 />

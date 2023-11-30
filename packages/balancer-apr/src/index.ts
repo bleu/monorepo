@@ -9,6 +9,14 @@ import { and, asc, eq, gt, isNotNull, sql } from "drizzle-orm";
 import { PgTable } from "drizzle-orm/pg-core";
 import { Address } from "viem";
 
+import { chunks } from "./chunks";
+import {
+  ENDPOINT_V3,
+  NETWORK_TO_BALANCER_ENDPOINT_MAP,
+  POOLS_SNAPSHOTS,
+  POOLS_WITHOUT_GAUGE_QUERY,
+  VOTING_GAUGES_QUERY,
+} from "./config";
 import { db } from "./db/index";
 import {
   balEmission,
@@ -20,187 +28,20 @@ import {
   tokenPrices,
   vebalRounds,
 } from "./db/schema";
+import { gql } from "./gql";
 import * as balEmissions from "./lib/balancer/emissions";
 import { DefiLlamaAPI } from "./lib/defillama";
 import { getPoolRelativeWeights } from "./lib/getRelativeWeight";
+import { paginatedFetch } from "./paginatedFetch";
 
-const BATCH_SIZE = 1_000;
+export const BATCH_SIZE = 1_000;
 
 const isVerbose = process.argv.includes("-v");
 
-function logIfVerbose(message: string) {
+export function logIfVerbose(message: string) {
   if (isVerbose) {
     console.log(message);
   }
-}
-
-async function gql(
-  endpoint: string,
-  query: string,
-  variables = {},
-  headers = {},
-) {
-  logIfVerbose(`Running GraphQL query on ${endpoint}`);
-
-  const defaultHeaders = {
-    "Content-Type": "application/json",
-  };
-  try {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        ...defaultHeaders,
-        ...headers,
-      },
-      body: JSON.stringify({
-        query,
-        variables,
-      }),
-    });
-    return response.json();
-  } catch (e) {
-    console.log("err", e);
-  }
-}
-
-const ENDPOINT_V3 = "https://api-v3.balancer.fi/graphql";
-const BASE_ENDPOINT_V2 =
-  "https://api.thegraph.com/subgraphs/name/balancer-labs";
-
-const NETWORK_TO_BALANCER_ENDPOINT_MAP = {
-  ethereum: `${BASE_ENDPOINT_V2}/balancer-v2`,
-  polygon: `${BASE_ENDPOINT_V2}/balancer-polygon-v2`,
-  "polygon-zkevm":
-    "https://api.studio.thegraph.com/query/24660/balancer-polygon-zk-v2/version/latest",
-  arbitrum: `${BASE_ENDPOINT_V2}/balancer-arbitrum-v2`,
-  gnosis: `${BASE_ENDPOINT_V2}/balancer-gnosis-chain-v2`,
-  optimism: `${BASE_ENDPOINT_V2}/balancer-optimism-v2`,
-  base: "https://api.studio.thegraph.com/query/24660/balancer-base-v2/version/latest",
-  avalanche: `${BASE_ENDPOINT_V2}/balancer-avalanche-v2`,
-} as const;
-
-const VOTING_GAUGES_QUERY = `
-query VeBalGetVotingList {
-    veBalGetVotingList {
-        chain
-        id
-        address
-        symbol
-        type
-        gauge {
-            address
-            isKilled
-            addedTimestamp
-            relativeWeightCap
-        }
-        tokens {
-            address
-            logoURI
-            symbol
-            weight
-        }
-    }
-}
-`;
-
-const POOLS_WITHOUT_GAUGE_QUERY = `
-query PoolsWherePoolType($latestId: String!) {
-  pools(
-    first: 1000,
-    where: {
-      id_gt: $latestId,
-    }
-  ) {
-    id
-    address
-    symbol
-    poolType
-    createTime
-    poolTypeVersion
-    tokens {
-      isExemptFromYieldProtocolFee
-      address
-      symbol
-      weight
-    }
-  }
-}
-`;
-
-const POOLS_SNAPSHOTS = `
-query PoolSnapshots($latestId: String!) {
-  poolSnapshots(
-    first: 1000,
-    where: {
-      id_gt: $latestId,
-    }
-  ) {
-    id
-    pool {
-      id
-      protocolYieldFeeCache
-      protocolSwapFeeCache
-    }
-    amounts
-    totalShares
-    swapVolume
-    protocolFee
-    swapFees
-    liquidity
-    timestamp
-  }
-}
-`;
-
-function* chunks(arr: unknown[], n: number) {
-  for (let i = 0; i < arr.length; i += n) {
-    yield arr.slice(i, i + n);
-  }
-}
-
-async function paginate<T>(
-  initialId: string,
-  step: number,
-  fetchFn: (id: string) => Promise<T | null>,
-): Promise<void> {
-  logIfVerbose(`Paginating from initialId=${initialId}, step=${step}`);
-
-  let idValue = initialId;
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    const data = await fetchFn(idValue);
-
-    // @ts-ignore  this comes as unknown type, but it is an array
-    const dataArray = Object.values(data)[0];
-
-    // @ts-ignore  this comes as unknown type, but it is an array
-    if (!data || dataArray.length < BATCH_SIZE) {
-      break;
-    }
-    // @ts-ignore  this comes as unknown type, but it is an array
-    idValue = dataArray[dataArray.length - 1].id;
-    console.log(idValue);
-  }
-}
-
-type ProcessFn<T> = (data: T) => Promise<void>;
-
-async function paginatedFetch<T>(
-  networkEndpoint: string,
-  query: string,
-  processFn: ProcessFn<T>,
-  initialId = "",
-  step = BATCH_SIZE,
-): Promise<void> {
-  await paginate(initialId, step, async (latestId: string) => {
-    const response = await gql(networkEndpoint, query, { latestId });
-    if (response.data) {
-      await processFn(response.data);
-      return response.data;
-    }
-
-    return null;
-  });
 }
 
 async function processPoolSnapshots(data: any, network: string) {
@@ -302,36 +143,49 @@ async function extractGaugesSnapshot() {
       gaugeAddressTimestampTuples,
     );
 
+    // Fetch round numbers for all timestamps in bulk
+    const roundNumbers = await db
+      .select({
+        timestamp: vebalRounds.startDate,
+        round_number: vebalRounds.roundNumber,
+      })
+      .from(vebalRounds);
+
+    // Create a timestamp to round number mapping
+    const roundNumberMap = roundNumbers.reduce(
+      (map, { timestamp, round_number }) => {
+        map[dateToEpoch(timestamp)] = round_number; // Ensure timestamp format aligns with what is used in gaugeAddressTimestampTuples
+        return map;
+      },
+      {} as { [key: number]: number },
+    );
+
+    const insertData = []; // Array to hold records for batch insert
+
     for (const [
       gaugeAddress,
       epochTimestamp,
       relativeWeight,
     ] of relativeWeights) {
-      const timestamp = new Date(epochTimestamp * 1000); // Convert back to Date object
+      const roundNumber = roundNumberMap[epochTimestamp];
 
-      // Fetch the round number for each timestamp
-      const roundNumberList = await db
-        .select({
-          round_number: vebalRounds.roundNumber,
-        })
-        .from(vebalRounds)
-        .where(eq(vebalRounds.startDate, timestamp));
-
-      const roundNumber = roundNumberList[0]?.round_number;
-
-      // Insert into gaugeSnapshots table
+      // Add record to insertData array if roundNumber exists
       if (roundNumber) {
-        await db
-          .insert(gaugeSnapshots)
-          .values({
-            gaugeAddress,
-            timestamp: timestamp,
-            relativeWeight: String(relativeWeight),
-            roundNumber: roundNumber,
-          })
-          .onConflictDoNothing()
-          .execute();
+        insertData.push({
+          gaugeAddress,
+          timestamp: new Date(epochTimestamp * 1000), // Convert back to Date object
+          relativeWeight: String(relativeWeight),
+          roundNumber,
+        });
       }
+    }
+    // Perform a single batch insert if there are records to insert
+    if (insertData.length > 0) {
+      await db
+        .insert(gaugeSnapshots)
+        .values(insertData)
+        .onConflictDoNothing()
+        .execute();
     }
   } catch (error) {
     console.error(error);
@@ -389,26 +243,28 @@ SET
 `);
 
   await db.execute(sql`
+UPDATE pool_snapshots_temp p
+SET next_timestamp_change = next_change.next_change_timestamp
+FROM (
+    SELECT 
+        id, 
+        LEAD(timestamp, 1, NOW()) OVER (PARTITION BY pool_external_id ORDER BY timestamp) AS next_change_timestamp
+    FROM 
+        pool_snapshots_temp
+) next_change
+WHERE p.id = next_change.id;
+`);
+
+  await db.execute(sql`
 INSERT INTO pool_snapshots (amounts, total_shares, swap_volume, swap_fees, liquidity, timestamp, protocol_yield_fee_cache, protocol_swap_fee_cache, external_id, pool_external_id, raw_data)
-WITH calendar AS (
-  SELECT generate_series('2021-04-21' :: timestamp, CURRENT_DATE, '1 day' :: INTERVAL) AS "timestamp"
-),
-
-pool_snapshots AS (
-  SELECT
-    *,
-    LEAD("timestamp", 1, NOW()) OVER (PARTITION BY pool_external_id ORDER BY "timestamp") AS timestamp_next_change
-  FROM pool_snapshots_temp
-)
-
 SELECT amounts, total_shares, swap_volume, swap_fees, liquidity, c.timestamp, protocol_yield_fee_cache, protocol_swap_fee_cache, pool_external_id || '-' || c.timestamp AS external_id, pool_external_id, raw_data
 FROM 
-    pool_snapshots b
+    pool_snapshots_temp b
 LEFT JOIN 
     calendar c 
 ON 
     b.timestamp <= c.timestamp 
-    AND (c.timestamp < b.timestamp_next_change OR b.timestamp_next_change IS NULL)
+    AND (c.timestamp < b.next_timestamp_change OR b.next_timestamp_change IS NULL)
 ON CONFLICT (external_id) DO NOTHING;
 `);
 }
@@ -593,19 +449,23 @@ async function seedVebalRounds() {
   const startDate = new Date("2022-04-14T00:00:00.000Z");
   let roundNumber = 1;
 
+  const data = [];
   while (startDate <= new Date()) {
     const endDate = new Date(startDate);
     endDate.setUTCDate(endDate.getUTCDate() + 6);
     endDate.setUTCHours(23, 59, 59, 999);
 
-    await db.execute(sql`
-      INSERT INTO vebal_rounds (start_date, end_date, round_number)
-      VALUES (${startDate.toISOString()}, ${endDate.toISOString()}, ${roundNumber})
-      ON CONFLICT (round_number) DO NOTHING;
-    `);
+    data.push({
+      startDate: startDate,
+      endDate: endDate,
+      roundNumber: roundNumber,
+    });
+
     startDate.setUTCDate(startDate.getUTCDate() + 7);
     roundNumber++;
   }
+
+  await addToTable(vebalRounds, data);
 }
 
 async function seedBalEmission() {
@@ -638,19 +498,27 @@ async function calculateApr() {
   await db.execute(sql`
   INSERT INTO swap_fee_apr (timestamp, pool_external_id, collected_fees_usd, value, external_id)
   SELECT
-	p1.timestamp,
-	p1.pool_external_id,
-	p1.swap_fees - p2.swap_fees AS collected_fees_usd,
-    CASE 
-        WHEN p1.liquidity = 0 THEN 0
-        ELSE ((p1.swap_fees - p2.swap_fees) * (1 - COALESCE(p1.protocol_swap_fee_cache, 0.5)) / p1.liquidity) * 365 * 100 
-    END AS "value",
-  p1.external_id
-FROM pool_snapshots p1
-LEFT JOIN pool_snapshots p2 
-ON p1. "timestamp" = p2. "timestamp" + INTERVAL '1 day'
-AND p1.pool_external_id = p2.pool_external_id
-ON CONFLICT (external_id) DO NOTHING;
+      p1.timestamp,
+      p1.pool_external_id,
+      p1.swap_fees - p2.swap_fees AS collected_fees_usd,
+      CASE 
+          WHEN p1.liquidity = 0 THEN 0
+          ELSE ((p1.swap_fees - p2.swap_fees) * (1 - COALESCE(p1.protocol_swap_fee_cache, 0.5)) / p1.liquidity) * 365 * 100 
+      END AS value,
+      p1.external_id
+  FROM 
+      pool_snapshots p1
+  LEFT JOIN pool_snapshots p2 
+      ON p1.timestamp = p2.timestamp + INTERVAL '1 day'
+      AND p1.pool_external_id = p2.pool_external_id
+  WHERE
+      p1.swap_fees IS NOT NULL
+      AND p2.swap_fees IS NOT NULL
+      AND p1.swap_fees != 0
+      AND p2.swap_fees != 0
+      AND p1.swap_fees - p2.swap_fees != 0
+  ON CONFLICT (external_id) DO NOTHING;
+  
 `);
 
   // veBAL APR
@@ -680,18 +548,15 @@ ON CONFLICT (external_id) DO NOTHING;
 async function fetchBalPrices() {
   try {
     // Get unique timestamps from pool_snapshots table
-    const result = await db.execute(sql`
-      SELECT DISTINCT
-      date_trunc('day', ps.timestamp) AS day
-      FROM
-        pool_snapshots ps
-      ORDER BY
-        day;
-    `);
+
+    const result = await db
+      .selectDistinct({ timestamp: poolSnapshots.timestamp })
+      .from(poolSnapshots)
+      .orderBy(asc(poolSnapshots.timestamp));
 
     // Iterate over each timestamp
     for (const row of result) {
-      const day = row.day as Date;
+      const day = row.timestamp as Date;
 
       const utcMidnightTimestampOfCurrentDay = new Date(
         Date.UTC(
@@ -731,15 +596,26 @@ async function fetchBalPrices() {
   }
 }
 
+async function seedCalendar() {
+  await db.execute(sql`
+  INSERT INTO calendar (timestamp)
+SELECT
+	generate_series('2021-04-21'::timestamp, CURRENT_DATE, '1 day'::INTERVAL) AS "timestamp"`);
+}
+
 export async function runETLs() {
   logIfVerbose("Starting ETL processes");
 
-  await seedNetworks();
-  await seedVebalRounds();
+  await Promise.all([
+    seedCalendar(),
+    seedVebalRounds(),
+    seedBalEmission(),
+    seedNetworks(),
+  ]);
+
   await ETLPools();
   await ETLSnapshots();
   await ETLGauges();
-  await seedBalEmission();
   await fetchBalPrices();
   await ETLGaugesSnapshot();
   await calculateApr();
@@ -747,4 +623,4 @@ export async function runETLs() {
   process.exit(0);
 }
 
-runETLs();
+// runETLs();

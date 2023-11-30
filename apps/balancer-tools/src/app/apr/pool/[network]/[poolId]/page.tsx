@@ -1,3 +1,4 @@
+import { Pool } from "@bleu-fi/balancer-apr/src/lib/balancer/gauges";
 import { SECONDS_IN_DAY } from "@bleu-fi/utils/date";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
@@ -5,14 +6,13 @@ import { Suspense } from "react";
 import ChartSkelton from "#/app/apr/(components)/(skeleton)/ChartSkelton";
 import KpisSkeleton from "#/app/apr/(components)/(skeleton)/KpisSkeleton";
 import Breadcrumb from "#/app/apr/(components)/Breadcrumb";
-import { generatePoolPageLink } from "#/app/apr/(utils)/getFilteredApiUrl";
-import { QueryParamsPagesSchema } from "#/app/apr/api/(utils)/validate";
+import { fetchDataForPoolIdDateRange } from "#/app/apr/(utils)/fetchDataForPoolIdDateRange";
+import { generatePoolPageLink } from "#/app/apr/(utils)/getFilteredUrl";
+import { QueryParamsPagesSchema } from "#/app/apr/(utils)/validate";
 import { SearchParams } from "#/app/apr/page";
-import { Pool } from "@bleu-fi/balancer-apr/src/lib/balancer/gauges";
 
 import HistoricalCharts from "../../(components)/HistoricalCharts";
 import PoolOverviewCards from "../../(components)/PoolOverviewCards";
-import { RewardWarning } from "../../(components)/RewardsWarning";
 
 export const revalidate = SECONDS_IN_DAY;
 export default async function Page({
@@ -52,6 +52,13 @@ export default async function Page({
 
     return redirect(`/apr/pool/${network}/${poolId}/error?${params}&`);
   }
+
+  const poolData = await fetchDataForPoolIdDateRange(
+    poolId,
+    startAtDate,
+    endAtDate,
+  );
+
   return (
     <div className="flex flex-1 h-full w-full flex-col justify-start rounded-3xl text-white gap-y-3 mb-4">
       <Breadcrumb />
@@ -62,13 +69,8 @@ export default async function Page({
           poolId={poolId}
         />
       </Suspense>
-      <RewardWarning />
       <Suspense fallback={<ChartSkelton />}>
-        <HistoricalCharts
-          poolId={poolId}
-          startAt={startAtDate}
-          endAt={endAtDate}
-        />
+        <HistoricalCharts results={poolData} />
       </Suspense>
     </div>
   );

@@ -3,6 +3,7 @@ import {
   boolean,
   customType,
   decimal,
+  index,
   integer,
   pgTable,
   serial,
@@ -165,43 +166,71 @@ export const networkRelations = relations(networks, ({ many }) => ({
   tokens: many(tokens),
 }));
 
-export const poolSnapshots = pgTable("pool_snapshots", {
-  id: serial("id").primaryKey(),
-  amounts: jsonb("amounts"),
-  totalShares: decimal("total_shares"),
-  swapVolume: decimal("swap_volume"),
-  swapFees: decimal("swap_fees"),
-  liquidity: decimal("liquidity"),
-  timestamp: timestamp("timestamp"),
-  protocolYieldFeeCache: decimal("protocol_yield_fee_cache"),
-  protocolSwapFeeCache: decimal("protocol_swap_fee_cache"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  externalId: varchar("external_id").unique(),
-  poolExternalId: varchar("pool_external_id").references(
-    () => pools.externalId,
-  ),
-  rawData: jsonb("raw_data"),
-});
+export const poolSnapshots = pgTable(
+  "pool_snapshots",
+  {
+    id: serial("id").primaryKey(),
+    amounts: jsonb("amounts"),
+    totalShares: decimal("total_shares"),
+    swapVolume: decimal("swap_volume"),
+    swapFees: decimal("swap_fees"),
+    liquidity: decimal("liquidity"),
+    timestamp: timestamp("timestamp"),
+    protocolYieldFeeCache: decimal("protocol_yield_fee_cache"),
+    protocolSwapFeeCache: decimal("protocol_swap_fee_cache"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    externalId: varchar("external_id").unique(),
+    poolExternalId: varchar("pool_external_id").references(
+      () => pools.externalId,
+    ),
+    rawData: jsonb("raw_data"),
+  },
+  (table) => ({
+    timestampIdx: index().on(table.timestamp),
+    createdAtIdx: index().on(table.createdAt),
+    swapFeesIdx: index().on(table.swapFees),
+  }),
+);
 
-export const poolSnapshotsTemp = pgTable("pool_snapshots_temp", {
-  id: serial("id").primaryKey(),
-  amounts: jsonb("amounts"),
-  totalShares: decimal("total_shares"),
-  swapVolume: decimal("swap_volume"),
-  swapFees: decimal("swap_fees"),
-  liquidity: decimal("liquidity"),
-  timestamp: timestamp("timestamp"),
-  protocolYieldFeeCache: decimal("protocol_yield_fee_cache"),
-  protocolSwapFeeCache: decimal("protocol_swap_fee_cache"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  externalId: varchar("external_id").unique(),
-  poolExternalId: varchar("pool_external_id").references(
-    () => pools.externalId,
-  ),
-  rawData: jsonb("raw_data"),
-});
+export const calendar = pgTable(
+  "calendar",
+  {
+    id: serial("id").primaryKey(),
+    timestamp: timestamp("timestamp").unique(),
+  },
+  (table) => ({
+    timestampIdx: index().on(table.timestamp),
+  }),
+);
+
+export const poolSnapshotsTemp = pgTable(
+  "pool_snapshots_temp",
+  {
+    id: serial("id").primaryKey(),
+    amounts: jsonb("amounts"),
+    totalShares: decimal("total_shares"),
+    swapVolume: decimal("swap_volume"),
+    swapFees: decimal("swap_fees"),
+    liquidity: decimal("liquidity"),
+    timestamp: timestamp("timestamp"),
+    protocolYieldFeeCache: decimal("protocol_yield_fee_cache"),
+    protocolSwapFeeCache: decimal("protocol_swap_fee_cache"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    nextTimestampChange: timestamp("next_timestamp_change"),
+    externalId: varchar("external_id").unique(),
+    poolExternalId: varchar("pool_external_id").references(
+      () => pools.externalId,
+    ),
+    rawData: jsonb("raw_data"),
+  },
+  (table) => ({
+    timestampIdx: index().on(table.timestamp),
+    nextTimestampChangeIdx: index().on(table.nextTimestampChange),
+    createdAtIdx: index().on(table.createdAt),
+  }),
+);
 
 export const poolSnapshotRelations = relations(poolSnapshots, ({ one }) => ({
   pool: one(pools, {
@@ -247,9 +276,9 @@ export const poolTokenRateProviderRelations = relations(
 
 export const vebalRounds = pgTable("vebal_rounds", {
   id: serial("id").primaryKey(),
-  endDate: timestamp("end_date"),
-  startDate: timestamp("start_date"),
-  roundNumber: integer("round_number").unique(),
+  endDate: timestamp("end_date").notNull(),
+  startDate: timestamp("start_date").notNull(),
+  roundNumber: integer("round_number").unique().notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

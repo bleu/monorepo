@@ -34,6 +34,7 @@ module.exports = {
     "import/no-duplicates": "error",
     "import/no-named-as-default-member": "off",
     "no-html-link-for-pages": "off",
+    "@next/next/no-html-link-for-pages": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/simple-import-sort/exports": "off",

@@ -2,14 +2,15 @@ import { Address, NetworkChainId, networkFor } from "@bleu-fi/utils";
 import { useState } from "react";
 import { FieldValues } from "react-hook-form";
 
-import { stages } from "#/app/milkman/(components)/TransactionProgressBar";
+import { stages } from "#/app/milkman/(components)/SingleOrderForm/TransactionProgressBar";
 import { TransactionStatus } from "#/app/milkman/utils/type";
 import { useOrder } from "#/contexts/OrderContext";
 
-import { FormHeader } from "./orderForm/Header";
-import { FormOrderOverview } from "./orderForm/Overview";
-import { FormSelectPriceChecker } from "./orderForm/PriceChecker";
-import { OrderSummary } from "./orderForm/Summary";
+import { FormHeader } from "./SingleOrderForm/Header";
+import { FormOrderOverview } from "./SingleOrderForm/Overview";
+import { FormSelectPriceChecker } from "./SingleOrderForm/PriceChecker";
+import { OrderSummary } from "./SingleOrderForm/Summary";
+import { TwapForm } from "./SingleOrderForm/Twap";
 
 export function TransactionCard({
   userAddress,
@@ -25,6 +26,7 @@ export function TransactionCard({
 
   const [orderOverviewData, setOrderOverviewData] = useState<FieldValues>();
   const [priceCheckerData, setPriceCheckerData] = useState<FieldValues>();
+  const [twapData, setTwapData] = useState<FieldValues>();
 
   function handleBack() {
     const currentStage = stages.find(
@@ -60,12 +62,22 @@ export function TransactionCard({
         defaultValues={priceCheckerData}
         tokenSellAddress={orderOverviewData?.tokenSell.address}
         tokenBuyAddress={orderOverviewData?.tokenBuy.address}
+        tokenBuyDecimals={orderOverviewData?.tokenBuy.decimals}
+      />
+    ),
+    [TransactionStatus.ORDER_TWAP]: (
+      <TwapForm
+        onSubmit={(data: FieldValues) => {
+          setTwapData(data);
+          handleContinue();
+        }}
+        defaultValues={twapData}
       />
     ),
     [TransactionStatus.ORDER_SUMMARY]: (
       <div className="flex flex-col gap-y-6 p-9">
         <OrderSummary
-          data={{ ...orderOverviewData, ...priceCheckerData }}
+          data={{ ...orderOverviewData, ...priceCheckerData, ...twapData }}
           handleBack={handleBack}
           network={network}
         />

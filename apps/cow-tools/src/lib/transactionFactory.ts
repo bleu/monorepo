@@ -7,11 +7,14 @@ import { goerli } from "viem/chains";
 import { milkmanAbi } from "#/lib/abis/milkman";
 
 import {
-  argType,
   encodePriceCheckerData,
-  PRICE_CHECKERS,
-  priceCheckerInfoMapping,
-} from "./priceCheckers";
+  encodePriceCheckerDataWithValidFromDecorator,
+} from "./encode";
+import {
+  priceCheckerAddressesMapping,
+  validFromDecorator,
+} from "./priceCheckersMappings";
+import { argType, PRICE_CHECKERS } from "./types";
 
 // Milkman's address is the same for all chains supported chains (Gnosis, etc...)
 export const MILKMAN_ADDRESS = "0x11C76AD590ABDFFCD980afEC9ad951B160F02797";
@@ -19,6 +22,7 @@ export const MILKMAN_ADDRESS = "0x11C76AD590ABDFFCD980afEC9ad951B160F02797";
 export enum TRANSACTION_TYPES {
   ERC20_APPROVE = "ERC20_APPROVE",
   MILKMAN_ORDER = "MILKMAN_ORDER",
+  MILKMAN_CANCEL = "MILKMAN_CANCEL",
 }
 export interface BaseArgs {
   type: TRANSACTION_TYPES;
@@ -38,7 +42,32 @@ export interface MilkmanOrderArgs extends BaseArgs {
   toAddress: Address;
   amount: bigint;
   priceChecker: PRICE_CHECKERS;
+  isValidFromNeeded: boolean;
+  validFrom: string;
   args: argType[];
+  twapDelay?: number;
+}
+
+export interface MilkmanCancelArgs extends BaseArgs {
+  type: TRANSACTION_TYPES.MILKMAN_CANCEL;
+  contractAddress: Address;
+  tokenAddressToSell: Address;
+  tokenAddressToBuy: Address;
+  toAddress: Address;
+  amount: bigint;
+  priceChecker: Address;
+  priceCheckerData: `0x${string}`;
+}
+
+export interface MilkmanCancelArgs extends BaseArgs {
+  type: TRANSACTION_TYPES.MILKMAN_CANCEL;
+  contractAddress: Address;
+  tokenAddressToSell: Address;
+  tokenAddressToBuy: Address;
+  toAddress: Address;
+  amount: bigint;
+  priceChecker: Address;
+  priceCheckerData: `0x${string}`;
 }
 
 interface ITransaction<T> {
@@ -70,11 +99,16 @@ class MilkmanOrderRawTx implements ITransaction<MilkmanOrderArgs> {
     toAddress,
     amount,
     priceChecker,
+    isValidFromNeeded,
+    validFrom,
+    twapDelay,
     args,
   }: MilkmanOrderArgs): BaseTransaction {
-    const priceCheckerInfo = priceCheckerInfoMapping[priceChecker];
-    const priceCheckerAddress = priceCheckerInfo.addresses[goerli.id];
+    const priceCheckerAddress = priceCheckerAddressesMapping[priceChecker][
+      goerli.id
+    ] as Address;
     const priceCheckerData = encodePriceCheckerData(priceChecker, args);
+
     return {
       to: MILKMAN_ADDRESS,
       value: "0",
@@ -86,7 +120,45 @@ class MilkmanOrderRawTx implements ITransaction<MilkmanOrderArgs> {
           tokenAddressToSell,
           tokenAddressToBuy,
           toAddress,
-          priceCheckerAddress,
+          isValidFromNeeded
+            ? validFromDecorator[goerli.id]
+            : priceCheckerAddress,
+          isValidFromNeeded
+            ? encodePriceCheckerDataWithValidFromDecorator({
+                priceCheckerAddress,
+                priceCheckerData,
+                validFrom,
+                twapDelay,
+              })
+            : priceCheckerData,
+        ],
+      }),
+    };
+  }
+}
+
+class MilkmanCancelRawTx implements ITransaction<MilkmanCancelArgs> {
+  createRawTx({
+    contractAddress,
+    tokenAddressToSell,
+    tokenAddressToBuy,
+    toAddress,
+    amount,
+    priceChecker,
+    priceCheckerData,
+  }: MilkmanCancelArgs): BaseTransaction {
+    return {
+      to: contractAddress,
+      value: "0",
+      data: encodeFunctionData({
+        abi: milkmanAbi,
+        functionName: "cancelSwap",
+        args: [
+          amount,
+          tokenAddressToSell,
+          tokenAddressToBuy,
+          toAddress,
+          priceChecker,
           priceCheckerData,
         ],
       }),
@@ -97,6 +169,7 @@ class MilkmanOrderRawTx implements ITransaction<MilkmanOrderArgs> {
 export interface TransactionBindings {
   [TRANSACTION_TYPES.ERC20_APPROVE]: ERC20ApproveArgs;
   [TRANSACTION_TYPES.MILKMAN_ORDER]: MilkmanOrderArgs;
+  [TRANSACTION_TYPES.MILKMAN_CANCEL]: MilkmanCancelArgs;
 }
 
 export type AllTransactionArgs = TransactionBindings[keyof TransactionBindings];
@@ -108,6 +181,7 @@ const TRANSACTION_CREATORS: {
 } = {
   [TRANSACTION_TYPES.ERC20_APPROVE]: ERC20ApproveRawTx,
   [TRANSACTION_TYPES.MILKMAN_ORDER]: MilkmanOrderRawTx,
+  [TRANSACTION_TYPES.MILKMAN_CANCEL]: MilkmanCancelRawTx,
 };
 
 export class TransactionFactory {

@@ -1,46 +1,39 @@
-import { generateApiUrlWithParams } from "#/app/apr/(utils)/getFilteredApiUrl";
-import { PoolStatsData, PoolStatsResults } from "#/app/apr/api/route";
-import { trimTrailingValues } from "#/lib/utils";
-import { fetcher } from "@bleu-fi/utils/fetcher";
+import {
+  PoolStatsData,
+  PoolStatsResults,
+  PoolStatsResultsPerDay,
+} from "#/app/apr/(utils)/fetchDataTypes";
 
 import HistoricalChart from "./HistoricalChart";
 
 export default async function HistoricalCharts({
-  startAt,
-  endAt,
-  poolId,
+  results,
 }: {
-  startAt: Date;
-  endAt: Date;
-  poolId?: string;
+  results: PoolStatsResults;
 }) {
-  const results: PoolStatsResults = await fetcher(
-    generateApiUrlWithParams(startAt, endAt, null, poolId),
-  );
-
-  return <HistoricalChart apiResult={results} />;
+  return <HistoricalChart results={results} />;
 }
 
-export function generateAndTrimAprCords(
-  data: Record<string, PoolStatsData[]>, // Use Record<string, PoolStatsData[]> for the updated data format
-  getValue: (result: PoolStatsData[]) => number,
-  valueToTrim: number,
-): { x: (string | number)[]; y: (string | number)[] } {
-  // Change the return type accordingly
-  const cords = Object.entries(data).reduce(
-    (cords, [date, results]) => {
-      // Use destructuring to extract date and results
-      cords.x.push(date); // Use date as the x value
-      cords.y.push(getValue(results)); // Use map to get y values from each result
-      return cords;
+export function generateAprCords(
+  data: PoolStatsResultsPerDay[], // Use Record<string, PoolStatsData[]> for the updated data format
+  getValue: (result: PoolStatsData) => number,
+) {
+  const { x, y } = data.reduce(
+    (acc, result) => {
+      const xValues = Object.keys(result)[0];
+      const yValues = getValue(Object.values(result)[0]);
+
+      acc.x.push(xValues);
+      acc.y.push(yValues);
+
+      return acc;
     },
     { x: [], y: [] } as { x: string[]; y: number[] },
   );
 
-  const trimmedData = trimTrailingValues(cords.x, cords.y, valueToTrim); // No need to reverse
   return {
-    x: trimmedData.trimmedIn,
-    y: trimmedData.trimmedOut,
+    x,
+    y,
   };
 }
 

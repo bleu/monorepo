@@ -9,18 +9,15 @@ import { LinkComponent } from "#/components/Link";
 import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { getNetwork } from "#/contexts/networks";
-import { AllSwapsQuery } from "#/lib/gql/generated";
 
-import { OrderTable } from "../(components)/OrdersTable";
+import { OrderTable } from "../(components)/OrderTable";
 
 export function HomePageWrapper({
   params,
-  orders,
 }: {
   params: {
     network: Network;
   };
-  orders: AllSwapsQuery["swaps"];
 }) {
   const { chain } = useNetwork();
   const { isConnected, isReconnecting, isConnecting } = useAccount();
@@ -73,7 +70,7 @@ export function HomePageWrapper({
             />
           </div>
         </div>
-        <OrderTable orders={orders} />
+        <OrderTable />
       </div>
     </div>
   );

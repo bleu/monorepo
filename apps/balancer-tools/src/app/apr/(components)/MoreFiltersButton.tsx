@@ -16,7 +16,7 @@ import { Badge } from "#/components/Badge";
 import { Checkbox } from "#/components/Checkbox";
 import { BaseInput } from "#/components/Input";
 
-import { INITIAL_MIN_TVL } from "../(utils)/getFilteredApiUrl";
+import { INITIAL_MIN_TVL } from "../(utils)/getFilteredUrl";
 import { PoolTypeEnum } from "../(utils)/types";
 
 interface SelectedAttributesType {

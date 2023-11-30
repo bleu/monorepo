@@ -1,5 +1,6 @@
 "use client";
 
+import { Pool } from "@bleu-fi/balancer-apr/src/lib/balancer/gauges";
 import { Network } from "@bleu-fi/utils";
 import { parseMMDDYYYYToDate } from "@bleu-fi/utils/date";
 import {
@@ -13,9 +14,8 @@ import { ReactNode, useState } from "react";
 import invariant from "tiny-invariant";
 
 import { Toast } from "#/components/Toast";
-import { Pool } from "@bleu-fi/balancer-apr/src/lib/balancer/gauges";
 
-import { generatePoolPageLink } from "../(utils)/getFilteredApiUrl";
+import { generatePoolPageLink } from "../(utils)/getFilteredUrl";
 
 function getPoolExternalUrl({
   network,

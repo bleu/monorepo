@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "9d2c2f4c-0b9e-4df8-999e-c6398e39d057",
+  "id": "b3fa3a11-2cdd-484c-9378-a05b11a6d89a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "bal_emission": {

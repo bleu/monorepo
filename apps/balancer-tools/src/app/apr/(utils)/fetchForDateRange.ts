@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+
 import { db } from "@bleu-fi/balancer-apr/src/db";
 import {
   pools,
@@ -8,7 +9,7 @@ import {
   tokens,
   vebalApr,
 } from "@bleu-fi/balancer-apr/src/db/schema";
-import { and, asc, between, desc, eq, sql } from "drizzle-orm";
+import { and, asc, between, desc, eq, ne, sql } from "drizzle-orm";
 
 import { PoolTypeEnum } from "./types";
 
@@ -16,56 +17,96 @@ interface FetchDataOptions {
   startDate: Date;
   endDate: Date;
   minTvl?: string;
-  maxTvl?: string;
   limit?: string;
-  sort?: "apr" | "tvl";
+  sort?: string;
   order?: "asc" | "desc";
+  maxTvl?: string;
+  filteredTokens?: string[];
 }
 
 export async function fetchDataForDateRange({
   startDate,
   endDate,
   minTvl = "10000",
-  maxTvl = "10000000000",
   limit = "10",
   sort = "apr",
   order = "desc",
+  maxTvl = "10000000000",
 }: FetchDataOptions) {
-  const sortOrder = order === "desc" ? desc : asc;
-  const sortFieldMapping = {
-    apr: sql<number>`avg(coalesce(${swapFeeApr.value},0) + coalesce(${vebalApr.value},0))`.as(
-      "avgApr",
-    ),
-    tvl: sql<number>`avg(${poolSnapshots.liquidity})`.as("avgLiquidity"),
-  } as const;
-
-  const poolDataQuery = db
+  const poolAprForDate = db
     .select({
-      poolExternalId: pools.externalId,
-      network: pools.networkSlug,
-      type: pools.poolType,
-      symbol: pools.symbol,
-      avgApr: sortFieldMapping.apr,
-      avgFeeApr: sql<number>`avg(${swapFeeApr.value})`.as("avgFeeApr"),
-      avgVebalApr: sql<number>`avg(${vebalApr.value})`.as("avgVebalApr"),
-      avgVolume: sql<number>`avg(${poolSnapshots.swapVolume})`.as("avgVolume"),
-      avgLiquidity: sortFieldMapping.tvl,
+      poolExternalId: swapFeeApr.poolExternalId,
+      avgApr:
+        sql<number>`cast(avg(coalesce(${swapFeeApr.value},0) + coalesce(${vebalApr.value},0)) as decimal)`.as(
+          "avgApr",
+        ),
+      avgFeeApr: sql<number>`cast(avg(${swapFeeApr.value}) as decimal)`.as(
+        "avgFeeApr",
+      ),
+      avgVebalApr: sql<number>`cast(avg(${vebalApr.value}) as decimal)`.as(
+        "avgVebalApr",
+      ),
+      avgVolume:
+        sql<number>`cast(avg(${poolSnapshots.swapVolume}) as decimal)`.as(
+          "avgVolume",
+        ),
+      avgLiquidity:
+        sql<number>`cast(avg(${poolSnapshots.liquidity}) as decimal)`.as(
+          "avgLiquidity",
+        ),
     })
-    .from(pools)
-    .fullJoin(swapFeeApr, eq(swapFeeApr.poolExternalId, pools.externalId))
-    .fullJoin(vebalApr, eq(vebalApr.poolExternalId, pools.externalId))
-    .fullJoin(poolSnapshots, eq(poolSnapshots.poolExternalId, pools.externalId))
+    .from(swapFeeApr)
+    .fullJoin(
+      poolSnapshots,
+      and(
+        eq(poolSnapshots.poolExternalId, swapFeeApr.poolExternalId),
+        eq(poolSnapshots.timestamp, swapFeeApr.timestamp),
+      ),
+    )
+    .fullJoin(
+      vebalApr,
+      and(
+        eq(vebalApr.poolExternalId, swapFeeApr.poolExternalId),
+        eq(vebalApr.timestamp, swapFeeApr.timestamp),
+      ),
+    )
     .where(
       and(
         between(swapFeeApr.timestamp, startDate, endDate),
         between(poolSnapshots.liquidity, minTvl, maxTvl),
       ),
     )
-    .groupBy(pools.externalId, pools.networkSlug, pools.poolType, pools.symbol)
-    .orderBy(sortOrder(sortFieldMapping[sort]))
+    .groupBy(swapFeeApr.poolExternalId)
+    .as("poolAprForDate");
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sortFieldMapping: Record<string, any> = {
+    apr: poolAprForDate.avgApr,
+    tvl: poolAprForDate.avgLiquidity,
+  };
+  const sortField = sortFieldMapping[sort];
+
+  const orderBy = order === "desc" ? desc(sortField) : asc(sortField);
+
+  const orderedPoolAprForDate = await db
+    .select()
+    .from(poolAprForDate)
+    .orderBy(orderBy)
+    .where(ne(poolAprForDate.avgApr, 0))
     .limit(Number(limit));
 
-  const poolsTokensQuery = db
+  const poolData = await db
+    .select({
+      poolExternalId: pools.externalId,
+      network: pools.networkSlug,
+      type: pools.poolType,
+      symbol: pools.symbol,
+    })
+    .from(pools)
+    .fullJoin(swapFeeApr, and(eq(swapFeeApr.poolExternalId, pools.externalId)))
+    .where(and(between(swapFeeApr.timestamp, startDate, endDate)));
+
+  const poolsTokens = await db
     .select({
       poolExternalId: poolTokens.poolExternalId,
       address: poolTokens.tokenAddress,
@@ -75,31 +116,48 @@ export async function fetchDataForDateRange({
     .from(poolTokens)
     .leftJoin(tokens, eq(tokens.address, poolTokens.tokenAddress));
 
-  const [orderedPoolAprForDate, poolsTokens] = await Promise.all([
-    poolDataQuery,
-    poolsTokensQuery,
-  ]);
-
-  console.log({
-    orderedPoolAprForDate,
-    poolsTokens,
-  });
-
   const returnData = orderedPoolAprForDate.map((pool) => {
     const tokensForPool = poolsTokens
-      .filter((token) => token.poolExternalId === pool.poolExternalId)
-      .map((token) => ({
-        address: token.address,
-        symbol: token.symbol,
-        weight: Number(token.weight),
+      .filter((poolToken) => poolToken.poolExternalId === pool.poolExternalId)
+      .map((poolToken) => ({
+        address: poolToken.address,
+        symbol: poolToken.symbol,
+        weight: Number(poolToken.weight),
       }));
 
     return {
-      ...pool,
+      poolId: pool.poolExternalId,
+      apr: {
+        total: Number(pool.avgApr),
+        breakdown: {
+          veBAL: Number(pool.avgVebalApr),
+          swapFee: Number(pool.avgFeeApr),
+          tokens: {
+            total: 0,
+            breakdown: [],
+          },
+          rewards: {
+            total: 0,
+            breakdown: [],
+          },
+        },
+      },
+      tvl: Number(pool.avgLiquidity),
       tokens: tokensForPool,
-      type: pool.type as PoolTypeEnum,
+      volume: Number(pool.avgVolume),
+      votingShare: 0,
+      symbol:
+        poolData.find((p) => p.poolExternalId === pool.poolExternalId)
+          ?.symbol || "",
+      network:
+        poolData.find((p) => p.poolExternalId === pool.poolExternalId)
+          ?.network || "",
+      type: poolData.find((p) => p.poolExternalId === pool.poolExternalId)
+        ?.type as PoolTypeEnum,
     };
   });
 
-  return { poolAverage: returnData };
+  return {
+    poolAverage: returnData,
+  };
 }

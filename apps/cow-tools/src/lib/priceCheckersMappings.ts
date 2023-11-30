@@ -144,7 +144,8 @@ export const priceCheckerAddressesMapping = {
     [PRICE_CHECKERS.CURVE]: "0x",
   },
   [gnosis.id]: {
-    [PRICE_CHECKERS.FIXED_MIN_OUT]: "0x",
+    [PRICE_CHECKERS.FIXED_MIN_OUT]:
+      "0x978414CBBE776d3F56E78c6e522dd01B1A608EfC",
     [PRICE_CHECKERS.UNI_V2]: "0x",
     [PRICE_CHECKERS.BALANCER]: "0x",
     [PRICE_CHECKERS.SUSHI_SWAP]: "0x",
@@ -167,7 +168,7 @@ export const deployedPriceCheckersByChain = {
     PRICE_CHECKERS.CHAINLINK,
     PRICE_CHECKERS.UNI_V3,
   ] as const,
-  [gnosis.id]: [PRICE_CHECKERS.CURVE],
+  [gnosis.id]: [PRICE_CHECKERS.FIXED_MIN_OUT, PRICE_CHECKERS.CURVE],
 };
 
 export const priceCheckerHasExpectedOutCalculatorMapping = {

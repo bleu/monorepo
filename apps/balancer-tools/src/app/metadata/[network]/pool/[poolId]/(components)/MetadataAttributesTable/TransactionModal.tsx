@@ -88,8 +88,8 @@ function ProcessTransaction({ poolId }: { poolId: Address }) {
     transactionStatus === TransactionStatus.PINNING
       ? "Pinning the JSON file to IPFS will be necessary for your approval."
       : transactionStatus === TransactionStatus.CONFIRMED
-        ? "Congratulations, you have updated your pool metadata."
-        : "Now, to finishing, confirm on your wallet to set metadata on-chain. ";
+      ? "Congratulations, you have updated your pool metadata."
+      : "Now, to finishing, confirm on your wallet to set metadata on-chain. ";
 
   return (
     <div className="mt-4 px-1">

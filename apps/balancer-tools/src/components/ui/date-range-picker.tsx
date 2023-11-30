@@ -212,8 +212,8 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
           ? new Date(initialDateTo)
           : initialDateTo
         : typeof initialDateFrom === "string"
-          ? new Date(initialDateFrom)
-          : initialDateFrom,
+        ? new Date(initialDateFrom)
+        : initialDateFrom,
     });
     setRangeCompare(
       initialCompareFrom
@@ -227,8 +227,8 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
                 ? new Date(initialCompareTo)
                 : initialCompareTo
               : typeof initialCompareFrom === "string"
-                ? new Date(initialCompareFrom)
-                : initialCompareFrom,
+              ? new Date(initialCompareFrom)
+              : initialCompareFrom,
           }
         : undefined,
     );

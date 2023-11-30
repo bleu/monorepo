@@ -1,0 +1,1 @@
+ALTER TABLE "pool_snapshots_temp" ADD COLUMN "next_timestamp_change" timestamp;

@@ -1,28 +1,27 @@
 import { blueDarkA } from "@radix-ui/colors";
 import { PlotType } from "plotly.js";
 
-import { PoolStatsResults } from "#/app/apr/api/route";
+import { PoolStatsResults } from "#/app/apr/(utils)/fetchDataTypes";
 
-import { generateAndTrimAprCords } from "..";
+import { generateAprCords } from "..";
 
 export default function formatVolumeChartData(
-  apiResult: PoolStatsResults,
+  results: PoolStatsResults,
   yaxis: string,
 ): Plotly.Data {
   const HOVERTEMPLATE = "$%{y:.2f}";
 
-  const trimmedTotalAprData = generateAndTrimAprCords(
-    apiResult.perDay,
-    (result) => result[0].volume,
-    0,
+  const volumeData = generateAprCords(
+    results.perDay,
+    (result) => result.volume,
   );
 
   return {
     name: "Volume",
     yaxis: yaxis,
     hovertemplate: HOVERTEMPLATE,
-    x: trimmedTotalAprData.x,
-    y: trimmedTotalAprData.y,
+    x: volumeData.x,
+    y: volumeData.y,
     marker: {
       color: blueDarkA.blueA9,
       opacity: 0.8,

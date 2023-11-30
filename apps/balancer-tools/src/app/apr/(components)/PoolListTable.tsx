@@ -1,6 +1,5 @@
 "use client";
 
-import { networkFor } from "@bleu-fi/utils";
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import {
   ChevronDownIcon,
@@ -21,19 +20,15 @@ import { useCallback, useEffect, useState } from "react";
 import { Button } from "#/components";
 import { Badge } from "#/components/Badge";
 import { PlotTitle } from "#/components/Plot";
-import { Spinner } from "#/components/Spinner";
+// import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
 import { TooltipMobile } from "#/components/TooltipMobile";
-import { fetcher } from "#/utils/fetcher";
 
+import { APR, PoolStats, PoolTokens } from "../(utils)/fetchDataTypes";
 import { formatAPR, formatTVL } from "../(utils)/formatPoolStats";
-import {
-  generateApiUrlWithParams,
-  generatePoolPageLink,
-} from "../(utils)/getFilteredApiUrl";
+import { generatePoolPageLink } from "../(utils)/getFilteredUrl";
 import { PoolTypeEnum } from "../(utils)/types";
-import { APR, PoolStatsData, PoolStatsResults, PoolTokens } from "../api/route";
 import { MoreFiltersButton } from "./MoreFiltersButton";
 import { TokenFilterInput } from "./TokenFilterInput";
 
@@ -44,18 +39,18 @@ export function PoolListTable({
 }: {
   startAt: Date;
   endAt: Date;
-  initialData: PoolStatsData[];
+  initialData: PoolStats[];
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const [tableData, setTableData] = useState(initialData);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [hasMorePools, setHasMorePools] = useState(true);
+  // const [isLoadingMore, setIsLoadingMore] = useState(false);
+  // const [hasMorePools, setHasMorePools] = useState(true);
 
   useEffect(() => {
     setTableData(initialData);
-    setHasMorePools(!(initialData.length < 10));
+    // setHasMorePools(!(initialData.length < 10));
   }, [initialData]);
 
   const createQueryString = useCallback(
@@ -72,22 +67,6 @@ export function PoolListTable({
     },
     [searchParams],
   );
-
-  const loadMorePools = async () => {
-    setIsLoadingMore(true);
-    const params = Object.fromEntries(searchParams.entries());
-    params["offset"] = (tableData.length + 1).toString();
-
-    const url = new URL(generateApiUrlWithParams(startAt, endAt, params));
-    const aditionalPoolsData = await fetcher<PoolStatsResults>(
-      url.pathname + url.search,
-    );
-    setTableData((prevTableData) => {
-      if (initialData.length === 0) setHasMorePools(false);
-      return prevTableData.concat(aditionalPoolsData.average.poolAverage);
-    });
-    setIsLoadingMore(false);
-  };
 
   return (
     <div className="flex flex-col justify-center text-white">
@@ -168,18 +147,18 @@ export function PoolListTable({
                     <Button
                       className="py-3 sticky left-0 sm:w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
                       shade="medium"
-                      disabled={isLoadingMore || !hasMorePools}
-                      onClick={loadMorePools}
+                      // disabled={isLoadingMore || !hasMorePools}
+                      disabled={true}
                     >
-                      {isLoadingMore ? (
+                      {/* {isLoadingMore ? (
                         <Spinner size="sm" />
                       ) : hasMorePools ? (
-                        <>
-                          Load More <ChevronDownIcon />
-                        </>
+                        <> */}
+                      Load More <ChevronDownIcon />
+                      {/* </>
                       ) : (
                         <>All pools have been loaded</>
-                      )}
+                      )} */}
                     </Button>
                   </Table.BodyCell>
                 </Table.BodyRow>
@@ -212,16 +191,17 @@ function TableRow({
   startAt,
   endAt,
 }: {
-  poolId: string;
+  poolId: string | null;
   network: string;
   tokens: PoolTokens[];
-  poolType: keyof typeof PoolTypeEnum;
+  poolType: PoolTypeEnum;
   tvl: number;
   votingShare: number;
   apr: APR;
   startAt: Date;
   endAt: Date;
 }) {
+  if (!poolId) return null;
   const poolRedirectURL = generatePoolPageLink(startAt, endAt, null, poolId);
   return (
     <Table.BodyRow classNames="sm:hover:bg-blue4 hover:cursor-pointer duration-500">
@@ -230,10 +210,10 @@ function TableRow({
         tdClassNames="flex justify-center items-start sm:items-center h-full w-full"
       >
         <Image
-          src={`/assets/network/${networkFor(network)}.svg`}
+          src={`/assets/network/${network}.svg`}
           height={25}
           width={25}
-          alt={`Logo for ${networkFor(network)}`}
+          alt={`Logo for ${network}`}
         />
       </Table.BodyCellLink>
       <Table.BodyCellLink
@@ -244,7 +224,7 @@ function TableRow({
         {tokens.map((token) => (
           <Badge color="blue" classNames="w-fit" key={token.address}>
             {token.symbol}
-            {PoolTypeEnum[poolType] == PoolTypeEnum.WEIGHTED ? (
+            {poolType == PoolTypeEnum.WEIGHTED ? (
               <span className="text-xs ml-1 text-slate-400">
                 {(token.weight! * 100).toFixed()}%
               </span>
@@ -256,7 +236,7 @@ function TableRow({
       </Table.BodyCellLink>
 
       <Table.BodyCellLink linkClassNames="float-right" href={poolRedirectURL}>
-        {PoolTypeEnum[poolType]}
+        {poolType}
       </Table.BodyCellLink>
 
       <Table.BodyCellLink linkClassNames="float-right" href={poolRedirectURL}>
@@ -305,7 +285,7 @@ function APRHover({ apr }: { apr: APR }) {
 
 function OrderIcon(
   searchParams: ReadonlyURLSearchParams,
-  fieldName: keyof PoolStatsData,
+  fieldName: keyof PoolStats,
 ) {
   if (searchParams.get("sort") !== fieldName) return <DashIcon />;
 

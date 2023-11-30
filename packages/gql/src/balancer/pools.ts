@@ -114,8 +114,6 @@ export const poolSnapshotInRange = gql`
       protocolFee
       swapFees
       liquidity
-      swapsCount
-      holdersCount
       timestamp
     }
   }

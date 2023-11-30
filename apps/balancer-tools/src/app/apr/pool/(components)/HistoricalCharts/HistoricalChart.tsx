@@ -4,7 +4,7 @@ import { blueDark } from "@radix-ui/colors";
 import { Data } from "plotly.js";
 import { useState } from "react";
 
-import { PoolStatsResults } from "#/app/apr/api/route";
+import { PoolStatsResults } from "#/app/apr/(utils)/fetchDataTypes";
 import Plot from "#/components/Plot";
 
 import FilterTabs from "./FilterTabs";
@@ -31,17 +31,17 @@ function getActiveData(
 }
 
 export default function HistoricalChartWrapper({
-  apiResult,
+  results,
 }: {
-  apiResult: PoolStatsResults;
+  results: PoolStatsResults;
 }) {
   const charts = ["APR", "Weekly Swap Fees", "TVL", "Volume"];
   const [selectedTabs, setselectedTabs] = useState([0]);
 
-  const feeChartData = formatSwapFeeChartData(apiResult, "y2");
-  const tvlChartData = formatTvlChartData(apiResult, "y3");
-  const volumeChartData = formatVolumeChartData(apiResult, "y4");
-  const aprChartData = formatAPRChartData(apiResult, "y5");
+  const feeChartData = formatSwapFeeChartData(results, "y2");
+  const tvlChartData = formatTvlChartData(results, "y3");
+  const volumeChartData = formatVolumeChartData(results, "y4");
+  const aprChartData = formatAPRChartData(results, "y5");
   const activeCharts = getActiveData(
     selectedTabs,
     aprChartData,
@@ -84,7 +84,7 @@ export default function HistoricalChartWrapper({
           },
           xaxis: {
             dtick: 1,
-            title: "Round Number",
+            title: "Date",
             gridcolor: blueDark.blue6,
             linecolor: blueDark.blue6,
             mirror: true,

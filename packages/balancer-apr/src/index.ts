@@ -9,6 +9,14 @@ import { and, asc, eq, gt, isNotNull, sql } from "drizzle-orm";
 import { PgTable } from "drizzle-orm/pg-core";
 import { Address } from "viem";
 
+import { chunks } from "./chunks";
+import {
+  ENDPOINT_V3,
+  NETWORK_TO_BALANCER_ENDPOINT_MAP,
+  POOLS_SNAPSHOTS,
+  POOLS_WITHOUT_GAUGE_QUERY,
+  VOTING_GAUGES_QUERY,
+} from "./config";
 import { db } from "./db/index";
 import {
   balEmission,
@@ -20,187 +28,20 @@ import {
   tokenPrices,
   vebalRounds,
 } from "./db/schema";
+import { gql } from "./gql";
 import * as balEmissions from "./lib/balancer/emissions";
 import { DefiLlamaAPI } from "./lib/defillama";
 import { getPoolRelativeWeights } from "./lib/getRelativeWeight";
+import { paginatedFetch } from "./paginatedFetch";
 
-const BATCH_SIZE = 1_000;
+export const BATCH_SIZE = 1_000;
 
 const isVerbose = process.argv.includes("-v");
 
-function logIfVerbose(message: string) {
+export function logIfVerbose(message: string) {
   if (isVerbose) {
     console.log(message);
   }
-}
-
-async function gql(
-  endpoint: string,
-  query: string,
-  variables = {},
-  headers = {},
-) {
-  logIfVerbose(`Running GraphQL query on ${endpoint}`);
-
-  const defaultHeaders = {
-    "Content-Type": "application/json",
-  };
-  try {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        ...defaultHeaders,
-        ...headers,
-      },
-      body: JSON.stringify({
-        query,
-        variables,
-      }),
-    });
-    return response.json();
-  } catch (e) {
-    console.log("err", e);
-  }
-}
-
-const ENDPOINT_V3 = "https://api-v3.balancer.fi/graphql";
-const BASE_ENDPOINT_V2 =
-  "https://api.thegraph.com/subgraphs/name/balancer-labs";
-
-const NETWORK_TO_BALANCER_ENDPOINT_MAP = {
-  ethereum: `${BASE_ENDPOINT_V2}/balancer-v2`,
-  polygon: `${BASE_ENDPOINT_V2}/balancer-polygon-v2`,
-  "polygon-zkevm":
-    "https://api.studio.thegraph.com/query/24660/balancer-polygon-zk-v2/version/latest",
-  arbitrum: `${BASE_ENDPOINT_V2}/balancer-arbitrum-v2`,
-  gnosis: `${BASE_ENDPOINT_V2}/balancer-gnosis-chain-v2`,
-  optimism: `${BASE_ENDPOINT_V2}/balancer-optimism-v2`,
-  base: "https://api.studio.thegraph.com/query/24660/balancer-base-v2/version/latest",
-  avalanche: `${BASE_ENDPOINT_V2}/balancer-avalanche-v2`,
-} as const;
-
-const VOTING_GAUGES_QUERY = `
-query VeBalGetVotingList {
-    veBalGetVotingList {
-        chain
-        id
-        address
-        symbol
-        type
-        gauge {
-            address
-            isKilled
-            addedTimestamp
-            relativeWeightCap
-        }
-        tokens {
-            address
-            logoURI
-            symbol
-            weight
-        }
-    }
-}
-`;
-
-const POOLS_WITHOUT_GAUGE_QUERY = `
-query PoolsWherePoolType($latestId: String!) {
-  pools(
-    first: 1000,
-    where: {
-      id_gt: $latestId,
-    }
-  ) {
-    id
-    address
-    symbol
-    poolType
-    createTime
-    poolTypeVersion
-    tokens {
-      isExemptFromYieldProtocolFee
-      address
-      symbol
-      weight
-    }
-  }
-}
-`;
-
-const POOLS_SNAPSHOTS = `
-query PoolSnapshots($latestId: String!) {
-  poolSnapshots(
-    first: 1000,
-    where: {
-      id_gt: $latestId,
-    }
-  ) {
-    id
-    pool {
-      id
-      protocolYieldFeeCache
-      protocolSwapFeeCache
-    }
-    amounts
-    totalShares
-    swapVolume
-    protocolFee
-    swapFees
-    liquidity
-    timestamp
-  }
-}
-`;
-
-function* chunks(arr: unknown[], n: number) {
-  for (let i = 0; i < arr.length; i += n) {
-    yield arr.slice(i, i + n);
-  }
-}
-
-async function paginate<T>(
-  initialId: string,
-  step: number,
-  fetchFn: (id: string) => Promise<T | null>,
-): Promise<void> {
-  logIfVerbose(`Paginating from initialId=${initialId}, step=${step}`);
-
-  let idValue = initialId;
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    const data = await fetchFn(idValue);
-
-    // @ts-ignore  this comes as unknown type, but it is an array
-    const dataArray = Object.values(data)[0];
-
-    // @ts-ignore  this comes as unknown type, but it is an array
-    if (!data || dataArray.length < BATCH_SIZE) {
-      break;
-    }
-    // @ts-ignore  this comes as unknown type, but it is an array
-    idValue = dataArray[dataArray.length - 1].id;
-    console.log(idValue);
-  }
-}
-
-type ProcessFn<T> = (data: T) => Promise<void>;
-
-async function paginatedFetch<T>(
-  networkEndpoint: string,
-  query: string,
-  processFn: ProcessFn<T>,
-  initialId = "",
-  step = BATCH_SIZE,
-): Promise<void> {
-  await paginate(initialId, step, async (latestId: string) => {
-    const response = await gql(networkEndpoint, query, { latestId });
-    if (response.data) {
-      await processFn(response.data);
-      return response.data;
-    }
-
-    return null;
-  });
 }
 
 async function processPoolSnapshots(data: any, network: string) {
@@ -555,13 +396,13 @@ async function ETLPools() {
 }
 
 async function ETLSnapshots() {
-  logIfVerbose("Starting Pool Snapshots Extraction");
-  await Promise.all(
-    networkNames.map(async (networkName) => {
-      const networkEndpoint = NETWORK_TO_BALANCER_ENDPOINT_MAP[networkName];
-      await extractPoolSnapshotsForNetwork(networkEndpoint, networkName);
-    }),
-  );
+  // logIfVerbose("Starting Pool Snapshots Extraction");
+  // await Promise.all(
+  //   networkNames.map(async (networkName) => {
+  //     const networkEndpoint = NETWORK_TO_BALANCER_ENDPOINT_MAP[networkName];
+  //     await extractPoolSnapshotsForNetwork(networkEndpoint, networkName);
+  //   }),
+  // );
 
   logIfVerbose("Starting Pool Snapshots Extraction");
   await transformPoolSnapshotsData();
@@ -734,9 +575,9 @@ async function fetchBalPrices() {
 export async function runETLs() {
   logIfVerbose("Starting ETL processes");
 
-  await seedNetworks();
-  await seedVebalRounds();
-  await ETLPools();
+  // await seedNetworks();
+  // await seedVebalRounds();
+  // await ETLPools();
   await ETLSnapshots();
   await ETLGauges();
   await seedBalEmission();

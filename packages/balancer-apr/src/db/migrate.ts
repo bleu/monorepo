@@ -1,12 +1,12 @@
 /* eslint-disable no-console */
 import "dotenv/config";
 
-import { sql } from "@vercel/postgres";
-import { drizzle } from "drizzle-orm/vercel-postgres";
-import { migrate } from "drizzle-orm/vercel-postgres/migrator";
+import { drizzle } from "drizzle-orm/postgres-js";
+import { migrate } from "drizzle-orm/postgres-js/migrator";
+import postgres from "postgres";
 
 async function runMigrate() {
-  const db = drizzle(sql);
+  const db = drizzle(postgres(process.env.DATABASE_URL!));
 
   console.log("Running migrations...");
 

@@ -21,5 +21,5 @@ class QueryLogger implements Logger {
 
 export const db = drizzle(postgres(process.env.DATABASE_URL!), {
   schema,
-  // logger: new QueryLogger(),
+  logger: new QueryLogger(),
 });

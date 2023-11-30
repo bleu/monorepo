@@ -143,36 +143,49 @@ async function extractGaugesSnapshot() {
       gaugeAddressTimestampTuples,
     );
 
+    // Fetch round numbers for all timestamps in bulk
+    const roundNumbers = await db
+      .select({
+        timestamp: vebalRounds.startDate,
+        round_number: vebalRounds.roundNumber,
+      })
+      .from(vebalRounds);
+
+    // Create a timestamp to round number mapping
+    const roundNumberMap = roundNumbers.reduce(
+      (map, { timestamp, round_number }) => {
+        map[dateToEpoch(timestamp)] = round_number; // Ensure timestamp format aligns with what is used in gaugeAddressTimestampTuples
+        return map;
+      },
+      {} as { [key: number]: number },
+    );
+
+    const insertData = []; // Array to hold records for batch insert
+
     for (const [
       gaugeAddress,
       epochTimestamp,
       relativeWeight,
     ] of relativeWeights) {
-      const timestamp = new Date(epochTimestamp * 1000); // Convert back to Date object
+      const roundNumber = roundNumberMap[epochTimestamp];
 
-      // Fetch the round number for each timestamp
-      const roundNumberList = await db
-        .select({
-          round_number: vebalRounds.roundNumber,
-        })
-        .from(vebalRounds)
-        .where(eq(vebalRounds.startDate, timestamp));
-
-      const roundNumber = roundNumberList[0]?.round_number;
-
-      // Insert into gaugeSnapshots table
+      // Add record to insertData array if roundNumber exists
       if (roundNumber) {
-        await db
-          .insert(gaugeSnapshots)
-          .values({
-            gaugeAddress,
-            timestamp: timestamp,
-            relativeWeight: String(relativeWeight),
-            roundNumber: roundNumber,
-          })
-          .onConflictDoNothing()
-          .execute();
+        insertData.push({
+          gaugeAddress,
+          timestamp: new Date(epochTimestamp * 1000), // Convert back to Date object
+          relativeWeight: String(relativeWeight),
+          roundNumber,
+        });
       }
+    }
+    // Perform a single batch insert if there are records to insert
+    if (insertData.length > 0) {
+      await db
+        .insert(gaugeSnapshots)
+        .values(insertData)
+        .onConflictDoNothing()
+        .execute();
     }
   } catch (error) {
     console.error(error);
@@ -230,26 +243,28 @@ SET
 `);
 
   await db.execute(sql`
+UPDATE pool_snapshots_temp p
+SET next_timestamp_change = next_change.next_change_timestamp
+FROM (
+    SELECT 
+        id, 
+        LEAD(timestamp, 1, NOW()) OVER (PARTITION BY pool_external_id ORDER BY timestamp) AS next_change_timestamp
+    FROM 
+        pool_snapshots_temp
+) next_change
+WHERE p.id = next_change.id;
+`);
+
+  await db.execute(sql`
 INSERT INTO pool_snapshots (amounts, total_shares, swap_volume, swap_fees, liquidity, timestamp, protocol_yield_fee_cache, protocol_swap_fee_cache, external_id, pool_external_id, raw_data)
-WITH calendar AS (
-  SELECT generate_series('2021-04-21' :: timestamp, CURRENT_DATE, '1 day' :: INTERVAL) AS "timestamp"
-),
-
-pool_snapshots AS (
-  SELECT
-    *,
-    LEAD("timestamp", 1, NOW()) OVER (PARTITION BY pool_external_id ORDER BY "timestamp") AS timestamp_next_change
-  FROM pool_snapshots_temp
-)
-
 SELECT amounts, total_shares, swap_volume, swap_fees, liquidity, c.timestamp, protocol_yield_fee_cache, protocol_swap_fee_cache, pool_external_id || '-' || c.timestamp AS external_id, pool_external_id, raw_data
 FROM 
-    pool_snapshots b
+    pool_snapshots_temp b
 LEFT JOIN 
     calendar c 
 ON 
     b.timestamp <= c.timestamp 
-    AND (c.timestamp < b.timestamp_next_change OR b.timestamp_next_change IS NULL)
+    AND (c.timestamp < b.next_timestamp_change OR b.next_timestamp_change IS NULL)
 ON CONFLICT (external_id) DO NOTHING;
 `);
 }
@@ -396,13 +411,13 @@ async function ETLPools() {
 }
 
 async function ETLSnapshots() {
-  // logIfVerbose("Starting Pool Snapshots Extraction");
-  // await Promise.all(
-  //   networkNames.map(async (networkName) => {
-  //     const networkEndpoint = NETWORK_TO_BALANCER_ENDPOINT_MAP[networkName];
-  //     await extractPoolSnapshotsForNetwork(networkEndpoint, networkName);
-  //   }),
-  // );
+  logIfVerbose("Starting Pool Snapshots Extraction");
+  await Promise.all(
+    networkNames.map(async (networkName) => {
+      const networkEndpoint = NETWORK_TO_BALANCER_ENDPOINT_MAP[networkName];
+      await extractPoolSnapshotsForNetwork(networkEndpoint, networkName);
+    }),
+  );
 
   logIfVerbose("Starting Pool Snapshots Extraction");
   await transformPoolSnapshotsData();
@@ -434,22 +449,23 @@ async function seedVebalRounds() {
   const startDate = new Date("2022-04-14T00:00:00.000Z");
   let roundNumber = 1;
 
+  const data = [];
   while (startDate <= new Date()) {
     const endDate = new Date(startDate);
     endDate.setUTCDate(endDate.getUTCDate() + 6);
     endDate.setUTCHours(23, 59, 59, 999);
 
-    await addToTable(vebalRounds, [
-      {
-        startDate: startDate,
-        endDate: endDate,
-        roundNumber: roundNumber,
-      },
-    ]);
+    data.push({
+      startDate: startDate,
+      endDate: endDate,
+      roundNumber: roundNumber,
+    });
 
     startDate.setUTCDate(startDate.getUTCDate() + 7);
     roundNumber++;
   }
+
+  await addToTable(vebalRounds, data);
 }
 
 async function seedBalEmission() {
@@ -482,19 +498,27 @@ async function calculateApr() {
   await db.execute(sql`
   INSERT INTO swap_fee_apr (timestamp, pool_external_id, collected_fees_usd, value, external_id)
   SELECT
-	p1.timestamp,
-	p1.pool_external_id,
-	p1.swap_fees - p2.swap_fees AS collected_fees_usd,
-    CASE 
-        WHEN p1.liquidity = 0 THEN 0
-        ELSE ((p1.swap_fees - p2.swap_fees) * (1 - COALESCE(p1.protocol_swap_fee_cache, 0.5)) / p1.liquidity) * 365 * 100 
-    END AS "value",
-  p1.external_id
-FROM pool_snapshots p1
-LEFT JOIN pool_snapshots p2 
-ON p1. "timestamp" = p2. "timestamp" + INTERVAL '1 day'
-AND p1.pool_external_id = p2.pool_external_id
-ON CONFLICT (external_id) DO NOTHING;
+      p1.timestamp,
+      p1.pool_external_id,
+      p1.swap_fees - p2.swap_fees AS collected_fees_usd,
+      CASE 
+          WHEN p1.liquidity = 0 THEN 0
+          ELSE ((p1.swap_fees - p2.swap_fees) * (1 - COALESCE(p1.protocol_swap_fee_cache, 0.5)) / p1.liquidity) * 365 * 100 
+      END AS value,
+      p1.external_id
+  FROM 
+      pool_snapshots p1
+  LEFT JOIN pool_snapshots p2 
+      ON p1.timestamp = p2.timestamp + INTERVAL '1 day'
+      AND p1.pool_external_id = p2.pool_external_id
+  WHERE
+      p1.swap_fees IS NOT NULL
+      AND p2.swap_fees IS NOT NULL
+      AND p1.swap_fees != 0
+      AND p2.swap_fees != 0
+      AND p1.swap_fees - p2.swap_fees != 0
+  ON CONFLICT (external_id) DO NOTHING;
+  
 `);
 
   // veBAL APR
@@ -572,15 +596,26 @@ async function fetchBalPrices() {
   }
 }
 
+async function seedCalendar() {
+  await db.execute(sql`
+  INSERT INTO calendar (timestamp)
+SELECT
+	generate_series('2021-04-21'::timestamp, CURRENT_DATE, '1 day'::INTERVAL) AS "timestamp"`);
+}
+
 export async function runETLs() {
   logIfVerbose("Starting ETL processes");
 
-  // await seedNetworks();
-  // await seedVebalRounds();
-  // await ETLPools();
+  await Promise.all([
+    seedCalendar(),
+    seedVebalRounds(),
+    seedBalEmission(),
+    seedNetworks(),
+  ]);
+
+  await ETLPools();
   await ETLSnapshots();
   await ETLGauges();
-  await seedBalEmission();
   await fetchBalPrices();
   await ETLGaugesSnapshot();
   await calculateApr();
@@ -588,4 +623,4 @@ export async function runETLs() {
   process.exit(0);
 }
 
-runETLs();
+// runETLs();

@@ -1,4 +1,4 @@
-# fly.toml app configuration file generated for balancer-apr-db on 2023-11-29T22:47:27-03:00
+# fly.toml app configuration file generated for balancer-apr-db on 2023-11-30T10:33:46-03:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
@@ -7,7 +7,6 @@ app = "balancer-apr-db"
 primary_region = "iad"
 
 [env]
-  FLY_SCALE_TO_ZERO = "1h"
   PRIMARY_REGION = "iad"
 
 [[mounts]]
@@ -18,7 +17,7 @@ primary_region = "iad"
 [[services]]
   protocol = "tcp"
   internal_port = 5432
-  auto_start_machines = true
+  auto_start_machines = false
 
   [[services.ports]]
     port = 5432
@@ -31,7 +30,7 @@ primary_region = "iad"
 [[services]]
   protocol = "tcp"
   internal_port = 5433
-  auto_start_machines = true
+  auto_start_machines = false
 
   [[services.ports]]
     port = 5433

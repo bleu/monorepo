@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS "pool_snapshots_swap_fees_index" ON "pool_snapshots" ("swap_fees");

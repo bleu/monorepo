@@ -9,9 +9,20 @@ import {
   tokens,
   vebalApr,
 } from "@bleu-fi/balancer-apr/src/db/schema";
-import { and, asc, between, desc, eq, ne, sql } from "drizzle-orm";
+import {
+  and,
+  asc,
+  between,
+  desc,
+  eq,
+  inArray,
+  ne,
+  sql,
+  SQLWrapper,
+} from "drizzle-orm";
 
 import { PoolTypeEnum } from "./types";
+import { areSupportedNetwork } from "./validate";
 
 interface FetchDataOptions {
   startDate: Date;
@@ -22,6 +33,7 @@ interface FetchDataOptions {
   order?: "asc" | "desc";
   maxTvl?: string;
   filteredTokens?: string[];
+  network?: string;
 }
 
 export async function fetchDataForDateRange({
@@ -32,7 +44,13 @@ export async function fetchDataForDateRange({
   sort = "apr",
   order = "desc",
   maxTvl = "10000000000",
+  network,
 }: FetchDataOptions) {
+  if (network !== undefined && !areSupportedNetwork(network)) {
+    throw new Error("Invalid network");
+  }
+  const networks = network?.split(",").map((n) => n.toLowerCase().trim());
+
   const poolAprForDate = db
     .select({
       poolExternalId: swapFeeApr.poolExternalId,
@@ -70,10 +88,12 @@ export async function fetchDataForDateRange({
         eq(vebalApr.timestamp, swapFeeApr.timestamp),
       ),
     )
+    .leftJoin(pools, eq(pools.externalId, swapFeeApr.poolExternalId))
     .where(
       and(
         between(swapFeeApr.timestamp, startDate, endDate),
         between(poolSnapshots.liquidity, minTvl, maxTvl),
+        (networks ? inArray(pools.networkSlug, networks) : true) as SQLWrapper,
       ),
     )
     .groupBy(swapFeeApr.poolExternalId)
@@ -145,7 +165,6 @@ export async function fetchDataForDateRange({
       tvl: Number(pool.avgLiquidity),
       tokens: tokensForPool,
       volume: Number(pool.avgVolume),
-      votingShare: 0,
       symbol:
         poolData.find((p) => p.poolExternalId === pool.poolExternalId)
           ?.symbol || "",

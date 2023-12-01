@@ -18,7 +18,7 @@ export interface SearchParams {
   minApr?: string;
   maxApr?: string;
   tokens?: string;
-  type?: string;
+  types?: string;
   network?: string;
 }
 

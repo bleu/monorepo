@@ -11,11 +11,15 @@ export default async function PoolListTableWrapper({
   endDate: Date;
   searchParams: SearchParams;
 }) {
+  const updatedSearchParams = {
+    ...searchParams,
+    tokens: searchParams.tokens ? searchParams.tokens.split(",") : undefined,
+  };
+
   const { poolAverage: poolAvgForTable } = await fetchDataForDateRange({
     startDate,
     endDate,
-    ...searchParams,
-    filteredTokens: searchParams.tokens?.split(","),
+    ...updatedSearchParams,
   });
   return (
     <PoolListTable

@@ -8,6 +8,15 @@ export enum PoolTypeEnum {
   COMPOSABLE_STABLE = "ComposableStable",
 }
 
+export const PoolTypeNames = {
+  [PoolTypeEnum.WEIGHTED]: "Weighted",
+  [PoolTypeEnum.GYROE]: "GyroE",
+  [PoolTypeEnum.STABLE]: "Stable",
+  [PoolTypeEnum.META_STABLE]: "MetaStable",
+  [PoolTypeEnum.UNKNOWN]: "FX",
+  [PoolTypeEnum.COMPOSABLE_STABLE]: "Composable Stable",
+};
+
 export const BASE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ??
   `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`;

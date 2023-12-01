@@ -4,6 +4,8 @@ import { Network, networksOnBalancer } from "@bleu-fi/utils";
 import { parseMMDDYYYYToDate } from "@bleu-fi/utils/date";
 import { z } from "zod";
 
+import { PoolTypeNames } from "./types";
+
 const currentDate = new Date();
 const minDate = new Date("2020-01-01");
 
@@ -11,11 +13,15 @@ export const areSupportedNetwork = (value?: string | undefined) =>
   value !== undefined &&
   value
     .split(",")
-    .some((val) =>
+    .every((val) =>
       Object.values(networksOnBalancer).includes(
         val.toLowerCase().trim() as Network,
       ),
     );
+
+export const areSupportedTypes = (value?: string | undefined) =>
+  value !== undefined &&
+  value.split(",").every((val) => Object.values(PoolTypeNames).includes(val));
 
 const OptionalNullableString = z.string().nullable().optional();
 const OptionalNullableDate =

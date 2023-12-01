@@ -2,9 +2,9 @@ import { Address } from "@bleu-fi/utils";
 import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
 import { erc20ABI } from "@wagmi/core";
 import { encodeFunctionData } from "viem";
-import { goerli } from "viem/chains";
 
 import { milkmanAbi } from "#/lib/abis/milkman";
+import { ChainId } from "#/utils/chainsPublicClients";
 
 import {
   encodePriceCheckerData,
@@ -45,18 +45,8 @@ export interface MilkmanOrderArgs extends BaseArgs {
   isValidFromNeeded: boolean;
   validFrom: string;
   args: argType[];
-  twapDelay?: number;
-}
-
-export interface MilkmanCancelArgs extends BaseArgs {
-  type: TRANSACTION_TYPES.MILKMAN_CANCEL;
-  contractAddress: Address;
-  tokenAddressToSell: Address;
-  tokenAddressToBuy: Address;
-  toAddress: Address;
-  amount: bigint;
-  priceChecker: Address;
-  priceCheckerData: `0x${string}`;
+  twapDelay: number;
+  chainId: ChainId;
 }
 
 export interface MilkmanCancelArgs extends BaseArgs {
@@ -102,10 +92,11 @@ class MilkmanOrderRawTx implements ITransaction<MilkmanOrderArgs> {
     isValidFromNeeded,
     validFrom,
     twapDelay,
+    chainId,
     args,
   }: MilkmanOrderArgs): BaseTransaction {
-    const priceCheckerAddress = priceCheckerAddressesMapping[priceChecker][
-      goerli.id
+    const priceCheckerAddress = priceCheckerAddressesMapping[chainId][
+      priceChecker
     ] as Address;
     const priceCheckerData = encodePriceCheckerData(priceChecker, args);
 
@@ -120,9 +111,7 @@ class MilkmanOrderRawTx implements ITransaction<MilkmanOrderArgs> {
           tokenAddressToSell,
           tokenAddressToBuy,
           toAddress,
-          isValidFromNeeded
-            ? validFromDecorator[goerli.id]
-            : priceCheckerAddress,
+          isValidFromNeeded ? validFromDecorator[chainId] : priceCheckerAddress,
           isValidFromNeeded
             ? encodePriceCheckerDataWithValidFromDecorator({
                 priceCheckerAddress,

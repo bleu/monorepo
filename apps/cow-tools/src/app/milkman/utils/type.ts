@@ -3,6 +3,7 @@ export enum TransactionStatus {
   ORDER_STRATEGY = "Order strategy",
   ORDER_TWAP = "Order twap",
   ORDER_SUMMARY = "Order summary",
+  TRANSACTION_ON_QUEUE = "Transaction on queue",
   MILKMAN_CREATED = "Milkman created",
   ORDER_PLACED = "Order placed",
   PARTIALLY_EXECUTED = "Partially executed",
@@ -12,6 +13,7 @@ export enum TransactionStatus {
 }
 
 export enum SwapStatus {
+  TRANSACTION_ON_QUEUE = "Transaction on queue",
   MILKMAN_CREATED = "Milkman created",
   ORDER_PLACED = "Order placed",
   EXECUTED = "Executed",

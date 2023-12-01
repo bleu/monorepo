@@ -14,6 +14,7 @@ import {
   ICowOrder,
   IUserMilkmanTransaction,
 } from "#/hooks/useUserMilkmanTransactions";
+import { cowTokenList } from "#/utils/cowTokenList";
 
 import { SwapStatus, TransactionStatus } from "../../utils/type";
 import { CancelButton } from "./CancelButton";
@@ -25,9 +26,13 @@ export function TableRowTransaction({
 }: {
   transaction: IUserMilkmanTransaction;
 }) {
-  function getSwapStatus(hasToken?: boolean, cowOrders?: ICowOrder[]) {
-    if (!cowOrders || hasToken === undefined) {
-      return SwapStatus.MILKMAN_CREATED;
+  function getSwapStatus(
+    hasToken?: boolean,
+    cowOrders?: ICowOrder[],
+    transactionProcessed?: boolean,
+  ) {
+    if (!cowOrders || hasToken === undefined || !transactionProcessed) {
+      return SwapStatus.TRANSACTION_ON_QUEUE;
     }
 
     const anyOrderWasExecuted = cowOrders.some(
@@ -52,6 +57,12 @@ export function TableRowTransaction({
   function getTransactionStatus(orderStatus: SwapStatus[]) {
     if (orderStatus.every((status) => status === SwapStatus.CANCELED)) {
       return TransactionStatus.CANCELED;
+    }
+
+    if (
+      orderStatus.every((status) => status === SwapStatus.TRANSACTION_ON_QUEUE)
+    ) {
+      return TransactionStatus.TRANSACTION_ON_QUEUE;
     }
     if (orderStatus.every((status) => status === SwapStatus.EXECUTED)) {
       return TransactionStatus.EXECUTED;
@@ -81,7 +92,7 @@ export function TableRowTransaction({
   }
 
   const orderStatus = transaction.orders.map((order) =>
-    getSwapStatus(order.hasToken, order.cowOrders),
+    getSwapStatus(order.hasToken, order.cowOrders, transaction.processed),
   );
   const transactionStatus = getTransactionStatus(orderStatus);
   const txUrl = buildBlockExplorerTxUrl({
@@ -104,7 +115,13 @@ export function TableRowTransaction({
   );
 
   const decimalsTokenIn =
-    transaction.orders[0].orderEvent.tokenIn?.decimals || 18;
+    transaction.orders[0].orderEvent.tokenIn?.decimals ||
+    cowTokenList.find(
+      (token) =>
+        token.address == transaction.orders[0].orderEvent.tokenIn?.id &&
+        token.chainId == transaction.orders[0].orderEvent.chainId,
+    )?.decimals ||
+    1;
 
   const totalAmountTokenIn = transaction.orders.reduce(
     (acc, order) =>
@@ -155,20 +172,23 @@ export function TableRowTransaction({
         <Table.BodyCell>
           <div className="flex items-center gap-x-1">
             <span>{transactionStatus}</span>
-            {txUrl && (
-              <Link href={txUrl} target="_blank">
-                <ArrowTopRightIcon className="hover:text-slate11" />
-              </Link>
-            )}
+            {txUrl &&
+              transactionStatus != TransactionStatus.TRANSACTION_ON_QUEUE && (
+                <Link href={txUrl} target="_blank">
+                  <ArrowTopRightIcon className="hover:text-slate11" />
+                </Link>
+              )}
           </div>
         </Table.BodyCell>
         <Table.BodyCell>
           <CancelButton
-            disabled={[
-              TransactionStatus.EXECUTED,
-              TransactionStatus.CANCELED,
-              TransactionStatus.EXECUTED_AND_CANCELED,
-            ].includes(transactionStatus)}
+            disabled={
+              ![
+                TransactionStatus.ORDER_PLACED,
+                TransactionStatus.PARTIALLY_EXECUTED,
+                TransactionStatus.MILKMAN_CREATED,
+              ].includes(transactionStatus)
+            }
             transaction={transaction}
           />
         </Table.BodyCell>

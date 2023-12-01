@@ -1,15 +1,20 @@
 import { TransactionProgressBar } from "#/app/milkman/(components)/SingleOrderForm/TransactionProgressBar";
 import { TransactionStatus } from "#/app/milkman/utils/type";
 import { Button } from "#/components";
+import { Spinner } from "#/components/Spinner";
 
 export function FormFooter({
   transactionStatus,
-  onClick,
+  onContinue,
+  onAddOneMore,
   disabled = false,
+  isLoading = false,
 }: {
   transactionStatus: TransactionStatus;
-  onClick?: () => void;
+  onContinue?: () => void;
+  onAddOneMore?: () => void;
   disabled?: boolean;
+  isLoading?: boolean;
 }) {
   const isDraftResume = transactionStatus === TransactionStatus.ORDER_SUMMARY;
   return (
@@ -23,21 +28,35 @@ export function FormFooter({
       <div className="flex justify-center gap-x-5">
         {isDraftResume ? (
           <>
-            <Button type="button" className="w-full" color="slate" disabled>
+            <Button
+              type="button"
+              className="w-full"
+              color="slate"
+              onClick={onAddOneMore}
+            >
               <span>Add one more order</span>
             </Button>
-            <Button type="submit" className="w-full" onClick={onClick}>
-              <span>Build transaction</span>
+            <Button
+              type="submit"
+              className="w-full"
+              onClick={onContinue}
+              disabled={disabled || isLoading}
+            >
+              {isLoading ? (
+                <Spinner size="sm" />
+              ) : (
+                <span>Build transaction</span>
+              )}
             </Button>
           </>
         ) : (
           <Button
             type="submit"
             className="w-full"
-            onClick={onClick}
-            disabled={disabled}
+            onClick={onContinue}
+            disabled={disabled || isLoading}
           >
-            <span>Continue</span>
+            {isLoading ? <Spinner size="sm" /> : <span>Continue</span>}
           </Button>
         )}
       </div>

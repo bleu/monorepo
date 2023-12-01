@@ -28,6 +28,32 @@ export enum NetworkChainId {
   AVALANCHE = 43114,
 }
 
+export const NetworkChainIdFromNetwork = {
+  [Network.Ethereum]: NetworkChainId.ETHEREUM,
+  [Network.Polygon]: NetworkChainId.POLYGON,
+  [Network.Arbitrum]: NetworkChainId.ARBITRUM,
+  [Network.Gnosis]: NetworkChainId.GNOSIS,
+  [Network.Optimism]: NetworkChainId.OPTIMISM,
+  [Network.Goerli]: NetworkChainId.GOERLI,
+  [Network.Sepolia]: NetworkChainId.SEPOLIA,
+  [Network.PolygonZKEVM]: NetworkChainId.POLYGONZKEVM,
+  [Network.Base]: NetworkChainId.BASE,
+  [Network.Avalanche]: NetworkChainId.AVALANCHE,
+};
+
+export const NetworkFromNetworkChainId = {
+  [NetworkChainId.ETHEREUM]: Network.Ethereum,
+  [NetworkChainId.POLYGON]: Network.Polygon,
+  [NetworkChainId.ARBITRUM]: Network.Arbitrum,
+  [NetworkChainId.GNOSIS]: Network.Gnosis,
+  [NetworkChainId.OPTIMISM]: Network.Optimism,
+  [NetworkChainId.GOERLI]: Network.Goerli,
+  [NetworkChainId.SEPOLIA]: Network.Sepolia,
+  [NetworkChainId.POLYGONZKEVM]: Network.PolygonZKEVM,
+  [NetworkChainId.BASE]: Network.Base,
+  [NetworkChainId.AVALANCHE]: Network.Avalanche,
+};
+
 export const networkUrls = {
   [NetworkChainId.ETHEREUM]: {
     url: "https://etherscan.io/",

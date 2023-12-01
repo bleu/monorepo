@@ -15,7 +15,7 @@ import { Dialog } from "#/components/Dialog";
 import { SearchPoolForm } from "#/components/SearchPoolForm";
 import { DateRangePicker } from "#/components/ui/date-range-picker";
 
-import { generatePoolPageLink } from "../(utils)/getFilteredApiUrl";
+import { generatePoolPageLink } from "../(utils)/getFilteredUrl";
 
 export default function HeaderEndButton() {
   const { network } = useParams();

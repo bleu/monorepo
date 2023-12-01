@@ -1,7 +1,6 @@
+import * as balEmissions from "@bleu-fi/balancer-apr/src/lib/balancer/emissions";
 import { dateToEpoch } from "@bleu-fi/utils/date";
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
-
-import * as balEmissions from "#/lib/balancer/emissions";
 
 import { getBALPriceForDateRange } from "../(utils)/getBALPriceForDateRange";
 import OverviewCards, { getDatesDetails } from "./OverviewCards";
@@ -13,12 +12,7 @@ export default async function HomeOverviewCards({
   startAt: Date;
   endAt: Date;
 }) {
-  const balInUSD = (
-    await getBALPriceForDateRange(dateToEpoch(startAt), dateToEpoch(endAt))
-  ).toLocaleString("en-US", {
-    style: "currency",
-    currency: "USD",
-  });
+  const balInUSD = await getBALPriceForDateRange(startAt, endAt);
   const cardsDetails = [
     { title: "BAL Price", content: balInUSD },
     {

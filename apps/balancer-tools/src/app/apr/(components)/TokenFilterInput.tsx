@@ -1,8 +1,7 @@
 "use client";
 
+import POOLS_WITH_LIVE_GAUGES from "@bleu-fi/balancer-apr/src/lib/balancer/data/voting-gauges.json";
 import { useRouter, useSearchParams } from "next/navigation";
-
-import POOLS_WITH_LIVE_GAUGES from "#/data/voting-gauges.json";
 
 import { MultiSelectDropdown } from "./MultiSelectDropdown";
 

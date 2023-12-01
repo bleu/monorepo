@@ -25,15 +25,10 @@ import { FormFooter } from "./Footer";
 
 export function FormSelectPriceChecker({
   onSubmit,
-  defaultValues, // tokenSellAddress,
-  // tokenBuyAddress,
-} // tokenBuyDecimals,
-: {
+  defaultValues,
+}: {
   onSubmit: (data: FieldValues) => void;
   defaultValues?: FieldValues;
-  // tokenSellAddress: Address;
-  // tokenBuyAddress: Address;
-  // tokenBuyDecimals: number;
 }) {
   const [selectedPriceChecker, setSelectedPriceChecker] =
     useState<PRICE_CHECKERS>(defaultValues?.priceChecker);

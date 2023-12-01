@@ -5,12 +5,14 @@ import { Spinner } from "#/components/Spinner";
 
 export function FormFooter({
   transactionStatus,
-  onClick,
+  onContinue,
+  onAddOneMore,
   disabled = false,
   isLoading = false,
 }: {
   transactionStatus: TransactionStatus;
-  onClick?: () => void;
+  onContinue?: () => void;
+  onAddOneMore?: () => void;
   disabled?: boolean;
   isLoading?: boolean;
 }) {
@@ -26,13 +28,18 @@ export function FormFooter({
       <div className="flex justify-center gap-x-5">
         {isDraftResume ? (
           <>
-            <Button type="button" className="w-full" color="slate" disabled>
+            <Button
+              type="button"
+              className="w-full"
+              color="slate"
+              onClick={onAddOneMore}
+            >
               <span>Add one more order</span>
             </Button>
             <Button
               type="submit"
               className="w-full"
-              onClick={onClick}
+              onClick={onContinue}
               disabled={disabled || isLoading}
             >
               {isLoading ? (
@@ -46,7 +53,7 @@ export function FormFooter({
           <Button
             type="submit"
             className="w-full"
-            onClick={onClick}
+            onClick={onContinue}
             disabled={disabled || isLoading}
           >
             {isLoading ? <Spinner size="sm" /> : <span>Continue</span>}

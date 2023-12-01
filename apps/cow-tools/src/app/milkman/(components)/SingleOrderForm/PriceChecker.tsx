@@ -1,4 +1,4 @@
-import { Address } from "@bleu-fi/utils";
+// import { Address } from "@bleu-fi/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusIcon, TrashIcon } from "@radix-ui/react-icons";
@@ -26,15 +26,9 @@ import { FormFooter } from "./Footer";
 export function FormSelectPriceChecker({
   onSubmit,
   defaultValues,
-  tokenSellAddress,
-  tokenBuyAddress,
-  tokenBuyDecimals,
 }: {
   onSubmit: (data: FieldValues) => void;
   defaultValues?: FieldValues;
-  tokenSellAddress: Address;
-  tokenBuyAddress: Address;
-  tokenBuyDecimals: number;
 }) {
   const [selectedPriceChecker, setSelectedPriceChecker] =
     useState<PRICE_CHECKERS>(defaultValues?.priceChecker);
@@ -51,15 +45,16 @@ export function FormSelectPriceChecker({
       priceChecker: selectedPriceChecker,
       expectedArgs: priceCheckersArgumentsMapping[selectedPriceChecker],
     })({
-      tokenSellAddress,
-      tokenBuyAddress,
-      tokenBuyDecimals,
+      tokenSellAddress: defaultValues?.tokenSell.address,
+      tokenBuyAddress: defaultValues?.tokenBuy.address,
+      tokenBuyDecimals: defaultValues?.tokenBuy.decimals,
       publicClient,
     });
 
   const form = useForm(
     selectedPriceChecker && {
       resolver: zodResolver(schema),
+      defaultValues,
     },
   );
 
@@ -112,7 +107,7 @@ export function FormSelectPriceChecker({
           form={form}
           priceChecker={selectedPriceChecker}
           defaultValues={defaultValues}
-          tokenBuyDecimals={tokenBuyDecimals}
+          tokenBuyDecimals={defaultValues?.tokenBuy.decimals}
         />
       )}
       <FormFooter

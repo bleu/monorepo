@@ -9,6 +9,7 @@ import { Button } from "#/components";
 import { useRawTxData } from "#/hooks/useRawTxData";
 import { priceCheckersArgumentsMapping } from "#/lib/priceCheckersMappings";
 import {
+  ERC20ApproveArgs,
   MILKMAN_ADDRESS,
   MilkmanOrderArgs,
   TRANSACTION_TYPES,
@@ -19,14 +20,106 @@ import { truncateAddress } from "#/utils/truncate";
 import { FormFooter } from "./Footer";
 import { TWAP_DELAY_OPTIONS, TwapDelayValues } from "./Twap";
 
-export function OrderSummary({
-  data,
-  handleBack,
+export function OrderSummaryList({
+  orders,
+  handleEdit,
   chainId,
+  setCurrentOrderToEdit,
+}: {
+  orders: FieldValues[];
+  handleEdit: () => void;
+  chainId?: NetworkChainId;
+  setCurrentOrderToEdit: (index: number) => void;
+}) {
+  const router = useRouter();
+
+  const { sendTransactions } = useRawTxData();
+
+  function createRawTransaction(data: FieldValues) {
+    const sellAmountBigInt = BigInt(
+      Number(data.tokenSellAmount) * 10 ** data.tokenSell.decimals,
+    );
+    const priceCheckersArgs = priceCheckersArgumentsMapping[
+      data.priceChecker as PRICE_CHECKERS
+    ].map((arg) => arg.convertInput(data[arg.name], data.tokenBuy.decimals));
+
+    const ordersNumber = data.isTwapNeeded ? data.numberOfOrders : 1;
+    const delay = data.isTwapNeeded
+      ? TwapDelayValues[data.delay as TWAP_DELAY_OPTIONS]
+      : 0;
+    const validFrom =
+      !data.isValidFromNeeded && data.isTwapNeeded
+        ? formatDateToLocalDatetime(new Date())
+        : data.validFrom;
+
+    return [
+      {
+        type: TRANSACTION_TYPES.ERC20_APPROVE,
+        tokenAddress: data.tokenSell.address,
+        spender: MILKMAN_ADDRESS,
+        amount: sellAmountBigInt,
+      } as ERC20ApproveArgs,
+      ...[...Array(ordersNumber).keys()].map((index) => {
+        return {
+          type: TRANSACTION_TYPES.MILKMAN_ORDER,
+          tokenAddressToSell: data.tokenSell.address,
+          tokenAddressToBuy: data.tokenBuy.address,
+          toAddress: data.receiverAddress,
+          amount: sellAmountBigInt / BigInt(ordersNumber),
+          priceChecker: data.priceChecker,
+          validFrom: validFrom,
+          isValidFromNeeded: data.isValidFromNeeded || data.isTwapNeeded,
+          args: priceCheckersArgs,
+          twapDelay: index * delay,
+          chainId: chainId,
+        } as MilkmanOrderArgs;
+      }),
+    ];
+  }
+
+  async function handleButtonClick() {
+    const rawTransactions = orders.map((order) => createRawTransaction(order));
+
+    await sendTransactions(rawTransactions.flat());
+    router.push(`/milkman/${networkFor(chainId)}`);
+  }
+  return (
+    <div>
+      <div className="flex flex-col gap-x-2">
+        {orders.map((order, index) => (
+          <OrderSummary
+            key={index}
+            data={order}
+            handleEdit={handleEdit}
+            index={index}
+            setCurrentOrderToEdit={setCurrentOrderToEdit}
+          />
+        ))}
+      </div>
+      <div className="mt-5">
+        <FormFooter
+          transactionStatus={TransactionStatus.ORDER_SUMMARY}
+          onContinue={handleButtonClick}
+          onAddOneMore={() => {
+            handleEdit();
+            setCurrentOrderToEdit(orders.length);
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function OrderSummary({
+  data,
+  handleEdit,
+  index,
+  setCurrentOrderToEdit,
 }: {
   data: FieldValues;
-  handleBack: () => void;
-  chainId?: NetworkChainId;
+  handleEdit: () => void;
+  index: number;
+  setCurrentOrderToEdit: (index: number) => void;
 }) {
   const fieldsToDisplay = [
     { label: "Token to sell", key: "tokenSell" },
@@ -51,62 +144,18 @@ export function OrderSummary({
     ),
   ];
 
-  const router = useRouter();
-
-  const { sendTransactions } = useRawTxData();
-
-  async function handleButtonClick() {
-    const sellAmountBigInt = BigInt(
-      Number(data.tokenSellAmount) * 10 ** data.tokenSell.decimals,
-    );
-    const priceCheckersArgs = priceCheckersArgumentsMapping[
-      data.priceChecker as PRICE_CHECKERS
-    ].map((arg) => arg.convertInput(data[arg.name], data.tokenBuy.decimals));
-
-    const ordersNumber = data.isTwapNeeded ? data.numberOfOrders : 1;
-    const delay = data.isTwapNeeded
-      ? TwapDelayValues[data.delay as TWAP_DELAY_OPTIONS]
-      : 0;
-    const validFrom =
-      !data.isValidFromNeeded && data.isTwapNeeded
-        ? formatDateToLocalDatetime(new Date())
-        : data.validFrom;
-
-    await sendTransactions([
-      {
-        type: TRANSACTION_TYPES.ERC20_APPROVE,
-        tokenAddress: data.tokenSell.address,
-        spender: MILKMAN_ADDRESS,
-        amount: sellAmountBigInt,
-      },
-      ...[...Array(ordersNumber).keys()].map((index) => {
-        return {
-          type: TRANSACTION_TYPES.MILKMAN_ORDER,
-          tokenAddressToSell: data.tokenSell.address,
-          tokenAddressToBuy: data.tokenBuy.address,
-          toAddress: data.receiverAddress,
-          amount: sellAmountBigInt / BigInt(ordersNumber),
-          priceChecker: data.priceChecker,
-          validFrom: validFrom,
-          isValidFromNeeded: data.isValidFromNeeded || data.isTwapNeeded,
-          args: priceCheckersArgs,
-          twapDelay: index * delay,
-          chainId: chainId,
-        } as MilkmanOrderArgs;
-      }),
-    ]);
-    router.push(`/milkman/${networkFor(chainId)}`);
-  }
-
   return (
     <div>
       <div className="font-semibold text-2xl flex justify-between">
-        Order #1 - {truncateAddress(data.tokenSell.symbol)} for{" "}
+        Order #{index + 1} - {truncateAddress(data.tokenSell.symbol)} for{" "}
         {data.tokenBuy.symbol}
         <Button
           type="button"
           className="bg-transparent border-0 hover:bg-transparent"
-          onClick={handleBack}
+          onClick={() => {
+            setCurrentOrderToEdit(0);
+            handleEdit();
+          }}
         >
           <Pencil1Icon className="text-amber9" />
         </Button>
@@ -162,12 +211,6 @@ export function OrderSummary({
               );
           }
         })}
-      </div>
-      <div className="mt-5">
-        <FormFooter
-          transactionStatus={TransactionStatus.ORDER_SUMMARY}
-          onClick={handleButtonClick}
-        />
       </div>
     </div>
   );

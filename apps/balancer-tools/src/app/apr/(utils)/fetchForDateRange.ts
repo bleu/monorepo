@@ -8,6 +8,7 @@ import {
   swapFeeApr,
   tokens,
   vebalApr,
+  yieldTokenApr,
 } from "@bleu-fi/balancer-apr/src/db/schema";
 import { and, asc, between, desc, eq, ne, sql } from "drizzle-orm";
 
@@ -33,11 +34,21 @@ export async function fetchDataForDateRange({
   order = "desc",
   maxTvl = "10000000000",
 }: FetchDataOptions) {
+  const yieldAprSum = db
+    .select({
+      poolExternalId: yieldTokenApr.poolExternalId,
+      timestamp: yieldTokenApr.timestamp,
+      valueSum: sql<number>`sum(${yieldTokenApr.value})`.as("valueSum"),
+    })
+    .from(yieldTokenApr)
+    .groupBy(yieldTokenApr.poolExternalId, yieldTokenApr.timestamp)
+    .as("yieldTokenAprSum");
+
   const poolAprForDate = db
     .select({
       poolExternalId: swapFeeApr.poolExternalId,
       avgApr:
-        sql<number>`cast(avg(coalesce(${swapFeeApr.value},0) + coalesce(${vebalApr.value},0)) as decimal)`.as(
+        sql<number>`cast(avg(coalesce(${swapFeeApr.value},0) + coalesce(${vebalApr.value},0)+ coalesce(${yieldAprSum.valueSum},0)) as decimal)`.as(
           "avgApr",
         ),
       avgFeeApr: sql<number>`cast(avg(${swapFeeApr.value}) as decimal)`.as(
@@ -53,6 +64,10 @@ export async function fetchDataForDateRange({
       avgLiquidity:
         sql<number>`cast(avg(${poolSnapshots.liquidity}) as decimal)`.as(
           "avgLiquidity",
+        ),
+      avgYieldTokenApr:
+        sql<number>`cast(avg(coalesce(${yieldAprSum.valueSum},0)) as decimal)`.as(
+          "avgYieldTokenApr",
         ),
     })
     .from(swapFeeApr)
@@ -70,6 +85,14 @@ export async function fetchDataForDateRange({
         eq(vebalApr.timestamp, swapFeeApr.timestamp),
       ),
     )
+    .fullJoin(
+      yieldAprSum,
+      and(
+        eq(yieldAprSum.poolExternalId, swapFeeApr.poolExternalId),
+        eq(yieldAprSum.timestamp, swapFeeApr.timestamp),
+      ),
+    )
+    .leftJoin(pools, eq(pools.externalId, swapFeeApr.poolExternalId))
     .where(
       and(
         between(swapFeeApr.timestamp, startDate, endDate),
@@ -132,13 +155,9 @@ export async function fetchDataForDateRange({
         breakdown: {
           veBAL: Number(pool.avgVebalApr),
           swapFee: Number(pool.avgFeeApr),
-          tokens: {
-            total: 0,
-            breakdown: [],
-          },
+          tokens: Number(pool.avgYieldTokenApr),
           rewards: {
             total: 0,
-            breakdown: [],
           },
         },
       },

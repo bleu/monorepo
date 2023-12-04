@@ -3,6 +3,7 @@ import {
   poolSnapshots,
   swapFeeApr,
   vebalApr,
+  yieldTokenApr,
 } from "@bleu-fi/balancer-apr/src/db/schema";
 import { and, between, eq, sql } from "drizzle-orm";
 
@@ -11,11 +12,20 @@ export async function fetchAvgDataForPoolIdDateRange(
   startDate: Date,
   endDate: Date,
 ) {
+  const yieldAprSum = db
+    .select({
+      poolExternalId: yieldTokenApr.poolExternalId,
+      timestamp: yieldTokenApr.timestamp,
+      valueSum: sql<number>`sum(${yieldTokenApr.value})`.as("valueSum"),
+    })
+    .from(yieldTokenApr)
+    .groupBy(yieldTokenApr.poolExternalId, yieldTokenApr.timestamp)
+    .as("yieldTokenAprSum");
   const poolStatsData = await db
     .select({
       poolExternalId: swapFeeApr.poolExternalId,
       avgApr: sql<number>`cast(avg(   
-        coalesce(${swapFeeApr.value},0) + coalesce(${vebalApr.value},0)
+        coalesce(${swapFeeApr.value},0) + coalesce(${vebalApr.value},0) +  coalesce(${yieldAprSum.valueSum},0)
       ) as decimal)`,
       avgLiquidity: sql<number>`cast(avg(${poolSnapshots.liquidity}) as decimal)`,
     })
@@ -32,6 +42,13 @@ export async function fetchAvgDataForPoolIdDateRange(
       and(
         eq(vebalApr.poolExternalId, swapFeeApr.poolExternalId),
         eq(vebalApr.timestamp, swapFeeApr.timestamp),
+      ),
+    )
+    .fullJoin(
+      yieldAprSum,
+      and(
+        eq(yieldAprSum.poolExternalId, swapFeeApr.poolExternalId),
+        eq(yieldAprSum.timestamp, swapFeeApr.timestamp),
       ),
     )
     .where(

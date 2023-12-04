@@ -52,7 +52,6 @@ export interface PoolStats {
   apr: APRwithoutBreakdown;
   volume: number;
   tvl: number;
-  votingShare: number;
   symbol: string;
   network: string;
   poolId: string | null;

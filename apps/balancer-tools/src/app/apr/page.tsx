@@ -1,11 +1,14 @@
 import { SECONDS_IN_DAY } from "@bleu-fi/utils/date";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
+import ChartSkelton from "./(components)/(skeleton)/ChartSkelton";
+import KpisSkeleton from "./(components)/(skeleton)/KpisSkeleton";
+import TableSkeleton from "./(components)/(skeleton)/TableSkeleton";
 import Breadcrumb from "./(components)/Breadcrumb";
 import HomeOverviewCards from "./(components)/HomeOverviewCards";
-import { PoolListTable } from "./(components)/PoolListTable";
-import TopPoolsChart from "./(components)/TopPoolsChart";
-import { fetchDataForDateRange } from "./(utils)/fetchForDateRange";
+import PoolListTableWrapper from "./(components)/PoolListTableWrapper";
+import TopPoolsChartWrapper from "./(components)/TopPoolsChartWrapper";
 import { generatePoolPageLink } from "./(utils)/getFilteredUrl";
 import { QueryParamsPagesSchema } from "./(utils)/validate";
 
@@ -15,7 +18,7 @@ export interface SearchParams {
   minApr?: string;
   maxApr?: string;
   tokens?: string;
-  type?: string;
+  types?: string;
   network?: string;
 }
 
@@ -48,32 +51,22 @@ export default async function Page({
     return redirect("/apr/");
   }
 
-  const { poolAverage: poolAvgForTable } = await fetchDataForDateRange({
-    startDate,
-    endDate,
-    ...searchParams,
-    filteredTokens: searchParams.tokens?.split(","),
-  });
-
-  const { poolAverage: poolAvgForChart } = await fetchDataForDateRange({
-    startDate,
-    endDate,
-  });
-
   return (
     <div className="flex flex-1 flex-col gap-y-3">
       <Breadcrumb />
-      <HomeOverviewCards startAt={startDate} endAt={endDate} />
-      <TopPoolsChart
-        startAt={startDate}
-        endAt={endDate}
-        poolsData={poolAvgForChart}
-      />
-      <PoolListTable
-        startAt={startDate}
-        endAt={endDate}
-        initialData={poolAvgForTable}
-      />
+      <Suspense fallback={<KpisSkeleton />}>
+        <HomeOverviewCards startDate={startDate} endDate={endDate} />
+      </Suspense>
+      <Suspense fallback={<ChartSkelton />}>
+        <TopPoolsChartWrapper startDate={startDate} endDate={endDate} />
+      </Suspense>
+      <Suspense fallback={<TableSkeleton />}>
+        <PoolListTableWrapper
+          startDate={startDate}
+          endDate={endDate}
+          searchParams={searchParams}
+        />
+      </Suspense>
     </div>
   );
 }

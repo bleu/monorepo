@@ -6,20 +6,20 @@ import { getBALPriceForDateRange } from "../(utils)/getBALPriceForDateRange";
 import OverviewCards, { getDatesDetails } from "./OverviewCards";
 
 export default async function HomeOverviewCards({
-  startAt,
-  endAt,
+  startDate,
+  endDate,
 }: {
-  startAt: Date;
-  endAt: Date;
+  startDate: Date;
+  endDate: Date;
 }) {
-  const balInUSD = await getBALPriceForDateRange(startAt, endAt);
+  const balInUSD = await getBALPriceForDateRange(startDate, endDate);
   const cardsDetails = [
     { title: "BAL Price", content: balInUSD },
     {
       title: "BAL Emissions",
-      content: formatNumber(balEmissions.weekly(dateToEpoch(endAt))),
+      content: formatNumber(balEmissions.weekly(dateToEpoch(endDate))),
     },
-    ...getDatesDetails(startAt, endAt),
+    ...getDatesDetails(startDate, endDate),
   ];
   return <OverviewCards cardsDetails={cardsDetails} />;
 }

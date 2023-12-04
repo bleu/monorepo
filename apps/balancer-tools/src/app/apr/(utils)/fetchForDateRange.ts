@@ -6,13 +6,24 @@ import {
   poolSnapshots,
   poolTokens,
   swapFeeApr,
-  tokens,
+  tokens as tokensTable,
   vebalApr,
   yieldTokenApr,
 } from "@bleu-fi/balancer-apr/src/db/schema";
-import { and, asc, between, desc, eq, ne, sql } from "drizzle-orm";
+import {
+  and,
+  asc,
+  between,
+  desc,
+  eq,
+  inArray,
+  ne,
+  sql,
+  SQLWrapper,
+} from "drizzle-orm";
 
 import { PoolTypeEnum } from "./types";
+import { areSupportedNetwork, areSupportedTypes } from "./validate";
 
 interface FetchDataOptions {
   startDate: Date;
@@ -22,7 +33,9 @@ interface FetchDataOptions {
   sort?: string;
   order?: "asc" | "desc";
   maxTvl?: string;
-  filteredTokens?: string[];
+  tokens?: string[];
+  network?: string;
+  types?: string;
 }
 
 export async function fetchDataForDateRange({
@@ -33,7 +46,21 @@ export async function fetchDataForDateRange({
   sort = "apr",
   order = "desc",
   maxTvl = "10000000000",
+  network,
+  tokens,
+  types,
 }: FetchDataOptions) {
+  if (network !== undefined && !areSupportedNetwork(network)) {
+    throw new Error("Invalid network");
+  }
+  const networks = network?.split(",").map((n) => n.toLowerCase().trim());
+
+  if (types !== undefined && !areSupportedTypes(types)) {
+    throw new Error("Invalid type");
+  }
+
+  const typesArray = types?.split(",").map((t) => t.trim());
+
   const yieldAprSum = db
     .select({
       poolExternalId: yieldTokenApr.poolExternalId,
@@ -95,10 +122,15 @@ export async function fetchDataForDateRange({
       ),
     )
     .leftJoin(pools, eq(pools.externalId, swapFeeApr.poolExternalId))
+    .leftJoin(poolTokens, eq(poolTokens.poolExternalId, pools.externalId))
+    .leftJoin(tokensTable, eq(tokensTable.address, poolTokens.tokenAddress))
     .where(
       and(
         between(swapFeeApr.timestamp, startDate, endDate),
         between(poolSnapshots.liquidity, minTvl, maxTvl),
+        (networks ? inArray(pools.networkSlug, networks) : true) as SQLWrapper,
+        (tokens ? inArray(tokensTable.symbol, tokens) : true) as SQLWrapper,
+        (typesArray ? inArray(pools.poolType, typesArray) : true) as SQLWrapper,
       ),
     )
     .groupBy(swapFeeApr.poolExternalId)
@@ -136,10 +168,10 @@ export async function fetchDataForDateRange({
       poolExternalId: poolTokens.poolExternalId,
       address: poolTokens.tokenAddress,
       weight: poolTokens.weight,
-      symbol: tokens.symbol,
+      symbol: tokensTable.symbol,
     })
     .from(poolTokens)
-    .leftJoin(tokens, eq(tokens.address, poolTokens.tokenAddress));
+    .leftJoin(tokensTable, eq(tokensTable.address, poolTokens.tokenAddress));
 
   const returnData = orderedPoolAprForDate.map((pool) => {
     const tokensForPool = poolsTokens
@@ -164,7 +196,6 @@ export async function fetchDataForDateRange({
       tvl: Number(pool.avgLiquidity),
       tokens: tokensForPool,
       volume: Number(pool.avgVolume),
-      votingShare: 0,
       symbol:
         poolData.find((p) => p.poolExternalId === pool.poolExternalId)
           ?.symbol || "",

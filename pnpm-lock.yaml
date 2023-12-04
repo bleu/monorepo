@@ -353,6 +353,9 @@ importers:
       '@safe-global/safe-core-sdk-types':
         specifier: ^2.3.0
         version: 2.3.0
+      '@safe-global/safe-gateway-typescript-sdk':
+        specifier: ^3.13.2
+        version: 3.13.2
       '@sentry/nextjs':
         specifier: ^7.83.0
         version: 7.83.0(next@13.5.6)(react@18.2.0)
@@ -3771,7 +3774,7 @@ packages:
       graphql-ws: 5.14.0(graphql@16.8.1)
       isomorphic-ws: 5.0.0(ws@8.14.2)
       tslib: 2.6.2
-      ws: 8.14.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      ws: 8.14.2(bufferutil@4.0.8)(utf-8-validate@6.0.3)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -4160,7 +4163,7 @@ packages:
       isomorphic-ws: 5.0.0(ws@8.14.2)
       tslib: 2.6.2
       value-or-promise: 1.0.12
-      ws: 8.14.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      ws: 8.14.2(bufferutil@4.0.8)(utf-8-validate@6.0.3)
     transitivePeerDependencies:
       - '@types/node'
       - bufferutil
@@ -5303,7 +5306,7 @@ packages:
   /@radix-ui/number@1.0.1:
     resolution: {integrity: sha512-T5gIdVO2mmPW3NNhjNgEP3cqMXjXL9UbO0BzWcXfvdBs+BohbQxvd/K5hSVKmn9/lbTdsQVKbUcP5WLCwvUbBg==}
     dependencies:
-      '@babel/runtime': 7.23.1
+      '@babel/runtime': 7.23.5
     dev: false
 
   /@radix-ui/primitive@1.0.1:
@@ -5531,7 +5534,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.1
+      '@babel/runtime': 7.23.5
       '@radix-ui/primitive': 1.0.1
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.39)(react@18.2.0)
       '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.2.17)(@types/react@18.2.39)(react-dom@18.2.0)(react@18.2.0)
@@ -5556,7 +5559,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.1
+      '@babel/runtime': 7.23.5
       '@radix-ui/primitive': 1.0.1
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.39)(react@18.2.0)
       '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.2.17)(@types/react@18.2.39)(react-dom@18.2.0)(react@18.2.0)
@@ -5577,7 +5580,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.1
+      '@babel/runtime': 7.23.5
       '@types/react': 18.2.39
       react: 18.2.0
     dev: false
@@ -5595,7 +5598,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.1
+      '@babel/runtime': 7.23.5
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.39)(react@18.2.0)
       '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.2.17)(@types/react@18.2.39)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-use-callback-ref': 1.0.1(@types/react@18.2.39)(react@18.2.0)
@@ -5618,7 +5621,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.1
+      '@babel/runtime': 7.23.5
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.39)(react@18.2.0)
       '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.2.17)(@types/react@18.2.39)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-use-callback-ref': 1.0.1(@types/react@18.2.39)(react@18.2.0)
@@ -5720,7 +5723,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.1
+      '@babel/runtime': 7.23.5
       '@floating-ui/react-dom': 2.0.1(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-arrow': 1.0.3(@types/react-dom@18.2.17)(@types/react@18.2.39)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.39)(react@18.2.0)
@@ -5750,7 +5753,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.1
+      '@babel/runtime': 7.23.5
       '@floating-ui/react-dom': 2.0.1(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-arrow': 1.0.3(@types/react-dom@18.2.17)(@types/react@18.2.39)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.39)(react@18.2.0)
@@ -5780,7 +5783,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.1
+      '@babel/runtime': 7.23.5
       '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.2.17)(@types/react@18.2.39)(react-dom@18.2.0)(react@18.2.0)
       '@types/react': 18.2.39
       '@types/react-dom': 18.2.17
@@ -5801,7 +5804,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.1
+      '@babel/runtime': 7.23.5
       '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.2.17)(@types/react@18.2.39)(react-dom@18.2.0)(react@18.2.0)
       '@types/react': 18.2.39
       '@types/react-dom': 18.2.17
@@ -5887,7 +5890,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.1
+      '@babel/runtime': 7.23.5
       '@radix-ui/primitive': 1.0.1
       '@radix-ui/react-collection': 1.0.3(@types/react-dom@18.2.17)(@types/react@18.2.39)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.39)(react@18.2.0)
@@ -6139,7 +6142,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.1
+      '@babel/runtime': 7.23.5
       '@types/react': 18.2.39
       react: 18.2.0
     dev: false
@@ -6183,7 +6186,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.1
+      '@babel/runtime': 7.23.5
       '@types/react': 18.2.39
       react: 18.2.0
     dev: false
@@ -6245,7 +6248,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.1
+      '@babel/runtime': 7.23.5
       '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.2.17)(@types/react@18.2.39)(react-dom@18.2.0)(react@18.2.0)
       '@types/react': 18.2.39
       '@types/react-dom': 18.2.17
@@ -6368,7 +6371,6 @@ packages:
       events: 3.3.0
     transitivePeerDependencies:
       - bufferutil
-      - encoding
       - typescript
       - utf-8-validate
       - zod
@@ -6377,11 +6379,10 @@ packages:
   /@safe-global/safe-apps-sdk@8.0.0(typescript@5.3.2)(zod@3.22.4):
     resolution: {integrity: sha512-gYw0ki/EAuV1oSyMxpqandHjnthZjYYy+YWpTAzf8BqfXM3ItcZLpjxfg+3+mXW8HIO+3jw6T9iiqEXsqHaMMw==}
     dependencies:
-      '@safe-global/safe-gateway-typescript-sdk': 3.7.0
+      '@safe-global/safe-gateway-typescript-sdk': 3.13.2
       viem: 1.19.11(typescript@5.3.2)(zod@3.22.4)
     transitivePeerDependencies:
       - bufferutil
-      - encoding
       - typescript
       - utf-8-validate
       - zod
@@ -6406,12 +6407,9 @@ packages:
       semver: 7.5.4
     dev: false
 
-  /@safe-global/safe-gateway-typescript-sdk@3.7.0:
-    resolution: {integrity: sha512-3BvlUgp0oZ1Zkn7nG3wY1jvCEE4t530BjKcaa3r0qsf0whf/ez/0gmQwk7DTOGmVmvOfjj6HHikxnrUCCX+/3Q==}
-    dependencies:
-      cross-fetch: 3.1.5
-    transitivePeerDependencies:
-      - encoding
+  /@safe-global/safe-gateway-typescript-sdk@3.13.2:
+    resolution: {integrity: sha512-kGlJecJHBzGrGTq/yhLANh56t+Zur6Ubpt+/w03ARX1poDb4TM8vKU3iV8tuYpk359PPWp+Qvjnqb9oW2YQcYw==}
+    engines: {node: '>=16'}
     dev: false
 
   /@scure/base@1.1.3:
@@ -13922,7 +13920,7 @@ packages:
     peerDependencies:
       ws: '*'
     dependencies:
-      ws: 8.14.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      ws: 8.14.2(bufferutil@4.0.8)(utf-8-validate@6.0.3)
     dev: true
 
   /isows@1.0.3(ws@8.13.0):
@@ -14652,7 +14650,7 @@ packages:
       whatwg-encoding: 2.0.0
       whatwg-mimetype: 3.0.0
       whatwg-url: 11.0.0
-      ws: 8.14.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      ws: 8.14.2(bufferutil@4.0.8)(utf-8-validate@6.0.3)
       xml-name-validator: 4.0.0
     transitivePeerDependencies:
       - bufferutil
@@ -15455,7 +15453,7 @@ packages:
       stoppable: 1.1.0
       undici: 5.22.1
       workerd: 1.20231030.0
-      ws: 8.14.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      ws: 8.14.2(bufferutil@4.0.8)(utf-8-validate@6.0.3)
       youch: 3.3.3
       zod: 3.22.4
     transitivePeerDependencies:
@@ -15968,7 +15966,6 @@ packages:
   /node-gyp-build@4.6.0:
     resolution: {integrity: sha512-NTZVKn9IylLwUzaKjkas1e4u2DLNcV4rdYagA4PWdPwW87Bi7z+BznyKSRwS/761tV/lzCGXplWsiaMjLqP2zQ==}
     hasBin: true
-    dev: false
 
   /node-gyp-build@4.7.1:
     resolution: {integrity: sha512-wTSrZ+8lsRRa3I3H8Xr65dLWSgCvY2l4AOnaeKdPA9TB/WYMPaTcrzf3rXvFoVvjKNVnu0CcWSx54qq9GKRUYg==}
@@ -19580,6 +19577,7 @@ packages:
     requiresBuild: true
     dependencies:
       node-gyp-build: 4.7.1
+    dev: false
 
   /utf-8-validate@6.0.3:
     resolution: {integrity: sha512-uIuGf9TWQ/y+0Lp+KGZCMuJWc3N9BHA+l/UmHd/oUHwJJDeysyTRxNQVkbzsIWfGFbRe3OcgML/i0mvVRPOyDA==}
@@ -19587,7 +19585,6 @@ packages:
     requiresBuild: true
     dependencies:
       node-gyp-build: 4.6.0
-    dev: false
 
   /utf8@3.0.0:
     resolution: {integrity: sha512-E8VjFIQ/TyQgp+TZfS6l8yp/xWppSAHzidGiRrqe4bK4XP9pTRyKFgGJpO3SN7zdX4DeomTrwaseCHovfpFcqQ==}
@@ -20450,6 +20447,7 @@ packages:
     dependencies:
       bufferutil: 4.0.8
       utf-8-validate: 5.0.10
+    dev: false
 
   /ws@8.14.2(bufferutil@4.0.8)(utf-8-validate@6.0.3):
     resolution: {integrity: sha512-wEBG1ftX4jcglPxgFCMJmZ2PLtSbJ2Peg6TmpJFTbe9GZYOQCDPdMYu/Tm0/bGZkw8paZnJY45J4K2PZrLYq8g==}
@@ -20465,7 +20463,6 @@ packages:
     dependencies:
       bufferutil: 4.0.8
       utf-8-validate: 6.0.3
-    dev: false
 
   /xhr-request-promise@0.1.3:
     resolution: {integrity: sha512-YUBytBsuwgitWtdRzXDDkWAXzhdGB8bYm0sSzMPZT7Z2MBjMSTHFsyCT1yCRATY+XC69DUrQraRAEgcoCRaIPg==}

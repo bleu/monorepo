@@ -79,6 +79,7 @@ export const priceCheckingBaseSchemaMapping = {
     addressesPriceFeeds: basicAddressSchema.array().nonempty(),
   }),
   [PRICE_CHECKERS.BALANCER]: basicDynamicSlippageSchema,
+  [PRICE_CHECKERS.CURVE]: basicDynamicSlippageSchema,
   [PRICE_CHECKERS.UNI_V3]: basicDynamicSlippageSchema
     .extend({
       tokenIn: z.array(basicAddressSchema).nonempty(),
@@ -141,8 +142,8 @@ export const generatePriceCheckerSchema = ({
             functionName: "checkPrice",
             args: [
               1, // we're just interested in call revert or not, so this value is not important
-              tokenBuyAddress,
               tokenSellAddress,
+              tokenBuyAddress,
               0, // this value isn't used by this price checker
               0, // this value will depend on the order, so it's not important here
               priceCheckerData,

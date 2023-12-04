@@ -24,10 +24,14 @@ export async function fetchAvgDataForPoolIdDateRange(
   const poolStatsData = await db
     .select({
       poolExternalId: swapFeeApr.poolExternalId,
-      avgApr: sql<number>`cast(avg(   
-        coalesce(${swapFeeApr.value},0) + coalesce(${vebalApr.value},0) +  coalesce(${yieldAprSum.valueSum},0)
-      ) as decimal)`,
-      avgLiquidity: sql<number>`cast(avg(${poolSnapshots.liquidity}) as decimal)`,
+      avgApr:
+        sql<number>`cast(sum(coalesce(${swapFeeApr.value},0) + coalesce(${vebalApr.value},0) + coalesce(${yieldAprSum.valueSum},0)) / count(${poolSnapshots.timestamp}) as decimal)`.as(
+          "avgApr",
+        ),
+      avgLiquidity:
+        sql<number>`cast(sum(${poolSnapshots.liquidity}) / count(${poolSnapshots.timestamp}) as decimal)`.as(
+          "avgLiquidity",
+        ),
     })
     .from(swapFeeApr)
     .fullJoin(

@@ -48,25 +48,27 @@ export async function fetchDataForDateRange({
     .select({
       poolExternalId: swapFeeApr.poolExternalId,
       avgApr:
-        sql<number>`cast(avg(coalesce(${swapFeeApr.value},0) + coalesce(${vebalApr.value},0)+ coalesce(${yieldAprSum.valueSum},0)) as decimal)`.as(
+        sql<number>`cast(sum(coalesce(${swapFeeApr.value},0) + coalesce(${vebalApr.value},0) + coalesce(${yieldAprSum.valueSum},0)) / count(${poolSnapshots.timestamp}) as decimal)`.as(
           "avgApr",
         ),
-      avgFeeApr: sql<number>`cast(avg(${swapFeeApr.value}) as decimal)`.as(
-        "avgFeeApr",
-      ),
-      avgVebalApr: sql<number>`cast(avg(${vebalApr.value}) as decimal)`.as(
-        "avgVebalApr",
-      ),
+      avgFeeApr:
+        sql<number>`cast(sum(${swapFeeApr.value}) /  count(${poolSnapshots.timestamp})  as decimal)`.as(
+          "avgFeeApr",
+        ),
+      avgVebalApr:
+        sql<number>`cast(sum(${vebalApr.value}) /  count(${poolSnapshots.timestamp})  as decimal)`.as(
+          "avgVebalApr",
+        ),
       avgVolume:
-        sql<number>`cast(avg(${poolSnapshots.swapVolume}) as decimal)`.as(
+        sql<number>`cast(sum(${poolSnapshots.swapVolume}) /  count(${poolSnapshots.timestamp})  as decimal)`.as(
           "avgVolume",
         ),
       avgLiquidity:
-        sql<number>`cast(avg(${poolSnapshots.liquidity}) as decimal)`.as(
+        sql<number>`cast(sum(${poolSnapshots.liquidity}) /  count(${poolSnapshots.timestamp})  as decimal)`.as(
           "avgLiquidity",
         ),
       avgYieldTokenApr:
-        sql<number>`cast(avg(coalesce(${yieldAprSum.valueSum},0)) as decimal)`.as(
+        sql<number>`cast(sum(coalesce(${yieldAprSum.valueSum},0)) /  count(${poolSnapshots.timestamp}) as decimal)`.as(
           "avgYieldTokenApr",
         ),
     })

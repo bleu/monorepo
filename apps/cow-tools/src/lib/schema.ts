@@ -5,6 +5,8 @@ import { z } from "zod";
 import { dynamicSlippagePriceCheckerAbi } from "./abis/dynamicSlippagePriceChecker";
 import { encodePriceCheckerData } from "./encode";
 import { PRICE_CHECKERS, PriceCheckerArgument } from "./types";
+import { fetchCowQuoteAmountOut } from "#/lib/fetchCowQuote";
+import { ChainId } from "#/utils/chainsPublicClients";
 
 const basicAddressSchema = z
   .string()
@@ -22,36 +24,59 @@ const baseTokenAddress = z.object({
 const priceCheckerRevertedMessage =
   "This price checker contract reverted for this parameters.";
 
-export const orderOverviewSchema = z
-  .object({
-    tokenSell: baseTokenAddress,
-    tokenSellAmount: z.coerce.number().positive(),
-    tokenBuy: baseTokenAddress,
-    receiverAddress: basicAddressSchema,
-    isValidFromNeeded: z.coerce.boolean(),
-    validFrom: z.coerce.string().optional(),
-  })
-  .refine(
-    (data) => {
-      if (!data.isValidFromNeeded) {
-        return true;
-      }
-      return data.validFrom;
-    },
-    {
-      path: ["validFrom"],
-      message: "Valid from is needed",
-    },
-  )
-  .refine(
-    (data) => {
-      return data.tokenSell.address != data.tokenBuy.address;
-    },
-    {
-      path: ["tokenBuy"],
-      message: "Tokens sell and buy must be different",
-    },
-  );
+export const generateOrderOverviewSchema = ({
+  chainId,
+}: {
+  chainId: ChainId;
+}) =>
+  z
+    .object({
+      tokenSell: baseTokenAddress,
+      tokenSellAmount: z.coerce.number().positive(),
+      tokenBuy: baseTokenAddress,
+      receiverAddress: basicAddressSchema,
+      isValidFromNeeded: z.coerce.boolean(),
+      validFrom: z.coerce.string().optional(),
+    })
+    .refine(
+      (data) => {
+        if (!data.isValidFromNeeded) {
+          return true;
+        }
+        return data.validFrom;
+      },
+      {
+        path: ["validFrom"],
+        message: "Valid from is needed",
+      },
+    )
+    .refine(
+      (data) => {
+        return data.tokenSell.address != data.tokenBuy.address;
+      },
+      {
+        path: ["tokenBuy"],
+        message: "Tokens sell and buy must be different",
+      },
+    )
+    .refine(
+      (data) => {
+        const amountIn = data.tokenSellAmount * 10 ** data.tokenSell.decimals;
+        return fetchCowQuoteAmountOut({
+          tokenIn: data.tokenSell,
+          tokenOut: data.tokenBuy,
+          amountIn,
+          chainId,
+          priceQuality: "fast",
+        })
+          .then(() => true)
+          .catch(() => false);
+      },
+      {
+        path: ["tokenBuy"],
+        message: "CoW swap doesn't support this pair",
+      },
+    );
 
 export const orderTwapSchema = z.object({
   isTwapNeeded: z.coerce.boolean(),

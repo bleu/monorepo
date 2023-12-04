@@ -74,7 +74,7 @@ export const generateOrderOverviewSchema = ({
       },
       {
         path: ["tokenBuy"],
-        message: "CoW swap doesn't support this pair",
+        message: "CoW Swap doesn't support this pair",
       },
     );
 

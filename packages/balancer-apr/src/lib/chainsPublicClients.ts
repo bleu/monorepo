@@ -3,8 +3,8 @@ import {
   arbitrum,
   avalanche,
   base,
-  gnosis as gnosisChain,
-  mainnet as mainnetChain,
+  gnosis,
+  mainnet,
   optimism,
   polygon,
   polygonZkEvm,
@@ -30,46 +30,31 @@ export type ChainName =
   | "optimism"
   | "base";
 
-const mainnet = {
-  ...mainnetChain,
-  rpcUrls: {
-    default: {
-      http: [
-        "https://mainnet.chainnodes.org/adcffa0f-ce12-4929-933a-38735d1f5210",
-      ],
-      webSocket: [
-        "wss://mainnet.chainnodes.org/adcffa0f-ce12-4929-933a-38735d1f5210",
-      ],
-    },
-    public: {
-      ...mainnetChain.rpcUrls.public,
-    },
-  },
-};
-
-const gnosis = {
-  ...gnosisChain,
-  rpcUrls: {
-    default: {
-      http: [
-        "https://gnosis-mainnet.chainnodes.org/adcffa0f-ce12-4929-933a-38735d1f5210",
-      ],
-      webSocket: [
-        "wss://gnosis-mainnet.chainnodes.org/adcffa0f-ce12-4929-933a-38735d1f5210",
-      ],
-    },
-    public: {
-      ...gnosisChain.rpcUrls.public,
-    },
-  },
-};
+const RPC_ENDPOINT_MAP = {
+  [mainnet.id]:
+    "https://mainnet.chainnodes.org/adcffa0f-ce12-4929-933a-38735d1f5210",
+  [optimism.id]:
+    "https://optimism-mainnet.chainnodes.org/adcffa0f-ce12-4929-933a-38735d1f5210",
+  [arbitrum.id]:
+    "https://arbitrum-one.chainnodes.org/adcffa0f-ce12-4929-933a-38735d1f5210",
+  [gnosis.id]:
+    "https://gnosis-mainnet.chainnodes.org/adcffa0f-ce12-4929-933a-38735d1f5210",
+  [polygon.id]:
+    "https://polygon-mainnet.chainnodes.org/adcffa0f-ce12-4929-933a-38735d1f5210",
+  [polygonZkEvm.id]: "https://1rpc.io/zkevm",
+} as const;
 
 export function createClientForChain(chain: ChainType) {
   return createPublicClient({
     chain,
-    transport: http(chain.rpcUrls.default.http[0]),
+    transport: http(
+      RPC_ENDPOINT_MAP[chain.id as keyof typeof RPC_ENDPOINT_MAP],
+    ),
     batch: {
-      multicall: true,
+      multicall: {
+        batchSize: 24,
+        wait: 1000,
+      },
     },
   });
 }

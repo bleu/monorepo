@@ -1,4 +1,5 @@
 import { Address, getContract } from "viem";
+import pThrottle from "p-throttle";
 
 import { publicClients } from "./chainsPublicClients";
 
@@ -11,6 +12,11 @@ export const rateProviderAbi = [
     type: "function",
   },
 ];
+
+const throttle = pThrottle({
+  limit: 24,
+  interval: 1000, // 1000 milliseconds = 1 second
+});
 
 export const getRates = async (
   rateProviderAddressBlocksTuples: [Address, string, number, Date][],
@@ -25,9 +31,14 @@ export const getRates = async (
         abi: rateProviderAbi,
         publicClient,
       });
-      return rateProvider.read.getRate([], { blockNumber: BigInt(block) });
+      const throttledRate = throttle(() =>
+        rateProvider.read.getRate([], { blockNumber: BigInt(block) }),
+      );
+
+      return throttledRate();
     }),
   );
+
   return responses.map((response, index) => {
     const [address, network, block, timestamp] =
       rateProviderAddressBlocksTuples[index];

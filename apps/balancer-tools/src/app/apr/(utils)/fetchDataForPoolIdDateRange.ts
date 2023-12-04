@@ -24,19 +24,21 @@ export async function fetchDataForPoolIdDateRange(
       poolExternalId: yieldTokenApr.poolExternalId,
       timestamp: yieldTokenApr.timestamp,
       valueSum: sql<number>`sum(${yieldTokenApr.value})`.as("valueSum"),
+    })
+    .from(yieldTokenApr)
+    .groupBy(yieldTokenApr.poolExternalId, yieldTokenApr.timestamp)
+    .as("yieldTokenAprSum");
+
+  const yieldAprToken = db
+    .select({
+      poolExternalId: yieldTokenApr.poolExternalId,
+      timestamp: yieldTokenApr.timestamp,
       value: yieldTokenApr.value,
       tokenAddress: yieldTokenApr.tokenAddress,
       tokenSymbol: tokens.symbol,
     })
     .from(yieldTokenApr)
     .leftJoin(tokens, eq(tokens.address, yieldTokenApr.tokenAddress))
-    .groupBy(
-      yieldTokenApr.poolExternalId,
-      yieldTokenApr.timestamp,
-      yieldTokenApr.value,
-      yieldTokenApr.tokenAddress,
-      tokens.symbol,
-    )
     .as("yieldTokenAprSum");
 
   const poolStatsData = await db
@@ -98,13 +100,13 @@ export async function fetchDataForPoolIdDateRange(
 
   const yieldAprByToken = await db
     .select({
-      poolExternalId: yieldAprSum.poolExternalId,
-      timestamp: yieldAprSum.timestamp,
-      value: yieldAprSum.value,
-      tokenAddress: yieldAprSum.tokenAddress,
-      tokenSymbol: yieldAprSum.tokenSymbol,
+      poolExternalId: yieldAprToken.poolExternalId,
+      timestamp: yieldAprToken.timestamp,
+      value: yieldAprToken.value,
+      tokenAddress: yieldAprToken.tokenAddress,
+      tokenSymbol: yieldAprToken.tokenSymbol,
     })
-    .from(yieldAprSum)
+    .from(yieldAprToken)
     .leftJoin(
       poolSnapshots,
       and(

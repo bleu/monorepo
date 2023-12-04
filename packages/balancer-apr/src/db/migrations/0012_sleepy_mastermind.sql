@@ -1,0 +1,1 @@
+ALTER TABLE "pool_token_rate_providers_snapshot" ADD COLUMN "rate_provider_address" varchar;

@@ -19,7 +19,7 @@ const throttle = pThrottle({
 });
 
 export const getRates = async (
-  rateProviderAddressBlocksTuples: [Address, string, number, Date][]
+  rateProviderAddressBlocksTuples: [Address, string, number, Date][],
 ) => {
   if (rateProviderAddressBlocksTuples.length === 0) return [];
 
@@ -32,11 +32,11 @@ export const getRates = async (
         publicClient,
       });
       const throttledRate = throttle(() =>
-        rateProvider.read.getRate([], { blockNumber: BigInt(block) })
+        rateProvider.read.getRate([], { blockNumber: BigInt(block) }),
       );
 
       return throttledRate();
-    })
+    }),
   );
 
   return responses.map((response, index) => {

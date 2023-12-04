@@ -7,9 +7,7 @@ import "dotenv/config";
 import { dateToEpoch, epochToDate } from "@bleu-fi/utils/date";
 import { and, asc, eq, gt, inArray, isNotNull, ne, sql } from "drizzle-orm";
 import { PgTable } from "drizzle-orm/pg-core";
-import { getRates } from "lib/getRates";
 import { Address, zeroAddress } from "viem";
-import { vunerabilityAffecteRateProviders } from "vunerabilityAffectedPool";
 
 import { chunks } from "./chunks";
 import {
@@ -40,8 +38,10 @@ import {
 import { gql } from "./gql";
 import * as balEmissions from "./lib/balancer/emissions";
 import { DefiLlamaAPI } from "./lib/defillama";
+import { getRates } from "./lib/getRates";
 import { getPoolRelativeWeights } from "./lib/getRelativeWeight";
 import { paginatedFetch } from "./paginatedFetch";
+import { vunerabilityAffecteRateProviders } from "./vunerabilityAffectedPool";
 
 export const BATCH_SIZE = 1_000;
 const BALANCER_START_DATE = "2021-04-21";

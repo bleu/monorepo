@@ -22,7 +22,11 @@ import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
 import { TooltipMobile } from "#/components/TooltipMobile";
 
-import { APR, PoolStats, PoolTokens } from "../(utils)/fetchDataTypes";
+import {
+  APRwithoutBreakdown,
+  PoolStats,
+  PoolTokens,
+} from "../(utils)/fetchDataTypes";
 import { formatAPR, formatTVL } from "../(utils)/formatPoolStats";
 import { generatePoolPageLink } from "../(utils)/getFilteredUrl";
 import { PoolTypeEnum } from "../(utils)/types";
@@ -173,7 +177,7 @@ function TableRow({
   poolType: PoolTypeEnum;
   tvl: number;
   votingShare: number;
-  apr: APR;
+  apr: APRwithoutBreakdown;
   startAt: Date;
   endAt: Date;
 }) {
@@ -232,17 +236,9 @@ function TableRow({
   );
 }
 
-function APRHover({ apr }: { apr: APR }) {
+function APRHover({ apr }: { apr: APRwithoutBreakdown }) {
   const aprEntries = Object.entries(apr.breakdown)
     .map(([key, value]) => {
-      if (
-        typeof value === "object" &&
-        value !== null &&
-        "total" in value &&
-        value.total > 0
-      ) {
-        return [key, value.total];
-      }
       return [key, value];
     })
     .filter(([, value]) => typeof value !== "object" && value > 0);

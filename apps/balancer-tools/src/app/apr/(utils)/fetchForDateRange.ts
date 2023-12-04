@@ -158,9 +158,7 @@ export async function fetchDataForDateRange({
           veBAL: Number(pool.avgVebalApr),
           swapFee: Number(pool.avgFeeApr),
           tokens: Number(pool.avgYieldTokenApr),
-          rewards: {
-            total: 0,
-          },
+          rewards: 0,
         },
       },
       tvl: Number(pool.avgLiquidity),

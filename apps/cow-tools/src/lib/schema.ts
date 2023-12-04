@@ -2,11 +2,12 @@ import { Address } from "@bleu-fi/utils";
 import { isAddress, PublicClient } from "viem";
 import { z } from "zod";
 
+import { fetchCowQuoteAmountOut } from "#/lib/fetchCowQuote";
+import { ChainId } from "#/utils/chainsPublicClients";
+
 import { dynamicSlippagePriceCheckerAbi } from "./abis/dynamicSlippagePriceChecker";
 import { encodePriceCheckerData } from "./encode";
 import { PRICE_CHECKERS, PriceCheckerArgument } from "./types";
-import { fetchCowQuoteAmountOut } from "#/lib/fetchCowQuote";
-import { ChainId } from "#/utils/chainsPublicClients";
 
 const basicAddressSchema = z
   .string()

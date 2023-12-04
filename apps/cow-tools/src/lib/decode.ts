@@ -1,5 +1,7 @@
 import { Address, decodeAbiParameters } from "viem";
 
+import { ChainId } from "#/utils/chainsPublicClients";
+
 import {
   priceCheckerAddressesMapping,
   priceCheckerHasExpectedOutCalculatorMapping,
@@ -30,16 +32,16 @@ export function decodePriceCheckerData(
 }
 
 export function getPriceCheckerFromAddressAndChain(
-  chainId: 5,
+  chainId: ChainId,
   priceCheckerAddress: Address,
 ): PRICE_CHECKERS | null {
   // Find Price checker info dict from priceCheckerAddressesMapping constant
   // using the address and chainId provided
   // Those two keys combination should be unique
   // If not found, return null
-  const priceCheckerInfo = Object.entries(priceCheckerAddressesMapping).find(
-    ([_key, mapping]) => mapping[chainId] === priceCheckerAddress,
-  );
+  const priceCheckerInfo = Object.entries(
+    priceCheckerAddressesMapping[chainId],
+  ).find(([_key, address]) => address === priceCheckerAddress);
 
   if (!priceCheckerInfo) {
     return null;

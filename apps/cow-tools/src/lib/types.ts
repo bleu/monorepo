@@ -35,4 +35,5 @@ export enum PRICE_CHECKERS {
   CHAINLINK = "Chainlink",
   BALANCER = "Balancer BAL WETH Single Sided",
   UNI_V3 = "Uniswap V3",
+  CURVE = "Curve",
 }

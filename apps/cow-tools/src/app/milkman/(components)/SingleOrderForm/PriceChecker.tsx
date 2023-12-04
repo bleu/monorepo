@@ -1,10 +1,9 @@
-import { Address } from "@bleu-fi/utils";
+// import { Address } from "@bleu-fi/utils";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import { FieldValues, useForm, UseFormReturn } from "react-hook-form";
-import { createPublicClient, http } from "viem";
-import { goerli } from "viem/chains";
 
 import { TransactionStatus } from "#/app/milkman/utils/type";
 import Button from "#/components/Button";
@@ -14,34 +13,31 @@ import Table from "#/components/Table";
 import { Form, FormMessage } from "#/components/ui/form";
 import { Label } from "#/components/ui/label";
 import {
+  deployedPriceCheckersByChain,
   priceCheckerAddressesMapping,
   priceCheckersArgumentsMapping,
 } from "#/lib/priceCheckersMappings";
 import { generatePriceCheckerSchema } from "#/lib/schema";
 import { PRICE_CHECKERS, PriceCheckerArgument } from "#/lib/types";
+import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 
 import { FormFooter } from "./Footer";
 
 export function FormSelectPriceChecker({
   onSubmit,
   defaultValues,
-  tokenSellAddress,
-  tokenBuyAddress,
-  tokenBuyDecimals,
 }: {
   onSubmit: (data: FieldValues) => void;
   defaultValues?: FieldValues;
-  tokenSellAddress: Address;
-  tokenBuyAddress: Address;
-  tokenBuyDecimals: number;
 }) {
   const [selectedPriceChecker, setSelectedPriceChecker] =
     useState<PRICE_CHECKERS>(defaultValues?.priceChecker);
 
-  const publicClient = createPublicClient({
-    chain: goerli,
-    transport: http(),
-  });
+  const { safe } = useSafeAppsSDK();
+
+  const chainId = safe.chainId as ChainId;
+
+  const publicClient = publicClientsFromIds[chainId];
 
   const schema =
     selectedPriceChecker &&
@@ -49,15 +45,16 @@ export function FormSelectPriceChecker({
       priceChecker: selectedPriceChecker,
       expectedArgs: priceCheckersArgumentsMapping[selectedPriceChecker],
     })({
-      tokenSellAddress,
-      tokenBuyAddress,
-      tokenBuyDecimals,
+      tokenSellAddress: defaultValues?.tokenSell.address,
+      tokenBuyAddress: defaultValues?.tokenBuy.address,
+      tokenBuyDecimals: defaultValues?.tokenBuy.decimals,
       publicClient,
     });
 
   const form = useForm(
     selectedPriceChecker && {
       resolver: zodResolver(schema),
+      defaultValues,
     },
   );
 
@@ -65,7 +62,7 @@ export function FormSelectPriceChecker({
     register,
     clearErrors,
     setValue,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = form;
 
   useEffect(() => {
@@ -78,7 +75,7 @@ export function FormSelectPriceChecker({
     setValue("priceChecker", selectedPriceChecker);
     setValue(
       "priceCheckerAddress",
-      priceCheckerAddressesMapping[selectedPriceChecker][goerli.id],
+      priceCheckerAddressesMapping[chainId][selectedPriceChecker],
     );
   }, [selectedPriceChecker]);
 
@@ -93,7 +90,7 @@ export function FormSelectPriceChecker({
           className="w-full mt-2"
           defaultValue={defaultValues?.priceChecker}
         >
-          {Object.values(PRICE_CHECKERS).map((priceChecker) => (
+          {deployedPriceCheckersByChain[chainId].map((priceChecker) => (
             <SelectItem value={priceChecker} key={priceChecker}>
               {priceChecker}
             </SelectItem>
@@ -110,11 +107,13 @@ export function FormSelectPriceChecker({
           form={form}
           priceChecker={selectedPriceChecker}
           defaultValues={defaultValues}
+          tokenBuyDecimals={defaultValues?.tokenBuy.decimals}
         />
       )}
       <FormFooter
         transactionStatus={TransactionStatus.ORDER_STRATEGY}
         disabled={!selectedPriceChecker}
+        isLoading={isSubmitting}
       />
     </Form>
   );
@@ -124,10 +123,12 @@ function PriceCheckerInputs({
   priceChecker,
   form,
   defaultValues,
+  tokenBuyDecimals,
 }: {
   priceChecker: PRICE_CHECKERS;
   form: UseFormReturn;
   defaultValues?: FieldValues;
+  tokenBuyDecimals: number;
 }) {
   const priceCheckerAguments = priceCheckersArgumentsMapping[priceChecker];
   const nonArrayArguments = priceCheckerAguments.filter(
@@ -148,7 +149,7 @@ function PriceCheckerInputs({
           label={arg.label}
           key={arg.name}
           defaultValue={defaultValues?.[arg.name]}
-          step={arg.step}
+          step={arg.step || 10 ** -tokenBuyDecimals}
           {...register(arg.name)}
         />
       ))}
@@ -209,9 +210,9 @@ function ArrayPriceCheckerInput({
                   return (
                     <Table.BodyCell classNames="align-top" key={arg.name}>
                       {arg.type.includes("bool") ? (
-                        <div className="flex items-center justify-center gap-x-2">
+                        <div className="flex items-center justify-center gap-x-2 mt-2">
                           <input
-                            className="h-5 w-5"
+                            className="h-5 w-5 mt-2"
                             type="checkbox"
                             key={argName}
                             defaultChecked={defaultValues?.[argName]}

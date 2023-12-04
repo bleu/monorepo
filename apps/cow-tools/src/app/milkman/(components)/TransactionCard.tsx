@@ -9,7 +9,7 @@ import { useOrder } from "#/contexts/OrderContext";
 import { FormHeader } from "./SingleOrderForm/Header";
 import { FormOrderOverview } from "./SingleOrderForm/Overview";
 import { FormSelectPriceChecker } from "./SingleOrderForm/PriceChecker";
-import { OrderSummary } from "./SingleOrderForm/Summary";
+import { OrderSummaryList } from "./SingleOrderForm/Summary";
 import { TwapForm } from "./SingleOrderForm/Twap";
 
 export function TransactionCard({
@@ -24,15 +24,18 @@ export function TransactionCard({
   const { transactionStatus, setTransactionStatus } = useOrder();
   const network = networkFor(chainId);
 
-  const [orderOverviewData, setOrderOverviewData] = useState<FieldValues>();
-  const [priceCheckerData, setPriceCheckerData] = useState<FieldValues>();
-  const [twapData, setTwapData] = useState<FieldValues>();
+  const [ordersData, setOrdersData] = useState<FieldValues[]>([]);
+  const [currentOrderToEdit, setCurrentOrderToEdit] = useState<number>(0);
 
   function handleBack() {
     const currentStage = stages.find(
       (stage) => stage.name === transactionStatus,
     );
     setTransactionStatus(currentStage?.previousStage ?? transactionStatus);
+  }
+
+  function handleEdit() {
+    setTransactionStatus(TransactionStatus.ORDER_OVERVIEW);
   }
 
   function handleContinue() {
@@ -42,44 +45,51 @@ export function TransactionCard({
     setTransactionStatus(currentStage?.nextStage ?? transactionStatus);
   }
 
+  const replaceOrderDataOnIndex = (data: FieldValues, index: number) => {
+    const newOrdersData = [...ordersData];
+    newOrdersData[index] = {
+      ...newOrdersData[currentOrderToEdit],
+      ...data,
+    };
+    setOrdersData(newOrdersData);
+  };
+
   const FORM_CONTENTS: { [key in TransactionStatus]?: JSX.Element } = {
     [TransactionStatus.ORDER_OVERVIEW]: (
       <FormOrderOverview
         onSubmit={(data: FieldValues) => {
-          setOrderOverviewData(data);
+          replaceOrderDataOnIndex(data, currentOrderToEdit);
           handleContinue();
         }}
         userAddress={userAddress}
-        defaultValues={orderOverviewData}
+        defaultValues={ordersData[currentOrderToEdit]}
       />
     ),
     [TransactionStatus.ORDER_STRATEGY]: (
       <FormSelectPriceChecker
         onSubmit={(data: FieldValues) => {
-          setPriceCheckerData(data);
+          replaceOrderDataOnIndex(data, currentOrderToEdit);
           handleContinue();
         }}
-        defaultValues={priceCheckerData}
-        tokenSellAddress={orderOverviewData?.tokenSell.address}
-        tokenBuyAddress={orderOverviewData?.tokenBuy.address}
-        tokenBuyDecimals={orderOverviewData?.tokenBuy.decimals}
+        defaultValues={ordersData[currentOrderToEdit]}
       />
     ),
     [TransactionStatus.ORDER_TWAP]: (
       <TwapForm
         onSubmit={(data: FieldValues) => {
-          setTwapData(data);
+          replaceOrderDataOnIndex(data, currentOrderToEdit);
           handleContinue();
         }}
-        defaultValues={twapData}
+        defaultValues={ordersData[currentOrderToEdit]}
       />
     ),
     [TransactionStatus.ORDER_SUMMARY]: (
       <div className="flex flex-col gap-y-6 p-9">
-        <OrderSummary
-          data={{ ...orderOverviewData, ...priceCheckerData, ...twapData }}
-          handleBack={handleBack}
-          network={network}
+        <OrderSummaryList
+          orders={ordersData}
+          handleEdit={handleEdit}
+          chainId={chainId}
+          setCurrentOrderToEdit={setCurrentOrderToEdit}
         />
       </div>
     ),

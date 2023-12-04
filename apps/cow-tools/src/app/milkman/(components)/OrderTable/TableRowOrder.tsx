@@ -7,6 +7,7 @@ import { formatUnits } from "viem";
 import { Dialog } from "#/components/Dialog";
 import Table from "#/components/Table";
 import { AllTransactionFromUserQuery } from "#/lib/gql/generated";
+import { cowTokenList } from "#/utils/cowTokenList";
 
 import { buildAccountCowExplorerUrl, chainId } from "../../utils/cowExplorer";
 import { SwapStatus } from "../../utils/type";
@@ -30,7 +31,13 @@ export function TableRowOrder({
     address: order.orderContract as Address,
   })?.url;
 
-  const tokenInDecimals = order.tokenIn?.decimals || 18;
+  const tokenInDecimals =
+    order.tokenIn?.decimals ||
+    cowTokenList.find(
+      (token) =>
+        token.address == order.tokenIn?.id && token.chainId == order.chainId,
+    )?.decimals ||
+    1;
   const tokenInAmount = formatUnits(order.tokenAmountIn, tokenInDecimals);
   return (
     <Table.BodyRow key={order.id} classNames="bg-slate4">

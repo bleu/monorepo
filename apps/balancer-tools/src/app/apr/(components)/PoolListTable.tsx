@@ -2,7 +2,6 @@
 
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import {
-  ChevronDownIcon,
   DashIcon,
   InfoCircledIcon,
   TriangleDownIcon,
@@ -17,10 +16,8 @@ import {
 } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-import { Button } from "#/components";
 import { Badge } from "#/components/Badge";
 import { PlotTitle } from "#/components/Plot";
-// import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
 import { TooltipMobile } from "#/components/TooltipMobile";
@@ -141,27 +138,6 @@ export function PoolListTable({
                     endAt={endAt}
                   />
                 ))}
-
-                <Table.BodyRow>
-                  <Table.BodyCell colSpan={6}>
-                    <Button
-                      className="py-3 sticky left-0 sm:w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
-                      shade="medium"
-                      // disabled={isLoadingMore || !hasMorePools}
-                      disabled={true}
-                    >
-                      {/* {isLoadingMore ? (
-                        <Spinner size="sm" />
-                      ) : hasMorePools ? (
-                        <> */}
-                      Load More <ChevronDownIcon />
-                      {/* </>
-                      ) : (
-                        <>All pools have been loaded</>
-                      )} */}
-                    </Button>
-                  </Table.BodyCell>
-                </Table.BodyRow>
               </>
             ) : (
               <Table.BodyRow>

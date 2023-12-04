@@ -2,7 +2,6 @@
 
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import {
-  ChevronDownIcon,
   DashIcon,
   InfoCircledIcon,
   TriangleDownIcon,
@@ -17,10 +16,8 @@ import {
 } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-import { Button } from "#/components";
 import { Badge } from "#/components/Badge";
 import { PlotTitle } from "#/components/Plot";
-// import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
 import { TooltipMobile } from "#/components/TooltipMobile";
@@ -45,12 +42,9 @@ export function PoolListTable({
   const searchParams = useSearchParams();
 
   const [tableData, setTableData] = useState(initialData);
-  // const [isLoadingMore, setIsLoadingMore] = useState(false);
-  // const [hasMorePools, setHasMorePools] = useState(true);
 
   useEffect(() => {
     setTableData(initialData);
-    // setHasMorePools(!(initialData.length < 10));
   }, [initialData]);
 
   const createQueryString = useCallback(
@@ -72,7 +66,7 @@ export function PoolListTable({
     <div className="flex flex-col justify-center text-white">
       <PlotTitle
         title={`All Pools`}
-        tooltip="All values are calculated at the end of the round"
+        tooltip="All values are the average in the selected date range."
         classNames="py-3"
       />
       <div className="flex text-white mb-5 gap-2">
@@ -87,25 +81,15 @@ export function PoolListTable({
             <Table.HeaderCell classNames="text-end whitespace-nowrap">
               Type
             </Table.HeaderCell>
-            <Table.HeaderCell classNames="text-end whitespace-nowrap hover:text-amber9">
+            <Table.HeaderCell classNames="text-end whitespace-nowrap hover:text-amber9 pr-3">
               <div>
                 <Link
                   className="flex gap-x-1 items-center float-right justify-end"
                   href={pathname + "?" + createQueryString("tvl")}
+                  scroll={false}
                 >
                   <span>TVL</span>
                   {OrderIcon(searchParams, "tvl")}
-                </Link>
-              </div>
-            </Table.HeaderCell>
-            <Table.HeaderCell classNames="text-end whitespace-nowrap hover:text-amber9">
-              <div>
-                <Link
-                  className="flex gap-x-1 items-center float-right justify-end"
-                  href={pathname + "?" + createQueryString("votingShare")}
-                >
-                  <span>Voting %</span>
-                  {OrderIcon(searchParams, "votingShare")}
                 </Link>
               </div>
             </Table.HeaderCell>
@@ -117,6 +101,7 @@ export function PoolListTable({
                 <Link
                   className="flex gap-x-1 items-center float-right justify-end"
                   href={pathname + "?" + createQueryString("apr")}
+                  scroll={false}
                 >
                   <span> APR</span>
                   {OrderIcon(searchParams, "apr")}
@@ -135,33 +120,11 @@ export function PoolListTable({
                     tokens={pool.tokens}
                     poolType={pool.type}
                     tvl={pool.tvl}
-                    votingShare={pool.votingShare}
                     apr={pool.apr}
                     startAt={startAt}
                     endAt={endAt}
                   />
                 ))}
-
-                <Table.BodyRow>
-                  <Table.BodyCell colSpan={6}>
-                    <Button
-                      className="py-3 sticky left-0 sm:w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
-                      shade="medium"
-                      // disabled={isLoadingMore || !hasMorePools}
-                      disabled={true}
-                    >
-                      {/* {isLoadingMore ? (
-                        <Spinner size="sm" />
-                      ) : hasMorePools ? (
-                        <> */}
-                      Load More <ChevronDownIcon />
-                      {/* </>
-                      ) : (
-                        <>All pools have been loaded</>
-                      )} */}
-                    </Button>
-                  </Table.BodyCell>
-                </Table.BodyRow>
               </>
             ) : (
               <Table.BodyRow>
@@ -186,7 +149,6 @@ function TableRow({
   tokens,
   poolType,
   tvl,
-  votingShare,
   apr,
   startAt,
   endAt,
@@ -196,7 +158,6 @@ function TableRow({
   tokens: PoolTokens[];
   poolType: PoolTypeEnum;
   tvl: number;
-  votingShare: number;
   apr: APR;
   startAt: Date;
   endAt: Date;
@@ -241,10 +202,6 @@ function TableRow({
 
       <Table.BodyCellLink linkClassNames="float-right" href={poolRedirectURL}>
         {formatTVL(tvl)}
-      </Table.BodyCellLink>
-
-      <Table.BodyCellLink linkClassNames="float-right" href={poolRedirectURL}>
-        {formatNumber(votingShare * 100).concat("%")}
       </Table.BodyCellLink>
 
       <Table.BodyCellLink linkClassNames="float-right" href={poolRedirectURL}>

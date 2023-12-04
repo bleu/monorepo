@@ -40,7 +40,6 @@ export interface PoolStats {
   apr: APR;
   volume: number;
   tvl: number;
-  votingShare: number;
   symbol: string;
   network: string;
   poolId: string | null;

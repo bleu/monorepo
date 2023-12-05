@@ -3,6 +3,7 @@ import {
   poolSnapshots,
   swapFeeApr,
   vebalApr,
+  yieldTokenApr,
 } from "@bleu-fi/balancer-apr/src/db/schema";
 import { and, between, eq, sql } from "drizzle-orm";
 
@@ -11,17 +12,30 @@ export async function fetchAvgDataForPoolIdDateRange(
   startDate: Date,
   endDate: Date,
 ) {
+  const yieldAprSum = db
+    .select({
+      poolExternalId: yieldTokenApr.poolExternalId,
+      timestamp: yieldTokenApr.timestamp,
+      valueSum: sql<number>`sum(${yieldTokenApr.value})`.as("valueSum"),
+    })
+    .from(yieldTokenApr)
+    .groupBy(yieldTokenApr.poolExternalId, yieldTokenApr.timestamp)
+    .as("yieldAprSum");
   const poolStatsData = await db
     .select({
-      poolExternalId: swapFeeApr.poolExternalId,
-      avgApr: sql<number>`cast(avg(   
-        coalesce(${swapFeeApr.value},0) + coalesce(${vebalApr.value},0)
-      ) as decimal)`,
-      avgLiquidity: sql<number>`cast(avg(${poolSnapshots.liquidity}) as decimal)`,
+      poolExternalId: poolSnapshots.poolExternalId,
+      avgApr:
+        sql<number>`cast(sum(coalesce(${swapFeeApr.value},0) + coalesce(${vebalApr.value},0) + coalesce(${yieldAprSum.valueSum},0)) / count(${poolSnapshots.timestamp}) as decimal)`.as(
+          "avgApr",
+        ),
+      avgLiquidity:
+        sql<number>`cast(sum(${poolSnapshots.liquidity}) / count(${poolSnapshots.timestamp}) as decimal)`.as(
+          "avgLiquidity",
+        ),
     })
-    .from(swapFeeApr)
+    .from(poolSnapshots)
     .fullJoin(
-      poolSnapshots,
+      swapFeeApr,
       and(
         eq(poolSnapshots.poolExternalId, swapFeeApr.poolExternalId),
         eq(poolSnapshots.timestamp, swapFeeApr.timestamp),
@@ -30,17 +44,24 @@ export async function fetchAvgDataForPoolIdDateRange(
     .fullJoin(
       vebalApr,
       and(
-        eq(vebalApr.poolExternalId, swapFeeApr.poolExternalId),
-        eq(vebalApr.timestamp, swapFeeApr.timestamp),
+        eq(vebalApr.poolExternalId, poolSnapshots.poolExternalId),
+        eq(vebalApr.timestamp, poolSnapshots.timestamp),
+      ),
+    )
+    .fullJoin(
+      yieldAprSum,
+      and(
+        eq(yieldAprSum.poolExternalId, poolSnapshots.poolExternalId),
+        eq(yieldAprSum.timestamp, poolSnapshots.timestamp),
       ),
     )
     .where(
       and(
-        between(swapFeeApr.timestamp, startDate, endDate),
-        eq(swapFeeApr.poolExternalId, poolId),
+        between(poolSnapshots.timestamp, startDate, endDate),
+        eq(poolSnapshots.poolExternalId, poolId),
       ),
     )
-    .groupBy(swapFeeApr.poolExternalId);
+    .groupBy(poolSnapshots.poolExternalId);
 
   const returnData = poolStatsData.map((pool) => {
     return {

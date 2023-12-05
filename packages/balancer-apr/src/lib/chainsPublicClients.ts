@@ -30,14 +30,40 @@ export type ChainName =
   | "optimism"
   | "base";
 
+const RPC_ENDPOINT_MAP = {
+  [mainnet.id]:
+    "https://mainnet.chainnodes.org/adcffa0f-ce12-4929-933a-38735d1f5210",
+  [optimism.id]:
+    "https://optimism-mainnet.chainnodes.org/adcffa0f-ce12-4929-933a-38735d1f5210",
+  [arbitrum.id]:
+    "https://arbitrum-one.chainnodes.org/adcffa0f-ce12-4929-933a-38735d1f5210",
+  [gnosis.id]:
+    "https://gnosis-mainnet.chainnodes.org/adcffa0f-ce12-4929-933a-38735d1f5210",
+  [polygon.id]:
+    "https://polygon-mainnet.chainnodes.org/adcffa0f-ce12-4929-933a-38735d1f5210",
+  [polygonZkEvm.id]: "https://1rpc.io/zkevm",
+} as const;
+
 export function createClientForChain(chain: ChainType) {
   return createPublicClient({
     chain,
-    transport: http(),
+    transport: http(
+      RPC_ENDPOINT_MAP[chain.id as keyof typeof RPC_ENDPOINT_MAP],
+    ),
+    batch: {
+      multicall: {
+        batchSize: 24,
+        wait: 1000,
+      },
+    },
   });
 }
 
-export const publicClients = {
+interface PublicClients {
+  [networkSlug: string]: ReturnType<typeof createClientForChain>;
+}
+
+export const publicClients: PublicClients = {
   ethereum: createClientForChain(mainnet),
   optimism: createClientForChain(optimism),
   polygon: createClientForChain(polygon),

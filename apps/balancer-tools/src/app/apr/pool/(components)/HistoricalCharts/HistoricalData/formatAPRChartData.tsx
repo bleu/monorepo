@@ -92,25 +92,25 @@ export default function formatAPRChartData(
     type: "scatter" as PlotType,
   };
 
-  // const firstDay = Object.keys(results.perDay)[0];
-  // const aprTokensData = results.perDay[
-  //   firstDay
-  // ][0].apr.breakdown.tokens.breakdown.map(({ symbol }, idx) => {
-  //   const trimmedTokenAprData = generateAprCords(
-  //     results.perDay,
-  //     (result) => result[0].apr.breakdown.tokens.breakdown[idx].yield,
-  //   );
-  //   return {
-  //     name: `${symbol} APR %`,
-  //     yaxis: yaxis,
-  //     showlegend: false,
-  //     hovertemplate: HOVERTEMPLATE,
-  //     x: trimmedTokenAprData.x,
-  //     y: trimmedTokenAprData.y,
-  //     line: { shape: "spline", color: "rgba(0,0,0,0);" } as const,
-  //     type: "scatter" as PlotType,
-  //   };
-  // });
+  const aprTokensData = Object.values(
+    results.perDay[0],
+  )[0].apr.breakdown.tokens.breakdown.map(({ symbol }, idx) => {
+    const trimmedTokenAprData = generateAprCords(
+      results.perDay,
+      (result) => result.apr.breakdown.tokens.breakdown[idx]?.yield,
+    );
+    return {
+      name: `${symbol} APR %`,
+      yaxis: yaxis,
+      showlegend: false,
+      hovertemplate: HOVERTEMPLATE,
+      x: trimmedTokenAprData.x,
+      y: trimmedTokenAprData.y,
+      line: { shape: "spline", color: "rgba(0,0,0,0);" } as const,
+      type: "scatter" as PlotType,
+    };
+  });
+
   // const aprRewardsData = results.perDay[
   //   firstDay
   // ][0].apr.breakdown.rewards.breakdown.map(({ symbol }, idx) => {
@@ -136,7 +136,7 @@ export default function formatAPRChartData(
     vebalAprPerRoundData,
     feeAprPerRoundData,
     aprTokensTotalData,
-    // ...aprTokensData,
+    ...aprTokensData,
     aprRewardsTotalData,
     // ...aprRewardsData,
   ];

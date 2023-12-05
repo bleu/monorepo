@@ -54,6 +54,7 @@ query PoolsWherePoolType($latestId: String!) {
       address
       symbol
       weight
+      index
     }
   }
 }
@@ -79,6 +80,26 @@ query PoolSnapshots($latestId: String!) {
     swapFees
     liquidity
     timestamp
+  }
+}
+`;
+
+export const RATE_PROVIDER_SNAPSHOTS = `
+query PoolRateProviders($latestId: String!) {
+  priceRateProviders(
+    first: 1000,
+    where: {
+      id_gt: $latestId,
+    }
+  ) {
+    id
+    poolId {
+      id
+    }
+    token {
+      address
+    }
+    address
   }
 }
 `;

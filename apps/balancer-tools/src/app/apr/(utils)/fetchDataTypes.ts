@@ -31,13 +31,25 @@ interface APRBreakdown {
   };
 }
 
-export interface APR {
+interface APRSimpleBreakdown {
+  veBAL: number;
+  swapFee: number;
+  tokens: number;
+  rewards: number;
+}
+
+export interface APRwithBreakdown {
   total: number;
   breakdown: APRBreakdown;
 }
 
+export interface APRwithoutBreakdown {
+  total: number;
+  breakdown: APRSimpleBreakdown;
+}
+
 export interface PoolStats {
-  apr: APR;
+  apr: APRwithoutBreakdown;
   volume: number;
   tvl: number;
   symbol: string;
@@ -47,8 +59,17 @@ export interface PoolStats {
   tokens: PoolTokens[];
 }
 
-export interface PoolStatsData extends PoolStats {
+export interface PoolStatsData {
   collectedFeesUSD: number;
+  apr: APRwithBreakdown;
+  volume: number;
+  tvl: number;
+  votingShare: number;
+  symbol: string;
+  network: string;
+  poolId: string | null;
+  type: PoolTypeEnum;
+  tokens: PoolTokens[];
 }
 
 export interface PoolStatsResultsPerDay {

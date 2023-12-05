@@ -6,8 +6,9 @@ import {
   swapFeeApr,
   tokens,
   vebalApr,
+  yieldTokenApr,
 } from "@bleu-fi/balancer-apr/src/db/schema";
-import { formatDateToMMDDYYYY } from "@bleu-fi/utils/date";
+import { dateToEpoch, formatDateToMMDDYYYY } from "@bleu-fi/utils/date";
 import { and, between, eq, sql } from "drizzle-orm";
 
 import { PoolStatsResults } from "./fetchDataTypes";
@@ -18,20 +19,46 @@ export async function fetchDataForPoolIdDateRange(
   startDate: Date,
   endDate: Date,
 ): Promise<PoolStatsResults> {
+  const yieldAprSum = db
+    .select({
+      poolExternalId: yieldTokenApr.poolExternalId,
+      timestamp: yieldTokenApr.timestamp,
+      valueSum: sql<number>`sum(${yieldTokenApr.value})`.as("valueSum"),
+    })
+    .from(yieldTokenApr)
+    .groupBy(yieldTokenApr.poolExternalId, yieldTokenApr.timestamp)
+    .as("yieldAprSum");
+
+  const yieldAprToken = db
+    .select({
+      poolExternalId: yieldTokenApr.poolExternalId,
+      timestamp: yieldTokenApr.timestamp,
+      value: yieldTokenApr.value,
+      tokenAddress: yieldTokenApr.tokenAddress,
+      tokenSymbol: tokens.symbol,
+    })
+    .from(yieldTokenApr)
+    .leftJoin(tokens, eq(tokens.address, yieldTokenApr.tokenAddress))
+    .as("yieldAprToken");
+
   const poolStatsData = await db
     .select({
-      poolExternalId: swapFeeApr.poolExternalId,
-      apr: sql<number>`cast(coalesce(${swapFeeApr.value},0) + coalesce(${vebalApr.value},0) as decimal)`,
+      poolExternalId: poolSnapshots.poolExternalId,
+      network: pools.networkSlug,
+      type: pools.poolType,
+      symbol: pools.symbol,
+      apr: sql<number>`cast(coalesce(${swapFeeApr.value},0) + coalesce(${vebalApr.value},0) + coalesce(${yieldAprSum.valueSum},0) as decimal)`,
       feeApr: swapFeeApr.value,
       vebalApr: vebalApr.value,
+      yieldApr: yieldAprSum.valueSum,
       volume: poolSnapshots.swapVolume,
       liquidity: poolSnapshots.liquidity,
       timestamp: poolSnapshots.timestamp,
       collectedFeesUSD: swapFeeApr.collectedFeesUSD,
     })
-    .from(swapFeeApr)
+    .from(poolSnapshots)
     .fullJoin(
-      poolSnapshots,
+      swapFeeApr,
       and(
         eq(poolSnapshots.poolExternalId, swapFeeApr.poolExternalId),
         eq(poolSnapshots.timestamp, swapFeeApr.timestamp),
@@ -40,30 +67,45 @@ export async function fetchDataForPoolIdDateRange(
     .fullJoin(
       vebalApr,
       and(
-        eq(vebalApr.poolExternalId, swapFeeApr.poolExternalId),
-        eq(vebalApr.timestamp, swapFeeApr.timestamp),
+        eq(vebalApr.poolExternalId, poolSnapshots.poolExternalId),
+        eq(vebalApr.timestamp, poolSnapshots.timestamp),
+      ),
+    )
+    .fullJoin(
+      yieldAprSum,
+      and(
+        eq(yieldAprSum.poolExternalId, poolSnapshots.poolExternalId),
+        eq(yieldAprSum.timestamp, poolSnapshots.timestamp),
+      ),
+    )
+    .leftJoin(pools, eq(pools.externalId, poolSnapshots.poolExternalId))
+    .where(
+      and(
+        between(poolSnapshots.timestamp, startDate, endDate),
+        eq(poolSnapshots.poolExternalId, poolId),
+      ),
+    );
+
+  const yieldAprByToken = await db
+    .select({
+      poolExternalId: yieldAprToken.poolExternalId,
+      timestamp: yieldAprToken.timestamp,
+      value: yieldAprToken.value,
+      tokenAddress: yieldAprToken.tokenAddress,
+      tokenSymbol: yieldAprToken.tokenSymbol,
+    })
+    .from(yieldAprToken)
+    .leftJoin(
+      poolSnapshots,
+      and(
+        eq(poolSnapshots.poolExternalId, yieldAprToken.poolExternalId),
+        eq(poolSnapshots.timestamp, yieldAprToken.timestamp),
       ),
     )
     .where(
       and(
-        between(swapFeeApr.timestamp, startDate, endDate),
-        eq(swapFeeApr.poolExternalId, poolId),
-      ),
-    );
-
-  const poolData = await db
-    .select({
-      poolExternalId: pools.externalId,
-      network: pools.networkSlug,
-      type: pools.poolType,
-      symbol: pools.symbol,
-    })
-    .from(pools)
-    .fullJoin(swapFeeApr, and(eq(swapFeeApr.poolExternalId, pools.externalId)))
-    .where(
-      and(
-        between(swapFeeApr.timestamp, startDate, endDate),
-        eq(pools.externalId, poolId),
+        between(yieldAprToken.timestamp, startDate, endDate),
+        eq(poolSnapshots.poolExternalId, poolId),
       ),
     );
 
@@ -91,6 +133,11 @@ export async function fetchDataForPoolIdDateRange(
         weight: Number(poolToken.weight),
       }));
 
+    const yieldAprByDate = yieldAprByToken.filter(
+      (yieldApr) =>
+        dateToEpoch(yieldApr.timestamp) === dateToEpoch(pool.timestamp),
+    );
+
     return {
       [formatDateToMMDDYYYY(pool.timestamp)]: {
         poolId: pool.poolExternalId,
@@ -100,8 +147,12 @@ export async function fetchDataForPoolIdDateRange(
             veBAL: Number(pool.vebalApr),
             swapFee: Number(pool.feeApr),
             tokens: {
-              total: 0,
-              breakdown: [],
+              total: Number(pool.yieldApr),
+              breakdown: yieldAprByDate.map((yieldApr) => ({
+                address: yieldApr.tokenAddress as string,
+                symbol: yieldApr.tokenSymbol as string,
+                yield: Number(yieldApr.value),
+              })),
             },
             rewards: {
               total: 0,
@@ -114,14 +165,9 @@ export async function fetchDataForPoolIdDateRange(
         tokens: tokensForPool,
         volume: Number(pool.volume),
         votingShare: 0,
-        symbol:
-          poolData.find((p) => p.poolExternalId === pool.poolExternalId)
-            ?.symbol || "",
-        network:
-          poolData.find((p) => p.poolExternalId === pool.poolExternalId)
-            ?.network || "",
-        type: poolData.find((p) => p.poolExternalId === pool.poolExternalId)
-          ?.type as PoolTypeEnum,
+        symbol: pool.symbol || "",
+        network: pool.network || "",
+        type: pool.type as PoolTypeEnum,
       },
     };
   });

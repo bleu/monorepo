@@ -348,8 +348,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       '@safe-global/protocol-kit':
-        specifier: ^1.3.0
-        version: 1.3.0(ethers@5.7.0)
+        specifier: ^2.0.0
+        version: 2.0.0
       '@safe-global/safe-core-sdk-types':
         specifier: ^2.3.0
         version: 2.3.0
@@ -6157,23 +6157,20 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@safe-global/protocol-kit@1.3.0(ethers@5.7.0):
-    resolution: {integrity: sha512-zBhwHpaUggywmnR1Xm5RV22DpyjmVWYP3pnOl4rcf9LAc1k7IVmw6WIt2YVhHRaWGxVYMd4RitJX8Dx2+8eLZQ==}
+  /@safe-global/protocol-kit@2.0.0:
+    resolution: {integrity: sha512-alnSxNZKC1ssKrFG5ytluu9kNKGwBifb1xhOyCqwMnm72JksbCEo0UWlNvaeCiYMwhYvMyS++mfxcLAsV/8Gfw==}
     dependencies:
-      '@ethersproject/address': 5.7.0
-      '@ethersproject/bignumber': 5.7.0
-      '@ethersproject/solidity': 5.7.0
+      '@noble/hashes': 1.3.2
       '@safe-global/safe-deployments': 1.28.0
       ethereumjs-util: 7.1.5
+      ethers: 6.9.0
       semver: 7.5.4
       web3: 1.10.3
       web3-core: 1.10.3
       web3-utils: 1.10.3
-      zksync-web3: 0.14.3(ethers@5.7.0)
     transitivePeerDependencies:
       - bufferutil
       - encoding
-      - ethers
       - supports-color
       - utf-8-validate
     dev: false
@@ -20438,14 +20435,6 @@ packages:
       mustache: 4.2.0
       stacktracey: 2.1.8
     dev: true
-
-  /zksync-web3@0.14.3(ethers@5.7.0):
-    resolution: {integrity: sha512-hT72th4AnqyLW1d5Jlv8N2B/qhEnl2NePK2A3org7tAa24niem/UAaHMkEvmWI3SF9waYUPtqAtjpf+yvQ9zvQ==}
-    peerDependencies:
-      ethers: ^5.7.0
-    dependencies:
-      ethers: 5.7.0
-    dev: false
 
   /zod@3.22.4:
     resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}

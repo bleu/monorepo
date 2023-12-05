@@ -11,7 +11,8 @@ import { Checkbox } from "#/components/Checkbox";
 import { Input } from "#/components/Input";
 import { Form, FormMessage } from "#/components/ui/form";
 import { useSafeBalances } from "#/hooks/useSafeBalances";
-import { orderOverviewSchema } from "#/lib/schema";
+import { generateOrderOverviewSchema } from "#/lib/schema";
+import { ChainId } from "#/utils/chainsPublicClients";
 
 import { tokenPriceChecker } from "../../[network]/order/new/page";
 import { FormFooter } from "./Footer";
@@ -20,11 +21,14 @@ export function FormOrderOverview({
   onSubmit,
   userAddress,
   defaultValues,
+  chainId,
 }: {
   onSubmit: (data: FieldValues) => void;
   userAddress: string;
   defaultValues?: FieldValues;
+  chainId: ChainId;
 }) {
+  const orderOverviewSchema = generateOrderOverviewSchema({ chainId });
   const form = useForm<typeof orderOverviewSchema._type>({
     resolver: zodResolver(orderOverviewSchema),
     defaultValues,

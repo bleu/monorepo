@@ -1,11 +1,17 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
+import { gnosis, goerli } from "viem/chains";
 
+import { AlertCard } from "#/components/AlertCard";
 import { Checkbox } from "#/components/Checkbox";
 import { Input } from "#/components/Input";
 import { Select, SelectItem } from "#/components/Select";
 import { Form } from "#/components/ui/form";
+import { fetchCowQuoteAmountOut } from "#/lib/fetchCowQuote";
+import { fetchTokenUsdPrice } from "#/lib/fetchTokenUsdPrice";
 import { orderTwapSchema } from "#/lib/schema";
+import { ChainId } from "#/utils/chainsPublicClients";
 
 import { TransactionStatus } from "../../utils/type";
 import { FormFooter } from "./Footer";
@@ -28,12 +34,19 @@ export const TwapDelayValues = {
   [TWAP_DELAY_OPTIONS.ONE_DAY]: 24 * 60 * 60,
 };
 
+const minValueForTwapWarining = {
+  [goerli.id]: 100,
+  [gnosis.id]: 500,
+};
+
 export function TwapForm({
   onSubmit,
   defaultValues,
+  chainId,
 }: {
   onSubmit: (data: FieldValues) => void;
   defaultValues?: FieldValues;
+  chainId: ChainId;
 }) {
   const form = useForm<typeof orderTwapSchema._type>({
     resolver: zodResolver(orderTwapSchema),
@@ -84,7 +97,72 @@ export function TwapForm({
           />
         </div>
       </div>
+      <TwapSuggestion
+        defaultValues={defaultValues}
+        chainId={chainId}
+        isTwapNeeded={isTwapNeeded}
+      />
       <FormFooter transactionStatus={TransactionStatus.ORDER_TWAP} />
     </Form>
+  );
+}
+
+function TwapSuggestion({
+  chainId,
+  defaultValues,
+  isTwapNeeded,
+}: {
+  chainId: ChainId;
+  defaultValues?: FieldValues;
+  isTwapNeeded?: boolean;
+}) {
+  const [buyAmountUsd, setBuyAmountUsd] = useState<number>();
+  const [sellAmountUsd, setSellAmountUsd] = useState<number>();
+
+  useEffect(() => {
+    if (defaultValues?.tokenSell && defaultValues?.tokenBuy) {
+      fetchTokenUsdPrice({
+        token: defaultValues?.tokenSell,
+        amount: defaultValues?.tokenSellAmount,
+        chainId,
+      }).then((usdAmount) => {
+        setSellAmountUsd(usdAmount);
+      });
+      fetchCowQuoteAmountOut({
+        amountIn:
+          defaultValues?.tokenSellAmount *
+          10 ** defaultValues?.tokenSell?.decimals,
+        tokenIn: defaultValues?.tokenSell,
+        tokenOut: defaultValues?.tokenBuy,
+        chainId,
+        priceQuality: "optimal",
+      }).then((amountOut) => {
+        fetchTokenUsdPrice({
+          token: defaultValues?.tokenBuy,
+          amount: Number(amountOut),
+          chainId,
+        }).then((usdAmount) => {
+          setBuyAmountUsd(usdAmount);
+        });
+      });
+    }
+  }, []);
+
+  if (!buyAmountUsd || !sellAmountUsd) {
+    return;
+  }
+
+  const priceImpact = 1 - buyAmountUsd / sellAmountUsd;
+  const showWarning =
+    priceImpact > 0.01 && sellAmountUsd > minValueForTwapWarining[chainId];
+  return (
+    showWarning &&
+    !isTwapNeeded && (
+      <AlertCard
+        style="warning"
+        title="TWAP is suggested"
+        message="Your order is large enough to cause a significant price impact. Consider using TWAP to split your order into multiples suborders."
+      />
+    )
   );
 }

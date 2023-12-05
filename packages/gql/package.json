@@ -19,7 +19,7 @@
     "@graphql-codegen/typescript-graphql-request": "6.0.1",
     "@graphql-codegen/typescript-operations": "4.0.1",
     "@types/node": "18.18.5",
-    "@types/react": "18.2.39",
+    "@types/react": "18.2.42",
     "@types/react-dom": "18.2.17",
     "graphql": "16.8.1",
     "graphql-codegen-plugin-typescript-swr": "0.8.5",

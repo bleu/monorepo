@@ -5,6 +5,7 @@ import { FieldValues } from "react-hook-form";
 import { stages } from "#/app/milkman/(components)/SingleOrderForm/TransactionProgressBar";
 import { TransactionStatus } from "#/app/milkman/utils/type";
 import { useOrder } from "#/contexts/OrderContext";
+import { ChainId } from "#/utils/chainsPublicClients";
 
 import { FormHeader } from "./SingleOrderForm/Header";
 import { FormOrderOverview } from "./SingleOrderForm/Overview";
@@ -63,6 +64,7 @@ export function TransactionCard({
         }}
         userAddress={userAddress}
         defaultValues={ordersData[currentOrderToEdit]}
+        chainId={chainId as ChainId}
       />
     ),
     [TransactionStatus.ORDER_STRATEGY]: (
@@ -81,6 +83,7 @@ export function TransactionCard({
           handleContinue();
         }}
         defaultValues={ordersData[currentOrderToEdit]}
+        chainId={chainId as ChainId}
       />
     ),
     [TransactionStatus.ORDER_SUMMARY]: (

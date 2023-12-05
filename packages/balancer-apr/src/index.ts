@@ -1137,7 +1137,6 @@ async function calculateTokenWeightSnapshots() {
   const poolExternalIds = poolsWithTokenPrices.map(
     ({ poolExternalId }) => poolExternalId,
   );
-
   const weightResults: {
     timestamp: Date;
     token: string;

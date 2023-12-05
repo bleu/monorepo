@@ -16,8 +16,8 @@ import {
   between,
   desc,
   eq,
+  gt,
   inArray,
-  ne,
   sql,
   SQLWrapper,
 } from "drizzle-orm";
@@ -157,7 +157,7 @@ export async function fetchDataForDateRange({
     .select()
     .from(poolAprForDate)
     .orderBy(orderBy)
-    .where(ne(poolAprForDate.avgApr, 0))
+    .where(gt(poolAprForDate.avgApr, 0.1))
     .limit(Number(limit));
 
   const poolsTokens = await db

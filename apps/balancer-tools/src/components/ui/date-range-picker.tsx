@@ -1,6 +1,6 @@
 "use client";
 
-import { formatDateToMMDDYYYY } from "@bleu-fi/utils/date";
+import { formatDateToMMDDYYYY, SECONDS_IN_DAY } from "@bleu-fi/utils/date";
 import {
   CheckIcon,
   ChevronDownIcon,
@@ -55,7 +55,6 @@ interface Preset {
 
 // Define presets
 const PRESETS: Preset[] = [
-  { name: "today", label: "Today" },
   { name: "last4", label: "Last 4 days" },
   { name: "last7", label: "Last 7 days" },
   { name: "thisWeek", label: "This Week" },
@@ -118,15 +117,11 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
   const getPresetRange = (presetName: string): DateRange => {
     const preset = PRESETS.find(({ name }) => name === presetName);
     if (!preset) throw new Error(`Unknown date range preset: ${presetName}`);
-    const from = new Date();
-    const to = new Date();
+    const from = new Date(new Date().getTime() - SECONDS_IN_DAY * 1000);
+    const to = new Date(new Date().getTime() - SECONDS_IN_DAY * 1000);
     const first = from.getDate() - from.getDay();
 
     switch (preset.name) {
-      case "today":
-        from.setHours(0, 0, 0, 0);
-        to.setHours(23, 59, 59, 999);
-        break;
       case "last4":
         from.setDate(from.getDate() - 3);
         from.setHours(0, 0, 0, 0);
@@ -424,7 +419,9 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
                           } else {
                             setRangeCompare({
                               from: date,
-                              to: new Date(),
+                              to: new Date(
+                                new Date().getTime() - SECONDS_IN_DAY * 1000,
+                              ),
                             });
                           }
                         }}
@@ -479,7 +476,9 @@ const DateRangePicker: FC<DateRangePickerProps> = ({
                   }}
                   selected={range}
                   disabled={(date) =>
-                    date > new Date() || date < new Date("2020-01-01")
+                    date >
+                      new Date(new Date().getTime() - SECONDS_IN_DAY * 1000) ||
+                    date < new Date("2020-01-01")
                   }
                   numberOfMonths={isSmallScreen ? 1 : 2}
                   defaultMonth={

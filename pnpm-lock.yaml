@@ -778,8 +778,8 @@ importers:
         specifier: ^29.1.1
         version: 29.1.1(@babel/core@7.22.9)(esbuild@0.16.17)(jest@29.7.0)(typescript@5.3.2)
       tsuml2:
-        specifier: ^0.13.0
-        version: 0.13.0
+        specifier: ^0.14.0
+        version: 0.14.0
 
   packages/tsconfig:
     devDependencies:
@@ -18984,8 +18984,8 @@ packages:
   /tslib@2.6.2:
     resolution: {integrity: sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==}
 
-  /tsuml2@0.13.0:
-    resolution: {integrity: sha512-enqcrGYBaNa49xkluyIcW2paxeij1P27j460MfuK6mNE31bVT9G8EokJUCCYlIlu/JkYIYNMhxIfpGJN5jpeag==}
+  /tsuml2@0.14.0:
+    resolution: {integrity: sha512-k3BO8kLQUhULIKNNNtduTC40rsQ9XvYCjURAFobsqWJPUSDOMbOGeMEUyywPyV28c76i+HEy5brkJFe/cJMLjw==}
     hasBin: true
     dependencies:
       chalk: 4.1.2

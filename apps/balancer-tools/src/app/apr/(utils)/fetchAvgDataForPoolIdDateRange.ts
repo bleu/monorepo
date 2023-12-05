@@ -20,10 +20,10 @@ export async function fetchAvgDataForPoolIdDateRange(
     })
     .from(yieldTokenApr)
     .groupBy(yieldTokenApr.poolExternalId, yieldTokenApr.timestamp)
-    .as("yieldTokenAprSum");
+    .as("yieldAprSum");
   const poolStatsData = await db
     .select({
-      poolExternalId: swapFeeApr.poolExternalId,
+      poolExternalId: poolSnapshots.poolExternalId,
       avgApr:
         sql<number>`cast(sum(coalesce(${swapFeeApr.value},0) + coalesce(${vebalApr.value},0) + coalesce(${yieldAprSum.valueSum},0)) / count(${poolSnapshots.timestamp}) as decimal)`.as(
           "avgApr",
@@ -33,9 +33,9 @@ export async function fetchAvgDataForPoolIdDateRange(
           "avgLiquidity",
         ),
     })
-    .from(swapFeeApr)
+    .from(poolSnapshots)
     .fullJoin(
-      poolSnapshots,
+      swapFeeApr,
       and(
         eq(poolSnapshots.poolExternalId, swapFeeApr.poolExternalId),
         eq(poolSnapshots.timestamp, swapFeeApr.timestamp),
@@ -44,24 +44,24 @@ export async function fetchAvgDataForPoolIdDateRange(
     .fullJoin(
       vebalApr,
       and(
-        eq(vebalApr.poolExternalId, swapFeeApr.poolExternalId),
-        eq(vebalApr.timestamp, swapFeeApr.timestamp),
+        eq(vebalApr.poolExternalId, poolSnapshots.poolExternalId),
+        eq(vebalApr.timestamp, poolSnapshots.timestamp),
       ),
     )
     .fullJoin(
       yieldAprSum,
       and(
-        eq(yieldAprSum.poolExternalId, swapFeeApr.poolExternalId),
-        eq(yieldAprSum.timestamp, swapFeeApr.timestamp),
+        eq(yieldAprSum.poolExternalId, poolSnapshots.poolExternalId),
+        eq(yieldAprSum.timestamp, poolSnapshots.timestamp),
       ),
     )
     .where(
       and(
-        between(swapFeeApr.timestamp, startDate, endDate),
-        eq(swapFeeApr.poolExternalId, poolId),
+        between(poolSnapshots.timestamp, startDate, endDate),
+        eq(poolSnapshots.poolExternalId, poolId),
       ),
     )
-    .groupBy(swapFeeApr.poolExternalId);
+    .groupBy(poolSnapshots.poolExternalId);
 
   const returnData = poolStatsData.map((pool) => {
     return {

@@ -27,7 +27,7 @@ export async function fetchDataForPoolIdDateRange(
     })
     .from(yieldTokenApr)
     .groupBy(yieldTokenApr.poolExternalId, yieldTokenApr.timestamp)
-    .as("yieldTokenAprSum");
+    .as("yieldAprSum");
 
   const yieldAprToken = db
     .select({
@@ -39,11 +39,14 @@ export async function fetchDataForPoolIdDateRange(
     })
     .from(yieldTokenApr)
     .leftJoin(tokens, eq(tokens.address, yieldTokenApr.tokenAddress))
-    .as("yieldTokenAprSum");
+    .as("yieldAprToken");
 
   const poolStatsData = await db
     .select({
-      poolExternalId: swapFeeApr.poolExternalId,
+      poolExternalId: poolSnapshots.poolExternalId,
+      network: pools.networkSlug,
+      type: pools.poolType,
+      symbol: pools.symbol,
       apr: sql<number>`cast(coalesce(${swapFeeApr.value},0) + coalesce(${vebalApr.value},0) + coalesce(${yieldAprSum.valueSum},0) as decimal)`,
       feeApr: swapFeeApr.value,
       vebalApr: vebalApr.value,
@@ -53,9 +56,9 @@ export async function fetchDataForPoolIdDateRange(
       timestamp: poolSnapshots.timestamp,
       collectedFeesUSD: swapFeeApr.collectedFeesUSD,
     })
-    .from(swapFeeApr)
+    .from(poolSnapshots)
     .fullJoin(
-      poolSnapshots,
+      swapFeeApr,
       and(
         eq(poolSnapshots.poolExternalId, swapFeeApr.poolExternalId),
         eq(poolSnapshots.timestamp, swapFeeApr.timestamp),
@@ -64,37 +67,22 @@ export async function fetchDataForPoolIdDateRange(
     .fullJoin(
       vebalApr,
       and(
-        eq(vebalApr.poolExternalId, swapFeeApr.poolExternalId),
-        eq(vebalApr.timestamp, swapFeeApr.timestamp),
+        eq(vebalApr.poolExternalId, poolSnapshots.poolExternalId),
+        eq(vebalApr.timestamp, poolSnapshots.timestamp),
       ),
     )
     .fullJoin(
       yieldAprSum,
       and(
-        eq(yieldAprSum.poolExternalId, swapFeeApr.poolExternalId),
-        eq(yieldAprSum.timestamp, swapFeeApr.timestamp),
+        eq(yieldAprSum.poolExternalId, poolSnapshots.poolExternalId),
+        eq(yieldAprSum.timestamp, poolSnapshots.timestamp),
       ),
     )
+    .leftJoin(pools, eq(pools.externalId, poolSnapshots.poolExternalId))
     .where(
       and(
-        between(swapFeeApr.timestamp, startDate, endDate),
-        eq(swapFeeApr.poolExternalId, poolId),
-      ),
-    );
-
-  const poolData = await db
-    .select({
-      poolExternalId: pools.externalId,
-      network: pools.networkSlug,
-      type: pools.poolType,
-      symbol: pools.symbol,
-    })
-    .from(pools)
-    .fullJoin(swapFeeApr, and(eq(swapFeeApr.poolExternalId, pools.externalId)))
-    .where(
-      and(
-        between(swapFeeApr.timestamp, startDate, endDate),
-        eq(pools.externalId, poolId),
+        between(poolSnapshots.timestamp, startDate, endDate),
+        eq(poolSnapshots.poolExternalId, poolId),
       ),
     );
 
@@ -110,13 +98,13 @@ export async function fetchDataForPoolIdDateRange(
     .leftJoin(
       poolSnapshots,
       and(
-        eq(poolSnapshots.poolExternalId, yieldAprSum.poolExternalId),
-        eq(poolSnapshots.timestamp, yieldAprSum.timestamp),
+        eq(poolSnapshots.poolExternalId, yieldAprToken.poolExternalId),
+        eq(poolSnapshots.timestamp, yieldAprToken.timestamp),
       ),
     )
     .where(
       and(
-        between(yieldAprSum.timestamp, startDate, endDate),
+        between(yieldAprToken.timestamp, startDate, endDate),
         eq(poolSnapshots.poolExternalId, poolId),
       ),
     );
@@ -177,14 +165,9 @@ export async function fetchDataForPoolIdDateRange(
         tokens: tokensForPool,
         volume: Number(pool.volume),
         votingShare: 0,
-        symbol:
-          poolData.find((p) => p.poolExternalId === pool.poolExternalId)
-            ?.symbol || "",
-        network:
-          poolData.find((p) => p.poolExternalId === pool.poolExternalId)
-            ?.network || "",
-        type: poolData.find((p) => p.poolExternalId === pool.poolExternalId)
-          ?.type as PoolTypeEnum,
+        symbol: pool.symbol || "",
+        network: pool.network || "",
+        type: pool.type as PoolTypeEnum,
       },
     };
   });

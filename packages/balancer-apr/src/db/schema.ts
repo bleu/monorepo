@@ -347,24 +347,20 @@ export const vebalApr = pgTable("vebal_apr", {
   externalId: varchar("external_id").unique(),
 });
 
-export const poolRewards = pgTable(
-  "pool_rewards",
-  {
-    id: serial("id").primaryKey(),
-    tokenAddress: varchar("token_address"),
-    networkSlug: varchar("network_slug").references(() => networks.slug),
-    startAt: decimal("start_at"),
-    endAt: decimal("end_at"),
-    yearlyAmount: decimal("yearly_amount"),
-    totalSupply: decimal("total_supply"),
-    poolExternalId: varchar("pool_external_id").references(
-      () => pools.externalId,
-    ),
-  },
-  (t) => ({
-    unq: unique().on(t.poolExternalId, t.tokenAddress, t.networkSlug),
-  }),
-);
+export const poolRewards = pgTable("pool_rewards", {
+  id: serial("id").primaryKey(),
+  poolExternalId: varchar("pool_external_id").references(
+    () => pools.externalId,
+  ),
+  startAt: decimal("start_at"),
+  endAt: decimal("end_at"),
+  rate: decimal("rate"),
+  tokenAddress: varchar("token_address"),
+  networkSlug: varchar("network_slug").references(() => networks.slug),
+  totalSupply: decimal("total_supply"),
+  externalId: varchar("external_id").unique(),
+  rawData: jsonb("raw_data"),
+});
 
 export const swapFeeApr = pgTable(
   "swap_fee_apr",

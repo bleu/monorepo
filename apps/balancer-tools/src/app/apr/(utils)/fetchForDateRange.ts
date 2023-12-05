@@ -73,7 +73,10 @@ export async function fetchDataForDateRange({
 
   const poolAprForDate = db
     .select({
-      poolExternalId: swapFeeApr.poolExternalId,
+      poolExternalId: poolSnapshots.poolExternalId,
+      network: pools.networkSlug,
+      type: pools.poolType,
+      symbol: pools.symbol,
       avgApr:
         sql<number>`cast(sum(coalesce(${swapFeeApr.value},0) + coalesce(${vebalApr.value},0) + coalesce(${yieldAprSum.valueSum},0)) / count(${poolSnapshots.timestamp}) as decimal)`.as(
           "avgApr",
@@ -99,9 +102,9 @@ export async function fetchDataForDateRange({
           "avgYieldTokenApr",
         ),
     })
-    .from(swapFeeApr)
+    .from(poolSnapshots)
     .fullJoin(
-      poolSnapshots,
+      swapFeeApr,
       and(
         eq(poolSnapshots.poolExternalId, swapFeeApr.poolExternalId),
         eq(poolSnapshots.timestamp, swapFeeApr.timestamp),
@@ -110,30 +113,35 @@ export async function fetchDataForDateRange({
     .fullJoin(
       vebalApr,
       and(
-        eq(vebalApr.poolExternalId, swapFeeApr.poolExternalId),
-        eq(vebalApr.timestamp, swapFeeApr.timestamp),
+        eq(vebalApr.poolExternalId, poolSnapshots.poolExternalId),
+        eq(vebalApr.timestamp, poolSnapshots.timestamp),
       ),
     )
     .fullJoin(
       yieldAprSum,
       and(
-        eq(yieldAprSum.poolExternalId, swapFeeApr.poolExternalId),
-        eq(yieldAprSum.timestamp, swapFeeApr.timestamp),
+        eq(yieldAprSum.poolExternalId, poolSnapshots.poolExternalId),
+        eq(yieldAprSum.timestamp, poolSnapshots.timestamp),
       ),
     )
-    .leftJoin(pools, eq(pools.externalId, swapFeeApr.poolExternalId))
+    .leftJoin(pools, eq(pools.externalId, poolSnapshots.poolExternalId))
     .leftJoin(poolTokens, eq(poolTokens.poolExternalId, pools.externalId))
     .leftJoin(tokensTable, eq(tokensTable.address, poolTokens.tokenAddress))
     .where(
       and(
-        between(swapFeeApr.timestamp, startDate, endDate),
+        between(poolSnapshots.timestamp, startDate, endDate),
         between(poolSnapshots.liquidity, minTvl, maxTvl),
         (networks ? inArray(pools.networkSlug, networks) : true) as SQLWrapper,
         (tokens ? inArray(tokensTable.symbol, tokens) : true) as SQLWrapper,
         (typesArray ? inArray(pools.poolType, typesArray) : true) as SQLWrapper,
       ),
     )
-    .groupBy(swapFeeApr.poolExternalId)
+    .groupBy(
+      poolSnapshots.poolExternalId,
+      pools.networkSlug,
+      pools.symbol,
+      pools.poolType,
+    )
     .as("poolAprForDate");
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -152,17 +160,6 @@ export async function fetchDataForDateRange({
     .where(ne(poolAprForDate.avgApr, 0))
     .limit(Number(limit));
 
-  const poolData = await db
-    .select({
-      poolExternalId: pools.externalId,
-      network: pools.networkSlug,
-      type: pools.poolType,
-      symbol: pools.symbol,
-    })
-    .from(pools)
-    .fullJoin(swapFeeApr, and(eq(swapFeeApr.poolExternalId, pools.externalId)))
-    .where(and(between(swapFeeApr.timestamp, startDate, endDate)));
-
   const poolsTokens = await db
     .select({
       poolExternalId: poolTokens.poolExternalId,
@@ -171,7 +168,13 @@ export async function fetchDataForDateRange({
       symbol: tokensTable.symbol,
     })
     .from(poolTokens)
-    .leftJoin(tokensTable, eq(tokensTable.address, poolTokens.tokenAddress));
+    .leftJoin(tokensTable, eq(tokensTable.address, poolTokens.tokenAddress))
+    .where(
+      inArray(
+        poolTokens.poolExternalId,
+        orderedPoolAprForDate.map((p) => p.poolExternalId as string),
+      ),
+    );
 
   const returnData = orderedPoolAprForDate.map((pool) => {
     const tokensForPool = poolsTokens
@@ -196,14 +199,9 @@ export async function fetchDataForDateRange({
       tvl: Number(pool.avgLiquidity),
       tokens: tokensForPool,
       volume: Number(pool.avgVolume),
-      symbol:
-        poolData.find((p) => p.poolExternalId === pool.poolExternalId)
-          ?.symbol || "",
-      network:
-        poolData.find((p) => p.poolExternalId === pool.poolExternalId)
-          ?.network || "",
-      type: poolData.find((p) => p.poolExternalId === pool.poolExternalId)
-        ?.type as PoolTypeEnum,
+      symbol: pool.symbol || "",
+      network: pool.network || "",
+      type: pool.type as PoolTypeEnum,
     };
   });
 

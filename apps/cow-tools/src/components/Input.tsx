@@ -50,11 +50,15 @@ export const Input = React.forwardRef<HTMLInputElement, IInput>(
           <FormLabel className="mb-2 block text-sm text-slate12">
             {label}
           </FormLabel>
-          {tooltipText && tooltipLink && (
+          {tooltipText && (
             <Tooltip content={tooltipText}>
-              <a href={tooltipLink} target="_blank">
+              {tooltipLink ? (
+                <a href={tooltipLink} target="_blank">
+                  <InfoCircledIcon color={slateDarkA.slateA11} />
+                </a>
+              ) : (
                 <InfoCircledIcon color={slateDarkA.slateA11} />
-              </a>
+              )}
             </Tooltip>
           )}
         </div>

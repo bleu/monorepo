@@ -124,7 +124,9 @@ export function FormOrderOverview({
                 type="number"
                 label="Amount to sell"
                 placeholder="0.0"
-                step={10 ** -defaultValues?.tokenSellAmount.decimals || 10e-18}
+                step={
+                  10 ** -(defaultValues?.tokenSellAmount.decimals - 1) || 10e-19
+                }
                 {...register("tokenSellAmount")}
               />
               {formData.tokenSellAmount > Number(walletAmount) && (

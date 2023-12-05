@@ -1066,7 +1066,12 @@ async function calculateTokenWeightSnapshots() {
     })
     .from(poolTokens)
     .leftJoin(pools, eq(pools.externalId, poolTokens.poolExternalId))
-    .where(inArray(poolTokens.poolExternalId, poolsIds));
+    .where(
+      and(
+        inArray(poolTokens.poolExternalId, poolsIds),
+        ne(poolTokens.tokenAddress, pools.address),
+      ),
+    );
 
   const tokensGroupedByPool: {
     poolExternalId: string;
@@ -1132,6 +1137,7 @@ async function calculateTokenWeightSnapshots() {
   const poolExternalIds = poolsWithTokenPrices.map(
     ({ poolExternalId }) => poolExternalId,
   );
+
   const weightResults: {
     timestamp: Date;
     token: string;
@@ -1288,5 +1294,3 @@ export async function runETLs() {
   logIfVerbose("Ended ETL processes");
   process.exit(0);
 }
-
-runETLs();

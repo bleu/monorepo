@@ -2,6 +2,9 @@ import { gnosis, goerli } from "viem/chains";
 
 import { PRICE_CHECKERS, PriceCheckerArgument } from "./types";
 
+const dynamicSlippageDescription =
+  "This value represents the allowed slippage that you accepts between the quote and the order execution";
+
 export const priceCheckersArgumentsMapping = {
   [PRICE_CHECKERS.FIXED_MIN_OUT]: [
     {
@@ -14,6 +17,7 @@ export const priceCheckersArgumentsMapping = {
       convertOutput: (output: bigint, decimals: number) =>
         Number(output) / 10 ** decimals,
       toExpectedOutCalculator: false,
+      description: "The minimum amount of tokens you want to receive.",
     },
   ] as PriceCheckerArgument[],
   [PRICE_CHECKERS.UNI_V2]: [
@@ -25,6 +29,7 @@ export const priceCheckersArgumentsMapping = {
       convertInput: (input: number) => BigInt(input * 100),
       convertOutput: (output: bigint) => Number(output) / 100,
       toExpectedOutCalculator: false,
+      description: dynamicSlippageDescription,
     },
   ] as PriceCheckerArgument[],
   [PRICE_CHECKERS.BALANCER]: [
@@ -36,6 +41,7 @@ export const priceCheckersArgumentsMapping = {
       convertInput: (input: number) => BigInt(input * 100),
       convertOutput: (output: bigint) => Number(output) / 100,
       toExpectedOutCalculator: false,
+      description: dynamicSlippageDescription,
     },
   ] as PriceCheckerArgument[],
   [PRICE_CHECKERS.SUSHI_SWAP]: [
@@ -47,6 +53,7 @@ export const priceCheckersArgumentsMapping = {
       convertInput: (input: number) => BigInt(input * 100),
       convertOutput: (output: bigint) => Number(output) / 100,
       toExpectedOutCalculator: false,
+      description: dynamicSlippageDescription,
     },
   ] as PriceCheckerArgument[],
   [PRICE_CHECKERS.CHAINLINK]: [
@@ -58,6 +65,7 @@ export const priceCheckersArgumentsMapping = {
       convertInput: (input: number) => BigInt(input * 100),
       convertOutput: (output: bigint) => Number(output) / 100,
       toExpectedOutCalculator: false,
+      description: dynamicSlippageDescription,
     },
     {
       name: "addressesPriceFeeds",
@@ -67,6 +75,9 @@ export const priceCheckersArgumentsMapping = {
       toExpectedOutCalculator: true,
       convertInput: (input: string) => input,
       convertOutput: (output: string) => output,
+      description:
+        "The price feeds addresses that will be used to calculate the expected amount of tokens you will receive.",
+      link: "https://docs.chain.link/data-feeds/price-feeds/addresses?network=ethereum&page=1",
     },
     {
       name: "revertPriceFeeds",
@@ -76,6 +87,8 @@ export const priceCheckersArgumentsMapping = {
       toExpectedOutCalculator: true,
       convertInput: (input: boolean) => input,
       convertOutput: (output: boolean) => output,
+      description:
+        "If the price feed will revert, the price checker will revert. This means that if the price feed is A/B and you want B/A you will have to mark this option.",
     },
   ] as PriceCheckerArgument[],
   [PRICE_CHECKERS.UNI_V3]: [
@@ -87,6 +100,7 @@ export const priceCheckersArgumentsMapping = {
       convertInput: (input: number) => BigInt(input * 100),
       convertOutput: (output: bigint) => Number(output) / 100,
       toExpectedOutCalculator: false,
+      description: dynamicSlippageDescription,
     },
     {
       name: "tokenIn",
@@ -96,6 +110,7 @@ export const priceCheckersArgumentsMapping = {
       toExpectedOutCalculator: true,
       convertInput: (input: string) => input,
       convertOutput: (output: string) => output,
+      description: "The token you want to sell on each pool.",
     },
     {
       name: "tokenOut",
@@ -105,6 +120,7 @@ export const priceCheckersArgumentsMapping = {
       toExpectedOutCalculator: true,
       convertInput: (input: string) => input,
       convertOutput: (output: string) => output,
+      description: "The token you want to buy on each pool.",
     },
     {
       name: "fees",
@@ -117,6 +133,8 @@ export const priceCheckersArgumentsMapping = {
         inputs.map((input) => BigInt(input * 100)),
       convertOutput: (outputs: string[]) =>
         outputs.map((output) => Number(output) / 100),
+      description: "The fee of each selected pool.",
+      link: "https://info.uniswap.org/#/pools",
     },
   ] as PriceCheckerArgument[],
   [PRICE_CHECKERS.CURVE]: [
@@ -180,3 +198,20 @@ export const priceCheckerHasExpectedOutCalculatorMapping = {
   [PRICE_CHECKERS.UNI_V3]: true,
   [PRICE_CHECKERS.CURVE]: true,
 } as const;
+
+export const priceCheckerTooltipMessageMapping = {
+  [PRICE_CHECKERS.FIXED_MIN_OUT]:
+    "This is the simplest price checker, it will accept the quoted order if the amount of tokens you will receive is greater than the minimum amount you set. This means that all the math is on you and, if the order will get a long time to be processed, you will have to predict the price.",
+  [PRICE_CHECKERS.UNI_V2]:
+    "This price checker will use Uniswap V2 pools to calculate the expected amount of tokens you will receive. To build the path with Uniswap V2 pools, it will always use WETH as the middle token (if it isn't one of the pair tokens).",
+  [PRICE_CHECKERS.BALANCER]:
+    "This price checker is specific for the case when you want to trade BAL80-WETH20 BPT token to BAL or WETH. It uses BAL infrastructure and Chainlink oracles to calculate the expected amount of tokens you will receive.",
+  [PRICE_CHECKERS.SUSHI_SWAP]:
+    "This price checker will use SushiSwap pools to calculate the expected amount of tokens you will receive. To build the path with Uniswap V2 pools, it will always use WETH as the middle token (if it isn't one of the pair tokens).",
+  [PRICE_CHECKERS.CURVE]:
+    "This price checker will use Curve pools to calculate the expected amount of tokens you will receive. To build the path it is used the Curve registry and router.",
+  [PRICE_CHECKERS.CHAINLINK]:
+    "The Chainlink price checker uses a path of price feeds to calculate the expected amount of tokens you will receive. The only checking that we do here is if the price checker will or not revert, so the construction of the path is up to you, a construction of a wrong path can lead to a relative lower amount of tokens received.",
+  [PRICE_CHECKERS.UNI_V3]:
+    "This price checker will use Uniswap V3 pools to calculate the expected amount of tokens you will receive. The only checking that we do here is if the price checker will or not revert, so the construction of the path is up to you, a construction of a wrong path can lead to a relative lower amount of tokens received.",
+};

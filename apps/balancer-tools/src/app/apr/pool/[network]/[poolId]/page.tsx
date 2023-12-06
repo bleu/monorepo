@@ -1,4 +1,3 @@
-import { Pool } from "@bleu-fi/balancer-apr/src/lib/balancer/gauges";
 import { SECONDS_IN_DAY } from "@bleu-fi/utils/date";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
@@ -16,11 +15,11 @@ import PoolOverviewCards from "../../(components)/PoolOverviewCards";
 
 export const revalidate = SECONDS_IN_DAY;
 export default async function Page({
-  params: { poolId, network },
+  params: { poolId },
   searchParams,
 }: {
   searchParams: SearchParams;
-  params: { poolId: string; network: string };
+  params: { poolId: string };
 }) {
   const parsedParams = QueryParamsPagesSchema.safeParse(searchParams);
   if (!parsedParams.success) {
@@ -41,16 +40,6 @@ export default async function Page({
   const { startAt: startAtDate, endAt: endAtDate } = parsedParams.data;
   if (!startAtDate || !endAtDate) {
     return redirect("/apr/");
-  }
-  if (startAtDate < new Date(new Pool(poolId).createdAt * 1000)) {
-    const paramsObject = Object.fromEntries(
-      Object.entries(searchParams).map(
-        ([key, value]) => [key, String(value)] as [string, string],
-      ),
-    );
-    const params = new URLSearchParams(paramsObject).toString();
-
-    return redirect(`/apr/pool/${network}/${poolId}/error?${params}&`);
   }
 
   const poolData = await fetchDataForPoolIdDateRange(

@@ -1,5 +1,6 @@
 "use client";
 
+import { formatDate } from "@bleu-fi/utils";
 import { blueDark } from "@radix-ui/colors";
 import { Data } from "plotly.js";
 import { useState } from "react";
@@ -49,6 +50,8 @@ export default function HistoricalChartWrapper({
     tvlChartData,
     volumeChartData,
   );
+
+  const createdAt = Object.values(results.perDay[0])[0].externalCreatedAt;
 
   // This is needed to enable an axis that isn't meant to be shown
   // If the anchor axis isn't enabled the other it'll only show one trace at a time
@@ -145,6 +148,10 @@ export default function HistoricalChartWrapper({
           },
         }}
       />
+      <div className="text-center text-gray-400 text-sm">
+        Historical data is only available since pool creation date{" "}
+        {formatDate(createdAt)}
+      </div>
     </div>
   );
 }

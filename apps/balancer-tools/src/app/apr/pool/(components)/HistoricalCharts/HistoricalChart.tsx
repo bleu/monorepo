@@ -86,7 +86,10 @@ export default function HistoricalChartWrapper({
             bgcolor: blueDark.blue6,
           },
           xaxis: {
-            dtick: 1,
+            dtick:
+              results.perDay.length > 30
+                ? Math.round(results.perDay.length / 10)
+                : 1,
             title: "Date",
             gridcolor: blueDark.blue6,
             linecolor: blueDark.blue6,

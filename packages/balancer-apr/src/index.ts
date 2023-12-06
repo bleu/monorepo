@@ -13,6 +13,8 @@ import { chunks } from "./chunks";
 import {
   ENDPOINT_V3,
   NETWORK_TO_BALANCER_ENDPOINT_MAP,
+  NETWORK_TO_REWARDS_ENDPOINT_MAP,
+  POOL_REWARDS,
   POOLS_SNAPSHOTS,
   POOLS_WITHOUT_GAUGE_QUERY,
   RATE_PROVIDER_SNAPSHOTS,
@@ -25,6 +27,7 @@ import {
   calendar,
   gauges,
   gaugeSnapshots,
+  poolRewards,
   pools,
   poolSnapshots,
   poolSnapshotsTemp,
@@ -63,6 +66,20 @@ async function processPoolSnapshots(data: any, network: string) {
       data.poolSnapshots.map((snapshot: any) => ({
         externalId: snapshot.id,
         rawData: { ...snapshot, network },
+      })),
+    );
+  }
+}
+
+async function processPoolRewards(data: any, network: string) {
+  logIfVerbose(`Processing pool rewards for network ${network}`);
+
+  if (data.rewardTokenDeposits) {
+    await addToTable(
+      poolRewards,
+      data.rewardTokenDeposits.map((rewards: any) => ({
+        externalId: rewards.id,
+        rawData: { ...rewards, network },
       })),
     );
   }
@@ -142,6 +159,15 @@ async function extractPoolSnapshotsForNetwork(
 ) {
   await paginatedFetch(networkEndpoint, POOLS_SNAPSHOTS, (data) =>
     processPoolSnapshots(data, network),
+  );
+}
+
+async function extractRewardsForNetwork(
+  networkEndpoint: string,
+  network: string,
+) {
+  await paginatedFetch(networkEndpoint, POOL_REWARDS, (data) =>
+    processPoolRewards(data, network),
   );
 }
 
@@ -653,6 +679,16 @@ async function ETLSnapshots() {
 
   logIfVerbose("Starting Pool Snapshots Extraction");
   await transformPoolSnapshotsData();
+}
+
+async function ETLPoolRewards() {
+  logIfVerbose("Starting Pool Rewards Extraction");
+  await Promise.all(
+    networkNames.map(async (networkName) => {
+      const networkEndpoint = NETWORK_TO_REWARDS_ENDPOINT_MAP[networkName];
+      await extractRewardsForNetwork(networkEndpoint, networkName);
+    }),
+  );
 }
 
 async function ETLPoolRateProvider() {
@@ -1282,6 +1318,7 @@ export async function runETLs() {
   await ETLPools();
   await ETLSnapshots();
   await ETLGauges();
+  await ETLPoolRewards();
   await fetchBalPrices();
   await ETLGaugesSnapshot();
   await fetchBlocks();
@@ -1293,3 +1330,5 @@ export async function runETLs() {
   logIfVerbose("Ended ETL processes");
   process.exit(0);
 }
+
+runETLs();

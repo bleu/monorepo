@@ -70,6 +70,7 @@ export interface PoolStatsData {
   poolId: string | null;
   type: PoolTypeEnum;
   tokens: PoolTokens[];
+  externalCreatedAt: Date;
 }
 
 export interface PoolStatsResultsPerDay {

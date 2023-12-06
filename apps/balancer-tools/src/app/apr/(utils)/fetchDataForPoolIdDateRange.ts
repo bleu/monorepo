@@ -85,7 +85,8 @@ export async function fetchDataForPoolIdDateRange(
         between(poolSnapshots.timestamp, startDate, endDate),
         eq(poolSnapshots.poolExternalId, poolId),
       ),
-    );
+    )
+    .orderBy(poolSnapshots.timestamp);
 
   const yieldAprByToken = await db
     .select({

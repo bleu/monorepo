@@ -26,6 +26,7 @@ export interface PriceCheckerArgument {
     decimals?: number,
   ) => Exclude<argType, bigint | bigint[]> | number;
   description: string;
+  link?: string;
   step?: number;
 }
 

@@ -11,6 +11,9 @@ export default async function HistoricalCharts({
 }: {
   results: PoolStatsResults;
 }) {
+  if (results.perDay.length === 0) {
+    return <></>;
+  }
   return <HistoricalChart results={results} />;
 }
 

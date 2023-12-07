@@ -737,8 +737,9 @@ async function ETLPoolRewards() {
       await extractRewardsForNetwork(networkEndpoint, networkName);
     }),
   );
-  logIfVerbose("Starting Pool Snapshots Extraction");
+  logIfVerbose("Starting Pool Rewards Extraction");
   await transformRewardsData();
+  logIfVerbose("Pool Rewards Extraction Done");
 }
 
 async function ETLPoolRateProvider() {
@@ -1042,6 +1043,7 @@ WHERE
 }
 
 async function fetchBalPrices() {
+  logIfVerbose("Start fetching BAL prices process");
   await fetchTokenPrice(
     "ethereum",
     "0xba100000625a3754423978a60c9317c58a424e3d",
@@ -1086,7 +1088,6 @@ async function fetchTokenPrice(
         };
       }),
     );
-    console.log(`Fetched prices for BAL since ${start}:`);
   } catch (e) {
     console.error(
       // @ts-ignore
@@ -1367,6 +1368,7 @@ async function calculateTokenWeightSnapshots() {
 }
 
 async function calculatePoolRewardsSnapshots() {
+  logIfVerbose("Calculating pool rewards snapshots");
   const poolRewardsPerDay = await db.execute(sql`
   WITH date_series AS (
     SELECT generate_series(
@@ -1456,6 +1458,7 @@ SELECT * FROM reward_calculations
         .execute();
     }
   }
+  logIfVerbose("Calculating pool rewards snapshots done");
 }
 
 async function fetchBlocks() {
@@ -1494,6 +1497,7 @@ async function fetchBlocks() {
       }
     }),
   );
+  logIfVerbose("Fetching blocks done");
 }
 
 async function seedCalendar() {
@@ -1533,5 +1537,3 @@ export async function runETLs() {
   logIfVerbose("Ended ETL processes");
   process.exit(0);
 }
-
-runETLs();

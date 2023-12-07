@@ -120,6 +120,27 @@
       "when": 1701809166194,
       "tag": "0016_petite_blob",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "5",
+      "when": 1701886828195,
+      "tag": "0017_small_lorna_dane",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "5",
+      "when": 1701886887251,
+      "tag": "0018_magical_felicia_hardy",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "5",
+      "when": 1701892290656,
+      "tag": "0019_grey_marvel_zombies",
+      "breakpoints": true
     }
   ]
 }

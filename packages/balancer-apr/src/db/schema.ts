@@ -352,14 +352,26 @@ export const poolRewards = pgTable("pool_rewards", {
   poolExternalId: varchar("pool_external_id").references(
     () => pools.externalId,
   ),
-  startAt: decimal("start_at"),
-  endAt: decimal("end_at"),
+  periodStart: timestamp("period_start"),
+  periodEnd: timestamp("period_end"),
   rate: decimal("rate"),
   tokenAddress: varchar("token_address"),
   networkSlug: varchar("network_slug").references(() => networks.slug),
   totalSupply: decimal("total_supply"),
   externalId: varchar("external_id").unique(),
   rawData: jsonb("raw_data"),
+});
+
+export const poolRewardsSnapshot = pgTable("pool_rewards_snapshot", {
+  id: serial("id").primaryKey(),
+  poolExternalId: varchar("pool_external_id").references(
+    () => pools.externalId,
+  ),
+  timestamp: timestamp("timestamp"),
+  tokenAddress: varchar("token_address"),
+  totalSupply: decimal("total_supply"),
+  yearlyAmount: decimal("yearly_amount"),
+  externalId: varchar("external_id").unique(),
 });
 
 export const swapFeeApr = pgTable(

@@ -4,7 +4,12 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 import "dotenv/config";
 
-import { dateToEpoch, epochToDate } from "@bleu-fi/utils/date";
+import {
+  dateToEpoch,
+  DAYS_IN_YEAR,
+  epochToDate,
+  SECONDS_IN_DAY,
+} from "@bleu-fi/utils/date";
 import { and, asc, eq, gt, inArray, isNotNull, ne, sql } from "drizzle-orm";
 import { PgTable } from "drizzle-orm/pg-core";
 import { Address, zeroAddress } from "viem";
@@ -28,6 +33,7 @@ import {
   gauges,
   gaugeSnapshots,
   poolRewards,
+  poolRewardsSnapshot,
   pools,
   poolSnapshots,
   poolSnapshotsTemp,
@@ -35,6 +41,7 @@ import {
   poolTokenRateProvidersSnapshot,
   poolTokens,
   poolTokenWeightsSnapshot,
+  rewardsTokenApr,
   tokenPrices,
   vebalRounds,
 } from "./db/schema";
@@ -589,6 +596,45 @@ async function transformPoolData() {
     `);
 }
 
+async function transformRewardsData() {
+  await transformNetworks(poolRewards, "network");
+
+  await db.execute(sql`
+  INSERT INTO pools (external_id, network_slug)
+  SELECT raw_data->'gauge'->>'poolId', 
+  LOWER(raw_data->>'network')
+  FROM pool_rewards
+  ON CONFLICT (external_id) DO NOTHING;
+  `);
+
+  // Insert data into the rewards table
+  await db.execute(sql`
+    INSERT INTO pool_rewards (
+      token_address, network_slug, period_start, period_end, total_supply, pool_external_id, rate, external_id
+    )
+    SELECT
+      split_part(raw_data ->> 'id', '-', 1) as token_address,
+      LOWER(raw_data ->> 'network') as network_slug,
+      to_timestamp((raw_data ->> 'periodStart')::bigint) AS period_start,
+      to_timestamp((raw_data ->> 'periodFinish')::bigint) AS period_end,
+      (raw_data ->> 'totalSupply')::NUMERIC as total_supply,
+      raw_data -> 'gauge' ->> 'poolId' as pool_external_id,
+      (raw_data ->> 'rate')::NUMERIC as rate,
+      raw_data ->> 'id' as external_id
+    FROM
+	    pool_rewards
+    ON CONFLICT (external_id) DO UPDATE
+    SET
+      token_address = excluded.token_address,
+      network_slug = LOWER(excluded.network_slug),
+      period_start = excluded.period_start,
+      period_end = excluded.period_end,
+      total_supply = excluded.total_supply,
+      pool_external_id = excluded.pool_external_id,
+      rate = excluded.rate;
+  `);
+}
+
 async function transformGauges() {
   await transformNetworks(gauges, "chain");
 
@@ -625,8 +671,6 @@ async function transformGauges() {
   DO UPDATE SET is_killed = EXCLUDED.is_killed
   WHERE gauges.address IS DISTINCT FROM EXCLUDED.address;`);
 
-  //TODO: get raw_data to the gauges table, this is creating new rows and deleting old ones, so the id starts on 267
-
   // delete rows that are no longer needed
   await db.execute(
     sql`
@@ -654,6 +698,10 @@ async function ETLGaugesSnapshot() {
 const networkNames = Object.keys(
   NETWORK_TO_BALANCER_ENDPOINT_MAP,
 ) as (keyof typeof NETWORK_TO_BALANCER_ENDPOINT_MAP)[];
+
+const networkNamesRewards = Object.keys(
+  NETWORK_TO_REWARDS_ENDPOINT_MAP,
+) as (keyof typeof NETWORK_TO_REWARDS_ENDPOINT_MAP)[];
 
 async function ETLPools() {
   logIfVerbose("Starting Pools Extraction");
@@ -684,11 +732,13 @@ async function ETLSnapshots() {
 async function ETLPoolRewards() {
   logIfVerbose("Starting Pool Rewards Extraction");
   await Promise.all(
-    networkNames.map(async (networkName) => {
+    networkNamesRewards.map(async (networkName) => {
       const networkEndpoint = NETWORK_TO_REWARDS_ENDPOINT_MAP[networkName];
       await extractRewardsForNetwork(networkEndpoint, networkName);
     }),
   );
+  logIfVerbose("Starting Pool Snapshots Extraction");
+  await transformRewardsData();
 }
 
 async function ETLPoolRateProvider() {
@@ -940,6 +990,55 @@ WHERE
   AND ptw.weight IS NOT NULL
   ON CONFLICT (external_id) DO NOTHING;
   `);
+
+  logIfVerbose("Seeding Rewards APR");
+
+  const poolInRewardsSnapshot = await db
+    .selectDistinct({
+      timestamp: poolRewardsSnapshot.timestamp,
+      poolExternalId: poolRewardsSnapshot.poolExternalId,
+      tokenAddress: poolRewardsSnapshot.tokenAddress,
+      totalSupply: poolRewardsSnapshot.totalSupply,
+      yearlyAmount: poolRewardsSnapshot.yearlyAmount,
+      liquidity: poolSnapshots.liquidity,
+      totalShares: poolSnapshots.totalShares,
+      tokenPrice: tokenPrices.priceUSD,
+    })
+    .from(poolRewardsSnapshot)
+    .leftJoin(
+      poolSnapshots,
+      and(
+        eq(poolSnapshots.poolExternalId, poolRewardsSnapshot.poolExternalId),
+        eq(poolSnapshots.timestamp, poolRewardsSnapshot.timestamp),
+      ),
+    )
+    .leftJoin(
+      tokenPrices,
+      and(
+        eq(tokenPrices.tokenAddress, poolRewardsSnapshot.tokenAddress),
+        eq(tokenPrices.timestamp, poolRewardsSnapshot.timestamp),
+      ),
+    )
+    .where(isNotNull(tokenPrices.priceUSD));
+  for (const aprItems of poolInRewardsSnapshot) {
+    const yearlyAmountUsd =
+      Number(aprItems.yearlyAmount) * Number(aprItems.tokenPrice);
+
+    const bptPrice = Number(aprItems.liquidity) / Number(aprItems.totalShares);
+    const totalSupplyUsd = Number(aprItems.totalSupply) * Number(bptPrice);
+    const apr = (yearlyAmountUsd / totalSupplyUsd) * 100;
+
+    await db
+      .insert(rewardsTokenApr)
+      .values({
+        timestamp: aprItems.timestamp,
+        poolExternalId: aprItems.poolExternalId,
+        tokenAddress: aprItems.tokenAddress,
+        value: String(apr),
+      })
+      .onConflictDoNothing()
+      .execute();
+  }
 }
 
 async function fetchBalPrices() {
@@ -1013,8 +1112,19 @@ async function fetchTokenPrices() {
       ne(poolTokenRateProviders.tokenAddress, poolTokenRateProviders.address),
     );
 
+  const tokenFromRewards = await db
+    .selectDistinct({
+      tokenAddress: poolRewards.tokenAddress,
+      networkSlug: poolRewards.networkSlug,
+      createdAt: pools.externalCreatedAt,
+    })
+    .from(poolRewards)
+    .leftJoin(pools, eq(pools.externalId, poolRewards.poolExternalId));
+
+  const tokensArray = [...tokenFromRewards, ...tokensFromRateProviders];
+
   const tokenWithMinCreationDates = Object.values(
-    tokensFromRateProviders.reduce(
+    tokensArray.reduce(
       (acc, { tokenAddress, networkSlug, createdAt }) => {
         const key = `${tokenAddress}_${networkSlug}`;
 
@@ -1256,6 +1366,98 @@ async function calculateTokenWeightSnapshots() {
   );
 }
 
+async function calculatePoolRewardsSnapshots() {
+  const poolRewardsPerDay = await db.execute(sql`
+  WITH date_series AS (
+    SELECT generate_series(
+        (SELECT MIN(period_start) FROM pool_rewards),
+        (SELECT MAX(period_end) FROM pool_rewards),
+        interval '1 day'
+    )::date AS snapshot_date
+),
+reward_calculations AS (
+    SELECT
+        ds.snapshot_date,
+        pr.rate,
+        pr.pool_external_id,
+        pr.token_address,
+        pr.network_slug,
+        pr.total_supply,
+        pr.period_start,
+        pr.period_end
+    FROM
+        date_series ds
+    JOIN
+        pool_rewards pr ON ds.snapshot_date BETWEEN pr.period_start AND pr.period_end
+)
+SELECT * FROM reward_calculations
+  `);
+
+  const aggregatedData = {};
+
+  poolRewardsPerDay.forEach((item) => {
+    const key = `${item.snapshot_date}_${item.pool_external_id}_${item.token_address}`;
+    //@ts-ignore
+    if (!aggregatedData[key]) {
+      //@ts-ignore
+      aggregatedData[key] = {
+        snapshot_date: item.snapshot_date,
+        pool_external_id: item.pool_external_id,
+        token_address: item.token_address,
+        network_slug: item.network_slug,
+        rewards: [],
+      };
+    }
+
+    //@ts-ignore
+    aggregatedData[key].rewards.push({
+      total_supply: item.total_supply,
+      period_start: item.period_start,
+      period_end: item.period_end,
+      rate: item.rate,
+    });
+  });
+
+  const resultArray: {
+    snapshot_date: Date;
+    pool_external_id: string;
+    token_address: string;
+    network_slug: string;
+    rewards: {
+      total_supply: string;
+      period_start: Date;
+      period_end: Date;
+      rate: string;
+    }[];
+  }[] = Object.values(aggregatedData);
+
+  const withOneReward = resultArray.filter((item) => item.rewards.length === 1);
+
+  for (const item of withOneReward) {
+    const isTimestampBetweenPeriod =
+      item.snapshot_date >= item.rewards[0].period_start &&
+      item.snapshot_date <= item.rewards[0].period_end;
+    if (isTimestampBetweenPeriod) {
+      const amount =
+        Number(item.rewards[0].rate) * SECONDS_IN_DAY * DAYS_IN_YEAR;
+      await db
+        .insert(poolRewardsSnapshot)
+        .values({
+          timestamp: item.snapshot_date,
+          poolExternalId: item.pool_external_id,
+          tokenAddress: item.token_address,
+          totalSupply: item.rewards[0].total_supply,
+          yearlyAmount: String(amount),
+          externalId: `${item.pool_external_id}-${
+            item.token_address
+          }-${item.snapshot_date.toISOString()}`,
+        })
+        .onConflictDoNothing()
+        .execute();
+    }
+  }
+}
+
 async function fetchBlocks() {
   logIfVerbose("Fetching blocks");
   await Promise.all(
@@ -1319,6 +1521,7 @@ export async function runETLs() {
   await ETLSnapshots();
   await ETLGauges();
   await ETLPoolRewards();
+  await calculatePoolRewardsSnapshots();
   await fetchBalPrices();
   await ETLGaugesSnapshot();
   await fetchBlocks();

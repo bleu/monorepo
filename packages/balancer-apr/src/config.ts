@@ -8,11 +8,11 @@ export const NETWORK_TO_BALANCER_ENDPOINT_MAP = {
   ethereum: `${BASE_ENDPOINT_V2}/balancer-v2`,
   polygon: `${BASE_ENDPOINT_V2}/balancer-polygon-v2`,
   "polygon-zkevm":
-    "https://api.studio.thegraph.com/query/24660/balancer-polygon-zk-v2/version/latest",
+    "https://api.studio.thegraph.com/query/40456/balancer-gauges-polygon-zk/version/latest",
   arbitrum: `${BASE_ENDPOINT_V2}/balancer-arbitrum-v2`,
   gnosis: `${BASE_ENDPOINT_V2}/balancer-gnosis-chain-v2`,
   optimism: `${BASE_ENDPOINT_V2}/balancer-optimism-v2`,
-  base: "https://api.studio.thegraph.com/query/24660/balancer-base-v2/version/latest",
+  base: "https://api.studio.thegraph.com/query/40456/balancer-gauges-base/version/latest",
   avalanche: `${BASE_ENDPOINT_V2}/balancer-avalanche-v2`,
 } as const;
 
@@ -20,13 +20,13 @@ export const NETWORK_TO_REWARDS_ENDPOINT_MAP = {
   ethereum: `${BASE_REWARDS_ENDPOINT}`,
   polygon: `${BASE_REWARDS_ENDPOINT}-polygon`,
   "polygon-zkevm":
-    "https://api.studio.thegraph.com/query/40456/balancer-gauges-polygon-zk/v2/graphql",
+    "https://api.studio.thegraph.com/query/40456/balancer-gauges-polygon-zk/version/latest",
   arbitrum: `${BASE_REWARDS_ENDPOINT}-arbitrum`,
   gnosis: `${BASE_REWARDS_ENDPOINT}-gnosis`,
   optimism: `${BASE_REWARDS_ENDPOINT}-optimism`,
-  base: "https://api.studio.thegraph.com/query/40456/balancer-gauges-base/v2/graphql",
+  base: "https://api.studio.thegraph.com/query/40456/balancer-gauges-base/version/latest",
   avalanche: `${BASE_REWARDS_ENDPOINT}-avalanche`,
-} as const;
+};
 
 export const VOTING_GAUGES_QUERY = `
 query VeBalGetVotingList {

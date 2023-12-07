@@ -30,7 +30,7 @@ export function TransactionCard({
 
   function handleBack() {
     const currentStage = stages.find(
-      (stage) => stage.name === transactionStatus,
+      (stage) => stage.name === transactionStatus
     );
     setTransactionStatus(currentStage?.previousStage ?? transactionStatus);
   }
@@ -41,7 +41,7 @@ export function TransactionCard({
 
   function handleContinue() {
     const currentStage = stages.find(
-      (stage) => stage.name === transactionStatus,
+      (stage) => stage.name === transactionStatus
     );
     setTransactionStatus(currentStage?.nextStage ?? transactionStatus);
   }

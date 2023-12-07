@@ -19,10 +19,12 @@ export function TokenSelect({
   onSelectToken,
   tokenType,
   selectedToken,
+  disabeld = false,
 }: {
   onSelectToken: (token: tokenPriceChecker) => void;
   tokenType: "sell" | "buy";
   selectedToken?: tokenPriceChecker;
+  disabeld?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [token, setToken] = useState<tokenPriceChecker | undefined>(undefined);
@@ -52,35 +54,58 @@ export function TokenSelect({
       isOpen={open}
       setIsOpen={setOpen}
     >
-      <div className="flex flex-col">
-        <span className="mb-2 block text-sm text-slate12">
-          Token to {tokenType}
-        </span>
-        <button
-          type="button"
-          //same style as Input.tsx
-          className="px-2w-full selection:color-white box-border flex h-[35px] w-full appearance-none items-center justify-between gap-2 rounded-[4px] bg-blue4 px-[10px] py-1 text-[15px] leading-none text-slate12 shadow-[0_0_0_1px] shadow-blue6 outline-none selection:bg-blue9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-blue1"
-        >
-          <div className="flex items-center gap-1">
-            <div className="rounded-full bg-white p-[3px]">
-              <Image
-                src={
-                  tokenLogoUri[token?.symbol as keyof typeof tokenLogoUri] ||
-                  "/assets/generic-token-logo.png"
-                }
-                className="rounded-full"
-                alt="Token Logo"
-                height={22}
-                width={22}
-                quality={100}
-              />
-            </div>
-            <div>{token?.symbol}</div>
-          </div>
-          <ChevronDownIcon />
-        </button>
-      </div>
+      <TokenSelectButton
+        tokenType={tokenType}
+        token={token}
+        disabeld={disabeld}
+        onClick={() => setOpen(true)}
+      />
     </Dialog>
+  );
+}
+
+export function TokenSelectButton({
+  tokenType,
+  token,
+  onClick,
+  disabeld = false,
+}: {
+  tokenType: "sell" | "buy";
+  token?: tokenPriceChecker;
+  disabeld?: boolean;
+  onClick?: () => void;
+}) {
+  return (
+    <div className="flex flex-col w-full">
+      <span className="mb-2 block text-sm text-slate12">
+        Token to {tokenType}
+      </span>
+      <button
+        type="button"
+        //same style as Input.tsx
+        className="px-2w-full selection:color-white box-border flex h-[35px] w-full appearance-none items-center justify-between gap-2 rounded-[4px] bg-blue4 px-[10px] py-1 text-[15px] leading-none text-slate12 shadow-[0_0_0_1px] shadow-blue6 outline-none selection:bg-blue9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-blue1"
+        disabled={disabeld}
+        onClick={onClick}
+      >
+        <div className="flex items-center gap-1">
+          <div className="rounded-full bg-white p-[3px]">
+            <Image
+              src={
+                tokenLogoUri[token?.symbol as keyof typeof tokenLogoUri] ||
+                "/assets/generic-token-logo.png"
+              }
+              className="rounded-full"
+              alt="Token Logo"
+              height={22}
+              width={22}
+              quality={100}
+            />
+          </div>
+          <div>{token?.symbol}</div>
+        </div>
+        {!disabeld && <ChevronDownIcon />}
+      </button>
+    </div>
   );
 }
 
@@ -111,7 +136,7 @@ function TokenModal({
               },
             };
           })
-      : [],
+      : []
   );
 
   const { assets, loaded } = useSafeBalances();
@@ -193,14 +218,14 @@ function TokenModal({
             .sort((a, b) =>
               formatUnits(
                 BigInt(a!.balance),
-                a!.tokenInfo.decimals ? a!.tokenInfo.decimals : 0,
+                a!.tokenInfo.decimals ? a!.tokenInfo.decimals : 0
               ) <
               formatUnits(
                 BigInt(b!.balance),
-                b!.tokenInfo.decimals ? b!.tokenInfo.decimals : 0,
+                b!.tokenInfo.decimals ? b!.tokenInfo.decimals : 0
               )
                 ? 1
-                : -1,
+                : -1
             )
             .map((token) => {
               if (token) {
@@ -255,7 +280,7 @@ function TokenRow({
         {token.balance
           ? formatUnits(
               BigInt(token.balance),
-              token.tokenInfo.decimals ? token.tokenInfo.decimals : 0,
+              token.tokenInfo.decimals ? token.tokenInfo.decimals : 0
             )
           : ""}
       </Table.BodyCell>

@@ -148,6 +148,48 @@ export const priceCheckersArgumentsMapping = {
       toExpectedOutCalculator: false,
     },
   ] as PriceCheckerArgument[],
+  [PRICE_CHECKERS.META]: [
+    {
+      name: "allowedSlippageInBps",
+      type: "uint256",
+      label: "Allowed slippage (%)",
+      inputType: "number",
+      convertInput: (input: number) => BigInt(input * 100),
+      convertOutput: (output: bigint) => Number(output) / 100,
+      toExpectedOutCalculator: false,
+      description: dynamicSlippageDescription,
+    },
+    {
+      name: "swapPath",
+      type: "address[]",
+      label: "Price checker",
+      inputType: "text",
+      toExpectedOutCalculator: true,
+      convertInput: (input: string) => input,
+      convertOutput: (output: string) => output,
+      description: "The expected out path",
+    },
+    {
+      name: "expectedOutAddresses",
+      type: "address[]",
+      label: "Price checker",
+      inputType: "text",
+      toExpectedOutCalculator: true,
+      convertInput: (input: string) => input,
+      convertOutput: (output: string) => output,
+      description: "The expected out path",
+    },
+    {
+      name: "expectedOutData",
+      type: "bytes[]",
+      label: "Price checker arguments",
+      inputType: "text",
+      toExpectedOutCalculator: true,
+      convertInput: (input: string) => input,
+      convertOutput: (output: string) => output,
+      description: "The expected out arguments",
+    },
+  ] as PriceCheckerArgument[],
 } as const;
 
 export const priceCheckerAddressesMapping = {
@@ -160,6 +202,7 @@ export const priceCheckerAddressesMapping = {
     [PRICE_CHECKERS.CHAINLINK]: "0x81909582e1Ab8a0f8f98C948537528E29a98f116",
     [PRICE_CHECKERS.UNI_V3]: "0xb560a403F8450164b8B745EccA41D8cED93C50a1",
     [PRICE_CHECKERS.CURVE]: "0x",
+    [PRICE_CHECKERS.META]: "0x43E850F9B8Cb2635673168F92Cf195F4BcFE056F",
   },
   [gnosis.id]: {
     [PRICE_CHECKERS.FIXED_MIN_OUT]:
@@ -170,6 +213,30 @@ export const priceCheckerAddressesMapping = {
     [PRICE_CHECKERS.CHAINLINK]: "0x",
     [PRICE_CHECKERS.UNI_V3]: "0x",
     [PRICE_CHECKERS.CURVE]: "0x5088989fE6f7E89aD94e2AEFb98856CeA04e9135",
+    [PRICE_CHECKERS.META]: "0x",
+  },
+};
+
+export const expectedOutCalculatorAddressesMapping = {
+  [goerli.id]: {
+    [PRICE_CHECKERS.FIXED_MIN_OUT]: "0x",
+    [PRICE_CHECKERS.UNI_V2]: "0x2E93639509A9D7e93f581CEd97F40A1e4e813E7a",
+    [PRICE_CHECKERS.BALANCER]: "0x5D6FE80Ce00978dF2D55c46B89A3ed8681323fFe",
+    [PRICE_CHECKERS.SUSHI_SWAP]: "0x26eef32497909Bb27E9B40091246c0aA39d1A7dB",
+    [PRICE_CHECKERS.CHAINLINK]: "0x9d5f78fb9b120f1fb1321aacf7db6884d2efadab",
+    [PRICE_CHECKERS.UNI_V3]: "0x07F20c78b86eC17150805d155C33dd5a6267Ce03",
+    [PRICE_CHECKERS.CURVE]: "0x",
+    [PRICE_CHECKERS.META]: "0xe35BD2A019a9Dd258a3d98e6aCd97aBB6CDCfA9b",
+  },
+  [gnosis.id]: {
+    [PRICE_CHECKERS.FIXED_MIN_OUT]: "0x",
+    [PRICE_CHECKERS.UNI_V2]: "0x",
+    [PRICE_CHECKERS.BALANCER]: "0x",
+    [PRICE_CHECKERS.SUSHI_SWAP]: "0x",
+    [PRICE_CHECKERS.CHAINLINK]: "0x",
+    [PRICE_CHECKERS.UNI_V3]: "0x",
+    [PRICE_CHECKERS.CURVE]: "0x021CdBed287504F90A76B0D3DD39415B9864D323",
+    [PRICE_CHECKERS.META]: "0x",
   },
 };
 
@@ -185,6 +252,7 @@ export const deployedPriceCheckersByChain = {
     PRICE_CHECKERS.BALANCER,
     PRICE_CHECKERS.CHAINLINK,
     PRICE_CHECKERS.UNI_V3,
+    PRICE_CHECKERS.META,
   ] as const,
   [gnosis.id]: [PRICE_CHECKERS.FIXED_MIN_OUT, PRICE_CHECKERS.CURVE],
 };
@@ -197,6 +265,7 @@ export const priceCheckerHasExpectedOutCalculatorMapping = {
   [PRICE_CHECKERS.CHAINLINK]: true,
   [PRICE_CHECKERS.UNI_V3]: true,
   [PRICE_CHECKERS.CURVE]: true,
+  [PRICE_CHECKERS.META]: true,
 } as const;
 
 export const priceCheckerTooltipMessageMapping = {
@@ -214,4 +283,6 @@ export const priceCheckerTooltipMessageMapping = {
     "The Chainlink price checker uses a path of price feeds to calculate the expected amount of tokens you will receive. The only checking that we do here is if the price checker will or not revert, so the construction of the path is up to you, a construction of a wrong path can lead to a relative lower amount of tokens received.",
   [PRICE_CHECKERS.UNI_V3]:
     "This price checker will use Uniswap V3 pools to calculate the expected amount of tokens you will receive. The only checking that we do here is if the price checker will or not revert, so the construction of the path is up to you, a construction of a wrong path can lead to a relative lower amount of tokens received.",
+  [PRICE_CHECKERS.META]:
+    "This price checker is used when you want to create a price checker that will use different protocols to calculate the expected amount of tokens you will receive. The only checking that we do here is if the price checker will or not revert, so the construction of the path is up to you, a construction of a wrong path can lead to a relative lower amount of tokens received.",
 };

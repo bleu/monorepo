@@ -21,7 +21,7 @@ export function encodePriceCheckerDataWithValidFromDecorator({
 }) {
   const validFromDate = new Date(validFrom);
   const validFromTimestamp = BigInt(
-    dateToEpoch(validFromDate) + (twapDelay || 0),
+    dateToEpoch(validFromDate) + (twapDelay || 0)
   );
   return encodeAbiParameters(
     [
@@ -38,13 +38,13 @@ export function encodePriceCheckerDataWithValidFromDecorator({
         type: "bytes",
       },
     ],
-    [validFromTimestamp, priceCheckerAddress, priceCheckerData],
+    [validFromTimestamp, priceCheckerAddress, priceCheckerData]
   );
 }
 
 export function encodePriceCheckerData(
   priceChecker: PRICE_CHECKERS,
-  args: argType[],
+  args: argType[]
 ): `0x${string}` {
   const priceCheckerArguments = priceCheckersArgumentsMapping[priceChecker];
 
@@ -62,7 +62,7 @@ export function encodePriceCheckerData(
 
 function encodeUniV3PriceCheckerData(
   expectedArgs: PriceCheckerArgument[],
-  args: argType[],
+  args: argType[]
 ): `0x${string}` {
   const tokenIn = args[1] as string[];
   const tokenOut = args[2] as string[];
@@ -112,13 +112,13 @@ function encodeUniV3PriceCheckerData(
           type: "bytes",
         },
       ]),
-    args.slice(0, 1).concat([expectedOutEncoded]),
+    args.slice(0, 1).concat([expectedOutEncoded])
   );
 }
 
 function validateArguments(
   expectedArgs: PriceCheckerArgument[],
-  args: argType[],
+  args: argType[]
 ) {
   if (expectedArgs.length !== args.length || !args.length) {
     throw new Error(`Invalid number of arguments`);
@@ -127,20 +127,35 @@ function validateArguments(
 
 function encodeArguments(
   expectedArgs: PriceCheckerArgument[],
-  args: argType[],
+  args: argType[]
 ): `0x${string}` {
   return encodeAbiParameters(
     expectedArgs.map((arg) => ({ name: arg.name, type: arg.type })),
-    args,
+    args
   );
+}
+
+export function encodeExpectedOutArguments(
+  priceChecker: PRICE_CHECKERS,
+  args: argType[]
+): `0x${string}` {
+  const expectedArgs = priceCheckersArgumentsMapping[priceChecker].filter(
+    (arg) => {
+      arg.toExpectedOutCalculator;
+    }
+  );
+  if (!expectedArgs.length) {
+    return `0x`;
+  }
+  return encodeArguments(expectedArgs, args);
 }
 
 function encodeWithExpectedOutCalculator(
   expectedArgs: PriceCheckerArgument[],
-  args: argType[],
+  args: argType[]
 ): `0x${string}` {
   const firstExpectedOutArgIndex = expectedArgs.findIndex(
-    (arg) => arg.toExpectedOutCalculator,
+    (arg) => arg.toExpectedOutCalculator
   );
 
   if (firstExpectedOutArgIndex === -1) {
@@ -150,7 +165,7 @@ function encodeWithExpectedOutCalculator(
   const expectedOutArgs = expectedArgs.slice(firstExpectedOutArgIndex);
   const expectedOutEncoded = encodeArguments(
     expectedOutArgs,
-    args.slice(firstExpectedOutArgIndex),
+    args.slice(firstExpectedOutArgIndex)
   );
 
   const mainArgs = expectedArgs
@@ -170,13 +185,13 @@ function encodeWithExpectedOutCalculator(
 
   return encodeAbiParameters(
     mainArgs,
-    args.slice(0, firstExpectedOutArgIndex).concat([expectedOutEncoded]),
+    args.slice(0, firstExpectedOutArgIndex).concat([expectedOutEncoded])
   );
 }
 
 function encodeWithExpectedOutCalculatorWithoutParameters(
   expectedArgs: PriceCheckerArgument[],
-  args: argType[],
+  args: argType[]
 ): `0x${string}` {
   return encodeAbiParameters(
     expectedArgs
@@ -187,6 +202,6 @@ function encodeWithExpectedOutCalculatorWithoutParameters(
         };
       })
       .concat([{ name: "_data", type: "bytes" }]),
-    args.concat(["0x"]),
+    args.concat(["0x"])
   );
 }

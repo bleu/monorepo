@@ -3,6 +3,7 @@ import {
   pools,
   poolSnapshots,
   poolTokens,
+  rewardsTokenApr,
   swapFeeApr,
   tokens,
   vebalApr,
@@ -23,7 +24,9 @@ export async function fetchDataForPoolIdDateRange(
     .select({
       poolExternalId: yieldTokenApr.poolExternalId,
       timestamp: yieldTokenApr.timestamp,
-      valueSum: sql<number>`sum(${yieldTokenApr.value})`.as("valueSum"),
+      yieldValueSum: sql<number>`sum(${yieldTokenApr.value})`.as(
+        "yieldValueSum",
+      ),
     })
     .from(yieldTokenApr)
     .groupBy(yieldTokenApr.poolExternalId, yieldTokenApr.timestamp)
@@ -41,16 +44,41 @@ export async function fetchDataForPoolIdDateRange(
     .leftJoin(tokens, eq(tokens.address, yieldTokenApr.tokenAddress))
     .as("yieldAprToken");
 
+  const rewardAprSum = db
+    .select({
+      poolExternalId: rewardsTokenApr.poolExternalId,
+      timestamp: rewardsTokenApr.timestamp,
+      rewardValueSum: sql<number>`sum(${rewardsTokenApr.value})`.as(
+        "rewardValueSum",
+      ),
+    })
+    .from(rewardsTokenApr)
+    .groupBy(rewardsTokenApr.poolExternalId, rewardsTokenApr.timestamp)
+    .as("rewardAprSum");
+
+  const rewardAprToken = db
+    .select({
+      poolExternalId: rewardsTokenApr.poolExternalId,
+      timestamp: rewardsTokenApr.timestamp,
+      value: rewardsTokenApr.value,
+      tokenAddress: rewardsTokenApr.tokenAddress,
+      tokenSymbol: tokens.symbol,
+    })
+    .from(rewardsTokenApr)
+    .leftJoin(tokens, eq(tokens.address, rewardsTokenApr.tokenAddress))
+    .as("rewardAprToken");
+
   const poolStatsData = await db
     .select({
       poolExternalId: poolSnapshots.poolExternalId,
       network: pools.networkSlug,
       type: pools.poolType,
       symbol: pools.symbol,
-      apr: sql<number>`cast(coalesce(${swapFeeApr.value},0) + coalesce(${vebalApr.value},0) + coalesce(${yieldAprSum.valueSum},0) as decimal)`,
+      apr: sql<number>`cast(coalesce(${swapFeeApr.value},0) + coalesce(${vebalApr.value},0) + coalesce(${yieldAprSum.yieldValueSum},0) + coalesce(${rewardAprSum.rewardValueSum},0)as decimal)`,
       feeApr: swapFeeApr.value,
       vebalApr: vebalApr.value,
-      yieldApr: yieldAprSum.valueSum,
+      yieldApr: yieldAprSum.yieldValueSum,
+      rewardApr: rewardAprSum.rewardValueSum,
       volume: poolSnapshots.swapVolume,
       liquidity: poolSnapshots.liquidity,
       timestamp: poolSnapshots.timestamp,
@@ -76,6 +104,13 @@ export async function fetchDataForPoolIdDateRange(
       and(
         eq(yieldAprSum.poolExternalId, poolSnapshots.poolExternalId),
         eq(yieldAprSum.timestamp, poolSnapshots.timestamp),
+      ),
+    )
+    .fullJoin(
+      rewardAprSum,
+      and(
+        eq(rewardAprSum.poolExternalId, poolSnapshots.poolExternalId),
+        eq(rewardAprSum.timestamp, poolSnapshots.timestamp),
       ),
     )
     .leftJoin(pools, eq(pools.externalId, poolSnapshots.poolExternalId))
@@ -109,6 +144,29 @@ export async function fetchDataForPoolIdDateRange(
       ),
     );
 
+  const rewardAprByToken = await db
+    .select({
+      poolExternalId: rewardAprToken.poolExternalId,
+      timestamp: rewardAprToken.timestamp,
+      value: rewardAprToken.value,
+      tokenAddress: rewardAprToken.tokenAddress,
+      tokenSymbol: rewardAprToken.tokenSymbol,
+    })
+    .from(rewardAprToken)
+    .leftJoin(
+      poolSnapshots,
+      and(
+        eq(poolSnapshots.poolExternalId, rewardAprToken.poolExternalId),
+        eq(poolSnapshots.timestamp, rewardAprToken.timestamp),
+      ),
+    )
+    .where(
+      and(
+        between(rewardAprToken.timestamp, startDate, endDate),
+        eq(rewardAprToken.poolExternalId, poolId),
+      ),
+    );
+
   const poolsTokens = await db
     .select({
       poolExternalId: poolTokens.poolExternalId,
@@ -138,6 +196,11 @@ export async function fetchDataForPoolIdDateRange(
         dateToEpoch(yieldApr.timestamp) === dateToEpoch(pool.timestamp),
     );
 
+    const rewardAprByDate = rewardAprByToken.filter(
+      (rewardApr) =>
+        dateToEpoch(rewardApr.timestamp) === dateToEpoch(pool.timestamp),
+    );
+
     return {
       [formatDateToMMDDYYYY(pool.timestamp)]: {
         poolId: pool.poolExternalId,
@@ -155,8 +218,12 @@ export async function fetchDataForPoolIdDateRange(
               })),
             },
             rewards: {
-              total: 0,
-              breakdown: [],
+              total: Number(pool.rewardApr),
+              breakdown: rewardAprByDate.map((rewardApr) => ({
+                address: rewardApr.tokenAddress as string,
+                symbol: rewardApr.tokenSymbol as string,
+                value: Number(rewardApr.value),
+              })),
             },
           },
         },

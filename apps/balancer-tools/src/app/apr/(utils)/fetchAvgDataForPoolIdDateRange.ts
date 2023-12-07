@@ -1,6 +1,7 @@
 import { db } from "@bleu-fi/balancer-apr/src/db";
 import {
   poolSnapshots,
+  rewardsTokenApr,
   swapFeeApr,
   vebalApr,
   yieldTokenApr,
@@ -16,16 +17,30 @@ export async function fetchAvgDataForPoolIdDateRange(
     .select({
       poolExternalId: yieldTokenApr.poolExternalId,
       timestamp: yieldTokenApr.timestamp,
-      valueSum: sql<number>`sum(${yieldTokenApr.value})`.as("valueSum"),
+      yieldValueSum: sql<number>`sum(${yieldTokenApr.value})`.as(
+        "yieldValueSum",
+      ),
     })
     .from(yieldTokenApr)
     .groupBy(yieldTokenApr.poolExternalId, yieldTokenApr.timestamp)
     .as("yieldAprSum");
+
+  const rewardAprSum = db
+    .select({
+      poolExternalId: rewardsTokenApr.poolExternalId,
+      timestamp: rewardsTokenApr.timestamp,
+      rewardValueSum: sql<number>`sum(${rewardsTokenApr.value})`.as(
+        "rewardValueSum",
+      ),
+    })
+    .from(rewardsTokenApr)
+    .groupBy(rewardsTokenApr.poolExternalId, rewardsTokenApr.timestamp)
+    .as("rewardAprSum");
   const poolStatsData = await db
     .select({
       poolExternalId: poolSnapshots.poolExternalId,
       avgApr:
-        sql<number>`cast(sum(coalesce(${swapFeeApr.value},0) + coalesce(${vebalApr.value},0) + coalesce(${yieldAprSum.valueSum},0)) / count(${poolSnapshots.timestamp}) as decimal)`.as(
+        sql<number>`cast(sum(coalesce(${swapFeeApr.value},0) + coalesce(${vebalApr.value},0) + coalesce(${yieldAprSum.yieldValueSum},0) + coalesce(${rewardAprSum.rewardValueSum},0)) / count(${poolSnapshots.timestamp}) as decimal)`.as(
           "avgApr",
         ),
       avgLiquidity:
@@ -53,6 +68,13 @@ export async function fetchAvgDataForPoolIdDateRange(
       and(
         eq(yieldAprSum.poolExternalId, poolSnapshots.poolExternalId),
         eq(yieldAprSum.timestamp, poolSnapshots.timestamp),
+      ),
+    )
+    .fullJoin(
+      rewardAprSum,
+      and(
+        eq(rewardAprSum.poolExternalId, poolSnapshots.poolExternalId),
+        eq(rewardAprSum.timestamp, poolSnapshots.timestamp),
       ),
     )
     .where(

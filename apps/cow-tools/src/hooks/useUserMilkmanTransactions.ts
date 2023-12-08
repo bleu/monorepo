@@ -21,7 +21,7 @@ gql(`
       where : { id : $user}
     ) {
       id
-      transactions {
+      transactions(orderBy:"blockNumber", orderDirection:"desc") {
         id
         blockNumber
         blockTimestamp
@@ -79,6 +79,7 @@ export interface IMilkmanOrder {
 
 export interface IUserMilkmanTransaction {
   id: string;
+  blockTimestamp: number;
   orders: IMilkmanOrder[];
   processed: boolean;
 }
@@ -92,6 +93,7 @@ function structureMilkmanTransaction(
 ): IUserMilkmanTransaction {
   return {
     id: transaction.id,
+    blockTimestamp: transaction.blockTimestamp,
     orders: transaction.swaps.map((swap, index) => ({
       cowOrders: cowOrder[index],
       hasToken: hasToken[index],
@@ -204,6 +206,7 @@ async function getQueuedMilkmanTransactions({
 
     return {
       id: transactionDetails.txId,
+      blockTimestamp: 0,
       processed: false,
       orders: milkmanTransactions?.map((milkmanTransaction) => ({
         cowOrders: [],

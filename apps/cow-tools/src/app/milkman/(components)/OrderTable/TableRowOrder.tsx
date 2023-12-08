@@ -51,6 +51,7 @@ export function TableRowOrder({
           </button>
         </Dialog>
       </Table.BodyCell>
+      <Table.BodyCell />
       <Table.BodyCell>
         <TokenInfo
           id={order.tokenIn?.id}
@@ -59,7 +60,7 @@ export function TableRowOrder({
         />
       </Table.BodyCell>
       <Table.BodyCell>
-        {formatNumber(tokenInAmount, 4, "decimal", "standard", 0.0001)}
+        {formatNumber(tokenInAmount, 4, "decimal", "compact", 0.0001)}
       </Table.BodyCell>
       <Table.BodyCell>
         <TokenInfo

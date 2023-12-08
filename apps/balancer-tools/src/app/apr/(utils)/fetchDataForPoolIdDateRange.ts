@@ -73,6 +73,7 @@ export async function fetchDataForPoolIdDateRange(
       poolExternalId: poolSnapshots.poolExternalId,
       network: pools.networkSlug,
       type: pools.poolType,
+      externalCreatedAt: pools.externalCreatedAt,
       symbol: pools.symbol,
       apr: sql<number>`cast(coalesce(${swapFeeApr.value},0) + coalesce(${vebalApr.value},0) + coalesce(${yieldAprSum.yieldValueSum},0) + coalesce(${rewardAprSum.rewardValueSum},0)as decimal)`,
       feeApr: swapFeeApr.value,
@@ -119,7 +120,8 @@ export async function fetchDataForPoolIdDateRange(
         between(poolSnapshots.timestamp, startDate, endDate),
         eq(poolSnapshots.poolExternalId, poolId),
       ),
-    );
+    )
+    .orderBy(poolSnapshots.timestamp);
 
   const yieldAprByToken = await db
     .select({
@@ -235,6 +237,7 @@ export async function fetchDataForPoolIdDateRange(
         symbol: pool.symbol || "",
         network: pool.network || "",
         type: pool.type as PoolTypeEnum,
+        externalCreatedAt: pool.externalCreatedAt as Date,
       },
     };
   });

@@ -1,3 +1,8 @@
+import { db } from "@bleu-fi/balancer-apr/src/db";
+import { pools } from "@bleu-fi/balancer-apr/src/db/schema";
+import { formatDate } from "@bleu-fi/utils";
+import { eq } from "drizzle-orm";
+
 import OverviewCards, {
   getDatesDetails,
 } from "../../(components)/OverviewCards";
@@ -20,6 +25,25 @@ export default async function PoolOverviewCards({
   }[] = [];
 
   const results = await fetchAvgDataForPoolIdDateRange(poolId, startAt, endAt);
+
+  if (!results.poolAverage) {
+    const poolCreationDateArray = await db
+      .select({ creatAt: pools.externalCreatedAt })
+      .from(pools)
+      .where(eq(pools.externalId, poolId));
+
+    const poolCreationDate = poolCreationDateArray[0].creatAt as Date;
+    return (
+      <div className="border border-blue6 bg-blue3 rounded p-4  w-full flex items-center flex-col">
+        <span>
+          Looks like you tried a date range before the pool creation date
+        </span>
+        <span>
+          Please select a date range after {formatDate(poolCreationDate)}
+        </span>
+      </div>
+    );
+  }
 
   cardsDetails.push(
     ...[

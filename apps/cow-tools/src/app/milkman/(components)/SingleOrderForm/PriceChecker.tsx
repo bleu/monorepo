@@ -1,7 +1,8 @@
 // import { Address } from "@bleu-fi/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PlusIcon, TrashIcon } from "@radix-ui/react-icons";
+import { slateDarkA } from "@radix-ui/colors";
+import { InfoCircledIcon, PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import { FieldValues, useForm, UseFormReturn } from "react-hook-form";
 
@@ -10,12 +11,14 @@ import Button from "#/components/Button";
 import { Input } from "#/components/Input";
 import { Select, SelectItem } from "#/components/Select";
 import Table from "#/components/Table";
+import { Tooltip } from "#/components/Tooltip";
 import { Form, FormMessage } from "#/components/ui/form";
 import { Label } from "#/components/ui/label";
 import {
   deployedPriceCheckersByChain,
   priceCheckerAddressesMapping,
   priceCheckersArgumentsMapping,
+  priceCheckerTooltipMessageMapping,
 } from "#/lib/priceCheckersMappings";
 import { generatePriceCheckerSchema } from "#/lib/schema";
 import { PRICE_CHECKERS, PriceCheckerArgument } from "#/lib/types";
@@ -82,7 +85,18 @@ export function FormSelectPriceChecker({
   return (
     <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-6 p-9">
       <div className="mb-2">
-        <Label>Price checker</Label>
+        <div className="flex gap-x-2">
+          <Label>Price checker</Label>
+          <Tooltip
+            content={
+              selectedPriceChecker
+                ? priceCheckerTooltipMessageMapping[selectedPriceChecker]
+                : "The price checker is what will define if the quoted order from CoW Swap will be posted and executed after your transaction."
+            }
+          >
+            <InfoCircledIcon className="w-4 h-4" color={slateDarkA.slateA11} />
+          </Tooltip>
+        </div>
         <Select
           onValueChange={(priceChecker) => {
             setSelectedPriceChecker(priceChecker as PRICE_CHECKERS);
@@ -150,6 +164,8 @@ function PriceCheckerInputs({
           key={arg.name}
           defaultValue={defaultValues?.[arg.name]}
           step={arg.step || 10 ** -tokenBuyDecimals}
+          tooltipText={arg.description}
+          tooltipLink={arg.link}
           {...register(arg.name)}
         />
       ))}
@@ -187,7 +203,20 @@ function ArrayPriceCheckerInput({
       <Table color="blue" shade="darkWithBorder">
         <Table.HeaderRow>
           {arrayArguments.map((arg) => (
-            <Table.HeaderCell key={arg.name}>{arg.label}</Table.HeaderCell>
+            <Table.HeaderCell key={arg.name}>
+              <div className="flex items-center gap-x-1">
+                {arg.label}
+                <Tooltip content={arg.description}>
+                  {arg.link ? (
+                    <a href={arg.link} target="_blank">
+                      <InfoCircledIcon color={slateDarkA.slateA11} />
+                    </a>
+                  ) : (
+                    <InfoCircledIcon color={slateDarkA.slateA11} />
+                  )}
+                </Tooltip>
+              </div>
+            </Table.HeaderCell>
           ))}
           <Table.HeaderCell>
             <Button

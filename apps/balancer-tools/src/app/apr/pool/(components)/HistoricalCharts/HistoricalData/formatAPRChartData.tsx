@@ -111,25 +111,24 @@ export default function formatAPRChartData(
     };
   });
 
-  // const aprRewardsData = results.perDay[
-  //   firstDay
-  // ][0].apr.breakdown.rewards.breakdown.map(({ symbol }, idx) => {
-  //   const aprRewardsData = generateAprCords(
-  //     results.perDay,
-  //     (result) => result[0].apr.breakdown.rewards.breakdown[idx].value,
-  //     0
-  //   );
-  //   return {
-  //     name: `${symbol} APR %`,
-  //     yaxis: yaxis,
-  //     showlegend: false,
-  //     hovertemplate: HOVERTEMPLATE,
-  //     x: aprRewardsData.x,
-  //     y: aprRewardsData.y,
-  //     line: { shape: "spline", color: "rgba(0,0,0,0);" } as const,
-  //     type: "scatter" as PlotType,
-  //   };
-  // });
+  const aprRewardsData = Object.values(
+    results.perDay[0],
+  )[0].apr.breakdown.rewards.breakdown.map(({ symbol }, idx) => {
+    const trimmedTokenAprData = generateAprCords(
+      results.perDay,
+      (result) => result.apr.breakdown.rewards.breakdown[idx]?.value,
+    );
+    return {
+      name: `${symbol} APR %`,
+      yaxis: yaxis,
+      showlegend: false,
+      hovertemplate: HOVERTEMPLATE,
+      x: trimmedTokenAprData.x,
+      y: trimmedTokenAprData.y,
+      line: { shape: "spline", color: "rgba(0,0,0,0);" } as const,
+      type: "scatter" as PlotType,
+    };
+  });
 
   return [
     totalAprPerRoundData,
@@ -138,6 +137,6 @@ export default function formatAPRChartData(
     aprTokensTotalData,
     ...aprTokensData,
     aprRewardsTotalData,
-    // ...aprRewardsData,
+    ...aprRewardsData,
   ];
 }

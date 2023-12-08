@@ -14,11 +14,15 @@ export async function paginate<T>(
   while (true) {
     const data = await fetchFn(idValue);
 
+    if (!data) {
+      break;
+    }
+
     // @ts-ignore  this comes as unknown type, but it is an array
     const dataArray = Object.values(data)[0];
 
     // @ts-ignore  this comes as unknown type, but it is an array
-    if (!data || dataArray.length < BATCH_SIZE) {
+    if (dataArray.length < BATCH_SIZE) {
       break;
     }
     // @ts-ignore  this comes as unknown type, but it is an array

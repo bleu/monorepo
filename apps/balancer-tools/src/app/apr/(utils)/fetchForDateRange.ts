@@ -5,6 +5,7 @@ import {
   pools,
   poolSnapshots,
   poolTokens,
+  rewardsTokenApr,
   swapFeeApr,
   tokens as tokensTable,
   vebalApr,
@@ -16,8 +17,8 @@ import {
   between,
   desc,
   eq,
+  gt,
   inArray,
-  ne,
   sql,
   SQLWrapper,
 } from "drizzle-orm";
@@ -65,11 +66,25 @@ export async function fetchDataForDateRange({
     .select({
       poolExternalId: yieldTokenApr.poolExternalId,
       timestamp: yieldTokenApr.timestamp,
-      valueSum: sql<number>`sum(${yieldTokenApr.value})`.as("valueSum"),
+      yieldValueSum: sql<number>`sum(${yieldTokenApr.value})`.as(
+        "yieldValueSum",
+      ),
     })
     .from(yieldTokenApr)
     .groupBy(yieldTokenApr.poolExternalId, yieldTokenApr.timestamp)
-    .as("yieldTokenAprSum");
+    .as("yieldAprSum");
+
+  const rewardAprSum = db
+    .select({
+      poolExternalId: rewardsTokenApr.poolExternalId,
+      timestamp: rewardsTokenApr.timestamp,
+      rewardValueSum: sql<number>`sum(${rewardsTokenApr.value})`.as(
+        "rewardValueSum",
+      ),
+    })
+    .from(rewardsTokenApr)
+    .groupBy(rewardsTokenApr.poolExternalId, rewardsTokenApr.timestamp)
+    .as("rewardAprSum");
 
   const poolAprForDate = db
     .select({
@@ -78,7 +93,7 @@ export async function fetchDataForDateRange({
       type: pools.poolType,
       symbol: pools.symbol,
       avgApr:
-        sql<number>`cast(sum(coalesce(${swapFeeApr.value},0) + coalesce(${vebalApr.value},0) + coalesce(${yieldAprSum.valueSum},0)) / count(${poolSnapshots.timestamp}) as decimal)`.as(
+        sql<number>`cast(sum(coalesce(${swapFeeApr.value},0) + coalesce(${vebalApr.value},0) + coalesce(${yieldAprSum.yieldValueSum},0)+ coalesce(${rewardAprSum.rewardValueSum},0)) / count(${poolSnapshots.timestamp}) as decimal)`.as(
           "avgApr",
         ),
       avgFeeApr:
@@ -98,8 +113,12 @@ export async function fetchDataForDateRange({
           "avgLiquidity",
         ),
       avgYieldTokenApr:
-        sql<number>`cast(sum(coalesce(${yieldAprSum.valueSum},0)) /  count(${poolSnapshots.timestamp}) as decimal)`.as(
+        sql<number>`cast(sum(coalesce(${yieldAprSum.yieldValueSum},0)) /  count(${poolSnapshots.timestamp}) as decimal)`.as(
           "avgYieldTokenApr",
+        ),
+      avgRewardTokenApr:
+        sql<number>`cast(sum(coalesce(${rewardAprSum.rewardValueSum},0)) /  count(${poolSnapshots.timestamp}) as decimal)`.as(
+          "avgRewardTokenApr",
         ),
     })
     .from(poolSnapshots)
@@ -122,6 +141,13 @@ export async function fetchDataForDateRange({
       and(
         eq(yieldAprSum.poolExternalId, poolSnapshots.poolExternalId),
         eq(yieldAprSum.timestamp, poolSnapshots.timestamp),
+      ),
+    )
+    .fullJoin(
+      rewardAprSum,
+      and(
+        eq(rewardAprSum.poolExternalId, poolSnapshots.poolExternalId),
+        eq(rewardAprSum.timestamp, poolSnapshots.timestamp),
       ),
     )
     .leftJoin(pools, eq(pools.externalId, poolSnapshots.poolExternalId))
@@ -157,7 +183,7 @@ export async function fetchDataForDateRange({
     .select()
     .from(poolAprForDate)
     .orderBy(orderBy)
-    .where(ne(poolAprForDate.avgApr, 0))
+    .where(gt(poolAprForDate.avgApr, 0.1))
     .limit(Number(limit));
 
   const poolsTokens = await db
@@ -193,7 +219,7 @@ export async function fetchDataForDateRange({
           veBAL: Number(pool.avgVebalApr),
           swapFee: Number(pool.avgFeeApr),
           tokens: Number(pool.avgYieldTokenApr),
-          rewards: 0,
+          rewards: Number(pool.avgRewardTokenApr),
         },
       },
       tvl: Number(pool.avgLiquidity),

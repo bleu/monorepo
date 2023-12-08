@@ -1,6 +1,10 @@
 export const ENDPOINT_V3 = "https://api-v3.balancer.fi/graphql";
 const BASE_ENDPOINT_V2 =
   "https://api.thegraph.com/subgraphs/name/balancer-labs";
+
+const BASE_REWARDS_ENDPOINT =
+  "https://api.thegraph.com/subgraphs/name/bleu-fi/balancer-gauges";
+
 export const NETWORK_TO_BALANCER_ENDPOINT_MAP = {
   ethereum: `${BASE_ENDPOINT_V2}/balancer-v2`,
   polygon: `${BASE_ENDPOINT_V2}/balancer-polygon-v2`,
@@ -12,6 +16,19 @@ export const NETWORK_TO_BALANCER_ENDPOINT_MAP = {
   base: "https://api.studio.thegraph.com/query/24660/balancer-base-v2/version/latest",
   avalanche: `${BASE_ENDPOINT_V2}/balancer-avalanche-v2`,
 } as const;
+
+export const NETWORK_TO_REWARDS_ENDPOINT_MAP = {
+  ethereum: `${BASE_REWARDS_ENDPOINT}`,
+  polygon: `${BASE_REWARDS_ENDPOINT}-polygon`,
+  "polygon-zkevm":
+    "https://api.studio.thegraph.com/query/40456/balancer-gauges-polygon-zk/version/latest",
+  arbitrum: `${BASE_REWARDS_ENDPOINT}-arbitrum`,
+  gnosis: `${BASE_REWARDS_ENDPOINT}-gnosis`,
+  optimism: `${BASE_REWARDS_ENDPOINT}-optimism`,
+  base: "https://api.studio.thegraph.com/query/40456/balancer-gauges-base/version/latest",
+  avalanche: `${BASE_REWARDS_ENDPOINT}-avalanche`,
+};
+
 export const VOTING_GAUGES_QUERY = `
 query VeBalGetVotingList {
     veBalGetVotingList {
@@ -103,3 +120,17 @@ query PoolRateProviders($latestId: String!) {
   }
 }
 `;
+
+export const POOL_REWARDS = `
+query PoolRewards($latestId: ID!) {
+  rewardTokenDeposits(where: {rate_gt: 0, totalSupply_gt: 0, id_gt: $latestId}) {
+		gauge{
+      poolId
+    }
+    id
+    rate
+    totalSupply
+    periodStart
+    periodFinish
+  }
+}`;

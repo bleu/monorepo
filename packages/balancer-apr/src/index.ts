@@ -4,7 +4,13 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 import "dotenv/config";
 
-import { dateToEpoch, epochToDate } from "@bleu-fi/utils/date";
+import {
+  dateToEpoch,
+  DAYS_IN_YEAR,
+  epochToDate,
+  SECONDS_IN_DAY,
+  SECONDS_IN_YEAR,
+} from "@bleu-fi/utils/date";
 import { and, asc, eq, gt, inArray, isNotNull, ne, sql } from "drizzle-orm";
 import { PgTable } from "drizzle-orm/pg-core";
 import { Address, zeroAddress } from "viem";
@@ -13,6 +19,8 @@ import { chunks } from "./chunks";
 import {
   ENDPOINT_V3,
   NETWORK_TO_BALANCER_ENDPOINT_MAP,
+  NETWORK_TO_REWARDS_ENDPOINT_MAP,
+  POOL_REWARDS,
   POOLS_SNAPSHOTS,
   POOLS_WITHOUT_GAUGE_QUERY,
   RATE_PROVIDER_SNAPSHOTS,
@@ -25,6 +33,8 @@ import {
   calendar,
   gauges,
   gaugeSnapshots,
+  poolRewards,
+  poolRewardsSnapshot,
   pools,
   poolSnapshots,
   poolSnapshotsTemp,
@@ -32,7 +42,9 @@ import {
   poolTokenRateProvidersSnapshot,
   poolTokens,
   poolTokenWeightsSnapshot,
+  rewardsTokenApr,
   tokenPrices,
+  tokens,
   vebalRounds,
 } from "./db/schema";
 import { gql } from "./gql";
@@ -63,6 +75,20 @@ async function processPoolSnapshots(data: any, network: string) {
       data.poolSnapshots.map((snapshot: any) => ({
         externalId: snapshot.id,
         rawData: { ...snapshot, network },
+      })),
+    );
+  }
+}
+
+async function processPoolRewards(data: any, network: string) {
+  logIfVerbose(`Processing pool rewards for network ${network}`);
+
+  if (data.rewardTokenDeposits) {
+    await addToTable(
+      poolRewards,
+      data.rewardTokenDeposits.map((rewards: any) => ({
+        externalId: rewards.id,
+        rawData: { ...rewards, network },
       })),
     );
   }
@@ -142,6 +168,15 @@ async function extractPoolSnapshotsForNetwork(
 ) {
   await paginatedFetch(networkEndpoint, POOLS_SNAPSHOTS, (data) =>
     processPoolSnapshots(data, network),
+  );
+}
+
+async function extractRewardsForNetwork(
+  networkEndpoint: string,
+  network: string,
+) {
+  await paginatedFetch(networkEndpoint, POOL_REWARDS, (data) =>
+    processPoolRewards(data, network),
   );
 }
 
@@ -453,7 +488,7 @@ async function transformPoolSnapshotsData() {
 
   await db.execute(sql`
   INSERT INTO pools (external_id, network_slug)
-SELECT raw_data->'pool'->>'id', 
+SELECT raw_data->'pool'->>'id',
 LOWER(raw_data->>'network')
 FROM pool_snapshots_temp
 ON CONFLICT (external_id) DO NOTHING;
@@ -478,10 +513,10 @@ SET
 UPDATE pool_snapshots_temp p
 SET next_timestamp_change = next_change.next_change_timestamp
 FROM (
-    SELECT 
-        id, 
+    SELECT
+        id,
         LEAD(timestamp, 1, NOW()) OVER (PARTITION BY pool_external_id ORDER BY timestamp) AS next_change_timestamp
-    FROM 
+    FROM
         pool_snapshots_temp
 ) next_change
 WHERE p.id = next_change.id;
@@ -490,12 +525,12 @@ WHERE p.id = next_change.id;
   await db.execute(sql`
 INSERT INTO pool_snapshots (amounts, total_shares, swap_volume, swap_fees, liquidity, timestamp, protocol_yield_fee_cache, protocol_swap_fee_cache, external_id, pool_external_id, raw_data)
 SELECT amounts, total_shares, swap_volume, swap_fees, liquidity, c.timestamp, protocol_yield_fee_cache, protocol_swap_fee_cache, pool_external_id || '-' || c.timestamp AS external_id, pool_external_id, raw_data
-FROM 
+FROM
     pool_snapshots_temp b
-LEFT JOIN 
-    calendar c 
-ON 
-    b.timestamp <= c.timestamp 
+LEFT JOIN
+    calendar c
+ON
+    b.timestamp <= c.timestamp
     AND (c.timestamp < b.next_timestamp_change OR b.next_timestamp_change IS NULL)
 ON CONFLICT (external_id) DO NOTHING;
 `);
@@ -563,6 +598,45 @@ async function transformPoolData() {
     `);
 }
 
+async function transformRewardsData() {
+  await transformNetworks(poolRewards, "network");
+
+  await db.execute(sql`
+  INSERT INTO pools (external_id, network_slug)
+  SELECT raw_data->'gauge'->>'poolId',
+  LOWER(raw_data->>'network')
+  FROM pool_rewards
+  ON CONFLICT (external_id) DO NOTHING;
+  `);
+
+  // Insert data into the rewards table
+  await db.execute(sql`
+    INSERT INTO pool_rewards (
+      token_address, network_slug, period_start, period_end, total_supply, pool_external_id, rate, external_id
+    )
+    SELECT
+      split_part(raw_data ->> 'id', '-', 1) as token_address,
+      LOWER(raw_data ->> 'network') as network_slug,
+      to_timestamp((raw_data ->> 'periodStart')::bigint) AS period_start,
+      to_timestamp((raw_data ->> 'periodFinish')::bigint) AS period_end,
+      (raw_data ->> 'totalSupply')::NUMERIC as total_supply,
+      raw_data -> 'gauge' ->> 'poolId' as pool_external_id,
+      (raw_data ->> 'rate')::NUMERIC as rate,
+      raw_data ->> 'id' as external_id
+    FROM
+	    pool_rewards
+    ON CONFLICT (external_id) DO UPDATE
+    SET
+      token_address = excluded.token_address,
+      network_slug = LOWER(excluded.network_slug),
+      period_start = excluded.period_start,
+      period_end = excluded.period_end,
+      total_supply = excluded.total_supply,
+      pool_external_id = excluded.pool_external_id,
+      rate = excluded.rate;
+  `);
+}
+
 async function transformGauges() {
   await transformNetworks(gauges, "chain");
 
@@ -599,8 +673,6 @@ async function transformGauges() {
   DO UPDATE SET is_killed = EXCLUDED.is_killed
   WHERE gauges.address IS DISTINCT FROM EXCLUDED.address;`);
 
-  //TODO: get raw_data to the gauges table, this is creating new rows and deleting old ones, so the id starts on 267
-
   // delete rows that are no longer needed
   await db.execute(
     sql`
@@ -629,6 +701,10 @@ const networkNames = Object.keys(
   NETWORK_TO_BALANCER_ENDPOINT_MAP,
 ) as (keyof typeof NETWORK_TO_BALANCER_ENDPOINT_MAP)[];
 
+const networkNamesRewards = Object.keys(
+  NETWORK_TO_REWARDS_ENDPOINT_MAP,
+) as (keyof typeof NETWORK_TO_REWARDS_ENDPOINT_MAP)[];
+
 async function ETLPools() {
   logIfVerbose("Starting Pools Extraction");
 
@@ -653,6 +729,19 @@ async function ETLSnapshots() {
 
   logIfVerbose("Starting Pool Snapshots Extraction");
   await transformPoolSnapshotsData();
+}
+
+async function ETLPoolRewards() {
+  logIfVerbose("Starting Pool Rewards Extraction");
+  await Promise.all(
+    networkNamesRewards.map(async (networkName) => {
+      const networkEndpoint = NETWORK_TO_REWARDS_ENDPOINT_MAP[networkName];
+      await extractRewardsForNetwork(networkEndpoint, networkName);
+    }),
+  );
+  logIfVerbose("Starting Pool Rewards Extraction");
+  await transformRewardsData();
+  logIfVerbose("Pool Rewards Extraction Done");
 }
 
 async function ETLPoolRateProvider() {
@@ -700,13 +789,12 @@ async function seedVebalRounds() {
   const startDate = new Date("2022-04-14T00:00:00.000Z");
   let roundNumber = 1;
 
-  const data = [];
   while (startDate <= new Date()) {
     const endDate = new Date(startDate);
     endDate.setUTCDate(endDate.getUTCDate() + 6);
     endDate.setUTCHours(23, 59, 59, 999);
 
-    data.push({
+    await db.insert(vebalRounds).values({
       startDate: startDate,
       endDate: endDate,
       roundNumber: roundNumber,
@@ -715,14 +803,13 @@ async function seedVebalRounds() {
     startDate.setUTCDate(startDate.getUTCDate() + 7);
     roundNumber++;
   }
-
-  await addToTable(vebalRounds, data);
 }
 
 async function seedBalEmission() {
+  logIfVerbose("Seeding BAL emission");
   const timestamps = await db
-    .selectDistinct({ timestamp: poolSnapshots.timestamp })
-    .from(poolSnapshots);
+    .selectDistinct({ timestamp: calendar.timestamp })
+    .from(calendar);
 
   for (const { timestamp } of timestamps) {
     if (!timestamp) continue;
@@ -744,169 +831,219 @@ async function seedBalEmission() {
 }
 
 async function calculateApr() {
-  // Fee APR
+  //   Fee APR
   logIfVerbose("Seeding Fee APR");
   await db.execute(sql`
-    INSERT INTO swap_fee_apr (timestamp, pool_external_id, collected_fees_usd, value, external_id)
-    SELECT
-        p1.timestamp,
-        p1.pool_external_id,
-        p1.swap_fees - p2.swap_fees AS collected_fees_usd,
-        CASE
-            WHEN p1.liquidity = 0 THEN 0
-            ELSE ((p1.swap_fees - p2.swap_fees) * (1 - COALESCE(p1.protocol_swap_fee_cache, 0.5)) / p1.liquidity) * 365 * 100
-        END AS value,
-        p1.external_id
-    FROM
-        pool_snapshots p1
-    LEFT JOIN pool_snapshots p2
-        ON p1.timestamp = p2.timestamp + INTERVAL '1 day'
-        AND p1.pool_external_id = p2.pool_external_id
-    WHERE
-        p1.swap_fees IS NOT NULL
-        AND p2.swap_fees IS NOT NULL
-        AND p1.swap_fees != 0
-        AND p2.swap_fees != 0
-        AND p1.swap_fees - p2.swap_fees != 0
-    ON CONFLICT (external_id) DO NOTHING;
+      INSERT INTO swap_fee_apr (timestamp, pool_external_id, collected_fees_usd, value, external_id)
+      SELECT
+          p1.timestamp,
+          p1.pool_external_id,
+          p1.swap_fees - p2.swap_fees AS collected_fees_usd,
+          CASE
+              WHEN p1.liquidity = 0 THEN 0
+              ELSE ((p1.swap_fees - p2.swap_fees) * (1 - COALESCE(p1.protocol_swap_fee_cache, 0.5)) / p1.liquidity) * 365 * 100
+          END AS value,
+          p1.external_id
+      FROM
+          pool_snapshots p1
+      LEFT JOIN pool_snapshots p2
+          ON p1.timestamp = p2.timestamp + INTERVAL '1 day'
+          AND p1.pool_external_id = p2.pool_external_id
+      WHERE
+          p1.swap_fees IS NOT NULL
+          AND p2.swap_fees IS NOT NULL
+          AND p1.swap_fees != 0
+          AND p2.swap_fees != 0
+          AND p1.swap_fees - p2.swap_fees != 0
+      ON CONFLICT (external_id) DO NOTHING;
 
-  `);
+    `);
 
-  // veBAL APR
+  //veBAL APR
   logIfVerbose("Seeding veBAL APR");
   await db.execute(sql`
-  INSERT INTO vebal_apr (timestamp, value, pool_external_id, external_id)
-  SELECT DISTINCT
-      ps.timestamp,
-      CASE
-          WHEN ps.liquidity = 0 THEN 0
-          ELSE (52 * (be.week_emission * gs.relative_weight * tp.price_usd) / ps.liquidity) * 100
-      END AS value,
-      ps.pool_external_id,
-      ps.external_id
-  FROM pool_snapshots ps
-  LEFT JOIN vebal_rounds vr ON ps.timestamp BETWEEN vr.start_date AND vr.end_date
-  JOIN gauges g ON g.pool_external_id = ps.pool_external_id
-  JOIN gauge_snapshots gs ON g.address = gs.gauge_address
-      AND vr.round_number = gs.round_number
-  LEFT JOIN token_prices tp ON tp.token_address = '0xba100000625a3754423978a60c9317c58a424e3d'
-      AND tp.timestamp = ps.timestamp
-  LEFT JOIN bal_emission be ON be.timestamp = ps.timestamp
-  ON CONFLICT (external_id) DO NOTHING;
-  `);
+    INSERT INTO vebal_apr (timestamp, value, pool_external_id, external_id)
+    SELECT DISTINCT
+        ps.timestamp,
+        CASE
+            WHEN ps.liquidity = 0 THEN 0
+            ELSE (52 * (be.week_emission * gs.relative_weight * tp.price_usd) / ps.liquidity) * 100
+        END AS value,
+        ps.pool_external_id,
+        ps.external_id
+    FROM pool_snapshots ps
+    LEFT JOIN vebal_rounds vr ON ps.timestamp BETWEEN vr.start_date AND vr.end_date
+    JOIN gauges g ON g.pool_external_id = ps.pool_external_id
+    JOIN gauge_snapshots gs ON g.address = gs.gauge_address
+        AND vr.round_number = gs.round_number
+    LEFT JOIN token_prices tp ON tp.token_address = '0xba100000625a3754423978a60c9317c58a424e3d'
+        AND tp.timestamp = ps.timestamp
+    LEFT JOIN bal_emission be ON be.timestamp = ps.timestamp
+    ON CONFLICT (external_id) DO NOTHING;
+    `);
 
   //Token Yield APR
   logIfVerbose("Seeding Token Yield APR for weighted pools");
 
   await db.execute(sql`
-  INSERT INTO yield_token_apr (timestamp, token_address, pool_external_id, external_id, value)
-  SELECT
-  pool_snapshots.timestamp,
-  pool_tokens.token_address,
-  pool_snapshots.pool_external_id,
-  pool_tokens.token_address || '-' || pool_snapshots.pool_external_id || '-' || pool_snapshots.timestamp as external_id,
-  CASE
-      WHEN pools.pool_type_version > 1 AND pool_tokens.is_exempt_from_yield_protocol_fee IS TRUE THEN
-          pool_tokens.weight * subquery.rate * 365 * 100
-      WHEN pools.pool_type_version > 1 AND (pool_tokens.is_exempt_from_yield_protocol_fee IS NULL OR pool_tokens.is_exempt_from_yield_protocol_fee IS FALSE )THEN
-          pool_tokens.weight * subquery.rate * 365 * 100 * COALESCE(NULLIF(pool_snapshots.protocol_yield_fee_cache, 0), 0.5)
-  END AS yield_apr
-FROM
-  pool_snapshots
-  LEFT JOIN pool_rate_providers ON pool_rate_providers.pool_external_id = pool_snapshots.pool_external_id
-  LEFT JOIN pools ON pools.external_id = pool_snapshots.pool_external_id
-  LEFT JOIN pool_tokens ON pool_tokens.pool_external_id = pool_snapshots.pool_external_id
-  LEFT JOIN (
-      SELECT
-          p1.timestamp,
-          p1.rate_provider_address,
-          (p1.rate - p2.rate) / p2.rate AS rate,
-          p1.external_id,
-          prt.token_address,
-          ROW_NUMBER() OVER (PARTITION BY p1.timestamp, prt.token_address ORDER BY p1.timestamp DESC) as row_num
-      FROM
-          pool_token_rate_providers_snapshot p1
-          LEFT JOIN pool_token_rate_providers_snapshot p2 ON p1.timestamp = p2.timestamp + INTERVAL '1 day'
-              AND p1.rate_provider_address = p2.rate_provider_address
-          LEFT JOIN pool_rate_providers prt ON prt.address = p1.rate_provider_address
-      WHERE
-          p1.rate IS NOT NULL
-          AND p2.rate IS NOT NULL
-          AND p1.rate != 0
-          AND p2.rate != 0
-          AND p1.rate - p2.rate != 0
-  ) AS subquery ON subquery.timestamp = pool_snapshots.timestamp
-  AND subquery.token_address = pool_tokens.token_address
-  AND subquery.row_num = 1 -- Use the latest rate
-WHERE
-  pool_snapshots.pool_external_id = pool_rate_providers.pool_external_id
-  AND pools.pool_type = 'Weighted'
-  AND subquery.rate IS NOT NULL
-  AND (
-    pool_rate_providers.vulnerability_affected = false
-    OR (
-      pool_rate_providers.vulnerability_affected = true
-      AND pool_snapshots.timestamp < '2023-08-22'::timestamp
+    INSERT INTO yield_token_apr (timestamp, token_address, pool_external_id, external_id, value)
+    SELECT
+    pool_snapshots.timestamp,
+    pool_tokens.token_address,
+    pool_snapshots.pool_external_id,
+    pool_tokens.token_address || '-' || pool_snapshots.pool_external_id || '-' || pool_snapshots.timestamp as external_id,
+    CASE
+        WHEN pools.pool_type_version > 1 AND pool_tokens.is_exempt_from_yield_protocol_fee IS TRUE THEN
+            pool_tokens.weight * subquery.rate * 365 * 100
+        WHEN pools.pool_type_version > 1 AND (pool_tokens.is_exempt_from_yield_protocol_fee IS NULL OR pool_tokens.is_exempt_from_yield_protocol_fee IS FALSE )THEN
+            pool_tokens.weight * subquery.rate * 365 * 100 * COALESCE(NULLIF(pool_snapshots.protocol_yield_fee_cache, 0), 0.5)
+    END AS yield_apr
+  FROM
+    pool_snapshots
+    LEFT JOIN pool_rate_providers ON pool_rate_providers.pool_external_id = pool_snapshots.pool_external_id
+    LEFT JOIN pools ON pools.external_id = pool_snapshots.pool_external_id
+    LEFT JOIN pool_tokens ON pool_tokens.pool_external_id = pool_snapshots.pool_external_id
+    LEFT JOIN (
+        SELECT
+            p1.timestamp,
+            p1.rate_provider_address,
+            (p1.rate - p2.rate) / p2.rate AS rate,
+            p1.external_id,
+            prt.token_address,
+            ROW_NUMBER() OVER (PARTITION BY p1.timestamp, prt.token_address ORDER BY p1.timestamp DESC) as row_num
+        FROM
+            pool_token_rate_providers_snapshot p1
+            LEFT JOIN pool_token_rate_providers_snapshot p2 ON p1.timestamp = p2.timestamp + INTERVAL '1 day'
+                AND p1.rate_provider_address = p2.rate_provider_address
+            LEFT JOIN pool_rate_providers prt ON prt.address = p1.rate_provider_address
+        WHERE
+            p1.rate IS NOT NULL
+            AND p2.rate IS NOT NULL
+            AND p1.rate != 0
+            AND p2.rate != 0
+            AND p1.rate - p2.rate != 0
+    ) AS subquery ON subquery.timestamp = pool_snapshots.timestamp
+    AND subquery.token_address = pool_tokens.token_address
+    AND subquery.row_num = 1 -- Use the latest rate
+  WHERE
+    pool_snapshots.pool_external_id = pool_rate_providers.pool_external_id
+    AND pools.pool_type = 'Weighted'
+    AND subquery.rate IS NOT NULL
+    AND (
+      pool_rate_providers.vulnerability_affected = false
+      OR (
+        pool_rate_providers.vulnerability_affected = true
+        AND pool_snapshots.timestamp < '2023-08-22'::timestamp
+      )
     )
-  )
-  ON CONFLICT (external_id) DO NOTHING;
-  `);
+    ON CONFLICT (external_id) DO NOTHING;
+    `);
 
   logIfVerbose("Seeding Token Yield APR for non-weighted pools");
 
   await db.execute(sql`
-  INSERT INTO yield_token_apr (timestamp, token_address, pool_external_id, external_id, value)
-  SELECT DISTINCT
-  pool_snapshots.timestamp,
-  pool_tokens.token_address,
-  pool_snapshots.pool_external_id,
-  pool_tokens.token_address || '-' || pool_snapshots.pool_external_id || '-' || pool_snapshots.timestamp as external_id,
-  CASE
-      WHEN pools.pool_type = 'ComposableStable' AND pool_tokens.is_exempt_from_yield_protocol_fee IS TRUE THEN
-          ptw.weight * subquery.rate * 365 * 100
-      WHEN pools.pool_type = 'ComposableStable' AND (pool_tokens.is_exempt_from_yield_protocol_fee IS NULL OR pool_tokens.is_exempt_from_yield_protocol_fee IS FALSE) THEN
-          ptw.weight * subquery.rate * 365 * 100 * COALESCE(NULLIF(pool_snapshots.protocol_yield_fee_cache, 0), 0.5)
-       WHEN pools.pool_type = 'MetaStable' OR pools.pool_type LIKE '%Gyro%' THEN
-       	ptw.weight * subquery.rate * 365 * 100 * (1 - COALESCE(NULLIF(pool_snapshots.protocol_swap_fee_cache, 0), 0.5))
-       ELSE  ptw.weight * subquery.rate * 365 * 100
-  END AS yield_apr
-FROM
-  pool_snapshots
-  LEFT JOIN pool_rate_providers ON pool_rate_providers.pool_external_id = pool_snapshots.pool_external_id
-  LEFT JOIN pools ON pools.external_id = pool_snapshots.pool_external_id
-  LEFT JOIN pool_tokens ON pool_tokens.pool_external_id = pool_snapshots.pool_external_id
-  LEFT JOIN pool_token_weights_snapshot ptw ON ptw.pool_external_id = pool_snapshots.pool_external_id AND ptw."timestamp" = pool_snapshots."timestamp" AND ptw.token_address = pool_tokens.token_address
-  LEFT JOIN (
-      SELECT
-          p1.timestamp,
-          p1.rate_provider_address,
-          (p1.rate - p2.rate) / p2.rate AS rate,
-          p1.external_id,
-          prt.token_address,
-          ROW_NUMBER() OVER (PARTITION BY p1.timestamp, prt.token_address ORDER BY p1.timestamp DESC) as row_num
-      FROM
-          pool_token_rate_providers_snapshot p1
-          LEFT JOIN pool_token_rate_providers_snapshot p2 ON p1.timestamp = p2.timestamp + INTERVAL '1 day'
-              AND p1.rate_provider_address = p2.rate_provider_address
-          LEFT JOIN pool_rate_providers prt ON prt.address = p1.rate_provider_address
-      WHERE
-          p1.rate IS NOT NULL
-          AND p2.rate IS NOT NULL
-          AND p1.rate != 0
-          AND p2.rate != 0
-          AND p1.rate - p2.rate != 0
-  ) AS subquery ON subquery.timestamp = pool_snapshots.timestamp
-  AND subquery.token_address = pool_tokens.token_address
-  AND subquery.row_num = 1 -- Use the latest rate
-WHERE
-  pool_snapshots.pool_external_id = pool_rate_providers.pool_external_id
-  AND subquery.rate IS NOT NULL
-  AND ptw.weight IS NOT NULL
-  ON CONFLICT (external_id) DO NOTHING;
-  `);
+    INSERT INTO yield_token_apr (timestamp, token_address, pool_external_id, external_id, value)
+    SELECT DISTINCT
+    pool_snapshots.timestamp,
+    pool_tokens.token_address,
+    pool_snapshots.pool_external_id,
+    pool_tokens.token_address || '-' || pool_snapshots.pool_external_id || '-' || pool_snapshots.timestamp as external_id,
+    CASE
+        WHEN pools.pool_type = 'ComposableStable' AND pool_tokens.is_exempt_from_yield_protocol_fee IS TRUE THEN
+            ptw.weight * subquery.rate * 365 * 100
+        WHEN pools.pool_type = 'ComposableStable' AND (pool_tokens.is_exempt_from_yield_protocol_fee IS NULL OR pool_tokens.is_exempt_from_yield_protocol_fee IS FALSE) THEN
+            ptw.weight * subquery.rate * 365 * 100 * COALESCE(NULLIF(pool_snapshots.protocol_yield_fee_cache, 0), 0.5)
+         WHEN pools.pool_type = 'MetaStable' OR pools.pool_type LIKE '%Gyro%' THEN
+         	ptw.weight * subquery.rate * 365 * 100 * (1 - COALESCE(NULLIF(pool_snapshots.protocol_swap_fee_cache, 0), 0.5))
+         ELSE  ptw.weight * subquery.rate * 365 * 100
+    END AS yield_apr
+  FROM
+    pool_snapshots
+    LEFT JOIN pool_rate_providers ON pool_rate_providers.pool_external_id = pool_snapshots.pool_external_id
+    LEFT JOIN pools ON pools.external_id = pool_snapshots.pool_external_id
+    LEFT JOIN pool_tokens ON pool_tokens.pool_external_id = pool_snapshots.pool_external_id
+    LEFT JOIN pool_token_weights_snapshot ptw ON ptw.pool_external_id = pool_snapshots.pool_external_id AND ptw."timestamp" = pool_snapshots."timestamp" AND ptw.token_address = pool_tokens.token_address
+    LEFT JOIN (
+        SELECT
+            p1.timestamp,
+            p1.rate_provider_address,
+            (p1.rate - p2.rate) / p2.rate AS rate,
+            p1.external_id,
+            prt.token_address,
+            ROW_NUMBER() OVER (PARTITION BY p1.timestamp, prt.token_address ORDER BY p1.timestamp DESC) as row_num
+        FROM
+            pool_token_rate_providers_snapshot p1
+            LEFT JOIN pool_token_rate_providers_snapshot p2 ON p1.timestamp = p2.timestamp + INTERVAL '1 day'
+                AND p1.rate_provider_address = p2.rate_provider_address
+            LEFT JOIN pool_rate_providers prt ON prt.address = p1.rate_provider_address
+        WHERE
+            p1.rate IS NOT NULL
+            AND p2.rate IS NOT NULL
+            AND p1.rate != 0
+            AND p2.rate != 0
+            AND p1.rate - p2.rate != 0
+    ) AS subquery ON subquery.timestamp = pool_snapshots.timestamp
+    AND subquery.token_address = pool_tokens.token_address
+    AND subquery.row_num = 1 -- Use the latest rate
+  WHERE
+    pool_snapshots.pool_external_id = pool_rate_providers.pool_external_id
+    AND subquery.rate IS NOT NULL
+    AND ptw.weight IS NOT NULL
+    ON CONFLICT (external_id) DO NOTHING;
+    `);
+
+  logIfVerbose("Seeding Rewards APR");
+
+  const poolInRewardsSnapshot = await db
+    .selectDistinct({
+      timestamp: poolRewardsSnapshot.timestamp,
+      poolExternalId: poolRewardsSnapshot.poolExternalId,
+      tokenAddress: poolRewardsSnapshot.tokenAddress,
+      totalSupply: poolRewardsSnapshot.totalSupply,
+      yearlyAmount: poolRewardsSnapshot.yearlyAmount,
+      liquidity: poolSnapshots.liquidity,
+      totalShares: poolSnapshots.totalShares,
+      tokenPrice: tokenPrices.priceUSD,
+    })
+    .from(poolRewardsSnapshot)
+    .leftJoin(
+      poolSnapshots,
+      and(
+        eq(poolSnapshots.poolExternalId, poolRewardsSnapshot.poolExternalId),
+        eq(poolSnapshots.timestamp, poolRewardsSnapshot.timestamp),
+      ),
+    )
+    .leftJoin(
+      tokenPrices,
+      and(
+        eq(tokenPrices.tokenAddress, poolRewardsSnapshot.tokenAddress),
+        eq(tokenPrices.timestamp, poolRewardsSnapshot.timestamp),
+      ),
+    )
+    .where(isNotNull(tokenPrices.priceUSD));
+  for (const aprItems of poolInRewardsSnapshot) {
+    const yearlyAmountUsd =
+      Number(aprItems.yearlyAmount) * Number(aprItems.tokenPrice);
+
+    const bptPrice = Number(aprItems.liquidity) / Number(aprItems.totalShares);
+    const totalSupplyUsd = Number(aprItems.totalSupply) * Number(bptPrice);
+    const apr = (yearlyAmountUsd / totalSupplyUsd) * 100;
+
+    await db
+      .insert(rewardsTokenApr)
+      .values({
+        timestamp: aprItems.timestamp,
+        poolExternalId: aprItems.poolExternalId,
+        tokenAddress: aprItems.tokenAddress,
+        value: String(apr),
+      })
+      .onConflictDoNothing()
+      .execute();
+  }
 }
 
 async function fetchBalPrices() {
+  logIfVerbose("Start fetching BAL prices process");
   await fetchTokenPrice(
     "ethereum",
     "0xba100000625a3754423978a60c9317c58a424e3d",
@@ -916,7 +1053,7 @@ async function fetchBalPrices() {
 
 async function fetchTokenPrice(
   network: string,
-  tokenAddresses: string,
+  tokenAddress: string,
   start: Date,
 ) {
   const remappings: { [key: string]: string } = {
@@ -929,7 +1066,7 @@ async function fetchTokenPrice(
   try {
     const prices = await DefiLlamaAPI.getHistoricalPrice(
       start,
-      `${remappings[network] ?? network}:${tokenAddresses}`,
+      `${remappings[network] ?? network}:${tokenAddress}`,
     );
     const pricesArray = Object.values(prices.coins)[0]?.prices;
 
@@ -951,7 +1088,19 @@ async function fetchTokenPrice(
         };
       }),
     );
-    console.log(`Fetched prices for BAL since ${start}:`);
+    const isTokenOnTokenTable = await db
+      .selectDistinct({
+        tokenAddress: tokens.address,
+      })
+      .from(tokens)
+      .where(eq(tokens.address, tokenAddress));
+    if (isTokenOnTokenTable.length === 0) {
+      await db.insert(tokens).values({
+        address: tokenAddress,
+        networkSlug: network,
+        symbol: Object.values(prices.coins)[0].symbol,
+      });
+    }
   } catch (e) {
     console.error(
       // @ts-ignore
@@ -977,8 +1126,18 @@ async function fetchTokenPrices() {
       ne(poolTokenRateProviders.tokenAddress, poolTokenRateProviders.address),
     );
 
+  const tokenFromRewards = await db
+    .selectDistinct({
+      tokenAddress: poolRewards.tokenAddress,
+      networkSlug: poolRewards.networkSlug,
+      createdAt: poolRewards.periodStart,
+    })
+    .from(poolRewards);
+
+  const tokensArray = [...tokenFromRewards, ...tokensFromRateProviders];
+
   const tokenWithMinCreationDates = Object.values(
-    tokensFromRateProviders.reduce(
+    tokensArray.reduce(
       (acc, { tokenAddress, networkSlug, createdAt }) => {
         const key = `${tokenAddress}_${networkSlug}`;
 
@@ -1220,6 +1379,201 @@ async function calculateTokenWeightSnapshots() {
   );
 }
 
+async function calculatePoolRewardsSnapshots() {
+  logIfVerbose("Calculating pool rewards snapshots");
+  const poolRewardsPerDay = await db.execute(sql`
+  WITH date_series AS (
+    SELECT generate_series(
+        (SELECT MIN(period_start) FROM pool_rewards),
+        (SELECT MAX(period_end) FROM pool_rewards),
+        interval '1 day'
+    )::date AS snapshot_date
+),
+reward_calculations AS (
+    SELECT
+        ds.snapshot_date,
+        pr.rate,
+        pr.pool_external_id,
+        pr.token_address,
+        pr.network_slug,
+        pr.total_supply,
+        pr.period_start,
+        pr.period_end
+    FROM
+        date_series ds
+    JOIN
+        pool_rewards pr ON ds.snapshot_date BETWEEN pr.period_start AND pr.period_end
+    ORDER BY pr.period_start ASC
+)
+SELECT * FROM reward_calculations
+  `);
+
+  const aggregatedData = {};
+
+  poolRewardsPerDay.forEach((item) => {
+    const key = `${item.snapshot_date}_${item.pool_external_id}_${item.token_address}`;
+    //@ts-ignore
+    if (!aggregatedData[key]) {
+      //@ts-ignore
+      aggregatedData[key] = {
+        snapshot_date: item.snapshot_date,
+        pool_external_id: item.pool_external_id,
+        token_address: item.token_address,
+        network_slug: item.network_slug,
+        rewards: [],
+      };
+    }
+
+    //@ts-ignore
+    aggregatedData[key].rewards.push({
+      total_supply: item.total_supply,
+      period_start: item.period_start,
+      period_end: item.period_end,
+      rate: item.rate,
+    });
+  });
+
+  const resultArray: {
+    snapshot_date: Date;
+    pool_external_id: string;
+    token_address: string;
+    network_slug: string;
+    rewards: {
+      total_supply: string;
+      period_start: Date;
+      period_end: Date;
+      rate: string;
+    }[];
+  }[] = Object.values(aggregatedData);
+
+  const withOneReward = resultArray.filter((item) => item.rewards.length === 1);
+  const withTwoRewards = resultArray.filter(
+    (item) => item.rewards.length === 2,
+  );
+
+  for (const item of withOneReward) {
+    const isTimestampBetweenPeriod =
+      item.snapshot_date >= item.rewards[0].period_start &&
+      item.snapshot_date <= item.rewards[0].period_end;
+    if (isTimestampBetweenPeriod) {
+      const amount =
+        Number(item.rewards[0].rate) * SECONDS_IN_DAY * DAYS_IN_YEAR;
+      await db
+        .insert(poolRewardsSnapshot)
+        .values({
+          timestamp: item.snapshot_date,
+          poolExternalId: item.pool_external_id,
+          tokenAddress: item.token_address,
+          totalSupply: item.rewards[0].total_supply,
+          yearlyAmount: String(amount),
+          externalId: `${item.pool_external_id}-${
+            item.token_address
+          }-${item.snapshot_date.toISOString()}`,
+        })
+        .onConflictDoNothing()
+        .execute();
+    }
+  }
+
+  for (const item of withTwoRewards) {
+    const arePeriodsOverlapping =
+      item.rewards[0].period_end >= item.rewards[1].period_start;
+
+    if (arePeriodsOverlapping) {
+      const isTimestampBetweenSecondPeriod =
+        item.snapshot_date >= item.rewards[1].period_start &&
+        item.snapshot_date <= item.rewards[1].period_end;
+      if (isTimestampBetweenSecondPeriod) {
+        const amount =
+          Number(item.rewards[0].rate) * SECONDS_IN_DAY * DAYS_IN_YEAR;
+        await db
+          .insert(poolRewardsSnapshot)
+          .values({
+            timestamp: item.snapshot_date,
+            poolExternalId: item.pool_external_id,
+            tokenAddress: item.token_address,
+            totalSupply: item.rewards[0].total_supply,
+            yearlyAmount: String(amount),
+            externalId: `${item.pool_external_id}-${
+              item.token_address
+            }-${item.snapshot_date.toISOString()}`,
+          })
+          .onConflictDoNothing()
+          .execute();
+      } else {
+        const endOfTheDay = new Date(item.snapshot_date);
+        endOfTheDay.setUTCHours(23, 59, 59, 999);
+        const firstDuration =
+          (item.rewards[1].period_start.getTime() -
+            item.snapshot_date.getTime()) /
+          1000;
+        const firstAnnualScalingFactor = SECONDS_IN_YEAR / firstDuration;
+        const secondDuration =
+          (endOfTheDay.getTime() - item.rewards[1].period_start.getTime()) /
+          1000;
+        const secondAnnualScalingFactor = SECONDS_IN_YEAR / secondDuration;
+        const firstAmount =
+          Number(item.rewards[0].rate) *
+          firstDuration *
+          firstAnnualScalingFactor;
+        const secondAmount =
+          Number(item.rewards[1].rate) *
+          secondDuration *
+          secondAnnualScalingFactor;
+        const amount = firstAmount + secondAmount;
+        await db
+          .insert(poolRewardsSnapshot)
+          .values({
+            timestamp: item.snapshot_date,
+            poolExternalId: item.pool_external_id,
+            tokenAddress: item.token_address,
+            totalSupply: item.rewards[0].total_supply,
+            yearlyAmount: String(amount),
+            externalId: `${item.pool_external_id}-${
+              item.token_address
+            }-${item.snapshot_date.toISOString()}`,
+          })
+          .onConflictDoNothing()
+          .execute();
+      }
+    } else {
+      const endOfTheDay = new Date(item.snapshot_date);
+      endOfTheDay.setUTCHours(23, 59, 59, 999);
+
+      const firstDuration =
+        (item.rewards[0].period_end.getTime() - item.snapshot_date.getTime()) /
+        1000;
+
+      const firstAnnualScalingFactor = SECONDS_IN_YEAR / firstDuration;
+      const secondDuration =
+        (endOfTheDay.getTime() - item.rewards[1].period_start.getTime()) / 1000;
+      const secondAnnualScalingFactor = SECONDS_IN_YEAR / secondDuration;
+      const firstAmount =
+        Number(item.rewards[0].rate) * firstDuration * firstAnnualScalingFactor;
+      const secondAmount =
+        Number(item.rewards[1].rate) *
+        secondDuration *
+        secondAnnualScalingFactor;
+      const amount = firstAmount + secondAmount;
+      await db
+        .insert(poolRewardsSnapshot)
+        .values({
+          timestamp: item.snapshot_date,
+          poolExternalId: item.pool_external_id,
+          tokenAddress: item.token_address,
+          totalSupply: item.rewards[0].total_supply,
+          yearlyAmount: String(amount),
+          externalId: `${item.pool_external_id}-${
+            item.token_address
+          }-${item.snapshot_date.toISOString()}`,
+        })
+        .onConflictDoNothing()
+        .execute();
+    }
+  }
+  logIfVerbose("Calculating pool rewards snapshots done");
+}
+
 async function fetchBlocks() {
   logIfVerbose("Fetching blocks");
   await Promise.all(
@@ -1256,6 +1610,7 @@ async function fetchBlocks() {
       }
     }),
   );
+  logIfVerbose("Fetching blocks done");
 }
 
 async function seedCalendar() {
@@ -1272,16 +1627,15 @@ SELECT
 export async function runETLs() {
   logIfVerbose("Starting ETL processes");
 
-  await Promise.all([
-    seedCalendar(),
-    seedVebalRounds(),
-    seedBalEmission(),
-    seedNetworks(),
-  ]);
-
+  await seedCalendar();
+  await seedVebalRounds();
+  await seedNetworks();
+  await seedBalEmission();
   await ETLPools();
   await ETLSnapshots();
   await ETLGauges();
+  await ETLPoolRewards();
+  await calculatePoolRewardsSnapshots();
   await fetchBalPrices();
   await ETLGaugesSnapshot();
   await fetchBlocks();

@@ -44,6 +44,7 @@ import {
   poolTokenWeightsSnapshot,
   rewardsTokenApr,
   tokenPrices,
+  tokens,
   vebalRounds,
 } from "./db/schema";
 import { gql } from "./gql";
@@ -1052,7 +1053,7 @@ async function fetchBalPrices() {
 
 async function fetchTokenPrice(
   network: string,
-  tokenAddresses: string,
+  tokenAddress: string,
   start: Date,
 ) {
   const remappings: { [key: string]: string } = {
@@ -1065,7 +1066,7 @@ async function fetchTokenPrice(
   try {
     const prices = await DefiLlamaAPI.getHistoricalPrice(
       start,
-      `${remappings[network] ?? network}:${tokenAddresses}`,
+      `${remappings[network] ?? network}:${tokenAddress}`,
     );
     const pricesArray = Object.values(prices.coins)[0]?.prices;
 
@@ -1087,6 +1088,19 @@ async function fetchTokenPrice(
         };
       }),
     );
+    const isTokenOnTokenTable = await db
+      .selectDistinct({
+        tokenAddress: tokens.address,
+      })
+      .from(tokens)
+      .where(eq(tokens.address, tokenAddress));
+    if (isTokenOnTokenTable.length === 0) {
+      await db.insert(tokens).values({
+        address: tokenAddress,
+        networkSlug: network,
+        symbol: Object.values(prices.coins)[0].symbol,
+      });
+    }
   } catch (e) {
     console.error(
       // @ts-ignore

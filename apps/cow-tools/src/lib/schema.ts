@@ -6,9 +6,9 @@ import { fetchCowQuoteAmountOut } from "#/lib/fetchCowQuote";
 import { ChainId } from "#/utils/chainsPublicClients";
 
 import { dynamicSlippagePriceCheckerAbi } from "./abis/dynamicSlippagePriceChecker";
+import { expectedOutCalculatorAbi } from "./abis/expectedOutCalculator";
 import { encodeExpectedOutArguments, encodePriceCheckerData } from "./encode";
 import { PRICE_CHECKERS, PriceCheckerArgument } from "./types";
-import { expectedOutCalculatorAbi } from "./abis/expectedOutCalculator";
 
 const basicAddressSchema = z
   .string()
@@ -166,7 +166,6 @@ export const generatePriceCheckerSchema = ({
         .refine(
           // @ts-ignore
           async (data) => {
-            console.log(data);
             try {
               const argsToEncode = expectedArgs.map((arg) => {
                 return arg.convertInput(data[arg.name], tokenBuy.decimals);
@@ -175,7 +174,6 @@ export const generatePriceCheckerSchema = ({
                 priceChecker,
                 argsToEncode,
               );
-              console.log(priceCheckerData);
               await publicClient.readContract({
                 address: data.priceCheckerAddress as Address,
                 abi: dynamicSlippagePriceCheckerAbi,
@@ -272,7 +270,7 @@ export const generateExpectedOutCalculatorSchema = ({
 }) => {
   const expectedOutBase = expectedOutCalculatorSchemaMapping[priceChecker];
   if (!expectedOutBase) {
-    return ({}) => z.null();
+    return () => z.null();
   }
   return ({ publicClient }: { publicClient: PublicClient }) => {
     return expectedOutBase.refine(

@@ -40,7 +40,6 @@ export function OrderTable() {
         </Table.HeaderCell>
         <Table.HeaderCell>Transaction Datetime</Table.HeaderCell>
         <Table.HeaderCell>Sell Token</Table.HeaderCell>
-        <Table.HeaderCell>Sell Amount</Table.HeaderCell>
         <Table.HeaderCell>Buy Token</Table.HeaderCell>
         <Table.HeaderCell>Status</Table.HeaderCell>
         <Table.HeaderCell>

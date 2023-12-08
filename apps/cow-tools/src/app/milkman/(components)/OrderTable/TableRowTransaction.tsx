@@ -1,6 +1,5 @@
 import { buildBlockExplorerTxUrl } from "@bleu-fi/utils";
 import { formatDateToLocalDatetime } from "@bleu-fi/utils/date";
-import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import {
   ArrowTopRightIcon,
   ChevronDownIcon,
@@ -159,11 +158,8 @@ export function TableRowTransaction({
                 : "Multiple Tokens"
             }
             chainId={transaction.orders[0].orderEvent.chainId}
+            amount={equalTokensIn ? totalAmountTokenIn : undefined}
           />
-        </Table.BodyCell>
-        <Table.BodyCell>
-          {equalTokensIn &&
-            formatNumber(totalAmountTokenIn, 4, "decimal", "compact", 0.0001)}
         </Table.BodyCell>
         <Table.BodyCell>
           <TokenInfo

@@ -1,5 +1,4 @@
 import { Address, buildBlockExplorerAddressURL } from "@bleu-fi/utils";
-import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import { ArrowTopRightIcon, InfoCircledIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { formatUnits } from "viem";
@@ -57,10 +56,8 @@ export function TableRowOrder({
           id={order.tokenIn?.id}
           symbol={order.tokenIn?.symbol}
           chainId={order.chainId}
+          amount={tokenInAmount}
         />
-      </Table.BodyCell>
-      <Table.BodyCell>
-        {formatNumber(tokenInAmount, 4, "decimal", "compact", 0.0001)}
       </Table.BodyCell>
       <Table.BodyCell>
         <TokenInfo

@@ -1,7 +1,12 @@
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { slateDarkA } from "@radix-ui/colors";
-import { InfoCircledIcon, PlusIcon, TrashIcon } from "@radix-ui/react-icons";
+import {
+  InfoCircledIcon,
+  Pencil1Icon,
+  PlusIcon,
+  TrashIcon,
+} from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import { FieldValues, useForm, UseFormReturn } from "react-hook-form";
 import { useNetwork } from "wagmi";
@@ -58,9 +63,9 @@ export function FormSelectPriceChecker({
       priceChecker: selectedPriceChecker,
       expectedArgs: priceCheckersArgumentsMapping[selectedPriceChecker],
     })({
-      tokenSellAddress: defaultValues?.tokenSell.address,
-      tokenBuyAddress: defaultValues?.tokenBuy.address,
-      tokenBuyDecimals: defaultValues?.tokenBuy.decimals,
+      tokenSell: defaultValues?.tokenSell,
+      tokenBuy: defaultValues?.tokenBuy,
+      sellAmount: defaultValues?.tokenSellAmount,
       publicClient,
     });
 
@@ -68,7 +73,7 @@ export function FormSelectPriceChecker({
     selectedPriceChecker && {
       resolver: zodResolver(schema),
       defaultValues,
-    }
+    },
   );
 
   const {
@@ -88,7 +93,7 @@ export function FormSelectPriceChecker({
     setValue("priceChecker", selectedPriceChecker);
     setValue(
       "priceCheckerAddress",
-      priceCheckerAddressesMapping[chainId][selectedPriceChecker]
+      priceCheckerAddressesMapping[chainId][selectedPriceChecker],
     );
   }, [selectedPriceChecker]);
 
@@ -158,7 +163,7 @@ function PriceCheckerInputs({
 }) {
   const priceCheckerAguments = filterPriceCheckerArguments
     ? priceCheckersArgumentsMapping[priceChecker].filter(
-        (arg) => arg.toExpectedOutCalculator
+        (arg) => arg.toExpectedOutCalculator,
       )
     : priceCheckersArgumentsMapping[priceChecker];
 
@@ -166,11 +171,11 @@ function PriceCheckerInputs({
     return;
   }
   const nonArrayArguments = priceCheckerAguments.filter(
-    (arg) => !arg.type.includes("[]")
+    (arg) => !arg.type.includes("[]"),
   );
 
   const arrayArguments = priceCheckerAguments.filter((arg) =>
-    arg.type.includes("[]")
+    arg.type.includes("[]"),
   );
 
   const { register } = form;
@@ -348,101 +353,215 @@ function MetaPriceCheckerInput({
 
   useEffect(() => {
     arrayArguments.forEach((arg) => {
-      if (defaultValues?.[arg.name]) {
+      if (!defaultValues?.[arg.name]) {
         register(arg.name);
         setValue(
           arg.name,
-          arg.name === "swapPath" ? [defaultValues?.tokenSell.address] : []
+          arg.name === "swapPath" ? [defaultValues?.tokenSell.address] : [],
         );
       }
     });
-    if (defaultValues?.expectedOutCalculatorsNotEncodedData) {
+    if (!defaultValues?.expectedOutCalculatorsNotEncodedData) {
       register("expectedOutCalculatorsNotEncodedData");
       setValue(
         "expectedOutCalculatorsNotEncodedData",
-        defaultValues?.expectedOutCalculatorsNotEncodedData || []
+        defaultValues?.expectedOutCalculatorsNotEncodedData || [],
       );
     }
   }, []);
 
-  function addExpectedOutCalculators(data: FieldValues) {
+  function addExpectedOutCalculators(
+    data: FieldValues,
+    selectedPriceChecker: PRICE_CHECKERS,
+    expectedArgs: PriceCheckerArgument[],
+  ) {
     setValue("expectedOutCalculatorsNotEncodedData", [
       ...getValues("expectedOutCalculatorsNotEncodedData"),
       data,
     ]);
+    setValue("swapPath", [...formData.swapPath, data.toToken.address]);
+    setValue("expectedOutAddresses", [
+      ...formData.expectedOutAddresses,
+      data.expectedOutCalculatorAddress,
+    ]);
+    setValue("expectedOutData", [
+      ...formData.expectedOutData,
+      encodeExpectedOutArguments(
+        selectedPriceChecker,
+        expectedArgs.map((arg) => arg.convertInput(data[arg.name])),
+      ),
+    ]);
+  }
+
+  function editExpectedOutCalculators(
+    data: FieldValues,
+    selectedPriceChecker: PRICE_CHECKERS,
+    expectedArgs: PriceCheckerArgument[],
+  ) {
+    const newExpectedOutCalculators = [...formData.expectedOutData];
+    newExpectedOutCalculators[dialogIndex] = encodeExpectedOutArguments(
+      selectedPriceChecker,
+      expectedArgs.map((arg) => arg.convertInput(data[arg.name])),
+    );
+    setValue("expectedOutData", newExpectedOutCalculators);
+
+    setValue("expectedOutAddresses", [
+      ...formData.expectedOutAddresses.slice(0, dialogIndex),
+      data.expectedOutCalculatorAddress,
+      ...formData.expectedOutAddresses.slice(dialogIndex + 1),
+    ]);
+
+    setValue("swapPath", [
+      ...formData.swapPath.slice(0, dialogIndex + 1),
+      data.toToken.address,
+      ...formData.swapPath.slice(dialogIndex + 2),
+    ]);
+
+    const newExpectedOutCalculatorsNotEncodedData = [
+      ...formData.expectedOutCalculatorsNotEncodedData,
+    ];
+    newExpectedOutCalculatorsNotEncodedData[dialogIndex] = data;
+    if (
+      dialogIndex + 1 <
+      formData.expectedOutCalculatorsNotEncodedData.length
+    ) {
+      newExpectedOutCalculatorsNotEncodedData[dialogIndex + 1].fromToken =
+        data.toToken;
+    }
+    setValue(
+      "expectedOutCalculatorsNotEncodedData",
+      newExpectedOutCalculatorsNotEncodedData,
+    );
   }
 
   const network = useNetwork();
 
   const [openDialog, setOpenDialog] = useState(false);
+  const [valuesForDialog, setValuesForDialog] = useState<FieldValues>({});
+  const [dialogIndex, setDialogIndex] = useState<number>(-1);
 
   return (
     <div className="flex flex-col w-full gap-y-2 mt-2">
+      <Dialog
+        title="Add expected out calculator step"
+        customWidth="w-[600px]"
+        content={
+          <AddMetaExpectedOutCalculatorStepDialog
+            onSubmit={(data, selectedPriceChecker, expectedArgs) => {
+              if (dialogIndex === -1) {
+                addExpectedOutCalculators(
+                  data,
+                  selectedPriceChecker,
+                  expectedArgs,
+                );
+                return;
+              }
+              editExpectedOutCalculators(
+                data,
+                selectedPriceChecker,
+                expectedArgs,
+              );
+            }}
+            defaultValues={valuesForDialog}
+            setIsOpen={setOpenDialog}
+          />
+        }
+        isOpen={openDialog}
+        setIsOpen={setOpenDialog}
+      />
+      <Label className="mt-2">
+        Build a path of expected out calculators from{" "}
+        {defaultValues?.tokenSell.symbol} to {defaultValues?.tokenBuy.symbol}
+      </Label>
       <Table color="blue" shade="darkWithBorder">
         <Table.HeaderRow>
+          <Table.HeaderCell>
+            <span className="sr-only">Cancel</span>
+          </Table.HeaderCell>
           {["Token in", "Token out", "Expected Minimum Out Calculator"].map(
             (arg) => (
               <Table.HeaderCell key={arg}>{arg}</Table.HeaderCell>
-            )
+            ),
           )}
           <Table.HeaderCell>
-            <Dialog
-              title="Add expected out calculator step"
-              customWidth="w-[600px]"
-              content={
-                <AddMetaExpectedOutCalculatorStepDialog
-                  form={form}
-                  addExpectedOutCalculators={addExpectedOutCalculators}
-                  defaultValues={
-                    formData.expectedOutCalculatorsNotEncodedData?.length > 0
-                      ? {
-                          fromToken:
-                            formData.expectedOutCalculatorsNotEncodedData.slice(
-                              -1
-                            )[0].toToken,
-                        }
-                      : {
-                          fromToken: defaultValues?.tokenSell,
-                        }
-                  }
-                  setIsOpen={setOpenDialog}
-                />
-              }
-              isOpen={openDialog}
-              setIsOpen={setOpenDialog}
+            <Button
+              type="button"
+              className="px-5 py-2"
+              onClick={() => {
+                setValuesForDialog(
+                  formData.expectedOutCalculatorsNotEncodedData?.length > 0
+                    ? {
+                        fromToken:
+                          formData.expectedOutCalculatorsNotEncodedData.slice(
+                            -1,
+                          )[0].toToken,
+                      }
+                    : {
+                        fromToken: defaultValues?.tokenSell,
+                      },
+                );
+                setDialogIndex(-1);
+                setOpenDialog(true);
+              }}
             >
-              <Button type="button" className="px-5 py-2">
-                <PlusIcon className="w-5 h-5 items-end" />
-              </Button>
-            </Dialog>
+              <PlusIcon className="w-5 h-5 items-end" />
+            </Button>
           </Table.HeaderCell>
         </Table.HeaderRow>
         <Table.Body>
           {formData.swapPath?.length > 1 &&
-            [...Array(formData.swapPath.length - 1).keys()].map((index) => {
+            [...Array(formData.swapPath.length - 1).keys()].map((rowIndex) => {
               const expectedOutPriceChecker =
                 getPriceCheckerFromAddressAndChain(
                   network.chain?.id as ChainId,
-                  formData.expectedOutAddresses[index],
-                  true
+                  formData.expectedOutAddresses[rowIndex],
+                  true,
                 );
               return (
-                <Table.BodyRow key={index}>
+                <Table.BodyRow key={rowIndex}>
+                  <Table.BodyCell>
+                    <div className="flex items-center justify-center gap-x-2">
+                      <button
+                        className="justify-self-center text-amber9 hover:text-amber10"
+                        type="button"
+                        onClick={() => {
+                          const fromToken = rowIndex
+                            ? formData.expectedOutCalculatorsNotEncodedData[
+                                rowIndex - 1
+                              ].toToken
+                            : defaultValues?.tokenSell;
+                          setValuesForDialog({
+                            ...formData.expectedOutCalculatorsNotEncodedData[
+                              rowIndex
+                            ],
+                            fromToken,
+                          });
+                          setDialogIndex(rowIndex);
+                          setOpenDialog(true);
+                        }}
+                      >
+                        <Pencil1Icon className="w-7 h-7" />
+                      </button>
+                    </div>
+                  </Table.BodyCell>
                   <Table.BodyCell>
                     <Input
-                      name={`tokenIn.${index}`}
+                      name={`tokenIn.${rowIndex}`}
                       value={
-                        formData.expectedOutCalculatorsNotEncodedData[index]
-                          .fromToken.symbol
+                        rowIndex
+                          ? formData.expectedOutCalculatorsNotEncodedData[
+                              rowIndex - 1
+                            ].toToken.symbol
+                          : defaultValues?.tokenSell.symbol
                       }
                       disabled
                     />
                   </Table.BodyCell>
                   <Table.BodyCell>
                     <Input
-                      name={`tokenOut.${index}`}
+                      name={`tokenOut.${rowIndex}`}
                       value={
-                        formData.expectedOutCalculatorsNotEncodedData[index]
+                        formData.expectedOutCalculatorsNotEncodedData[rowIndex]
                           .toToken.symbol
                       }
                       disabled
@@ -450,7 +569,7 @@ function MetaPriceCheckerInput({
                   </Table.BodyCell>
                   <Table.BodyCell>
                     <Input
-                      name={`expectedOut.${index}`}
+                      name={`expectedOut.${rowIndex}`}
                       value={
                         expectedOutPriceChecker || "Not valid expected out"
                       }
@@ -464,11 +583,22 @@ function MetaPriceCheckerInput({
                         type="button"
                         onClick={() => {
                           arrayArguments.forEach((arg) => {
+                            const indexToSlice =
+                              arg.name === "swapPath" ? rowIndex + 1 : rowIndex;
                             setValue(arg.name, [
-                              ...formData[arg.name].slice(0, index),
-                              ...formData[arg.name].slice(index + 1),
+                              ...formData[arg.name].slice(0, indexToSlice),
+                              ...formData[arg.name].slice(indexToSlice + 1),
                             ]);
                           });
+                          setValue("expectedOutCalculatorsNotEncodedData", [
+                            ...formData.expectedOutCalculatorsNotEncodedData.slice(
+                              0,
+                              rowIndex,
+                            ),
+                            ...formData.expectedOutCalculatorsNotEncodedData.slice(
+                              rowIndex + 1,
+                            ),
+                          ]);
                         }}
                       >
                         <TrashIcon className="w-7 h-7" />
@@ -490,27 +620,22 @@ function MetaPriceCheckerInput({
 }
 
 function AddMetaExpectedOutCalculatorStepDialog({
-  form,
   defaultValues,
-  addExpectedOutCalculators,
+  onSubmit,
   setIsOpen,
 }: {
-  form: UseFormReturn;
   defaultValues?: FieldValues;
-  addExpectedOutCalculators: (data: FieldValues) => void;
+  onSubmit?: (
+    data: FieldValues,
+    priceChecker: PRICE_CHECKERS,
+    expectedArgs: PriceCheckerArgument[],
+  ) => void;
   setIsOpen: (isOpen: boolean) => void;
 }) {
-  const fromToken = defaultValues?.fromToken as tokenPriceChecker | undefined;
-
-  const {
-    setValue: setValueMetaPriceChecker,
-    getValues: getValuesMetaPrichecker,
-  } = form;
-
-  const metaPriceCheckerValues = getValuesMetaPrichecker();
+  const fromToken = defaultValues?.fromToken as tokenPriceChecker;
 
   const [selectedPriceChecker, setSelectedPriceChecker] =
-    useState<PRICE_CHECKERS>(defaultValues?.priceChecker);
+    useState<PRICE_CHECKERS>(defaultValues?.expectedOutCalculator);
 
   const { safe } = useSafeAppsSDK();
 
@@ -537,7 +662,7 @@ function AddMetaExpectedOutCalculatorStepDialog({
     selectedPriceChecker && {
       resolver: zodResolver(schema),
       defaultValues,
-    }
+    },
   );
 
   const {
@@ -564,15 +689,15 @@ function AddMetaExpectedOutCalculatorStepDialog({
     setValue("expectedOutCalculator", selectedPriceChecker);
     setValue(
       "expectedOutCalculatorAddress",
-      expectedOutCalculatorAddressesMapping[chainId][selectedPriceChecker]
+      expectedOutCalculatorAddressesMapping[chainId][selectedPriceChecker],
     );
   }, [selectedPriceChecker]);
 
   const priceCheckersToShow = deployedPriceCheckersByChain[chainId].filter(
     (priceChecker) =>
       ![PRICE_CHECKERS.FIXED_MIN_OUT, PRICE_CHECKERS.META].includes(
-        priceChecker as PRICE_CHECKERS
-      )
+        priceChecker as PRICE_CHECKERS,
+      ),
   );
 
   const toToken = watch("toToken");
@@ -581,22 +706,7 @@ function AddMetaExpectedOutCalculatorStepDialog({
     <Form
       {...expectedOutCalculatorForm}
       onSubmit={(data) => {
-        addExpectedOutCalculators(data);
-        setValueMetaPriceChecker("swapPath", [
-          ...metaPriceCheckerValues.swapPath,
-          data.toToken.address,
-        ]);
-        setValueMetaPriceChecker("expectedOutAddresses", [
-          ...metaPriceCheckerValues.expectedOutAddresses,
-          data.expectedOutCalculatorAddress,
-        ]);
-        setValueMetaPriceChecker("expectedOutData", [
-          ...metaPriceCheckerValues.expectedOutData,
-          encodeExpectedOutArguments(
-            selectedPriceChecker,
-            expectedArgs.map((arg) => arg.convertInput(data[arg.name]))
-          ),
-        ]);
+        onSubmit?.(data, selectedPriceChecker, expectedArgs);
         setIsOpen(false);
       }}
       className="flex flex-col gap-y-6 p-9 w-full"
@@ -633,7 +743,7 @@ function AddMetaExpectedOutCalculatorStepDialog({
             setSelectedPriceChecker(priceChecker as PRICE_CHECKERS);
           }}
           className="w-full mt-2"
-          defaultValue={defaultValues?.priceChecker}
+          defaultValue={defaultValues?.expectedOutCalculator}
         >
           {priceCheckersToShow.map((priceChecker) => (
             <SelectItem value={priceChecker} key={priceChecker}>
@@ -649,14 +759,18 @@ function AddMetaExpectedOutCalculatorStepDialog({
       </div>
       {selectedPriceChecker && (
         <PriceCheckerInputs
-          form={form}
+          form={expectedOutCalculatorForm}
           priceChecker={selectedPriceChecker}
           defaultValues={defaultValues}
           tokenBuyDecimals={toToken?.decimals}
           filterPriceCheckerArguments={true}
         />
       )}
-      <Button type="submit" className="w-full" disabled={isSubmitting}>
+      <Button
+        type="submit"
+        className="w-full"
+        disabled={isSubmitting || !selectedPriceChecker}
+      >
         {isSubmitting ? <Spinner size="sm" /> : <span>Continue</span>}
       </Button>
     </Form>

@@ -53,7 +53,7 @@ export const generateOrderOverviewSchema = ({
       {
         path: ["validFrom"],
         message: "Valid from is needed",
-      }
+      },
     )
     .refine(
       (data) => {
@@ -62,7 +62,7 @@ export const generateOrderOverviewSchema = ({
       {
         path: ["tokenBuy"],
         message: "Tokens sell and buy must be different",
-      }
+      },
     )
     .refine(
       (data) => {
@@ -80,7 +80,7 @@ export const generateOrderOverviewSchema = ({
       {
         path: ["tokenBuy"],
         message: "CoW Swap doesn't support this pair",
-      }
+      },
     );
 
 export const orderTwapSchema = z.object({
@@ -124,14 +124,14 @@ export const priceCheckingBaseSchemaMapping = {
               return true;
             }
             return token === data.tokenOut[index - 1];
-          }
+          },
         );
         return previousTokenOutIsNextTokenIn;
       },
       {
         path: ["tokenIn"],
         message: "The token out must be the token in of the next line",
-      }
+      },
     ),
   [PRICE_CHECKERS.META]: basicDynamicSlippageSchema.extend({
     swapPath: basicAddressSchema.array().nonempty(),
@@ -150,14 +150,14 @@ export const generatePriceCheckerSchema = ({
 }) => {
   const priceCheckerBase = priceCheckingBaseSchemaMapping[priceChecker];
   return ({
-    tokenSellAddress,
-    tokenBuyAddress,
-    tokenBuyDecimals,
+    tokenSell,
+    tokenBuy,
+    sellAmount,
     publicClient,
   }: {
-    tokenSellAddress: Address;
-    tokenBuyAddress: Address;
-    tokenBuyDecimals: number;
+    tokenSell: { address: Address; decimals: number };
+    tokenBuy: { address: Address; decimals: number };
+    sellAmount: number;
     publicClient: PublicClient;
   }) => {
     return (
@@ -166,22 +166,24 @@ export const generatePriceCheckerSchema = ({
         .refine(
           // @ts-ignore
           async (data) => {
+            console.log(data);
             try {
               const argsToEncode = expectedArgs.map((arg) => {
-                return arg.convertInput(data[arg.name], tokenBuyDecimals);
+                return arg.convertInput(data[arg.name], tokenBuy.decimals);
               });
               const priceCheckerData = encodePriceCheckerData(
                 priceChecker,
-                argsToEncode
+                argsToEncode,
               );
+              console.log(priceCheckerData);
               await publicClient.readContract({
                 address: data.priceCheckerAddress as Address,
                 abi: dynamicSlippagePriceCheckerAbi,
                 functionName: "checkPrice",
                 args: [
-                  1, // we're just interested in call revert or not, so this value is not important
-                  tokenSellAddress,
-                  tokenBuyAddress,
+                  sellAmount * 10 ** tokenSell.decimals,
+                  tokenSell.address,
+                  tokenBuy.address,
                   0, // this value isn't used by this price checker
                   0, // this value will depend on the order, so it's not important here
                   priceCheckerData,
@@ -195,7 +197,7 @@ export const generatePriceCheckerSchema = ({
           {
             path: ["priceChecker"],
             message: priceCheckerRevertedMessage,
-          }
+          },
         )
         .refine(
           // @ts-ignore
@@ -204,15 +206,15 @@ export const generatePriceCheckerSchema = ({
               return true;
             }
             return (
-              data.swapPath[0] === tokenSellAddress &&
-              data.swapPath.slice(-1)[0] === tokenBuyAddress
+              data.swapPath[0] === tokenSell.address &&
+              data.swapPath.slice(-1)[0] === tokenBuy.address
             );
           },
           {
             path: ["priceChecker"],
             message:
               "The first token must be the token sell and the last token must be the token buy",
-          }
+          },
         )
     );
   };
@@ -249,14 +251,14 @@ export const expectedOutCalculatorSchemaMapping = {
               return true;
             }
             return token === data.tokenOut[index - 1];
-          }
+          },
         );
         return previousTokenOutIsNextTokenIn;
       },
       {
         path: ["tokenIn"],
         message: "The token out must be the token in of the next line",
-      }
+      },
     ),
   [PRICE_CHECKERS.META]: null,
 } as const;
@@ -282,14 +284,14 @@ export const generateExpectedOutCalculatorSchema = ({
           });
           const expectedOutData = encodeExpectedOutArguments(
             priceChecker,
-            argsToEncode
+            argsToEncode,
           );
           await publicClient.readContract({
             address: data.expectedOutCalculatorAddress as Address,
             abi: expectedOutCalculatorAbi,
             functionName: "getExpectedOut",
             args: [
-              1, // we're just interested in call revert or not, so this value is not important
+              1e18, // we're just interested in call revert or not, so this value is not important
               data.fromToken.address,
               data.toToken.address,
               expectedOutData,
@@ -303,7 +305,7 @@ export const generateExpectedOutCalculatorSchema = ({
       {
         path: ["expectedOutCalculator"],
         message: expectedOutRevertedMessage,
-      }
+      },
     );
   };
 };

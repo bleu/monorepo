@@ -233,31 +233,42 @@ async function getQueuedMilkmanTransactions({
 export function useUserMilkmanTransactions() {
   const { safe } = useSafeAppsSDK();
   const [loaded, setLoaded] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const [error, setError] = useState(false);
   const [transactions, setTransactions] = useState<IUserMilkmanTransaction[]>(
     [],
   );
 
+  const retry = () => {
+    setLoaded(false);
+    setRetryCount(retryCount + 1);
+  };
+
   useEffect(() => {
     async function loadOrders() {
-      const [processedTransactions, queuedTransactions] = await Promise.all([
-        getProcessedMilkmanTransactions({
-          chainId: safe.chainId as ChainId,
-          address: safe.safeAddress,
-        }),
-        getQueuedMilkmanTransactions({
-          chainId: String(safe.chainId),
-          address: safe.safeAddress,
-        }),
-      ]);
-
-      setTransactions([...queuedTransactions, ...processedTransactions]);
+      try {
+        const [processedTransactions, queuedTransactions] = await Promise.all([
+          getProcessedMilkmanTransactions({
+            chainId: safe.chainId as ChainId,
+            address: safe.safeAddress,
+          }),
+          getQueuedMilkmanTransactions({
+            chainId: String(safe.chainId),
+            address: safe.safeAddress,
+          }),
+        ]);
+        setTransactions([...queuedTransactions, ...processedTransactions]);
+        setError(false);
+      } catch {
+        setError(true);
+      }
       setLoaded(true);
     }
 
     loadOrders();
-  }, [safe]);
+  }, [safe, retryCount]);
 
-  return { transactions, loaded };
+  return { transactions, loaded, error, retry };
 }
 
 export async function getTokenBalance(

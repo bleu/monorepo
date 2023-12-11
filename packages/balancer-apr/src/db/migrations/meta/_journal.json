@@ -141,6 +141,41 @@
       "when": 1701892290656,
       "tag": "0019_grey_marvel_zombies",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "5",
+      "when": 1702307469509,
+      "tag": "0020_lazy_the_twelve",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "5",
+      "when": 1702312416281,
+      "tag": "0021_orange_stingray",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "5",
+      "when": 1702315703236,
+      "tag": "0022_outgoing_roland_deschain",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "5",
+      "when": 1702316316906,
+      "tag": "0023_foamy_maggott",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "5",
+      "when": 1702322096137,
+      "tag": "0024_right_naoko",
+      "breakpoints": true
     }
   ]
 }

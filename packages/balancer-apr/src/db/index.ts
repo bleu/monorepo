@@ -12,14 +12,17 @@ class QueryLogger implements Logger {
   logQuery(query: string, params: unknown[]): void {
     if (process.env.NODE_ENV === "production") return;
 
-    console.debug("___QUERY___");
-    console.debug(query);
-    console.debug(params);
-    console.debug("___END_QUERY___");
+    // console.debug("___QUERY___");
+    // console.debug(query);
+    // console.debug(params);
+    // console.debug("___END_QUERY___");
   }
 }
 
-export const db = drizzle(postgres(process.env.DATABASE_URL!), {
-  schema,
-  logger: new QueryLogger(),
-});
+export const db = drizzle(
+  postgres("postgres://postgres:postgres@0.0.0.0:5432/apr"),
+  {
+    schema,
+    logger: new QueryLogger(),
+  },
+);

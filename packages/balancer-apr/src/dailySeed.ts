@@ -9,13 +9,26 @@ import {
   SECONDS_IN_YEAR,
 } from "@bleu-fi/utils/date";
 import {
+  and,
+  asc,
+  eq,
+  gt,
+  gte,
+  inArray,
+  isNotNull,
+  ne,
+  sql,
+} from "drizzle-orm";
+import { Address } from "viem";
+
+import {
   NETWORK_TO_BALANCER_ENDPOINT_MAP,
   NETWORK_TO_REWARDS_ENDPOINT_MAP,
   POOL_REWARDS_DATE_RANGE,
   POOLS_SNAPSHOTS_DATE_RANGE,
   POOLS_WITHOUT_GAUGE_QUERY_DATE_RANGE,
-} from "config";
-import { db } from "db";
+} from "./config";
+import { db } from "./db";
 import {
   balEmission,
   blocks,
@@ -34,40 +47,19 @@ import {
   rewardsTokenApr,
   tokenPrices,
   vebalRounds,
-} from "db/schema";
-import {
-  and,
-  asc,
-  eq,
-  gt,
-  gte,
-  inArray,
-  isNotNull,
-  ne,
-  sql,
-} from "drizzle-orm";
+} from "./db/schema";
 import {
   addToTable,
   ETLGauges,
   ETLPoolRateProvider,
   fetchTokenPrice,
   transformNetworks,
-} from "index";
-import { DefiLlamaAPI } from "lib/defillama";
-import { getRates } from "lib/getRates";
-import { getPoolRelativeWeights } from "lib/getRelativeWeight";
-import { paginatedFetchDateRange } from "paginatedFetch";
-import { Address } from "viem";
-
+} from "./index";
 import * as balEmissions from "./lib/balancer/emissions";
-
-const isVerbose = process.argv.includes("-v");
-
-export function logIfVerbose(message: string) {
-  if (isVerbose) {
-    console.log(message);
-  }
-}
+import { DefiLlamaAPI } from "./lib/defillama";
+import { getRates } from "./lib/getRates";
+import { getPoolRelativeWeights } from "./lib/getRelativeWeight";
+import { paginatedFetchDateRange } from "./paginatedFetch";
 
 const networkNames = Object.keys(
   NETWORK_TO_BALANCER_ENDPOINT_MAP,
@@ -87,6 +79,7 @@ const twoDaysAgo = new Date(currentDate);
 twoDaysAgo.setUTCDate(currentDate.getUTCDate() - 2);
 
 async function seedCalendar() {
+  console.log("Seeding calendar");
   await db.execute(sql`
   INSERT INTO calendar (timestamp)
     SELECT
@@ -100,7 +93,7 @@ async function seedCalendar() {
 }
 
 async function seedVebalRounds() {
-  logIfVerbose("Seeding veBAL rounds");
+  console.log("Seeding veBAL rounds");
 
   const startDate = new Date("2022-04-14T00:00:00.000Z");
   let roundNumber = 1;
@@ -126,7 +119,7 @@ async function seedVebalRounds() {
 }
 
 async function seedBalEmission() {
-  logIfVerbose("Seeding BAL emission");
+  console.log("Seeding BAL emission");
   const timestamps = await db
     .selectDistinct({ timestamp: calendar.timestamp })
     .from(calendar)
@@ -158,7 +151,7 @@ async function seedBalEmission() {
 }
 
 async function ETLPools() {
-  logIfVerbose("Starting Pools Extraction");
+  console.log("Starting Pools Extraction");
 
   await Promise.all(
     networkNames.map(async (networkName) => {
@@ -166,7 +159,7 @@ async function ETLPools() {
       await extractPoolsForNetwork(networkEndpoint, networkName);
     }),
   );
-  logIfVerbose("Starting Pools Transformation");
+  console.log("Starting Pools Transformation");
   await transformPoolData();
 }
 
@@ -235,7 +228,7 @@ async function extractGaugesSnapshot() {
         ]);
 
       // Batch process to get relative weights
-      logIfVerbose(
+      console.log(
         `Fetching ${gaugeAddressTimestampTuples.length} relativeweight-timestamp pairs`,
       );
       const relativeWeights = await getPoolRelativeWeights(
@@ -293,7 +286,7 @@ async function extractGaugesSnapshot() {
 }
 
 async function extractPoolRateProviderSnapshot(network: string) {
-  logIfVerbose("Starting Pool Rate Provider Snapshot Extraction");
+  console.log("Starting Pool Rate Provider Snapshot Extraction");
   const distinctRateProviders = await db
     .selectDistinct({
       rateProviderAddress: poolTokenRateProviders.address,
@@ -395,7 +388,7 @@ async function extractPoolRateProviderSnapshot(network: string) {
         timestamp as Date,
       ]);
 
-    logIfVerbose(
+    console.log(
       `Fetching ${rateProviderTuples.length} rates for ${rateProviderAddress} on ${networkSlug}`,
     );
     try {
@@ -439,7 +432,7 @@ async function extractPoolRateProviderSnapshot(network: string) {
 }
 
 async function processPools(data: any, network: string) {
-  logIfVerbose(`Processing pools for network ${network}`);
+  console.log(`Processing pools for network ${network}`);
 
   if (data.pools.length > 0) {
     await addToTable(
@@ -453,7 +446,7 @@ async function processPools(data: any, network: string) {
 }
 
 async function processPoolSnapshots(data: any, network: string) {
-  logIfVerbose(`Processing pool snapshots for network ${network}`);
+  console.log(`Processing pool snapshots for network ${network}`);
 
   if (data.poolSnapshots.length > 0) {
     await addToTable(
@@ -467,7 +460,7 @@ async function processPoolSnapshots(data: any, network: string) {
 }
 
 async function processPoolRewards(data: any, network: string) {
-  logIfVerbose(`Processing pool rewards for network ${network}`);
+  console.log(`Processing pool rewards for network ${network}`);
 
   if (data.rewardTokenDeposits.length > 0) {
     await addToTable(
@@ -682,7 +675,7 @@ async function transformRewardsData() {
 }
 
 async function ETLSnapshots() {
-  logIfVerbose("Starting Pool Snapshots Extraction");
+  console.log("Starting Pool Snapshots Extraction");
   await Promise.all(
     networkNames.map(async (networkName) => {
       const networkEndpoint = NETWORK_TO_BALANCER_ENDPOINT_MAP[networkName];
@@ -690,29 +683,29 @@ async function ETLSnapshots() {
     }),
   );
 
-  logIfVerbose("Starting Pool Snapshots Extraction");
+  console.log("Starting Pool Snapshots Extraction");
   await transformPoolSnapshotsData();
 }
 
 async function ETLPoolRewards() {
-  logIfVerbose("Starting Pool Rewards Extraction");
+  console.log("Starting Pool Rewards Extraction");
   await Promise.all(
     networkNamesRewards.map(async (networkName) => {
       const networkEndpoint = NETWORK_TO_REWARDS_ENDPOINT_MAP[networkName];
       await extractRewardsForNetwork(networkEndpoint, networkName);
     }),
   );
-  logIfVerbose("Starting Pool Rewards Extraction");
+  console.log("Starting Pool Rewards Extraction");
   await transformRewardsData();
 }
 
 async function ETLGaugesSnapshot() {
-  logIfVerbose("Starting Gauges Snapshot Extraction");
+  console.log("Starting Gauges Snapshot Extraction");
   await extractGaugesSnapshot();
 }
 
 async function ETLPoolRateProviderSnapshot() {
-  logIfVerbose("Starting Pool Rate Provider Snapshot Extraction");
+  console.log("Starting Pool Rate Provider Snapshot Extraction");
   await Promise.all(
     networkNames.map(async (networkName) => {
       await extractPoolRateProviderSnapshot(networkName);
@@ -721,7 +714,7 @@ async function ETLPoolRateProviderSnapshot() {
 }
 
 async function calculatePoolRewardsSnapshots() {
-  logIfVerbose("Calculating pool rewards snapshots");
+  console.log("Calculating pool rewards snapshots");
   const poolRewardsPerDay = await db.execute(sql`
   WITH date_series AS (
     SELECT generate_series(
@@ -955,11 +948,11 @@ SELECT * FROM reward_calculations
         .execute();
     }
   }
-  logIfVerbose("Calculating pool rewards snapshots done");
+  console.log("Calculating pool rewards snapshots done");
 }
 
 async function fetchBalPrices() {
-  logIfVerbose("Start fetching BAL prices process");
+  console.log("Start fetching BAL prices process");
   await fetchTokenPrice(
     "ethereum",
     "0xba100000625a3754423978a60c9317c58a424e3d",
@@ -968,10 +961,10 @@ async function fetchBalPrices() {
 }
 
 async function fetchBlocks() {
-  logIfVerbose("Fetching blocks");
+  console.log("Fetching blocks");
   await Promise.all(
     networkNames.map(async (networkName) => {
-      logIfVerbose(`Fetching blocks for ${networkName}`);
+      console.log(`Fetching blocks for ${networkName}`);
       const timestamps = await db
         .selectDistinct({ timestamp: poolSnapshots.timestamp })
         .from(poolSnapshots)
@@ -1008,11 +1001,11 @@ async function fetchBlocks() {
       }
     }),
   );
-  logIfVerbose("Fetching blocks done");
+  console.log("Fetching blocks done");
 }
 
 async function fetchTokenPrices() {
-  logIfVerbose("Start fetching token prices process");
+  console.log("Start fetching token prices process");
   const tokensFromRateProviders = await db
     .selectDistinct({
       tokenAddress: poolTokenRateProviders.tokenAddress,
@@ -1080,15 +1073,13 @@ async function fetchTokenPrices() {
         dateToEpoch(createdAt[0]),
         dateToEpoch(twoDaysAgo),
       );
-      logIfVerbose(
+      console.log(
         `Fetching token price for ${tokenAddress} on ${networkSlug} since ${epochToDate(
           minDate,
         ).toISOString()}`,
       );
       await fetchTokenPrice(networkSlug, tokenAddress, epochToDate(minDate));
-      logIfVerbose(
-        `token price for ${tokenAddress} on ${networkSlug} finished`,
-      );
+      console.log(`token price for ${tokenAddress} on ${networkSlug} finished`);
     } catch (error) {
       // console.error(`${error}`);
     }
@@ -1300,7 +1291,7 @@ async function calculateTokenWeightSnapshots() {
 
 async function calculateApr() {
   //   Fee APR
-  logIfVerbose("Seeding Fee APR");
+  console.log("Seeding Fee APR");
   await db.execute(sql`
       INSERT INTO swap_fee_apr (timestamp, pool_external_id, collected_fees_usd, value, external_id)
       SELECT
@@ -1334,7 +1325,7 @@ async function calculateApr() {
     `);
 
   //veBAL APR
-  logIfVerbose("Seeding veBAL APR");
+  console.log("Seeding veBAL APR");
   await db.execute(sql`
     INSERT INTO vebal_apr (timestamp, value, pool_external_id, external_id)
     SELECT DISTINCT
@@ -1364,7 +1355,7 @@ async function calculateApr() {
     `);
 
   //Token Yield APR
-  logIfVerbose("Seeding Token Yield APR for weighted pools");
+  console.log("Seeding Token Yield APR for weighted pools");
 
   await db.execute(sql`
     INSERT INTO yield_token_apr (timestamp, token_address, pool_external_id, external_id, value)
@@ -1430,7 +1421,7 @@ async function calculateApr() {
         AND excluded.value != 'NaN';
     `);
 
-  logIfVerbose("Seeding Token Yield APR for non-weighted pools");
+  console.log("Seeding Token Yield APR for non-weighted pools");
 
   await db.execute(sql`
     INSERT INTO yield_token_apr (timestamp, token_address, pool_external_id, external_id, value)
@@ -1503,7 +1494,7 @@ async function calculateApr() {
             AND excluded.value != 'NaN';
     `);
 
-  logIfVerbose("Seeding Rewards APR");
+  console.log("Seeding Rewards APR");
 
   const poolInRewardsSnapshot = await db
     .selectDistinct({
@@ -1569,8 +1560,8 @@ async function calculateApr() {
   }
 }
 
-async function runDailyETLs() {
-  logIfVerbose("Starting ETL processes");
+export async function runDailyETLs() {
+  console.log("Starting ETL processes");
 
   await seedCalendar();
   await seedVebalRounds();
@@ -1588,8 +1579,6 @@ async function runDailyETLs() {
   await fetchTokenPrices();
   await calculateTokenWeightSnapshots();
   await calculateApr();
-  logIfVerbose("Ended ETL processes");
+  console.log("Ended ETL processes");
   process.exit(0);
 }
-
-runDailyETLs();

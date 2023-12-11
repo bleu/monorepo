@@ -14,6 +14,7 @@ import { AllTransactionFromUserQuery } from "#/lib/gql/generated";
 import { milkmanSubgraph } from "#/lib/gql/sdk";
 import { MILKMAN_ADDRESS } from "#/lib/transactionFactory";
 import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
+import { retryAsyncOperation } from "#/utils/retryAsyncOperation";
 
 gql(`
   query AllTransactionFromUser ($user: String!) {
@@ -151,11 +152,21 @@ async function getProcessedMilkmanTransactions({
 
   const hasTokenBySwap = tokenBalances.map((tokenBalance) => tokenBalance > 0);
 
-  const cowOrdersBySwap = await Promise.all(
+  const cowOrdersBySwap = (await Promise.all(
     orderContractsBySwap.map((orderContract) =>
-      getCowOrders(orderContract as Address),
+      retryAsyncOperation<ICowOrder[]>(
+        async () => {
+          return getCowOrders(orderContract as Address);
+        },
+        5,
+        1000,
+      ),
     ),
-  );
+  )) as ICowOrder[][];
+
+  if (cowOrdersBySwap.some((cowOrders) => cowOrders === null)) {
+    throw new Error("Failed to fetch cow orders");
+  }
 
   const hasTokenByTransaction = [] as boolean[][];
   const cowOrdersByTransaction = [] as ICowOrder[][][];

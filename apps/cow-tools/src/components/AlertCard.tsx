@@ -2,13 +2,13 @@ import { capitalize } from "@bleu-fi/utils";
 import cn from "clsx";
 
 export function AlertCard({
-  message,
   title,
   style,
+  children,
 }: {
   style: "error" | "warning";
-  message: string;
   title: string;
+  children?: React.ReactNode;
 }) {
   return (
     <div className="max-w-md" role="alert">
@@ -28,7 +28,7 @@ export function AlertCard({
             : "bg-amber12 border-yellow-300 text-yellow-800 ",
         )}
       >
-        <p>{message}</p>
+        {children}
       </div>
     </div>
   );

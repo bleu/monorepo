@@ -158,11 +158,10 @@ function TwapSuggestion({
   return (
     showWarning &&
     !isTwapNeeded && (
-      <AlertCard
-        style="warning"
-        title="TWAP is suggested"
-        message="Your order is large enough to cause a significant price impact. Consider using TWAP to split your order into multiples suborders."
-      />
+      <AlertCard style="warning" title="TWAP is suggested">
+        Your order is large enough to cause a significant price impact. Consider
+        using TWAP to split your order into multiples suborders.
+      </AlertCard>
     )
   );
 }

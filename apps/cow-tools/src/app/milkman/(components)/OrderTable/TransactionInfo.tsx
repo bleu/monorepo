@@ -5,10 +5,10 @@ import { Address } from "viem";
 
 import {
   decodePriceCheckerData,
+  getExpectedArgumentsFromPriceChecker,
   getPriceCheckerFromAddressAndChain,
 } from "#/lib/decode";
 import { AllTransactionFromUserQuery } from "#/lib/gql/generated";
-import { priceCheckersArgumentsMapping } from "#/lib/priceCheckersMappings";
 import { ChainId } from "#/utils/chainsPublicClients";
 import { truncateAddress } from "#/utils/truncate";
 
@@ -23,11 +23,19 @@ export function TransactionInfo({
   );
 
   const expecetedArguments = priceChecker
-    ? priceCheckersArgumentsMapping[priceChecker]
+    ? getExpectedArgumentsFromPriceChecker(
+        priceChecker,
+        order.priceCheckerData as `0x${string}`,
+        order.chainId as ChainId,
+      )
     : [];
 
   const decodedArgs = priceChecker
-    ? decodePriceCheckerData(priceChecker, order.priceCheckerData as Address)
+    ? decodePriceCheckerData(
+        priceChecker,
+        order.priceCheckerData as `0x${string}`,
+        order.chainId as ChainId,
+      )
     : [];
 
   const priceCheckerExplorerUrl = buildBlockExplorerAddressURL({
@@ -57,15 +65,18 @@ export function TransactionInfo({
           )}
         </div>
         {decodedDataSuccess &&
-          decodedArgs.map((argument, index) => (
-            <div key={index}>
-              {expecetedArguments[index].label} :{" "}
-              {expecetedArguments[index].convertOutput(
+          decodedArgs.map((argument, index) => {
+            const output =
+              expecetedArguments[index].convertOutput?.(
                 argument,
                 order.tokenOut?.decimals || 18,
-              )}
-            </div>
-          ))}
+              ) || String(argument);
+            return (
+              <div key={index} className="max-w-prose text-base">
+                {expecetedArguments[index].label} : {output}
+              </div>
+            );
+          })}
         {!decodedDataSuccess && (
           <span>Price Checker Data: Error decoding data</span>
         )}

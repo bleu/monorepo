@@ -1,15 +1,10 @@
 import { Address } from "@bleu-fi/utils";
-import { gnosis, goerli, mainnet } from "viem/chains";
+import { goerli, mainnet } from "viem/chains";
 
 import { ChainId } from "#/utils/chainsPublicClients";
 import { cowTokenList } from "#/utils/cowTokenList";
 
 const COINGECKO_BASE_URL = "https://api.coingecko.com/api/v3";
-
-const PLATFORM_MAP = {
-  [gnosis.id]: "xdai",
-  [goerli.id]: "ethereum", // since coingecko can't handle goerli tokens, we use the ethereum version of the token to test
-};
 
 export async function fetchTokenUsdPrice({
   token,
@@ -39,13 +34,12 @@ export async function fetchTokenUsdPrice({
     return;
   }
 
-  const platform = PLATFORM_MAP[chainId];
   const params = {
     contract_addresses: address,
     vs_currencies: "usd",
   };
 
-  const url = `${COINGECKO_BASE_URL}/simple/token_price/${platform}/?${new URLSearchParams(
+  const url = `${COINGECKO_BASE_URL}/simple/token_price/ethereum/?${new URLSearchParams(
     params,
   )}`;
 

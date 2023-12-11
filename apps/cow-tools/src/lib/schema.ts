@@ -168,7 +168,10 @@ export const generatePriceCheckerSchema = ({
           async (data) => {
             try {
               const argsToEncode = expectedArgs.map((arg) => {
-                return arg.convertInput(data[arg.name], tokenBuy.decimals);
+                return (
+                  arg.convertInput?.(data[arg.name], tokenBuy.decimals) ||
+                  data[arg.name]
+                );
               });
               const priceCheckerData = encodePriceCheckerData(
                 priceChecker,

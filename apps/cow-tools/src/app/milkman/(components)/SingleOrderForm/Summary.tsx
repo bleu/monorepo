@@ -41,7 +41,11 @@ export function OrderSummaryList({
     );
     const priceCheckersArgs = priceCheckersArgumentsMapping[
       data.priceChecker as PRICE_CHECKERS
-    ].map((arg) => arg.convertInput(data[arg.name], data.tokenBuy.decimals));
+    ].map(
+      (arg) =>
+        arg.convertInput?.(data[arg.name], data.tokenBuy.decimals) ||
+        data[arg.name],
+    );
 
     const ordersNumber = data.isTwapNeeded ? data.numberOfOrders : 1;
     const delay = data.isTwapNeeded

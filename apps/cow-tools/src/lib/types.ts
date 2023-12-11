@@ -4,7 +4,8 @@ export type argTypeName =
   | "bool"
   | "address[]"
   | "bool[]"
-  | "bytes";
+  | "bytes"
+  | "uint24[]";
 
 export type argType =
   | string
@@ -17,15 +18,15 @@ export type argType =
 export interface PriceCheckerArgument {
   name: string;
   type: argTypeName;
-  label: string;
-  inputType: "number" | "text" | "checkbox";
-  toExpectedOutCalculator: boolean;
-  convertInput: (input: argType | number, decimals?: number) => argType;
-  convertOutput: (
+  encodingLevel: number;
+  label?: string;
+  inputType?: "number" | "text" | "checkbox";
+  convertInput?: (input: argType | number, decimals?: number) => argType;
+  convertOutput?: (
     output: argType,
     decimals?: number,
-  ) => Exclude<argType, bigint | bigint[]> | number;
-  description: string;
+  ) => Exclude<argType, bigint | bigint[]> | number | number[];
+  description?: string;
   link?: string;
   step?: number;
 }

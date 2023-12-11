@@ -163,7 +163,7 @@ function PriceCheckerInputs({
 }) {
   const priceCheckerAguments = filterPriceCheckerArguments
     ? priceCheckersArgumentsMapping[priceChecker].filter(
-        (arg) => arg.toExpectedOutCalculator,
+        (arg) => arg.encodingLevel > 0,
       )
     : priceCheckersArgumentsMapping[priceChecker];
 
@@ -388,7 +388,9 @@ function MetaPriceCheckerInput({
       ...formData.expectedOutData,
       encodeExpectedOutArguments(
         selectedPriceChecker,
-        expectedArgs.map((arg) => arg.convertInput(data[arg.name])),
+        expectedArgs.map(
+          (arg) => arg.convertInput?.(data[arg.name]) || data[arg.name],
+        ),
       ),
     ]);
   }
@@ -401,7 +403,9 @@ function MetaPriceCheckerInput({
     const newExpectedOutCalculators = [...formData.expectedOutData];
     newExpectedOutCalculators[dialogIndex] = encodeExpectedOutArguments(
       selectedPriceChecker,
-      expectedArgs.map((arg) => arg.convertInput(data[arg.name])),
+      expectedArgs.map(
+        (arg) => arg.convertInput?.(data[arg.name]) || data[arg.name],
+      ),
     );
     setValue("expectedOutData", newExpectedOutCalculators);
 
@@ -645,7 +649,7 @@ function AddMetaExpectedOutCalculatorStepDialog({
 
   const expectedArgs = priceCheckersArgumentsMapping[
     selectedPriceChecker
-  ]?.filter((arg) => arg.toExpectedOutCalculator);
+  ]?.filter((arg) => arg.encodingLevel > 0);
 
   const getExpectedOutCalculatorSchema = generateExpectedOutCalculatorSchema({
     priceChecker: selectedPriceChecker,

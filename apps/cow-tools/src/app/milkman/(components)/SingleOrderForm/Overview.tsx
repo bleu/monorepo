@@ -180,26 +180,28 @@ export function FormOrderOverview({
           setValue("isValidFromNeeded", !formData.isValidFromNeeded)
         }
       />
-      <div>
-        <Input
-          type="datetime-local"
-          label="Valid from"
-          disabled={!formData.isValidFromNeeded}
-          {...register("validFrom")}
-        />
-        <div className="mt-2 flex gap-x-1 text-xs">
-          <button
-            type="button"
+      {formData.isValidFromNeeded && (
+        <div>
+          <Input
+            type="datetime-local"
+            label="Valid from"
             disabled={!formData.isValidFromNeeded}
-            className="text-blue9 outline-none hover:text-amber9"
-            onClick={() => {
-              setValue("validFrom", formatDateToLocalDatetime(new Date()));
-            }}
-          >
-            Use Current Date time
-          </button>
+            {...register("validFrom")}
+          />
+          <div className="mt-2 flex gap-x-1 text-xs">
+            <button
+              type="button"
+              disabled={!formData.isValidFromNeeded}
+              className="text-blue9 outline-none hover:text-amber9"
+              onClick={() => {
+                setValue("validFrom", formatDateToLocalDatetime(new Date()));
+              }}
+            >
+              Use Current Date time
+            </button>
+          </div>
         </div>
-      </div>
+      )}
       <FormFooter transactionStatus={TransactionStatus.ORDER_OVERVIEW} />
     </Form>
   );

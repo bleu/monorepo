@@ -99,15 +99,17 @@ export function TransactionCard({
   };
 
   return (
-    <div className="flex h-full items-center justify-center w-full mt-20">
-      <div className="my-4 flex h-fit w-fit flex-col  rounded-lg border border-slate7 bg-blue3 text-white">
-        <div className="divide-y divide-slate7">
+    <div className="flex h-full items-center justify-center w-full">
+      <div className="my-4 flex flex-col rounded-lg border border-slate7 bg-blue3 text-white">
+        <div className="divide-y divide-slate7 h-full">
           <FormHeader
             transactionStatus={transactionStatus}
             network={network}
             onClick={handleBack}
           />
-          {FORM_CONTENTS[transactionStatus]}
+          <div className="flex flex-col overflow-auto w-full h-full max-h-[550px]">
+            {FORM_CONTENTS[transactionStatus]}
+          </div>
         </div>
       </div>
     </div>

@@ -141,7 +141,7 @@ export function encodeExpectedOutArguments(
 ): `0x${string}` {
   const expectedArgs = priceCheckersArgumentsMapping[priceChecker].filter(
     (arg) => {
-      arg.toExpectedOutCalculator;
+      arg.encodingLevel > 0;
     },
   );
   if (!expectedArgs.length) {
@@ -155,7 +155,7 @@ function encodeWithExpectedOutCalculator(
   args: argType[],
 ): `0x${string}` {
   const firstExpectedOutArgIndex = expectedArgs.findIndex(
-    (arg) => arg.toExpectedOutCalculator,
+    (arg) => arg.encodingLevel > 0,
   );
 
   if (firstExpectedOutArgIndex === -1) {

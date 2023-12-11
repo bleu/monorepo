@@ -1,9 +1,17 @@
 import { gnosis, goerli } from "viem/chains";
 
+import { truncateAddress } from "#/utils/truncate";
+
 import { PRICE_CHECKERS, PriceCheckerArgument } from "./types";
 
 const dynamicSlippageDescription =
   "This value represents the allowed slippage that you accepts between the quote and the order execution";
+
+export const convertOutputListOfAddresses = (output: string[]) =>
+  String(output.map((address) => truncateAddress(address))).replaceAll(
+    ",",
+    ", ",
+  );
 
 export const priceCheckersArgumentsMapping = {
   [PRICE_CHECKERS.FIXED_MIN_OUT]: [
@@ -16,7 +24,7 @@ export const priceCheckersArgumentsMapping = {
         BigInt(input * 10 ** decimals),
       convertOutput: (output: bigint, decimals: number) =>
         Number(output) / 10 ** decimals,
-      toExpectedOutCalculator: false,
+      encodingLevel: 0,
       description: "The minimum amount of tokens you want to receive.",
     },
   ] as PriceCheckerArgument[],
@@ -28,7 +36,7 @@ export const priceCheckersArgumentsMapping = {
       inputType: "number",
       convertInput: (input: number) => BigInt(input * 100),
       convertOutput: (output: bigint) => Number(output) / 100,
-      toExpectedOutCalculator: false,
+      encodingLevel: 0,
       description: dynamicSlippageDescription,
     },
   ] as PriceCheckerArgument[],
@@ -40,7 +48,7 @@ export const priceCheckersArgumentsMapping = {
       inputType: "number",
       convertInput: (input: number) => BigInt(input * 100),
       convertOutput: (output: bigint) => Number(output) / 100,
-      toExpectedOutCalculator: false,
+      encodingLevel: 0,
       description: dynamicSlippageDescription,
     },
   ] as PriceCheckerArgument[],
@@ -52,7 +60,7 @@ export const priceCheckersArgumentsMapping = {
       inputType: "number",
       convertInput: (input: number) => BigInt(input * 100),
       convertOutput: (output: bigint) => Number(output) / 100,
-      toExpectedOutCalculator: false,
+      encodingLevel: 0,
       description: dynamicSlippageDescription,
     },
   ] as PriceCheckerArgument[],
@@ -60,21 +68,20 @@ export const priceCheckersArgumentsMapping = {
     {
       name: "allowedSlippageInBps",
       type: "uint256",
-      label: "Allowed slippage (%)",
-      inputType: "number",
       convertInput: (input: number) => BigInt(input * 100),
       convertOutput: (output: bigint) => Number(output) / 100,
-      toExpectedOutCalculator: false,
+      label: "Allowed slippage (%)",
+      inputType: "number",
+      encodingLevel: 0,
       description: dynamicSlippageDescription,
     },
     {
       name: "addressesPriceFeeds",
       type: "address[]",
       label: "Price feeds",
+      convertOutput: convertOutputListOfAddresses,
       inputType: "text",
-      toExpectedOutCalculator: true,
-      convertInput: (input: string) => input,
-      convertOutput: (output: string) => output,
+      encodingLevel: 1,
       description:
         "The price feeds addresses that will be used to calculate the expected amount of tokens you will receive.",
       link: "https://docs.chain.link/data-feeds/price-feeds/addresses?network=ethereum&page=1",
@@ -84,9 +91,7 @@ export const priceCheckersArgumentsMapping = {
       type: "bool[]",
       label: "Revert price feeds",
       inputType: "checkbox",
-      toExpectedOutCalculator: true,
-      convertInput: (input: boolean) => input,
-      convertOutput: (output: boolean) => output,
+      encodingLevel: 1,
       description:
         "If the price feed will revert, the price checker will revert. This means that if the price feed is A/B and you want B/A you will have to mark this option.",
     },
@@ -99,7 +104,7 @@ export const priceCheckersArgumentsMapping = {
       inputType: "number",
       convertInput: (input: number) => BigInt(input * 100),
       convertOutput: (output: bigint) => Number(output) / 100,
-      toExpectedOutCalculator: false,
+      encodingLevel: 0,
       description: dynamicSlippageDescription,
     },
     {
@@ -107,9 +112,7 @@ export const priceCheckersArgumentsMapping = {
       type: "address[]",
       label: "Token In",
       inputType: "text",
-      toExpectedOutCalculator: true,
-      convertInput: (input: string) => input,
-      convertOutput: (output: string) => output,
+      encodingLevel: 1,
       description: "The token you want to sell on each pool.",
     },
     {
@@ -117,9 +120,7 @@ export const priceCheckersArgumentsMapping = {
       type: "address[]",
       label: "Token Out",
       inputType: "text",
-      toExpectedOutCalculator: true,
-      convertInput: (input: string) => input,
-      convertOutput: (output: string) => output,
+      encodingLevel: 1,
       description: "The token you want to buy on each pool.",
     },
     {
@@ -128,7 +129,7 @@ export const priceCheckersArgumentsMapping = {
       label: "Fees (%)",
       inputType: "number",
       step: 0.01,
-      toExpectedOutCalculator: true,
+      encodingLevel: 1,
       convertInput: (inputs: number[]) =>
         inputs.map((input) => BigInt(input * 100)),
       convertOutput: (outputs: string[]) =>
@@ -145,7 +146,7 @@ export const priceCheckersArgumentsMapping = {
       inputType: "number",
       convertInput: (input: number) => BigInt(input * 100),
       convertOutput: (output: bigint) => Number(output) / 100,
-      toExpectedOutCalculator: false,
+      encodingLevel: 0,
     },
   ] as PriceCheckerArgument[],
   [PRICE_CHECKERS.META]: [
@@ -156,27 +157,25 @@ export const priceCheckersArgumentsMapping = {
       inputType: "number",
       convertInput: (input: number) => BigInt(input * 100),
       convertOutput: (output: bigint) => Number(output) / 100,
-      toExpectedOutCalculator: false,
+      encodingLevel: 0,
       description: dynamicSlippageDescription,
     },
     {
       name: "swapPath",
       type: "address[]",
-      label: "Price checker",
+      label: "Swap path",
+      convertOutput: convertOutputListOfAddresses,
       inputType: "text",
-      toExpectedOutCalculator: true,
-      convertInput: (input: string) => input,
-      convertOutput: (output: string) => output,
+      encodingLevel: 1,
       description: "The expected out path",
     },
     {
       name: "expectedOutAddresses",
       type: "address[]",
-      label: "Price checker",
+      label: "Expected Out Addresses",
+      convertOutput: convertOutputListOfAddresses,
       inputType: "text",
-      toExpectedOutCalculator: true,
-      convertInput: (input: string) => input,
-      convertOutput: (output: string) => output,
+      encodingLevel: 1,
       description: "The expected out path",
     },
     {
@@ -184,9 +183,7 @@ export const priceCheckersArgumentsMapping = {
       type: "bytes[]",
       label: "Price checker arguments",
       inputType: "text",
-      toExpectedOutCalculator: true,
-      convertInput: (input: string) => input,
-      convertOutput: (output: string) => output,
+      encodingLevel: 1,
       description: "The expected out arguments",
     },
   ] as PriceCheckerArgument[],

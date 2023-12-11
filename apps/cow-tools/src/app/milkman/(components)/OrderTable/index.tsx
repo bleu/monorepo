@@ -33,7 +33,7 @@ export function OrderTable() {
   }
 
   return (
-    <Table color="blue" shade="darkWithBorder">
+    <Table color="blue" shade="darkWithBorder" classNames="overflow-y-auto">
       <Table.HeaderRow>
         <Table.HeaderCell>
           <span className="sr-only"></span>

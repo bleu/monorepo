@@ -124,10 +124,7 @@ export function MoreFiltersButton() {
   };
 
   useEffect(() => {
-    const timer = setTimeout(pushQueryparamsURL, 700);
-    return () => {
-      clearTimeout(timer);
-    };
+    pushQueryparamsURL();
   }, [selectedAttributes]);
 
   const countNonNullValues = useCallback(

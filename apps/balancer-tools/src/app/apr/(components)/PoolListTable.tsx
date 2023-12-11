@@ -2,6 +2,7 @@
 
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import {
+  ChevronDownIcon,
   DashIcon,
   InfoCircledIcon,
   TriangleDownIcon,
@@ -12,12 +13,15 @@ import Link from "next/link";
 import {
   ReadonlyURLSearchParams,
   usePathname,
+  useRouter,
   useSearchParams,
 } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
+import { Button } from "#/components";
 import { Badge } from "#/components/Badge";
 import { PlotTitle } from "#/components/Plot";
+import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
 import { TooltipMobile } from "#/components/TooltipMobile";
@@ -44,11 +48,16 @@ export function PoolListTable({
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMorePools, setHasMorePools] = useState(true);
   const [tableData, setTableData] = useState(initialData);
+  const [limit, setLimit] = useState(Number(searchParams.get("limit")));
+  const router = useRouter();
 
   useEffect(() => {
     setTableData(initialData);
+    setHasMorePools(!(initialData.length < 10));
+    setIsLoadingMore(false);
   }, [initialData]);
 
   const createQueryString = useCallback(
@@ -65,6 +74,15 @@ export function PoolListTable({
     },
     [searchParams],
   );
+
+  const loadMorePools = async () => {
+    setIsLoadingMore(true);
+    const params = new URLSearchParams(searchParams).toString();
+    const regex = /limit=\d+/;
+    const newParam = params.replace(regex, `limit=${limit + 10}`);
+    setLimit(limit + 10);
+    router.push(pathname + "?" + newParam, { scroll: false });
+  };
 
   return (
     <div className="flex flex-col justify-center text-white">
@@ -129,6 +147,27 @@ export function PoolListTable({
                     endAt={endAt}
                   />
                 ))}
+
+                <Table.BodyRow>
+                  <Table.BodyCell colSpan={6}>
+                    <Button
+                      className="py-3 sticky left-0 sm:w-full flex content-center justify-center gap-x-3 rounded-t-none rounded-b disabled:cursor-not-allowed"
+                      shade="medium"
+                      disabled={isLoadingMore || !hasMorePools}
+                      onClick={loadMorePools}
+                    >
+                      {isLoadingMore ? (
+                        <Spinner size="sm" />
+                      ) : hasMorePools ? (
+                        <>
+                          Load More <ChevronDownIcon />
+                        </>
+                      ) : (
+                        <>All pools have been loaded</>
+                      )}
+                    </Button>
+                  </Table.BodyCell>
+                </Table.BodyRow>
               </>
             ) : (
               <Table.BodyRow>

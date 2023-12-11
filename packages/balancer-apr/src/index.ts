@@ -794,11 +794,15 @@ async function seedVebalRounds() {
     endDate.setUTCDate(endDate.getUTCDate() + 6);
     endDate.setUTCHours(23, 59, 59, 999);
 
-    await db.insert(vebalRounds).values({
-      startDate: startDate,
-      endDate: endDate,
-      roundNumber: roundNumber,
-    });
+    await db
+      .insert(vebalRounds)
+      .values({
+        startDate: startDate,
+        endDate: endDate,
+        roundNumber: roundNumber,
+      })
+      .onConflictDoNothing()
+      .execute();
 
     startDate.setUTCDate(startDate.getUTCDate() + 7);
     roundNumber++;
@@ -1647,3 +1651,5 @@ export async function runETLs() {
   logIfVerbose("Ended ETL processes");
   process.exit(0);
 }
+
+runETLs();

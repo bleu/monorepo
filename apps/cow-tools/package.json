@@ -44,7 +44,7 @@
     "@safe-global/api-kit": "^2.0.0",
     "@safe-global/protocol-kit": "^2.0.0",
     "@safe-global/safe-core-sdk-types": "^2.3.0",
-    "@safe-global/safe-gateway-typescript-sdk": "^3.13.2",
+    "@safe-global/safe-gateway-typescript-sdk": "^3.13.3",
     "@sentry/nextjs": "^7.83.0",
     "@sentry/profiling-node": "^1.2.6",
     "@vercel/kv": "^0.2.3",

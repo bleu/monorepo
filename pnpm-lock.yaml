@@ -354,8 +354,8 @@ importers:
         specifier: ^2.3.0
         version: 2.3.0
       '@safe-global/safe-gateway-typescript-sdk':
-        specifier: ^3.13.2
-        version: 3.13.2
+        specifier: ^3.13.3
+        version: 3.13.3
       '@sentry/nextjs':
         specifier: ^7.83.0
         version: 7.83.0(next@13.5.6)(react@18.2.0)
@@ -6379,7 +6379,7 @@ packages:
   /@safe-global/safe-apps-sdk@8.0.0(typescript@5.3.2)(zod@3.22.4):
     resolution: {integrity: sha512-gYw0ki/EAuV1oSyMxpqandHjnthZjYYy+YWpTAzf8BqfXM3ItcZLpjxfg+3+mXW8HIO+3jw6T9iiqEXsqHaMMw==}
     dependencies:
-      '@safe-global/safe-gateway-typescript-sdk': 3.13.2
+      '@safe-global/safe-gateway-typescript-sdk': 3.13.3
       viem: 1.19.11(typescript@5.3.2)(zod@3.22.4)
     transitivePeerDependencies:
       - bufferutil
@@ -6421,8 +6421,8 @@ packages:
       semver: 7.5.4
     dev: false
 
-  /@safe-global/safe-gateway-typescript-sdk@3.13.2:
-    resolution: {integrity: sha512-kGlJecJHBzGrGTq/yhLANh56t+Zur6Ubpt+/w03ARX1poDb4TM8vKU3iV8tuYpk359PPWp+Qvjnqb9oW2YQcYw==}
+  /@safe-global/safe-gateway-typescript-sdk@3.13.3:
+    resolution: {integrity: sha512-qBDM469cVCedpBpeTSn+k5FUr9+rq5bMTflp/mKd7h35uafcexvOR/PHZn2qftqV8b1kc9b8t22cPRJ2365jew==}
     engines: {node: '>=16'}
     dev: false
 

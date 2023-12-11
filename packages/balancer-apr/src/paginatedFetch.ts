@@ -50,3 +50,22 @@ export async function paginatedFetch<T>(
     return null;
   });
 }
+
+export async function paginatedFetchDateRange<T>(
+  networkEndpoint: string,
+  query: string,
+  fromDate: number,
+  processFn: ProcessFn<T>,
+  initialId = "",
+  step = BATCH_SIZE,
+): Promise<void> {
+  await paginate(initialId, step, async (latestId: string) => {
+    const response = await gql(networkEndpoint, query, { latestId, fromDate });
+    if (response.data) {
+      await processFn(response.data);
+      return response.data;
+    }
+
+    return null;
+  });
+}

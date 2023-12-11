@@ -3,6 +3,8 @@
 import { runDailyETLs } from "@bleu-fi/balancer-apr/src/dailySeed";
 import { NextRequest } from "next/server";
 
+export const maxDuration = 300;
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");

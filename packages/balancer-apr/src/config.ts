@@ -101,7 +101,7 @@ query PoolSnapshots($latestId: String!) {
 }
 `;
 
-export const RATE_PROVIDER_SNAPSHOTS = `
+export const RATE_PROVIDER = `
 query PoolRateProviders($latestId: String!) {
   priceRateProviders(
     first: 1000,
@@ -124,6 +124,72 @@ query PoolRateProviders($latestId: String!) {
 export const POOL_REWARDS = `
 query PoolRewards($latestId: ID!) {
   rewardTokenDeposits(where: {rate_gt: 0, totalSupply_gt: 0, id_gt: $latestId}) {
+		gauge{
+      poolId
+    }
+    id
+    rate
+    totalSupply
+    periodStart
+    periodFinish
+  }
+}`;
+
+export const POOLS_WITHOUT_GAUGE_QUERY_DATE_RANGE = `
+query PoolsWherePoolType($latestId: String!, $fromDate: Int!) {
+  pools(
+    first: 1000,
+    where: {
+      id_gt: $latestId,
+      createTime_gte: $fromDate
+    }
+  ) {
+    id
+    address
+    symbol
+    poolType
+    createTime
+    poolTypeVersion
+    tokens {
+      isExemptFromYieldProtocolFee
+      address
+      symbol
+      weight
+      index
+    }
+  }
+}
+`;
+
+export const POOLS_SNAPSHOTS_DATE_RANGE = `
+query PoolSnapshots($latestId: String!, $fromDate: Int!) {
+  poolSnapshots(
+    first: 1000,
+    where: {
+      id_gt: $latestId,
+      timestamp_gte: $fromDate
+    }
+  ) {
+    id
+    pool {
+      id
+      protocolYieldFeeCache
+      protocolSwapFeeCache
+    }
+    amounts
+    totalShares
+    swapVolume
+    protocolFee
+    swapFees
+    liquidity
+    timestamp
+  }
+}
+`;
+
+export const POOL_REWARDS_DATE_RANGE = `
+query PoolRewards($latestId: ID!, $fromDate: BigInt!) {
+  rewardTokenDeposits(where: {rate_gt: 0, totalSupply_gt: 0, id_gt: $latestId, periodStart_gte: $fromDate}) {
 		gauge{
       poolId
     }

@@ -1,12 +1,8 @@
 {
   "crons": [
     {
-      "path": "/apr/api/seed",
-      "schedule": "*/5 * * * *"
-    },
-    {
       "path": "/api/apr/seed",
-      "schedule": "*/5 * * * *"
+      "schedule": "*/20 * * * *"
     }
   ]
 }

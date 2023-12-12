@@ -98,24 +98,35 @@ async function seedVebalRounds() {
   const startDate = new Date("2022-04-14T00:00:00.000Z");
   let roundNumber = 1;
 
+  const vebalRoundsList = [];
+
   while (startDate <= new Date()) {
     const endDate = new Date(startDate);
+    const newStartDate = new Date(startDate);
     endDate.setUTCDate(endDate.getUTCDate() + 6);
     endDate.setUTCHours(23, 59, 59, 999);
 
-    await db
-      .insert(vebalRounds)
-      .values({
-        startDate: startDate,
-        endDate: endDate,
-        roundNumber: roundNumber,
-      })
-      .onConflictDoNothing()
-      .execute();
+    vebalRoundsList.push({
+      newStartDate,
+      endDate,
+      roundNumber,
+    });
 
     startDate.setUTCDate(startDate.getUTCDate() + 7);
     roundNumber++;
   }
+  vebalRoundsList.forEach(async (item) => {
+    await db
+      .insert(vebalRounds)
+      .values({
+        startDate: item.newStartDate,
+        endDate: item.endDate,
+        roundNumber: item.roundNumber,
+        updatedAt: new Date(),
+      })
+      .onConflictDoNothing()
+      .execute();
+  });
 }
 
 async function seedBalEmission() {
@@ -601,8 +612,16 @@ async function transformPoolSnapshotsData() {
   `);
 
   await db.execute(sql`
-  INSERT INTO pool_snapshots (amounts, total_shares, swap_volume, swap_fees, liquidity, timestamp, protocol_yield_fee_cache, protocol_swap_fee_cache, external_id, pool_external_id, raw_data)
-  SELECT amounts, total_shares, swap_volume, swap_fees, liquidity, c.timestamp, protocol_yield_fee_cache, protocol_swap_fee_cache, pool_external_id || '-' || c.timestamp AS external_id, pool_external_id, raw_data
+    INSERT INTO pool_snapshots (
+      amounts, total_shares, swap_volume, swap_fees, liquidity, 
+      timestamp, protocol_yield_fee_cache, protocol_swap_fee_cache, 
+      external_id, pool_external_id, raw_data
+  )
+  SELECT DISTINCT ON (pool_external_id, c.timestamp)
+      amounts, total_shares, swap_volume, swap_fees, liquidity, 
+      c.timestamp, protocol_yield_fee_cache, protocol_swap_fee_cache, 
+      pool_external_id || '-' || c.timestamp AS external_id, 
+      pool_external_id, raw_data
   FROM
       pool_snapshots_temp b
   LEFT JOIN

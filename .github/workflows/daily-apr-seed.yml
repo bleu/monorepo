@@ -13,13 +13,16 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "18.14.0" # Adjust this as per your requirement
+          node-version: "18.14.0"
 
-      - name: Set up pnpm
-        uses: ./.github/workflows/setup-pnpm
+      - name: Install Dependencies
+        run: pnpm install
+        working-directory: ./packages/balancer-apr
 
       - name: Run ETL Process
         env:
           DATABASE_URL: ${{ secrets.APR_DATABASE_URL }}
-        run: node -r esbuild-register src/dailySeed.ts
+        run: |
+          echo "Running ETL Process..."
+          node -r esbuild-register src/dailySeed.ts
         working-directory: ./packages/balancer-apr

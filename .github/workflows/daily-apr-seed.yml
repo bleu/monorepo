@@ -2,7 +2,7 @@ name: Daily APR ETL Process
 
 on:
   schedule:
-    - cron: '30 0 * * *'  # Runs at 00:30 UTC every day
+    - cron: "30 0 * * *" # Runs at 00:30 UTC every day
   workflow_dispatch:
 
 jobs:

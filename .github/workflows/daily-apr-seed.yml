@@ -1,0 +1,35 @@
+name: Daily ETL Process
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run_etl:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "18.14.0"
+
+      - name: Set up pnpm
+        uses: ./.github/workflows/setup-pnpm
+
+      - name: Install Dependencies
+        run: pnpm install
+        working-directory: ./packages/balancer-apr
+
+      - name: Test Node.js Execution
+        run: node -e "console.log('Node.js is working')"
+        working-directory: ./packages/balancer-apr
+
+      - name: Run ETL Process
+        env:
+          DATABASE_URL: ${{ secrets.APR_DATABASE_URL }}
+        run: |
+          echo "Running ETL Process..."
+          node -r esbuild-register src/dailySeed.ts
+        working-directory: ./packages/balancer-apr

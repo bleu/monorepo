@@ -1,8 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { run } from "node:test";
-
 import {
   dateToEpoch,
   DAYS_IN_YEAR,

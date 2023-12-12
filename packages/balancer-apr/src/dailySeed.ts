@@ -1,6 +1,8 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { run } from "node:test";
+
 import {
   dateToEpoch,
   DAYS_IN_YEAR,
@@ -1582,3 +1584,5 @@ export async function runDailyETLs() {
   console.log("Ended ETL processes");
   process.exit(0);
 }
+
+runDailyETLs();

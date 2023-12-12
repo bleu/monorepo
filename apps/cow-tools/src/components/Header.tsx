@@ -37,7 +37,7 @@ export function Header({
         >
           <>
             {imageSrc && (
-              <Image src={imageSrc} height={50} width={150} alt="" />
+              <Image src={imageSrc} height={50} width={200} alt="" />
             )}
           </>
         </Link>

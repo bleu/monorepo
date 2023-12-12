@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { runDailyETLs } from "@bleu-fi/balancer-apr/src/dailySeed";
 import { NextRequest } from "next/server";
 

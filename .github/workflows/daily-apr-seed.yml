@@ -1,6 +1,8 @@
-name: Daily ETL Process
+name: Daily APR ETL Process
 
 on:
+  schedule:
+    - cron: '30 0 * * *'  # Runs at 00:30 UTC every day
   workflow_dispatch:
 
 jobs:
@@ -29,6 +31,7 @@ jobs:
       - name: Run ETL Process
         env:
           DATABASE_URL: ${{ secrets.APR_DATABASE_URL }}
+          IS_GITHUB: ${{ secrets.IS_GITHUB }}
         run: |
           echo "Running ETL Process..."
           node -r esbuild-register src/dailySeed.ts

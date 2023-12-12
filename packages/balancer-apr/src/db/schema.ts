@@ -38,9 +38,7 @@ export const pools = pgTable(
     id: serial("id").primaryKey(),
     externalId: varchar("external_id").unique(),
     poolType: varchar("pool_type"),
-    name: varchar("name"),
     address: varchar("address"),
-    totalLiquidity: varchar("total_liquidity"),
     symbol: varchar("symbol"),
     externalCreatedAt: timestamp("external_created_at"),
     poolTypeVersion: decimal("pool_type_version"),
@@ -345,6 +343,8 @@ export const vebalApr = pgTable("vebal_apr", {
     () => pools.externalId,
   ),
   externalId: varchar("external_id").unique(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 export const poolRewards = pgTable("pool_rewards", {
@@ -360,6 +360,8 @@ export const poolRewards = pgTable("pool_rewards", {
   totalSupply: decimal("total_supply"),
   externalId: varchar("external_id").unique(),
   rawData: jsonb("raw_data"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 export const poolRewardsSnapshot = pgTable("pool_rewards_snapshot", {
@@ -372,6 +374,8 @@ export const poolRewardsSnapshot = pgTable("pool_rewards_snapshot", {
   totalSupply: decimal("total_supply"),
   yearlyAmount: decimal("yearly_amount"),
   externalId: varchar("external_id").unique(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 export const swapFeeApr = pgTable(
@@ -385,6 +389,8 @@ export const swapFeeApr = pgTable(
       () => pools.externalId,
     ),
     externalId: varchar("external_id").unique(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
   (t) => ({
     unq: unique().on(t.timestamp, t.poolExternalId),
@@ -401,6 +407,8 @@ export const rewardsTokenApr = pgTable(
     poolExternalId: varchar("pool_external_id").references(
       () => pools.externalId,
     ),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
   (t) => ({
     unq: unique().on(t.timestamp, t.tokenAddress, t.poolExternalId),
@@ -418,6 +426,8 @@ export const yieldTokenApr = pgTable(
       () => pools.externalId,
     ),
     externalId: varchar("external_id").unique(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
   (t) => ({
     unq: unique().on(t.timestamp, t.tokenAddress, t.poolExternalId),
@@ -428,7 +438,7 @@ export const balEmission = pgTable(
   "bal_emission",
   {
     id: serial("id").primaryKey(),
-    timestamp: timestamp("timestamp"),
+    timestamp: timestamp("timestamp").unique(),
     weekEmission: decimal("week_emission"),
   },
   (t) => ({

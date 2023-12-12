@@ -275,19 +275,19 @@ export const priceCheckerHasExpectedOutCalculatorMapping = {
 
 export const priceCheckerTooltipMessageMapping = {
   [PRICE_CHECKERS.FIXED_MIN_OUT]:
-    "This is the simplest price checker, it will accept the quoted order if the amount of tokens you will receive is greater than the minimum amount you set. This means that all the math is on you and, if the order will get a long time to be processed, you will have to predict the price.",
+    "This basic price checker accepts orders if the received token amount exceeds your set minimum. It requires you to calculate and predict prices, especially for orders that take time to process.",
   [PRICE_CHECKERS.UNI_V2]:
-    "This price checker will use Uniswap V2 pools to calculate the expected amount of tokens you will receive. To build the path with Uniswap V2 pools, it will always use WETH as the middle token (if it isn't one of the pair tokens).",
+    "This checker uses Uniswap V2 pools to estimate your token returns. It constructs a path using WETH as an intermediary (if not already a pair token) to calculate expected token amounts.",
   [PRICE_CHECKERS.BALANCER]:
-    "This price checker is specific for the case when you want to trade BAL80-WETH20 BPT token to BAL or WETH. It uses BAL infrastructure and Chainlink oracles to calculate the expected amount of tokens you will receive.",
+    "Designed for trading BAL80-WETH20 BPT to BAL or WETH, this checker uses BAL infrastructure and Chainlink oracles to estimate expected token returns.",
   [PRICE_CHECKERS.SUSHI_SWAP]:
-    "This price checker will use SushiSwap pools to calculate the expected amount of tokens you will receive. To build the path with Uniswap V2 pools, it will always use WETH as the middle token (if it isn't one of the pair tokens).",
+    "This checker calculates expected token returns using SushiSwap pools. Similar to UNI_V2, it uses WETH as a middle token in the path if it's not part of the token pair.",
   [PRICE_CHECKERS.CURVE]:
-    "This price checker will use Curve pools to calculate the expected amount of tokens you will receive. To build the path it is used the Curve registry and router.",
+    "Utilizing Curve pools, this checker estimates token returns. The path is constructed using the Curve registry and router.",
   [PRICE_CHECKERS.CHAINLINK]:
-    "The Chainlink price checker uses a path of price feeds to calculate the expected amount of tokens you will receive. The only checking that we do here is if the price checker will or not revert, so the construction of the path is up to you, a construction of a wrong path can lead to a relative lower amount of tokens received.",
+    "The Chainlink checker calculates expected token returns using a series of price feeds. It only verifies if the checker will not revert; constructing an inaccurate path may result in lower token returns.",
   [PRICE_CHECKERS.UNI_V3]:
-    "This price checker will use Uniswap V3 pools to calculate the expected amount of tokens you will receive. The only checking that we do here is if the price checker will or not revert, so the construction of the path is up to you, a construction of a wrong path can lead to a relative lower amount of tokens received.",
+    "This checker uses Uniswap V3 pools to estimate token returns. It ensures the checker doesn't revert, leaving the path construction to you. Incorrect paths may lead to reduced token returns.",
   [PRICE_CHECKERS.META]:
-    "This price checker is used when you want to create a price checker that will use different protocols to calculate the expected amount of tokens you will receive. The only checking that we do here is if the price checker will or not revert, so the construction of the path is up to you, a construction of a wrong path can lead to a relative lower amount of tokens received.",
+    "This versatile checker calculates token returns using various protocols. It checks for non-reversion, but path construction is user-dependent, with incorrect paths possibly leading to lower returns.",
 };

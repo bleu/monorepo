@@ -23,7 +23,7 @@ import {
   POOL_REWARDS,
   POOLS_SNAPSHOTS,
   POOLS_WITHOUT_GAUGE_QUERY,
-  RATE_PROVIDER_SNAPSHOTS,
+  RATE_PROVIDER,
   VOTING_GAUGES_QUERY,
 } from "./config";
 import { db } from "./db/index";
@@ -198,7 +198,7 @@ async function extractPoolRateProvider(
   networkEndpoint: string,
   network: string,
 ) {
-  await paginatedFetch(networkEndpoint, RATE_PROVIDER_SNAPSHOTS, (data) =>
+  await paginatedFetch(networkEndpoint, RATE_PROVIDER, (data) =>
     processPoolRateProvider(data, network),
   );
 }
@@ -459,7 +459,7 @@ async function extractPoolRateProviderSnapshot(network: string) {
   }
 }
 
-async function addToTable(table: any, items: any) {
+export async function addToTable(table: any, items: any) {
   const chunkedItems = [...chunks(items, BATCH_SIZE)];
   return await Promise.all(
     chunkedItems.map(async (items) => {
@@ -468,7 +468,7 @@ async function addToTable(table: any, items: any) {
   );
 }
 
-async function transformNetworks(table: PgTable, key = "network") {
+export async function transformNetworks(table: PgTable, key = "network") {
   await db.execute(sql`
 INSERT INTO networks (slug)
 SELECT
@@ -651,8 +651,10 @@ async function transformGauges() {
       LOWER(raw_data ->> 'chain')
     END
   FROM
-    gauges ON CONFLICT (external_id)
-    DO NOTHING;
+    gauges 
+  WHERE raw_data ->> 'id' IS NOT NULL
+  ON CONFLICT (external_id)
+  DO NOTHING;
   `);
 
   // Then, insert or update the 'gauges' table.
@@ -685,7 +687,7 @@ async function transformGauges() {
   );
 }
 
-async function ETLGauges() {
+export async function ETLGauges() {
   logIfVerbose("Starting Gauges Extraction");
   await extractGauges();
   logIfVerbose("Starting Gauges Transformation");
@@ -744,7 +746,7 @@ async function ETLPoolRewards() {
   logIfVerbose("Pool Rewards Extraction Done");
 }
 
-async function ETLPoolRateProvider() {
+export async function ETLPoolRateProvider() {
   logIfVerbose("Starting Rate Provider Extraction");
   await Promise.all(
     networkNames.map(async (networkName) => {
@@ -992,6 +994,13 @@ async function calculateApr() {
   WHERE
     pool_snapshots.pool_external_id = pool_rate_providers.pool_external_id
     AND subquery.rate IS NOT NULL
+    AND (
+      pool_rate_providers.vulnerability_affected = false
+      OR (
+        pool_rate_providers.vulnerability_affected = true
+        AND pool_snapshots.timestamp < '2023-08-22'::timestamp
+      )
+    )
     AND ptw.weight IS NOT NULL
     ON CONFLICT (external_id) DO NOTHING;
     `);
@@ -1055,7 +1064,7 @@ async function fetchBalPrices() {
   );
 }
 
-async function fetchTokenPrice(
+export async function fetchTokenPrice(
   network: string,
   tokenAddress: string,
   start: Date,
@@ -1651,5 +1660,3 @@ export async function runETLs() {
   logIfVerbose("Ended ETL processes");
   process.exit(0);
 }
-
-runETLs();

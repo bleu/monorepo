@@ -15,13 +15,15 @@ export async function GET(request: NextRequest) {
   // }
 
   // Start the ETL process asynchronously
-  runDailyETLs()
-    .then(() => {
-      console.log("Seed finished");
-    })
-    .catch((error) => {
-      console.error("Seed encountered an error:", error);
-    });
+  // runDailyETLs()
+  //   .then(() => {
+  //     console.log("Seed finished");
+  //   })
+  //   .catch((error) => {
+  //     console.error("Seed encountered an error:", error);
+  //   });
+
+  console.log(process.env.DATABASE_URL);
 
   return Response.json({ message: "Seed is being done" });
 }

@@ -364,7 +364,7 @@ export const AllTransactionFromUserDocument = gql`
     query AllTransactionFromUser($user: String!) {
   users(where: {id: $user}) {
     id
-    transactions {
+    transactions(orderBy: "blockNumber", orderDirection: "desc") {
       id
       blockNumber
       blockTimestamp

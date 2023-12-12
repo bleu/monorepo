@@ -14,6 +14,7 @@ import { AllTransactionFromUserQuery } from "#/lib/gql/generated";
 import { milkmanSubgraph } from "#/lib/gql/sdk";
 import { MILKMAN_ADDRESS } from "#/lib/transactionFactory";
 import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
+import { retryAsyncOperation } from "#/utils/retryAsyncOperation";
 
 gql(`
   query AllTransactionFromUser ($user: String!) {
@@ -21,7 +22,7 @@ gql(`
       where : { id : $user}
     ) {
       id
-      transactions {
+      transactions(orderBy:"blockNumber", orderDirection:"desc") {
         id
         blockNumber
         blockTimestamp
@@ -79,6 +80,7 @@ export interface IMilkmanOrder {
 
 export interface IUserMilkmanTransaction {
   id: string;
+  blockTimestamp: number;
   orders: IMilkmanOrder[];
   processed: boolean;
 }
@@ -92,6 +94,7 @@ function structureMilkmanTransaction(
 ): IUserMilkmanTransaction {
   return {
     id: transaction.id,
+    blockTimestamp: transaction.blockTimestamp,
     orders: transaction.swaps.map((swap, index) => ({
       cowOrders: cowOrder[index],
       hasToken: hasToken[index],
@@ -149,11 +152,21 @@ async function getProcessedMilkmanTransactions({
 
   const hasTokenBySwap = tokenBalances.map((tokenBalance) => tokenBalance > 0);
 
-  const cowOrdersBySwap = await Promise.all(
+  const cowOrdersBySwap = (await Promise.all(
     orderContractsBySwap.map((orderContract) =>
-      getCowOrders(orderContract as Address),
+      retryAsyncOperation<ICowOrder[]>(
+        async () => {
+          return getCowOrders(orderContract as Address);
+        },
+        5,
+        1000,
+      ),
     ),
-  );
+  )) as ICowOrder[][];
+
+  if (cowOrdersBySwap.some((cowOrders) => cowOrders === null)) {
+    throw new Error("Failed to fetch cow orders");
+  }
 
   const hasTokenByTransaction = [] as boolean[][];
   const cowOrdersByTransaction = [] as ICowOrder[][][];
@@ -204,6 +217,7 @@ async function getQueuedMilkmanTransactions({
 
     return {
       id: transactionDetails.txId,
+      blockTimestamp: 0,
       processed: false,
       orders: milkmanTransactions?.map((milkmanTransaction) => ({
         cowOrders: [],
@@ -233,31 +247,42 @@ async function getQueuedMilkmanTransactions({
 export function useUserMilkmanTransactions() {
   const { safe } = useSafeAppsSDK();
   const [loaded, setLoaded] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const [error, setError] = useState(false);
   const [transactions, setTransactions] = useState<IUserMilkmanTransaction[]>(
     [],
   );
 
+  const retry = () => {
+    setLoaded(false);
+    setRetryCount(retryCount + 1);
+  };
+
   useEffect(() => {
     async function loadOrders() {
-      const [processedTransactions, queuedTransactions] = await Promise.all([
-        getProcessedMilkmanTransactions({
-          chainId: safe.chainId as ChainId,
-          address: safe.safeAddress,
-        }),
-        getQueuedMilkmanTransactions({
-          chainId: String(safe.chainId),
-          address: safe.safeAddress,
-        }),
-      ]);
-
-      setTransactions([...queuedTransactions, ...processedTransactions]);
+      try {
+        const [processedTransactions, queuedTransactions] = await Promise.all([
+          getProcessedMilkmanTransactions({
+            chainId: safe.chainId as ChainId,
+            address: safe.safeAddress,
+          }),
+          getQueuedMilkmanTransactions({
+            chainId: String(safe.chainId),
+            address: safe.safeAddress,
+          }),
+        ]);
+        setTransactions([...queuedTransactions, ...processedTransactions]);
+        setError(false);
+      } catch {
+        setError(true);
+      }
       setLoaded(true);
     }
 
     loadOrders();
-  }, [safe]);
+  }, [safe, retryCount]);
 
-  return { transactions, loaded };
+  return { transactions, loaded, error, retry };
 }
 
 export async function getTokenBalance(

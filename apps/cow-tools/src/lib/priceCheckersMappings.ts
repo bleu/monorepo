@@ -1,9 +1,17 @@
 import { gnosis, goerli } from "viem/chains";
 
+import { truncateAddress } from "#/utils/truncate";
+
 import { PRICE_CHECKERS, PriceCheckerArgument } from "./types";
 
 const dynamicSlippageDescription =
   "This value represents the allowed slippage that you accepts between the quote and the order execution";
+
+export const convertOutputListOfAddresses = (output: string[]) =>
+  String(output.map((address) => truncateAddress(address))).replaceAll(
+    ",",
+    ", ",
+  );
 
 export const priceCheckersArgumentsMapping = {
   [PRICE_CHECKERS.FIXED_MIN_OUT]: [
@@ -16,7 +24,7 @@ export const priceCheckersArgumentsMapping = {
         BigInt(input * 10 ** decimals),
       convertOutput: (output: bigint, decimals: number) =>
         Number(output) / 10 ** decimals,
-      toExpectedOutCalculator: false,
+      encodingLevel: 0,
       description: "The minimum amount of tokens you want to receive.",
     },
   ] as PriceCheckerArgument[],
@@ -28,7 +36,7 @@ export const priceCheckersArgumentsMapping = {
       inputType: "number",
       convertInput: (input: number) => BigInt(input * 100),
       convertOutput: (output: bigint) => Number(output) / 100,
-      toExpectedOutCalculator: false,
+      encodingLevel: 0,
       description: dynamicSlippageDescription,
     },
   ] as PriceCheckerArgument[],
@@ -40,7 +48,7 @@ export const priceCheckersArgumentsMapping = {
       inputType: "number",
       convertInput: (input: number) => BigInt(input * 100),
       convertOutput: (output: bigint) => Number(output) / 100,
-      toExpectedOutCalculator: false,
+      encodingLevel: 0,
       description: dynamicSlippageDescription,
     },
   ] as PriceCheckerArgument[],
@@ -52,7 +60,7 @@ export const priceCheckersArgumentsMapping = {
       inputType: "number",
       convertInput: (input: number) => BigInt(input * 100),
       convertOutput: (output: bigint) => Number(output) / 100,
-      toExpectedOutCalculator: false,
+      encodingLevel: 0,
       description: dynamicSlippageDescription,
     },
   ] as PriceCheckerArgument[],
@@ -60,21 +68,20 @@ export const priceCheckersArgumentsMapping = {
     {
       name: "allowedSlippageInBps",
       type: "uint256",
-      label: "Allowed slippage (%)",
-      inputType: "number",
       convertInput: (input: number) => BigInt(input * 100),
       convertOutput: (output: bigint) => Number(output) / 100,
-      toExpectedOutCalculator: false,
+      label: "Allowed slippage (%)",
+      inputType: "number",
+      encodingLevel: 0,
       description: dynamicSlippageDescription,
     },
     {
       name: "addressesPriceFeeds",
       type: "address[]",
       label: "Price feeds",
+      convertOutput: convertOutputListOfAddresses,
       inputType: "text",
-      toExpectedOutCalculator: true,
-      convertInput: (input: string) => input,
-      convertOutput: (output: string) => output,
+      encodingLevel: 1,
       description:
         "The price feeds addresses that will be used to calculate the expected amount of tokens you will receive.",
       link: "https://docs.chain.link/data-feeds/price-feeds/addresses?network=ethereum&page=1",
@@ -84,9 +91,7 @@ export const priceCheckersArgumentsMapping = {
       type: "bool[]",
       label: "Revert price feeds",
       inputType: "checkbox",
-      toExpectedOutCalculator: true,
-      convertInput: (input: boolean) => input,
-      convertOutput: (output: boolean) => output,
+      encodingLevel: 1,
       description:
         "If the price feed will revert, the price checker will revert. This means that if the price feed is A/B and you want B/A you will have to mark this option.",
     },
@@ -99,7 +104,7 @@ export const priceCheckersArgumentsMapping = {
       inputType: "number",
       convertInput: (input: number) => BigInt(input * 100),
       convertOutput: (output: bigint) => Number(output) / 100,
-      toExpectedOutCalculator: false,
+      encodingLevel: 0,
       description: dynamicSlippageDescription,
     },
     {
@@ -107,9 +112,7 @@ export const priceCheckersArgumentsMapping = {
       type: "address[]",
       label: "Token In",
       inputType: "text",
-      toExpectedOutCalculator: true,
-      convertInput: (input: string) => input,
-      convertOutput: (output: string) => output,
+      encodingLevel: 1,
       description: "The token you want to sell on each pool.",
     },
     {
@@ -117,9 +120,7 @@ export const priceCheckersArgumentsMapping = {
       type: "address[]",
       label: "Token Out",
       inputType: "text",
-      toExpectedOutCalculator: true,
-      convertInput: (input: string) => input,
-      convertOutput: (output: string) => output,
+      encodingLevel: 1,
       description: "The token you want to buy on each pool.",
     },
     {
@@ -128,7 +129,7 @@ export const priceCheckersArgumentsMapping = {
       label: "Fees (%)",
       inputType: "number",
       step: 0.01,
-      toExpectedOutCalculator: true,
+      encodingLevel: 1,
       convertInput: (inputs: number[]) =>
         inputs.map((input) => BigInt(input * 100)),
       convertOutput: (outputs: string[]) =>
@@ -145,7 +146,45 @@ export const priceCheckersArgumentsMapping = {
       inputType: "number",
       convertInput: (input: number) => BigInt(input * 100),
       convertOutput: (output: bigint) => Number(output) / 100,
-      toExpectedOutCalculator: false,
+      encodingLevel: 0,
+    },
+  ] as PriceCheckerArgument[],
+  [PRICE_CHECKERS.META]: [
+    {
+      name: "allowedSlippageInBps",
+      type: "uint256",
+      label: "Allowed slippage (%)",
+      inputType: "number",
+      convertInput: (input: number) => BigInt(input * 100),
+      convertOutput: (output: bigint) => Number(output) / 100,
+      encodingLevel: 0,
+      description: dynamicSlippageDescription,
+    },
+    {
+      name: "swapPath",
+      type: "address[]",
+      label: "Swap path",
+      convertOutput: convertOutputListOfAddresses,
+      inputType: "text",
+      encodingLevel: 1,
+      description: "The expected out path",
+    },
+    {
+      name: "expectedOutAddresses",
+      type: "address[]",
+      label: "Expected Out Addresses",
+      convertOutput: convertOutputListOfAddresses,
+      inputType: "text",
+      encodingLevel: 1,
+      description: "The expected out path",
+    },
+    {
+      name: "expectedOutData",
+      type: "bytes[]",
+      label: "Price checker arguments",
+      inputType: "text",
+      encodingLevel: 1,
+      description: "The expected out arguments",
     },
   ] as PriceCheckerArgument[],
 } as const;
@@ -160,6 +199,7 @@ export const priceCheckerAddressesMapping = {
     [PRICE_CHECKERS.CHAINLINK]: "0x81909582e1Ab8a0f8f98C948537528E29a98f116",
     [PRICE_CHECKERS.UNI_V3]: "0xb560a403F8450164b8B745EccA41D8cED93C50a1",
     [PRICE_CHECKERS.CURVE]: "0x",
+    [PRICE_CHECKERS.META]: "0x43E850F9B8Cb2635673168F92Cf195F4BcFE056F",
   },
   [gnosis.id]: {
     [PRICE_CHECKERS.FIXED_MIN_OUT]:
@@ -170,6 +210,30 @@ export const priceCheckerAddressesMapping = {
     [PRICE_CHECKERS.CHAINLINK]: "0x",
     [PRICE_CHECKERS.UNI_V3]: "0x",
     [PRICE_CHECKERS.CURVE]: "0x5088989fE6f7E89aD94e2AEFb98856CeA04e9135",
+    [PRICE_CHECKERS.META]: "0x",
+  },
+};
+
+export const expectedOutCalculatorAddressesMapping = {
+  [goerli.id]: {
+    [PRICE_CHECKERS.FIXED_MIN_OUT]: "0x",
+    [PRICE_CHECKERS.UNI_V2]: "0x2E93639509A9D7e93f581CEd97F40A1e4e813E7a",
+    [PRICE_CHECKERS.BALANCER]: "0x5D6FE80Ce00978dF2D55c46B89A3ed8681323fFe",
+    [PRICE_CHECKERS.SUSHI_SWAP]: "0x26eef32497909Bb27E9B40091246c0aA39d1A7dB",
+    [PRICE_CHECKERS.CHAINLINK]: "0x9d5f78fb9b120f1fb1321aacf7db6884d2efadab",
+    [PRICE_CHECKERS.UNI_V3]: "0x07F20c78b86eC17150805d155C33dd5a6267Ce03",
+    [PRICE_CHECKERS.CURVE]: "0x",
+    [PRICE_CHECKERS.META]: "0xe35BD2A019a9Dd258a3d98e6aCd97aBB6CDCfA9b",
+  },
+  [gnosis.id]: {
+    [PRICE_CHECKERS.FIXED_MIN_OUT]: "0x",
+    [PRICE_CHECKERS.UNI_V2]: "0x",
+    [PRICE_CHECKERS.BALANCER]: "0x",
+    [PRICE_CHECKERS.SUSHI_SWAP]: "0x",
+    [PRICE_CHECKERS.CHAINLINK]: "0x",
+    [PRICE_CHECKERS.UNI_V3]: "0x",
+    [PRICE_CHECKERS.CURVE]: "0x021CdBed287504F90A76B0D3DD39415B9864D323",
+    [PRICE_CHECKERS.META]: "0x",
   },
 };
 
@@ -185,6 +249,7 @@ export const deployedPriceCheckersByChain = {
     PRICE_CHECKERS.BALANCER,
     PRICE_CHECKERS.CHAINLINK,
     PRICE_CHECKERS.UNI_V3,
+    PRICE_CHECKERS.META,
   ] as const,
   [gnosis.id]: [PRICE_CHECKERS.FIXED_MIN_OUT, PRICE_CHECKERS.CURVE],
 };
@@ -197,21 +262,24 @@ export const priceCheckerHasExpectedOutCalculatorMapping = {
   [PRICE_CHECKERS.CHAINLINK]: true,
   [PRICE_CHECKERS.UNI_V3]: true,
   [PRICE_CHECKERS.CURVE]: true,
+  [PRICE_CHECKERS.META]: true,
 } as const;
 
 export const priceCheckerTooltipMessageMapping = {
   [PRICE_CHECKERS.FIXED_MIN_OUT]:
-    "This is the simplest price checker, it will accept the quoted order if the amount of tokens you will receive is greater than the minimum amount you set. This means that all the math is on you and, if the order will get a long time to be processed, you will have to predict the price.",
+    "This basic price checker accepts orders if the received token amount exceeds your set minimum. It requires you to calculate and predict prices, especially for orders that take time to process.",
   [PRICE_CHECKERS.UNI_V2]:
-    "This price checker will use Uniswap V2 pools to calculate the expected amount of tokens you will receive. To build the path with Uniswap V2 pools, it will always use WETH as the middle token (if it isn't one of the pair tokens).",
+    "This checker uses Uniswap V2 pools to estimate your token returns. It constructs a path using WETH as an intermediary (if not already a pair token) to calculate expected token amounts.",
   [PRICE_CHECKERS.BALANCER]:
-    "This price checker is specific for the case when you want to trade BAL80-WETH20 BPT token to BAL or WETH. It uses BAL infrastructure and Chainlink oracles to calculate the expected amount of tokens you will receive.",
+    "Designed for trading BAL80-WETH20 BPT to BAL or WETH, this checker uses BAL infrastructure and Chainlink oracles to estimate expected token returns.",
   [PRICE_CHECKERS.SUSHI_SWAP]:
-    "This price checker will use SushiSwap pools to calculate the expected amount of tokens you will receive. To build the path with Uniswap V2 pools, it will always use WETH as the middle token (if it isn't one of the pair tokens).",
+    "This checker calculates expected token returns using SushiSwap pools. Similar to UNI_V2, it uses WETH as a middle token in the path if it's not part of the token pair.",
   [PRICE_CHECKERS.CURVE]:
-    "This price checker will use Curve pools to calculate the expected amount of tokens you will receive. To build the path it is used the Curve registry and router.",
+    "Utilizing Curve pools, this checker estimates token returns. The path is constructed using the Curve registry and router.",
   [PRICE_CHECKERS.CHAINLINK]:
-    "The Chainlink price checker uses a path of price feeds to calculate the expected amount of tokens you will receive. The only checking that we do here is if the price checker will or not revert, so the construction of the path is up to you, a construction of a wrong path can lead to a relative lower amount of tokens received.",
+    "The Chainlink checker calculates expected token returns using a series of price feeds. It only verifies if the checker will not revert; constructing an inaccurate path may result in lower token returns.",
   [PRICE_CHECKERS.UNI_V3]:
-    "This price checker will use Uniswap V3 pools to calculate the expected amount of tokens you will receive. The only checking that we do here is if the price checker will or not revert, so the construction of the path is up to you, a construction of a wrong path can lead to a relative lower amount of tokens received.",
+    "This checker uses Uniswap V3 pools to estimate token returns. It ensures the checker doesn't revert, leaving the path construction to you. Incorrect paths may lead to reduced token returns.",
+  [PRICE_CHECKERS.META]:
+    "This versatile checker calculates token returns using various protocols. It checks for non-reversion, but path construction is user-dependent, with incorrect paths possibly leading to lower returns.",
 };

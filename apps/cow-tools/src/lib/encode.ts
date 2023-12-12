@@ -135,12 +135,27 @@ function encodeArguments(
   );
 }
 
+export function encodeExpectedOutArguments(
+  priceChecker: PRICE_CHECKERS,
+  args: argType[],
+): `0x${string}` {
+  const expectedArgs = priceCheckersArgumentsMapping[priceChecker].filter(
+    (arg) => {
+      arg.encodingLevel > 0;
+    },
+  );
+  if (!expectedArgs.length) {
+    return `0x`;
+  }
+  return encodeArguments(expectedArgs, args);
+}
+
 function encodeWithExpectedOutCalculator(
   expectedArgs: PriceCheckerArgument[],
   args: argType[],
 ): `0x${string}` {
   const firstExpectedOutArgIndex = expectedArgs.findIndex(
-    (arg) => arg.toExpectedOutCalculator,
+    (arg) => arg.encodingLevel > 0,
   );
 
   if (firstExpectedOutArgIndex === -1) {

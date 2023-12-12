@@ -1,5 +1,5 @@
 import { buildBlockExplorerTxUrl } from "@bleu-fi/utils";
-import { formatNumber } from "@bleu-fi/utils/formatNumber";
+import { formatDateToLocalDatetime } from "@bleu-fi/utils/date";
 import {
   ArrowTopRightIcon,
   ChevronDownIcon,
@@ -143,31 +143,34 @@ export function TableRowTransaction({
           </button>
         </Table.BodyCell>
         <Table.BodyCell>
-          {equalTokensIn ? (
-            <TokenInfo
-              id={transaction.orders[0].orderEvent.tokenIn?.id}
-              symbol={transaction.orders[0].orderEvent.tokenIn?.symbol}
-              chainId={transaction.orders[0].orderEvent.chainId}
-            />
-          ) : (
-            "Multiple Tokens"
-          )}
+          {transaction.blockTimestamp
+            ? formatDateToLocalDatetime(
+                new Date(transaction.blockTimestamp * 1000),
+              )
+            : "Pending..."}
         </Table.BodyCell>
         <Table.BodyCell>
-          {equalTokensIn
-            ? formatNumber(totalAmountTokenIn, 4, "decimal", "standard", 0.0001)
-            : "Multiple Tokens"}
+          <TokenInfo
+            id={transaction.orders[0].orderEvent.tokenIn?.id}
+            symbol={
+              equalTokensIn
+                ? transaction.orders[0].orderEvent.tokenIn?.symbol
+                : "Multiple Tokens"
+            }
+            chainId={transaction.orders[0].orderEvent.chainId}
+            amount={equalTokensIn ? totalAmountTokenIn : undefined}
+          />
         </Table.BodyCell>
         <Table.BodyCell>
-          {equalTokensOut ? (
-            <TokenInfo
-              id={transaction.orders[0].orderEvent.tokenOut?.id}
-              symbol={transaction.orders[0].orderEvent.tokenOut?.symbol}
-              chainId={transaction.orders[0].orderEvent.chainId}
-            />
-          ) : (
-            "Multiple Tokens"
-          )}
+          <TokenInfo
+            id={transaction.orders[0].orderEvent.tokenOut?.id}
+            symbol={
+              equalTokensOut
+                ? transaction.orders[0].orderEvent.tokenOut?.symbol
+                : "Multiple Tokens"
+            }
+            chainId={transaction.orders[0].orderEvent.chainId}
+          />
         </Table.BodyCell>
         <Table.BodyCell>
           <div className="flex items-center gap-x-1">

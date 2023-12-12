@@ -1,3 +1,4 @@
+import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import Image from "next/image";
 
 import { cowTokenList } from "#/utils/cowTokenList";
@@ -7,10 +8,12 @@ export function TokenInfo({
   symbol,
   id,
   chainId,
+  amount,
 }: {
   symbol?: string | null;
   id?: string;
   chainId?: number;
+  amount?: number | string;
 }) {
   const tokenLogoUri = cowTokenList.find(
     (token) => token.address === id && token.chainId === chainId,
@@ -31,7 +34,8 @@ export function TokenInfo({
           </div>
         </div>
       </div>
-      {symbol ?? truncateAddress(id)}
+      {symbol ?? truncateAddress(id)}{" "}
+      {amount && `(${formatNumber(amount, 2, "decimal", "compact", 0.001)})`}
     </div>
   );
 }

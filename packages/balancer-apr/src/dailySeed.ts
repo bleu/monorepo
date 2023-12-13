@@ -1582,21 +1582,21 @@ async function calculateApr() {
 export async function runDailyETLs() {
   console.log("Starting ETL processes");
 
-  // await seedCalendar();
-  // await seedVebalRounds();
-  // await seedBalEmission();
-  // await ETLPools();
-  // await ETLSnapshots();
-  // await ETLGauges();
-  // await ETLPoolRewards();
-  // await calculatePoolRewardsSnapshots();
-  // await fetchBalPrices();
-  // await ETLGaugesSnapshot();
-  // await fetchBlocks();
-  // await ETLPoolRateProvider();
-  // await ETLPoolRateProviderSnapshot();
-  // await fetchTokenPrices();
-  // await calculateTokenWeightSnapshots();
+  await seedCalendar();
+  await seedVebalRounds();
+  await seedBalEmission();
+  await ETLPools();
+  await ETLSnapshots();
+  await ETLGauges();
+  await ETLPoolRewards();
+  await calculatePoolRewardsSnapshots();
+  await fetchBalPrices();
+  await ETLGaugesSnapshot();
+  await fetchBlocks();
+  await ETLPoolRateProvider();
+  await ETLPoolRateProviderSnapshot();
+  await fetchTokenPrices();
+  await calculateTokenWeightSnapshots();
   await calculateApr();
   console.log("Ended ETL processes");
   process.exit(0);

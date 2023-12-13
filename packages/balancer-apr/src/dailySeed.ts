@@ -1347,7 +1347,7 @@ async function calculateApr() {
   console.log("Seeding veBAL APR");
   await db.execute(sql`
     INSERT INTO vebal_apr (timestamp, value, pool_external_id, external_id)
-    SELECT DISTINCT
+    SELECT DISTINCT ON (ps.timestamp, ps.pool_external_id)
         ps.timestamp,
         CASE
             WHEN ps.liquidity = 0 THEN 0
@@ -1378,7 +1378,7 @@ async function calculateApr() {
 
   await db.execute(sql`
     INSERT INTO yield_token_apr (timestamp, token_address, pool_external_id, external_id, value)
-    SELECT DISTINCT
+    SELECT DISTINCT ON (pool_snapshots.timestamp, pool_tokens.token_address, pool_snapshots.pool_external_id)
     pool_snapshots.timestamp,
     pool_tokens.token_address,
     pool_snapshots.pool_external_id,
@@ -1444,7 +1444,7 @@ async function calculateApr() {
 
   await db.execute(sql`
     INSERT INTO yield_token_apr (timestamp, token_address, pool_external_id, external_id, value)
-    SELECT DISTINCT
+    SELECT DISTINCT ON (pool_snapshots.timestamp, pool_tokens.token_address, pool_snapshots.pool_external_id)
     pool_snapshots.timestamp,
     pool_tokens.token_address,
     pool_snapshots.pool_external_id,
@@ -1582,21 +1582,21 @@ async function calculateApr() {
 export async function runDailyETLs() {
   console.log("Starting ETL processes");
 
-  await seedCalendar();
-  await seedVebalRounds();
-  await seedBalEmission();
-  await ETLPools();
-  await ETLSnapshots();
-  await ETLGauges();
-  await ETLPoolRewards();
-  await calculatePoolRewardsSnapshots();
-  await fetchBalPrices();
-  await ETLGaugesSnapshot();
-  await fetchBlocks();
-  await ETLPoolRateProvider();
-  await ETLPoolRateProviderSnapshot();
-  await fetchTokenPrices();
-  await calculateTokenWeightSnapshots();
+  // await seedCalendar();
+  // await seedVebalRounds();
+  // await seedBalEmission();
+  // await ETLPools();
+  // await ETLSnapshots();
+  // await ETLGauges();
+  // await ETLPoolRewards();
+  // await calculatePoolRewardsSnapshots();
+  // await fetchBalPrices();
+  // await ETLGaugesSnapshot();
+  // await fetchBlocks();
+  // await ETLPoolRateProvider();
+  // await ETLPoolRateProviderSnapshot();
+  // await fetchTokenPrices();
+  // await calculateTokenWeightSnapshots();
   await calculateApr();
   console.log("Ended ETL processes");
   process.exit(0);

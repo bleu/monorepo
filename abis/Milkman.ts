@@ -1,4 +1,4 @@
-[
+export const milkmanAbi = [
   { "inputs": [], "stateMutability": "nonpayable", "type": "constructor" },
   {
     "anonymous": false,
@@ -137,4 +137,4 @@
     "stateMutability": "view",
     "type": "function"
   }
-]
+] as const;

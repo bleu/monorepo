@@ -1,8 +1,9 @@
-import type { Config } from "@ponder/core";
+import { createConfig } from "@ponder/core";
 import { http } from "viem";
+import { milkmanAbi } from "./abis/Milkman";
 
-export const config: Config = {
-  networks: [
+export default createConfig({
+  networks: {
     // {
     //   name: "mainnet",
     //   chainId: 1,
@@ -13,13 +14,23 @@ export const config: Config = {
     //   chainId: 100,
     //   rpcUrl: process.env.PONDER_RPC_URL_GNOSIS,
     // },
-    {
-      name: "goerli",
+    goerli: {
       chainId: 5,
-      rpcUrl: process.env.PONDER_RPC_URL_GOERLI,
+      transport: http(process.env.PONDER_RPC_URL_GOERLI),
     },
-  ],
-  contracts: [
+  },
+  contracts: {
+    milkman: {
+      abi: milkmanAbi,
+      address: "0x11C76AD590ABDFFCD980afEC9ad951B160F02797",
+      network: {
+        goerli: {
+          address: "0x11C76AD590ABDFFCD980afEC9ad951B160F02797",
+          startBlock: 8083917
+        }
+      }
+    }
+  }
     // {
     //   name: "Milkman",
     //   network: "mainnet",
@@ -34,12 +45,5 @@ export const config: Config = {
     //   address: "0x11C76AD590ABDFFCD980afEC9ad951B160F02797",
     //   startBlock: 26367139,
     // },
-    {
-      name: "Milkman",
-      network: "goerli",
-      abi: "./abis/Milkman.json",
-      address: "0x11C76AD590ABDFFCD980afEC9ad951B160F02797",
-      startBlock: 8083917,
-    },
-  ],
-};
+  }
+);

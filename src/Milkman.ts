@@ -1,29 +1,29 @@
 import { ponder } from "@/generated";
 
-ponder.on("Milkman:SwapRequested", async ({ event, context }) => {
+ponder.on("milkman:SwapRequested", async ({ event, context }) => {
 
-  const user = await context.entities.User.upsert({id: event.params.orderCreator})
-  const tokenIn = await context.entities.Token.upsert({id: event.params.fromToken})
-  const tokenOut = await context.entities.Token.upsert({id: event.params.toToken})
+  const user = await context.db.User.upsert({id: event.args.orderCreator})
+  const tokenIn = await context.db.Token.upsert({id: event.args.fromToken})
+  const tokenOut = await context.db.Token.upsert({id: event.args.toToken})
 
-  let transaction = await context.entities.TransactionHash.findUnique({id: event.transaction.hash})
+  let transaction = await context.db.TransactionHash.findUnique({id: event.transaction.hash})
   if (!transaction) {
-    transaction = await context.entities.TransactionHash.create({id: event.transaction.hash, data: {user: user.id, blockNumber: event.block.number, blockTimestamp: event.block.timestamp}})
+    transaction = await context.db.TransactionHash.create({id: event.transaction.hash, data: {user: user.id, blockNumber: event.block.number, blockTimestamp: event.block.timestamp}})
   }
 
-  await context.entities.Swap.create({
+  await context.db.Swap.create({
     id: event.log.id,
     data: {
       chainId: 5, // only tracking goerli currently, waiting ponder to expose chainId in event object
-      status: "REQUESTED",
-      tokenIn: tokenIn.id,
-      tokenOut: tokenOut.id,
-      tokenAmountIn: event.params.amountIn,
-      priceChecker: event.params.priceChecker,
-      priceCheckerData: event.params.priceCheckerData,
-      orderContract: event.params.orderContract,
-      to: event.params.to,
-      transactionHash: transaction.id,
+      tokenInId: tokenIn.id,
+      tokenOutId: tokenOut.id,
+      tokenAmountIn: event.args.amountIn,
+      priceChecker: event.args.priceChecker,
+      priceCheckerData: event.args.priceCheckerData,
+      orderContract: event.args.orderContract,
+      to: event.args.to,
+      transactionHash: event.transaction.hash,
+      transactionHashId: event.transaction.hash,
     }
   })
 });

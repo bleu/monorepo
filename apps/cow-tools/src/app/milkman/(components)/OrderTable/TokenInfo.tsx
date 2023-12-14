@@ -35,7 +35,7 @@ export function TokenInfo({
         </div>
       </div>
       {symbol ?? truncateAddress(id)}{" "}
-      {amount && `(${formatNumber(amount, 2, "decimal", "compact", 0.001)})`}
+      {amount && `(${formatNumber(amount, 4, "decimal", "compact", 0.001)})`}
     </div>
   );
 }

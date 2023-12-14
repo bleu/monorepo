@@ -21,8 +21,8 @@ export function CancelButton({
         ({
           type: TRANSACTION_TYPES.MILKMAN_CANCEL,
           contractAddress: order.orderEvent.orderContract,
-          tokenAddressToSell: order.orderEvent.tokenIn?.id,
-          tokenAddressToBuy: order.orderEvent.tokenOut?.id,
+          tokenAddressToSell: order.orderEvent.tokenIn?.address,
+          tokenAddressToBuy: order.orderEvent.tokenOut?.address,
           toAddress: order.orderEvent.to,
           amount: BigInt(order.orderEvent.tokenAmountIn),
           priceChecker: order.orderEvent.priceChecker,

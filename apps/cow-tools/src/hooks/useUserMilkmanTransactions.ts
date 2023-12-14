@@ -29,20 +29,19 @@ gql(`
         swaps {
           id
           chainId
-          transactionHash
           tokenAmountIn
           priceChecker
           orderContract
           priceCheckerData
           to
           tokenIn {
-            id
+            address
             name
             symbol
             decimals
           }
           tokenOut {
-            id
+            address
             name
             symbol
             decimals
@@ -114,7 +113,7 @@ async function getProcessedMilkmanTransactions({
   const publicClient = publicClientsFromIds[chainId as ChainId];
 
   const { users } = await milkmanSubgraph.AllTransactionFromUser({
-    user: address,
+    user: `${address}-${chainId}`,
   });
 
   const swapsLenByTransaction = users[0]?.transactions.map(
@@ -130,7 +129,7 @@ async function getProcessedMilkmanTransactions({
   );
 
   const tokenAddressesByTransactions = users[0]?.transactions.map(
-    (transaction) => transaction.swaps.map((swap) => swap.tokenIn?.id),
+    (transaction) => transaction.swaps.map((swap) => swap.tokenIn?.address),
   ) as (Address | undefined)[][];
 
   const tokenAddressesBySwap = ([] as (Address | undefined)[]).concat(
@@ -226,17 +225,22 @@ async function getQueuedMilkmanTransactions({
           chainId: Number(chainId),
           tokenAmountIn: milkmanTransaction.dataDecoded?.parameters?.[0].value,
           tokenIn: {
-            id: milkmanTransaction.dataDecoded?.parameters?.[1].value,
+            address: milkmanTransaction.dataDecoded?.parameters?.[1].value,
+            name: "",
+            symbol: "",
+            decimals: 1,
           },
           tokenOut: {
-            id: milkmanTransaction.dataDecoded?.parameters?.[2].value,
+            address: milkmanTransaction.dataDecoded?.parameters?.[2].value,
+            name: "",
+            symbol: "",
+            decimals: 1,
           },
           to: milkmanTransaction.dataDecoded?.parameters?.[3].value,
           priceChecker: milkmanTransaction.dataDecoded?.parameters?.[4].value,
           priceCheckerData:
             milkmanTransaction.dataDecoded?.parameters?.[5].value,
           id: "",
-          transactionHash: "",
           orderContract: "",
         },
       })) as IMilkmanOrder[],

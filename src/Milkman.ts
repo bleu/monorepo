@@ -1,20 +1,85 @@
 import { ponder } from "@/generated";
+import { erc20Abi } from "../abis/erc20";
 
 ponder.on("milkman:SwapRequested", async ({ event, context }) => {
+  function callERC20Contract<T>(
+    address: `0x${string}`,
+    functionName: "symbol" | "decimals" | "name"
+  ): Promise<T> {
+    return context.client.readContract({
+      abi: erc20Abi,
+      address,
+      functionName,
+    }) as Promise<T>;
+  }
 
-  const user = await context.db.User.upsert({id: event.args.orderCreator})
-  const tokenIn = await context.db.Token.upsert({id: event.args.fromToken})
-  const tokenOut = await context.db.Token.upsert({id: event.args.toToken})
+  function getErc20Data(address: `0x${string}`) {
+    return Promise.all([
+      callERC20Contract<string>(address, "symbol").catch(() => ""),
+      callERC20Contract<number>(address, "decimals").catch(() => 0),
+      callERC20Contract<string>(address, "name").catch(() => ""),
+    ]);
+  }
 
-  let transaction = await context.db.TransactionHash.findUnique({id: event.transaction.hash})
+  async function getToken(address: `0x${string}`) {
+    let token = await context.db.Token.findUnique({
+      id: address,
+    });
+    if (!token) {
+      const [symbol, decimals, name] = await getErc20Data(address);
+      token = await context.db.Token.create({
+        id: `${address}-${context.network.chainId}`,
+        data: {
+          address,
+          chainId: context.network.chainId,
+          symbol,
+          decimals,
+          name,
+        },
+      });
+    }
+    return token;
+  }
+
+  const userId = `${event.args.orderCreator}-${context.network.chainId}`;
+  let user = await context.db["User"].findUnique({
+    id: userId,
+  });
+
+  if (!user) {
+    user = await context.db.User.create({
+      id: userId,
+      data: {
+        address: event.args.orderCreator,
+        chainId: context.network.chainId,
+      },
+    });
+  }
+
+  const [tokenIn, tokenOut] = await Promise.all([
+    getToken(event.args.fromToken),
+    getToken(event.args.toToken),
+  ]);
+
+  let transaction = await context.db.Transaction.findUnique({
+    id: event.transaction.hash,
+  });
   if (!transaction) {
-    transaction = await context.db.TransactionHash.create({id: event.transaction.hash, data: {user: user.id, blockNumber: event.block.number, blockTimestamp: event.block.timestamp}})
+    transaction = await context.db.Transaction.create({
+      id: event.transaction.hash,
+      data: {
+        user: user.id,
+        chainId: context.network.chainId,
+        blockNumber: event.block.number,
+        blockTimestamp: event.block.timestamp,
+      },
+    });
   }
 
   await context.db.Swap.create({
     id: event.log.id,
     data: {
-      chainId: 5, // only tracking goerli currently, waiting ponder to expose chainId in event object
+      chainId: context.network.chainId,
       tokenInId: tokenIn.id,
       tokenOutId: tokenOut.id,
       tokenAmountIn: event.args.amountIn,
@@ -22,8 +87,8 @@ ponder.on("milkman:SwapRequested", async ({ event, context }) => {
       priceCheckerData: event.args.priceCheckerData,
       orderContract: event.args.orderContract,
       to: event.args.to,
-      transactionHash: event.transaction.hash,
-      transactionHashId: event.transaction.hash,
-    }
-  })
+      Transaction: event.transaction.hash,
+      TransactionId: event.transaction.hash,
+    },
+  });
 });

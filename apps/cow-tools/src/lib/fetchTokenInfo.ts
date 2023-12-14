@@ -1,6 +1,7 @@
+import { Address } from "@bleu-fi/utils";
+
 import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 import { erc20ABI } from "#/wagmi";
-import { Address } from "@bleu-fi/utils";
 
 export function fetchTokenInfo<T>(
   tokenAddress: Address,

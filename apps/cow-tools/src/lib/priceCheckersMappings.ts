@@ -1,4 +1,4 @@
-import { goerli,mainnet } from "viem/chains";
+import { goerli, mainnet } from "viem/chains";
 
 import { truncateAddress } from "#/utils/truncate";
 

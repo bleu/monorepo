@@ -4,12 +4,14 @@ import {
   getTransactionDetails,
   getTransactionQueue,
   Transaction,
+  TransactionDetails,
 } from "@safe-global/safe-gateway-typescript-sdk";
 import { erc20ABI } from "@wagmi/core";
 import { gql } from "graphql-tag";
 import { useEffect, useState } from "react";
 import { PublicClient } from "viem";
 
+import { fetchTokenInfo } from "#/lib/fetchTokenInfo";
 import { AllTransactionFromUserQuery } from "#/lib/gql/generated";
 import { milkmanSubgraph } from "#/lib/gql/sdk";
 import { MILKMAN_ADDRESS } from "#/lib/transactionFactory";
@@ -184,6 +186,31 @@ async function getProcessedMilkmanTransactions({
   );
 }
 
+async function fetchToken(tokenAddress: Address, chainId: ChainId) {
+  const [symbol, name, decimals] = await Promise.all([
+    fetchTokenInfo<string>(tokenAddress, chainId, "symbol").catch(() => ""),
+    fetchTokenInfo<string>(tokenAddress, chainId, "name").catch(() => ""),
+    fetchTokenInfo<number>(tokenAddress, chainId, "decimals").catch(() => 1),
+  ]);
+
+  return {
+    address: tokenAddress,
+    symbol,
+    name,
+    decimals,
+  };
+}
+
+function getMilkmanTransactionsFromTransactionsDetails(
+  transactionDetails: TransactionDetails,
+) {
+  return (
+    transactionDetails.txData?.dataDecoded?.parameters?.[0].valueDecoded?.filter(
+      (value) => value.to?.toLowerCase() == MILKMAN_ADDRESS.toLowerCase(),
+    ) || []
+  );
+}
+
 async function getQueuedMilkmanTransactions({
   chainId,
   address,
@@ -208,44 +235,68 @@ async function getQueuedMilkmanTransactions({
         ),
     );
 
-  return queuedMilkmanTransactionQueueDetails.map((transactionDetails) => {
-    const milkmanTransactions =
-      transactionDetails.txData?.dataDecoded?.parameters?.[0].valueDecoded?.filter(
-        (value) => value.to?.toLowerCase() == MILKMAN_ADDRESS.toLowerCase(),
-      );
+  const [tokensIn, tokensOut] = await Promise.all(
+    [1, 2].map((index) =>
+      Promise.all(
+        queuedMilkmanTransactionQueueDetails.map((transactionDetails) =>
+          Promise.all(
+            getMilkmanTransactionsFromTransactionsDetails(
+              transactionDetails,
+            ).map((milkmanTransaction) =>
+              fetchToken(
+                milkmanTransaction.dataDecoded?.parameters?.[index]
+                  .value as Address,
+                Number(chainId) as ChainId,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
 
-    return {
-      id: transactionDetails.txId,
-      blockTimestamp: 0,
-      processed: false,
-      orders: milkmanTransactions?.map((milkmanTransaction) => ({
-        cowOrders: [],
-        hasToken: false,
-        orderEvent: {
-          chainId: Number(chainId),
-          tokenAmountIn: milkmanTransaction.dataDecoded?.parameters?.[0].value,
-          tokenIn: {
-            address: milkmanTransaction.dataDecoded?.parameters?.[1].value,
-            name: "",
-            symbol: "",
-            decimals: 1,
-          },
-          tokenOut: {
-            address: milkmanTransaction.dataDecoded?.parameters?.[2].value,
-            name: "",
-            symbol: "",
-            decimals: 1,
-          },
-          to: milkmanTransaction.dataDecoded?.parameters?.[3].value,
-          priceChecker: milkmanTransaction.dataDecoded?.parameters?.[4].value,
-          priceCheckerData:
-            milkmanTransaction.dataDecoded?.parameters?.[5].value,
-          id: "",
-          orderContract: "",
-        },
-      })) as IMilkmanOrder[],
-    };
-  });
+  return queuedMilkmanTransactionQueueDetails.map(
+    (transactionDetails, transactionIndex) => {
+      const milkmanTransactions =
+        getMilkmanTransactionsFromTransactionsDetails(transactionDetails);
+
+      return {
+        id: transactionDetails.txId,
+        blockTimestamp: 0,
+        processed: false,
+        orders: milkmanTransactions?.map((milkmanTransaction, milkmanIndex) => {
+          // const [tokenIn, tokenOut] = await Promise.all([
+          //   fetchToken(
+          //     milkmanTransaction.dataDecoded?.parameters?.[1].value as Address,
+          //     Number(chainId) as ChainId
+          //   ),
+          //   fetchToken(
+          //     milkmanTransaction.dataDecoded?.parameters?.[2].value as Address,
+          //     Number(chainId) as ChainId
+          //   ),
+          // ]);
+          return {
+            cowOrders: [],
+            hasToken: false,
+            orderEvent: {
+              chainId: Number(chainId),
+              tokenAmountIn:
+                milkmanTransaction.dataDecoded?.parameters?.[0].value,
+              tokenIn: tokensIn[transactionIndex][milkmanIndex],
+              tokenOut: tokensOut[transactionIndex][milkmanIndex],
+              to: milkmanTransaction.dataDecoded?.parameters?.[3].value,
+              priceChecker:
+                milkmanTransaction.dataDecoded?.parameters?.[4].value,
+              priceCheckerData:
+                milkmanTransaction.dataDecoded?.parameters?.[5].value,
+              id: "",
+              orderContract: "",
+            },
+          };
+        }) as IMilkmanOrder[],
+      };
+    },
+  );
 }
 
 export function useUserMilkmanTransactions() {

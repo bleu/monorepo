@@ -22,8 +22,9 @@ ponder.on("milkman:SwapRequested", async ({ event, context }) => {
   }
 
   async function getToken(address: `0x${string}`) {
+    const tokenId = `${address}-${context.network.chainId}`;
     let token = await context.db.Token.findUnique({
-      id: address,
+      id: tokenId,
     });
     if (!token) {
       const [symbol, decimals, name] = await getErc20Data(address);

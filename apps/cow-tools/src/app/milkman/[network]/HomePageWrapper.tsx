@@ -1,14 +1,17 @@
 "use client";
 
-import { Network } from "@bleu-fi/utils";
+import {
+  Network,
+  NetworkChainId,
+  NetworkFromNetworkChainId,
+} from "@bleu-fi/utils";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { PlusIcon } from "@radix-ui/react-icons";
-import { useAccount, useNetwork } from "wagmi";
+import { goerli, mainnet } from "viem/chains";
 
 import { Button } from "#/components";
 import { LinkComponent } from "#/components/Link";
-import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
-import { getNetwork } from "#/contexts/networks";
 
 import { OrderTable } from "../(components)/OrderTable";
 
@@ -19,20 +22,13 @@ export function HomePageWrapper({
     network: Network;
   };
 }) {
-  const { chain } = useNetwork();
-  const { isConnected, isReconnecting, isConnecting } = useAccount();
+  const { safe, connected } = useSafeAppsSDK();
 
-  if (!isConnected && !isReconnecting && !isConnecting) {
+  if (!connected) {
     return <WalletNotConnected />;
   }
 
-  if (isConnecting || isReconnecting) {
-    return <Spinner />;
-  }
-
-  const network = getNetwork(chain?.name);
-
-  if (network !== params.network) {
+  if (safe.chainId !== mainnet.id && safe.chainId !== goerli.id) {
     return (
       <div className="flex h-full w-full flex-col items-center rounded-3xl px-12 py-16 md:py-20">
         <div className="text-center text-3xl text-amber9">
@@ -57,7 +53,9 @@ export function HomePageWrapper({
           <div className="flex gap-4">
             <LinkComponent
               loaderColor="amber"
-              href={`/milkman/${network}/order/new`}
+              href={`/milkman/${
+                NetworkFromNetworkChainId[safe.chainId as NetworkChainId]
+              }/order/new`}
               content={
                 <Button
                   className="flex items-center gap-1 py-3 px-6"

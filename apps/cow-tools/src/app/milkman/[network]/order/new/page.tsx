@@ -1,12 +1,11 @@
 "use client";
 
 import { Address, Network } from "@bleu-fi/utils";
-import { useAccount, useNetwork } from "wagmi";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { goerli, mainnet } from "viem/chains";
 
 import { TransactionCard } from "#/app/milkman/(components)/TransactionCard";
-import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
-import { getNetwork } from "#/contexts/networks";
 
 export type tokenPriceChecker = {
   symbol: string;
@@ -21,23 +20,15 @@ export default function Page({
     network: Network;
   };
 }) {
-  const { chain } = useNetwork();
-  const { isConnected, isReconnecting, isConnecting } = useAccount();
-  const { address } = useAccount();
+  const { safe, connected } = useSafeAppsSDK();
 
-  const addressLower = address ? address?.toLowerCase() : "";
-
-  if (!isConnected && !isReconnecting && !isConnecting) {
+  if (!connected) {
     return <WalletNotConnected />;
   }
 
-  if (isConnecting || isReconnecting) {
-    return <Spinner />;
-  }
+  const addressLower = safe.safeAddress ? safe.safeAddress?.toLowerCase() : "";
 
-  const network = getNetwork(chain?.name);
-
-  if (network !== params.network) {
+  if (safe.chainId !== mainnet.id && safe.chainId !== goerli.id) {
     return (
       <div className="flex h-full w-full flex-col items-center rounded-3xl px-12 py-16 md:py-20">
         <div className="text-center text-3xl text-amber9">
@@ -54,7 +45,7 @@ export default function Page({
     <>
       <TransactionCard
         userAddress={addressLower as Address}
-        chainId={chain?.id}
+        chainId={safe.chainId}
       />
     </>
   );

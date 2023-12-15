@@ -1,12 +1,12 @@
 "use client";
 
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { TokenBalance, TokenType } from "@gnosis.pm/safe-apps-sdk";
 import { ChevronDownIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import { tokenLogoUri } from "public/tokens/logoUri";
 import React, { useEffect, useState } from "react";
 import { formatUnits } from "viem";
-import { useNetwork } from "wagmi";
 
 import { Dialog } from "#/components/Dialog";
 import Table from "#/components/Table";
@@ -116,11 +116,13 @@ function TokenModal({
   onSelectToken: (token: TokenBalance) => void;
   tokenType: "sell" | "buy";
 }) {
-  const { chain } = useNetwork();
+  const {
+    safe: { chainId },
+  } = useSafeAppsSDK();
   const [tokens, setTokens] = useState<(TokenBalance | undefined)[]>(
     tokenType === "buy"
       ? cowTokenList
-          .filter((token) => token.chainId === chain?.id)
+          .filter((token) => token.chainId === chainId)
           .map((token) => {
             return {
               balance: "0",

@@ -104,21 +104,21 @@ export function TableRowTransaction({
 
   const equalTokensIn = transaction.orders.every(
     (order) =>
-      order.orderEvent.tokenIn?.id ==
-      transaction.orders[0].orderEvent.tokenIn?.id,
+      order.orderEvent.tokenIn?.address ==
+      transaction.orders[0].orderEvent.tokenIn?.address,
   );
 
   const equalTokensOut = transaction.orders.every(
     (order) =>
-      order.orderEvent.tokenOut?.id ==
-      transaction.orders[0].orderEvent.tokenOut?.id,
+      order.orderEvent.tokenOut?.address ==
+      transaction.orders[0].orderEvent.tokenOut?.address,
   );
 
   const decimalsTokenIn =
     transaction.orders[0].orderEvent.tokenIn?.decimals ||
     cowTokenList.find(
       (token) =>
-        token.address == transaction.orders[0].orderEvent.tokenIn?.id &&
+        token.address == transaction.orders[0].orderEvent.tokenIn?.address &&
         token.chainId == transaction.orders[0].orderEvent.chainId,
     )?.decimals ||
     1;
@@ -151,7 +151,7 @@ export function TableRowTransaction({
         </Table.BodyCell>
         <Table.BodyCell>
           <TokenInfo
-            id={transaction.orders[0].orderEvent.tokenIn?.id}
+            id={transaction.orders[0].orderEvent.tokenIn?.address}
             symbol={
               equalTokensIn
                 ? transaction.orders[0].orderEvent.tokenIn?.symbol
@@ -163,7 +163,7 @@ export function TableRowTransaction({
         </Table.BodyCell>
         <Table.BodyCell>
           <TokenInfo
-            id={transaction.orders[0].orderEvent.tokenOut?.id}
+            id={transaction.orders[0].orderEvent.tokenOut?.address}
             symbol={
               equalTokensOut
                 ? transaction.orders[0].orderEvent.tokenOut?.symbol

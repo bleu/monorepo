@@ -265,16 +265,6 @@ async function getQueuedMilkmanTransactions({
         blockTimestamp: 0,
         processed: false,
         orders: milkmanTransactions?.map((milkmanTransaction, milkmanIndex) => {
-          // const [tokenIn, tokenOut] = await Promise.all([
-          //   fetchToken(
-          //     milkmanTransaction.dataDecoded?.parameters?.[1].value as Address,
-          //     Number(chainId) as ChainId
-          //   ),
-          //   fetchToken(
-          //     milkmanTransaction.dataDecoded?.parameters?.[2].value as Address,
-          //     Number(chainId) as ChainId
-          //   ),
-          // ]);
           return {
             cowOrders: [],
             hasToken: false,
@@ -328,7 +318,9 @@ export function useUserMilkmanTransactions() {
         ]);
         setTransactions([...queuedTransactions, ...processedTransactions]);
         setError(false);
-      } catch {
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error(err);
         setError(true);
       }
       setLoaded(true);

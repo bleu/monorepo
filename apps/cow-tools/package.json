@@ -76,7 +76,7 @@
     "@bleu-fi/eslint-config": "workspace:^",
     "@bleu-fi/utils": "workspace:^",
     "@graphql-codegen/cli": "5.0.0",
-    "@graphql-codegen/typescript-graphql-request": "6.0.1",
+    "@graphql-codegen/typescript-graphql-request": "6.1.0",
     "@testing-library/jest-dom": "6.1.5",
     "@testing-library/react": "^14.1.2",
     "@testing-library/user-event": "14.5.1",

@@ -19,34 +19,35 @@ import PoolOverviewCards from "../../(components)/PoolOverviewCards";
 
 export const revalidate = 86_400;
 
-
 type Props = {
-  params: { poolId: string }
-  searchParams: { [key: string]: string | string[] | undefined }
-}
- 
+  params: { poolId: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+};
 
 export async function generateMetadata(
   { params }: Props,
-  parent: ResolvingMetadata
+  parent: ResolvingMetadata,
 ): Promise<Metadata> {
-  const externalId = params.poolId
+  const externalId = params.poolId;
 
-  const result = await db.select({
-    name: pools.symbol,
-  }).from(pools).where(eq(pools.externalId, externalId))
+  const result = await db
+    .select({
+      name: pools.symbol,
+    })
+    .from(pools)
+    .where(eq(pools.externalId, externalId));
 
   if (!result.length) {
     return {
       title: "Pool not found",
-      description: (await parent).description
-    }
+      description: (await parent).description,
+    };
   }
 
   return {
     title: `${result[0]} - Historical APR`,
-    description: (await parent).description
-  }
+    description: (await parent).description,
+  };
 }
 
 export default async function Page({

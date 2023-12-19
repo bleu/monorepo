@@ -1640,6 +1640,12 @@ SELECT
   ON CONFLICT (timestamp) DO NOTHING;
   `);
 }
+export async function removeLiquidityBootstraping() {
+  return await db.execute(sql`
+  DELETE FROM pools
+  WHERE pool_type = 'LiquidityBoostraping'
+  `);
+}
 
 export async function runETLs() {
   logIfVerbose("Starting ETL processes");
@@ -1660,6 +1666,7 @@ export async function runETLs() {
   await ETLPoolRateProviderSnapshot();
   await fetchTokenPrices();
   await calculateTokenWeightSnapshots();
+  await removeLiquidityBootstraping();
   await calculateApr();
   logIfVerbose("Ended ETL processes");
   process.exit(0);

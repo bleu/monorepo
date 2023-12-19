@@ -53,6 +53,7 @@ import {
   ETLGauges,
   ETLPoolRateProvider,
   fetchTokenPrice,
+  removeLiquidityBootstraping,
   transformNetworks,
 } from "./index";
 import * as balEmissions from "./lib/balancer/emissions";
@@ -1597,6 +1598,7 @@ export async function runDailyETLs() {
   await ETLPoolRateProviderSnapshot();
   await fetchTokenPrices();
   await calculateTokenWeightSnapshots();
+  await removeLiquidityBootstraping();
   await calculateApr();
   console.log("Ended ETL processes");
   process.exit(0);

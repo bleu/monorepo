@@ -12,8 +12,6 @@ import {
 } from "@bleu-fi/utils";
 import { GraphQLClient } from "graphql-request";
 
-import { withCache } from "../cache";
-
 export function impersonateWhetherDAO(
   chainId: string,
   address: Address | undefined,
@@ -42,32 +40,10 @@ const clientFor = (client: Subgraph) => (chainId: string) => {
   return new GraphQLClient(endpoint);
 };
 
-function wrapWithCache<T extends object>(obj: T): T {
-  return new Proxy(obj, {
-    get(target, propKey) {
-      const origMethod = target[propKey as keyof T];
-      if (typeof origMethod === "function") {
-        return function (...args: unknown[]) {
-          return withCache(origMethod.bind(target))(...args);
-        };
-      }
-      return origMethod;
-    },
-  }) as T;
-}
-
 export const pools = {
   client: clientFor(Subgraph.Balancer),
   gql: (chainId: number | string) =>
     balancerSdks[networkFor(chainId)](pools.client(String(chainId))),
-};
-
-export const poolsWithCache = {
-  client: clientFor(Subgraph.Balancer),
-  gql: (chainId: number | string) =>
-    wrapWithCache(
-      balancerSdks[networkFor(chainId)](poolsWithCache.client(String(chainId))),
-    ),
 };
 
 export const poolsMetadata = {
@@ -81,9 +57,7 @@ export const poolsMetadata = {
 export const gauges = {
   client: clientFor(Subgraph.BalancerGauges),
   gql: (chainId: number | string) =>
-    wrapWithCache(
-      gaugesSdks[networkFor(chainId)](gauges.client(String(chainId))),
-    ),
+    gaugesSdks[networkFor(chainId)](gauges.client(String(chainId))),
 };
 
 export const internalBalances = {

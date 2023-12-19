@@ -36,7 +36,7 @@ export default function HistoricalChartWrapper({
 }: {
   results: PoolStatsResults;
 }) {
-  const charts = ["APR", "Weekly Swap Fees", "TVL", "Volume"];
+  const charts = ["APR", "Swap Fees", "TVL", "Volume"];
   const [selectedTabs, setselectedTabs] = useState([0]);
 
   const feeChartData = formatSwapFeeChartData(results, "y2");

@@ -1,9 +1,7 @@
 export const ENDPOINT_V3 = "https://api-v3.balancer.fi/graphql";
+
 const BASE_ENDPOINT_V2 =
   "https://api.thegraph.com/subgraphs/name/balancer-labs";
-
-const BASE_REWARDS_ENDPOINT =
-  "https://api.thegraph.com/subgraphs/name/bleu-fi/balancer-gauges";
 
 export const NETWORK_TO_BALANCER_ENDPOINT_MAP = {
   ethereum: `${BASE_ENDPOINT_V2}/balancer-v2`,
@@ -16,6 +14,9 @@ export const NETWORK_TO_BALANCER_ENDPOINT_MAP = {
   base: "https://api.studio.thegraph.com/query/24660/balancer-base-v2/version/latest",
   avalanche: `${BASE_ENDPOINT_V2}/balancer-avalanche-v2`,
 } as const;
+
+const BASE_REWARDS_ENDPOINT =
+  "https://api.thegraph.com/subgraphs/name/bleu-fi/balancer-gauges";
 
 export const NETWORK_TO_REWARDS_ENDPOINT_MAP = {
   ethereum: `${BASE_REWARDS_ENDPOINT}`,

@@ -1552,9 +1552,9 @@ async function calculateApr() {
     const yearlyAmountUsd =
       Number(aprItems.yearlyAmount) * Number(aprItems.tokenPrice);
 
-    const bptPrice = Number(aprItems.liquidity) / Number(aprItems.totalShares);
-    const totalSupplyUsd = Number(aprItems.totalSupply) * Number(bptPrice);
-    const apr = (yearlyAmountUsd / totalSupplyUsd) * 100;
+    // const bptPrice = Number(aprItems.liquidity) / Number(aprItems.totalShares);
+    // const totalSupplyUsd = Number(aprItems.totalSupply) * Number(bptPrice);
+    const apr = (yearlyAmountUsd / Number(aprItems.liquidity)) * 100;
 
     await db
       .insert(rewardsTokenApr)

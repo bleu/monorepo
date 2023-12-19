@@ -26,7 +26,7 @@ export default function HistoricalSwapFeeChartData(
       color: normalBarColor,
       opacity: 1,
     },
-    line: { shape: "spline" } as const,
+    line: { shape: "linear" } as const,
     type: "bar" as PlotType,
     offsetgroup: 1,
   };

@@ -176,6 +176,13 @@
       "when": 1702322096137,
       "tag": "0024_right_naoko",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "5",
+      "when": 1702999601324,
+      "tag": "0025_concerned_zarda",
+      "breakpoints": true
     }
   ]
 }

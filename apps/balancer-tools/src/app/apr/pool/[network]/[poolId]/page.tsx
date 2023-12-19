@@ -45,7 +45,7 @@ export async function generateMetadata(
   }
 
   return {
-    title: `${result[0]} - Historical APR`,
+    title: `${result[0].name} - Historical APR`,
     description: (await parent).description,
   };
 }

@@ -1089,9 +1089,13 @@ export async function fetchTokenPrice(
         const [networkSlug, tokenAddress] = Object.keys(prices.coins)[0].split(
           ":",
         );
-        const timestamp = new Date(
-          epochToDate(entry.timestamp).setUTCHours(0, 0, 0, 0),
-        );
+        let timestamp = new Date(epochToDate(entry.timestamp));
+        if (timestamp.getUTCHours() === 23 && timestamp.getUTCMinutes() >= 58) {
+          timestamp = new Date(
+            timestamp.setUTCDate(timestamp.getUTCDate() + 1),
+          );
+        }
+        timestamp.setUTCHours(0, 0, 0, 0);
 
         return {
           tokenAddress,

@@ -22,9 +22,8 @@ export interface SearchParams {
   network?: string;
 }
 
-export const maxDuration = 300;
+export const revalidate = 86_400;
 
-export const revalidate = SECONDS_IN_DAY;
 export default async function Page({
   searchParams,
 }: {

@@ -1,4 +1,8 @@
+import { db } from "@bleu-fi/balancer-apr/src/db";
+import { pools } from "@bleu-fi/balancer-apr/src/db/schema";
 import { SECONDS_IN_DAY } from "@bleu-fi/utils/date";
+import { eq } from "drizzle-orm";
+import { Metadata, ResolvingMetadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
@@ -13,7 +17,39 @@ import { SearchParams } from "#/app/apr/page";
 import HistoricalCharts from "../../(components)/HistoricalCharts";
 import PoolOverviewCards from "../../(components)/PoolOverviewCards";
 
-export const revalidate = SECONDS_IN_DAY;
+export const revalidate = 86_400;
+
+type Props = {
+  params: { poolId: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+};
+
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  const externalId = params.poolId;
+
+  const result = await db
+    .select({
+      name: pools.symbol,
+    })
+    .from(pools)
+    .where(eq(pools.externalId, externalId));
+
+  if (!result.length) {
+    return {
+      title: "Pool not found",
+      description: (await parent).description,
+    };
+  }
+
+  return {
+    title: `${result[0]} - Historical APR`,
+    description: (await parent).description,
+  };
+}
+
 export default async function Page({
   params: { poolId },
   searchParams,
@@ -22,6 +58,7 @@ export default async function Page({
   params: { poolId: string };
 }) {
   const parsedParams = QueryParamsPagesSchema.safeParse(searchParams);
+
   if (!parsedParams.success) {
     const oneDayAgoFormated = new Date(
       new Date().getTime() - SECONDS_IN_DAY * 1000,
@@ -37,6 +74,7 @@ export default async function Page({
       ),
     );
   }
+
   const { startAt: startAtDate, endAt: endAtDate } = parsedParams.data;
   if (!startAtDate || !endAtDate) {
     return redirect("/apr/");

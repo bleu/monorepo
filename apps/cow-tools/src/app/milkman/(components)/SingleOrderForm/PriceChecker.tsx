@@ -9,7 +9,6 @@ import {
 } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import { FieldValues, useForm, UseFormReturn } from "react-hook-form";
-import { useNetwork } from "wagmi";
 
 import { TransactionStatus } from "#/app/milkman/utils/type";
 import Button from "#/components/Button";
@@ -438,8 +437,9 @@ function MetaPriceCheckerInput({
     );
   }
 
-  const network = useNetwork();
-
+  const {
+    safe: { chainId },
+  } = useSafeAppsSDK();
   const [openDialog, setOpenDialog] = useState(false);
   const [valuesForDialog, setValuesForDialog] = useState<FieldValues>({});
   const [dialogIndex, setDialogIndex] = useState<number>(-1);
@@ -517,7 +517,7 @@ function MetaPriceCheckerInput({
             [...Array(formData.swapPath.length - 1).keys()].map((rowIndex) => {
               const expectedOutPriceChecker =
                 getPriceCheckerFromAddressAndChain(
-                  network.chain?.id as ChainId,
+                  chainId as ChainId,
                   formData.expectedOutAddresses[rowIndex],
                   true,
                 );

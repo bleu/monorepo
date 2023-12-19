@@ -48,7 +48,7 @@ export default function formatAPRChartData(
     hovertemplate: HOVERTEMPLATE,
     x: vebalAprData.x,
     y: vebalAprData.y,
-    line: { shape: "spline", color: blueDarkA.blueA9 } as const,
+    line: { shape: "linear", color: blueDarkA.blueA9 } as const,
     type: "scatter" as PlotType,
   };
 
@@ -58,7 +58,7 @@ export default function formatAPRChartData(
     hovertemplate: HOVERTEMPLATE,
     x: feeAprData.x,
     y: feeAprData.y,
-    line: { shape: "spline", color: greenDarkA.greenA9 } as const,
+    line: { shape: "linear", color: greenDarkA.greenA9 } as const,
     type: "scatter" as PlotType,
   };
 
@@ -68,7 +68,7 @@ export default function formatAPRChartData(
     hovertemplate: HOVERTEMPLATE,
     x: tokenTotalAprData.x,
     y: tokenTotalAprData.y,
-    line: { shape: "spline", color: violetDarkA.violetA9 } as const,
+    line: { shape: "linear", color: violetDarkA.violetA9 } as const,
     type: "scatter" as PlotType,
   };
 
@@ -78,7 +78,7 @@ export default function formatAPRChartData(
     hovertemplate: HOVERTEMPLATE,
     x: rewardsTotalAprData.x,
     y: rewardsTotalAprData.y,
-    line: { shape: "spline", color: yellowDarkA.yellowA9 } as const,
+    line: { shape: "linear", color: yellowDarkA.yellowA9 } as const,
     type: "scatter" as PlotType,
   };
 
@@ -88,7 +88,7 @@ export default function formatAPRChartData(
     hovertemplate: HOVERTEMPLATE,
     x: totalAprData.x,
     y: totalAprData.y,
-    line: { shape: "spline", color: whiteA.whiteA9 } as const,
+    line: { shape: "linear", color: whiteA.whiteA9 } as const,
     type: "scatter" as PlotType,
   };
 
@@ -106,7 +106,7 @@ export default function formatAPRChartData(
       hovertemplate: HOVERTEMPLATE,
       x: trimmedTokenAprData.x,
       y: trimmedTokenAprData.y,
-      line: { shape: "spline", color: "rgba(0,0,0,0);" } as const,
+      line: { shape: "linear", color: "rgba(0,0,0,0);" } as const,
       type: "scatter" as PlotType,
     };
   });
@@ -125,7 +125,7 @@ export default function formatAPRChartData(
       hovertemplate: HOVERTEMPLATE,
       x: trimmedTokenAprData.x,
       y: trimmedTokenAprData.y,
-      line: { shape: "spline", color: "rgba(0,0,0,0);" } as const,
+      line: { shape: "linear", color: "rgba(0,0,0,0);" } as const,
       type: "scatter" as PlotType,
     };
   });

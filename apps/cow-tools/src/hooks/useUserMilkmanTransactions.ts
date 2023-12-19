@@ -4,12 +4,14 @@ import {
   getTransactionDetails,
   getTransactionQueue,
   Transaction,
+  TransactionDetails,
 } from "@safe-global/safe-gateway-typescript-sdk";
 import { erc20ABI } from "@wagmi/core";
 import { gql } from "graphql-tag";
 import { useEffect, useState } from "react";
 import { PublicClient } from "viem";
 
+import { fetchTokenInfo } from "#/lib/fetchTokenInfo";
 import { AllTransactionFromUserQuery } from "#/lib/gql/generated";
 import { milkmanSubgraph } from "#/lib/gql/sdk";
 import { MILKMAN_ADDRESS } from "#/lib/transactionFactory";
@@ -29,20 +31,19 @@ gql(`
         swaps {
           id
           chainId
-          transactionHash
           tokenAmountIn
           priceChecker
           orderContract
           priceCheckerData
           to
           tokenIn {
-            id
+            address
             name
             symbol
             decimals
           }
           tokenOut {
-            id
+            address
             name
             symbol
             decimals
@@ -114,7 +115,7 @@ async function getProcessedMilkmanTransactions({
   const publicClient = publicClientsFromIds[chainId as ChainId];
 
   const { users } = await milkmanSubgraph.AllTransactionFromUser({
-    user: address,
+    user: `${address}-${chainId}`,
   });
 
   const swapsLenByTransaction = users[0]?.transactions.map(
@@ -130,7 +131,7 @@ async function getProcessedMilkmanTransactions({
   );
 
   const tokenAddressesByTransactions = users[0]?.transactions.map(
-    (transaction) => transaction.swaps.map((swap) => swap.tokenIn?.id),
+    (transaction) => transaction.swaps.map((swap) => swap.tokenIn?.address),
   ) as (Address | undefined)[][];
 
   const tokenAddressesBySwap = ([] as (Address | undefined)[]).concat(
@@ -185,6 +186,31 @@ async function getProcessedMilkmanTransactions({
   );
 }
 
+async function fetchToken(tokenAddress: Address, chainId: ChainId) {
+  const [symbol, name, decimals] = await Promise.all([
+    fetchTokenInfo<string>(tokenAddress, chainId, "symbol").catch(() => ""),
+    fetchTokenInfo<string>(tokenAddress, chainId, "name").catch(() => ""),
+    fetchTokenInfo<number>(tokenAddress, chainId, "decimals").catch(() => 1),
+  ]);
+
+  return {
+    address: tokenAddress,
+    symbol,
+    name,
+    decimals,
+  };
+}
+
+function getMilkmanTransactionsFromTransactionsDetails(
+  transactionDetails: TransactionDetails,
+) {
+  return (
+    transactionDetails.txData?.dataDecoded?.parameters?.[0].valueDecoded?.filter(
+      (value) => value.to?.toLowerCase() == MILKMAN_ADDRESS.toLowerCase(),
+    ) || []
+  );
+}
+
 async function getQueuedMilkmanTransactions({
   chainId,
   address,
@@ -209,39 +235,58 @@ async function getQueuedMilkmanTransactions({
         ),
     );
 
-  return queuedMilkmanTransactionQueueDetails.map((transactionDetails) => {
-    const milkmanTransactions =
-      transactionDetails.txData?.dataDecoded?.parameters?.[0].valueDecoded?.filter(
-        (value) => value.to?.toLowerCase() == MILKMAN_ADDRESS.toLowerCase(),
-      );
+  const [tokensIn, tokensOut] = await Promise.all(
+    [1, 2].map((index) =>
+      Promise.all(
+        queuedMilkmanTransactionQueueDetails.map((transactionDetails) =>
+          Promise.all(
+            getMilkmanTransactionsFromTransactionsDetails(
+              transactionDetails,
+            ).map((milkmanTransaction) =>
+              fetchToken(
+                milkmanTransaction.dataDecoded?.parameters?.[index]
+                  .value as Address,
+                Number(chainId) as ChainId,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
 
-    return {
-      id: transactionDetails.txId,
-      blockTimestamp: 0,
-      processed: false,
-      orders: milkmanTransactions?.map((milkmanTransaction) => ({
-        cowOrders: [],
-        hasToken: false,
-        orderEvent: {
-          chainId: Number(chainId),
-          tokenAmountIn: milkmanTransaction.dataDecoded?.parameters?.[0].value,
-          tokenIn: {
-            id: milkmanTransaction.dataDecoded?.parameters?.[1].value,
-          },
-          tokenOut: {
-            id: milkmanTransaction.dataDecoded?.parameters?.[2].value,
-          },
-          to: milkmanTransaction.dataDecoded?.parameters?.[3].value,
-          priceChecker: milkmanTransaction.dataDecoded?.parameters?.[4].value,
-          priceCheckerData:
-            milkmanTransaction.dataDecoded?.parameters?.[5].value,
-          id: "",
-          transactionHash: "",
-          orderContract: "",
-        },
-      })) as IMilkmanOrder[],
-    };
-  });
+  return queuedMilkmanTransactionQueueDetails.map(
+    (transactionDetails, transactionIndex) => {
+      const milkmanTransactions =
+        getMilkmanTransactionsFromTransactionsDetails(transactionDetails);
+
+      return {
+        id: transactionDetails.txId,
+        blockTimestamp: 0,
+        processed: false,
+        orders: milkmanTransactions?.map((milkmanTransaction, milkmanIndex) => {
+          return {
+            cowOrders: [],
+            hasToken: false,
+            orderEvent: {
+              chainId: Number(chainId),
+              tokenAmountIn:
+                milkmanTransaction.dataDecoded?.parameters?.[0].value,
+              tokenIn: tokensIn[transactionIndex][milkmanIndex],
+              tokenOut: tokensOut[transactionIndex][milkmanIndex],
+              to: milkmanTransaction.dataDecoded?.parameters?.[3].value,
+              priceChecker:
+                milkmanTransaction.dataDecoded?.parameters?.[4].value,
+              priceCheckerData:
+                milkmanTransaction.dataDecoded?.parameters?.[5].value,
+              id: "",
+              orderContract: "",
+            },
+          };
+        }) as IMilkmanOrder[],
+      };
+    },
+  );
 }
 
 export function useUserMilkmanTransactions() {
@@ -273,7 +318,9 @@ export function useUserMilkmanTransactions() {
         ]);
         setTransactions([...queuedTransactions, ...processedTransactions]);
         setError(false);
-      } catch {
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error(err);
         setError(true);
       }
       setLoaded(true);

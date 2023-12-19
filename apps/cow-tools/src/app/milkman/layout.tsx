@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 import * as React from "react";
 
-import { CustomConnectButton } from "#/components/CustomConnectButton";
 import { Footer } from "#/components/Footer";
 import { Header } from "#/components/Header";
 import { NetworksContextProvider } from "#/contexts/networks";
@@ -17,11 +16,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <NetworksContextProvider>
       <div className="flex flex-col h-screen">
-        <Header
-          linkUrl={"/milkman"}
-          imageSrc={"/assets/milkman.svg"}
-          endButton={<CustomConnectButton showNetworkSelector={false} />}
-        />
+        <Header linkUrl={"/milkman"} imageSrc={"/assets/milkman.svg"} />
 
         <div className="flex flex-1 overflow-auto p-4 sm:flex-row sm:gap-x-8 text-white">
           {children}

@@ -1,10 +1,9 @@
 "use client";
 
 import { Network, networkFor } from "@bleu-fi/utils";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
-
-import { useNetwork } from "#/wagmi";
 
 export function getNetwork(chainName?: string) {
   if (!chainName) return Network.Ethereum;
@@ -40,21 +39,23 @@ export const NetworksContextProvider = ({
   const [networkConnectedToWallet, setSelectedNetwork] =
     React.useState<number>();
 
-  const network = useNetwork();
+  const {
+    safe: { chainId },
+  } = useSafeAppsSDK();
   const { push } = useRouter();
   const pathname = usePathname();
   const appName = pathname.split("/")[1];
   useEffect(() => {
-    if (!network.chain?.id) setSelectedNetwork(undefined);
-    setSelectedNetwork(network.chain?.id);
+    if (!chainId) setSelectedNetwork(undefined);
+    setSelectedNetwork(chainId);
     if (
-      network.chain?.id &&
+      chainId &&
       networkConnectedToWallet !== undefined &&
-      networkConnectedToWallet !== network.chain?.id
+      networkConnectedToWallet !== chainId
     ) {
-      push(`/${appName}/${networkFor(network.chain.id).toLowerCase()}`);
+      push(`/${appName}/${networkFor(chainId).toLowerCase()}`);
     }
-  }, [network]);
+  }, [chainId]);
 
   const mismatchedNetworks =
     networkConnectedToWallet !== undefined &&

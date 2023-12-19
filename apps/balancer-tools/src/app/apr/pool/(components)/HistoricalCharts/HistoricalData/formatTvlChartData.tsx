@@ -21,7 +21,7 @@ export default function formatTvlChartData(
       color: amberDark.amber9,
       opacity: 0.8,
     },
-    line: { shape: "spline" } as const,
+    line: { shape: "linear" } as const,
     type: "bar" as PlotType,
     // @ts-ignore: 2322
     offsetgroup: 2,

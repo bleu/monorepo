@@ -26,7 +26,7 @@ export default function formatVolumeChartData(
       color: blueDarkA.blueA9,
       opacity: 0.8,
     },
-    line: { shape: "spline" } as const,
+    line: { shape: "linear" } as const,
     type: "bar" as PlotType,
     // @ts-ignore: 2322
     offsetgroup: 3,

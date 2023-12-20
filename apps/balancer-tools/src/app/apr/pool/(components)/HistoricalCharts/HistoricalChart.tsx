@@ -152,7 +152,7 @@ export default function HistoricalChartWrapper({
         }}
       />
       <div className="text-center text-gray-400 text-sm">
-        Historical data is only available since pool creation date{" "}
+        Historical data is only available after the pool was created in{" "}
         {formatDate(createdAt)}
       </div>
     </div>

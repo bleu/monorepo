@@ -610,6 +610,38 @@ export type CircuitBreaker_OrderBy =
   | 'upperBoundPercentage'
   | '%future added value';
 
+export type FxOracle = {
+  __typename?: 'FXOracle';
+  id: Scalars['ID']['output'];
+  tokens: Array<Scalars['Bytes']['output']>;
+};
+
+export type FxOracle_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<FxOracle_Filter>>>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  id_gt?: InputMaybe<Scalars['ID']['input']>;
+  id_gte?: InputMaybe<Scalars['ID']['input']>;
+  id_in?: InputMaybe<Array<Scalars['ID']['input']>>;
+  id_lt?: InputMaybe<Scalars['ID']['input']>;
+  id_lte?: InputMaybe<Scalars['ID']['input']>;
+  id_not?: InputMaybe<Scalars['ID']['input']>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']['input']>>;
+  or?: InputMaybe<Array<InputMaybe<FxOracle_Filter>>>;
+  tokens?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  tokens_contains?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  tokens_contains_nocase?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  tokens_not?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  tokens_not_contains?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  tokens_not_contains_nocase?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+};
+
+export type FxOracle_OrderBy =
+  | 'id'
+  | 'tokens'
+  | '%future added value';
+
 export type GradualWeightUpdate = {
   __typename?: 'GradualWeightUpdate';
   endTimestamp: Scalars['BigInt']['output'];
@@ -3399,6 +3431,8 @@ export type Query = {
   balancers: Array<Balancer>;
   circuitBreaker?: Maybe<CircuitBreaker>;
   circuitBreakers: Array<CircuitBreaker>;
+  fxoracle?: Maybe<FxOracle>;
+  fxoracles: Array<FxOracle>;
   gradualWeightUpdate?: Maybe<GradualWeightUpdate>;
   gradualWeightUpdates: Array<GradualWeightUpdate>;
   joinExit?: Maybe<JoinExit>;
@@ -3518,6 +3552,24 @@ export type QueryCircuitBreakersArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<CircuitBreaker_Filter>;
+};
+
+
+export type QueryFxoracleArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID']['input'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryFxoraclesArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<FxOracle_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<FxOracle_Filter>;
 };
 
 
@@ -3910,6 +3962,8 @@ export type Subscription = {
   balancers: Array<Balancer>;
   circuitBreaker?: Maybe<CircuitBreaker>;
   circuitBreakers: Array<CircuitBreaker>;
+  fxoracle?: Maybe<FxOracle>;
+  fxoracles: Array<FxOracle>;
   gradualWeightUpdate?: Maybe<GradualWeightUpdate>;
   gradualWeightUpdates: Array<GradualWeightUpdate>;
   joinExit?: Maybe<JoinExit>;
@@ -4029,6 +4083,24 @@ export type SubscriptionCircuitBreakersArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<CircuitBreaker_Filter>;
+};
+
+
+export type SubscriptionFxoracleArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID']['input'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionFxoraclesArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<FxOracle_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<FxOracle_Filter>;
 };
 
 
@@ -5893,7 +5965,7 @@ export type PoolSnapshotInRangeQueryVariables = Exact<{
 }>;
 
 
-export type PoolSnapshotInRangeQuery = { __typename?: 'Query', poolSnapshots: Array<{ __typename?: 'PoolSnapshot', amounts: Array<any>, totalShares: any, swapVolume: any, protocolFee?: any | null, swapFees: any, liquidity: any, swapsCount: any, holdersCount: any, timestamp: number, pool: { __typename?: 'Pool', address: any, owner?: any | null, poolType?: string | null, symbol?: string | null, swapFee: any, totalLiquidity: any, totalSwapVolume: any, totalSwapFee: any, protocolYieldFeeCache?: any | null, protocolSwapFeeCache?: any | null, poolTypeVersion?: number | null, tokens?: Array<{ __typename?: 'PoolToken', address: string, symbol: string, balance: any, decimals: number, isExemptFromYieldProtocolFee?: boolean | null, priceRate: any, weight?: any | null }> | null } }> };
+export type PoolSnapshotInRangeQuery = { __typename?: 'Query', poolSnapshots: Array<{ __typename?: 'PoolSnapshot', amounts: Array<any>, totalShares: any, swapVolume: any, protocolFee?: any | null, swapFees: any, liquidity: any, timestamp: number, pool: { __typename?: 'Pool', address: any, owner?: any | null, poolType?: string | null, symbol?: string | null, swapFee: any, totalLiquidity: any, totalSwapVolume: any, totalSwapFee: any, protocolYieldFeeCache?: any | null, protocolSwapFeeCache?: any | null, poolTypeVersion?: number | null, tokens?: Array<{ __typename?: 'PoolToken', address: string, symbol: string, balance: any, decimals: number, isExemptFromYieldProtocolFee?: boolean | null, priceRate: any, weight?: any | null }> | null } }> };
 
 export type PoolQueryVariables = Exact<{
   poolId: Scalars['ID']['input'];
@@ -6042,8 +6114,6 @@ export const PoolSnapshotInRangeDocument = gql`
     protocolFee
     swapFees
     liquidity
-    swapsCount
-    holdersCount
     timestamp
   }
 }

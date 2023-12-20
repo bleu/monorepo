@@ -106,6 +106,31 @@ export type GaugeFactory_OrderBy =
   | 'numGauges'
   | '%future added value';
 
+export type GaugeInjector = {
+  __typename?: 'GaugeInjector';
+  /**  GaugeInjector contract address  */
+  id: Scalars['ID']['output'];
+};
+
+export type GaugeInjector_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<GaugeInjector_Filter>>>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  id_gt?: InputMaybe<Scalars['ID']['input']>;
+  id_gte?: InputMaybe<Scalars['ID']['input']>;
+  id_in?: InputMaybe<Array<Scalars['ID']['input']>>;
+  id_lt?: InputMaybe<Scalars['ID']['input']>;
+  id_lte?: InputMaybe<Scalars['ID']['input']>;
+  id_not?: InputMaybe<Scalars['ID']['input']>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']['input']>>;
+  or?: InputMaybe<Array<InputMaybe<GaugeInjector_Filter>>>;
+};
+
+export type GaugeInjector_OrderBy =
+  | 'id'
+  | '%future added value';
+
 export type GaugeShare = {
   __typename?: 'GaugeShare';
   /**  User's balance of gauge deposit tokens  */
@@ -1041,6 +1066,8 @@ export type Query = {
   gauge?: Maybe<Gauge>;
   gaugeFactories: Array<GaugeFactory>;
   gaugeFactory?: Maybe<GaugeFactory>;
+  gaugeInjector?: Maybe<GaugeInjector>;
+  gaugeInjectors: Array<GaugeInjector>;
   gaugeShare?: Maybe<GaugeShare>;
   gaugeShares: Array<GaugeShare>;
   gaugeType?: Maybe<GaugeType>;
@@ -1098,6 +1125,24 @@ export type QueryGaugeFactoryArgs = {
   block?: InputMaybe<Block_Height>;
   id: Scalars['ID']['input'];
   subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryGaugeInjectorArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID']['input'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryGaugeInjectorsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<GaugeInjector_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<GaugeInjector_Filter>;
 };
 
 
@@ -1702,6 +1747,8 @@ export type Subscription = {
   gauge?: Maybe<Gauge>;
   gaugeFactories: Array<GaugeFactory>;
   gaugeFactory?: Maybe<GaugeFactory>;
+  gaugeInjector?: Maybe<GaugeInjector>;
+  gaugeInjectors: Array<GaugeInjector>;
   gaugeShare?: Maybe<GaugeShare>;
   gaugeShares: Array<GaugeShare>;
   gaugeType?: Maybe<GaugeType>;
@@ -1759,6 +1806,24 @@ export type SubscriptionGaugeFactoryArgs = {
   block?: InputMaybe<Block_Height>;
   id: Scalars['ID']['input'];
   subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionGaugeInjectorArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID']['input'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionGaugeInjectorsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<GaugeInjector_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<GaugeInjector_Filter>;
 };
 
 

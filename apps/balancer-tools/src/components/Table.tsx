@@ -111,9 +111,14 @@ function HeaderCell({
   );
 }
 
-function Body({ children }: React.PropsWithChildren) {
+function Body({
+  children,
+  className,
+}: React.PropsWithChildren<{
+  className?: string;
+}>) {
   useTableContext();
-  return <tbody>{children}</tbody>;
+  return <tbody className={className}>{children}</tbody>;
 }
 
 function BodyCellLink({
@@ -142,7 +147,7 @@ function BodyCellLink({
         <Link
           href={href}
           className={cn([
-            "whitespace-nowrap text-sm text-slate10 p-4 flex text-white",
+            "whitespace-nowrap text-sm text-slate10 p-4 flex",
             linkClassNames,
           ])}
         >

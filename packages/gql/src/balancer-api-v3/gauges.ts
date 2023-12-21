@@ -3,6 +3,7 @@ import { gql } from "graphql-tag";
 export const veBalGetVotingList = gql`
   query veBalGetVotingList {
     veBalGetVotingList {
+      id
       address
       chain
       symbol
@@ -10,6 +11,7 @@ export const veBalGetVotingList = gql`
       gauge {
         address
         isKilled
+        addedTimestamp
       }
     }
   }

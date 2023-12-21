@@ -31,10 +31,10 @@ export default function page() {
       <div className="mt-20 flex w-4/6 flex-col gap-y-5">
         <div className="flex items-center justify-between gap-x-8">
           <div className="flex flex-col text-slate12">
-            <h1 className="text-3xl">Active Gauges</h1>
+            <h1 className="text-3xl">Active L2 Gauges</h1>
             <span>
-              Here is a list of all active gauges and how much BAL can be minted
-              if you checkpoint them.
+              Here is a list of all active gauges on second layers and how much
+              each of them can be mint.
             </span>
           </div>
           <div className="flex gap-4">
@@ -47,7 +47,7 @@ export default function page() {
                   title="Checkpoint gauges"
                 >
                   <PlusIcon />
-                  Checkpoint gauges
+                  Checkpoint
                 </Button>
               }
             />

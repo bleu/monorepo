@@ -3,6 +3,7 @@ import { defineConfig } from "@wagmi/cli";
 import { foundry, react } from "@wagmi/cli/plugins";
 import * as chains from "wagmi/chains";
 
+import { checkGaugeMintAbi } from "./src/abis/checkGaugeMint";
 import { vaultAbi } from "./src/abis/vault";
 
 export default defineConfig({
@@ -20,6 +21,13 @@ export default defineConfig({
         [chains.arbitrum.id]: "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
         [chains.gnosis.id]: "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
         [chains.polygonZkEvm.id]: "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
+      },
+    },
+    {
+      name: "CheckGaugeMint",
+      abi: checkGaugeMintAbi,
+      address: {
+        [chains.mainnet.id]: "0x6a24a03a2209a1513fe99fce2e06aac8c8e84880",
       },
     },
   ],

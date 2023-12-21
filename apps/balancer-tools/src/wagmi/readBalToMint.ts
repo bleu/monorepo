@@ -1,22 +1,28 @@
-import { Address } from "@bleu-fi/utils";
+import { VeBalGetVotingListQuery } from "@bleu-fi/gql/src/balancer-api-v3/__generated__/Ethereum";
 import { readContract } from "@wagmi/core";
 
-import { checkGaugeMintABI } from "./generated";
+import { apiChainNameToGaugeType } from "#/app/gaugescheckpointer/(utils)/chainMapping";
+import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
-export async function readBalToMint({
-  gaugeAddress,
-}: {
-  gaugeAddress: Address;
-}) {
+import { checkGaugeMintABI, checkGaugeMintAddress } from "./generated";
+
+export async function readBalToMint(
+  votingOption: ArrElement<
+    GetDeepProp<VeBalGetVotingListQuery, "veBalGetVotingList">
+  >,
+) {
+  const gaugeType = apiChainNameToGaugeType[votingOption.chain];
   return readContract({
-    address: "0x798bd35a5C18D20aE83B0C18D36bC328f2eB7061",
+    address: checkGaugeMintAddress[1],
     abi: checkGaugeMintABI,
     // @ts-ignore
     functionName: "queryBalToMint",
-    args: [gaugeAddress],
+    args: [votingOption.gauge.address, gaugeType],
   })
     .then(() => null)
     .catch((error) => {
+      // eslint-disable-next-line no-console
+      console.log({ votingOption, errorReason: error.cause.reason });
       return Number(error.cause.reason) * 1e-18;
     });
 }

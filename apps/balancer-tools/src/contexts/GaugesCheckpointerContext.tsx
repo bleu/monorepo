@@ -1,19 +1,16 @@
 "use client";
 
-// import { InternalBalanceQuery } from "@bleu-fi/gql/src/balancer/__generated__/Ethereum";
-import { Address } from "@bleu-fi/utils";
+import { VeBalGetVotingListQuery } from "@bleu-fi/gql/src/balancer-api-v3/__generated__/Ethereum";
 import { createContext, PropsWithChildren, useContext, useState } from "react";
 
 import { Notification, TransactionStatus } from "#/hooks/useTransaction";
+import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
 export interface gaugeItem {
-  address: Address;
-  chain: string;
-  poolAddress: Address;
-  poolSymbol: string;
-  poolName: string;
-  balToMint?: number;
-  lastCheckpoint?: number;
+  votingOption: ArrElement<
+    GetDeepProp<VeBalGetVotingListQuery, "veBalGetVotingList">
+  >;
+  balToMint: number | null;
 }
 
 type GaugesCheckpointerContextType = {

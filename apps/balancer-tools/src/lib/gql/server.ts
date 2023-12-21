@@ -66,8 +66,8 @@ export const internalBalances = {
     balancerSdks[networkFor(chainId)](internalBalances.client(String(chainId))),
 };
 
-export const apiV3 = {
+export const balancerApiV3 = {
   client: clientFor(Subgraph.BalancerApiV3),
   gql: (chainId: string) =>
-    balancerApiV3Sdks[networkFor(chainId)](apiV3.client(chainId)),
+    balancerApiV3Sdks[networkFor(chainId)](balancerApiV3.client(chainId)),
 };

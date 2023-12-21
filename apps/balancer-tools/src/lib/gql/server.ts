@@ -1,8 +1,8 @@
 import { Subgraph, SUBGRAPHS } from "@bleu-fi/gql/codegen";
 import balancerSdks from "@bleu-fi/gql/src/balancer/index.server";
+import balancerApiV3Sdks from "@bleu-fi/gql/src/balancer-api-v3";
 import gaugesSdks from "@bleu-fi/gql/src/balancer-gauges/index.server";
 import poolMetadataSdks from "@bleu-fi/gql/src/balancer-pools-metadata/index.server";
-import balancerApiV3Sdks from "@bleu-fi/gql/src/balancer-api-v3";
 import {
   Address,
   DELEGATE_OWNER,

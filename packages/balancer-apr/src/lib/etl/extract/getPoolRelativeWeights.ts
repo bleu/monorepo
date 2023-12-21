@@ -38,7 +38,7 @@ const gaugesController = getContract({
 });
 
 export const getPoolRelativeWeights = async (
-  gaugeAddressTimestampTuples: [Address, number][]
+  gaugeAddressTimestampTuples: [Address, number][],
 ) => {
   if (gaugeAddressTimestampTuples.length === 0) return [];
 
@@ -47,8 +47,8 @@ export const getPoolRelativeWeights = async (
       gaugesController.read.gauge_relative_weight([
         address,
         BigInt(Math.floor(timestamp)),
-      ])
-    )
+      ]),
+    ),
   );
   return responses.map((response, index) => {
     const [address, timestamp] = gaugeAddressTimestampTuples[index];

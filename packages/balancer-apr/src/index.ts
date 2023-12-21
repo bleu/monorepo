@@ -101,5 +101,3 @@ export async function runETLs() {
   logIfVerbose("Ended ETL processes");
   process.exit(0);
 }
-
-runETLs();

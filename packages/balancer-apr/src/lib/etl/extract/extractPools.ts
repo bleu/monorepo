@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { pools } from "../../../db/schema";
-import { paginatedFetch } from "../../../paginatedFetch";
-
 import { NETWORK_TO_BALANCER_ENDPOINT_MAP } from "../../../config";
+import { pools } from "../../../db/schema";
 import { addToTable, logIfVerbose, networkNames } from "../../../index";
+import { paginatedFetch } from "../../../paginatedFetch";
 
 export const POOLS_WITHOUT_GAUGE_QUERY = `
 query PoolsWherePoolType($latestId: String!) {

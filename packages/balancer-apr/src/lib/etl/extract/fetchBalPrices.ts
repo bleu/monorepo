@@ -1,6 +1,5 @@
 import { tokenPrices } from "../../../db/schema";
 import { fetchTokenPrice } from "../../../fetchTokenPrices";
-
 import { addToTable, BALANCER_START_DATE, logIfVerbose } from "../../../index";
 
 export async function fetchBalPrices() {

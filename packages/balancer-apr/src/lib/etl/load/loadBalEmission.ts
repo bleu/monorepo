@@ -23,7 +23,6 @@ export async function loadBalEmission() {
         timestamp: timestamp,
         weekEmission: String(weeklyBalEmission),
       });
-
     } catch (error) {
       logIfVerbose(`${error}`);
     }

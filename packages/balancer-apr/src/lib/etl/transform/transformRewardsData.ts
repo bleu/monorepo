@@ -1,9 +1,9 @@
 import { sql } from "drizzle-orm";
-import { transformNetworks } from "../../../transformNetworks";
 
 import { db } from "../../../db/index";
 import { poolRewards } from "../../../db/schema";
 import { logIfVerbose } from "../../../index";
+import { transformNetworks } from "../../../transformNetworks";
 
 export async function transformRewardsData() {
   logIfVerbose("Starting Pool Rewards Extraction");

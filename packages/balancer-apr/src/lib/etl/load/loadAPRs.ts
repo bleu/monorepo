@@ -12,7 +12,7 @@ import {
 import { logIfVerbose } from "../../../index";
 
 export async function loadAPRs() {
-    // Fee APR
+  // Fee APR
   logIfVerbose("Loading Fee APR");
   await db.execute(sql`
       INSERT INTO swap_fee_apr (timestamp, pool_external_id, collected_fees_usd, value, external_id)

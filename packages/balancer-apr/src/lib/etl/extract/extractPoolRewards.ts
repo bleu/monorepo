@@ -1,10 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { paginatedFetch } from "../../../paginatedFetch";
-
-import { poolRewards } from "../../../db/schema";
-
 import { NETWORK_TO_REWARDS_ENDPOINT_MAP } from "../../../config";
+import { poolRewards } from "../../../db/schema";
 import { addToTable, logIfVerbose, networkNamesRewards } from "../../../index";
+import { paginatedFetch } from "../../../paginatedFetch";
 
 export const POOL_REWARDS = `
 query PoolRewards($latestId: ID!) {

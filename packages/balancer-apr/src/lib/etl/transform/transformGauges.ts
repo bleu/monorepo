@@ -1,6 +1,5 @@
 import { sql } from "drizzle-orm";
 
-
 import { db } from "../../../db/index";
 import { gauges } from "../../../db/schema";
 import { logIfVerbose } from "../../../index";

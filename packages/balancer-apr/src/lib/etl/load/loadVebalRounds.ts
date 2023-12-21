@@ -1,4 +1,3 @@
-import { db } from "../../../db/index";
 import { vebalRounds } from "../../../db/schema";
 import { addToTable, logIfVerbose } from "../../../index";
 

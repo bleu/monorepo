@@ -106,6 +106,31 @@ export type GaugeFactory_OrderBy =
   | 'numGauges'
   | '%future added value';
 
+export type GaugeInjector = {
+  __typename?: 'GaugeInjector';
+  /**  GaugeInjector contract address  */
+  id: Scalars['ID']['output'];
+};
+
+export type GaugeInjector_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<GaugeInjector_Filter>>>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  id_gt?: InputMaybe<Scalars['ID']['input']>;
+  id_gte?: InputMaybe<Scalars['ID']['input']>;
+  id_in?: InputMaybe<Array<Scalars['ID']['input']>>;
+  id_lt?: InputMaybe<Scalars['ID']['input']>;
+  id_lte?: InputMaybe<Scalars['ID']['input']>;
+  id_not?: InputMaybe<Scalars['ID']['input']>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']['input']>>;
+  or?: InputMaybe<Array<InputMaybe<GaugeInjector_Filter>>>;
+};
+
+export type GaugeInjector_OrderBy =
+  | 'id'
+  | '%future added value';
+
 export type GaugeShare = {
   __typename?: 'GaugeShare';
   /**  User's balance of gauge deposit tokens  */
@@ -1041,6 +1066,8 @@ export type Query = {
   gauge?: Maybe<Gauge>;
   gaugeFactories: Array<GaugeFactory>;
   gaugeFactory?: Maybe<GaugeFactory>;
+  gaugeInjector?: Maybe<GaugeInjector>;
+  gaugeInjectors: Array<GaugeInjector>;
   gaugeShare?: Maybe<GaugeShare>;
   gaugeShares: Array<GaugeShare>;
   gaugeType?: Maybe<GaugeType>;
@@ -1098,6 +1125,24 @@ export type QueryGaugeFactoryArgs = {
   block?: InputMaybe<Block_Height>;
   id: Scalars['ID']['input'];
   subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryGaugeInjectorArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID']['input'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryGaugeInjectorsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<GaugeInjector_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<GaugeInjector_Filter>;
 };
 
 
@@ -1702,6 +1747,8 @@ export type Subscription = {
   gauge?: Maybe<Gauge>;
   gaugeFactories: Array<GaugeFactory>;
   gaugeFactory?: Maybe<GaugeFactory>;
+  gaugeInjector?: Maybe<GaugeInjector>;
+  gaugeInjectors: Array<GaugeInjector>;
   gaugeShare?: Maybe<GaugeShare>;
   gaugeShares: Array<GaugeShare>;
   gaugeType?: Maybe<GaugeType>;
@@ -1759,6 +1806,24 @@ export type SubscriptionGaugeFactoryArgs = {
   block?: InputMaybe<Block_Height>;
   id: Scalars['ID']['input'];
   subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionGaugeInjectorArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID']['input'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionGaugeInjectorsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<GaugeInjector_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<GaugeInjector_Filter>;
 };
 
 
@@ -2328,11 +2393,52 @@ export type GaugeQueryVariables = Exact<{
 
 export type GaugeQuery = { __typename?: 'Query', liquidityGauge?: { __typename?: 'LiquidityGauge', symbol: string } | null };
 
+export type PreferentialGaugeQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type PreferentialGaugeQuery = { __typename?: 'Query', pools: Array<{ __typename?: 'Pool', poolId?: any | null, gauges?: Array<{ __typename?: 'LiquidityGauge', id: string }> | null }> };
+
+export type PoolPreferentialGaugeQueryVariables = Exact<{
+  poolId: Scalars['Bytes']['input'];
+}>;
+
+
+export type PoolPreferentialGaugeQuery = { __typename?: 'Query', pools: Array<{ __typename?: 'Pool', id: string, poolId?: any | null, preferentialGauge?: { __typename?: 'LiquidityGauge', id: string } | null, gauges?: Array<{ __typename?: 'LiquidityGauge', gauge?: { __typename?: 'Gauge', liquidityGauge?: { __typename?: 'LiquidityGauge', id: string, symbol: string } | null } | null }> | null }> };
+
 
 export const GaugeDocument = gql`
     query Gauge($gaugeId: ID!) {
   liquidityGauge(id: $gaugeId) {
     symbol
+  }
+}
+    `;
+export const PreferentialGaugeDocument = gql`
+    query PreferentialGauge {
+  pools(first: 1000, where: {gauges_: {gauge_not: null}}) {
+    poolId
+    gauges {
+      id
+    }
+  }
+}
+    `;
+export const PoolPreferentialGaugeDocument = gql`
+    query PoolPreferentialGauge($poolId: Bytes!) {
+  pools(where: {poolId_in: [$poolId], gauges_: {gauge_not: null}}) {
+    id
+    poolId
+    preferentialGauge {
+      id
+    }
+    gauges {
+      gauge {
+        liquidityGauge {
+          id
+          symbol
+        }
+      }
+    }
   }
 }
     `;
@@ -2346,6 +2452,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
   return {
     Gauge(variables: GaugeQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GaugeQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GaugeQuery>(GaugeDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Gauge', 'query');
+    },
+    PreferentialGauge(variables?: PreferentialGaugeQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<PreferentialGaugeQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<PreferentialGaugeQuery>(PreferentialGaugeDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PreferentialGauge', 'query');
+    },
+    PoolPreferentialGauge(variables: PoolPreferentialGaugeQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<PoolPreferentialGaugeQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<PoolPreferentialGaugeQuery>(PoolPreferentialGaugeDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PoolPreferentialGauge', 'query');
     }
   };
 }

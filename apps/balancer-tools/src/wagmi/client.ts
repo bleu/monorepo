@@ -55,7 +55,7 @@ export const { chains, publicClient, webSocketPublicClient } = configureChains(
     }),
     publicProvider(),
   ],
-  { retryCount: 5 }
+  { retryCount: 5 },
 );
 
 const { connectors } = getDefaultWallets({

@@ -48,19 +48,17 @@ import {
   tokenPrices,
   vebalRounds,
 } from "./db/schema";
-import {
-  addToTable,
-  ETLGauges,
-  ETLPoolRateProvider,
-  fetchTokenPrice,
-  removeLiquidityBootstraping,
-  transformNetworks,
-} from "./index";
+import { fetchTokenPrice } from "./fetchTokenPrices";
+import { addToTable, removeLiquidityBootstraping } from "./index";
 import * as balEmissions from "./lib/balancer/emissions";
 import { DefiLlamaAPI } from "./lib/defillama";
+import { extractGauges } from "./lib/etl/extract/extractGauges";
+import { extractPoolRateProviders } from "./lib/etl/extract/extractPoolRateProviders";
+import { getPoolRelativeWeights } from "./lib/etl/extract/getPoolRelativeWeights";
+import { transformGauges } from "./lib/etl/transform/transformGauges";
 import { getRates } from "./lib/getRates";
-import { getPoolRelativeWeights } from "./lib/getRelativeWeight";
 import { paginatedFetchDateRange } from "./paginatedFetch";
+import { transformNetworks } from "./transformNetworks";
 
 const networkNames = Object.keys(
   NETWORK_TO_BALANCER_ENDPOINT_MAP,
@@ -1588,13 +1586,18 @@ export async function runDailyETLs() {
   await seedBalEmission();
   await ETLPools();
   await ETLSnapshots();
-  await ETLGauges();
+
+  await extractGauges();
+  await transformGauges();
+
   await ETLPoolRewards();
   await calculatePoolRewardsSnapshots();
   await fetchBalPrices();
   await ETLGaugesSnapshot();
   await fetchBlocks();
-  await ETLPoolRateProvider();
+
+  await extractPoolRateProviders();
+
   await ETLPoolRateProviderSnapshot();
   await fetchTokenPrices();
   await calculateTokenWeightSnapshots();

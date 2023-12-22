@@ -51,11 +51,11 @@ export async function generateMetadata(
 }
 
 export default async function Page({
-  params: { poolId },
+  params: { poolId, network },
   searchParams,
 }: {
   searchParams: SearchParams;
-  params: { poolId: string };
+  params: { poolId: string; network: string };
 }) {
   const parsedParams = QueryParamsPagesSchema.safeParse(searchParams);
 
@@ -85,6 +85,22 @@ export default async function Page({
     startAtDate,
     endAtDate,
   );
+
+  const actualNetwork = Object.values(poolData.perDay[0])[0].network;
+
+  if (actualNetwork !== network) {
+    return redirect(
+      generatePoolPageLink(
+        startAtDate,
+        endAtDate,
+        {
+          ...searchParams,
+        },
+        poolId,
+        actualNetwork,
+      ),
+    );
+  }
 
   return (
     <div className="flex flex-1 h-full w-full flex-col justify-start rounded-3xl text-white gap-y-3 mb-4">

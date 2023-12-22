@@ -19,7 +19,7 @@ export default function HistoricalSwapFeeChartData(
   const colletedSwapFeePerRoundData = {
     name: "Collected SwapFee",
     yaxis: yaxis,
-    hovertemplate: "Weekly Fees: $%{y:.2f}<extra></extra>",
+    hovertemplate: "Fees (USD): %{y:$,.2f}<extra></extra>",
     x: collectedSwapFeeData.x,
     y: collectedSwapFeeData.y,
     marker: {

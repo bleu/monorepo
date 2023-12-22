@@ -36,7 +36,7 @@ export default async function PoolOverviewCards({
     return (
       <div className="border border-blue6 bg-blue3 rounded p-4  w-full flex items-center flex-col">
         <span>
-          Looks like you tried a date range before the pool creation date
+          Looks like the range you selected extends before the pool was created
         </span>
         <span>
           Please select a date range after {formatDate(poolCreationDate)}

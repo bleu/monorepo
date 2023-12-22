@@ -109,6 +109,7 @@ export default function HistoricalChartWrapper({
             fixedrange: true,
             // @ts-expect-error
             tickmode: "sync",
+            rangemode: "nonnegative",
             title: "Swap Fee",
             overlaying: "y",
             side: "right",
@@ -123,6 +124,7 @@ export default function HistoricalChartWrapper({
             fixedrange: true,
             // @ts-expect-error
             tickmode: "sync",
+            rangemode: "nonnegative",
             title: "TVL",
             overlaying: "y",
             side: "right",
@@ -137,6 +139,7 @@ export default function HistoricalChartWrapper({
             fixedrange: true,
             // @ts-expect-error
             tickmode: "sync",
+            rangemode: "nonnegative",
             title: "Volume",
             overlaying: "y",
             side: "right",
@@ -151,6 +154,7 @@ export default function HistoricalChartWrapper({
             fixedrange: true,
             // @ts-expect-error
             tickmode: "sync",
+            rangemode: "nonnegative",
             title: "APR %",
             overlaying: "y",
             anchor: "free",

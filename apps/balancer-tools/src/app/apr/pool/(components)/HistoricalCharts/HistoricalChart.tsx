@@ -107,6 +107,8 @@ export default function HistoricalChartWrapper({
             linecolor: blueDark.blue6,
             mirror: true,
             fixedrange: true,
+            // @ts-expect-error
+            tickmode: "sync",
             title: "Swap Fee",
             overlaying: "y",
             side: "right",
@@ -119,6 +121,8 @@ export default function HistoricalChartWrapper({
             linecolor: blueDark.blue6,
             mirror: true,
             fixedrange: true,
+            // @ts-expect-error
+            tickmode: "sync",
             title: "TVL",
             overlaying: "y",
             side: "right",
@@ -131,6 +135,8 @@ export default function HistoricalChartWrapper({
             linecolor: blueDark.blue6,
             mirror: true,
             fixedrange: true,
+            // @ts-expect-error
+            tickmode: "sync",
             title: "Volume",
             overlaying: "y",
             side: "right",
@@ -143,6 +149,8 @@ export default function HistoricalChartWrapper({
             linecolor: blueDark.blue6,
             mirror: true,
             fixedrange: true,
+            // @ts-expect-error
+            tickmode: "sync",
             title: "APR %",
             overlaying: "y",
             anchor: "free",

@@ -36,7 +36,7 @@ const polygonZkEvm = {
 
 const RPC_ENDPOINT_MAP = {
   [mainnet.id]:
-    "https://rpc.tenderly.co/fork/b8c39a65-9e89-432d-9797-ec655a21874b",
+    "https://rpc.tenderly.co/fork/5c019904-b005-416c-9185-f1cf44aefabb",
   [optimism.id]: "https://optimism.meowrpc.com",
   [arbitrum.id]: "https://arb1.arbitrum.io/rpc",
   [goerli.id]: "https://ethereum-goerli.publicnode.com",

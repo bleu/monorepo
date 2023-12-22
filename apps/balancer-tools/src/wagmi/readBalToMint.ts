@@ -4,7 +4,10 @@ import { readContract } from "@wagmi/core";
 import { apiChainNameToGaugeType } from "#/app/gaugescheckpointer/(utils)/chainMapping";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
-import { checkGaugeMintABI, checkGaugeMintAddress } from "./generated";
+import {
+  gaugeCheckpointerQueriesABI,
+  gaugeCheckpointerQueriesAddress,
+} from "./generated";
 
 export async function readBalToMint(
   votingOption: ArrElement<
@@ -13,16 +16,14 @@ export async function readBalToMint(
 ) {
   const gaugeType = apiChainNameToGaugeType[votingOption.chain];
   return readContract({
-    address: checkGaugeMintAddress[1],
-    abi: checkGaugeMintABI,
+    address: gaugeCheckpointerQueriesAddress[1],
+    abi: gaugeCheckpointerQueriesABI,
     // @ts-ignore
-    functionName: "queryBalToMint",
+    functionName: "queryCheckpointGauge",
     args: [votingOption.gauge.address, gaugeType],
   })
     .then(() => null)
     .catch((error) => {
-      // eslint-disable-next-line no-console
-      console.log({ votingOption, errorReason: error.cause.reason });
       return Number(error.cause.reason) * 1e-18;
     });
 }

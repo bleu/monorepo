@@ -22,8 +22,8 @@ export const apiChainNameToGaugeType = {
   BASE: "Base",
   AVALANCHE: "Avalanche",
   ZKSYNC: "ZKsync",
-  ZKEVM: "ZKevm",
-  FANTOM: "FANTON",
-  OPTIMISM: "OPTIMISM",
+  ZKEVM: "PolygonZkEvm",
+  FANTOM: "Fanton",
+  OPTIMISM: "Optimism",
   "%future added value": "Ethereum",
 };

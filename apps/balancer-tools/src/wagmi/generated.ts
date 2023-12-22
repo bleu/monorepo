@@ -1,4 +1,8 @@
 import {
+  useContractEvent,
+  UseContractEventConfig,
+  useNetwork,
+  useChainId,
   useContractRead,
   UseContractReadConfig,
   useContractWrite,
@@ -6,75 +10,12 @@ import {
   UseContractWriteConfig,
   usePrepareContractWrite,
   UsePrepareContractWriteConfig,
-  useContractEvent,
-  UseContractEventConfig,
-  useNetwork,
-  useChainId,
 } from 'wagmi'
 import {
   ReadContractResult,
   WriteContractMode,
   PrepareWriteContractResult,
 } from 'wagmi/actions'
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// CheckGaugeMint
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x6a24a03a2209a1513fe99fce2e06aac8c8e84880)
- */
-export const checkGaugeMintABI = [
-  {
-    stateMutability: 'view',
-    type: 'function',
-    inputs: [],
-    name: 'BAL',
-    outputs: [{ name: '', internalType: 'contract IERC20', type: 'address' }],
-  },
-  {
-    stateMutability: 'view',
-    type: 'function',
-    inputs: [],
-    name: 'gaugeCheckpointer',
-    outputs: [
-      {
-        name: '',
-        internalType: 'contract IStakelessGaugeCheckpointer',
-        type: 'address',
-      },
-    ],
-  },
-  {
-    stateMutability: 'nonpayable',
-    type: 'function',
-    inputs: [
-      {
-        name: 'gauge',
-        internalType: 'contract IStakelessGauge',
-        type: 'address',
-      },
-      { name: 'gaugeType', internalType: 'string', type: 'string' },
-    ],
-    name: 'queryBalToMint',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-  },
-] as const
-
-/**
- * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x6a24a03a2209a1513fe99fce2e06aac8c8e84880)
- */
-export const checkGaugeMintAddress = {
-  1: '0x6a24a03a2209A1513FE99FcE2E06Aac8c8E84880',
-} as const
-
-/**
- * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x6a24a03a2209a1513fe99fce2e06aac8c8e84880)
- */
-export const checkGaugeMintConfig = {
-  address: checkGaugeMintAddress,
-  abi: checkGaugeMintABI,
-} as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // IPoolMetadataRegistry
@@ -218,6 +159,78 @@ export const poolMetadataRegistryAddress = {
 export const poolMetadataRegistryConfig = {
   address: poolMetadataRegistryAddress,
   abi: poolMetadataRegistryABI,
+} as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// gaugeCheckpointerQueries
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x3a855f744f1bd76bc36b05d18cd1ba101a65b25c)
+ */
+export const gaugeCheckpointerQueriesABI = [
+  {
+    stateMutability: 'nonpayable',
+    type: 'constructor',
+    inputs: [
+      {
+        name: 'balancerTokenAddress',
+        internalType: 'address',
+        type: 'address',
+      },
+      {
+        name: 'gaugeCheckpointerAddress',
+        internalType: 'address',
+        type: 'address',
+      },
+    ],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [],
+    name: 'BAL',
+    outputs: [{ name: '', internalType: 'contract IERC20', type: 'address' }],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [],
+    name: 'gaugeCheckpointer',
+    outputs: [
+      {
+        name: '',
+        internalType: 'contract IStakelessGaugeCheckpointer',
+        type: 'address',
+      },
+    ],
+  },
+  {
+    stateMutability: 'payable',
+    type: 'function',
+    inputs: [
+      { name: 'gauge', internalType: 'address', type: 'address' },
+      { name: 'gaugeType', internalType: 'string', type: 'string' },
+    ],
+    name: 'queryCheckpointGauge',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+  },
+  { stateMutability: 'payable', type: 'receive' },
+] as const
+
+/**
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x3a855f744f1bd76bc36b05d18cd1ba101a65b25c)
+ */
+export const gaugeCheckpointerQueriesAddress = {
+  1: '0x3a855f744F1bD76BC36B05d18cD1ba101a65b25c',
+} as const
+
+/**
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x3a855f744f1bd76bc36b05d18cd1ba101a65b25c)
+ */
+export const gaugeCheckpointerQueriesConfig = {
+  address: gaugeCheckpointerQueriesAddress,
+  abi: gaugeCheckpointerQueriesABI,
 } as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1029,196 +1042,6 @@ export const vaultConfig = { address: vaultAddress, abi: vaultABI } as const
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Wraps __{@link useContractRead}__ with `abi` set to __{@link checkGaugeMintABI}__.
- *
- * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x6a24a03a2209a1513fe99fce2e06aac8c8e84880)
- */
-export function useCheckGaugeMintRead<
-  TFunctionName extends string,
-  TSelectData = ReadContractResult<typeof checkGaugeMintABI, TFunctionName>,
->(
-  config: Omit<
-    UseContractReadConfig<typeof checkGaugeMintABI, TFunctionName, TSelectData>,
-    'abi' | 'address'
-  > & { chainId?: keyof typeof checkGaugeMintAddress } = {} as any,
-) {
-  return useContractRead({
-    abi: checkGaugeMintABI,
-    address: checkGaugeMintAddress[1],
-    ...config,
-  } as UseContractReadConfig<
-    typeof checkGaugeMintABI,
-    TFunctionName,
-    TSelectData
-  >)
-}
-
-/**
- * Wraps __{@link useContractRead}__ with `abi` set to __{@link checkGaugeMintABI}__ and `functionName` set to `"BAL"`.
- *
- * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x6a24a03a2209a1513fe99fce2e06aac8c8e84880)
- */
-export function useCheckGaugeMintBal<
-  TFunctionName extends 'BAL',
-  TSelectData = ReadContractResult<typeof checkGaugeMintABI, TFunctionName>,
->(
-  config: Omit<
-    UseContractReadConfig<typeof checkGaugeMintABI, TFunctionName, TSelectData>,
-    'abi' | 'address' | 'functionName'
-  > & { chainId?: keyof typeof checkGaugeMintAddress } = {} as any,
-) {
-  return useContractRead({
-    abi: checkGaugeMintABI,
-    address: checkGaugeMintAddress[1],
-    functionName: 'BAL',
-    ...config,
-  } as UseContractReadConfig<
-    typeof checkGaugeMintABI,
-    TFunctionName,
-    TSelectData
-  >)
-}
-
-/**
- * Wraps __{@link useContractRead}__ with `abi` set to __{@link checkGaugeMintABI}__ and `functionName` set to `"gaugeCheckpointer"`.
- *
- * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x6a24a03a2209a1513fe99fce2e06aac8c8e84880)
- */
-export function useCheckGaugeMintGaugeCheckpointer<
-  TFunctionName extends 'gaugeCheckpointer',
-  TSelectData = ReadContractResult<typeof checkGaugeMintABI, TFunctionName>,
->(
-  config: Omit<
-    UseContractReadConfig<typeof checkGaugeMintABI, TFunctionName, TSelectData>,
-    'abi' | 'address' | 'functionName'
-  > & { chainId?: keyof typeof checkGaugeMintAddress } = {} as any,
-) {
-  return useContractRead({
-    abi: checkGaugeMintABI,
-    address: checkGaugeMintAddress[1],
-    functionName: 'gaugeCheckpointer',
-    ...config,
-  } as UseContractReadConfig<
-    typeof checkGaugeMintABI,
-    TFunctionName,
-    TSelectData
-  >)
-}
-
-/**
- * Wraps __{@link useContractWrite}__ with `abi` set to __{@link checkGaugeMintABI}__.
- *
- * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x6a24a03a2209a1513fe99fce2e06aac8c8e84880)
- */
-export function useCheckGaugeMintWrite<
-  TFunctionName extends string,
-  TMode extends WriteContractMode = undefined,
-  TChainId extends number = keyof typeof checkGaugeMintAddress,
->(
-  config: TMode extends 'prepared'
-    ? UseContractWriteConfig<
-        PrepareWriteContractResult<
-          typeof checkGaugeMintABI,
-          string
-        >['request']['abi'],
-        TFunctionName,
-        TMode
-      > & { address?: Address; chainId?: TChainId }
-    : UseContractWriteConfig<typeof checkGaugeMintABI, TFunctionName, TMode> & {
-        abi?: never
-        address?: never
-        chainId?: TChainId
-      } = {} as any,
-) {
-  return useContractWrite<typeof checkGaugeMintABI, TFunctionName, TMode>({
-    abi: checkGaugeMintABI,
-    address: checkGaugeMintAddress[1],
-    ...config,
-  } as any)
-}
-
-/**
- * Wraps __{@link useContractWrite}__ with `abi` set to __{@link checkGaugeMintABI}__ and `functionName` set to `"queryBalToMint"`.
- *
- * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x6a24a03a2209a1513fe99fce2e06aac8c8e84880)
- */
-export function useCheckGaugeMintQueryBalToMint<
-  TMode extends WriteContractMode = undefined,
-  TChainId extends number = keyof typeof checkGaugeMintAddress,
->(
-  config: TMode extends 'prepared'
-    ? UseContractWriteConfig<
-        PrepareWriteContractResult<
-          typeof checkGaugeMintABI,
-          'queryBalToMint'
-        >['request']['abi'],
-        'queryBalToMint',
-        TMode
-      > & {
-        address?: Address
-        chainId?: TChainId
-        functionName?: 'queryBalToMint'
-      }
-    : UseContractWriteConfig<
-        typeof checkGaugeMintABI,
-        'queryBalToMint',
-        TMode
-      > & {
-        abi?: never
-        address?: never
-        chainId?: TChainId
-        functionName?: 'queryBalToMint'
-      } = {} as any,
-) {
-  return useContractWrite<typeof checkGaugeMintABI, 'queryBalToMint', TMode>({
-    abi: checkGaugeMintABI,
-    address: checkGaugeMintAddress[1],
-    functionName: 'queryBalToMint',
-    ...config,
-  } as any)
-}
-
-/**
- * Wraps __{@link usePrepareContractWrite}__ with `abi` set to __{@link checkGaugeMintABI}__.
- *
- * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x6a24a03a2209a1513fe99fce2e06aac8c8e84880)
- */
-export function usePrepareCheckGaugeMintWrite<TFunctionName extends string>(
-  config: Omit<
-    UsePrepareContractWriteConfig<typeof checkGaugeMintABI, TFunctionName>,
-    'abi' | 'address'
-  > & { chainId?: keyof typeof checkGaugeMintAddress } = {} as any,
-) {
-  return usePrepareContractWrite({
-    abi: checkGaugeMintABI,
-    address: checkGaugeMintAddress[1],
-    ...config,
-  } as UsePrepareContractWriteConfig<typeof checkGaugeMintABI, TFunctionName>)
-}
-
-/**
- * Wraps __{@link usePrepareContractWrite}__ with `abi` set to __{@link checkGaugeMintABI}__ and `functionName` set to `"queryBalToMint"`.
- *
- * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x6a24a03a2209a1513fe99fce2e06aac8c8e84880)
- */
-export function usePrepareCheckGaugeMintQueryBalToMint(
-  config: Omit<
-    UsePrepareContractWriteConfig<typeof checkGaugeMintABI, 'queryBalToMint'>,
-    'abi' | 'address' | 'functionName'
-  > & { chainId?: keyof typeof checkGaugeMintAddress } = {} as any,
-) {
-  return usePrepareContractWrite({
-    abi: checkGaugeMintABI,
-    address: checkGaugeMintAddress[1],
-    functionName: 'queryBalToMint',
-    ...config,
-  } as UsePrepareContractWriteConfig<
-    typeof checkGaugeMintABI,
-    'queryBalToMint'
-  >)
-}
-
-/**
  * Wraps __{@link useContractEvent}__ with `abi` set to __{@link iPoolMetadataRegistryABI}__.
  */
 export function useIPoolMetadataRegistryEvent<TEventName extends string>(
@@ -1694,6 +1517,240 @@ export function usePoolMetadataRegistryPoolMetadataUpdatedEvent(
   } as UseContractEventConfig<
     typeof poolMetadataRegistryABI,
     'PoolMetadataUpdated'
+  >)
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link gaugeCheckpointerQueriesABI}__.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x3a855f744f1bd76bc36b05d18cd1ba101a65b25c)
+ */
+export function useGaugeCheckpointerQueriesRead<
+  TFunctionName extends string,
+  TSelectData = ReadContractResult<
+    typeof gaugeCheckpointerQueriesABI,
+    TFunctionName
+  >,
+>(
+  config: Omit<
+    UseContractReadConfig<
+      typeof gaugeCheckpointerQueriesABI,
+      TFunctionName,
+      TSelectData
+    >,
+    'abi' | 'address'
+  > & { chainId?: keyof typeof gaugeCheckpointerQueriesAddress } = {} as any,
+) {
+  return useContractRead({
+    abi: gaugeCheckpointerQueriesABI,
+    address: gaugeCheckpointerQueriesAddress[1],
+    ...config,
+  } as UseContractReadConfig<
+    typeof gaugeCheckpointerQueriesABI,
+    TFunctionName,
+    TSelectData
+  >)
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link gaugeCheckpointerQueriesABI}__ and `functionName` set to `"BAL"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x3a855f744f1bd76bc36b05d18cd1ba101a65b25c)
+ */
+export function useGaugeCheckpointerQueriesBal<
+  TFunctionName extends 'BAL',
+  TSelectData = ReadContractResult<
+    typeof gaugeCheckpointerQueriesABI,
+    TFunctionName
+  >,
+>(
+  config: Omit<
+    UseContractReadConfig<
+      typeof gaugeCheckpointerQueriesABI,
+      TFunctionName,
+      TSelectData
+    >,
+    'abi' | 'address' | 'functionName'
+  > & { chainId?: keyof typeof gaugeCheckpointerQueriesAddress } = {} as any,
+) {
+  return useContractRead({
+    abi: gaugeCheckpointerQueriesABI,
+    address: gaugeCheckpointerQueriesAddress[1],
+    functionName: 'BAL',
+    ...config,
+  } as UseContractReadConfig<
+    typeof gaugeCheckpointerQueriesABI,
+    TFunctionName,
+    TSelectData
+  >)
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link gaugeCheckpointerQueriesABI}__ and `functionName` set to `"gaugeCheckpointer"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x3a855f744f1bd76bc36b05d18cd1ba101a65b25c)
+ */
+export function useGaugeCheckpointerQueriesGaugeCheckpointer<
+  TFunctionName extends 'gaugeCheckpointer',
+  TSelectData = ReadContractResult<
+    typeof gaugeCheckpointerQueriesABI,
+    TFunctionName
+  >,
+>(
+  config: Omit<
+    UseContractReadConfig<
+      typeof gaugeCheckpointerQueriesABI,
+      TFunctionName,
+      TSelectData
+    >,
+    'abi' | 'address' | 'functionName'
+  > & { chainId?: keyof typeof gaugeCheckpointerQueriesAddress } = {} as any,
+) {
+  return useContractRead({
+    abi: gaugeCheckpointerQueriesABI,
+    address: gaugeCheckpointerQueriesAddress[1],
+    functionName: 'gaugeCheckpointer',
+    ...config,
+  } as UseContractReadConfig<
+    typeof gaugeCheckpointerQueriesABI,
+    TFunctionName,
+    TSelectData
+  >)
+}
+
+/**
+ * Wraps __{@link useContractWrite}__ with `abi` set to __{@link gaugeCheckpointerQueriesABI}__.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x3a855f744f1bd76bc36b05d18cd1ba101a65b25c)
+ */
+export function useGaugeCheckpointerQueriesWrite<
+  TFunctionName extends string,
+  TMode extends WriteContractMode = undefined,
+  TChainId extends number = keyof typeof gaugeCheckpointerQueriesAddress,
+>(
+  config: TMode extends 'prepared'
+    ? UseContractWriteConfig<
+        PrepareWriteContractResult<
+          typeof gaugeCheckpointerQueriesABI,
+          string
+        >['request']['abi'],
+        TFunctionName,
+        TMode
+      > & { address?: Address; chainId?: TChainId }
+    : UseContractWriteConfig<
+        typeof gaugeCheckpointerQueriesABI,
+        TFunctionName,
+        TMode
+      > & {
+        abi?: never
+        address?: never
+        chainId?: TChainId
+      } = {} as any,
+) {
+  return useContractWrite<
+    typeof gaugeCheckpointerQueriesABI,
+    TFunctionName,
+    TMode
+  >({
+    abi: gaugeCheckpointerQueriesABI,
+    address: gaugeCheckpointerQueriesAddress[1],
+    ...config,
+  } as any)
+}
+
+/**
+ * Wraps __{@link useContractWrite}__ with `abi` set to __{@link gaugeCheckpointerQueriesABI}__ and `functionName` set to `"queryCheckpointGauge"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x3a855f744f1bd76bc36b05d18cd1ba101a65b25c)
+ */
+export function useGaugeCheckpointerQueriesQueryCheckpointGauge<
+  TMode extends WriteContractMode = undefined,
+  TChainId extends number = keyof typeof gaugeCheckpointerQueriesAddress,
+>(
+  config: TMode extends 'prepared'
+    ? UseContractWriteConfig<
+        PrepareWriteContractResult<
+          typeof gaugeCheckpointerQueriesABI,
+          'queryCheckpointGauge'
+        >['request']['abi'],
+        'queryCheckpointGauge',
+        TMode
+      > & {
+        address?: Address
+        chainId?: TChainId
+        functionName?: 'queryCheckpointGauge'
+      }
+    : UseContractWriteConfig<
+        typeof gaugeCheckpointerQueriesABI,
+        'queryCheckpointGauge',
+        TMode
+      > & {
+        abi?: never
+        address?: never
+        chainId?: TChainId
+        functionName?: 'queryCheckpointGauge'
+      } = {} as any,
+) {
+  return useContractWrite<
+    typeof gaugeCheckpointerQueriesABI,
+    'queryCheckpointGauge',
+    TMode
+  >({
+    abi: gaugeCheckpointerQueriesABI,
+    address: gaugeCheckpointerQueriesAddress[1],
+    functionName: 'queryCheckpointGauge',
+    ...config,
+  } as any)
+}
+
+/**
+ * Wraps __{@link usePrepareContractWrite}__ with `abi` set to __{@link gaugeCheckpointerQueriesABI}__.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x3a855f744f1bd76bc36b05d18cd1ba101a65b25c)
+ */
+export function usePrepareGaugeCheckpointerQueriesWrite<
+  TFunctionName extends string,
+>(
+  config: Omit<
+    UsePrepareContractWriteConfig<
+      typeof gaugeCheckpointerQueriesABI,
+      TFunctionName
+    >,
+    'abi' | 'address'
+  > & { chainId?: keyof typeof gaugeCheckpointerQueriesAddress } = {} as any,
+) {
+  return usePrepareContractWrite({
+    abi: gaugeCheckpointerQueriesABI,
+    address: gaugeCheckpointerQueriesAddress[1],
+    ...config,
+  } as UsePrepareContractWriteConfig<
+    typeof gaugeCheckpointerQueriesABI,
+    TFunctionName
+  >)
+}
+
+/**
+ * Wraps __{@link usePrepareContractWrite}__ with `abi` set to __{@link gaugeCheckpointerQueriesABI}__ and `functionName` set to `"queryCheckpointGauge"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x3a855f744f1bd76bc36b05d18cd1ba101a65b25c)
+ */
+export function usePrepareGaugeCheckpointerQueriesQueryCheckpointGauge(
+  config: Omit<
+    UsePrepareContractWriteConfig<
+      typeof gaugeCheckpointerQueriesABI,
+      'queryCheckpointGauge'
+    >,
+    'abi' | 'address' | 'functionName'
+  > & { chainId?: keyof typeof gaugeCheckpointerQueriesAddress } = {} as any,
+) {
+  return usePrepareContractWrite({
+    abi: gaugeCheckpointerQueriesABI,
+    address: gaugeCheckpointerQueriesAddress[1],
+    functionName: 'queryCheckpointGauge',
+    ...config,
+  } as UsePrepareContractWriteConfig<
+    typeof gaugeCheckpointerQueriesABI,
+    'queryCheckpointGauge'
   >)
 }
 

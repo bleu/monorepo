@@ -1,4 +1,20 @@
-export const checkGaugeMintAbi = [
+export const gaugeCheckpointerQueriesAbi = [
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "balancerTokenAddress",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "gaugeCheckpointerAddress",
+        type: "address",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "constructor",
+  },
   {
     inputs: [],
     name: "BAL",
@@ -28,7 +44,7 @@ export const checkGaugeMintAbi = [
   {
     inputs: [
       {
-        internalType: "contract IStakelessGauge",
+        internalType: "address",
         name: "gauge",
         type: "address",
       },
@@ -38,7 +54,7 @@ export const checkGaugeMintAbi = [
         type: "string",
       },
     ],
-    name: "queryBalToMint",
+    name: "queryCheckpointGauge",
     outputs: [
       {
         internalType: "uint256",
@@ -46,7 +62,11 @@ export const checkGaugeMintAbi = [
         type: "uint256",
       },
     ],
-    stateMutability: "nonpayable",
+    stateMutability: "payable",
     type: "function",
+  },
+  {
+    stateMutability: "payable",
+    type: "receive",
   },
 ] as const;

@@ -1,10 +1,6 @@
 "use client";
 import { VeBalGetVotingListQuery } from "@bleu-fi/gql/src/balancer-api-v3/__generated__/Ethereum";
-import {
-  NetworkChainId,
-  NetworkFromNetworkChainId,
-  networkUrls,
-} from "@bleu-fi/utils";
+import { NetworkChainId, NetworkFromNetworkChainId } from "@bleu-fi/utils";
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import { capitalize } from "lodash";
@@ -12,6 +8,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { ToastContent } from "#/app/metadata/[network]/pool/[poolId]/(components)/MetadataAttributesTable/TransactionModal";
+import { ClickToCopy } from "#/components/ClickToCopy";
 import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
 import { Toast } from "#/components/Toast";
@@ -141,12 +138,11 @@ function TableRow({ votingOption, balToMint }: gaugeItem) {
   ] as NetworkChainId;
   const chainName = NetworkFromNetworkChainId[chainId];
   const poolUrl = `https://app.balancer.fi/#/${chainName}/pool/${votingOption.id}`;
-  const scanGaugeUrl = `${networkUrls[chainId].url}/address/${votingOption.gauge.address}`;
 
   return (
     <Table.BodyRow key={votingOption.address}>
       <Table.BodyCell>
-        <div className="flex flex-row items-center">
+        <div className="flex flex-row items-center gap-x-1">
           {votingOption.symbol} ({capitalize(chainName)}){" "}
           <Link href={poolUrl} target="_blank">
             <ArrowTopRightIcon className="hover:text-slate11" />
@@ -155,17 +151,16 @@ function TableRow({ votingOption, balToMint }: gaugeItem) {
       </Table.BodyCell>
       <Table.BodyCell>{votingOption.type}</Table.BodyCell>
       <Table.BodyCell>
-        <div className="flex flex-row items-center">
-          {truncateAddress(votingOption.gauge.address)}
-          <Link href={scanGaugeUrl} target="_blank">
-            <ArrowTopRightIcon className="hover:text-slate11" />
-          </Link>
+        <div className="flex flex-row items-center gap-x-1">
+          <ClickToCopy text={votingOption.gauge.address}>
+            {truncateAddress(votingOption.gauge.address)}
+          </ClickToCopy>
         </div>
       </Table.BodyCell>
       <Table.BodyCell>
         {typeof balToMint != "number"
           ? "Error"
-          : formatNumber(balToMint, 4, "decimal", "standard")}
+          : formatNumber(balToMint, 2, "decimal", "standard", 0.01)}
       </Table.BodyCell>
     </Table.BodyRow>
   );

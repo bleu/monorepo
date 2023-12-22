@@ -3,7 +3,7 @@ import { defineConfig } from "@wagmi/cli";
 import { foundry, react } from "@wagmi/cli/plugins";
 import * as chains from "wagmi/chains";
 
-import { checkGaugeMintAbi } from "./src/abis/checkGaugeMint";
+import { gaugeCheckpointerQueriesAbi } from "./src/abis/gaugeCheckpointerQueries";
 import { vaultAbi } from "./src/abis/vault";
 
 export default defineConfig({
@@ -24,10 +24,10 @@ export default defineConfig({
       },
     },
     {
-      name: "CheckGaugeMint",
-      abi: checkGaugeMintAbi,
+      name: "gaugeCheckpointerQueries",
+      abi: gaugeCheckpointerQueriesAbi,
       address: {
-        [chains.mainnet.id]: "0x6a24a03a2209a1513fe99fce2e06aac8c8e84880",
+        [chains.mainnet.id]: "0x3a855f744f1bd76bc36b05d18cd1ba101a65b25c",
       },
     },
   ],

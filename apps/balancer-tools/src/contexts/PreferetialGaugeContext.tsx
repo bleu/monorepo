@@ -1,7 +1,7 @@
 "use client";
 
 import { PreferentialGaugeQuery } from "@bleu-fi/gql/src/balancer-gauges/__generated__/Ethereum";
-import { createContext, ReactNode, useContext, useState } from "react";
+import { createContext, ReactNode, useContext } from "react";
 
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
@@ -9,9 +9,7 @@ export type PreferentialGaugeGql = ArrElement<
   GetDeepProp<PreferentialGaugeQuery, "pools">
 >;
 
-interface PreferentialGaugeContextType {
-  submit: boolean;
-}
+interface PreferentialGaugeContextType {}
 
 export const PreferentialGaugeContext = createContext(
   {} as PreferentialGaugeContextType,
@@ -22,14 +20,8 @@ export function PreferentialGaugeProvider({
 }: {
   children: ReactNode;
 }) {
-  const [submit, handleSubmit] = useState<boolean>(false);
-
   return (
-    <PreferentialGaugeContext.Provider
-      value={{
-        submit,
-      }}
-    >
+    <PreferentialGaugeContext.Provider value={{}}>
       <div className="grow">{children}</div>
     </PreferentialGaugeContext.Provider>
   );

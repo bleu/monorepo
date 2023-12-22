@@ -1,16 +1,19 @@
 "use client";
 import { NetworkChainId } from "@bleu-fi/utils";
 import { useEffect } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import { useAccount } from "wagmi";
 
 import { Button } from "#/components";
 import { Select, SelectItem } from "#/components/Select";
 import { Form } from "#/components/ui/form";
 import { gauges } from "#/lib/gql";
 import { truncateAddress } from "#/utils/truncate";
+import { setPrerentialGauge } from "#/wagmi/writeEmitEvent";
 
 export default function Page({ params }: { params: { poolId: string } }) {
   const form = useForm();
+  const { address } = useAccount();
   const { data } = gauges
     .gql(`${NetworkChainId.ETHEREUM}`)
     .usePoolPreferentialGauge({ poolId: params.poolId });
@@ -33,10 +36,16 @@ export default function Page({ params }: { params: { poolId: string } }) {
       );
       form.setValue("preferentialGauge", data?.pools[0].preferentialGauge?.id);
     }
+    form.register("userAddress");
+    form.setValue("userAddress", address?.toLowerCase());
   }, [data]);
 
-  function onSubmit() {
-    console.log("handle contract call");
+  async function onSubmit(data: FieldValues) {
+    await setPrerentialGauge({
+      oldGaugeAddress: data.oldPreferentialGauge,
+      newGaugeAddress: data.preferentialGauge,
+      userAddress: data.userAddress,
+    });
   }
 
   return (

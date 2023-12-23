@@ -10,7 +10,7 @@ import {
   tokenPrices,
 } from "../../../db/schema";
 import { logIfVerbose } from "../../../index";
-import { blockListRateProvider } from "blockListRateProvider";
+import { blockListRateProvider } from "../../../blockListRateProvider";
 
 export async function loadAPRs() {
   // Fee APR

@@ -8,7 +8,6 @@ import {
   SECONDS_IN_DAY,
   SECONDS_IN_YEAR,
 } from "@bleu-fi/utils/date";
-import { blockListRateProvider } from "blockListRateProvider";
 import {
   and,
   asc,
@@ -22,6 +21,7 @@ import {
 } from "drizzle-orm";
 import { Address } from "viem";
 
+import { blockListRateProvider } from "./blockListRateProvider";
 import {
   NETWORK_TO_BALANCER_ENDPOINT_MAP,
   NETWORK_TO_REWARDS_ENDPOINT_MAP,

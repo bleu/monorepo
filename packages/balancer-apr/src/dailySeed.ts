@@ -21,6 +21,7 @@ import {
 } from "drizzle-orm";
 import { Address } from "viem";
 
+import { blockListRateProvider } from "./blockListRateProvider";
 import {
   NETWORK_TO_BALANCER_ENDPOINT_MAP,
   NETWORK_TO_REWARDS_ENDPOINT_MAP,
@@ -1415,6 +1416,11 @@ async function calculateApr() {
             AND p1.timestamp >= '${sql.raw(
               twoDaysAgo.toISOString(),
             )}'::timestamp AT TIME ZONE 'UTC'
+            AND p1.rate_provider_address NOT IN (${sql.raw(
+              blockListRateProvider
+                .map((item) => `'${item.rateProviderAddress}'`)
+                .join(", "),
+            )})
     ) AS subquery ON subquery.timestamp = pool_snapshots.timestamp
     AND subquery.token_address = pool_tokens.token_address
     AND subquery.row_num = 1 -- Use the latest rate
@@ -1485,6 +1491,11 @@ async function calculateApr() {
             AND p1.timestamp >= '${sql.raw(
               twoDaysAgo.toISOString(),
             )}'::timestamp AT TIME ZONE 'UTC'
+            AND p1.rate_provider_address NOT IN (${sql.raw(
+              blockListRateProvider
+                .map((item) => `'${item.rateProviderAddress}'`)
+                .join(", "),
+            )})
     ) AS subquery ON subquery.timestamp = pool_snapshots.timestamp
     AND subquery.token_address = pool_tokens.token_address
     AND subquery.row_num = 1 -- Use the latest rate

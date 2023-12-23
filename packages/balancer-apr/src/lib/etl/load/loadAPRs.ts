@@ -2,6 +2,7 @@ import "dotenv/config";
 
 import { and, eq, isNotNull, sql } from "drizzle-orm";
 
+import { blockListRateProvider } from "../../../blockListRateProvider";
 import { db } from "../../../db/index";
 import {
   poolRewardsSnapshot,
@@ -100,6 +101,11 @@ export async function loadAPRs() {
             AND p1.rate != 0
             AND p2.rate != 0
             AND p1.rate - p2.rate != 0
+            AND p1.rate_provider_address NOT IN (${sql.raw(
+              blockListRateProvider
+                .map((item) => `'${item.rateProviderAddress}'`)
+                .join(", "),
+            )})
     ) AS subquery ON subquery.timestamp = pool_snapshots.timestamp
     AND subquery.token_address = pool_tokens.token_address
     AND subquery.row_num = 1 -- Use the latest rate
@@ -158,6 +164,11 @@ export async function loadAPRs() {
             AND p1.rate != 0
             AND p2.rate != 0
             AND p1.rate - p2.rate != 0
+            AND p1.rate_provider_address NOT IN (${sql.raw(
+              blockListRateProvider
+                .map((item) => `'${item.rateProviderAddress}'`)
+                .join(", "),
+            )})
     ) AS subquery ON subquery.timestamp = pool_snapshots.timestamp
     AND subquery.token_address = pool_tokens.token_address
     AND subquery.row_num = 1 -- Use the latest rate

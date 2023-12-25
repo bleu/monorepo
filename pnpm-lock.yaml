@@ -228,8 +228,8 @@ importers:
         specifier: ^18.18.5
         version: 18.18.5
       '@types/plotly.js':
-        specifier: ^2.12.31
-        version: 2.12.31
+        specifier: ^2.12.32
+        version: 2.12.32
       '@types/react':
         specifier: ^18.2.45
         version: 18.2.45
@@ -463,8 +463,8 @@ importers:
         specifier: ^18.18.5
         version: 18.18.5
       '@types/plotly.js':
-        specifier: ^2.12.31
-        version: 2.12.31
+        specifier: ^2.12.32
+        version: 2.12.32
       '@types/react':
         specifier: ^18.2.45
         version: 18.2.45
@@ -4899,6 +4899,7 @@ packages:
     dependencies:
       is-glob: 4.0.3
       micromatch: 4.0.5
+      napi-wasm: 1.1.0
     dev: false
     bundledDependencies:
       - napi-wasm
@@ -7021,8 +7022,8 @@ packages:
       pg-types: 2.2.0
     dev: false
 
-  /@types/plotly.js@2.12.31:
-    resolution: {integrity: sha512-FmzZQquzgTnQnywzyg7zlTTD4UFOroJ6/ac2KAueLCMQF7c+dwjZxgRohHB7Qzz0dZpFgic0VSkC2re7j6oluQ==}
+  /@types/plotly.js@2.12.32:
+    resolution: {integrity: sha512-pCE60W1v77zxobnA1oGIisHhGzTHv8c4fAtM81Y1h7gezeKpLpx4E0fQ3ThKIPOIvGlnoVseUjSpFwFqIKdsXg==}
     dev: true
 
   /@types/prop-types@15.7.11:
@@ -7040,7 +7041,7 @@ packages:
   /@types/react-plotly.js@2.6.3:
     resolution: {integrity: sha512-HBQwyGuu/dGXDsWhnQrhH+xcJSsHvjkwfSRjP+YpOsCCWryIuXF78ZCBjpfgO3sCc0Jo8sYp4NOGtqT7Cn3epQ==}
     dependencies:
-      '@types/plotly.js': 2.12.31
+      '@types/plotly.js': 2.12.32
       '@types/react': 18.2.45
     dev: true
 
@@ -15498,6 +15499,10 @@ packages:
     engines: {node: ^14 || ^16 || >=18}
     hasBin: true
     dev: true
+
+  /napi-wasm@1.1.0:
+    resolution: {integrity: sha512-lHwIAJbmLSjF9VDRm9GoVOy9AGp3aIvkjv+Kvz9h16QR3uSVYH78PNQUnT2U4X53mhlnV2M7wrhibQ3GHicDmg==}
+    dev: false
 
   /native-fetch@3.0.0(node-fetch@2.7.0):
     resolution: {integrity: sha512-G3Z7vx0IFb/FQ4JxvtqGABsOTIqRWvgQz6e+erkB+JJD6LrszQtMozEHI4EkmgZQvnGHrpLVzUWk7t4sJCIkVw==}

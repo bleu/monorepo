@@ -17,7 +17,7 @@
     "@bleu-fi/tsconfig": "workspace:*",
     "@bleu-fi/utils": "workspace:^",
     "@types/node": "18.18.5",
-    "drizzle-kit": "^0.20.7",
+    "drizzle-kit": "^0.20.8",
     "esbuild-register": "^3.5.0",
     "graphql": "16.8.1",
     "micromatch": "4.0.5",

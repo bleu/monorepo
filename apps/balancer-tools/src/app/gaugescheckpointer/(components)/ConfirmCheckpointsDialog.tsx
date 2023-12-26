@@ -21,7 +21,10 @@ export function ConfirmCheckpointsDialog({
 }) {
   const { selectedGauges } = useGaugesCheckpointer();
   const form = useForm();
-  const { register } = form;
+  const {
+    register,
+    formState: { isSubmitting },
+  } = form;
   const { handleTransaction } = useCheckpointGauges();
 
   const totalBalMinted = formatNumber(
@@ -84,7 +87,7 @@ export function ConfirmCheckpointsDialog({
           </div>
         );
       })}
-      <Button type="submit" className="w-full mt-2">
+      <Button type="submit" className="w-full mt-2" disabled={isSubmitting}>
         <span>Checkpoint Gauges</span>
       </Button>
     </Form>

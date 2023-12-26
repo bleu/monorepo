@@ -29,7 +29,7 @@ export async function writeCheckpointMultipleGauges({
     abi: stakelessGaugeCheckpointerABI,
     functionName: "checkpointMultipleGauges",
     args: [gaugesTypes, gauges],
-    value: BigInt((ethValue || 0) * 1e-18),
+    value: BigInt((ethValue || 0) * 1e18),
   });
 
   return await writeContract(config);

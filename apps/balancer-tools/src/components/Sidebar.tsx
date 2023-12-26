@@ -65,12 +65,19 @@ function Header({
   );
 }
 
-function Content({ children }: { children: React.ReactNode }) {
+function Content({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   const { isFloating } = useSidebarContext();
 
   return (
     <div
       className={cn(
+        className,
         "relative max-h-[31rem] xl:max-h-[40rem] self-stretch overflow-auto",
         {
           "rounded-md": isFloating,
@@ -94,7 +101,7 @@ function InputFilter({
     <div className="flex items-center">
       <input
         placeholder={placeHolder}
-        className="h-9 w-full appearance-none items-center justify-center rounded-l-[4px] bg-white px-[10px] text-sm leading-none text-slate12 outline-none"
+        className="h-9 w-full appearance-none items-center justify-center rounded-l-[4px] bg-white px-[10px] text-sm leading-none text-slate9 outline-none"
         onChange={onChange}
       />
       <button className="h-9 rounded-r-[4px] bg-blue4 px-2 leading-none outline-none transition hover:bg-blue4">

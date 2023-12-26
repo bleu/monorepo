@@ -2393,11 +2393,52 @@ export type GaugeQueryVariables = Exact<{
 
 export type GaugeQuery = { __typename?: 'Query', liquidityGauge?: { __typename?: 'LiquidityGauge', symbol: string } | null };
 
+export type PreferentialGaugeQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type PreferentialGaugeQuery = { __typename?: 'Query', pools: Array<{ __typename?: 'Pool', poolId?: any | null, gauges?: Array<{ __typename?: 'LiquidityGauge', id: string }> | null }> };
+
+export type PoolPreferentialGaugeQueryVariables = Exact<{
+  poolId: Scalars['Bytes']['input'];
+}>;
+
+
+export type PoolPreferentialGaugeQuery = { __typename?: 'Query', pools: Array<{ __typename?: 'Pool', id: string, poolId?: any | null, preferentialGauge?: { __typename?: 'LiquidityGauge', id: string } | null, gauges?: Array<{ __typename?: 'LiquidityGauge', gauge?: { __typename?: 'Gauge', liquidityGauge?: { __typename?: 'LiquidityGauge', id: string, symbol: string } | null } | null }> | null }> };
+
 
 export const GaugeDocument = gql`
     query Gauge($gaugeId: ID!) {
   liquidityGauge(id: $gaugeId) {
     symbol
+  }
+}
+    `;
+export const PreferentialGaugeDocument = gql`
+    query PreferentialGauge {
+  pools(first: 1000, where: {gauges_: {gauge_not: null}}) {
+    poolId
+    gauges {
+      id
+    }
+  }
+}
+    `;
+export const PoolPreferentialGaugeDocument = gql`
+    query PoolPreferentialGauge($poolId: Bytes!) {
+  pools(where: {poolId_in: [$poolId], gauges_: {gauge_not: null}}) {
+    id
+    poolId
+    preferentialGauge {
+      id
+    }
+    gauges {
+      gauge {
+        liquidityGauge {
+          id
+          symbol
+        }
+      }
+    }
   }
 }
     `;
@@ -2411,6 +2452,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
   return {
     Gauge(variables: GaugeQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GaugeQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GaugeQuery>(GaugeDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Gauge', 'query');
+    },
+    PreferentialGauge(variables?: PreferentialGaugeQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<PreferentialGaugeQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<PreferentialGaugeQuery>(PreferentialGaugeDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PreferentialGauge', 'query');
+    },
+    PoolPreferentialGauge(variables: PoolPreferentialGaugeQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<PoolPreferentialGaugeQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<PoolPreferentialGaugeQuery>(PoolPreferentialGaugeDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PoolPreferentialGauge', 'query');
     }
   };
 }

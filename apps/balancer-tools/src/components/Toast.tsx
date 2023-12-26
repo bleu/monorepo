@@ -1,3 +1,4 @@
+import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import * as ToastPrimitive from "@radix-ui/react-toast";
 import cn from "clsx";
 import React, { Dispatch } from "react";
@@ -65,5 +66,29 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {children}
       <ToastPrimitive.Viewport className="fixed bottom-0 right-0 z-[2147483647] m-0 flex w-[350px] max-w-[100vw] list-none flex-col gap-[10px] p-[var(--viewport-padding)] outline-none [--viewport-padding:_25px]" />
     </ToastPrimitive.Provider>
+  );
+}
+
+export function ToastContent({
+  title,
+  description,
+  link,
+}: {
+  title: string;
+  description: string;
+  link?: string;
+}) {
+  return (
+    <div className="flex h-14 flex-row items-center justify-between px-4 py-8">
+      <div className="flex flex-col justify-between space-y-1">
+        <h1 className="text-xl font-medium text-slate12">{title}</h1>
+        <h3 className="mb-2 leading-3 text-slate11">{description}</h3>
+      </div>
+      {link && (
+        <a target="_blank" href={link} className="text-slate12">
+          <ArrowTopRightIcon width={24} height={24} />
+        </a>
+      )}
+    </div>
   );
 }

@@ -6,7 +6,7 @@ interface ICheckbox {
   id: string;
   checked: boolean;
   onChange: () => void;
-  label: string;
+  label?: string;
 }
 
 export function Checkbox({ id, checked, onChange, label }: ICheckbox) {
@@ -22,12 +22,14 @@ export function Checkbox({ id, checked, onChange, label }: ICheckbox) {
           <CheckIcon />
         </CheckboxPrimitive.Indicator>
       </CheckboxPrimitive.Root>
-      <label
-        htmlFor={id}
-        className="pl-[15px] text-[15px] leading-8 text-white"
-      >
-        {label}
-      </label>
+      {label && (
+        <label
+          htmlFor={id}
+          className="pl-[15px] text-[15px] leading-8 text-white"
+        >
+          {label}
+        </label>
+      )}
     </div>
   );
 }

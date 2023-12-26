@@ -1,7 +1,7 @@
 import { VeBalGetVotingListQuery } from "@bleu-fi/gql/src/balancer-api-v3/__generated__/Ethereum";
 import { readContract } from "@wagmi/core";
 
-import { apiChainNameToGaugeType } from "#/app/gaugescheckpointer/(utils)/chainMapping";
+import { apiChainNameToGaugeType } from "#/lib/gauge-checkpointer-mappings";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
 import {

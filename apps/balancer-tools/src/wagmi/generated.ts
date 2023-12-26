@@ -234,6 +234,319 @@ export const gaugeCheckpointerQueriesConfig = {
 } as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// stakelessGaugeCheckpointer
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export const stakelessGaugeCheckpointerABI = [
+  {
+    stateMutability: 'nonpayable',
+    type: 'constructor',
+    inputs: [
+      {
+        name: 'gaugeAdder',
+        internalType: 'contract IGaugeAdder',
+        type: 'address',
+      },
+      {
+        name: 'authorizerAdaptorEntrypoint',
+        internalType: 'contract IAuthorizerAdaptorEntrypoint',
+        type: 'address',
+      },
+    ],
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'gauge',
+        internalType: 'contract IStakelessGauge',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'indexedGaugeType',
+        internalType: 'string',
+        type: 'string',
+        indexed: true,
+      },
+      {
+        name: 'gaugeType',
+        internalType: 'string',
+        type: 'string',
+        indexed: false,
+      },
+    ],
+    name: 'GaugeAdded',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'gauge',
+        internalType: 'contract IStakelessGauge',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'indexedGaugeType',
+        internalType: 'string',
+        type: 'string',
+        indexed: true,
+      },
+      {
+        name: 'gaugeType',
+        internalType: 'string',
+        type: 'string',
+        indexed: false,
+      },
+    ],
+    name: 'GaugeRemoved',
+  },
+  {
+    stateMutability: 'nonpayable',
+    type: 'function',
+    inputs: [
+      { name: 'gaugeType', internalType: 'string', type: 'string' },
+      {
+        name: 'gauges',
+        internalType: 'contract IStakelessGauge[]',
+        type: 'address[]',
+      },
+    ],
+    name: 'addGauges',
+    outputs: [],
+  },
+  {
+    stateMutability: 'nonpayable',
+    type: 'function',
+    inputs: [
+      { name: 'gaugeType', internalType: 'string', type: 'string' },
+      {
+        name: 'gauges',
+        internalType: 'contract IStakelessGauge[]',
+        type: 'address[]',
+      },
+    ],
+    name: 'addGaugesWithVerifiedType',
+    outputs: [],
+  },
+  {
+    stateMutability: 'payable',
+    type: 'function',
+    inputs: [
+      { name: 'minRelativeWeight', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'checkpointAllGaugesAboveRelativeWeight',
+    outputs: [],
+  },
+  {
+    stateMutability: 'payable',
+    type: 'function',
+    inputs: [
+      { name: 'gaugeTypes', internalType: 'string[]', type: 'string[]' },
+      { name: 'minRelativeWeight', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'checkpointGaugesOfTypesAboveRelativeWeight',
+    outputs: [],
+  },
+  {
+    stateMutability: 'payable',
+    type: 'function',
+    inputs: [
+      { name: 'gaugeTypes', internalType: 'string[]', type: 'string[]' },
+      {
+        name: 'gauges',
+        internalType: 'contract IStakelessGauge[]',
+        type: 'address[]',
+      },
+    ],
+    name: 'checkpointMultipleGauges',
+    outputs: [],
+  },
+  {
+    stateMutability: 'payable',
+    type: 'function',
+    inputs: [
+      { name: 'gaugeType', internalType: 'string', type: 'string' },
+      {
+        name: 'gauges',
+        internalType: 'contract IStakelessGauge[]',
+        type: 'address[]',
+      },
+    ],
+    name: 'checkpointMultipleGaugesOfMatchingType',
+    outputs: [],
+  },
+  {
+    stateMutability: 'payable',
+    type: 'function',
+    inputs: [
+      { name: 'gaugeType', internalType: 'string', type: 'string' },
+      {
+        name: 'gauge',
+        internalType: 'contract IStakelessGauge',
+        type: 'address',
+      },
+    ],
+    name: 'checkpointSingleGauge',
+    outputs: [],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [{ name: 'selector', internalType: 'bytes4', type: 'bytes4' }],
+    name: 'getActionId',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [],
+    name: 'getAuthorizer',
+    outputs: [
+      { name: '', internalType: 'contract IAuthorizer', type: 'address' },
+    ],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [],
+    name: 'getGaugeAdder',
+    outputs: [
+      { name: '', internalType: 'contract IGaugeAdder', type: 'address' },
+    ],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [
+      { name: 'gaugeType', internalType: 'string', type: 'string' },
+      { name: 'index', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'getGaugeAtIndex',
+    outputs: [
+      { name: '', internalType: 'contract IStakelessGauge', type: 'address' },
+    ],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [],
+    name: 'getGaugeTypes',
+    outputs: [{ name: '', internalType: 'string[]', type: 'string[]' }],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [
+      { name: 'gaugeTypes', internalType: 'string[]', type: 'string[]' },
+      { name: 'minRelativeWeight', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'getGaugeTypesBridgeCost',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [],
+    name: 'getRoundedDownBlockTimestamp',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [
+      { name: 'gaugeType', internalType: 'string', type: 'string' },
+      {
+        name: 'gauge',
+        internalType: 'contract IStakelessGauge',
+        type: 'address',
+      },
+    ],
+    name: 'getSingleBridgeCost',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [
+      { name: 'minRelativeWeight', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'getTotalBridgeCost',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [{ name: 'gaugeType', internalType: 'string', type: 'string' }],
+    name: 'getTotalGauges',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [],
+    name: 'getVault',
+    outputs: [{ name: '', internalType: 'contract IVault', type: 'address' }],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [
+      { name: 'gaugeType', internalType: 'string', type: 'string' },
+      {
+        name: 'gauge',
+        internalType: 'contract IStakelessGauge',
+        type: 'address',
+      },
+    ],
+    name: 'hasGauge',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [{ name: 'gaugeType', internalType: 'string', type: 'string' }],
+    name: 'isValidGaugeType',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+  },
+  {
+    stateMutability: 'nonpayable',
+    type: 'function',
+    inputs: [
+      { name: 'gaugeType', internalType: 'string', type: 'string' },
+      {
+        name: 'gauges',
+        internalType: 'contract IStakelessGauge[]',
+        type: 'address[]',
+      },
+    ],
+    name: 'removeGauges',
+    outputs: [],
+  },
+] as const
+
+/**
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export const stakelessGaugeCheckpointerAddress = {
+  1: '0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98',
+} as const
+
+/**
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export const stakelessGaugeCheckpointerConfig = {
+  address: stakelessGaugeCheckpointerAddress,
+  abi: stakelessGaugeCheckpointerABI,
+} as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // vault
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1751,6 +2064,1154 @@ export function usePrepareGaugeCheckpointerQueriesQueryCheckpointGauge(
   } as UsePrepareContractWriteConfig<
     typeof gaugeCheckpointerQueriesABI,
     'queryCheckpointGauge'
+  >)
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function useStakelessGaugeCheckpointerRead<
+  TFunctionName extends string,
+  TSelectData = ReadContractResult<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName
+  >,
+>(
+  config: Omit<
+    UseContractReadConfig<
+      typeof stakelessGaugeCheckpointerABI,
+      TFunctionName,
+      TSelectData
+    >,
+    'abi' | 'address'
+  > & { chainId?: keyof typeof stakelessGaugeCheckpointerAddress } = {} as any,
+) {
+  return useContractRead({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    ...config,
+  } as UseContractReadConfig<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName,
+    TSelectData
+  >)
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"getActionId"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function useStakelessGaugeCheckpointerGetActionId<
+  TFunctionName extends 'getActionId',
+  TSelectData = ReadContractResult<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName
+  >,
+>(
+  config: Omit<
+    UseContractReadConfig<
+      typeof stakelessGaugeCheckpointerABI,
+      TFunctionName,
+      TSelectData
+    >,
+    'abi' | 'address' | 'functionName'
+  > & { chainId?: keyof typeof stakelessGaugeCheckpointerAddress } = {} as any,
+) {
+  return useContractRead({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'getActionId',
+    ...config,
+  } as UseContractReadConfig<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName,
+    TSelectData
+  >)
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"getAuthorizer"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function useStakelessGaugeCheckpointerGetAuthorizer<
+  TFunctionName extends 'getAuthorizer',
+  TSelectData = ReadContractResult<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName
+  >,
+>(
+  config: Omit<
+    UseContractReadConfig<
+      typeof stakelessGaugeCheckpointerABI,
+      TFunctionName,
+      TSelectData
+    >,
+    'abi' | 'address' | 'functionName'
+  > & { chainId?: keyof typeof stakelessGaugeCheckpointerAddress } = {} as any,
+) {
+  return useContractRead({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'getAuthorizer',
+    ...config,
+  } as UseContractReadConfig<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName,
+    TSelectData
+  >)
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"getGaugeAdder"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function useStakelessGaugeCheckpointerGetGaugeAdder<
+  TFunctionName extends 'getGaugeAdder',
+  TSelectData = ReadContractResult<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName
+  >,
+>(
+  config: Omit<
+    UseContractReadConfig<
+      typeof stakelessGaugeCheckpointerABI,
+      TFunctionName,
+      TSelectData
+    >,
+    'abi' | 'address' | 'functionName'
+  > & { chainId?: keyof typeof stakelessGaugeCheckpointerAddress } = {} as any,
+) {
+  return useContractRead({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'getGaugeAdder',
+    ...config,
+  } as UseContractReadConfig<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName,
+    TSelectData
+  >)
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"getGaugeAtIndex"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function useStakelessGaugeCheckpointerGetGaugeAtIndex<
+  TFunctionName extends 'getGaugeAtIndex',
+  TSelectData = ReadContractResult<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName
+  >,
+>(
+  config: Omit<
+    UseContractReadConfig<
+      typeof stakelessGaugeCheckpointerABI,
+      TFunctionName,
+      TSelectData
+    >,
+    'abi' | 'address' | 'functionName'
+  > & { chainId?: keyof typeof stakelessGaugeCheckpointerAddress } = {} as any,
+) {
+  return useContractRead({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'getGaugeAtIndex',
+    ...config,
+  } as UseContractReadConfig<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName,
+    TSelectData
+  >)
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"getGaugeTypes"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function useStakelessGaugeCheckpointerGetGaugeTypes<
+  TFunctionName extends 'getGaugeTypes',
+  TSelectData = ReadContractResult<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName
+  >,
+>(
+  config: Omit<
+    UseContractReadConfig<
+      typeof stakelessGaugeCheckpointerABI,
+      TFunctionName,
+      TSelectData
+    >,
+    'abi' | 'address' | 'functionName'
+  > & { chainId?: keyof typeof stakelessGaugeCheckpointerAddress } = {} as any,
+) {
+  return useContractRead({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'getGaugeTypes',
+    ...config,
+  } as UseContractReadConfig<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName,
+    TSelectData
+  >)
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"getGaugeTypesBridgeCost"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function useStakelessGaugeCheckpointerGetGaugeTypesBridgeCost<
+  TFunctionName extends 'getGaugeTypesBridgeCost',
+  TSelectData = ReadContractResult<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName
+  >,
+>(
+  config: Omit<
+    UseContractReadConfig<
+      typeof stakelessGaugeCheckpointerABI,
+      TFunctionName,
+      TSelectData
+    >,
+    'abi' | 'address' | 'functionName'
+  > & { chainId?: keyof typeof stakelessGaugeCheckpointerAddress } = {} as any,
+) {
+  return useContractRead({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'getGaugeTypesBridgeCost',
+    ...config,
+  } as UseContractReadConfig<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName,
+    TSelectData
+  >)
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"getRoundedDownBlockTimestamp"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function useStakelessGaugeCheckpointerGetRoundedDownBlockTimestamp<
+  TFunctionName extends 'getRoundedDownBlockTimestamp',
+  TSelectData = ReadContractResult<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName
+  >,
+>(
+  config: Omit<
+    UseContractReadConfig<
+      typeof stakelessGaugeCheckpointerABI,
+      TFunctionName,
+      TSelectData
+    >,
+    'abi' | 'address' | 'functionName'
+  > & { chainId?: keyof typeof stakelessGaugeCheckpointerAddress } = {} as any,
+) {
+  return useContractRead({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'getRoundedDownBlockTimestamp',
+    ...config,
+  } as UseContractReadConfig<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName,
+    TSelectData
+  >)
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"getSingleBridgeCost"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function useStakelessGaugeCheckpointerGetSingleBridgeCost<
+  TFunctionName extends 'getSingleBridgeCost',
+  TSelectData = ReadContractResult<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName
+  >,
+>(
+  config: Omit<
+    UseContractReadConfig<
+      typeof stakelessGaugeCheckpointerABI,
+      TFunctionName,
+      TSelectData
+    >,
+    'abi' | 'address' | 'functionName'
+  > & { chainId?: keyof typeof stakelessGaugeCheckpointerAddress } = {} as any,
+) {
+  return useContractRead({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'getSingleBridgeCost',
+    ...config,
+  } as UseContractReadConfig<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName,
+    TSelectData
+  >)
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"getTotalBridgeCost"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function useStakelessGaugeCheckpointerGetTotalBridgeCost<
+  TFunctionName extends 'getTotalBridgeCost',
+  TSelectData = ReadContractResult<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName
+  >,
+>(
+  config: Omit<
+    UseContractReadConfig<
+      typeof stakelessGaugeCheckpointerABI,
+      TFunctionName,
+      TSelectData
+    >,
+    'abi' | 'address' | 'functionName'
+  > & { chainId?: keyof typeof stakelessGaugeCheckpointerAddress } = {} as any,
+) {
+  return useContractRead({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'getTotalBridgeCost',
+    ...config,
+  } as UseContractReadConfig<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName,
+    TSelectData
+  >)
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"getTotalGauges"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function useStakelessGaugeCheckpointerGetTotalGauges<
+  TFunctionName extends 'getTotalGauges',
+  TSelectData = ReadContractResult<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName
+  >,
+>(
+  config: Omit<
+    UseContractReadConfig<
+      typeof stakelessGaugeCheckpointerABI,
+      TFunctionName,
+      TSelectData
+    >,
+    'abi' | 'address' | 'functionName'
+  > & { chainId?: keyof typeof stakelessGaugeCheckpointerAddress } = {} as any,
+) {
+  return useContractRead({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'getTotalGauges',
+    ...config,
+  } as UseContractReadConfig<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName,
+    TSelectData
+  >)
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"getVault"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function useStakelessGaugeCheckpointerGetVault<
+  TFunctionName extends 'getVault',
+  TSelectData = ReadContractResult<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName
+  >,
+>(
+  config: Omit<
+    UseContractReadConfig<
+      typeof stakelessGaugeCheckpointerABI,
+      TFunctionName,
+      TSelectData
+    >,
+    'abi' | 'address' | 'functionName'
+  > & { chainId?: keyof typeof stakelessGaugeCheckpointerAddress } = {} as any,
+) {
+  return useContractRead({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'getVault',
+    ...config,
+  } as UseContractReadConfig<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName,
+    TSelectData
+  >)
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"hasGauge"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function useStakelessGaugeCheckpointerHasGauge<
+  TFunctionName extends 'hasGauge',
+  TSelectData = ReadContractResult<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName
+  >,
+>(
+  config: Omit<
+    UseContractReadConfig<
+      typeof stakelessGaugeCheckpointerABI,
+      TFunctionName,
+      TSelectData
+    >,
+    'abi' | 'address' | 'functionName'
+  > & { chainId?: keyof typeof stakelessGaugeCheckpointerAddress } = {} as any,
+) {
+  return useContractRead({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'hasGauge',
+    ...config,
+  } as UseContractReadConfig<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName,
+    TSelectData
+  >)
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"isValidGaugeType"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function useStakelessGaugeCheckpointerIsValidGaugeType<
+  TFunctionName extends 'isValidGaugeType',
+  TSelectData = ReadContractResult<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName
+  >,
+>(
+  config: Omit<
+    UseContractReadConfig<
+      typeof stakelessGaugeCheckpointerABI,
+      TFunctionName,
+      TSelectData
+    >,
+    'abi' | 'address' | 'functionName'
+  > & { chainId?: keyof typeof stakelessGaugeCheckpointerAddress } = {} as any,
+) {
+  return useContractRead({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'isValidGaugeType',
+    ...config,
+  } as UseContractReadConfig<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName,
+    TSelectData
+  >)
+}
+
+/**
+ * Wraps __{@link useContractWrite}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function useStakelessGaugeCheckpointerWrite<
+  TFunctionName extends string,
+  TMode extends WriteContractMode = undefined,
+  TChainId extends number = keyof typeof stakelessGaugeCheckpointerAddress,
+>(
+  config: TMode extends 'prepared'
+    ? UseContractWriteConfig<
+        PrepareWriteContractResult<
+          typeof stakelessGaugeCheckpointerABI,
+          string
+        >['request']['abi'],
+        TFunctionName,
+        TMode
+      > & { address?: Address; chainId?: TChainId }
+    : UseContractWriteConfig<
+        typeof stakelessGaugeCheckpointerABI,
+        TFunctionName,
+        TMode
+      > & {
+        abi?: never
+        address?: never
+        chainId?: TChainId
+      } = {} as any,
+) {
+  return useContractWrite<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName,
+    TMode
+  >({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    ...config,
+  } as any)
+}
+
+/**
+ * Wraps __{@link useContractWrite}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"addGauges"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function useStakelessGaugeCheckpointerAddGauges<
+  TMode extends WriteContractMode = undefined,
+  TChainId extends number = keyof typeof stakelessGaugeCheckpointerAddress,
+>(
+  config: TMode extends 'prepared'
+    ? UseContractWriteConfig<
+        PrepareWriteContractResult<
+          typeof stakelessGaugeCheckpointerABI,
+          'addGauges'
+        >['request']['abi'],
+        'addGauges',
+        TMode
+      > & { address?: Address; chainId?: TChainId; functionName?: 'addGauges' }
+    : UseContractWriteConfig<
+        typeof stakelessGaugeCheckpointerABI,
+        'addGauges',
+        TMode
+      > & {
+        abi?: never
+        address?: never
+        chainId?: TChainId
+        functionName?: 'addGauges'
+      } = {} as any,
+) {
+  return useContractWrite<
+    typeof stakelessGaugeCheckpointerABI,
+    'addGauges',
+    TMode
+  >({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'addGauges',
+    ...config,
+  } as any)
+}
+
+/**
+ * Wraps __{@link useContractWrite}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"addGaugesWithVerifiedType"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function useStakelessGaugeCheckpointerAddGaugesWithVerifiedType<
+  TMode extends WriteContractMode = undefined,
+  TChainId extends number = keyof typeof stakelessGaugeCheckpointerAddress,
+>(
+  config: TMode extends 'prepared'
+    ? UseContractWriteConfig<
+        PrepareWriteContractResult<
+          typeof stakelessGaugeCheckpointerABI,
+          'addGaugesWithVerifiedType'
+        >['request']['abi'],
+        'addGaugesWithVerifiedType',
+        TMode
+      > & {
+        address?: Address
+        chainId?: TChainId
+        functionName?: 'addGaugesWithVerifiedType'
+      }
+    : UseContractWriteConfig<
+        typeof stakelessGaugeCheckpointerABI,
+        'addGaugesWithVerifiedType',
+        TMode
+      > & {
+        abi?: never
+        address?: never
+        chainId?: TChainId
+        functionName?: 'addGaugesWithVerifiedType'
+      } = {} as any,
+) {
+  return useContractWrite<
+    typeof stakelessGaugeCheckpointerABI,
+    'addGaugesWithVerifiedType',
+    TMode
+  >({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'addGaugesWithVerifiedType',
+    ...config,
+  } as any)
+}
+
+/**
+ * Wraps __{@link useContractWrite}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"checkpointAllGaugesAboveRelativeWeight"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function useStakelessGaugeCheckpointerCheckpointAllGaugesAboveRelativeWeight<
+  TMode extends WriteContractMode = undefined,
+  TChainId extends number = keyof typeof stakelessGaugeCheckpointerAddress,
+>(
+  config: TMode extends 'prepared'
+    ? UseContractWriteConfig<
+        PrepareWriteContractResult<
+          typeof stakelessGaugeCheckpointerABI,
+          'checkpointAllGaugesAboveRelativeWeight'
+        >['request']['abi'],
+        'checkpointAllGaugesAboveRelativeWeight',
+        TMode
+      > & {
+        address?: Address
+        chainId?: TChainId
+        functionName?: 'checkpointAllGaugesAboveRelativeWeight'
+      }
+    : UseContractWriteConfig<
+        typeof stakelessGaugeCheckpointerABI,
+        'checkpointAllGaugesAboveRelativeWeight',
+        TMode
+      > & {
+        abi?: never
+        address?: never
+        chainId?: TChainId
+        functionName?: 'checkpointAllGaugesAboveRelativeWeight'
+      } = {} as any,
+) {
+  return useContractWrite<
+    typeof stakelessGaugeCheckpointerABI,
+    'checkpointAllGaugesAboveRelativeWeight',
+    TMode
+  >({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'checkpointAllGaugesAboveRelativeWeight',
+    ...config,
+  } as any)
+}
+
+/**
+ * Wraps __{@link useContractWrite}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"checkpointGaugesOfTypesAboveRelativeWeight"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function useStakelessGaugeCheckpointerCheckpointGaugesOfTypesAboveRelativeWeight<
+  TMode extends WriteContractMode = undefined,
+  TChainId extends number = keyof typeof stakelessGaugeCheckpointerAddress,
+>(
+  config: TMode extends 'prepared'
+    ? UseContractWriteConfig<
+        PrepareWriteContractResult<
+          typeof stakelessGaugeCheckpointerABI,
+          'checkpointGaugesOfTypesAboveRelativeWeight'
+        >['request']['abi'],
+        'checkpointGaugesOfTypesAboveRelativeWeight',
+        TMode
+      > & {
+        address?: Address
+        chainId?: TChainId
+        functionName?: 'checkpointGaugesOfTypesAboveRelativeWeight'
+      }
+    : UseContractWriteConfig<
+        typeof stakelessGaugeCheckpointerABI,
+        'checkpointGaugesOfTypesAboveRelativeWeight',
+        TMode
+      > & {
+        abi?: never
+        address?: never
+        chainId?: TChainId
+        functionName?: 'checkpointGaugesOfTypesAboveRelativeWeight'
+      } = {} as any,
+) {
+  return useContractWrite<
+    typeof stakelessGaugeCheckpointerABI,
+    'checkpointGaugesOfTypesAboveRelativeWeight',
+    TMode
+  >({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'checkpointGaugesOfTypesAboveRelativeWeight',
+    ...config,
+  } as any)
+}
+
+/**
+ * Wraps __{@link useContractWrite}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"checkpointMultipleGauges"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function useStakelessGaugeCheckpointerCheckpointMultipleGauges<
+  TMode extends WriteContractMode = undefined,
+  TChainId extends number = keyof typeof stakelessGaugeCheckpointerAddress,
+>(
+  config: TMode extends 'prepared'
+    ? UseContractWriteConfig<
+        PrepareWriteContractResult<
+          typeof stakelessGaugeCheckpointerABI,
+          'checkpointMultipleGauges'
+        >['request']['abi'],
+        'checkpointMultipleGauges',
+        TMode
+      > & {
+        address?: Address
+        chainId?: TChainId
+        functionName?: 'checkpointMultipleGauges'
+      }
+    : UseContractWriteConfig<
+        typeof stakelessGaugeCheckpointerABI,
+        'checkpointMultipleGauges',
+        TMode
+      > & {
+        abi?: never
+        address?: never
+        chainId?: TChainId
+        functionName?: 'checkpointMultipleGauges'
+      } = {} as any,
+) {
+  return useContractWrite<
+    typeof stakelessGaugeCheckpointerABI,
+    'checkpointMultipleGauges',
+    TMode
+  >({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'checkpointMultipleGauges',
+    ...config,
+  } as any)
+}
+
+/**
+ * Wraps __{@link useContractWrite}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"checkpointMultipleGaugesOfMatchingType"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function useStakelessGaugeCheckpointerCheckpointMultipleGaugesOfMatchingType<
+  TMode extends WriteContractMode = undefined,
+  TChainId extends number = keyof typeof stakelessGaugeCheckpointerAddress,
+>(
+  config: TMode extends 'prepared'
+    ? UseContractWriteConfig<
+        PrepareWriteContractResult<
+          typeof stakelessGaugeCheckpointerABI,
+          'checkpointMultipleGaugesOfMatchingType'
+        >['request']['abi'],
+        'checkpointMultipleGaugesOfMatchingType',
+        TMode
+      > & {
+        address?: Address
+        chainId?: TChainId
+        functionName?: 'checkpointMultipleGaugesOfMatchingType'
+      }
+    : UseContractWriteConfig<
+        typeof stakelessGaugeCheckpointerABI,
+        'checkpointMultipleGaugesOfMatchingType',
+        TMode
+      > & {
+        abi?: never
+        address?: never
+        chainId?: TChainId
+        functionName?: 'checkpointMultipleGaugesOfMatchingType'
+      } = {} as any,
+) {
+  return useContractWrite<
+    typeof stakelessGaugeCheckpointerABI,
+    'checkpointMultipleGaugesOfMatchingType',
+    TMode
+  >({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'checkpointMultipleGaugesOfMatchingType',
+    ...config,
+  } as any)
+}
+
+/**
+ * Wraps __{@link useContractWrite}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"checkpointSingleGauge"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function useStakelessGaugeCheckpointerCheckpointSingleGauge<
+  TMode extends WriteContractMode = undefined,
+  TChainId extends number = keyof typeof stakelessGaugeCheckpointerAddress,
+>(
+  config: TMode extends 'prepared'
+    ? UseContractWriteConfig<
+        PrepareWriteContractResult<
+          typeof stakelessGaugeCheckpointerABI,
+          'checkpointSingleGauge'
+        >['request']['abi'],
+        'checkpointSingleGauge',
+        TMode
+      > & {
+        address?: Address
+        chainId?: TChainId
+        functionName?: 'checkpointSingleGauge'
+      }
+    : UseContractWriteConfig<
+        typeof stakelessGaugeCheckpointerABI,
+        'checkpointSingleGauge',
+        TMode
+      > & {
+        abi?: never
+        address?: never
+        chainId?: TChainId
+        functionName?: 'checkpointSingleGauge'
+      } = {} as any,
+) {
+  return useContractWrite<
+    typeof stakelessGaugeCheckpointerABI,
+    'checkpointSingleGauge',
+    TMode
+  >({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'checkpointSingleGauge',
+    ...config,
+  } as any)
+}
+
+/**
+ * Wraps __{@link useContractWrite}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"removeGauges"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function useStakelessGaugeCheckpointerRemoveGauges<
+  TMode extends WriteContractMode = undefined,
+  TChainId extends number = keyof typeof stakelessGaugeCheckpointerAddress,
+>(
+  config: TMode extends 'prepared'
+    ? UseContractWriteConfig<
+        PrepareWriteContractResult<
+          typeof stakelessGaugeCheckpointerABI,
+          'removeGauges'
+        >['request']['abi'],
+        'removeGauges',
+        TMode
+      > & {
+        address?: Address
+        chainId?: TChainId
+        functionName?: 'removeGauges'
+      }
+    : UseContractWriteConfig<
+        typeof stakelessGaugeCheckpointerABI,
+        'removeGauges',
+        TMode
+      > & {
+        abi?: never
+        address?: never
+        chainId?: TChainId
+        functionName?: 'removeGauges'
+      } = {} as any,
+) {
+  return useContractWrite<
+    typeof stakelessGaugeCheckpointerABI,
+    'removeGauges',
+    TMode
+  >({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'removeGauges',
+    ...config,
+  } as any)
+}
+
+/**
+ * Wraps __{@link usePrepareContractWrite}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function usePrepareStakelessGaugeCheckpointerWrite<
+  TFunctionName extends string,
+>(
+  config: Omit<
+    UsePrepareContractWriteConfig<
+      typeof stakelessGaugeCheckpointerABI,
+      TFunctionName
+    >,
+    'abi' | 'address'
+  > & { chainId?: keyof typeof stakelessGaugeCheckpointerAddress } = {} as any,
+) {
+  return usePrepareContractWrite({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    ...config,
+  } as UsePrepareContractWriteConfig<
+    typeof stakelessGaugeCheckpointerABI,
+    TFunctionName
+  >)
+}
+
+/**
+ * Wraps __{@link usePrepareContractWrite}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"addGauges"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function usePrepareStakelessGaugeCheckpointerAddGauges(
+  config: Omit<
+    UsePrepareContractWriteConfig<
+      typeof stakelessGaugeCheckpointerABI,
+      'addGauges'
+    >,
+    'abi' | 'address' | 'functionName'
+  > & { chainId?: keyof typeof stakelessGaugeCheckpointerAddress } = {} as any,
+) {
+  return usePrepareContractWrite({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'addGauges',
+    ...config,
+  } as UsePrepareContractWriteConfig<
+    typeof stakelessGaugeCheckpointerABI,
+    'addGauges'
+  >)
+}
+
+/**
+ * Wraps __{@link usePrepareContractWrite}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"addGaugesWithVerifiedType"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function usePrepareStakelessGaugeCheckpointerAddGaugesWithVerifiedType(
+  config: Omit<
+    UsePrepareContractWriteConfig<
+      typeof stakelessGaugeCheckpointerABI,
+      'addGaugesWithVerifiedType'
+    >,
+    'abi' | 'address' | 'functionName'
+  > & { chainId?: keyof typeof stakelessGaugeCheckpointerAddress } = {} as any,
+) {
+  return usePrepareContractWrite({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'addGaugesWithVerifiedType',
+    ...config,
+  } as UsePrepareContractWriteConfig<
+    typeof stakelessGaugeCheckpointerABI,
+    'addGaugesWithVerifiedType'
+  >)
+}
+
+/**
+ * Wraps __{@link usePrepareContractWrite}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"checkpointAllGaugesAboveRelativeWeight"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function usePrepareStakelessGaugeCheckpointerCheckpointAllGaugesAboveRelativeWeight(
+  config: Omit<
+    UsePrepareContractWriteConfig<
+      typeof stakelessGaugeCheckpointerABI,
+      'checkpointAllGaugesAboveRelativeWeight'
+    >,
+    'abi' | 'address' | 'functionName'
+  > & { chainId?: keyof typeof stakelessGaugeCheckpointerAddress } = {} as any,
+) {
+  return usePrepareContractWrite({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'checkpointAllGaugesAboveRelativeWeight',
+    ...config,
+  } as UsePrepareContractWriteConfig<
+    typeof stakelessGaugeCheckpointerABI,
+    'checkpointAllGaugesAboveRelativeWeight'
+  >)
+}
+
+/**
+ * Wraps __{@link usePrepareContractWrite}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"checkpointGaugesOfTypesAboveRelativeWeight"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function usePrepareStakelessGaugeCheckpointerCheckpointGaugesOfTypesAboveRelativeWeight(
+  config: Omit<
+    UsePrepareContractWriteConfig<
+      typeof stakelessGaugeCheckpointerABI,
+      'checkpointGaugesOfTypesAboveRelativeWeight'
+    >,
+    'abi' | 'address' | 'functionName'
+  > & { chainId?: keyof typeof stakelessGaugeCheckpointerAddress } = {} as any,
+) {
+  return usePrepareContractWrite({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'checkpointGaugesOfTypesAboveRelativeWeight',
+    ...config,
+  } as UsePrepareContractWriteConfig<
+    typeof stakelessGaugeCheckpointerABI,
+    'checkpointGaugesOfTypesAboveRelativeWeight'
+  >)
+}
+
+/**
+ * Wraps __{@link usePrepareContractWrite}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"checkpointMultipleGauges"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function usePrepareStakelessGaugeCheckpointerCheckpointMultipleGauges(
+  config: Omit<
+    UsePrepareContractWriteConfig<
+      typeof stakelessGaugeCheckpointerABI,
+      'checkpointMultipleGauges'
+    >,
+    'abi' | 'address' | 'functionName'
+  > & { chainId?: keyof typeof stakelessGaugeCheckpointerAddress } = {} as any,
+) {
+  return usePrepareContractWrite({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'checkpointMultipleGauges',
+    ...config,
+  } as UsePrepareContractWriteConfig<
+    typeof stakelessGaugeCheckpointerABI,
+    'checkpointMultipleGauges'
+  >)
+}
+
+/**
+ * Wraps __{@link usePrepareContractWrite}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"checkpointMultipleGaugesOfMatchingType"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function usePrepareStakelessGaugeCheckpointerCheckpointMultipleGaugesOfMatchingType(
+  config: Omit<
+    UsePrepareContractWriteConfig<
+      typeof stakelessGaugeCheckpointerABI,
+      'checkpointMultipleGaugesOfMatchingType'
+    >,
+    'abi' | 'address' | 'functionName'
+  > & { chainId?: keyof typeof stakelessGaugeCheckpointerAddress } = {} as any,
+) {
+  return usePrepareContractWrite({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'checkpointMultipleGaugesOfMatchingType',
+    ...config,
+  } as UsePrepareContractWriteConfig<
+    typeof stakelessGaugeCheckpointerABI,
+    'checkpointMultipleGaugesOfMatchingType'
+  >)
+}
+
+/**
+ * Wraps __{@link usePrepareContractWrite}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"checkpointSingleGauge"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function usePrepareStakelessGaugeCheckpointerCheckpointSingleGauge(
+  config: Omit<
+    UsePrepareContractWriteConfig<
+      typeof stakelessGaugeCheckpointerABI,
+      'checkpointSingleGauge'
+    >,
+    'abi' | 'address' | 'functionName'
+  > & { chainId?: keyof typeof stakelessGaugeCheckpointerAddress } = {} as any,
+) {
+  return usePrepareContractWrite({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'checkpointSingleGauge',
+    ...config,
+  } as UsePrepareContractWriteConfig<
+    typeof stakelessGaugeCheckpointerABI,
+    'checkpointSingleGauge'
+  >)
+}
+
+/**
+ * Wraps __{@link usePrepareContractWrite}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `functionName` set to `"removeGauges"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function usePrepareStakelessGaugeCheckpointerRemoveGauges(
+  config: Omit<
+    UsePrepareContractWriteConfig<
+      typeof stakelessGaugeCheckpointerABI,
+      'removeGauges'
+    >,
+    'abi' | 'address' | 'functionName'
+  > & { chainId?: keyof typeof stakelessGaugeCheckpointerAddress } = {} as any,
+) {
+  return usePrepareContractWrite({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    functionName: 'removeGauges',
+    ...config,
+  } as UsePrepareContractWriteConfig<
+    typeof stakelessGaugeCheckpointerABI,
+    'removeGauges'
+  >)
+}
+
+/**
+ * Wraps __{@link useContractEvent}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function useStakelessGaugeCheckpointerEvent<TEventName extends string>(
+  config: Omit<
+    UseContractEventConfig<typeof stakelessGaugeCheckpointerABI, TEventName>,
+    'abi' | 'address'
+  > & { chainId?: keyof typeof stakelessGaugeCheckpointerAddress } = {} as any,
+) {
+  return useContractEvent({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    ...config,
+  } as UseContractEventConfig<typeof stakelessGaugeCheckpointerABI, TEventName>)
+}
+
+/**
+ * Wraps __{@link useContractEvent}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `eventName` set to `"GaugeAdded"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function useStakelessGaugeCheckpointerGaugeAddedEvent(
+  config: Omit<
+    UseContractEventConfig<typeof stakelessGaugeCheckpointerABI, 'GaugeAdded'>,
+    'abi' | 'address' | 'eventName'
+  > & { chainId?: keyof typeof stakelessGaugeCheckpointerAddress } = {} as any,
+) {
+  return useContractEvent({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    eventName: 'GaugeAdded',
+    ...config,
+  } as UseContractEventConfig<
+    typeof stakelessGaugeCheckpointerABI,
+    'GaugeAdded'
+  >)
+}
+
+/**
+ * Wraps __{@link useContractEvent}__ with `abi` set to __{@link stakelessGaugeCheckpointerABI}__ and `eventName` set to `"GaugeRemoved"`.
+ *
+ * [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98)
+ */
+export function useStakelessGaugeCheckpointerGaugeRemovedEvent(
+  config: Omit<
+    UseContractEventConfig<
+      typeof stakelessGaugeCheckpointerABI,
+      'GaugeRemoved'
+    >,
+    'abi' | 'address' | 'eventName'
+  > & { chainId?: keyof typeof stakelessGaugeCheckpointerAddress } = {} as any,
+) {
+  return useContractEvent({
+    abi: stakelessGaugeCheckpointerABI,
+    address: stakelessGaugeCheckpointerAddress[1],
+    eventName: 'GaugeRemoved',
+    ...config,
+  } as UseContractEventConfig<
+    typeof stakelessGaugeCheckpointerABI,
+    'GaugeRemoved'
   >)
 }
 

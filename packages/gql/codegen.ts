@@ -51,7 +51,7 @@ export const SUBGRAPHS = {
         [Network.Ethereum]: `${baseEndpoint}`,
         // TODO: substitute Sepolia
         [Network.Sepolia]: `${baseEndpoint}-goerli`,
-        [Network.Goerli]: `${baseEndpoint}-goerli`,
+        [Network.Goerli]: `https://api.thegraph.com/subgraphs/name/bleu-fi/balancer-gauges-goerli`,
         [Network.Polygon]: `${baseEndpoint}-polygon`,
         [Network.PolygonZKEVM]: `https://api.studio.thegraph.com/query/24660/balancer-gauges-polygon-zk/version/latest`,
         [Network.Arbitrum]: `${baseEndpoint}-arbitrum`,

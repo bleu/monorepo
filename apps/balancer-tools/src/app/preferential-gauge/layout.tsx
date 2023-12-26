@@ -1,6 +1,6 @@
 "use client";
 
-import { Network } from "@bleu-fi/utils";
+import { Network, networkFor } from "@bleu-fi/utils";
 import * as React from "react";
 import { useNetwork } from "wagmi";
 
@@ -20,7 +20,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
       <div className="flex h-full flex-col min-w-[930px]">
         <HeaderNetworkMismatchAlert />
         <Header
-          linkUrl={`/preferential-gauge`}
+          linkUrl={`/preferential-gauge/${networkFor(chain?.id)}`}
           title={"Preferential Gauges"}
           imageSrc={"/assets/balancer-symbol.svg"}
         />
@@ -28,7 +28,7 @@ export default function Layout({ children }: React.PropsWithChildren) {
           <div className="flex flex-1 gap-x-8">
             <PreferentialGaugeSidebar />
             <CheckSupportedChains
-              supportedChains={[Network.Ethereum]}
+              supportedChains={[Network.Ethereum, Network.Goerli]}
               chainName={network}
             >
               {children}

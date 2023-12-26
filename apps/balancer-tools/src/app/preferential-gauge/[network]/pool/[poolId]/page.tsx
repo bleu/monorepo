@@ -1,21 +1,23 @@
 "use client";
-import { NetworkChainId } from "@bleu-fi/utils";
 import { useEffect } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 
 import { Button } from "#/components";
 import { Select, SelectItem } from "#/components/Select";
 import { Form } from "#/components/ui/form";
+import { useChangePreferentialGauge } from "#/hooks/preferentialGauge/useChangePreferentialGauge";
 import { gauges } from "#/lib/gql";
 import { truncateAddress } from "#/utils/truncate";
-import { setPrerentialGauge } from "#/wagmi/writeEmitEvent";
 
 export default function Page({ params }: { params: { poolId: string } }) {
   const form = useForm();
   const { address } = useAccount();
+  const { chain } = useNetwork();
+  const { setPrerentialGauge } = useChangePreferentialGauge();
+  const chainId = chain?.id ?? 1;
   const { data } = gauges
-    .gql(`${NetworkChainId.ETHEREUM}`)
+    .gql(`${chainId}`)
     .usePoolPreferentialGauge({ poolId: params.poolId });
 
   const gaugesInfo = data?.pools[0].gauges;
@@ -45,6 +47,7 @@ export default function Page({ params }: { params: { poolId: string } }) {
       oldGaugeAddress: data.oldPreferentialGauge,
       newGaugeAddress: data.preferentialGauge,
       userAddress: data.userAddress,
+      chainId: chain?.id as number,
     });
   }
 
@@ -88,8 +91,12 @@ export default function Page({ params }: { params: { poolId: string } }) {
           )}
         />
         <div>
-          <Button type="submit" className="p-2">
-            Submit
+          <Button
+            type="submit"
+            className="p-2"
+            disabled={form.formState.isSubmitting}
+          >
+            {form.formState.isSubmitting ? "Submitting..." : "Submit"}
           </Button>
         </div>
       </Form>

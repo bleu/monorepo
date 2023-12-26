@@ -1,17 +1,39 @@
-import { NetworkChainId } from "@bleu-fi/utils";
+import { Address, networkFor } from "@bleu-fi/utils";
 import Link from "next/link";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useAccount, useNetwork } from "wagmi";
 
 import Sidebar from "#/components/Sidebar";
-import { PreferentialGaugeGql } from "#/contexts/PreferetialGaugeContext";
+import { Toast, ToastContent } from "#/components/Toast";
+import {
+  PreferentialGaugeGql,
+  usePreferentialGauge,
+} from "#/contexts/PreferetialGaugeContext";
 import { gauges } from "#/lib/gql";
+import { refetchRequest } from "#/utils/refetchRequest";
 import { truncateAddress } from "#/utils/truncate";
 
 export function PreferentialGaugeSidebar() {
   const [querySearch, setQuerySearch] = useState("");
-  const { data } = gauges
-    .gql(`${NetworkChainId.ETHEREUM}`)
-    .usePreferentialGauge();
+  const { chain } = useNetwork();
+  const { address } = useAccount();
+  const path = usePathname();
+  const {
+    notification,
+    isNotifierOpen,
+    setIsNotifierOpen,
+    transactionUrl,
+    clearNotification,
+  } = usePreferentialGauge();
+  const chainId = chain?.id ?? 1;
+  const { data, mutate } = gauges.gql(`${chainId}`).usePreferentialGauge();
+
+  refetchRequest({
+    mutate,
+    chainId: `${chainId}`,
+    userAddress: address?.toLowerCase() as Address,
+  });
 
   const handleSearchChange = (e: React.FormEvent<HTMLInputElement>) => {
     setQuerySearch(e.currentTarget.value);
@@ -20,6 +42,10 @@ export function PreferentialGaugeSidebar() {
   const filteredPoolById = data?.pools.filter((item) =>
     item.poolId.toLowerCase().includes(querySearch.toLowerCase()),
   );
+
+  useEffect(() => {
+    clearNotification();
+  }, [path]);
 
   return (
     <div>
@@ -37,7 +63,9 @@ export function PreferentialGaugeSidebar() {
             filteredPoolById.map((item: PreferentialGaugeGql) => (
               <Link
                 key={item.poolId}
-                href={`/preferential-gauge/pool/${item.poolId}`}
+                href={`/preferential-gauge/${networkFor(chain?.id)}/pool/${
+                  item.poolId
+                }`}
               >
                 <Sidebar.Item isSelected={false}>
                   <p className="flex justify-start text-lg font-bold text-slate12 group-hover:text-amber10">
@@ -48,6 +76,20 @@ export function PreferentialGaugeSidebar() {
             ))}
         </Sidebar.Content>
       </Sidebar>
+      {notification && (
+        <Toast
+          content={
+            <ToastContent
+              title={notification.title}
+              description={notification.description}
+              link={transactionUrl}
+            />
+          }
+          variant={notification.variant}
+          isOpen={isNotifierOpen}
+          setIsOpen={setIsNotifierOpen}
+        />
+      )}
     </div>
   );
 }

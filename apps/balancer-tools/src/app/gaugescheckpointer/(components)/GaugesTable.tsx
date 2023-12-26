@@ -1,13 +1,13 @@
 "use client";
-import { VeBalGetVotingListQuery } from "@bleu-fi/gql/src/balancer-api-v3/__generated__/Ethereum";
 import { NetworkChainId, NetworkFromNetworkChainId } from "@bleu-fi/utils";
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import { capitalize } from "lodash";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { ToastContent } from "#/app/metadata/[network]/pool/[poolId]/(components)/MetadataAttributesTable/TransactionModal";
+import { Checkbox } from "#/components/Checkbox";
 import { ClickToCopy } from "#/components/ClickToCopy";
 import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
@@ -16,62 +16,18 @@ import {
   gaugeItem,
   useGaugesCheckpointer,
 } from "#/contexts/GaugesCheckpointerContext";
-import { balancerApiV3 } from "#/lib/gql";
-import { ArrElement, GetDeepProp } from "#/utils/getTypes";
+import { apiChainNameToNetworkNumber } from "#/lib/gauge-checkpointer-mappings";
 import { truncateAddress } from "#/utils/truncate";
-import { readBalToMint } from "#/wagmi/readBalToMint";
 
-import { apiChainNameToNetworkNumber } from "../(utils)/chainMapping";
-
-export function GaugesTable() {
+export function GaugesTable({
+  gaugeItems,
+  loading,
+}: {
+  gaugeItems: gaugeItem[];
+  loading: boolean;
+}) {
   const { notification, setIsNotifierOpen, isNotifierOpen, transactionUrl } =
     useGaugesCheckpointer();
-  const [gaugeItems, setGaugeItems] = useState<gaugeItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  function votingListFilter(
-    votingOption: ArrElement<
-      GetDeepProp<VeBalGetVotingListQuery, "veBalGetVotingList">
-    >,
-  ) {
-    const currentTimestamp = Math.floor(Date.now() / 1000);
-    return (
-      !votingOption.gauge.isKilled &&
-      currentTimestamp > (votingOption.gauge.addedTimestamp || 0) &&
-      votingOption.chain !== "MAINNET"
-    );
-  }
-  const { data: veBalGetVotingList } = balancerApiV3
-    .gql("1")
-    .useVeBalGetVotingList();
-
-  async function updateGaugeItems(
-    votingOptions: ArrElement<
-      GetDeepProp<VeBalGetVotingListQuery, "veBalGetVotingList">
-    >[],
-  ) {
-    setLoading(true);
-
-    const votingOptionsFiltered = votingOptions.filter(votingListFilter);
-    const balToMinOnEachGauge = await Promise.all(
-      votingOptionsFiltered?.map(async (votingOption) => {
-        return readBalToMint(votingOption);
-      }),
-    );
-    const newGaugeItems = votingOptionsFiltered.map((votingOption, index) => {
-      return {
-        votingOption,
-        balToMint: balToMinOnEachGauge[index],
-      };
-    });
-    setGaugeItems(newGaugeItems);
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    if (!veBalGetVotingList) return;
-    updateGaugeItems(veBalGetVotingList?.veBalGetVotingList);
-  }, [veBalGetVotingList]);
 
   if (loading) {
     return (
@@ -100,6 +56,10 @@ export function GaugesTable() {
       {gaugeItems.length && (
         <Table color="blue" shade="darkWithBorder">
           <Table.HeaderRow>
+            <Table.HeaderCell>
+              {" "}
+              <span className="sr-only">SelectedGauge</span>
+            </Table.HeaderCell>
             <Table.HeaderCell>Pool</Table.HeaderCell>
             <Table.HeaderCell>Type</Table.HeaderCell>
             <Table.HeaderCell>Gauge</Table.HeaderCell>
@@ -139,8 +99,31 @@ function TableRow({ votingOption, balToMint }: gaugeItem) {
   const chainName = NetworkFromNetworkChainId[chainId];
   const poolUrl = `https://app.balancer.fi/#/${chainName}/pool/${votingOption.id}`;
 
+  const { addSelectedGauge, removeSelectedGauge } = useGaugesCheckpointer();
+
+  const [checked, setChecked] = useState(false);
+
+  function onChange() {
+    const newCheckedValue = !checked;
+    if (newCheckedValue) {
+      addSelectedGauge({
+        votingOption,
+        balToMint: balToMint || 0,
+      });
+    } else {
+      removeSelectedGauge({
+        votingOption,
+        balToMint: balToMint || 0,
+      });
+    }
+    setChecked(newCheckedValue);
+  }
+
   return (
-    <Table.BodyRow key={votingOption.address}>
+    <Table.BodyRow key={votingOption.id}>
+      <Table.BodyCell>
+        <Checkbox id={votingOption.id} onChange={onChange} checked={checked} />
+      </Table.BodyCell>
       <Table.BodyCell>
         <div className="flex flex-row items-center gap-x-1">
           {votingOption.symbol} ({capitalize(chainName)}){" "}

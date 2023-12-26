@@ -3,7 +3,7 @@
 import { VeBalGetVotingListQuery } from "@bleu-fi/gql/src/balancer-api-v3/__generated__/Ethereum";
 import { createContext, PropsWithChildren, useContext, useState } from "react";
 
-import { Notification, TransactionStatus } from "#/hooks/useTransaction";
+import { Notification } from "#/hooks/useTransaction";
 import { ArrElement, GetDeepProp } from "#/utils/getTypes";
 
 export interface gaugeItem {
@@ -21,8 +21,10 @@ type GaugesCheckpointerContextType = {
   transactionUrl: string | undefined;
   setTransactionUrl: (transactionUrl: string | undefined) => void;
   clearNotification: () => void;
-  transactionStatus: TransactionStatus;
-  setTransactionStatus: (status: TransactionStatus) => void;
+  selectedGauges: gaugeItem[];
+  addSelectedGauge: (selectedGauge: gaugeItem) => void;
+  removeSelectedGauge: (selectedGauge: gaugeItem) => void;
+  setSelectedGauges: (selectedGauges: gaugeItem[]) => void;
 };
 
 export const GaugesCheckpointerContext = createContext(
@@ -33,14 +35,23 @@ export function GaugesCheckpointerProvider({ children }: PropsWithChildren) {
   const [isNotifierOpen, setIsNotifierOpen] = useState(false);
   const [notification, setNotification] = useState<Notification | null>(null);
   const [transactionUrl, setTransactionUrl] = useState<string>();
-  const [transactionStatus, setTransactionStatus] = useState<TransactionStatus>(
-    TransactionStatus.AUTHORIZING,
-  );
+  const [selectedGauges, setSelectedGauges] = useState<gaugeItem[]>([]);
+
+  function addSelectedGauge(selectedGauge: gaugeItem) {
+    setSelectedGauges([...selectedGauges, selectedGauge]);
+  }
+
+  function removeSelectedGauge(selectedGauge: gaugeItem) {
+    setSelectedGauges(
+      selectedGauges.filter(
+        (gauge) => gauge.votingOption.id !== selectedGauge.votingOption.id,
+      ),
+    );
+  }
 
   function clearNotification() {
     setNotification(null);
     setIsNotifierOpen(false);
-    setTransactionStatus(TransactionStatus.AUTHORIZING);
     setTransactionUrl(undefined);
   }
 
@@ -54,8 +65,10 @@ export function GaugesCheckpointerProvider({ children }: PropsWithChildren) {
         transactionUrl,
         setTransactionUrl,
         clearNotification,
-        transactionStatus,
-        setTransactionStatus,
+        selectedGauges,
+        addSelectedGauge,
+        removeSelectedGauge,
+        setSelectedGauges,
       }}
     >
       {children}

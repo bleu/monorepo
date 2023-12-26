@@ -1,22 +1,77 @@
 "use client";
 
+import { VeBalGetVotingListQuery } from "@bleu-fi/gql/src/balancer-api-v3/__generated__/Ethereum";
 import { PlusIcon } from "@radix-ui/react-icons";
+import { useEffect, useState } from "react";
 
 import { Button } from "#/components";
-import { LinkComponent } from "#/components/Link";
+import { Dialog } from "#/components/Dialog";
 import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
-import { getNetwork } from "#/contexts/networks";
-import { useAccount, useNetwork } from "#/wagmi";
+import {
+  gaugeItem,
+  useGaugesCheckpointer,
+} from "#/contexts/GaugesCheckpointerContext";
+import { balancerApiV3 } from "#/lib/gql";
+import { ArrElement, GetDeepProp } from "#/utils/getTypes";
+import { useAccount } from "#/wagmi";
+import { readBalToMint } from "#/wagmi/readBalToMint";
 
+import { ConfirmCheckpointsDialog } from "../(components)/ConfirmCheckpointsDialog";
 import { GaugesTable } from "../(components)/GaugesTable";
 
 export default function page() {
   const { isConnected, isReconnecting, isConnecting } = useAccount();
 
-  const { chain } = useNetwork();
+  const { data: veBalGetVotingList } = balancerApiV3
+    .gql("1")
+    .useVeBalGetVotingList();
 
-  const network = getNetwork(chain?.name);
+  const { selectedGauges, clearNotification, setSelectedGauges } =
+    useGaugesCheckpointer();
+
+  const [isOpenDialog, setIsOpenDialog] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  function votingListFilter(
+    votingOption: ArrElement<
+      GetDeepProp<VeBalGetVotingListQuery, "veBalGetVotingList">
+    >,
+  ) {
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    return (
+      !votingOption.gauge.isKilled &&
+      currentTimestamp > (votingOption.gauge.addedTimestamp || 0) &&
+      votingOption.chain !== "MAINNET"
+    );
+  }
+  const [gaugeItems, setGaugeItems] = useState<gaugeItem[]>([]);
+
+  async function updateGaugeItems(
+    votingOptions: GetDeepProp<VeBalGetVotingListQuery, "veBalGetVotingList">,
+  ) {
+    setLoading(true);
+
+    const votingOptionsFiltered = votingOptions.filter(votingListFilter);
+    const balToMinOnEachGauge = await Promise.all(
+      votingOptionsFiltered?.map(async (votingOption) => {
+        return readBalToMint(votingOption);
+      }),
+    );
+    const newGaugeItems = votingOptionsFiltered.map((votingOption, index) => {
+      return {
+        votingOption,
+        balToMint: balToMinOnEachGauge[index],
+      };
+    });
+    setGaugeItems(newGaugeItems);
+    setLoading(false);
+    setSelectedGauges([]);
+  }
+  useEffect(() => {
+    if (!veBalGetVotingList) return;
+    updateGaugeItems(veBalGetVotingList?.veBalGetVotingList);
+  }, [veBalGetVotingList]);
 
   if (!isConnected && !isReconnecting && !isConnecting) {
     return <WalletNotConnected />;
@@ -38,22 +93,33 @@ export default function page() {
             </span>
           </div>
           <div className="flex gap-4">
-            <LinkComponent
-              loaderColor="amber"
-              href={`/gaugescheckpointer/${network}`}
+            <Dialog
+              title={`Confirm gauges checkpoint`}
               content={
-                <Button
-                  className="flex items-center gap-1 p-2"
-                  title="Checkpoint gauges"
-                >
-                  <PlusIcon />
-                  Checkpoint
-                </Button>
+                <ConfirmCheckpointsDialog
+                  setIsOpenDialog={setIsOpenDialog}
+                  reloadTable={() => {
+                    if (veBalGetVotingList)
+                      updateGaugeItems(veBalGetVotingList?.veBalGetVotingList);
+                  }}
+                />
               }
-            />
+              isOpen={isOpenDialog}
+              setIsOpen={setIsOpenDialog}
+            >
+              <Button
+                className="flex items-center gap-1 p-2"
+                title="Checkpoint gauges"
+                disabled={selectedGauges.length === 0}
+                onClick={clearNotification}
+              >
+                <PlusIcon />
+                Checkpoint
+              </Button>
+            </Dialog>
           </div>
         </div>
-        <GaugesTable />
+        <GaugesTable gaugeItems={gaugeItems} loading={loading} />
       </div>
     </div>
   );

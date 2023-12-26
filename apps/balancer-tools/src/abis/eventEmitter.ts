@@ -47,4 +47,4 @@ export const eventEmitterABI = [
     stateMutability: "nonpayable",
     type: "function",
   },
-];
+] as const;

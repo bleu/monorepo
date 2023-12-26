@@ -1,16 +1,26 @@
-import { waitForTransaction } from "@wagmi/core";
+import { Address, NetworkChainId } from "@bleu-fi/utils";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { useEffect } from "react";
+import { encodeFunctionData } from "viem";
 
+import { eventEmitterABI } from "#/abis/eventEmitter";
 import { usePreferentialGauge } from "#/contexts/PreferetialGaugeContext";
-import { writeEmitEvent } from "#/wagmi/writeEmitEvent";
 
 import { NotificationVariant } from "../useTransaction";
-import { useTransactionStatus } from "./useTransactionStatus";
+
+const identifier =
+  "0x88aea7780a038b8536bb116545f59b8a089101d5e526639d3c54885508ce50e2";
+
+export const eventEmitterAddress: Partial<{ [key: number]: string }> = {
+  [Number(NetworkChainId.ETHEREUM)]:
+    "0x1acfeea57d2ac674d7e65964f155ab9348a6c290",
+  [Number(NetworkChainId.GOERLI)]: "0x59c0f0c75cc64f2e8155c6b90e00208e1183a909",
+};
 
 export function useChangePreferentialGauge() {
   const { setNotification, isNotifierOpen, setIsNotifierOpen, notification } =
     usePreferentialGauge();
-  const { handleTransactionStatus } = useTransactionStatus();
+  const { sdk } = useSafeAppsSDK();
   async function setPrerentialGauge({
     oldGaugeAddress,
     newGaugeAddress,
@@ -35,84 +45,46 @@ export function useChangePreferentialGauge() {
       });
       return;
     } else if (!oldGaugeAddress) {
-      try {
-        setNotification({
-          title: "Confirm transaction",
-          description: "Check your wallet to confirm",
-          variant: NotificationVariant.PENDING,
-        });
-        const { hash } = await writeEmitEvent({
-          gaugeAddress: newGaugeAddress,
-          active: true,
-          chainId,
-        });
-        handleTransactionStatus({
-          hash,
-          chainId,
-        });
-        const waitForTransactionData = await waitForTransaction({
-          hash,
-        });
-        if (waitForTransactionData.status === "success") {
-          setNotification({
-            title: "Great!",
-            description: "The transaction was a success!",
-            variant: NotificationVariant.SUCCESS,
-          });
-        }
-      } catch (error) {
-        setNotification({
-          title: "Error!",
-          description: "Error while setting new gauge",
-          variant: NotificationVariant.ALERT,
-        });
-      }
-      return;
-    }
-    try {
       setNotification({
         title: "Confirm transaction",
         description: "Check your wallet to confirm",
         variant: NotificationVariant.PENDING,
       });
-      //AQUI deveria ser uma multicall,
-      await writeEmitEvent({
-        gaugeAddress: oldGaugeAddress,
-        active: false,
-        chainId,
+      await sdk.txs.send({
+        txs: [
+          {
+            to: eventEmitterAddress[chainId] as string,
+            value: "0",
+            data: encodeFunctionData({
+              abi: eventEmitterABI,
+              functionName: "emitEvent",
+              args: [identifier, newGaugeAddress as Address, 1n],
+            }),
+          },
+        ],
       });
-      try {
-        const { hash } = await writeEmitEvent({
-          gaugeAddress: newGaugeAddress,
-          active: true,
-          chainId,
-        });
-        handleTransactionStatus({
-          hash,
-          chainId,
-        });
-        const waitForTransactionData = await waitForTransaction({
-          hash,
-        });
-        if (waitForTransactionData.status === "success") {
-          setNotification({
-            title: "Great!",
-            description: "The transaction was a success!",
-            variant: NotificationVariant.SUCCESS,
-          });
-        }
-      } catch (error) {
-        setNotification({
-          title: "Error!",
-          description: "Error while setting new gauge",
-          variant: NotificationVariant.ALERT,
-        });
-      }
-    } catch (error) {
-      setNotification({
-        title: "Error!",
-        description: "Error while deactivating old gauge",
-        variant: NotificationVariant.ALERT,
+    } else {
+      await sdk.txs.send({
+        txs: [
+          {
+            to: eventEmitterAddress[chainId] as string,
+            value: "0",
+            data: encodeFunctionData({
+              abi: eventEmitterABI,
+              functionName: "emitEvent",
+              args: [identifier, oldGaugeAddress as Address, 0n],
+            }),
+          },
+          {
+            to: eventEmitterAddress[chainId] as string,
+            value: "0",
+            data: encodeFunctionData({
+              abi: eventEmitterABI,
+              functionName: "emitEvent",
+              args: [identifier, newGaugeAddress as Address, 1n],
+            }),
+          },
+        ],
       });
     }
   }

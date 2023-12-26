@@ -9,8 +9,6 @@ export default function formatVolumeChartData(
   results: PoolStatsResults,
   yaxis: string,
 ): Plotly.Data {
-  const HOVERTEMPLATE = "$%{y:.2f}";
-
   const volumeData = generateAprCords(
     results.perDay,
     (result) => result.volume,
@@ -19,7 +17,7 @@ export default function formatVolumeChartData(
   return {
     name: "Volume",
     yaxis: yaxis,
-    hovertemplate: HOVERTEMPLATE,
+    hovertemplate: "Volume (USD): %{y:$,.0f}<extra></extra>",
     x: volumeData.x,
     y: volumeData.y,
     marker: {

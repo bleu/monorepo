@@ -98,12 +98,14 @@ export function PoolListTable({
       <div className="flex justify-center text-white shadow-lg mb-5 overflow-auto scrollbar-thin scrollbar-track-blue2 scrollbar-thumb-slate12">
         <Table color="blue" shade={"darkWithBorder"}>
           <Table.HeaderRow>
-            <Table.HeaderCell>Network</Table.HeaderCell>
-            <Table.HeaderCell classNames="w-full">Composition</Table.HeaderCell>
-            <Table.HeaderCell classNames="text-end whitespace-nowrap">
+            <Table.HeaderCell classNames="p-4">Network</Table.HeaderCell>
+            <Table.HeaderCell classNames="w-full p-4">
+              Composition
+            </Table.HeaderCell>
+            <Table.HeaderCell classNames="text-end whitespace-nowrap p-4">
               Type
             </Table.HeaderCell>
-            <Table.HeaderCell classNames="text-end whitespace-nowrap hover:text-amber9 pr-3">
+            <Table.HeaderCell classNames="text-end whitespace-nowrap hover:text-amber9 p-4">
               <div>
                 <Link
                   className="flex gap-x-1 items-center float-right justify-end"
@@ -115,17 +117,17 @@ export function PoolListTable({
                 </Link>
               </div>
             </Table.HeaderCell>
-            <Table.HeaderCell classNames="text-end whitespace-nowrap hover:text-amber9">
-              <div className="flex gap-1">
-                <TooltipMobile content={`The value displayed is the min APR`}>
-                  <InfoCircledIcon />
-                </TooltipMobile>
+            <Table.HeaderCell classNames="text-end whitespace-nowrap hover:text-amber9 p-4">
+              <div className="flex gap-1 space-x-1">
                 <Link
                   className="flex gap-x-1 items-center float-right justify-end"
                   href={pathname + "?" + createQueryString("apr")}
                   scroll={false}
                 >
-                  <span> APR</span>
+                  <span>APR</span>
+                  <TooltipMobile content="This considers a veBAL boost of 1. Hence this considers the min veBAL APR.">
+                    <InfoCircledIcon />
+                  </TooltipMobile>
                   {OrderIcon(searchParams, "apr")}
                 </Link>
               </div>

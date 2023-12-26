@@ -1,5 +1,6 @@
 import { Subgraph, SUBGRAPHS } from "@bleu-fi/gql/codegen";
 import balancerSdks from "@bleu-fi/gql/src/balancer/index.server";
+import balancerApiV3Sdks from "@bleu-fi/gql/src/balancer-api-v3";
 import gaugesSdks from "@bleu-fi/gql/src/balancer-gauges/index.server";
 import poolMetadataSdks from "@bleu-fi/gql/src/balancer-pools-metadata/index.server";
 import {
@@ -63,4 +64,10 @@ export const internalBalances = {
   client: clientFor(Subgraph.Balancer),
   gql: (chainId: number | string) =>
     balancerSdks[networkFor(chainId)](internalBalances.client(String(chainId))),
+};
+
+export const balancerApiV3 = {
+  client: clientFor(Subgraph.BalancerApiV3),
+  gql: (chainId: string) =>
+    balancerApiV3Sdks[networkFor(chainId)](balancerApiV3.client(chainId)),
 };

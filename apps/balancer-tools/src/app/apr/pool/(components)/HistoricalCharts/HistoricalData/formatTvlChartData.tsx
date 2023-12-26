@@ -14,7 +14,7 @@ export default function formatTvlChartData(
   return {
     name: "TVL",
     yaxis: yaxis,
-    hovertemplate: "%{y:$,.0f}",
+    hovertemplate: "TVL (USD): %{y:$,.0f}<extra></extra>",
     x: tvlData.x,
     y: tvlData.y,
     marker: {

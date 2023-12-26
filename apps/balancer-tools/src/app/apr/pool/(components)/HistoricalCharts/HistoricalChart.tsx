@@ -107,6 +107,9 @@ export default function HistoricalChartWrapper({
             linecolor: blueDark.blue6,
             mirror: true,
             fixedrange: true,
+            // @ts-expect-error
+            tickmode: "sync",
+            rangemode: "nonnegative",
             title: "Swap Fee",
             overlaying: "y",
             side: "right",
@@ -119,6 +122,9 @@ export default function HistoricalChartWrapper({
             linecolor: blueDark.blue6,
             mirror: true,
             fixedrange: true,
+            // @ts-expect-error
+            tickmode: "sync",
+            rangemode: "nonnegative",
             title: "TVL",
             overlaying: "y",
             side: "right",
@@ -131,6 +137,9 @@ export default function HistoricalChartWrapper({
             linecolor: blueDark.blue6,
             mirror: true,
             fixedrange: true,
+            // @ts-expect-error
+            tickmode: "sync",
+            rangemode: "nonnegative",
             title: "Volume",
             overlaying: "y",
             side: "right",
@@ -143,6 +152,9 @@ export default function HistoricalChartWrapper({
             linecolor: blueDark.blue6,
             mirror: true,
             fixedrange: true,
+            // @ts-expect-error
+            tickmode: "sync",
+            rangemode: "nonnegative",
             title: "APR %",
             overlaying: "y",
             anchor: "free",
@@ -152,7 +164,7 @@ export default function HistoricalChartWrapper({
         }}
       />
       <div className="text-center text-gray-400 text-sm">
-        Historical data is only available since pool creation date{" "}
+        Historical data is only available after the pool was created in{" "}
         {formatDate(createdAt)}
       </div>
     </div>

@@ -5,6 +5,7 @@ export enum Subgraph {
   BalancerPoolsMetadata = "balancer-pools-metadata",
   BalancerGauges = "balancer-gauges",
   Balancer = "balancer",
+  BalancerApiV3 = "balancer-api-v3",
 }
 
 // IMPORTANT NOTE:
@@ -83,6 +84,28 @@ export const SUBGRAPHS = {
         [Network.Base]:
           "https://api.studio.thegraph.com/query/24660/balancer-base-v2/version/latest",
         [Network.Avalanche]: `${baseEndpoint}/balancer-avalanche-v2`,
+      };
+    },
+    endpointFor(network: Network) {
+      return this.endpoints()[network];
+    },
+  },
+  [Subgraph.BalancerApiV3]: {
+    name: Subgraph.BalancerApiV3,
+    endpoints() {
+      const baseEndpoint = "https://api-v3.balancer.fi/graphql";
+
+      return {
+        [Network.Ethereum]: `${baseEndpoint}`,
+        [Network.Sepolia]: `${baseEndpoint}`,
+        [Network.Goerli]: `${baseEndpoint}`,
+        [Network.Polygon]: `${baseEndpoint}`,
+        [Network.PolygonZKEVM]: `${baseEndpoint}`,
+        [Network.Arbitrum]: `${baseEndpoint}`,
+        [Network.Gnosis]: `${baseEndpoint}`,
+        [Network.Optimism]: `${baseEndpoint}`,
+        [Network.Base]: `${baseEndpoint}`,
+        [Network.Avalanche]: `${baseEndpoint}`,
       };
     },
     endpointFor(network: Network) {

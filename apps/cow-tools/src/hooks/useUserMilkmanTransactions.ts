@@ -118,6 +118,8 @@ async function getProcessedMilkmanTransactions({
     user: `${address}-${chainId}`,
   });
 
+  if (users.length === 0) return [] as IUserMilkmanTransaction[];
+
   const swapsLenByTransaction = users[0]?.transactions.map(
     (transaction) => transaction.swaps.length,
   );

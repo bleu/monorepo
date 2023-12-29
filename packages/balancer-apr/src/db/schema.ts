@@ -52,6 +52,7 @@ export const pools = pgTable(
   },
   (t) => ({
     unq: unique().on(t.address, t.networkSlug),
+    type: index().on(t.poolType),
   }),
 );
 
@@ -103,6 +104,7 @@ export const tokens = pgTable(
     name: varchar("name"),
     logoURI: varchar("logo_uri"),
     externalCreatedAt: timestamp("external_created_at"),
+    decimals: integer("decimals"),
     networkSlug: varchar("network_slug").references(() => networks.slug, {
       onDelete: "cascade",
       onUpdate: "cascade",
@@ -163,6 +165,7 @@ export const poolTokens = pgTable(
   },
   (t) => ({
     unq: unique().on(t.poolExternalId, t.tokenAddress),
+    poolExternalId: index().on(t.poolExternalId),
   }),
 );
 
@@ -198,6 +201,10 @@ export const poolSnapshots = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
     externalId: varchar("external_id").unique(),
+    networkSlug: varchar("network_slug").references(() => networks.slug, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    }),
     poolExternalId: varchar("pool_external_id").references(
       () => pools.externalId,
       { onDelete: "cascade", onUpdate: "cascade" },
@@ -208,6 +215,8 @@ export const poolSnapshots = pgTable(
     timestampIdx: index().on(table.timestamp),
     createdAtIdx: index().on(table.createdAt),
     swapFeesIdx: index().on(table.swapFees),
+    networkSlug: index().on(table.networkSlug),
+    poolExternalId: index().on(table.poolExternalId),
   }),
 );
 
@@ -238,6 +247,10 @@ export const poolSnapshotsTemp = pgTable(
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
     nextTimestampChange: timestamp("next_timestamp_change"),
     externalId: varchar("external_id").unique(),
+    networkSlug: varchar("network_slug").references(() => networks.slug, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    }),
     poolExternalId: varchar("pool_external_id").references(
       () => pools.externalId,
       { onDelete: "cascade", onUpdate: "cascade" },
@@ -248,6 +261,7 @@ export const poolSnapshotsTemp = pgTable(
     timestampIdx: index().on(table.timestamp),
     nextTimestampChangeIdx: index().on(table.nextTimestampChange),
     createdAtIdx: index().on(table.createdAt),
+    poolExternalId: index().on(table.poolExternalId),
   }),
 );
 
@@ -258,24 +272,39 @@ export const poolSnapshotRelations = relations(poolSnapshots, ({ one }) => ({
   }),
 }));
 
-export const poolTokenRateProviders = pgTable("pool_rate_providers", {
-  id: serial("id").primaryKey(),
-  externalId: varchar("external_id").unique(),
-  address: varchar("address"),
-  vulnerabilityAffected: boolean("vulnerability_affected"),
-  poolExternalId: varchar("pool_external_id").references(
-    () => pools.externalId,
-    { onDelete: "cascade", onUpdate: "cascade" },
-  ),
-  tokenAddress: varchar("token_address"),
-  networkSlug: varchar("network_slug").references(() => networks.slug, {
-    onDelete: "cascade",
-    onUpdate: "cascade",
+export const poolTokenRateProviders = pgTable(
+  "pool_rate_providers",
+  {
+    id: serial("id").primaryKey(),
+    externalId: varchar("external_id").unique(),
+    address: varchar("address"),
+    vulnerabilityAffected: boolean("vulnerability_affected"),
+    poolExternalId: varchar("pool_external_id").references(
+      () => pools.externalId,
+      { onDelete: "cascade", onUpdate: "cascade" },
+    ),
+    tokenAddress: varchar("token_address"),
+    networkSlug: varchar("network_slug").references(() => networks.slug, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    rawData: jsonb("raw_data"),
+  },
+  (table) => ({
+    unq: unique().on(
+      table.address,
+      table.tokenAddress,
+      table.vulnerabilityAffected,
+    ),
+    poolExternalId: index().on(table.poolExternalId),
+    networkSlug: index().on(table.networkSlug),
+    tokenAddress: index().on(table.tokenAddress),
+    address: index().on(table.address),
+    vulnerabilityAffected: index().on(table.vulnerabilityAffected),
   }),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  rawData: jsonb("raw_data"),
-});
+);
 
 export const poolTokenRateProvidersSnapshot = pgTable(
   "pool_token_rate_providers_snapshot",
@@ -311,6 +340,7 @@ export const gauges = pgTable(
     address: varchar("address"),
     isKilled: boolean("is_killed"),
     externalCreatedAt: timestamp("external_created_at"),
+    childGaugeAddress: varchar("child_gauge_address"),
     poolExternalId: varchar("pool_external_id").references(
       () => pools.externalId,
       { onDelete: "cascade", onUpdate: "cascade" },
@@ -323,8 +353,17 @@ export const gauges = pgTable(
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
     rawData: jsonb("raw_data"),
   },
-  (t) => ({
-    unq: unique().on(t.address, t.poolExternalId),
+  (table) => ({
+    unq: unique().on(table.address, table.poolExternalId, table.isKilled),
+    networkAddrUnq: unique().on(
+      table.address,
+      table.childGaugeAddress,
+      table.networkSlug,
+      table.isKilled,
+    ),
+    poolExternalId: index().on(table.poolExternalId),
+    networkSlug: index().on(table.networkSlug),
+    address: index().on(table.address),
   }),
 );
 
@@ -341,66 +380,111 @@ export const gaugeSnapshots = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
     blockNumber: integer("block_number"),
-    gaugeAddress: varchar("gauge_address"),
+    gaugeAddress: varchar("gauge_address").notNull(),
+    childGaugeAddress: varchar("child_gauge_address"),
     roundNumber: integer("round_number"),
+    workingSupply: decimal("working_supply"),
+    totalSupply: decimal("total_supply"),
+    inflationRate: decimal("inflation_rate"),
     networkSlug: varchar("network_slug").references(() => networks.slug, {
       onDelete: "cascade",
       onUpdate: "cascade",
     }),
-    rawData: jsonb("raw_data"),
   },
   (t) => ({
-    unq: unique().on(t.timestamp, t.gaugeAddress, t.networkSlug),
+    unq: unique().on(
+      t.timestamp,
+      t.gaugeAddress,
+      t.childGaugeAddress,
+      t.networkSlug,
+    ),
+    gaugeAddress: index().on(t.gaugeAddress),
+    childGaugeAddress: index().on(t.childGaugeAddress),
+    timestamp: index().on(t.timestamp),
+    networkSlug: index().on(t.networkSlug),
+    roundNumber: index().on(t.roundNumber),
   }),
 );
 
-export const poolTokenWeightsSnapshot = pgTable("pool_token_weights_snapshot", {
-  id: serial("id").primaryKey(),
-  weight: decimal("weight"),
-  poolExternalId: varchar("pool_external_id").references(
-    () => pools.externalId,
-    { onDelete: "cascade", onUpdate: "cascade" },
-  ),
-  tokenAddress: varchar("token_address"),
-  externalId: varchar("external_id").unique(),
-  timestamp: timestamp("timestamp").defaultNow().notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
-
-export const vebalApr = pgTable("vebal_apr", {
-  id: serial("id").primaryKey(),
-  timestamp: timestamp("timestamp"),
-  value: decimal("value"),
-  poolExternalId: varchar("pool_external_id").references(
-    () => pools.externalId,
-    { onDelete: "cascade", onUpdate: "cascade" },
-  ),
-  externalId: varchar("external_id").unique(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
-
-export const poolRewards = pgTable("pool_rewards", {
-  id: serial("id").primaryKey(),
-  poolExternalId: varchar("pool_external_id").references(
-    () => pools.externalId,
-    { onDelete: "cascade", onUpdate: "cascade" },
-  ),
-  periodStart: timestamp("period_start"),
-  periodEnd: timestamp("period_end"),
-  rate: decimal("rate"),
-  tokenAddress: varchar("token_address"),
-  networkSlug: varchar("network_slug").references(() => networks.slug, {
-    onDelete: "cascade",
-    onUpdate: "cascade",
+export const poolTokenWeightsSnapshot = pgTable(
+  "pool_token_weights_snapshot",
+  {
+    id: serial("id").primaryKey(),
+    weight: decimal("weight"),
+    poolExternalId: varchar("pool_external_id").references(
+      () => pools.externalId,
+      { onDelete: "cascade", onUpdate: "cascade" },
+    ),
+    tokenAddress: varchar("token_address"),
+    externalId: varchar("external_id").unique(),
+    timestamp: timestamp("timestamp").defaultNow().notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    poolExternalId: index().on(table.poolExternalId),
+    tokenAddress: index().on(table.tokenAddress),
+    timestamp: index().on(table.timestamp),
   }),
-  totalSupply: decimal("total_supply"),
-  externalId: varchar("external_id").unique(),
-  rawData: jsonb("raw_data"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+);
+
+export const vebalApr = pgTable(
+  "vebal_apr",
+  {
+    id: serial("id").primaryKey(),
+    timestamp: timestamp("timestamp"),
+    value: decimal("value"),
+    poolExternalId: varchar("pool_external_id").references(
+      () => pools.externalId,
+      { onDelete: "cascade", onUpdate: "cascade" },
+    ),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    unq: unique().on(table.timestamp, table.poolExternalId),
+    poolExternalId: index().on(table.poolExternalId),
+    timestamp: index().on(table.timestamp),
+  }),
+);
+
+export const poolRewards = pgTable(
+  "pool_rewards",
+  {
+    id: serial("id").primaryKey(),
+    poolExternalId: varchar("pool_external_id").references(
+      () => pools.externalId,
+      { onDelete: "cascade", onUpdate: "cascade" },
+    ),
+    periodStart: timestamp("period_start"),
+    periodEnd: timestamp("period_end"),
+    rate: decimal("rate"),
+    tokenAddress: varchar("token_address"),
+    networkSlug: varchar("network_slug").references(() => networks.slug, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    }),
+    totalSupply: decimal("total_supply"),
+    externalId: varchar("external_id").unique(),
+    rawData: jsonb("raw_data"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    unq: unique().on(
+      table.periodStart,
+      table.periodEnd,
+      table.poolExternalId,
+      table.tokenAddress,
+      table.totalSupply,
+    ),
+    poolExternalId: index().on(table.poolExternalId),
+    networkSlug: index().on(table.networkSlug),
+    tokenAddress: index().on(table.tokenAddress),
+    periodStart: index().on(table.periodStart),
+    periodEnd: index().on(table.periodEnd),
+  }),
+);
 
 export const poolRewardsSnapshot = pgTable("pool_rewards_snapshot", {
   id: serial("id").primaryKey(),
@@ -432,8 +516,10 @@ export const swapFeeApr = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
-  (t) => ({
-    unq: unique().on(t.timestamp, t.poolExternalId),
+  (table) => ({
+    poolExternalId: index().on(table.poolExternalId),
+    timestamp: index().on(table.timestamp),
+    unq: unique().on(table.timestamp, table.poolExternalId),
   }),
 );
 
@@ -448,11 +534,21 @@ export const rewardsTokenApr = pgTable(
       () => pools.externalId,
       { onDelete: "cascade", onUpdate: "cascade" },
     ),
+    periodStart: timestamp("period_start"),
+    periodEnd: timestamp("period_end"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
-  (t) => ({
-    unq: unique().on(t.timestamp, t.tokenAddress, t.poolExternalId),
+  (table) => ({
+    poolExternalId: index().on(table.poolExternalId),
+    timestamp: index().on(table.timestamp),
+    unq: unique().on(
+      table.timestamp,
+      table.tokenAddress,
+      table.poolExternalId,
+      table.periodStart,
+      table.periodEnd,
+    ),
   }),
 );
 
@@ -471,8 +567,10 @@ export const yieldTokenApr = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
-  (t) => ({
-    unq: unique().on(t.timestamp, t.tokenAddress, t.poolExternalId),
+  (table) => ({
+    poolExternalId: index().on(table.poolExternalId),
+    timestamp: index().on(table.timestamp),
+    unq: unique().on(table.timestamp, table.tokenAddress, table.poolExternalId),
   }),
 );
 

@@ -1,48 +1,65 @@
 import { epochToDate } from "@bleu-fi/utils/date";
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, gte, isNull, min, sql } from "drizzle-orm";
 import pThrottle from "p-throttle";
 
 import { db } from "./db/index";
-import { tokenPrices, tokens } from "./db/schema";
-import { addToTable, BALANCER_START_DATE, logIfVerbose } from "./index";
+import { calendar, pools, poolTokens, tokenPrices, tokens } from "./db/schema";
+import { addToTable, logIfVerbose } from "./index";
 import { DefiLlamaAPI } from "./lib/defillama";
 
 const throttle = pThrottle({
-  limit: 20,
-  interval: 200,
+  limit: 4,
+  interval: 1000,
 });
-
 export async function fetchTokenPrices() {
   logIfVerbose("Start fetching token prices process");
 
-  const tokensWithPrices = db
-    .selectDistinctOn([tokenPrices.tokenAddress, tokenPrices.networkSlug])
-    .from(tokenPrices)
-    .as("tokensWithPrices");
-
   const tokenList = await db
-    .select({
+    .selectDistinct({
       networkSlug: tokens.networkSlug,
       address: tokens.address,
+      firstPoolCreatedAt: min(pools.externalCreatedAt),
     })
     .from(tokens)
+    .fullJoin(calendar, sql`true`)
     .leftJoin(
-      tokensWithPrices,
+      poolTokens,
       and(
-        eq(tokensWithPrices.tokenAddress, tokens.address),
-        eq(tokensWithPrices.networkSlug, tokens.networkSlug),
+        eq(poolTokens.tokenAddress, tokens.address),
+        eq(poolTokens.networkSlug, tokens.networkSlug),
       ),
     )
-    .where(isNull(tokensWithPrices.tokenAddress));
+    .leftJoin(
+      pools,
+      and(
+        eq(pools.externalId, poolTokens.poolExternalId),
+        eq(pools.networkSlug, tokens.networkSlug),
+      ),
+    )
+    .leftJoin(
+      tokenPrices,
+      and(
+        eq(tokenPrices.networkSlug, tokens.networkSlug),
+        eq(tokenPrices.tokenAddress, tokens.address),
+        eq(tokenPrices.timestamp, calendar.timestamp),
+      ),
+    )
+    .where(
+      and(
+        isNull(tokenPrices.tokenAddress),
+        gte(calendar.timestamp, pools.externalCreatedAt),
+      ),
+    )
+    .groupBy(tokens.address, tokens.networkSlug);
 
   const allTokenPrices = await Promise.all(
-    tokenList.map(({ networkSlug, address }) =>
+    tokenList.map(({ networkSlug, address, firstPoolCreatedAt }) =>
       throttle(async () => {
         try {
           const prices = await fetchTokenPrice(
             networkSlug!,
             address!,
-            new Date(BALANCER_START_DATE),
+            firstPoolCreatedAt!,
           );
           return prices;
         } catch (error) {
@@ -58,6 +75,7 @@ export async function fetchTokenPrices() {
   await addToTable(tokenPrices, allTokenPrices.filter(Boolean).flat());
 
   logIfVerbose("Fetching token prices process completed");
+  return;
 }
 
 function getNetworkSlug(network: string) {

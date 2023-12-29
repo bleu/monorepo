@@ -1,0 +1,1 @@
+ALTER TABLE "gauges" ADD CONSTRAINT "gauges_address_network_slug_unique" UNIQUE("address","network_slug");

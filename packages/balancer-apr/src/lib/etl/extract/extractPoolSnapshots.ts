@@ -1,7 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { NETWORK_TO_BALANCER_ENDPOINT_MAP } from "../../../config";
 import { poolSnapshotsTemp } from "../../../db/schema";
-import { addToTable, logIfVerbose, networkNames } from "../../../index";
+import {
+  addToTable,
+  BATCH_SIZE,
+  logIfVerbose,
+  networkNames,
+} from "../../../index";
 import { paginatedFetch } from "../../../paginatedFetch";
 
 const POOLS_SNAPSHOTS = `
@@ -9,7 +15,7 @@ query PoolSnapshots($latestId: String!) {
   poolSnapshots(
     first: 1000,
     where: {
-      id_gt: $latestId,
+      id_gt: $latestId
     }
   ) {
     id
@@ -49,6 +55,8 @@ async function processPoolSnapshots(data: any, network: string) {
       data.poolSnapshots.map((snapshot: any) => ({
         externalId: snapshot.id,
         rawData: { ...snapshot, network },
+        networkSlug: network,
+        timestamp: new Date(snapshot.timestamp * 1000),
       })),
     );
   }
@@ -58,7 +66,18 @@ export async function extractPoolSnapshotsForNetwork(
   networkEndpoint: string,
   network: string,
 ) {
-  await paginatedFetch(networkEndpoint, POOLS_SNAPSHOTS, (data) =>
-    processPoolSnapshots(data, network),
+  // const lastTimestamp = await db
+  //   .select({ timestamp: max(poolSnapshotsTemp.timestamp) })
+  //   .from(poolSnapshotsTemp);
+
+  // const timestampGt = dateToEpoch(lastTimestamp[0].timestamp) || 0;
+
+  await paginatedFetch(
+    networkEndpoint,
+    POOLS_SNAPSHOTS,
+    (data) => processPoolSnapshots(data, network),
+    "",
+    BATCH_SIZE,
+    // { timestampGt },
   );
 }

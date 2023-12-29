@@ -9,7 +9,7 @@ query PoolsWherePoolType($latestId: String!) {
   pools(
     first: 1000,
     where: {
-      id_gt: $latestId,
+      id_gt: $latestId
     }
   ) {
     id

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { dateToEpoch } from "@bleu-fi/utils/date";
-import { and, eq, isNull, sql } from "drizzle-orm";
+import { and, desc, eq, isNull, lt, not, sql } from "drizzle-orm";
 import pThrottle from "p-throttle";
 
 import { db } from "../../../db/index";
@@ -9,9 +9,17 @@ import { addToTable, logIfVerbose } from "../../../index";
 import { DefiLlamaAPI } from "../../../lib/defillama";
 
 const throttle = pThrottle({
-  limit: 20,
-  interval: 200,
+  limit: 10,
+  interval: 1000,
 });
+
+// Except for base, these are arbitrary dates
+const CHAIN_FIRST_BLOCK_TIMESTAMP_MAP = {
+  base: new Date("2023-06-15T12:35:47Z"),
+  "polygon-zkevm": new Date("2023-05-07T00:00:00Z"),
+  optimism: new Date("2021-11-12T00:00:00.000Z"),
+  arbitrum: new Date("2021-06-11T00:00:00.000Z"),
+};
 
 export async function extractBlocks() {
   logIfVerbose("Fetching blocks");
@@ -30,20 +38,41 @@ export async function extractBlocks() {
         eq(blocks.networkSlug, networks.slug),
       ),
     )
-    .where(isNull(blocks.id));
-
-  if (
-    timestamps
-      .map(({ slug }) => slug)
-      .filter((slug) =>
-        ["base", "optimism", "polygon-zkevm", "sepolia"].includes(slug!),
-      ).length > 0
-  ) {
-    logIfVerbose(
-      "Skipping block fetching because all blocks are already fetched",
-    );
-    return;
-  }
+    .where(
+      and(
+        isNull(blocks.id),
+        not(eq(networks.slug, "sepolia")),
+        not(eq(networks.slug, "goerli")),
+        not(
+          and(
+            eq(networks.slug, "arbitrum"),
+            lt(calendar.timestamp, CHAIN_FIRST_BLOCK_TIMESTAMP_MAP["arbitrum"]),
+          )!,
+        ),
+        not(
+          and(
+            eq(networks.slug, "base"),
+            lt(calendar.timestamp, CHAIN_FIRST_BLOCK_TIMESTAMP_MAP["base"]),
+          )!,
+        ),
+        not(
+          and(
+            eq(networks.slug, "optimism"),
+            lt(calendar.timestamp, CHAIN_FIRST_BLOCK_TIMESTAMP_MAP["optimism"]),
+          )!,
+        ),
+        not(
+          and(
+            eq(networks.slug, "polygon-zkevm"),
+            lt(
+              calendar.timestamp,
+              CHAIN_FIRST_BLOCK_TIMESTAMP_MAP["polygon-zkevm"],
+            ),
+          )!,
+        ),
+      ),
+    )
+    .orderBy(desc(calendar.timestamp));
 
   const results = await Promise.all(
     timestamps.map(({ timestamp, slug }) => {
@@ -58,6 +87,8 @@ export async function extractBlocks() {
           );
         } catch (error) {
           // @ts-ignore
+          logIfVerbose(error.message);
+          // @ts-expect-error
           if (error.message.includes("Rate limit exceeded"))
             logIfVerbose(
               `Rate limit while fetching block for ${slug} at ${timestamp!.toISOString()}`,

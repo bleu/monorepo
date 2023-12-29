@@ -37,7 +37,7 @@
   "homepage": "https://github.com/bleu-fi/monorepo#readme",
   "devDependencies": {
     "@bleu-fi/eslint-config": "workspace:*",
-    "@types/node": "^18.18.5",
+    "@types/node": "^20.10.6",
     "concurrently": "^8.2.2",
     "ghooks": "^2.0.4",
     "lint-staged": "^15.2.0",

@@ -1,0 +1,1 @@
+ALTER TABLE "gauge_snapshots" ADD COLUMN "total_supply" numeric;

@@ -1,0 +1,2 @@
+ALTER TABLE "rewards_token_apr" DROP CONSTRAINT "rewards_token_apr_timestamp_token_address_pool_external_id_unique";--> statement-breakpoint
+ALTER TABLE "rewards_token_apr" ADD CONSTRAINT "rewards_token_apr_timestamp_token_address_pool_external_id_period_start_period_end_unique" UNIQUE("timestamp","token_address","pool_external_id","period_start","period_end");

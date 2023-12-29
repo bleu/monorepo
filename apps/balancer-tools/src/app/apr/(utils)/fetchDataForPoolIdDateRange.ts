@@ -53,6 +53,11 @@ export async function fetchDataForPoolIdDateRange(
       ),
     })
     .from(rewardsTokenApr)
+    .where(
+      sql.raw(
+        `rewards_token_apr.period_end - rewards_token_apr.timestamp > interval '1 day'`,
+      ),
+    )
     .groupBy(rewardsTokenApr.poolExternalId, rewardsTokenApr.timestamp)
     .as("rewardAprSum");
 
@@ -63,9 +68,19 @@ export async function fetchDataForPoolIdDateRange(
       value: rewardsTokenApr.value,
       tokenAddress: rewardsTokenApr.tokenAddress,
       tokenSymbol: tokens.symbol,
+      periodStart: rewardsTokenApr.periodStart,
+      periodEnd: rewardsTokenApr.periodEnd,
+      networkSlug: tokens.networkSlug,
     })
     .from(rewardsTokenApr)
-    .leftJoin(tokens, eq(tokens.address, rewardsTokenApr.tokenAddress))
+    .innerJoin(pools, eq(pools.externalId, rewardsTokenApr.poolExternalId))
+    .innerJoin(
+      tokens,
+      and(
+        eq(tokens.address, rewardsTokenApr.tokenAddress),
+        eq(pools.networkSlug, tokens.networkSlug),
+      ),
+    )
     .as("rewardAprToken");
 
   const poolStatsData = await db
@@ -155,16 +170,20 @@ export async function fetchDataForPoolIdDateRange(
       tokenSymbol: rewardAprToken.tokenSymbol,
     })
     .from(rewardAprToken)
-    .leftJoin(
+    .innerJoin(
       poolSnapshots,
       and(
         eq(poolSnapshots.poolExternalId, rewardAprToken.poolExternalId),
         eq(poolSnapshots.timestamp, rewardAprToken.timestamp),
+        eq(poolSnapshots.networkSlug, rewardAprToken.networkSlug),
       ),
     )
     .where(
       and(
         between(rewardAprToken.timestamp, startDate, endDate),
+        sql.raw(
+          `"rewardAprToken".period_end - "rewardAprToken".timestamp > interval '1 day'`,
+        ),
         eq(rewardAprToken.poolExternalId, poolId),
       ),
     );
@@ -177,7 +196,13 @@ export async function fetchDataForPoolIdDateRange(
       symbol: tokens.symbol,
     })
     .from(poolTokens)
-    .leftJoin(tokens, eq(tokens.address, poolTokens.tokenAddress))
+    .leftJoin(
+      tokens,
+      and(
+        eq(poolTokens.networkSlug, tokens.networkSlug),
+        eq(tokens.address, poolTokens.tokenAddress),
+      ),
+    )
     .where(eq(poolTokens.poolExternalId, poolId));
 
   const returnData = poolStatsData.map((pool) => {

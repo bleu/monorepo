@@ -1,14 +1,10 @@
 import { sql } from "drizzle-orm";
 
 import { db } from "../../../db/index";
-import { poolRewards } from "../../../db/schema";
 import { logIfVerbose } from "../../../index";
-import { transformNetworks } from "../../../transformNetworks";
 
 export async function transformRewardsData() {
-  logIfVerbose("Starting Pool Rewards Extraction");
-
-  await transformNetworks(poolRewards, "network");
+  logIfVerbose("Starting Pool Rewards Transformation");
 
   await db.execute(sql`
   INSERT INTO pools (external_id, network_slug)
@@ -19,10 +15,8 @@ export async function transformRewardsData() {
   `);
 
   // Insert data into the rewards table
-  await db.execute(sql`
-    INSERT INTO pool_rewards (
-      token_address, network_slug, period_start, period_end, total_supply, pool_external_id, rate, external_id
-    )
+  return await db.execute(sql`
+  WITH preprocessed AS (
     SELECT
       split_part(raw_data ->> 'id', '-', 1) as token_address,
       LOWER(raw_data ->> 'network') as network_slug,
@@ -33,15 +27,21 @@ export async function transformRewardsData() {
       (raw_data ->> 'rate')::NUMERIC as rate,
       raw_data ->> 'id' as external_id
     FROM
-	    pool_rewards
-    ON CONFLICT (external_id) DO UPDATE
-    SET
-      token_address = excluded.token_address,
-      network_slug = LOWER(excluded.network_slug),
-      period_start = excluded.period_start,
-      period_end = excluded.period_end,
-      total_supply = excluded.total_supply,
-      pool_external_id = excluded.pool_external_id,
-      rate = excluded.rate;
+      pool_rewards
+  )
+  INSERT INTO pool_rewards (
+    token_address, network_slug, period_start, period_end, total_supply, pool_external_id, rate, external_id
+  )
+  SELECT * FROM preprocessed
+  ON CONFLICT (external_id) DO UPDATE
+  SET
+    token_address = excluded.token_address,
+    network_slug = excluded.network_slug,
+    period_start = excluded.period_start,
+    period_end = excluded.period_end,
+    total_supply = excluded.total_supply,
+    pool_external_id = excluded.pool_external_id,
+    rate = excluded.rate;  
   `);
+  return;
 }

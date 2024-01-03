@@ -1,4 +1,5 @@
 import { dateToEpoch } from "@bleu-fi/utils/date";
+import { and, eq, isNull } from "drizzle-orm";
 
 import { db } from "../../../db/index";
 import { balEmission, calendar } from "../../../db/schema";
@@ -7,26 +8,25 @@ import * as balEmissions from "../../../lib/balancer/emissions";
 
 export async function loadBalEmission() {
   logIfVerbose("Loading BAL emission");
+
   const timestamps = await db
-    .selectDistinct({ timestamp: calendar.timestamp })
-    .from(calendar);
+    .select({
+      timestamp: calendar.timestamp,
+    })
+    .from(calendar)
+    .leftJoin(balEmission, and(eq(balEmission.timestamp, calendar.timestamp)))
+    .where(isNull(balEmission.id));
 
-  const emissionsToInsert = [];
-
-  for (const { timestamp } of timestamps) {
-    if (!timestamp) continue;
-    try {
-      const weeklyBalEmission = balEmissions.weekly(dateToEpoch(timestamp));
-
-      // Add emission data to the array
-      emissionsToInsert.push({
-        timestamp: timestamp,
-        weekEmission: String(weeklyBalEmission),
-      });
-    } catch (error) {
-      logIfVerbose(`${error}`);
-    }
+  if (timestamps.length === 0) {
+    logIfVerbose("No BAL emission to load");
+    return;
   }
 
-  await addToTable(balEmission, emissionsToInsert);
+  await addToTable(
+    balEmission,
+    timestamps.map(({ timestamp }) => ({
+      timestamp,
+      weekEmission: String(balEmissions.weekly(dateToEpoch(timestamp))),
+    })),
+  );
 }

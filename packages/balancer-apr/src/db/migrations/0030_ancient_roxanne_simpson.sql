@@ -1,0 +1,2 @@
+ALTER TABLE "gauges" DROP CONSTRAINT "gauges_address_pool_external_id_unique";--> statement-breakpoint
+ALTER TABLE "gauges" ADD CONSTRAINT "gauges_address_pool_external_id_is_killed_unique" UNIQUE("address","pool_external_id","is_killed");

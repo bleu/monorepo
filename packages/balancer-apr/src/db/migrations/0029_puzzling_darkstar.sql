@@ -1,0 +1,2 @@
+ALTER TABLE "gauges" DROP CONSTRAINT "gauges_address_network_slug_unique";--> statement-breakpoint
+ALTER TABLE "gauges" ADD CONSTRAINT "gauges_address_network_slug_is_killed_unique" UNIQUE("address","network_slug","is_killed");

@@ -56,8 +56,8 @@ import { DefiLlamaAPI } from "./lib/defillama";
 import { extractGauges } from "./lib/etl/extract/extractGauges";
 import { extractPoolRateProviders } from "./lib/etl/extract/extractPoolRateProviders";
 import { getPoolRelativeWeights } from "./lib/etl/extract/getPoolRelativeWeights";
-import { transformGauges } from "./lib/etl/transform/transformGauges";
-import { getRates } from "./lib/getRates";
+import { getRates } from "./lib/etl/extract/getRates";
+// import { transformGauges } from "./lib/etl/transform/transformGauges";
 import { paginatedFetchDateRange } from "./paginatedFetch";
 import { transformNetworks } from "./transformNetworks";
 
@@ -405,6 +405,7 @@ async function extractPoolRateProviderSnapshot(network: string) {
     try {
       const rates = await getRates(rateProviderTuples);
 
+      // @ts-expect-error
       for (const [address, network, block, timestamp, rate] of rates) {
         db.insert(poolTokenRateProvidersSnapshot)
           .values({
@@ -1599,7 +1600,7 @@ export async function runDailyETLs() {
   await ETLSnapshots();
 
   await extractGauges();
-  await transformGauges();
+  // await transformGauges();
 
   await ETLPoolRewards();
   await calculatePoolRewardsSnapshots();

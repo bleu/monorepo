@@ -5,7 +5,7 @@ import { NETWORK_TO_BALANCER_ENDPOINT_MAP } from "../../../config";
 import { pools, poolTokenRateProviders } from "../../../db/schema";
 import { addToTable, logIfVerbose, networkNames } from "../../../index";
 import { paginatedFetch } from "../../../paginatedFetch";
-import { vunerabilityAffecteRateProviders } from "../../../vunerabilityAffectedPool";
+import { vulnerabilityAffectedPools } from "../../../vulnerabilityAffectedPool";
 
 const RATE_PROVIDER = `
 query PoolRateProviders($latestId: String!) {
@@ -72,7 +72,7 @@ async function processPoolRateProvider(data: any, network: string) {
         .map((priceRateProviders: any) => ({
           externalId: priceRateProviders.id + "-" + network,
           address: priceRateProviders.address,
-          vulnerabilityAffected: vunerabilityAffecteRateProviders.some(
+          vulnerabilityAffected: vulnerabilityAffectedPools.some(
             ({ address }) =>
               address.toLowerCase() ===
               priceRateProviders.token.address.toLowerCase(),

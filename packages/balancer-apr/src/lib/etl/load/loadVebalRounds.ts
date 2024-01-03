@@ -24,5 +24,10 @@ export async function loadVebalRounds() {
     roundNumber++;
   }
 
+  if (roundsToInsert.length === 0) {
+    logIfVerbose("No veBAL rounds to load");
+    return;
+  }
+
   await addToTable(vebalRounds, roundsToInsert);
 }

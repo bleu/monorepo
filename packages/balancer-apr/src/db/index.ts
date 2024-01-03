@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-// import { sql } from "@vercel/postgres";
 
 import { type Logger } from "drizzle-orm/logger";
 import { drizzle } from "drizzle-orm/postgres-js";

@@ -23,13 +23,13 @@ import { extractPoolRateProviderSnapshots } from "./lib/etl/extract/extractPoolR
 import { extractPoolRewards } from "./lib/etl/extract/extractPoolRewards";
 import { extractPools } from "./lib/etl/extract/extractPools";
 import { extractPoolSnapshots } from "./lib/etl/extract/extractPoolSnapshots";
+import { extractTokenDecimals } from "./lib/etl/extract/extractTokenDecimals";
 import { fetchBalPrices } from "./lib/etl/extract/fetchBalPrices";
 import { loadAPRs } from "./lib/etl/load/loadAPRs";
 import { loadBalEmission } from "./lib/etl/load/loadBalEmission";
 import { loadCalendar } from "./lib/etl/load/loadCalendar";
 import { loadNetworks } from "./lib/etl/load/loadNetworks";
 import { loadVebalRounds } from "./lib/etl/load/loadVebalRounds";
-import { transformGauges } from "./lib/etl/transform/transformGauges";
 import { transformPools } from "./lib/etl/transform/transformPools";
 import { transformPoolSnapshots } from "./lib/etl/transform/transformPoolSnapshots";
 import { transformRewardsData } from "./lib/etl/transform/transformRewardsData";
@@ -45,11 +45,20 @@ export function logIfVerbose(message: unknown) {
   }
 }
 
-export async function addToTable(table: any, items: any) {
+export async function addToTable(
+  table: any,
+  items: any,
+  onConflictStatement?: any,
+) {
   const chunkedItems = [...chunks(items, BATCH_SIZE)];
   return await Promise.all(
     chunkedItems.map(async (items) => {
-      return await db.insert(table).values(items).onConflictDoNothing();
+      onConflictStatement
+        ? await db
+            .insert(table)
+            .values(items)
+            .onConflictDoUpdate(onConflictStatement)
+        : await db.insert(table).values(items).onConflictDoNothing();
     }),
   );
 }
@@ -65,7 +74,7 @@ export const networkNamesRewards = Object.keys(
 export async function removeLiquidityBootstraping() {
   return await db.execute(sql`
   DELETE FROM pools
-  WHERE pool_type = 'LiquidityBoostraping'
+  WHERE pool_type = 'LiquidityBootstrapping' OR pool_type = NULL;
   `);
 }
 
@@ -73,31 +82,39 @@ export async function runETLs() {
   logIfVerbose("Starting ETL processes");
 
   await Promise.all([loadCalendar(), loadNetworks()]);
-  await extractBlocks();
 
   await Promise.all([loadVebalRounds(), loadBalEmission()]);
 
-  await extractPools();
-  await extractGauges();
-  await extractPoolSnapshots();
-  await extractPoolRewards();
-  await fetchBalPrices();
-  await fetchTokenPrices();
-  await extractGaugesSnapshot();
-  await extractPoolRateProviders();
-  await extractPoolRateProviderSnapshots();
+  await Promise.all([
+    extractBlocks(),
+    extractPools(),
+    extractPoolSnapshots(),
+    extractPoolRewards(),
+  ]);
+
+  await Promise.all([
+    extractGauges(),
+    extractPoolRateProviders(),
+    fetchBalPrices(),
+    fetchTokenPrices(),
+    extractTokenDecimals(),
+  ]);
 
   await transformPools();
   await transformPoolSnapshots();
-  await transformGauges();
-  await transformRewardsData();
+  await extractGaugesSnapshot();
 
   await removeLiquidityBootstraping();
+  await transformRewardsData();
+
+  await extractPoolRateProviderSnapshots();
+  await calculateTokenWeightSnapshots();
 
   await calculatePoolRewardsSnapshots();
-  await calculateTokenWeightSnapshots();
 
   await loadAPRs();
   logIfVerbose("Ended ETL processes");
   process.exit(0);
 }
+
+runETLs();

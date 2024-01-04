@@ -16,6 +16,13 @@ export async function fetchBalPrices() {
     .orderBy(desc(tokenPrices.timestamp))
     .limit(1);
 
+  if (
+    latestBalPriceTimestamp[0].timestamp?.toDateString() ===
+    new Date().toDateString()
+  ) {
+    logIfVerbose("BAL prices are up to date");
+  }
+
   const prices = await fetchTokenPrice(
     "ethereum",
     BAL_ADDRESS,

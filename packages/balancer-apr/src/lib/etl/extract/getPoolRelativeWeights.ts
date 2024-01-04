@@ -55,14 +55,14 @@ export const getPoolRelativeWeights = async (
 
   const responses = await Promise.all(
     gaugeAddressTimestampTuples.map(([address, timestamp], idx) => {
-      return throttle(() => {
+      return throttle(async () => {
         try {
           logIfVerbose(
-            `$${address}:${timestamp} Fetching working supply, ${idx + 1}/${
-              gaugeAddressTimestampTuples.length
-            }`,
+            `${address}:${timestamp} Fetching pool relative weight, ${
+              idx + 1
+            }/${gaugeAddressTimestampTuples.length}`,
           );
-          return gaugesController.read.gauge_relative_weight([
+          return await gaugesController.read.gauge_relative_weight([
             address,
             BigInt(Math.floor(timestamp)),
           ]);

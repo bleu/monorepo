@@ -48,27 +48,27 @@ export function logIfVerbose(message: unknown) {
 export async function addToTable(
   table: any,
   items: any,
-  onConflictStatement?: any,
+  onConflictStatement: any = null
 ) {
   const chunkedItems = [...chunks(items, BATCH_SIZE)];
   return await Promise.all(
     chunkedItems.map(async (items) => {
-      onConflictStatement
+      return onConflictStatement
         ? await db
             .insert(table)
             .values(items)
             .onConflictDoUpdate(onConflictStatement)
         : await db.insert(table).values(items).onConflictDoNothing();
-    }),
+    })
   );
 }
 
 export const networkNames = Object.keys(
-  NETWORK_TO_BALANCER_ENDPOINT_MAP,
+  NETWORK_TO_BALANCER_ENDPOINT_MAP
 ) as (keyof typeof NETWORK_TO_BALANCER_ENDPOINT_MAP)[];
 
 export const networkNamesRewards = Object.keys(
-  NETWORK_TO_REWARDS_ENDPOINT_MAP,
+  NETWORK_TO_REWARDS_ENDPOINT_MAP
 ) as (keyof typeof NETWORK_TO_REWARDS_ENDPOINT_MAP)[];
 
 export async function removeLiquidityBootstraping() {
@@ -96,13 +96,13 @@ export async function runETLs() {
     extractGauges(),
     extractPoolRateProviders(),
     fetchBalPrices(),
-    fetchTokenPrices(),
     extractTokenDecimals(),
   ]);
 
   await transformPools();
   await transformPoolSnapshots();
-  await extractGaugesSnapshot();
+
+  await Promise.all([fetchTokenPrices(), extractGaugesSnapshot()]);
 
   await removeLiquidityBootstraping();
   await transformRewardsData();

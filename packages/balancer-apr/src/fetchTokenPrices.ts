@@ -1,75 +1,97 @@
-import { epochToDate } from "@bleu-fi/utils/date";
-import { and, eq, gte, isNull, min, sql } from "drizzle-orm";
+import { dateToEpoch, epochToDate } from "@bleu-fi/utils/date";
+import { sql } from "drizzle-orm";
 import pThrottle from "p-throttle";
 
 import { db } from "./db/index";
-import { calendar, pools, poolTokens, tokenPrices, tokens } from "./db/schema";
+import { tokenPrices } from "./db/schema";
 import { addToTable, logIfVerbose } from "./index";
 import { DefiLlamaAPI } from "./lib/defillama";
 
 const throttle = pThrottle({
-  limit: 4,
+  limit: 6,
   interval: 1000,
 });
 export async function fetchTokenPrices() {
   logIfVerbose("Start fetching token prices process");
 
-  const tokenList = await db
-    .selectDistinct({
-      networkSlug: tokens.networkSlug,
-      address: tokens.address,
-      firstPoolCreatedAt: min(pools.externalCreatedAt),
-    })
-    .from(tokens)
-    .fullJoin(calendar, sql`true`)
-    .leftJoin(
-      poolTokens,
-      and(
-        eq(poolTokens.tokenAddress, tokens.address),
-        eq(poolTokens.networkSlug, tokens.networkSlug),
-      ),
-    )
-    .leftJoin(
-      pools,
-      and(
-        eq(pools.externalId, poolTokens.poolExternalId),
-        eq(pools.networkSlug, tokens.networkSlug),
-      ),
-    )
-    .leftJoin(
-      tokenPrices,
-      and(
-        eq(tokenPrices.networkSlug, tokens.networkSlug),
-        eq(tokenPrices.tokenAddress, tokens.address),
-        eq(tokenPrices.timestamp, calendar.timestamp),
-      ),
-    )
-    .where(
-      and(
-        isNull(tokenPrices.tokenAddress),
-        gte(calendar.timestamp, pools.externalCreatedAt),
-      ),
-    )
-    .groupBy(tokens.address, tokens.networkSlug);
+  const tokenList = await db.execute<{
+    network_slug: string;
+    address: string;
+    timestamp: Date;
+  }>(
+    sql.raw(`
+    SELECT
+    *
+  FROM (
+    SELECT
+      t.address,
+      t.network_slug,
+      CASE WHEN min(ps.timestamp) < min(tp.timestamp) THEN
+        min(ps.timestamp)
+      ELSE
+        least(max(tp. "timestamp"), now()::date)
+      END AS timestamp
+    FROM
+      tokens t
+      JOIN (
+        SELECT
+          min(ps.timestamp)
+          timestamp,
+          pt.token_address,
+          pt.network_slug
+        FROM
+          pool_snapshots ps
+          JOIN pool_tokens pt ON pt.pool_external_id = ps.pool_external_id
+            AND ps.network_slug = pt.network_slug
+          GROUP BY
+            pt.token_address,
+            pt.network_slug) ps ON t.network_slug = ps.network_slug
+          AND t.address = ps.token_address
+      LEFT JOIN (
+        SELECT
+          min(tp. "timestamp")
+          timestamp,
+          token_address,
+          network_slug
+        FROM
+          token_prices tp
+        GROUP BY
+          network_slug,
+          token_address) tp ON tp.token_address = t.address
+        AND tp.network_slug = t.network_slug
+      GROUP BY
+        t.address,
+        t.network_slug) sq
+  WHERE
+    sq.timestamp < now() - interval '1 day';
+`),
+  );
 
   const allTokenPrices = await Promise.all(
-    tokenList.map(({ networkSlug, address, firstPoolCreatedAt }) =>
-      throttle(async () => {
+    tokenList.map(({ network_slug: networkSlug, address, timestamp }, idx) => {
+      logIfVerbose(
+        `${networkSlug}:${address}:${dateToEpoch(timestamp)} Fetching prices: ${
+          idx + 1
+        }/${tokenList.length}`,
+      );
+      return throttle(async () => {
         try {
           const prices = await fetchTokenPrice(
-            networkSlug!,
+            networkSlug,
             address!,
-            firstPoolCreatedAt!,
+            timestamp!,
           );
           return prices;
         } catch (error) {
           logIfVerbose(
-            // @ts-expect-error
-            `Failed to fetch prices for ${address} on ${networkSlug}: ${error.message}`,
+            `${networkSlug}:${address}:${dateToEpoch(
+              timestamp,
+              // @ts-expect-error
+            )} Failed fetching price: ${error.message}`,
           );
         }
-      })(),
-    ),
+      })();
+    }),
   );
 
   await addToTable(tokenPrices, allTokenPrices.filter(Boolean).flat());
@@ -101,17 +123,26 @@ export async function fetchTokenPrice(
   tokenAddress: string,
   start: Date,
 ) {
+  if (!tokenAddress || !network || !start) return [];
+
   let prices;
   try {
-    logIfVerbose(`Fetching price for ${network}:${tokenAddress}`);
+    logIfVerbose(
+      `${network}:${tokenAddress}:${dateToEpoch(start)} Fetching price`,
+    );
     prices = await DefiLlamaAPI.getHistoricalPrice(
       start,
       `${getNetworkSlug(network)}:${tokenAddress}`,
     );
   } catch (error) {
+    // @ts-expect-error
+    if (error?.message?.includes?.("No price data available")) return [];
+
     logIfVerbose(
-      // @ts-expect-error
-      `Failed to fetch prices for ${tokenAddress} on ${network}: ${error.message}`,
+      `${network}:${tokenAddress}:${dateToEpoch(
+        start,
+        // @ts-expect-error
+      )} Failed fetching price: ${error.message}`,
     );
     return [];
   }
@@ -128,7 +159,6 @@ export async function fetchTokenPrice(
 
   const [networkSlug, address] = Object.keys(prices.coins)[0].split(":");
 
-  logIfVerbose(`Fetched price for ${network}:${tokenAddress}`);
   return pricesArray.map((entry) => ({
     tokenAddress: address,
     networkSlug: getNetworkSlug(networkSlug),

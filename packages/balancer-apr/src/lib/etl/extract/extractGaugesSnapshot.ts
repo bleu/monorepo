@@ -4,9 +4,7 @@ import { sql } from "drizzle-orm";
 import { Address } from "viem";
 
 import { db } from "../../../db/index";
-import {
-  gaugeSnapshots
-} from "../../../db/schema";
+import { gaugeSnapshots } from "../../../db/schema";
 import { addToTable, logIfVerbose } from "../../../index";
 import { getGaugeWorkingSupply } from "./getGaugeWorkingSupply";
 import { getPoolRelativeWeights } from "./getPoolRelativeWeights";

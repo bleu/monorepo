@@ -49,24 +49,24 @@ import {
   tokenPrices,
   vebalRounds,
 } from "./db/schema";
-import { fetchTokenPrice } from "./fetchTokenPrices";
 import { addToTable, removeLiquidityBootstraping } from "./index";
 import * as balEmissions from "./lib/balancer/emissions";
 import { DefiLlamaAPI } from "./lib/defillama";
 import { extractGauges } from "./lib/etl/extract/extractGauges";
 import { extractPoolRateProviders } from "./lib/etl/extract/extractPoolRateProviders";
+import { fetchTokenPrice } from "./lib/etl/extract/fetchTokenPrices";
 import { getPoolRelativeWeights } from "./lib/etl/extract/getPoolRelativeWeights";
 import { getRates } from "./lib/etl/extract/getRates";
+import { transformNetworks } from "./lib/etl/transform/transformNetworks";
 // import { transformGauges } from "./lib/etl/transform/transformGauges";
 import { paginatedFetchDateRange } from "./paginatedFetch";
-import { transformNetworks } from "./transformNetworks";
 
 const networkNames = Object.keys(
-  NETWORK_TO_BALANCER_ENDPOINT_MAP,
+  NETWORK_TO_BALANCER_ENDPOINT_MAP
 ) as (keyof typeof NETWORK_TO_BALANCER_ENDPOINT_MAP)[];
 
 const networkNamesRewards = Object.keys(
-  NETWORK_TO_REWARDS_ENDPOINT_MAP,
+  NETWORK_TO_REWARDS_ENDPOINT_MAP
 ) as (keyof typeof NETWORK_TO_REWARDS_ENDPOINT_MAP)[];
 
 const currentDate = new Date();
@@ -168,7 +168,7 @@ async function ETLPools() {
     networkNames.map(async (networkName) => {
       const networkEndpoint = NETWORK_TO_BALANCER_ENDPOINT_MAP[networkName];
       await extractPoolsForNetwork(networkEndpoint, networkName);
-    }),
+    })
   );
   console.log("Starting Pools Transformation");
   await transformPoolData();
@@ -176,37 +176,37 @@ async function ETLPools() {
 
 async function extractPoolsForNetwork(
   networkEndpoint: string,
-  network: string,
+  network: string
 ) {
   await paginatedFetchDateRange(
     networkEndpoint,
     POOLS_WITHOUT_GAUGE_QUERY_DATE_RANGE,
     dateToEpoch(twoDaysAgo),
-    (data) => processPools(data, network),
+    (data) => processPools(data, network)
   );
 }
 
 async function extractPoolSnapshotsForNetwork(
   networkEndpoint: string,
-  network: string,
+  network: string
 ) {
   await paginatedFetchDateRange(
     networkEndpoint,
     POOLS_SNAPSHOTS_DATE_RANGE,
     dateToEpoch(twoDaysAgo),
-    (data) => processPoolSnapshots(data, network),
+    (data) => processPoolSnapshots(data, network)
   );
 }
 
 async function extractRewardsForNetwork(
   networkEndpoint: string,
-  network: string,
+  network: string
 ) {
   await paginatedFetchDateRange(
     networkEndpoint,
     POOL_REWARDS_DATE_RANGE,
     dateToEpoch(twoDaysAgo),
-    (data) => processPoolRewards(data, network),
+    (data) => processPoolRewards(data, network)
   );
 }
 
@@ -225,8 +225,8 @@ async function extractGaugesSnapshot() {
         and(
           gt(poolSnapshots.timestamp, gauges.externalCreatedAt),
           isNotNull(vebalRounds.startDate),
-          gte(poolSnapshots.timestamp, twoDaysAgo),
-        ),
+          gte(poolSnapshots.timestamp, twoDaysAgo)
+        )
       )
       .orderBy(asc(vebalRounds.startDate));
 
@@ -240,10 +240,10 @@ async function extractGaugesSnapshot() {
 
       // Batch process to get relative weights
       console.log(
-        `Fetching ${gaugeAddressTimestampTuples.length} relativeweight-timestamp pairs`,
+        `Fetching ${gaugeAddressTimestampTuples.length} relativeweight-timestamp pairs`
       );
       const relativeWeights = await getPoolRelativeWeights(
-        gaugeAddressTimestampTuples,
+        gaugeAddressTimestampTuples
       );
 
       // Fetch round numbers for all timestamps in bulk
@@ -260,7 +260,7 @@ async function extractGaugesSnapshot() {
           map[dateToEpoch(timestamp)] = round_number; // Ensure timestamp format aligns with what is used in gaugeAddressTimestampTuples
           return map;
         },
-        {} as { [key: number]: number },
+        {} as { [key: number]: number }
       );
 
       const insertData = []; // Array to hold records for batch insert
@@ -314,7 +314,7 @@ async function extractPoolRateProviderSnapshot(network: string) {
     .from(blocks)
     .leftJoin(calendar, eq(calendar.timestamp, blocks.timestamp))
     .where(
-      and(eq(blocks.networkSlug, network), gte(blocks.timestamp, twoDaysAgo)),
+      and(eq(blocks.networkSlug, network), gte(blocks.timestamp, twoDaysAgo))
     )
     .orderBy(asc(blocks.number));
 
@@ -328,15 +328,15 @@ async function extractPoolRateProviderSnapshot(network: string) {
   const filterBlocksByDate = (
     blocks: { timestamp: Date; blockNumber: number }[],
     startDate: Date | null,
-    cutDirection: "before" | "after",
+    cutDirection: "before" | "after"
   ) => {
     if (!startDate) return blocks;
     return cutDirection === "before"
       ? blocks.filter(
-          ({ timestamp }) => timestamp.getTime() < startDate.getTime(),
+          ({ timestamp }) => timestamp.getTime() < startDate.getTime()
         )
       : blocks.filter(
-          ({ timestamp }) => timestamp.getTime() > startDate.getTime(),
+          ({ timestamp }) => timestamp.getTime() > startDate.getTime()
         );
   };
 
@@ -351,13 +351,13 @@ async function extractPoolRateProviderSnapshot(network: string) {
         .from(pools)
         .leftJoin(
           poolTokenRateProviders,
-          eq(poolTokenRateProviders.poolExternalId, pools.externalId),
+          eq(poolTokenRateProviders.poolExternalId, pools.externalId)
         )
         .where(
           and(
             eq(poolTokenRateProviders.address, String(rateProviderAddress)),
-            eq(poolTokenRateProviders.networkSlug, String(networkSlug)),
-          ),
+            eq(poolTokenRateProviders.networkSlug, String(networkSlug))
+          )
         );
       const poolsStartDateArray = poolsStartDate.map((item) => {
         return item.createdAt as Date;
@@ -365,13 +365,13 @@ async function extractPoolRateProviderSnapshot(network: string) {
 
       const minStartDate = poolsStartDateArray.reduce(
         (min, current) => (min < current ? min : current),
-        poolsStartDateArray[0],
+        poolsStartDateArray[0]
       );
 
       const blocksArray = filterBlocksByDate(
         blocksNumberArray,
         minStartDate,
-        "after",
+        "after"
       );
       return [
         rateProviderAddress as Address,
@@ -381,7 +381,7 @@ async function extractPoolRateProviderSnapshot(network: string) {
           timestamp: Date;
         }[],
       ];
-    }),
+    })
   );
   const rateProviderAddressBlocksTuples =
     await rateProviderAddressBlocksTuplesPromise;
@@ -400,7 +400,7 @@ async function extractPoolRateProviderSnapshot(network: string) {
       ]);
 
     console.log(
-      `Fetching ${rateProviderTuples.length} rates for ${rateProviderAddress} on ${networkSlug}`,
+      `Fetching ${rateProviderTuples.length} rates for ${rateProviderAddress} on ${networkSlug}`
     );
     try {
       const rates = await getRates(rateProviderTuples);
@@ -437,7 +437,7 @@ async function extractPoolRateProviderSnapshot(network: string) {
           blocksNumberArray[0].timestamp
         } to ${
           blocksNumberArray[blocksNumberArray.length - 1].timestamp
-        } : ${error}`,
+        } : ${error}`
       );
     }
   }
@@ -452,7 +452,7 @@ async function processPools(data: any, network: string) {
       data.pools.map((pool: any) => ({
         externalId: pool.id,
         rawData: { ...pool, network },
-      })),
+      }))
     );
   }
 }
@@ -466,7 +466,7 @@ async function processPoolSnapshots(data: any, network: string) {
       data.poolSnapshots.map((snapshot: any) => ({
         externalId: snapshot.id,
         rawData: { ...snapshot, network },
-      })),
+      }))
     );
   }
 }
@@ -480,7 +480,7 @@ async function processPoolRewards(data: any, network: string) {
       data.rewardTokenDeposits.map((rewards: any) => ({
         externalId: rewards.id,
         rawData: { ...rewards, network },
-      })),
+      }))
     );
   }
 }
@@ -505,7 +505,7 @@ async function transformPoolData() {
       FROM pools
         WHERE 
         to_timestamp((raw_data->>'createTime')::BIGINT) >= '${sql.raw(
-          twoDaysAgo.toISOString(),
+          twoDaysAgo.toISOString()
         )}'::timestamp AT TIME ZONE 'UTC'
         ON CONFLICT (external_id) DO UPDATE
     SET
@@ -527,7 +527,7 @@ async function transformPoolData() {
         FROM pools
         WHERE 
             to_timestamp((raw_data->>'createTime')::BIGINT) >= '${sql.raw(
-              twoDaysAgo.toISOString(),
+              twoDaysAgo.toISOString()
             )}'::timestamp AT TIME ZONE 'UTC'
         ON CONFLICT (address, network_slug) DO NOTHING;
       `);
@@ -553,7 +553,7 @@ async function transformPoolData() {
         JOIN tokens ON sub.address = tokens.address
         WHERE 
             to_timestamp((raw_data->>'createTime')::BIGINT) >= '${sql.raw(
-              twoDaysAgo.toISOString(),
+              twoDaysAgo.toISOString()
             )}'::timestamp AT TIME ZONE 'UTC'
         ON CONFLICT (pool_external_id, token_address) DO UPDATE
         SET weight = excluded.weight,
@@ -573,7 +573,7 @@ async function transformPoolSnapshotsData() {
   FROM pool_snapshots_temp
   WHERE 
     to_timestamp((raw_data->>'timestamp')::BIGINT) >= '${sql.raw(
-      twoDaysAgo.toISOString(),
+      twoDaysAgo.toISOString()
     )}'::timestamp AT TIME ZONE 'UTC'
   ON CONFLICT (external_id) DO NOTHING;
     `);
@@ -700,7 +700,7 @@ async function ETLSnapshots() {
     networkNames.map(async (networkName) => {
       const networkEndpoint = NETWORK_TO_BALANCER_ENDPOINT_MAP[networkName];
       await extractPoolSnapshotsForNetwork(networkEndpoint, networkName);
-    }),
+    })
   );
 
   console.log("Starting Pool Snapshots Extraction");
@@ -713,7 +713,7 @@ async function ETLPoolRewards() {
     networkNamesRewards.map(async (networkName) => {
       const networkEndpoint = NETWORK_TO_REWARDS_ENDPOINT_MAP[networkName];
       await extractRewardsForNetwork(networkEndpoint, networkName);
-    }),
+    })
   );
   console.log("Starting Pool Rewards Extraction");
   await transformRewardsData();
@@ -729,7 +729,7 @@ async function ETLPoolRateProviderSnapshot() {
   await Promise.all(
     networkNames.map(async (networkName) => {
       await extractPoolRateProviderSnapshot(networkName);
-    }),
+    })
   );
 }
 
@@ -805,7 +805,7 @@ SELECT * FROM reward_calculations
 
   const withOneReward = resultArray.filter((item) => item.rewards.length === 1);
   const withTwoRewards = resultArray.filter(
-    (item) => item.rewards.length === 2,
+    (item) => item.rewards.length === 2
   );
 
   for (const item of withOneReward) {
@@ -976,7 +976,7 @@ async function fetchBalPrices() {
   await fetchTokenPrice(
     "ethereum",
     "0xba100000625a3754423978a60c9317c58a424e3d",
-    twoDaysAgo,
+    twoDaysAgo
   );
 }
 
@@ -992,8 +992,8 @@ async function fetchBlocks() {
         .where(
           and(
             eq(pools.networkSlug, networkName),
-            gte(poolSnapshots.timestamp, twoDaysAgo),
-          ),
+            gte(poolSnapshots.timestamp, twoDaysAgo)
+          )
         );
 
       for (const { timestamp } of timestamps) {
@@ -1002,7 +1002,7 @@ async function fetchBlocks() {
         try {
           const blockResult = await DefiLlamaAPI.findBlockNumber(
             networkName,
-            dateToEpoch(timestamp),
+            dateToEpoch(timestamp)
           );
 
           await db
@@ -1019,7 +1019,7 @@ async function fetchBlocks() {
           console.error(`${error}`);
         }
       }
-    }),
+    })
   );
   console.log("Fetching blocks done");
 }
@@ -1035,10 +1035,10 @@ async function fetchTokenPrices() {
     .from(poolTokenRateProviders)
     .leftJoin(
       pools,
-      eq(pools.externalId, poolTokenRateProviders.poolExternalId),
+      eq(pools.externalId, poolTokenRateProviders.poolExternalId)
     )
     .where(
-      ne(poolTokenRateProviders.tokenAddress, poolTokenRateProviders.address),
+      ne(poolTokenRateProviders.tokenAddress, poolTokenRateProviders.address)
     );
 
   const tokenFromRewards = await db
@@ -1067,7 +1067,7 @@ async function fetchTokenPrices() {
             acc[key].createdAt.push(createdAt);
             const minDate = acc[key].createdAt.reduce(
               (min, current) => (min < current ? min : current),
-              acc[key].createdAt[0],
+              acc[key].createdAt[0]
             );
             acc[key].createdAt = [minDate];
           }
@@ -1078,8 +1078,8 @@ async function fetchTokenPrices() {
       {} as Record<
         string,
         { tokenAddress: string; networkSlug: string; createdAt: Date[] }
-      >,
-    ),
+      >
+    )
   );
 
   for (const {
@@ -1091,12 +1091,12 @@ async function fetchTokenPrices() {
     try {
       const minDate = Math.max(
         dateToEpoch(createdAt[0]),
-        dateToEpoch(twoDaysAgo),
+        dateToEpoch(twoDaysAgo)
       );
       console.log(
         `Fetching token price for ${tokenAddress} on ${networkSlug} since ${epochToDate(
-          minDate,
-        ).toISOString()}`,
+          minDate
+        ).toISOString()}`
       );
       await fetchTokenPrice(networkSlug, tokenAddress, epochToDate(minDate));
       console.log(`token price for ${tokenAddress} on ${networkSlug} finished`);
@@ -1118,21 +1118,21 @@ async function calculateTokenWeightSnapshots() {
       poolTokenRateProviders,
       eq(
         poolTokenRateProviders.address,
-        poolTokenRateProvidersSnapshot.rateProviderAddress,
-      ),
+        poolTokenRateProvidersSnapshot.rateProviderAddress
+      )
     )
     .leftJoin(
       pools,
-      eq(pools.externalId, poolTokenRateProviders.poolExternalId),
+      eq(pools.externalId, poolTokenRateProviders.poolExternalId)
     )
     .where(ne(pools.poolType, "Weighted"));
 
   const poolsIds = tokensFromRateProvider.map(
-    ({ poolExternalId }) => poolExternalId as string,
+    ({ poolExternalId }) => poolExternalId as string
   );
 
   const tokensAddresses = tokensFromRateProvider.map(
-    ({ tokenAddress }) => tokenAddress as string,
+    ({ tokenAddress }) => tokenAddress as string
   );
 
   const tokensfromPools = await db
@@ -1147,8 +1147,8 @@ async function calculateTokenWeightSnapshots() {
     .where(
       and(
         inArray(poolTokens.poolExternalId, poolsIds),
-        ne(poolTokens.tokenAddress, pools.address),
-      ),
+        ne(poolTokens.tokenAddress, pools.address)
+      )
     );
 
   const tokensGroupedByPool: {
@@ -1168,10 +1168,10 @@ async function calculateTokenWeightSnapshots() {
           tokenAddress: string;
         }[];
       }[],
-      item,
+      item
     ) => {
       const existingGroup = result.find(
-        (group) => group.poolExternalId === item.poolExternalId,
+        (group) => group.poolExternalId === item.poolExternalId
       );
 
       if (existingGroup) {
@@ -1194,7 +1194,7 @@ async function calculateTokenWeightSnapshots() {
 
       return result;
     },
-    [],
+    []
   );
 
   const tokensPricesExists = await db
@@ -1207,13 +1207,13 @@ async function calculateTokenWeightSnapshots() {
   const poolsWithTokenPrices = tokensGroupedByPool.filter((group) =>
     group.tokens.every((token) =>
       tokensPricesExists.some(
-        ({ tokenAddress }) => tokenAddress === token.tokenAddress,
-      ),
-    ),
+        ({ tokenAddress }) => tokenAddress === token.tokenAddress
+      )
+    )
   );
 
   const poolExternalIds = poolsWithTokenPrices.map(
-    ({ poolExternalId }) => poolExternalId,
+    ({ poolExternalId }) => poolExternalId
   );
   const weightResults: {
     timestamp: Date;
@@ -1245,12 +1245,12 @@ async function calculateTokenWeightSnapshots() {
       LEFT JOIN token_prices tp ON pt.token_address = tp.token_address AND ps."timestamp" = tp."timestamp"
     WHERE
     ps.pool_external_id IN (${sql.raw(
-      poolExternalIds.map((id) => `'${id}'`).join(", "),
+      poolExternalIds.map((id) => `'${id}'`).join(", ")
     )})
       AND tp.price_usd IS NOT NULL
       AND (ps.amounts->>pt.token_index) IS NOT NULL
       AND ps.timestamp >= '${sql.raw(
-        twoDaysAgo.toISOString(),
+        twoDaysAgo.toISOString()
       )}'::timestamp AT TIME ZONE 'UTC'
   ),
   total_liquidity AS (
@@ -1286,8 +1286,8 @@ async function calculateTokenWeightSnapshots() {
             0,
             0,
             0,
-            0,
-          ),
+            0
+          )
         );
         return {
           timestamp: utcMidnightTimestampOfCurrentDay,
@@ -1298,7 +1298,7 @@ async function calculateTokenWeightSnapshots() {
             item.token
           }-${utcMidnightTimestampOfCurrentDay.toISOString()}`,
         };
-      }),
+      })
     )
     .onConflictDoUpdate({
       target: poolTokenWeightsSnapshot.externalId,
@@ -1335,7 +1335,7 @@ async function calculateApr() {
           AND p2.swap_fees != 0
           AND p1.swap_fees - p2.swap_fees != 0
           AND p1.timestamp >= '${sql.raw(
-            twoDaysAgo.toISOString(),
+            twoDaysAgo.toISOString()
           )}'::timestamp AT TIME ZONE 'UTC'
       ON CONFLICT (external_id) DO UPDATE
       SET
@@ -1365,7 +1365,7 @@ async function calculateApr() {
         AND tp.timestamp = ps.timestamp
     LEFT JOIN bal_emission be ON be.timestamp = ps.timestamp
     WHERE ps.timestamp >= '${sql.raw(
-      twoDaysAgo.toISOString(),
+      twoDaysAgo.toISOString()
     )}'::timestamp AT TIME ZONE 'UTC'
     ON CONFLICT (external_id) DO UPDATE
     SET
@@ -1415,12 +1415,12 @@ async function calculateApr() {
             AND p2.rate != 0
             AND p1.rate - p2.rate != 0
             AND p1.timestamp >= '${sql.raw(
-              twoDaysAgo.toISOString(),
+              twoDaysAgo.toISOString()
             )}'::timestamp AT TIME ZONE 'UTC'
             AND p1.rate_provider_address NOT IN (${sql.raw(
               blockListRateProvider
                 .map((item) => `'${item.rateProviderAddress}'`)
-                .join(", "),
+                .join(", ")
             )})
     ) AS subquery ON subquery.timestamp = pool_snapshots.timestamp
     AND subquery.token_address = pool_tokens.token_address
@@ -1490,12 +1490,12 @@ async function calculateApr() {
             AND p2.rate != 0
             AND p1.rate - p2.rate != 0
             AND p1.timestamp >= '${sql.raw(
-              twoDaysAgo.toISOString(),
+              twoDaysAgo.toISOString()
             )}'::timestamp AT TIME ZONE 'UTC'
             AND p1.rate_provider_address NOT IN (${sql.raw(
               blockListRateProvider
                 .map((item) => `'${item.rateProviderAddress}'`)
-                .join(", "),
+                .join(", ")
             )})
     ) AS subquery ON subquery.timestamp = pool_snapshots.timestamp
     AND subquery.token_address = pool_tokens.token_address
@@ -1542,21 +1542,21 @@ async function calculateApr() {
       poolSnapshots,
       and(
         eq(poolSnapshots.poolExternalId, poolRewardsSnapshot.poolExternalId),
-        eq(poolSnapshots.timestamp, poolRewardsSnapshot.timestamp),
-      ),
+        eq(poolSnapshots.timestamp, poolRewardsSnapshot.timestamp)
+      )
     )
     .leftJoin(
       tokenPrices,
       and(
         eq(tokenPrices.tokenAddress, poolRewardsSnapshot.tokenAddress),
-        eq(tokenPrices.timestamp, poolRewardsSnapshot.timestamp),
-      ),
+        eq(tokenPrices.timestamp, poolRewardsSnapshot.timestamp)
+      )
     )
     .where(
       and(
         isNotNull(tokenPrices.priceUSD),
-        gte(poolRewardsSnapshot.timestamp, twoDaysAgo),
-      ),
+        gte(poolRewardsSnapshot.timestamp, twoDaysAgo)
+      )
     );
   for (const aprItems of poolInRewardsSnapshot) {
     const yearlyAmountUsd =

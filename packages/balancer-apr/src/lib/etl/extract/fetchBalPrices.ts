@@ -2,8 +2,8 @@ import { desc, eq } from "drizzle-orm";
 
 import { db } from "../../../db";
 import { tokenPrices } from "../../../db/schema";
-import { fetchTokenPrice } from "../../../fetchTokenPrices";
 import { addToTable, BALANCER_START_DATE, logIfVerbose } from "../../../index";
+import { fetchTokenPrice } from "./fetchTokenPrices";
 
 const BAL_ADDRESS = "0xba100000625a3754423978a60c9317c58a424e3d";
 export async function fetchBalPrices() {

@@ -1,7 +1,7 @@
 import { dateToEpoch } from "@bleu-fi/utils/date";
 import { and, eq, gt, isNotNull, sql, sum } from "drizzle-orm";
 
-import { db } from "./db/index";
+import { db } from "../../../db/index";
 import {
   blocks,
   poolSnapshots,
@@ -9,8 +9,8 @@ import {
   poolTokens,
   poolTokenWeightsSnapshot,
   tokenPrices,
-} from "./db/schema";
-import { addToTable } from "./index";
+} from "../../../db/schema";
+import { addToTable } from "../../../index";
 
 export async function calculateTokenWeightSnapshots() {
   // const tokensFromRateProvider = await db

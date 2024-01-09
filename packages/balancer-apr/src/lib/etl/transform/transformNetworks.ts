@@ -1,7 +1,7 @@
 import { sql } from "drizzle-orm";
 import { PgTable } from "drizzle-orm/pg-core";
 
-import { db } from "./db/index";
+import { db } from "../../../db/index";
 
 export async function transformNetworks(table: PgTable, key = "network") {
   await db.execute(sql`

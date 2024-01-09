@@ -330,6 +330,20 @@
       "when": 1704395912091,
       "tag": "0046_tough_zarek",
       "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "5",
+      "when": 1704469680973,
+      "tag": "0047_noisy_black_panther",
+      "breakpoints": true
+    },
+    {
+      "idx": 48,
+      "version": "5",
+      "when": 1704470043362,
+      "tag": "0048_bizarre_the_initiative",
+      "breakpoints": true
     }
   ]
 }

@@ -2,13 +2,13 @@ import { dateToEpoch, epochToDate } from "@bleu-fi/utils/date";
 import { sql } from "drizzle-orm";
 import pThrottle from "p-throttle";
 
-import { db } from "./db/index";
-import { tokenPrices } from "./db/schema";
-import { addToTable, logIfVerbose } from "./index";
-import { DefiLlamaAPI } from "./lib/defillama";
+import { db } from "../../..//db/index";
+import { tokenPrices } from "../../..//db/schema";
+import { addToTable, logIfVerbose } from "../../..//index";
+import { DefiLlamaAPI } from "../../..//lib/defillama";
 
 const throttle = pThrottle({
-  limit: 6,
+  limit: 10,
   interval: 1000,
 });
 export async function fetchTokenPrices() {
@@ -20,7 +20,7 @@ export async function fetchTokenPrices() {
     timestamp: Date;
   }>(
     sql.raw(`
-    SELECT
+  SELECT
     *
   FROM (
     SELECT
@@ -69,12 +69,12 @@ export async function fetchTokenPrices() {
 
   const allTokenPrices = await Promise.all(
     tokenList.map(({ network_slug: networkSlug, address, timestamp }, idx) => {
-      logIfVerbose(
-        `${networkSlug}:${address}:${dateToEpoch(timestamp)} Fetching prices: ${
-          idx + 1
-        }/${tokenList.length}`,
-      );
       return throttle(async () => {
+        logIfVerbose(
+          `${networkSlug}:${address}:${dateToEpoch(
+            timestamp,
+          )} Fetching prices: ${idx + 1}/${tokenList.length}`,
+        );
         try {
           const prices = await fetchTokenPrice(
             networkSlug,

@@ -40,10 +40,14 @@ export const pools = pgTable(
     poolType: varchar("pool_type"),
     address: varchar("address"),
     symbol: varchar("symbol"),
-    externalCreatedAt: timestamp("external_created_at", {withTimezone: true}),
+    externalCreatedAt: timestamp("external_created_at", { withTimezone: true }),
     poolTypeVersion: decimal("pool_type_version"),
-    createdAt: timestamp("created_at", {withTimezone: true}).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", {withTimezone: true}).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
     networkSlug: varchar("network_slug").references(() => networks.slug, {
       onDelete: "cascade",
       onUpdate: "cascade",
@@ -77,9 +81,13 @@ export const blocks = pgTable(
   {
     id: serial("id").primaryKey(),
     number: integer("number"),
-    timestamp: timestamp("timestamp", {withTimezone: true}),
-    createdAt: timestamp("created_at", {withTimezone: true}).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", {withTimezone: true}).defaultNow().notNull(),
+    timestamp: timestamp("timestamp", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
     networkSlug: varchar("network_slug").references(() => networks.slug, {
       onDelete: "cascade",
       onUpdate: "cascade",
@@ -103,14 +111,18 @@ export const tokens = pgTable(
     symbol: varchar("symbol"),
     name: varchar("name"),
     logoURI: varchar("logo_uri"),
-    externalCreatedAt: timestamp("external_created_at", {withTimezone: true}),
+    externalCreatedAt: timestamp("external_created_at", { withTimezone: true }),
     decimals: integer("decimals"),
     networkSlug: varchar("network_slug").references(() => networks.slug, {
       onDelete: "cascade",
       onUpdate: "cascade",
     }),
-    createdAt: timestamp("created_at", {withTimezone: true}).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", {withTimezone: true}).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
     rawData: jsonb("raw_data"),
   },
   (t) => ({
@@ -128,9 +140,13 @@ export const tokenPrices = pgTable(
   {
     id: serial("id").primaryKey(),
     priceUSD: decimal("price_usd"),
-    timestamp: timestamp("timestamp", {withTimezone: true}),
-    createdAt: timestamp("created_at", {withTimezone: true}).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", {withTimezone: true}).defaultNow().notNull(),
+    timestamp: timestamp("timestamp", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
     tokenAddress: varchar("token_address"),
     networkSlug: varchar("network_slug").references(() => networks.slug, {
       onDelete: "cascade",
@@ -153,8 +169,12 @@ export const poolTokens = pgTable(
     weight: decimal("weight"),
     tokenIndex: integer("token_index"),
     isExemptFromYieldProtocolFee: boolean("is_exempt_from_yield_protocol_fee"),
-    createdAt: timestamp("created_at", {withTimezone: true}).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", {withTimezone: true}).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
     poolExternalId: varchar("pool_external_id").references(
       () => pools.externalId,
       { onDelete: "cascade", onUpdate: "cascade" },
@@ -180,8 +200,12 @@ export const networks = pgTable("networks", {
   name: varchar("name"),
   slug: varchar("slug").unique().notNull(),
   chainId: varchar("chain_id").unique(),
-  createdAt: timestamp("created_at", {withTimezone: true}).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", {withTimezone: true}).defaultNow().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
 });
 
 export const networkRelations = relations(networks, ({ many }) => ({
@@ -201,11 +225,17 @@ export const poolSnapshots = pgTable(
     swapVolume: decimal("swap_volume"),
     swapFees: decimal("swap_fees"),
     liquidity: decimal("liquidity"),
-    timestamp: timestamp("timestamp", {withTimezone: true}),
+    calculatedLiquidity: decimal("calculated_liquidity"),
+    calculatedLiquidityError: decimal("calculated_liquidity_error"),
+    timestamp: timestamp("timestamp", { withTimezone: true }),
     protocolYieldFeeCache: decimal("protocol_yield_fee_cache"),
     protocolSwapFeeCache: decimal("protocol_swap_fee_cache"),
-    createdAt: timestamp("created_at", {withTimezone: true}).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", {withTimezone: true}).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
     externalId: varchar("external_id").unique(),
     networkSlug: varchar("network_slug").references(() => networks.slug, {
       onDelete: "cascade",
@@ -230,7 +260,7 @@ export const calendar = pgTable(
   "calendar",
   {
     id: serial("id").primaryKey(),
-    timestamp: timestamp("timestamp", {withTimezone: true}).unique(),
+    timestamp: timestamp("timestamp", { withTimezone: true }).unique(),
   },
   (table) => ({
     timestampIdx: index().on(table.timestamp),
@@ -246,12 +276,18 @@ export const poolSnapshotsTemp = pgTable(
     swapVolume: decimal("swap_volume"),
     swapFees: decimal("swap_fees"),
     liquidity: decimal("liquidity"),
-    timestamp: timestamp("timestamp", {withTimezone: true}),
+    timestamp: timestamp("timestamp", { withTimezone: true }),
     protocolYieldFeeCache: decimal("protocol_yield_fee_cache"),
     protocolSwapFeeCache: decimal("protocol_swap_fee_cache"),
-    createdAt: timestamp("created_at", {withTimezone: true}).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", {withTimezone: true}).defaultNow().notNull(),
-    nextTimestampChange: timestamp("next_timestamp_change", {withTimezone: true}),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    nextTimestampChange: timestamp("next_timestamp_change", {
+      withTimezone: true,
+    }),
     externalId: varchar("external_id").unique(),
     networkSlug: varchar("network_slug").references(() => networks.slug, {
       onDelete: "cascade",
@@ -294,8 +330,12 @@ export const poolTokenRateProviders = pgTable(
       onDelete: "cascade",
       onUpdate: "cascade",
     }),
-    createdAt: timestamp("created_at", {withTimezone: true}).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", {withTimezone: true}).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
     rawData: jsonb("raw_data"),
   },
   (table) => ({
@@ -324,19 +364,29 @@ export const poolTokenRateProvidersSnapshot = pgTable(
     }),
     externalId: varchar("external_id").unique(),
     rateProviderAddress: varchar("rate_provider_address"),
-    timestamp: timestamp("timestamp", {withTimezone: true}).defaultNow().notNull(),
-    createdAt: timestamp("created_at", {withTimezone: true}).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", {withTimezone: true}).defaultNow().notNull(),
+    timestamp: timestamp("timestamp", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
 );
 
 export const vebalRounds = pgTable("vebal_rounds", {
   id: serial("id").primaryKey(),
-  endDate: timestamp("end_date", {withTimezone: true}).notNull(),
-  startDate: timestamp("start_date", {withTimezone: true}).notNull(),
+  endDate: timestamp("end_date", { withTimezone: true }).notNull(),
+  startDate: timestamp("start_date", { withTimezone: true }).notNull(),
   roundNumber: integer("round_number").unique().notNull(),
-  createdAt: timestamp("created_at", {withTimezone: true}).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", {withTimezone: true}).defaultNow().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
 });
 export const gauges = pgTable(
   "gauges",
@@ -344,7 +394,7 @@ export const gauges = pgTable(
     id: serial("id").primaryKey(),
     address: varchar("address"),
     isKilled: boolean("is_killed"),
-    externalCreatedAt: timestamp("external_created_at", {withTimezone: true}),
+    externalCreatedAt: timestamp("external_created_at", { withTimezone: true }),
     childGaugeAddress: varchar("child_gauge_address"),
     poolExternalId: varchar("pool_external_id").references(
       () => pools.externalId,
@@ -354,8 +404,12 @@ export const gauges = pgTable(
       onDelete: "cascade",
       onUpdate: "cascade",
     }),
-    createdAt: timestamp("created_at", {withTimezone: true}).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", {withTimezone: true}).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
     rawData: jsonb("raw_data"),
   },
   (table) => ({
@@ -381,9 +435,13 @@ export const gaugeSnapshots = pgTable(
   {
     id: serial("id").primaryKey(),
     relativeWeight: decimal("relative_weight"),
-    timestamp: timestamp("timestamp", {withTimezone: true}),
-    createdAt: timestamp("created_at", {withTimezone: true}).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", {withTimezone: true}).defaultNow().notNull(),
+    timestamp: timestamp("timestamp", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
     blockNumber: integer("block_number"),
     gaugeAddress: varchar("gauge_address").notNull(),
     childGaugeAddress: varchar("child_gauge_address"),
@@ -422,9 +480,15 @@ export const poolTokenWeightsSnapshot = pgTable(
     ),
     tokenAddress: varchar("token_address"),
     externalId: varchar("external_id").unique(),
-    timestamp: timestamp("timestamp", {withTimezone: true}).defaultNow().notNull(),
-    createdAt: timestamp("created_at", {withTimezone: true}).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", {withTimezone: true}).defaultNow().notNull(),
+    timestamp: timestamp("timestamp", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (table) => ({
     poolExternalId: index().on(table.poolExternalId),
@@ -437,14 +501,18 @@ export const vebalApr = pgTable(
   "vebal_apr",
   {
     id: serial("id").primaryKey(),
-    timestamp: timestamp("timestamp", {withTimezone: true}),
+    timestamp: timestamp("timestamp", { withTimezone: true }),
     value: decimal("value"),
     poolExternalId: varchar("pool_external_id").references(
       () => pools.externalId,
       { onDelete: "cascade", onUpdate: "cascade" },
     ),
-    createdAt: timestamp("created_at", {withTimezone: true}).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", {withTimezone: true}).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (table) => ({
     unq: unique().on(table.timestamp, table.poolExternalId),
@@ -461,8 +529,8 @@ export const poolRewards = pgTable(
       () => pools.externalId,
       { onDelete: "cascade", onUpdate: "cascade" },
     ),
-    periodStart: timestamp("period_start", {withTimezone: true}),
-    periodEnd: timestamp("period_end", {withTimezone: true}),
+    periodStart: timestamp("period_start", { withTimezone: true }),
+    periodEnd: timestamp("period_end", { withTimezone: true }),
     rate: decimal("rate"),
     tokenAddress: varchar("token_address"),
     networkSlug: varchar("network_slug").references(() => networks.slug, {
@@ -472,8 +540,12 @@ export const poolRewards = pgTable(
     totalSupply: decimal("total_supply"),
     externalId: varchar("external_id").unique(),
     rawData: jsonb("raw_data"),
-    createdAt: timestamp("created_at", {withTimezone: true}).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", {withTimezone: true}).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (table) => ({
     unq: unique().on(
@@ -497,20 +569,24 @@ export const poolRewardsSnapshot = pgTable("pool_rewards_snapshot", {
     () => pools.externalId,
     { onDelete: "cascade", onUpdate: "cascade" },
   ),
-  timestamp: timestamp("timestamp", {withTimezone: true}),
+  timestamp: timestamp("timestamp", { withTimezone: true }),
   tokenAddress: varchar("token_address"),
   totalSupply: decimal("total_supply"),
   yearlyAmount: decimal("yearly_amount"),
   externalId: varchar("external_id").unique(),
-  createdAt: timestamp("created_at", {withTimezone: true}).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", {withTimezone: true}).defaultNow().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
 });
 
 export const swapFeeApr = pgTable(
   "swap_fee_apr",
   {
     id: serial("id").primaryKey(),
-    timestamp: timestamp("timestamp", {withTimezone: true}),
+    timestamp: timestamp("timestamp", { withTimezone: true }),
     value: decimal("value"),
     collectedFeesUSD: decimal("collected_fees_usd"),
     poolExternalId: varchar("pool_external_id").references(
@@ -518,8 +594,12 @@ export const swapFeeApr = pgTable(
       { onDelete: "cascade", onUpdate: "cascade" },
     ),
     externalId: varchar("external_id").unique(),
-    createdAt: timestamp("created_at", {withTimezone: true}).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", {withTimezone: true}).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (table) => ({
     poolExternalId: index().on(table.poolExternalId),
@@ -532,17 +612,21 @@ export const rewardsTokenApr = pgTable(
   "rewards_token_apr",
   {
     id: serial("id").primaryKey(),
-    timestamp: timestamp("timestamp", {withTimezone: true}),
+    timestamp: timestamp("timestamp", { withTimezone: true }),
     tokenAddress: varchar("token_address"),
     value: decimal("value"),
     poolExternalId: varchar("pool_external_id").references(
       () => pools.externalId,
       { onDelete: "cascade", onUpdate: "cascade" },
     ),
-    periodStart: timestamp("period_start", {withTimezone: true}),
-    periodEnd: timestamp("period_end", {withTimezone: true}),
-    createdAt: timestamp("created_at", {withTimezone: true}).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", {withTimezone: true}).defaultNow().notNull(),
+    periodStart: timestamp("period_start", { withTimezone: true }),
+    periodEnd: timestamp("period_end", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (table) => ({
     poolExternalId: index().on(table.poolExternalId),
@@ -561,7 +645,7 @@ export const yieldTokenApr = pgTable(
   "yield_token_apr",
   {
     id: serial("id").primaryKey(),
-    timestamp: timestamp("timestamp", {withTimezone: true}),
+    timestamp: timestamp("timestamp", { withTimezone: true }),
     tokenAddress: varchar("token_address"),
     value: decimal("value"),
     poolExternalId: varchar("pool_external_id").references(
@@ -569,8 +653,12 @@ export const yieldTokenApr = pgTable(
       { onDelete: "cascade", onUpdate: "cascade" },
     ),
     externalId: varchar("external_id").unique(),
-    createdAt: timestamp("created_at", {withTimezone: true}).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", {withTimezone: true}).defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (table) => ({
     poolExternalId: index().on(table.poolExternalId),
@@ -583,7 +671,7 @@ export const balEmission = pgTable(
   "bal_emission",
   {
     id: serial("id").primaryKey(),
-    timestamp: timestamp("timestamp", {withTimezone: true}).unique(),
+    timestamp: timestamp("timestamp", { withTimezone: true }).unique(),
     weekEmission: decimal("week_emission"),
   },
   (t) => ({

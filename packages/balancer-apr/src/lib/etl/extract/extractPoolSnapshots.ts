@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { dateToEpoch } from "@bleu-fi/utils/date";
+
 import { NETWORK_TO_BALANCER_ENDPOINT_MAP } from "../../../config";
 import { poolSnapshotsTemp } from "../../../db/schema";
 import {
@@ -11,11 +13,12 @@ import {
 import { paginatedFetch } from "../../../paginatedFetch";
 
 const POOLS_SNAPSHOTS = `
-query PoolSnapshots($latestId: String!) {
+query PoolSnapshots($latestId: ID!, $today: Int!) {
   poolSnapshots(
     first: 1000,
     where: {
-      id_gt: $latestId
+      id_gt: $latestId,
+      timestamp_not: $today,
     }
   ) {
     id
@@ -66,11 +69,8 @@ export async function extractPoolSnapshotsForNetwork(
   networkEndpoint: string,
   network: string,
 ) {
-  // const lastTimestamp = await db
-  //   .select({ timestamp: max(poolSnapshotsTemp.timestamp) })
-  //   .from(poolSnapshotsTemp);
-
-  // const timestampGt = dateToEpoch(lastTimestamp[0].timestamp) || 0;
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
 
   await paginatedFetch(
     networkEndpoint,
@@ -78,6 +78,6 @@ export async function extractPoolSnapshotsForNetwork(
     (data) => processPoolSnapshots(data, network),
     "",
     BATCH_SIZE,
-    // { timestampGt },
+    { today: dateToEpoch(today) },
   );
 }

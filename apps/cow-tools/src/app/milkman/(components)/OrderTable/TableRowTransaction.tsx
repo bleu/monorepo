@@ -193,6 +193,7 @@ export function TableRowTransaction({
               ].includes(transactionStatus)
             }
             transaction={transaction}
+            orderStatus={orderStatus}
           />
         </Table.BodyCell>
       </Table.BodyRow>

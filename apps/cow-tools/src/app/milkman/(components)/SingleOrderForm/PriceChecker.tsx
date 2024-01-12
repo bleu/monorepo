@@ -1,3 +1,4 @@
+import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { slateDarkA } from "@radix-ui/colors";
@@ -22,6 +23,7 @@ import { Form, FormMessage } from "#/components/ui/form";
 import { Label } from "#/components/ui/label";
 import { getPriceCheckerFromAddressAndChain } from "#/lib/decode";
 import { encodeExpectedOutArguments } from "#/lib/encode";
+import { fetchCowQuote } from "#/lib/fetchCowQuote";
 import {
   deployedPriceCheckersByChain,
   expectedOutCalculatorAddressesMapping,
@@ -49,6 +51,7 @@ export function FormSelectPriceChecker({
 }) {
   const [selectedPriceChecker, setSelectedPriceChecker] =
     useState<PRICE_CHECKERS>(defaultValues?.priceChecker);
+  const [quotedAmountOut, setQuotedAmountOut] = useState<number>(0);
 
   const { safe } = useSafeAppsSDK();
 
@@ -66,6 +69,7 @@ export function FormSelectPriceChecker({
       tokenBuy: defaultValues?.tokenBuy,
       sellAmount: defaultValues?.tokenSellAmount,
       publicClient,
+      cowQuotedAmount: quotedAmountOut,
     });
 
   const form = useForm(
@@ -81,6 +85,22 @@ export function FormSelectPriceChecker({
     setValue,
     formState: { errors, isSubmitting },
   } = form;
+
+  useEffect(() => {
+    fetchCowQuote({
+      tokenIn: defaultValues?.tokenSell,
+      tokenOut: defaultValues?.tokenBuy,
+      amountIn:
+        defaultValues?.tokenSellAmount *
+        10 ** defaultValues?.tokenSell.decimals,
+      chainId,
+      priceQuality: "optimal",
+    }).then((res) => {
+      setQuotedAmountOut(
+        Number(res.quote.buyAmount) / 10 ** defaultValues?.tokenBuy.decimals,
+      );
+    });
+  }, []);
 
   useEffect(() => {
     clearErrors();
@@ -99,7 +119,21 @@ export function FormSelectPriceChecker({
   return (
     <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-6 p-9">
       <div className="mb-2">
-        <div className="flex gap-x-2">
+        {quotedAmountOut > 0 && (
+          <div className="flex gap-x-2 my-2 items-center">
+            <Label>
+              Quoted Amount Out: {formatNumber(quotedAmountOut, 4)}{" "}
+              {defaultValues?.tokenBuy.symbol}
+            </Label>
+            <Tooltip content={"Quoted using the CoW API."}>
+              <InfoCircledIcon
+                className="w-4 h-4"
+                color={slateDarkA.slateA11}
+              />
+            </Tooltip>
+          </div>
+        )}
+        <div className="flex gap-x-2 items-center">
           <Label>Price checker</Label>
           <Tooltip
             content={
@@ -126,7 +160,7 @@ export function FormSelectPriceChecker({
         </Select>
         {errors.priceChecker && (
           <FormMessage className="h-6 text-sm text-tomato10 w-full">
-            <span>{errors.priceChecker.message as string}</span>
+            <p className="text-wrap">{errors.priceChecker.message as string}</p>
           </FormMessage>
         )}
       </div>

@@ -2,7 +2,7 @@
 
 import { Address, Network } from "@bleu-fi/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { goerli, mainnet } from "viem/chains";
+import { gnosis, goerli, mainnet } from "viem/chains";
 
 import { TransactionCard } from "#/app/milkman/(components)/TransactionCard";
 import WalletNotConnected from "#/components/WalletNotConnected";
@@ -28,7 +28,11 @@ export default function Page({
 
   const addressLower = safe.safeAddress ? safe.safeAddress?.toLowerCase() : "";
 
-  if (safe.chainId !== mainnet.id && safe.chainId !== goerli.id) {
+  if (
+    safe.chainId !== mainnet.id &&
+    safe.chainId !== goerli.id &&
+    safe.chainId !== gnosis.id
+  ) {
     return (
       <div className="flex h-full w-full flex-col items-center rounded-3xl px-12 py-16 md:py-20">
         <div className="text-center text-3xl text-amber9">

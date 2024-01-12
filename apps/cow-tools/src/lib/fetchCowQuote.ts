@@ -9,7 +9,7 @@ const COW_API_URL_BY_CHAIN_ID = {
   [goerli.id]: COW_API_BASE_URL + "goerli",
 };
 
-export async function fetchCowQuoteAmountOut({
+export async function fetchCowQuote({
   tokenIn,
   tokenOut,
   amountIn,
@@ -48,9 +48,5 @@ export async function fetchCowQuoteAmountOut({
       "Content-Type": "application/json",
     },
     body: JSON.stringify(bodyObject),
-  })
-    .then((res) => res.json())
-    .then((res) => {
-      return Number(res.quote.buyAmount) / 10 ** tokenOut.decimals;
-    });
+  }).then((res) => res.json());
 }

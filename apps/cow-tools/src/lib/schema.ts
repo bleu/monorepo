@@ -1,8 +1,8 @@
-import { Address } from "@bleu-fi/utils";
+import { Address, capitalize } from "@bleu-fi/utils";
 import { isAddress, PublicClient } from "viem";
 import { z } from "zod";
 
-import { fetchCowQuoteAmountOut } from "#/lib/fetchCowQuote";
+import { fetchCowQuote } from "#/lib/fetchCowQuote";
 import { ChainId } from "#/utils/chainsPublicClients";
 
 import { dynamicSlippagePriceCheckerAbi } from "./abis/dynamicSlippagePriceChecker";
@@ -64,24 +64,24 @@ export const generateOrderOverviewSchema = ({
         message: "Tokens sell and buy must be different",
       },
     )
-    .refine(
-      (data) => {
-        const amountIn = data.tokenSellAmount * 10 ** data.tokenSell.decimals;
-        return fetchCowQuoteAmountOut({
-          tokenIn: data.tokenSell,
-          tokenOut: data.tokenBuy,
-          amountIn,
-          chainId,
-          priceQuality: "fast",
-        })
-          .then(() => true)
-          .catch(() => false);
-      },
-      {
-        path: ["tokenBuy"],
-        message: "CoW Swap doesn't support this pair",
-      },
-    );
+    .superRefine((data, ctx) => {
+      const amountIn = data.tokenSellAmount * 10 ** data.tokenSell.decimals;
+      return fetchCowQuote({
+        tokenIn: data.tokenSell,
+        tokenOut: data.tokenBuy,
+        amountIn,
+        chainId,
+        priceQuality: "fast",
+      }).then((res) => {
+        if (res.errorType) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: capitalize(res.description),
+            path: ["tokenBuy"],
+          });
+        }
+      });
+    });
 
 export const orderTwapSchema = z.object({
   isTwapNeeded: z.coerce.boolean(),
@@ -153,19 +153,37 @@ export const generatePriceCheckerSchema = ({
     tokenSell,
     tokenBuy,
     sellAmount,
+    cowQuotedAmount,
     publicClient,
   }: {
     tokenSell: { address: Address; decimals: number };
     tokenBuy: { address: Address; decimals: number };
     sellAmount: number;
+    cowQuotedAmount: number;
     publicClient: PublicClient;
   }) => {
     return (
       priceCheckerBase
         // @ts-ignore
-        .refine(
+        .superRefine(
           // @ts-ignore
-          async (data) => {
+          async (data, ctx) => {
+            // Check if the first token is the token sell and the last token is the token buy on Meta Price Checker
+            if (priceChecker === PRICE_CHECKERS.META) {
+              if (
+                data.swapPath[0] === tokenSell.address &&
+                data.swapPath.slice(-1)[0] === tokenBuy.address
+              ) {
+                ctx.addIssue({
+                  code: z.ZodIssueCode.custom,
+                  message:
+                    "The first token must be the token sell and the last token must be the token buy",
+                  path: ["priceChecker"],
+                });
+                return z.NEVER;
+              }
+            }
+
             try {
               const argsToEncode = expectedArgs.map((arg) => {
                 return (
@@ -177,7 +195,8 @@ export const generatePriceCheckerSchema = ({
                 priceChecker,
                 argsToEncode,
               );
-              await publicClient.readContract({
+
+              const orderWillBeExecuted = await publicClient.readContract({
                 address: data.priceCheckerAddress as Address,
                 abi: dynamicSlippagePriceCheckerAbi,
                 functionName: "checkPrice",
@@ -185,36 +204,27 @@ export const generatePriceCheckerSchema = ({
                   sellAmount * 10 ** tokenSell.decimals,
                   tokenSell.address,
                   tokenBuy.address,
-                  0, // this value isn't used by this price checker
-                  0, // this value will depend on the order, so it's not important here
+                  0, // this value isn't used by the price checkers
+                  cowQuotedAmount * 10 ** tokenBuy.decimals,
                   priceCheckerData,
                 ],
               });
-              return true;
+              if (!orderWillBeExecuted) {
+                ctx.addIssue({
+                  code: z.ZodIssueCode.custom,
+                  message:
+                    "The quoted CoW value is lower than the expected out.",
+                  path: ["priceChecker"],
+                });
+              }
             } catch (e) {
-              return false;
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: priceCheckerRevertedMessage,
+                path: ["priceChecker"],
+              });
+              return z.NEVER;
             }
-          },
-          {
-            path: ["priceChecker"],
-            message: priceCheckerRevertedMessage,
-          },
-        )
-        .refine(
-          // @ts-ignore
-          (data) => {
-            if (priceChecker !== PRICE_CHECKERS.META) {
-              return true;
-            }
-            return (
-              data.swapPath[0] === tokenSell.address &&
-              data.swapPath.slice(-1)[0] === tokenBuy.address
-            );
-          },
-          {
-            path: ["priceChecker"],
-            message:
-              "The first token must be the token sell and the last token must be the token buy",
           },
         )
     );

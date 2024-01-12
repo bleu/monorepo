@@ -5,12 +5,15 @@ import Link from "next/link";
 import React from "react";
 
 import Fathom from "./Fathom";
+import { ToastProvider } from "./Toast";
 
 export function RootLayout({ children }: React.PropsWithChildren) {
   return (
     <SafeProvider loader={<SafeLoader />}>
-      <Fathom />
-      <div className="h-full w-full bg-blue1">{children}</div>
+      <ToastProvider>
+        <Fathom />
+        <div className="h-full w-full bg-blue1">{children}</div>
+      </ToastProvider>
     </SafeProvider>
   );
 }

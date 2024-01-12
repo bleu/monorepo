@@ -140,14 +140,13 @@ function OrderSummary({
       key: "numberOfOrders",
     },
     data.isTwapNeeded && { label: "TWAP delay", key: "delay" },
-    data.priceChecker != PRICE_CHECKERS.META && {
-      ...priceCheckersArgumentsMapping[data.priceChecker as PRICE_CHECKERS].map(
-        (arg) => ({
+    ...priceCheckersArgumentsMapping[data.priceChecker as PRICE_CHECKERS].map(
+      (arg) =>
+        data.priceChecker != PRICE_CHECKERS.META && {
           label: arg.label,
           key: arg.name,
-        }),
-      ),
-    },
+        },
+    ),
   ];
 
   return (

@@ -9,7 +9,7 @@ export enum TransactionStatus {
   PARTIALLY_EXECUTED = "Partially executed",
   CANCELED = "Canceled",
   EXECUTED = "Fully executed",
-  EXECUTED_AND_CANCELED = "Partially executed and canceled",
+  EXECUTED_AND_CANCELED = "Partially executed/canceled",
 }
 
 export enum SwapStatus {

@@ -7,7 +7,7 @@ import {
 } from "@bleu-fi/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { PlusIcon } from "@radix-ui/react-icons";
-import { goerli, mainnet } from "viem/chains";
+import { gnosis, goerli, mainnet } from "viem/chains";
 
 import { Button } from "#/components";
 import { LinkComponent } from "#/components/Link";
@@ -28,7 +28,11 @@ export function HomePageWrapper({
     return <WalletNotConnected />;
   }
 
-  if (safe.chainId !== mainnet.id && safe.chainId !== goerli.id) {
+  if (
+    safe.chainId !== mainnet.id &&
+    safe.chainId !== goerli.id &&
+    safe.chainId !== gnosis.id
+  ) {
     return (
       <div className="flex h-full w-full flex-col items-center rounded-3xl px-12 py-16 md:py-20">
         <div className="text-center text-3xl text-amber9">

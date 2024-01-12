@@ -2,15 +2,23 @@
 
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { TokenBalance, TokenType } from "@gnosis.pm/safe-apps-sdk";
-import { ChevronDownIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import {
+  ChevronDownIcon,
+  MagnifyingGlassIcon,
+  PlusIcon,
+} from "@radix-ui/react-icons";
+import { erc20ABI } from "@wagmi/core";
 import Image from "next/image";
 import { tokenLogoUri } from "public/tokens/logoUri";
 import React, { useEffect, useState } from "react";
-import { formatUnits } from "viem";
+import { formatUnits, isAddress } from "viem";
 
+import { Button } from "#/components";
 import { Dialog } from "#/components/Dialog";
 import Table from "#/components/Table";
+import { Toast } from "#/components/Toast";
 import { useSafeBalances } from "#/hooks/useSafeBalances";
+import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 import { cowTokenList } from "#/utils/cowTokenList";
 
 import { tokenPriceChecker } from "../[network]/order/new/page";
@@ -168,6 +176,8 @@ function TokenModal({
   }, [loaded, assets]);
 
   const [tokenSearchQuery, setTokenSearchQuery] = useState("");
+  const [isNotifierOpen, setIsNotifierOpen] = useState(false);
+  const publicClient = publicClientsFromIds[chainId as ChainId];
 
   function filterTokenInput({
     tokenSearchQuery,
@@ -179,8 +189,46 @@ function TokenModal({
     {
       if (!token) return false;
       const regex = new RegExp(tokenSearchQuery, "i");
-      return regex.test(Object.values(token).join(","));
+      return regex.test(Object.values(token.tokenInfo).join(","));
     }
+  }
+
+  async function manuallyImportToken() {
+    if (!isAddress(tokenSearchQuery)) {
+      setIsNotifierOpen(true);
+      return;
+    }
+
+    const tokensContracts = ["name", "symbol", "decimals"].map(
+      (functionName) => ({
+        abi: erc20ABI,
+        address: tokenSearchQuery,
+        functionName: functionName,
+      }),
+    );
+    const data = await publicClient.multicall({ contracts: tokensContracts });
+
+    if (data.some((result) => result.error)) {
+      setIsNotifierOpen(true);
+      return;
+    }
+
+    const token = {
+      balance: "0",
+      fiatBalance: "0",
+      fiatConversion: "0",
+      tokenInfo: {
+        chainId: chainId as ChainId,
+        address: tokenSearchQuery,
+        decimals: data[2].result as number,
+        name: data[0].result as string,
+        symbol: data[1].result as string,
+        logoUri: "/assets/generic-token-logo.png",
+        type: TokenType.ERC20,
+      },
+    };
+
+    setTokens((prevTokens) => [token, ...prevTokens]);
   }
   return (
     <div className="max-h-[30rem] divide-y divide-slate7 overflow-y-scroll text-white scrollbar-thin scrollbar-track-blue3 scrollbar-thumb-slate12">
@@ -196,7 +244,7 @@ function TokenModal({
             }
             value={tokenSearchQuery}
           />
-          <div className="flex items-center h-9 rounded-r-[4px] bg-slate12 px-2 leading-none outline-none transition hover:bg-slate11 disabled:cursor-not-allowed">
+          <div className="flex items-center h-9 rounded-r-[4px] bg-slate12 px-2 leading-none outline-none transition disabled:cursor-not-allowed">
             <MagnifyingGlassIcon
               color="rgb(31 41 55)"
               className="font-semibold"
@@ -204,6 +252,9 @@ function TokenModal({
               width={20}
             />
           </div>
+          <Button className="mx-2 p-2" onClick={manuallyImportToken}>
+            <PlusIcon />
+          </Button>
         </div>
       </div>
       <Table color="blue">
@@ -242,6 +293,28 @@ function TokenModal({
             })}
         </Table.Body>
       </Table>
+      <Toast
+        content={<ToastContent />}
+        isOpen={isNotifierOpen}
+        setIsOpen={setIsNotifierOpen}
+        duration={5000}
+        variant="alert"
+      />
+    </div>
+  );
+}
+
+function ToastContent() {
+  return (
+    <div className="flex h-14 flex-row items-center justify-between px-4 py-8">
+      <div className="flex flex-col justify-between space-y-1">
+        <h1 className="text-md font-medium text-slate12">
+          Error importing token
+        </h1>
+        <h3 className="mb-2 text-sm leading-3 text-slate11">
+          Check if the address is correct.
+        </h3>
+      </div>
     </div>
   );
 }

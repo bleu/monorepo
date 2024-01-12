@@ -14,14 +14,14 @@ export default function formatTvlChartData(
   return {
     name: "TVL",
     yaxis: yaxis,
-    hovertemplate: "%{y:$,.0f}",
+    hovertemplate: "TVL (USD): %{y:$,.0f}<extra></extra>",
     x: tvlData.x,
     y: tvlData.y,
     marker: {
       color: amberDark.amber9,
       opacity: 0.8,
     },
-    line: { shape: "spline" } as const,
+    line: { shape: "linear" } as const,
     type: "bar" as PlotType,
     // @ts-ignore: 2322
     offsetgroup: 2,

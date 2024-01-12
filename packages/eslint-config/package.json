@@ -7,22 +7,22 @@
   ],
   "devDependencies": {
     "@bleu-fi/utils": "workspace:^",
-    "@next/eslint-plugin-next": "^13.5.6",
-    "@typescript-eslint/eslint-plugin": "^6.13.1",
-    "@typescript-eslint/parser": "^6.13.1",
-    "eslint": "^8.54.0",
+    "@next/eslint-plugin-next": "^14.0.4",
+    "@typescript-eslint/eslint-plugin": "^6.17.0",
+    "@typescript-eslint/parser": "^6.17.0",
+    "eslint": "^8.56.0",
     "eslint-config-next": "latest",
-    "eslint-config-prettier": "^9.0.0",
+    "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-compat": "latest",
     "eslint-plugin-graphql": "latest",
-    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-prettier": "latest",
     "eslint-plugin-react-hooks": "latest",
     "eslint-plugin-simple-import-sort": "latest",
-    "eslint-plugin-tailwindcss": "^3.13.0",
-    "prettier": "^3.1.0",
-    "prettier-plugin-tailwindcss": "^0.5.7",
-    "typescript": "^5.3.2"
+    "eslint-plugin-tailwindcss": "^3.13.1",
+    "prettier": "^3.1.1",
+    "prettier-plugin-tailwindcss": "^0.5.10",
+    "typescript": "^5.3.3"
   }
 }

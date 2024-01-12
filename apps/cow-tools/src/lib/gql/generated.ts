@@ -24,8 +24,8 @@ export type Query = {
   swaps: Array<Swap>;
   token?: Maybe<Token>;
   tokens: Array<Token>;
-  transactionHash?: Maybe<TransactionHash>;
-  transactionHashs: Array<TransactionHash>;
+  transaction?: Maybe<Transaction>;
+  transactions: Array<Transaction>;
   user?: Maybe<User>;
   users: Array<User>;
 };
@@ -63,19 +63,19 @@ export type QueryTokensArgs = {
 };
 
 
-export type QueryTransactionHashArgs = {
+export type QueryTransactionArgs = {
   id: Scalars['String']['input'];
   timestamp?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
-export type QueryTransactionHashsArgs = {
+export type QueryTransactionsArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Scalars['String']['input']>;
   orderDirection?: InputMaybe<Scalars['String']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   timestamp?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<TransactionHashFilter>;
+  where?: InputMaybe<TransactionFilter>;
 };
 
 
@@ -94,28 +94,44 @@ export type QueryUsersArgs = {
   where?: InputMaybe<UserFilter>;
 };
 
-export enum Status {
-  Cancelled = 'CANCELLED',
-  Executed = 'EXECUTED',
-  Requested = 'REQUESTED'
-}
-
 export type Swap = {
   __typename?: 'Swap';
+  Transaction: Scalars['String']['output'];
+  TransactionId: Scalars['String']['output'];
   chainId: Scalars['Int']['output'];
   id: Scalars['String']['output'];
   orderContract: Scalars['String']['output'];
   priceChecker: Scalars['String']['output'];
   priceCheckerData: Scalars['String']['output'];
-  status: Status;
   to: Scalars['String']['output'];
   tokenAmountIn: Scalars['BigInt']['output'];
-  tokenIn?: Maybe<Token>;
-  tokenOut?: Maybe<Token>;
-  transactionHash: Scalars['String']['output'];
+  tokenIn: Token;
+  tokenInId: Scalars['String']['output'];
+  tokenOut: Token;
+  tokenOutId: Scalars['String']['output'];
 };
 
 export type SwapFilter = {
+  Transaction?: InputMaybe<Scalars['String']['input']>;
+  TransactionId?: InputMaybe<Scalars['String']['input']>;
+  TransactionId_contains?: InputMaybe<Scalars['String']['input']>;
+  TransactionId_ends_with?: InputMaybe<Scalars['String']['input']>;
+  TransactionId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  TransactionId_not?: InputMaybe<Scalars['String']['input']>;
+  TransactionId_not_contains?: InputMaybe<Scalars['String']['input']>;
+  TransactionId_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  TransactionId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  TransactionId_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  TransactionId_starts_with?: InputMaybe<Scalars['String']['input']>;
+  Transaction_contains?: InputMaybe<Scalars['String']['input']>;
+  Transaction_ends_with?: InputMaybe<Scalars['String']['input']>;
+  Transaction_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  Transaction_not?: InputMaybe<Scalars['String']['input']>;
+  Transaction_not_contains?: InputMaybe<Scalars['String']['input']>;
+  Transaction_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  Transaction_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  Transaction_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  Transaction_starts_with?: InputMaybe<Scalars['String']['input']>;
   chainId?: InputMaybe<Scalars['Int']['input']>;
   chainId_gt?: InputMaybe<Scalars['Int']['input']>;
   chainId_gte?: InputMaybe<Scalars['Int']['input']>;
@@ -164,10 +180,6 @@ export type SwapFilter = {
   priceChecker_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   priceChecker_not_starts_with?: InputMaybe<Scalars['String']['input']>;
   priceChecker_starts_with?: InputMaybe<Scalars['String']['input']>;
-  status?: InputMaybe<Status>;
-  status_in?: InputMaybe<Array<InputMaybe<Status>>>;
-  status_not?: InputMaybe<Status>;
-  status_not_in?: InputMaybe<Array<InputMaybe<Status>>>;
   to?: InputMaybe<Scalars['String']['input']>;
   to_contains?: InputMaybe<Scalars['String']['input']>;
   to_ends_with?: InputMaybe<Scalars['String']['input']>;
@@ -186,47 +198,57 @@ export type SwapFilter = {
   tokenAmountIn_lte?: InputMaybe<Scalars['BigInt']['input']>;
   tokenAmountIn_not?: InputMaybe<Scalars['BigInt']['input']>;
   tokenAmountIn_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
-  tokenIn?: InputMaybe<Scalars['String']['input']>;
-  tokenIn_contains?: InputMaybe<Scalars['String']['input']>;
-  tokenIn_ends_with?: InputMaybe<Scalars['String']['input']>;
-  tokenIn_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  tokenIn_not?: InputMaybe<Scalars['String']['input']>;
-  tokenIn_not_contains?: InputMaybe<Scalars['String']['input']>;
-  tokenIn_not_ends_with?: InputMaybe<Scalars['String']['input']>;
-  tokenIn_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  tokenIn_not_starts_with?: InputMaybe<Scalars['String']['input']>;
-  tokenIn_starts_with?: InputMaybe<Scalars['String']['input']>;
-  tokenOut?: InputMaybe<Scalars['String']['input']>;
-  tokenOut_contains?: InputMaybe<Scalars['String']['input']>;
-  tokenOut_ends_with?: InputMaybe<Scalars['String']['input']>;
-  tokenOut_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  tokenOut_not?: InputMaybe<Scalars['String']['input']>;
-  tokenOut_not_contains?: InputMaybe<Scalars['String']['input']>;
-  tokenOut_not_ends_with?: InputMaybe<Scalars['String']['input']>;
-  tokenOut_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  tokenOut_not_starts_with?: InputMaybe<Scalars['String']['input']>;
-  tokenOut_starts_with?: InputMaybe<Scalars['String']['input']>;
-  transactionHash?: InputMaybe<Scalars['String']['input']>;
-  transactionHash_contains?: InputMaybe<Scalars['String']['input']>;
-  transactionHash_ends_with?: InputMaybe<Scalars['String']['input']>;
-  transactionHash_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  transactionHash_not?: InputMaybe<Scalars['String']['input']>;
-  transactionHash_not_contains?: InputMaybe<Scalars['String']['input']>;
-  transactionHash_not_ends_with?: InputMaybe<Scalars['String']['input']>;
-  transactionHash_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  transactionHash_not_starts_with?: InputMaybe<Scalars['String']['input']>;
-  transactionHash_starts_with?: InputMaybe<Scalars['String']['input']>;
+  tokenInId?: InputMaybe<Scalars['String']['input']>;
+  tokenInId_contains?: InputMaybe<Scalars['String']['input']>;
+  tokenInId_ends_with?: InputMaybe<Scalars['String']['input']>;
+  tokenInId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  tokenInId_not?: InputMaybe<Scalars['String']['input']>;
+  tokenInId_not_contains?: InputMaybe<Scalars['String']['input']>;
+  tokenInId_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  tokenInId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  tokenInId_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  tokenInId_starts_with?: InputMaybe<Scalars['String']['input']>;
+  tokenOutId?: InputMaybe<Scalars['String']['input']>;
+  tokenOutId_contains?: InputMaybe<Scalars['String']['input']>;
+  tokenOutId_ends_with?: InputMaybe<Scalars['String']['input']>;
+  tokenOutId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  tokenOutId_not?: InputMaybe<Scalars['String']['input']>;
+  tokenOutId_not_contains?: InputMaybe<Scalars['String']['input']>;
+  tokenOutId_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  tokenOutId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  tokenOutId_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  tokenOutId_starts_with?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Token = {
   __typename?: 'Token';
-  decimals?: Maybe<Scalars['Int']['output']>;
+  address: Scalars['String']['output'];
+  chainId: Scalars['Int']['output'];
+  decimals: Scalars['Int']['output'];
   id: Scalars['String']['output'];
-  name?: Maybe<Scalars['String']['output']>;
-  symbol?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  symbol: Scalars['String']['output'];
 };
 
 export type TokenFilter = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  address_contains?: InputMaybe<Scalars['String']['input']>;
+  address_ends_with?: InputMaybe<Scalars['String']['input']>;
+  address_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  address_not?: InputMaybe<Scalars['String']['input']>;
+  address_not_contains?: InputMaybe<Scalars['String']['input']>;
+  address_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  address_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  address_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  address_starts_with?: InputMaybe<Scalars['String']['input']>;
+  chainId?: InputMaybe<Scalars['Int']['input']>;
+  chainId_gt?: InputMaybe<Scalars['Int']['input']>;
+  chainId_gte?: InputMaybe<Scalars['Int']['input']>;
+  chainId_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  chainId_lt?: InputMaybe<Scalars['Int']['input']>;
+  chainId_lte?: InputMaybe<Scalars['Int']['input']>;
+  chainId_not?: InputMaybe<Scalars['Int']['input']>;
+  chainId_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
   decimals?: InputMaybe<Scalars['Int']['input']>;
   decimals_gt?: InputMaybe<Scalars['Int']['input']>;
   decimals_gte?: InputMaybe<Scalars['Int']['input']>;
@@ -267,17 +289,18 @@ export type TokenFilter = {
   symbol_starts_with?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type TransactionHash = {
-  __typename?: 'TransactionHash';
+export type Transaction = {
+  __typename?: 'Transaction';
   blockNumber: Scalars['BigInt']['output'];
   blockTimestamp: Scalars['BigInt']['output'];
+  chainId: Scalars['Int']['output'];
   id: Scalars['String']['output'];
   swaps: Array<Swap>;
-  user?: Maybe<User>;
+  user: Scalars['String']['output'];
 };
 
 
-export type TransactionHashSwapsArgs = {
+export type TransactionSwapsArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Scalars['String']['input']>;
   orderDirection?: InputMaybe<Scalars['String']['input']>;
@@ -285,7 +308,7 @@ export type TransactionHashSwapsArgs = {
   timestamp?: InputMaybe<Scalars['Int']['input']>;
 };
 
-export type TransactionHashFilter = {
+export type TransactionFilter = {
   blockNumber?: InputMaybe<Scalars['BigInt']['input']>;
   blockNumber_gt?: InputMaybe<Scalars['BigInt']['input']>;
   blockNumber_gte?: InputMaybe<Scalars['BigInt']['input']>;
@@ -302,6 +325,14 @@ export type TransactionHashFilter = {
   blockTimestamp_lte?: InputMaybe<Scalars['BigInt']['input']>;
   blockTimestamp_not?: InputMaybe<Scalars['BigInt']['input']>;
   blockTimestamp_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  chainId?: InputMaybe<Scalars['Int']['input']>;
+  chainId_gt?: InputMaybe<Scalars['Int']['input']>;
+  chainId_gte?: InputMaybe<Scalars['Int']['input']>;
+  chainId_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  chainId_lt?: InputMaybe<Scalars['Int']['input']>;
+  chainId_lte?: InputMaybe<Scalars['Int']['input']>;
+  chainId_not?: InputMaybe<Scalars['Int']['input']>;
+  chainId_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
   id?: InputMaybe<Scalars['String']['input']>;
   id_contains?: InputMaybe<Scalars['String']['input']>;
   id_ends_with?: InputMaybe<Scalars['String']['input']>;
@@ -326,8 +357,10 @@ export type TransactionHashFilter = {
 
 export type User = {
   __typename?: 'User';
+  address: Scalars['String']['output'];
+  chainId: Scalars['Int']['output'];
   id: Scalars['String']['output'];
-  transactions: Array<TransactionHash>;
+  transactions: Array<Transaction>;
 };
 
 
@@ -340,6 +373,24 @@ export type UserTransactionsArgs = {
 };
 
 export type UserFilter = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  address_contains?: InputMaybe<Scalars['String']['input']>;
+  address_ends_with?: InputMaybe<Scalars['String']['input']>;
+  address_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  address_not?: InputMaybe<Scalars['String']['input']>;
+  address_not_contains?: InputMaybe<Scalars['String']['input']>;
+  address_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  address_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  address_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  address_starts_with?: InputMaybe<Scalars['String']['input']>;
+  chainId?: InputMaybe<Scalars['Int']['input']>;
+  chainId_gt?: InputMaybe<Scalars['Int']['input']>;
+  chainId_gte?: InputMaybe<Scalars['Int']['input']>;
+  chainId_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  chainId_lt?: InputMaybe<Scalars['Int']['input']>;
+  chainId_lte?: InputMaybe<Scalars['Int']['input']>;
+  chainId_not?: InputMaybe<Scalars['Int']['input']>;
+  chainId_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
   id?: InputMaybe<Scalars['String']['input']>;
   id_contains?: InputMaybe<Scalars['String']['input']>;
   id_ends_with?: InputMaybe<Scalars['String']['input']>;
@@ -357,7 +408,7 @@ export type AllTransactionFromUserQueryVariables = Exact<{
 }>;
 
 
-export type AllTransactionFromUserQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, transactions: Array<{ __typename?: 'TransactionHash', id: string, blockNumber: any, blockTimestamp: any, swaps: Array<{ __typename?: 'Swap', id: string, chainId: number, transactionHash: string, tokenAmountIn: any, priceChecker: string, orderContract: string, priceCheckerData: string, to: string, tokenIn?: { __typename?: 'Token', id: string, name?: string | null, symbol?: string | null, decimals?: number | null } | null, tokenOut?: { __typename?: 'Token', id: string, name?: string | null, symbol?: string | null, decimals?: number | null } | null }> }> }> };
+export type AllTransactionFromUserQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, transactions: Array<{ __typename?: 'Transaction', id: string, blockNumber: any, blockTimestamp: any, swaps: Array<{ __typename?: 'Swap', id: string, chainId: number, tokenAmountIn: any, priceChecker: string, orderContract: string, priceCheckerData: string, to: string, tokenIn: { __typename?: 'Token', address: string, name: string, symbol: string, decimals: number }, tokenOut: { __typename?: 'Token', address: string, name: string, symbol: string, decimals: number } }> }> }> };
 
 
 export const AllTransactionFromUserDocument = gql`
@@ -371,20 +422,19 @@ export const AllTransactionFromUserDocument = gql`
       swaps {
         id
         chainId
-        transactionHash
         tokenAmountIn
         priceChecker
         orderContract
         priceCheckerData
         to
         tokenIn {
-          id
+          address
           name
           symbol
           decimals
         }
         tokenOut {
-          id
+          address
           name
           symbol
           decimals

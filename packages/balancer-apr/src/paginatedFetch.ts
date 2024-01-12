@@ -39,12 +39,26 @@ export async function paginatedFetch<T>(
   processFn: ProcessFn<T>,
   initialId = "",
   step = BATCH_SIZE,
+  variables = {},
 ): Promise<void> {
   await paginate(initialId, step, async (latestId: string) => {
-    const response = await gql(networkEndpoint, query, { latestId });
+    const response = await gql(networkEndpoint, query, {
+      latestId,
+      ...variables,
+    });
     if (response.data) {
+      logIfVerbose({ response });
       await processFn(response.data);
       return response.data;
+    }
+
+    if (response.errors) {
+      console.error(
+        `Failed to fetch data from ${networkEndpoint}, ${query}, ${latestId}`,
+      );
+      console.error({ variables });
+      console.error(response.errors);
+      throw new Error("Failed to fetch data");
     }
 
     return null;

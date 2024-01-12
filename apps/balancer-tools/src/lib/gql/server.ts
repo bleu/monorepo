@@ -1,8 +1,8 @@
 import { Subgraph, SUBGRAPHS } from "@bleu-fi/gql/codegen";
 import balancerSdks from "@bleu-fi/gql/src/balancer/index.server";
+import balancerApiV3Sdks from "@bleu-fi/gql/src/balancer-api-v3";
 import gaugesSdks from "@bleu-fi/gql/src/balancer-gauges/index.server";
 import poolMetadataSdks from "@bleu-fi/gql/src/balancer-pools-metadata/index.server";
-import rewardsSdks from "@bleu-fi/gql/src/balancer-rewards/index.server";
 import {
   Address,
   DELEGATE_OWNER,
@@ -11,8 +11,6 @@ import {
   networkMultisigs,
 } from "@bleu-fi/utils";
 import { GraphQLClient } from "graphql-request";
-
-import { withCache } from "../cache";
 
 export function impersonateWhetherDAO(
   chainId: string,
@@ -42,32 +40,10 @@ const clientFor = (client: Subgraph) => (chainId: string) => {
   return new GraphQLClient(endpoint);
 };
 
-function wrapWithCache<T extends object>(obj: T): T {
-  return new Proxy(obj, {
-    get(target, propKey) {
-      const origMethod = target[propKey as keyof T];
-      if (typeof origMethod === "function") {
-        return function (...args: unknown[]) {
-          return withCache(origMethod.bind(target))(...args);
-        };
-      }
-      return origMethod;
-    },
-  }) as T;
-}
-
 export const pools = {
   client: clientFor(Subgraph.Balancer),
   gql: (chainId: number | string) =>
     balancerSdks[networkFor(chainId)](pools.client(String(chainId))),
-};
-
-export const poolsWithCache = {
-  client: clientFor(Subgraph.Balancer),
-  gql: (chainId: number | string) =>
-    wrapWithCache(
-      balancerSdks[networkFor(chainId)](poolsWithCache.client(String(chainId))),
-    ),
 };
 
 export const poolsMetadata = {
@@ -81,9 +57,7 @@ export const poolsMetadata = {
 export const gauges = {
   client: clientFor(Subgraph.BalancerGauges),
   gql: (chainId: number | string) =>
-    wrapWithCache(
-      gaugesSdks[networkFor(chainId)](gauges.client(String(chainId))),
-    ),
+    gaugesSdks[networkFor(chainId)](gauges.client(String(chainId))),
 };
 
 export const internalBalances = {
@@ -92,8 +66,8 @@ export const internalBalances = {
     balancerSdks[networkFor(chainId)](internalBalances.client(String(chainId))),
 };
 
-export const rewards = {
-  client: clientFor(Subgraph.BalancerRewards),
+export const balancerApiV3 = {
+  client: clientFor(Subgraph.BalancerApiV3),
   gql: (chainId: string) =>
-    rewardsSdks[networkFor(chainId)](rewards.client(chainId)),
+    balancerApiV3Sdks[networkFor(chainId)](balancerApiV3.client(chainId)),
 };

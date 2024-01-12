@@ -49,11 +49,15 @@ export function createClientForChain(chain: ChainType) {
     chain,
     transport: http(
       RPC_ENDPOINT_MAP[chain.id as keyof typeof RPC_ENDPOINT_MAP],
+      {
+        batch: true,
+      },
     ),
+    cacheTime: 10_000,
     batch: {
       multicall: {
-        batchSize: 24,
-        wait: 1000,
+        batchSize: 100,
+        wait: 500,
       },
     },
   });

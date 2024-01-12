@@ -48,8 +48,8 @@ export function TransactionInfo({
     <div className="text-white">
       <div className="font-semibold text-2xl flex justify-between">
         Price Checker Data -{" "}
-        {order.tokenIn?.symbol || truncateAddress(order.tokenIn?.id)} for{" "}
-        {order.tokenOut?.symbol || truncateAddress(order.tokenOut?.id)}
+        {order.tokenIn?.symbol || truncateAddress(order.tokenIn?.address)} for{" "}
+        {order.tokenOut?.symbol || truncateAddress(order.tokenOut?.address)}
       </div>
       <hr className="mb-2" />
       <div className="flex flex-col">

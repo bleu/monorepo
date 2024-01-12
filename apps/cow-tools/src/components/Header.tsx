@@ -1,32 +1,23 @@
 "use client";
 
-import { networkFor } from "@bleu-fi/utils";
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import Image from "next/image";
 import Link from "next/link";
 import { ReactNode } from "react";
 
-import { useNetworks } from "#/contexts/networks";
-import toTitleCase from "#/utils/toTitleCase";
-import { useSwitchNetwork } from "#/wagmi";
-
-import { CustomConnectButton } from "./CustomConnectButton";
+import { truncateAddress } from "#/utils/truncate";
 
 interface IHeader {
   linkUrl: string;
   imageSrc?: string;
   children?: ReactNode;
-  endButton?: ReactNode;
   onLinkClick?: () => void;
 }
 
-export function Header({
-  linkUrl,
-  imageSrc,
-  children,
-  endButton = <CustomConnectButton />,
-  onLinkClick,
-}: IHeader) {
+export function Header({ linkUrl, imageSrc, children, onLinkClick }: IHeader) {
+  const {
+    safe: { safeAddress },
+  } = useSafeAppsSDK();
   return (
     <div className="flex h-20 w-full items-center border-b border-b-blue3 bg-blue2 p-4 text-white">
       <div className="mr-auto flex sm:flex-1 justify-start">
@@ -43,30 +34,11 @@ export function Header({
         </Link>
       </div>
       {children && <div className="flex flex-1 justify-center">{children}</div>}
-      <div className="ml-auto flex flex-1 justify-end">{endButton}</div>
-    </div>
-  );
-}
-
-export function HeaderNetworkMismatchAlert() {
-  const { mismatchedNetworks, urlPathNetwork } = useNetworks();
-
-  const { switchNetwork } = useSwitchNetwork({ chainId: urlPathNetwork });
-
-  if (!mismatchedNetworks || !urlPathNetwork) return null;
-
-  return (
-    <div className="flex min-h-[50px] flex-row items-center justify-center bg-tomato3 text-white">
-      <ExclamationTriangleIcon className="mr-3 h-4 w-4" />
-      <p className="pr-4">
-        Please switch to {toTitleCase(networkFor(urlPathNetwork))}
-      </p>
-      <button
-        className="inline-block h-6 cursor-pointer rounded-lg border-none bg-tomato4 px-2 text-xs text-white shadow hover:bg-tomato6 hover:text-white hover:shadow-none"
-        onClick={() => switchNetwork?.()}
-      >
-        Switch network
-      </button>
+      <div className="ml-auto flex flex-1 justify-end">
+        <div className="bg-blue3 text-slate12 border-blue3 rounded-md text-center text-sm font-semibold border focus-visible:outline-blue7 focus-visible:outline-offset-2 disabled:opacity-40 py-3 px-5">
+          {truncateAddress(safeAddress)}
+        </div>
+      </div>
     </div>
   );
 }

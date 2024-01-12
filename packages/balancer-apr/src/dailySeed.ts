@@ -21,6 +21,7 @@ import {
 } from "drizzle-orm";
 import { Address } from "viem";
 
+import { blockListRateProvider } from "./blockListRateProvider";
 import {
   NETWORK_TO_BALANCER_ENDPOINT_MAP,
   NETWORK_TO_REWARDS_ENDPOINT_MAP,
@@ -48,18 +49,17 @@ import {
   tokenPrices,
   vebalRounds,
 } from "./db/schema";
-import {
-  addToTable,
-  ETLGauges,
-  ETLPoolRateProvider,
-  fetchTokenPrice,
-  transformNetworks,
-} from "./index";
+import { fetchTokenPrice } from "./fetchTokenPrices";
+import { addToTable, removeLiquidityBootstraping } from "./index";
 import * as balEmissions from "./lib/balancer/emissions";
 import { DefiLlamaAPI } from "./lib/defillama";
-import { getRates } from "./lib/getRates";
-import { getPoolRelativeWeights } from "./lib/getRelativeWeight";
+import { extractGauges } from "./lib/etl/extract/extractGauges";
+import { extractPoolRateProviders } from "./lib/etl/extract/extractPoolRateProviders";
+import { getPoolRelativeWeights } from "./lib/etl/extract/getPoolRelativeWeights";
+import { getRates } from "./lib/etl/extract/getRates";
+// import { transformGauges } from "./lib/etl/transform/transformGauges";
 import { paginatedFetchDateRange } from "./paginatedFetch";
+import { transformNetworks } from "./transformNetworks";
 
 const networkNames = Object.keys(
   NETWORK_TO_BALANCER_ENDPOINT_MAP,
@@ -98,24 +98,35 @@ async function seedVebalRounds() {
   const startDate = new Date("2022-04-14T00:00:00.000Z");
   let roundNumber = 1;
 
+  const vebalRoundsList = [];
+
   while (startDate <= new Date()) {
     const endDate = new Date(startDate);
+    const newStartDate = new Date(startDate);
     endDate.setUTCDate(endDate.getUTCDate() + 6);
     endDate.setUTCHours(23, 59, 59, 999);
 
-    await db
-      .insert(vebalRounds)
-      .values({
-        startDate: startDate,
-        endDate: endDate,
-        roundNumber: roundNumber,
-      })
-      .onConflictDoNothing()
-      .execute();
+    vebalRoundsList.push({
+      newStartDate,
+      endDate,
+      roundNumber,
+    });
 
     startDate.setUTCDate(startDate.getUTCDate() + 7);
     roundNumber++;
   }
+  vebalRoundsList.forEach(async (item) => {
+    await db
+      .insert(vebalRounds)
+      .values({
+        startDate: item.newStartDate,
+        endDate: item.endDate,
+        roundNumber: item.roundNumber,
+        updatedAt: new Date(),
+      })
+      .onConflictDoNothing()
+      .execute();
+  });
 }
 
 async function seedBalEmission() {
@@ -394,6 +405,7 @@ async function extractPoolRateProviderSnapshot(network: string) {
     try {
       const rates = await getRates(rateProviderTuples);
 
+      // @ts-expect-error
       for (const [address, network, block, timestamp, rate] of rates) {
         db.insert(poolTokenRateProvidersSnapshot)
           .values({
@@ -601,8 +613,16 @@ async function transformPoolSnapshotsData() {
   `);
 
   await db.execute(sql`
-  INSERT INTO pool_snapshots (amounts, total_shares, swap_volume, swap_fees, liquidity, timestamp, protocol_yield_fee_cache, protocol_swap_fee_cache, external_id, pool_external_id, raw_data)
-  SELECT amounts, total_shares, swap_volume, swap_fees, liquidity, c.timestamp, protocol_yield_fee_cache, protocol_swap_fee_cache, pool_external_id || '-' || c.timestamp AS external_id, pool_external_id, raw_data
+    INSERT INTO pool_snapshots (
+      amounts, total_shares, swap_volume, swap_fees, liquidity, 
+      timestamp, protocol_yield_fee_cache, protocol_swap_fee_cache, 
+      external_id, pool_external_id, raw_data
+  )
+  SELECT DISTINCT ON (pool_external_id, c.timestamp)
+      amounts, total_shares, swap_volume, swap_fees, liquidity, 
+      c.timestamp, protocol_yield_fee_cache, protocol_swap_fee_cache, 
+      pool_external_id || '-' || c.timestamp AS external_id, 
+      pool_external_id, raw_data
   FROM
       pool_snapshots_temp b
   LEFT JOIN
@@ -1328,7 +1348,7 @@ async function calculateApr() {
   console.log("Seeding veBAL APR");
   await db.execute(sql`
     INSERT INTO vebal_apr (timestamp, value, pool_external_id, external_id)
-    SELECT DISTINCT
+    SELECT DISTINCT ON (ps.timestamp, ps.pool_external_id)
         ps.timestamp,
         CASE
             WHEN ps.liquidity = 0 THEN 0
@@ -1359,7 +1379,7 @@ async function calculateApr() {
 
   await db.execute(sql`
     INSERT INTO yield_token_apr (timestamp, token_address, pool_external_id, external_id, value)
-    SELECT DISTINCT
+    SELECT DISTINCT ON (pool_snapshots.timestamp, pool_tokens.token_address, pool_snapshots.pool_external_id)
     pool_snapshots.timestamp,
     pool_tokens.token_address,
     pool_snapshots.pool_external_id,
@@ -1397,6 +1417,11 @@ async function calculateApr() {
             AND p1.timestamp >= '${sql.raw(
               twoDaysAgo.toISOString(),
             )}'::timestamp AT TIME ZONE 'UTC'
+            AND p1.rate_provider_address NOT IN (${sql.raw(
+              blockListRateProvider
+                .map((item) => `'${item.rateProviderAddress}'`)
+                .join(", "),
+            )})
     ) AS subquery ON subquery.timestamp = pool_snapshots.timestamp
     AND subquery.token_address = pool_tokens.token_address
     AND subquery.row_num = 1 -- Use the latest rate
@@ -1425,7 +1450,7 @@ async function calculateApr() {
 
   await db.execute(sql`
     INSERT INTO yield_token_apr (timestamp, token_address, pool_external_id, external_id, value)
-    SELECT DISTINCT
+    SELECT DISTINCT ON (pool_snapshots.timestamp, pool_tokens.token_address, pool_snapshots.pool_external_id)
     pool_snapshots.timestamp,
     pool_tokens.token_address,
     pool_snapshots.pool_external_id,
@@ -1467,6 +1492,11 @@ async function calculateApr() {
             AND p1.timestamp >= '${sql.raw(
               twoDaysAgo.toISOString(),
             )}'::timestamp AT TIME ZONE 'UTC'
+            AND p1.rate_provider_address NOT IN (${sql.raw(
+              blockListRateProvider
+                .map((item) => `'${item.rateProviderAddress}'`)
+                .join(", "),
+            )})
     ) AS subquery ON subquery.timestamp = pool_snapshots.timestamp
     AND subquery.token_address = pool_tokens.token_address
     AND subquery.row_num = 1 -- Use the latest rate
@@ -1532,9 +1562,9 @@ async function calculateApr() {
     const yearlyAmountUsd =
       Number(aprItems.yearlyAmount) * Number(aprItems.tokenPrice);
 
-    const bptPrice = Number(aprItems.liquidity) / Number(aprItems.totalShares);
-    const totalSupplyUsd = Number(aprItems.totalSupply) * Number(bptPrice);
-    const apr = (yearlyAmountUsd / totalSupplyUsd) * 100;
+    // const bptPrice = Number(aprItems.liquidity) / Number(aprItems.totalShares);
+    // const totalSupplyUsd = Number(aprItems.totalSupply) * Number(bptPrice);
+    const apr = (yearlyAmountUsd / Number(aprItems.liquidity)) * 100;
 
     await db
       .insert(rewardsTokenApr)
@@ -1568,17 +1598,25 @@ export async function runDailyETLs() {
   await seedBalEmission();
   await ETLPools();
   await ETLSnapshots();
-  await ETLGauges();
+
+  await extractGauges();
+  // await transformGauges();
+
   await ETLPoolRewards();
   await calculatePoolRewardsSnapshots();
   await fetchBalPrices();
   await ETLGaugesSnapshot();
   await fetchBlocks();
-  await ETLPoolRateProvider();
+
+  await extractPoolRateProviders();
+
   await ETLPoolRateProviderSnapshot();
   await fetchTokenPrices();
   await calculateTokenWeightSnapshots();
+  await removeLiquidityBootstraping();
   await calculateApr();
   console.log("Ended ETL processes");
   process.exit(0);
 }
+
+runDailyETLs();

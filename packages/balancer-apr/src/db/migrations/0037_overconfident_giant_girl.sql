@@ -1,0 +1,1 @@
+ALTER TABLE "gauges" ADD COLUMN "child_gauge_address" varchar;

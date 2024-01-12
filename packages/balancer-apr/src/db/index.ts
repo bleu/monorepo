@@ -1,8 +1,6 @@
 /* eslint-disable no-console */
-// import { sql } from "@vercel/postgres";
 
 import { type Logger } from "drizzle-orm/logger";
-// import { drizzle } from "drizzle-orm/vercel-postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
@@ -10,7 +8,11 @@ import * as schema from "./schema";
 
 class QueryLogger implements Logger {
   logQuery(query: string, params: unknown[]): void {
-    if (process.env.NODE_ENV === "production") return;
+    if (
+      process.env.NODE_ENV === "production" ||
+      process.env.IS_GITHUB === "true"
+    )
+      return;
 
     console.debug("___QUERY___");
     console.debug(query);

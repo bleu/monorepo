@@ -34,7 +34,8 @@ export function TableRowOrder({
     order.tokenIn?.decimals ||
     cowTokenList.find(
       (token) =>
-        token.address == order.tokenIn?.id && token.chainId == order.chainId,
+        token.address == order.tokenIn?.address &&
+        token.chainId == order.chainId,
     )?.decimals ||
     1;
   const tokenInAmount = formatUnits(order.tokenAmountIn, tokenInDecimals);
@@ -53,7 +54,7 @@ export function TableRowOrder({
       <Table.BodyCell />
       <Table.BodyCell>
         <TokenInfo
-          id={order.tokenIn?.id}
+          id={order.tokenIn?.address}
           symbol={order.tokenIn?.symbol}
           chainId={order.chainId}
           amount={tokenInAmount}
@@ -61,7 +62,7 @@ export function TableRowOrder({
       </Table.BodyCell>
       <Table.BodyCell>
         <TokenInfo
-          id={order.tokenOut?.id}
+          id={order.tokenOut?.address}
           symbol={order.tokenOut?.symbol}
           chainId={order.chainId}
         />

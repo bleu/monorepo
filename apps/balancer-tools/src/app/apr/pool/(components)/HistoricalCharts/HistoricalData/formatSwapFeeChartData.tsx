@@ -19,14 +19,14 @@ export default function HistoricalSwapFeeChartData(
   const colletedSwapFeePerRoundData = {
     name: "Collected SwapFee",
     yaxis: yaxis,
-    hovertemplate: "Weekly Fees: $%{y:.2f}<extra></extra>",
+    hovertemplate: "Fees (USD): %{y:$,.2f}<extra></extra>",
     x: collectedSwapFeeData.x,
     y: collectedSwapFeeData.y,
     marker: {
       color: normalBarColor,
       opacity: 1,
     },
-    line: { shape: "spline" } as const,
+    line: { shape: "linear" } as const,
     type: "bar" as PlotType,
     offsetgroup: 1,
   };

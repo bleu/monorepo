@@ -10,7 +10,7 @@ const APP_DISPLAY_NAME = "Historical APR";
 
 export const metadata: Metadata = {
   title: `Balancer - ${APP_DISPLAY_NAME}`,
-  description: "APR Enhancement Calculator for Balancer pools through rounds",
+  description: "Balancer Pools Historical APR",
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {

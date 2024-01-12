@@ -5,7 +5,7 @@ export enum Subgraph {
   BalancerPoolsMetadata = "balancer-pools-metadata",
   BalancerGauges = "balancer-gauges",
   Balancer = "balancer",
-  BalancerRewards = "balancer-rewards",
+  BalancerApiV3 = "balancer-api-v3",
 }
 
 // IMPORTANT NOTE:
@@ -90,30 +90,22 @@ export const SUBGRAPHS = {
       return this.endpoints()[network];
     },
   },
-  [Subgraph.BalancerRewards]: {
-    name: Subgraph.BalancerRewards,
+  [Subgraph.BalancerApiV3]: {
+    name: Subgraph.BalancerApiV3,
     endpoints() {
+      const baseEndpoint = "https://api-v3.balancer.fi/graphql";
+
       return {
-        [Network.Ethereum]:
-          "https://api.studio.thegraph.com/query/40456/balancer-gauges-base/version/latest",
-        [Network.Goerli]:
-          "https://api.studio.thegraph.com/query/40456/balancer-gauges-base/version/latest",
-        [Network.Polygon]:
-          "https://api.studio.thegraph.com/query/40456/balancer-gauges-base/version/latest",
-        [Network.PolygonZKEVM]:
-          "https://api.studio.thegraph.com/query/40456/balancer-gauges-polygon-zk/version/latest",
-        [Network.Arbitrum]:
-          "https://api.studio.thegraph.com/query/40456/balancer-gauges-base/version/latest",
-        [Network.Sepolia]:
-          "https://api.studio.thegraph.com/query/40456/balancer-gauges-sepolia/version/latest",
-        [Network.Gnosis]:
-          "https://api.studio.thegraph.com/query/40456/balancer-gauges-base/version/latest",
-        [Network.Optimism]:
-          "https://api.studio.thegraph.com/query/40456/balancer-gauges-base/version/latest",
-        [Network.Base]:
-          "https://api.studio.thegraph.com/query/40456/balancer-gauges-base/version/latest",
-        [Network.Avalanche]:
-          "https://api.studio.thegraph.com/query/40456/balancer-gauges-base/version/latest",
+        [Network.Ethereum]: `${baseEndpoint}`,
+        [Network.Sepolia]: `${baseEndpoint}`,
+        [Network.Goerli]: `${baseEndpoint}`,
+        [Network.Polygon]: `${baseEndpoint}`,
+        [Network.PolygonZKEVM]: `${baseEndpoint}`,
+        [Network.Arbitrum]: `${baseEndpoint}`,
+        [Network.Gnosis]: `${baseEndpoint}`,
+        [Network.Optimism]: `${baseEndpoint}`,
+        [Network.Base]: `${baseEndpoint}`,
+        [Network.Avalanche]: `${baseEndpoint}`,
       };
     },
     endpointFor(network: Network) {

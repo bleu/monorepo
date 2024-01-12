@@ -170,7 +170,7 @@ function ToastContent() {
   return (
     <div className="flex h-14 flex-row items-center justify-between px-4 py-8">
       <div className="flex flex-col justify-between space-y-1">
-        <h1 className="text-xl font-medium text-slate12">Link copied</h1>
+        <h1 className="text-md font-medium text-slate12">Link copied</h1>
       </div>
     </div>
   );

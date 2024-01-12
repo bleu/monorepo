@@ -78,11 +78,13 @@ export function generatePoolPageLink(
   endAt: Date,
   searchParams?: SearchParams | null,
   poolId?: string,
+  network?: string,
 ) {
   const queryParams = generateQueryParams(startAt, endAt, searchParams);
   if (poolId) {
-    const network = networkFor(new Pool(poolId).network);
-    return `/apr/pool/${network}/${poolId}?startAt=${formatDateToMMDDYYYY(
+    return `/apr/pool/${
+      network || networkFor(new Pool(poolId).network)
+    }/${poolId}?startAt=${formatDateToMMDDYYYY(
       startAt,
     )}&endAt=${formatDateToMMDDYYYY(endAt)}`;
   } else {

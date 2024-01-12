@@ -3,6 +3,8 @@ import { defineConfig } from "@wagmi/cli";
 import { foundry, react } from "@wagmi/cli/plugins";
 import * as chains from "wagmi/chains";
 
+import { gaugeCheckpointerQueriesAbi } from "./src/abis/gaugeCheckpointerQueries";
+import { stakelessGaugeCheckpointerAbi } from "./src/abis/stakelessGaugeCheckpointer";
 import { vaultAbi } from "./src/abis/vault";
 
 export default defineConfig({
@@ -20,6 +22,20 @@ export default defineConfig({
         [chains.arbitrum.id]: "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
         [chains.gnosis.id]: "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
         [chains.polygonZkEvm.id]: "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
+      },
+    },
+    {
+      name: "gaugeCheckpointerQueries",
+      abi: gaugeCheckpointerQueriesAbi,
+      address: {
+        [chains.mainnet.id]: "0x3a855f744f1bd76bc36b05d18cd1ba101a65b25c",
+      },
+    },
+    {
+      name: "stakelessGaugeCheckpointer",
+      abi: stakelessGaugeCheckpointerAbi,
+      address: {
+        [chains.mainnet.id]: "0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98",
       },
     },
   ],

@@ -23,7 +23,7 @@ import { Form, FormMessage } from "#/components/ui/form";
 import { Label } from "#/components/ui/label";
 import { getPriceCheckerFromAddressAndChain } from "#/lib/decode";
 import { encodeExpectedOutArguments } from "#/lib/encode";
-import { fetchCowQuoteAmountOut } from "#/lib/fetchCowQuote";
+import { fetchCowQuote } from "#/lib/fetchCowQuote";
 import {
   deployedPriceCheckersByChain,
   expectedOutCalculatorAddressesMapping,
@@ -69,6 +69,7 @@ export function FormSelectPriceChecker({
       tokenBuy: defaultValues?.tokenBuy,
       sellAmount: defaultValues?.tokenSellAmount,
       publicClient,
+      cowQuotedAmount: quotedAmountOut,
     });
 
   const form = useForm(
@@ -86,7 +87,7 @@ export function FormSelectPriceChecker({
   } = form;
 
   useEffect(() => {
-    fetchCowQuoteAmountOut({
+    fetchCowQuote({
       tokenIn: defaultValues?.tokenSell,
       tokenOut: defaultValues?.tokenBuy,
       amountIn:
@@ -94,8 +95,10 @@ export function FormSelectPriceChecker({
         10 ** defaultValues?.tokenSell.decimals,
       chainId,
       priceQuality: "optimal",
-    }).then((quote) => {
-      setQuotedAmountOut(quote);
+    }).then((res) => {
+      setQuotedAmountOut(
+        Number(res.quote.buyAmount) / 10 ** defaultValues?.tokenBuy.decimals,
+      );
     });
   }, []);
 
@@ -157,7 +160,7 @@ export function FormSelectPriceChecker({
         </Select>
         {errors.priceChecker && (
           <FormMessage className="h-6 text-sm text-tomato10 w-full">
-            <span>{errors.priceChecker.message as string}</span>
+            <p className="text-wrap">{errors.priceChecker.message as string}</p>
           </FormMessage>
         )}
       </div>

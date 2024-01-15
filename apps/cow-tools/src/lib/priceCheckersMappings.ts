@@ -5,7 +5,7 @@ import { truncateAddress } from "#/utils/truncate";
 import { PRICE_CHECKERS, PriceCheckerArgument } from "./types";
 
 const dynamicSlippageDescription =
-  "This value represents the allowed slippage that you accepts between the quote and the order execution";
+  "This value represents the allowed slippage that you accepts between the quote and the order execution (including fees)";
 
 export const convertOutputListOfAddresses = (output: string[]) =>
   String(output.map((address) => truncateAddress(address))).replaceAll(
@@ -13,68 +13,35 @@ export const convertOutputListOfAddresses = (output: string[]) =>
     ", ",
   );
 
+const allowedSlippageInBpsArgument = {
+  name: "allowedSlippageInBps",
+  type: "uint256",
+  label: "Allowed slippage (%)",
+  inputType: "number",
+  convertInput: (input: number) => BigInt(input * 100),
+  convertOutput: (output: bigint) => Number(output) / 100,
+  encodingLevel: 0,
+  description: dynamicSlippageDescription,
+} as PriceCheckerArgument;
+
 export const priceCheckersArgumentsMapping = {
   [PRICE_CHECKERS.FIXED_MIN_OUT]: [
-    {
-      name: "minOut",
-      type: "uint256",
-      label: "Token to buy minimum amount",
-      inputType: "number",
-      convertInput: (input: number, decimals: number) =>
-        BigInt(input * 10 ** decimals),
-      convertOutput: (output: bigint, decimals: number) =>
-        Number(output) / 10 ** decimals,
-      encodingLevel: 0,
-      description: "The minimum amount of tokens you want to receive.",
-    },
+    allowedSlippageInBpsArgument,
   ] as PriceCheckerArgument[],
   [PRICE_CHECKERS.UNI_V2]: [
-    {
-      name: "allowedSlippageInBps",
-      type: "uint256",
-      label: "Allowed slippage (%)",
-      inputType: "number",
-      convertInput: (input: number) => BigInt(input * 100),
-      convertOutput: (output: bigint) => Number(output) / 100,
-      encodingLevel: 0,
-      description: dynamicSlippageDescription,
-    },
+    allowedSlippageInBpsArgument,
   ] as PriceCheckerArgument[],
   [PRICE_CHECKERS.BALANCER]: [
-    {
-      name: "allowedSlippageInBps",
-      type: "uint256",
-      label: "Allowed slippage (%)",
-      inputType: "number",
-      convertInput: (input: number) => BigInt(input * 100),
-      convertOutput: (output: bigint) => Number(output) / 100,
-      encodingLevel: 0,
-      description: dynamicSlippageDescription,
-    },
+    allowedSlippageInBpsArgument,
   ] as PriceCheckerArgument[],
   [PRICE_CHECKERS.SUSHI_SWAP]: [
-    {
-      name: "allowedSlippageInBps",
-      type: "uint256",
-      label: "Allowed slippage (%)",
-      inputType: "number",
-      convertInput: (input: number) => BigInt(input * 100),
-      convertOutput: (output: bigint) => Number(output) / 100,
-      encodingLevel: 0,
-      description: dynamicSlippageDescription,
-    },
+    allowedSlippageInBpsArgument,
+  ] as PriceCheckerArgument[],
+  [PRICE_CHECKERS.CURVE]: [
+    allowedSlippageInBpsArgument,
   ] as PriceCheckerArgument[],
   [PRICE_CHECKERS.CHAINLINK]: [
-    {
-      name: "allowedSlippageInBps",
-      type: "uint256",
-      convertInput: (input: number) => BigInt(input * 100),
-      convertOutput: (output: bigint) => Number(output) / 100,
-      label: "Allowed slippage (%)",
-      inputType: "number",
-      encodingLevel: 0,
-      description: dynamicSlippageDescription,
-    },
+    allowedSlippageInBpsArgument,
     {
       name: "addressesPriceFeeds",
       type: "address[]",
@@ -97,16 +64,7 @@ export const priceCheckersArgumentsMapping = {
     },
   ] as PriceCheckerArgument[],
   [PRICE_CHECKERS.UNI_V3]: [
-    {
-      name: "allowedSlippageInBps",
-      type: "uint256",
-      label: "Allowed slippage (%)",
-      inputType: "number",
-      convertInput: (input: number) => BigInt(input * 100),
-      convertOutput: (output: bigint) => Number(output) / 100,
-      encodingLevel: 0,
-      description: dynamicSlippageDescription,
-    },
+    allowedSlippageInBpsArgument,
     {
       name: "tokenIn",
       type: "address[]",
@@ -138,28 +96,8 @@ export const priceCheckersArgumentsMapping = {
       link: "https://info.uniswap.org/#/pools",
     },
   ] as PriceCheckerArgument[],
-  [PRICE_CHECKERS.CURVE]: [
-    {
-      name: "allowedSlippageInBps",
-      type: "uint256",
-      label: "Allowed slippage (%)",
-      inputType: "number",
-      convertInput: (input: number) => BigInt(input * 100),
-      convertOutput: (output: bigint) => Number(output) / 100,
-      encodingLevel: 0,
-    },
-  ] as PriceCheckerArgument[],
   [PRICE_CHECKERS.META]: [
-    {
-      name: "allowedSlippageInBps",
-      type: "uint256",
-      label: "Allowed slippage (%)",
-      inputType: "number",
-      convertInput: (input: number) => BigInt(input * 100),
-      convertOutput: (output: bigint) => Number(output) / 100,
-      encodingLevel: 0,
-      description: dynamicSlippageDescription,
-    },
+    allowedSlippageInBpsArgument,
     {
       name: "swapPath",
       type: "address[]",

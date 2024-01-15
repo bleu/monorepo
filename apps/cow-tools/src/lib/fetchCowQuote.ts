@@ -40,7 +40,14 @@ export async function fetchCowQuote({
     kind: "sell",
     partiallyFillable: false,
     priceQuality,
+    sellTokenBalance: "erc20",
+    buyTokenBalance: "erc20",
     sellAmountBeforeFee: amountIn.toLocaleString().replaceAll(",", ""),
+    signingScheme: "eip1271",
+    onChainOrder: true,
+    appData:
+      "0x2B8694ED30082129598720860E8E972F07AA10D9B81CAE16CA0E2CFB24743E24",
+    verificationGasLimit: 113925,
   };
   return fetch(`${url}/api/v1/quote`, {
     method: "POST",

@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { FieldValues, useForm, UseFormReturn } from "react-hook-form";
 
 import { TransactionStatus } from "#/app/milkman/utils/type";
+import { AlertCard } from "#/components/AlertCard";
 import Button from "#/components/Button";
 import { Dialog } from "#/components/Dialog";
 import { Input } from "#/components/Input";
@@ -42,6 +43,8 @@ import { tokenPriceChecker } from "../../[network]/order/new/page";
 import { TokenSelect, TokenSelectButton } from "../TokenSelect";
 import { FormFooter } from "./Footer";
 
+const FEE_PERCENTAGE_THRESHOLD = 0.2;
+
 export function FormSelectPriceChecker({
   onSubmit,
   defaultValues,
@@ -52,6 +55,7 @@ export function FormSelectPriceChecker({
   const [selectedPriceChecker, setSelectedPriceChecker] =
     useState<PRICE_CHECKERS>(defaultValues?.priceChecker);
   const [quotedAmountOut, setQuotedAmountOut] = useState<number>(0);
+  const [feePercetageThreshold, setFeePercetageThreshold] = useState<number>(0);
 
   const { safe } = useSafeAppsSDK();
 
@@ -99,6 +103,10 @@ export function FormSelectPriceChecker({
       setQuotedAmountOut(
         Number(res.quote.buyAmount) / 10 ** defaultValues?.tokenBuy.decimals,
       );
+      setFeePercetageThreshold(
+        Number(res.quote.feeAmount) /
+          (Number(res.quote.feeAmount) + Number(res.quote.sellAmount)),
+      );
     });
   }, []);
 
@@ -125,7 +133,11 @@ export function FormSelectPriceChecker({
               Quoted Amount Out: {formatNumber(quotedAmountOut, 4)}{" "}
               {defaultValues?.tokenBuy.symbol}
             </Label>
-            <Tooltip content={"Quoted using the CoW API."}>
+            <Tooltip
+              content={
+                "Quoted using the CoW API and includes fees. This value will change on the feature, since another quote will be made on order posting."
+              }
+            >
               <InfoCircledIcon
                 className="w-4 h-4"
                 color={slateDarkA.slateA11}
@@ -171,6 +183,17 @@ export function FormSelectPriceChecker({
           defaultValues={defaultValues}
           tokenBuyDecimals={defaultValues?.tokenBuy.decimals}
         />
+      )}
+      {feePercetageThreshold > FEE_PERCENTAGE_THRESHOLD && (
+        <div className="flex gap-x-2 my-2 items-center">
+          <AlertCard style="warning" title="High fee">
+            <span>
+              You will be paying around{" "}
+              {(feePercetageThreshold * 100).toFixed()}% of fee. This is a high
+              fee, consider review your order.
+            </span>
+          </AlertCard>
+        </div>
       )}
       <FormFooter
         transactionStatus={TransactionStatus.ORDER_STRATEGY}

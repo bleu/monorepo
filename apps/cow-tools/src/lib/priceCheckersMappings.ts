@@ -26,7 +26,18 @@ const allowedSlippageInBpsArgument = {
 
 export const priceCheckersArgumentsMapping = {
   [PRICE_CHECKERS.FIXED_MIN_OUT]: [
-    allowedSlippageInBpsArgument,
+    {
+      name: "minOut",
+      type: "uint256",
+      label: "Token to buy minimum amount",
+      inputType: "number",
+      convertInput: (input: number, decimals: number) =>
+        BigInt(input * 10 ** decimals),
+      convertOutput: (output: bigint, decimals: number) =>
+        Number(output) / 10 ** decimals,
+      encodingLevel: 0,
+      description: "The minimum amount of tokens you want to receive.",
+    },
   ] as PriceCheckerArgument[],
   [PRICE_CHECKERS.UNI_V2]: [
     allowedSlippageInBpsArgument,

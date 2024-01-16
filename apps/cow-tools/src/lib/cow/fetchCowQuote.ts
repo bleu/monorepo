@@ -1,13 +1,6 @@
-import { gnosis, goerli } from "viem/chains";
-
 import { ChainId } from "#/utils/chainsPublicClients";
 
-const COW_API_BASE_URL = "https://api.cow.fi/";
-
-const COW_API_URL_BY_CHAIN_ID = {
-  [gnosis.id]: COW_API_BASE_URL + "xdai",
-  [goerli.id]: COW_API_BASE_URL + "goerli",
-};
+import { COW_API_URL_BY_CHAIN_ID } from ".";
 
 export async function fetchCowQuote({
   tokenIn,

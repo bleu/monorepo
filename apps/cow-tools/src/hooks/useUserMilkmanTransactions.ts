@@ -11,6 +11,7 @@ import { gql } from "graphql-tag";
 import { useEffect, useState } from "react";
 import { PublicClient } from "viem";
 
+import { getCowOrders, ICowOrder } from "#/lib/cow/fetchCowOrder";
 import { fetchTokenInfo } from "#/lib/fetchTokenInfo";
 import { AllTransactionFromUserQuery } from "#/lib/gql/generated";
 import { milkmanSubgraph } from "#/lib/gql/sdk";
@@ -54,25 +55,6 @@ gql(`
   }
 `);
 
-export interface ICowOrder {
-  sellToken: Address;
-  buyToken: Address;
-  receiver: Address;
-  sellAmount: number;
-  buyAmount: number;
-  validTo: number;
-  feeAmount: number;
-  kind: string;
-  partiallyFillable: boolean;
-  sellTokenBalance: string;
-  buyTokenBalance: string;
-  from: Address;
-  executedSellAmount?: number;
-  executedSellAmountBeforeFees?: number;
-  executedBuyAmount?: number;
-  executedFeeAmount?: number;
-  status: string;
-}
 export interface IMilkmanOrder {
   cowOrders: ICowOrder[];
   hasToken: boolean;
@@ -85,8 +67,6 @@ export interface IUserMilkmanTransaction {
   orders: IMilkmanOrder[];
   processed: boolean;
 }
-
-const cowApiUrl = "https://api.cow.fi/goerli";
 
 function structureMilkmanTransaction(
   transaction: AllTransactionFromUserQuery["users"][0]["transactions"][0],
@@ -159,7 +139,7 @@ async function getProcessedMilkmanTransactions({
     orderContractsBySwap.map((orderContract) =>
       retryAsyncOperation<ICowOrder[]>(
         async () => {
-          return getCowOrders(orderContract as Address);
+          return getCowOrders(orderContract as Address, chainId);
         },
         5,
         1000,
@@ -345,12 +325,4 @@ export async function getTokenBalance(
     functionName: "balanceOf",
     args: [userAddress],
   });
-}
-
-export async function getCowOrders(userAddress: Address): Promise<ICowOrder[]> {
-  return fetch(`${cowApiUrl}/api/v1/account/${userAddress}/orders`, {
-    headers: {
-      Accept: "application/json",
-    },
-  }).then((response) => response.json() as Promise<ICowOrder[]>);
 }

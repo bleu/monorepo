@@ -1,14 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
-import { goerli, mainnet } from "viem/chains";
+import { gnosis, goerli, mainnet } from "viem/chains";
 
 import { AlertCard } from "#/components/AlertCard";
 import { Checkbox } from "#/components/Checkbox";
 import { Input } from "#/components/Input";
 import { Select, SelectItem } from "#/components/Select";
 import { Form } from "#/components/ui/form";
-import { fetchCowQuote } from "#/lib/fetchCowQuote";
+import { fetchCowQuote } from "#/lib/cow/fetchCowQuote";
 import { fetchTokenUsdPrice } from "#/lib/fetchTokenUsdPrice";
 import { orderTwapSchema } from "#/lib/schema";
 import { ChainId } from "#/utils/chainsPublicClients";
@@ -36,6 +36,7 @@ export const TwapDelayValues = {
 
 const minValueForTwapWarining = {
   [goerli.id]: 100,
+  [gnosis.id]: 500,
   [mainnet.id]: 50_000,
 };
 

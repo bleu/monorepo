@@ -1,13 +1,6 @@
-import { goerli, mainnet } from "viem/chains";
-
 import { ChainId } from "#/utils/chainsPublicClients";
 
-const COW_API_BASE_URL = "https://api.cow.fi/";
-
-const COW_API_URL_BY_CHAIN_ID = {
-  [mainnet.id]: COW_API_BASE_URL + "mainnet",
-  [goerli.id]: COW_API_BASE_URL + "goerli",
-};
+import { COW_API_URL_BY_CHAIN_ID } from ".";
 
 export async function fetchCowQuote({
   tokenIn,
@@ -40,7 +33,13 @@ export async function fetchCowQuote({
     kind: "sell",
     partiallyFillable: false,
     priceQuality,
+    sellTokenBalance: "erc20",
+    buyTokenBalance: "erc20",
     sellAmountBeforeFee: amountIn.toLocaleString().replaceAll(",", ""),
+    signingScheme: "eip1271",
+    onChainOrder: true,
+    appData:
+      "0x2B8694ED30082129598720860E8E972F07AA10D9B81CAE16CA0E2CFB24743E24",
   };
   return fetch(`${url}/api/v1/quote`, {
     method: "POST",

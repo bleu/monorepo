@@ -2,7 +2,7 @@ import { Address, capitalize } from "@bleu-fi/utils";
 import { isAddress, PublicClient } from "viem";
 import { z } from "zod";
 
-import { fetchCowQuote } from "#/lib/fetchCowQuote";
+import { fetchCowQuote } from "#/lib/cow/fetchCowQuote";
 import { ChainId } from "#/utils/chainsPublicClients";
 
 import { dynamicSlippagePriceCheckerAbi } from "./abis/dynamicSlippagePriceChecker";

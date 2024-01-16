@@ -27,14 +27,14 @@ export function TableRowTransaction({
   function getSwapStatus(
     hasToken?: boolean,
     cowOrders?: ICowOrder[],
-    transactionProcessed?: boolean
+    transactionProcessed?: boolean,
   ) {
     if (!cowOrders || hasToken === undefined || !transactionProcessed) {
       return SwapStatus.TRANSACTION_ON_QUEUE;
     }
 
     const anyOrderWasExecuted = cowOrders.some(
-      (order) => order.status == "fulfilled"
+      (order) => order.status == "fulfilled",
     );
 
     if (anyOrderWasExecuted) {
@@ -69,7 +69,7 @@ export function TableRowTransaction({
     if (
       orderStatus.every(
         (status) =>
-          status === SwapStatus.CANCELED || status === SwapStatus.EXECUTED
+          status === SwapStatus.CANCELED || status === SwapStatus.EXECUTED,
       )
     ) {
       return TransactionStatus.EXECUTED_AND_CANCELED;
@@ -79,7 +79,7 @@ export function TableRowTransaction({
     }
 
     const allOrdersPlaced = orderStatus.every(
-      (status) => status === SwapStatus.ORDER_PLACED
+      (status) => status === SwapStatus.ORDER_PLACED,
     );
 
     if (allOrdersPlaced) {
@@ -90,7 +90,7 @@ export function TableRowTransaction({
   }
 
   const orderStatus = transaction.orders.map((order) =>
-    getSwapStatus(order.hasToken, order.cowOrders, transaction.processed)
+    getSwapStatus(order.hasToken, order.cowOrders, transaction.processed),
   );
   const transactionStatus = getTransactionStatus(orderStatus);
   const txUrl = buildBlockExplorerTxUrl({
@@ -103,13 +103,13 @@ export function TableRowTransaction({
   const equalTokensIn = transaction.orders.every(
     (order) =>
       order.orderEvent.tokenIn?.address ==
-      transaction.orders[0].orderEvent.tokenIn?.address
+      transaction.orders[0].orderEvent.tokenIn?.address,
   );
 
   const equalTokensOut = transaction.orders.every(
     (order) =>
       order.orderEvent.tokenOut?.address ==
-      transaction.orders[0].orderEvent.tokenOut?.address
+      transaction.orders[0].orderEvent.tokenOut?.address,
   );
 
   const decimalsTokenIn =
@@ -117,7 +117,7 @@ export function TableRowTransaction({
     cowTokenList.find(
       (token) =>
         token.address == transaction.orders[0].orderEvent.tokenIn?.address &&
-        token.chainId == transaction.orders[0].orderEvent.chainId
+        token.chainId == transaction.orders[0].orderEvent.chainId,
     )?.decimals ||
     1;
 
@@ -125,7 +125,7 @@ export function TableRowTransaction({
     (acc, order) =>
       acc +
       Number(formatUnits(order.orderEvent.tokenAmountIn, decimalsTokenIn)),
-    0
+    0,
   );
 
   return (
@@ -143,7 +143,7 @@ export function TableRowTransaction({
         <Table.BodyCell>
           {transaction.blockTimestamp
             ? formatDateToLocalDatetime(
-                new Date(transaction.blockTimestamp * 1000)
+                new Date(transaction.blockTimestamp * 1000),
               )
             : "Pending..."}
         </Table.BodyCell>

@@ -3,7 +3,7 @@ import { gnosis, goerli, mainnet } from "viem/chains";
 
 export type ChainType = typeof mainnet | typeof goerli | typeof gnosis;
 
-export type ChainName = "mainnet" | "goerli" | "gnosis";
+export type ChainName = "mainnet" | "goerli";
 
 export type ChainId = typeof mainnet.id | typeof goerli.id;
 

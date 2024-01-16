@@ -8,7 +8,7 @@ import { Checkbox } from "#/components/Checkbox";
 import { Input } from "#/components/Input";
 import { Select, SelectItem } from "#/components/Select";
 import { Form } from "#/components/ui/form";
-import { fetchCowQuote } from "#/lib/fetchCowQuote";
+import { fetchCowQuote } from "#/lib/cow/fetchCowQuote";
 import { fetchTokenUsdPrice } from "#/lib/fetchTokenUsdPrice";
 import { orderTwapSchema } from "#/lib/schema";
 import { ChainId } from "#/utils/chainsPublicClients";

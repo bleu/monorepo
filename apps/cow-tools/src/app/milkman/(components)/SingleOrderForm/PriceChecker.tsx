@@ -22,9 +22,9 @@ import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
 import { Form, FormMessage } from "#/components/ui/form";
 import { Label } from "#/components/ui/label";
+import { fetchCowQuote } from "#/lib/cow/fetchCowQuote";
 import { getPriceCheckerFromAddressAndChain } from "#/lib/decode";
 import { encodeExpectedOutArguments } from "#/lib/encode";
-import { fetchCowQuote } from "#/lib/fetchCowQuote";
 import {
   deployedPriceCheckersByChain,
   expectedOutCalculatorAddressesMapping,

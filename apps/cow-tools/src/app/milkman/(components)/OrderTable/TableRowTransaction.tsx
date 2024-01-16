@@ -10,10 +10,8 @@ import { useState } from "react";
 import { formatUnits } from "viem";
 
 import Table from "#/components/Table";
-import {
-  ICowOrder,
-  IUserMilkmanTransaction,
-} from "#/hooks/useUserMilkmanTransactions";
+import { IUserMilkmanTransaction } from "#/hooks/useUserMilkmanTransactions";
+import { ICowOrder } from "#/lib/cow/fetchCowOrder";
 import { cowTokenList } from "#/utils/cowTokenList";
 
 import { SwapStatus, TransactionStatus } from "../../utils/type";

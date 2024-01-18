@@ -53,7 +53,7 @@ export function FormOrderOverview({
   );
 
   const walletAmount = !tokenSell
-    ? 0
+    ? "0"
     : formatUnits(BigInt(tokenSell?.balance), tokenSell?.tokenInfo.decimals);
 
   useEffect(() => {
@@ -110,7 +110,10 @@ export function FormOrderOverview({
                   type="button"
                   className="text-blue9 outline-none hover:text-amber9"
                   onClick={() => {
-                    setValue("tokenSellAmount", Number(walletAmount));
+                    setValue(
+                      "tokenSellAmount",
+                      convertAndRoundDown(walletAmount),
+                    );
                   }}
                 >
                   Max
@@ -124,9 +127,7 @@ export function FormOrderOverview({
                 type="number"
                 label="Amount to sell"
                 placeholder="0.0"
-                step={
-                  10 ** -(defaultValues?.tokenSellAmount.decimals - 1) || 10e-19
-                }
+                step={10 ** -defaultValues?.tokenSellAmount.decimals || 10e-18}
                 {...register("tokenSellAmount")}
               />
               {formData.tokenSellAmount > Number(walletAmount) && (
@@ -205,4 +206,12 @@ export function FormOrderOverview({
       <FormFooter transactionStatus={TransactionStatus.ORDER_OVERVIEW} />
     </Form>
   );
+}
+
+function convertAndRoundDown(value: string) {
+  const num = parseFloat(value);
+  const integerPartLength = Math.floor(num).toString().length;
+  const maxDecimalPlaces = Math.max(0, 15 - integerPartLength);
+  const scale = Math.pow(10, maxDecimalPlaces);
+  return Math.floor(num * scale) / scale;
 }

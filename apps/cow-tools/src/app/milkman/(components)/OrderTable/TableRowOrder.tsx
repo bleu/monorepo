@@ -70,19 +70,21 @@ export function TableRowOrder({
       <Table.BodyCell>
         <div className="flex items-center gap-x-1">
           <span>{orderStatus}</span>
-          {cowExplorerUrl && contractExplorerUrl && (
-            <Link
-              href={
-                orderStatus == SwapStatus.MILKMAN_CREATED ||
-                orderStatus == SwapStatus.CANCELED
-                  ? contractExplorerUrl
-                  : cowExplorerUrl
-              }
-              target="_blank"
-            >
-              <ArrowTopRightIcon className="hover:text-slate11" />
-            </Link>
-          )}
+          {cowExplorerUrl &&
+            contractExplorerUrl &&
+            orderStatus != SwapStatus.TRANSACTION_ON_QUEUE && (
+              <Link
+                href={
+                  orderStatus == SwapStatus.MILKMAN_CREATED ||
+                  orderStatus == SwapStatus.CANCELED
+                    ? contractExplorerUrl
+                    : cowExplorerUrl
+                }
+                target="_blank"
+              >
+                <ArrowTopRightIcon className="hover:text-slate11" />
+              </Link>
+            )}
         </div>
       </Table.BodyCell>
       <Table.BodyCell>

@@ -63,10 +63,40 @@ const moduleExports = {
       },
       {
         protocol: "https",
+        hostname: "raw.githubusercontent.com",
+        port: "",
+        pathname: "/trustwallet/assets/**",
+      },
+      {
+        protocol: "https",
+        hostname: "raw.githubusercontent.com",
+        port: "",
+        pathname: "/cowprotocol/token-lists/**",
+      },
+      {
+        protocol: "https",
+        hostname: "raw.githubusercontent.com",
+        port: "",
+        pathname: "/centfinance/assets/**",
+      },
+      {
+        protocol: "https",
         hostname: "cdn.sanity.io",
         port: "",
         pathname:
           "/images/r2mka0oi/production/bf37b9c7fb36c7d3c96d3d05b45c76d89072b777-1800x1800.png",
+      },
+      {
+        protocol: "https",
+        hostname: "gnosis.mypinata.cloud",
+        port: "",
+        pathname: "/ipfs/**",
+      },
+      {
+        protocol: "https",
+        hostname: "app.stakewise.io",
+        port: "",
+        pathname: "/static/images/currencies/**",
       },
     ],
   },

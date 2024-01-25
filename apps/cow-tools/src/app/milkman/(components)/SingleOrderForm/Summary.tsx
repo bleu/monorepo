@@ -6,6 +6,7 @@ import { FieldValues } from "react-hook-form";
 
 import { TransactionStatus } from "#/app/milkman/utils/type";
 import { Button } from "#/components";
+import { ClickToCopy } from "#/components/ClickToCopy";
 import { useRawTxData } from "#/hooks/useRawTxData";
 import { priceCheckersArgumentsMapping } from "#/lib/priceCheckersMappings";
 import {
@@ -169,50 +170,53 @@ function OrderSummary({
       <div className="flex flex-col">
         {fieldsToDisplay.map((field) => {
           const value = data[field.key];
+          if (!value) return null;
           switch (field.key) {
             case "tokenSell":
               return (
-                value && (
-                  <span key={field.key}>
-                    {field.label}: {value.symbol} (
-                    {truncateAddress(data.tokenSell.address)})
-                  </span>
-                )
+                <div className="flex flex-row gap-x-2" key={field.key}>
+                  {field.label}:
+                  <ClickToCopy text={data.tokenSell.address} key={field.key}>
+                    {truncateAddress(data.tokenSell.address)}
+                  </ClickToCopy>
+                </div>
               );
             case "tokenBuy":
               return (
-                value && (
-                  <span key={field.key}>
-                    {field.label}: {value.symbol} (
-                    {truncateAddress(data.tokenBuy.address)})
-                  </span>
-                )
+                <div className="flex flex-row gap-x-2" key={field.key}>
+                  {field.label}:
+                  <ClickToCopy text={data.tokenBuy.address} key={field.key}>
+                    {truncateAddress(data.tokenBuy.address)}
+                  </ClickToCopy>
+                </div>
               );
             case "addressesPriceFeeds":
               return (
-                value && (
-                  <span key={field.key}>
-                    {field.label}:{" "}
-                    {value.map((address: string) => truncateAddress(address))}
-                  </span>
-                )
+                <div className="flex flex-row gap-x-2" key={field.key}>
+                  {field.label}:
+                  {value.map((address: string) => {
+                    return (
+                      <ClickToCopy text={address} key={field.key}>
+                        {truncateAddress(address)}
+                      </ClickToCopy>
+                    );
+                  })}
+                </div>
               );
 
             case "revertPriceFeeds":
               return (
-                value && (
-                  <span key={field.key}>
-                    {field.label}: {value.toString()}
-                  </span>
-                )
+                <div className="flex flex-row gap-x-2" key={field.key}>
+                  <span>{field.label}:</span>
+                  <span>{value.toString()}</span>
+                </div>
               );
             default:
               return (
-                value && (
-                  <span key={field.key}>
-                    {field.label}: {value}
-                  </span>
-                )
+                <div className="flex flex-row gap-x-2" key={field.key}>
+                  <span>{field.label}:</span>
+                  <span>{value}</span>
+                </div>
               );
           }
         })}

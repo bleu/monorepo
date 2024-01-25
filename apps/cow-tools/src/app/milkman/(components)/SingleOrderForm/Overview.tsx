@@ -77,6 +77,12 @@ export function FormOrderOverview({
     };
   }
 
+  useEffect(() => {
+    if (!defaultValues?.receiverAddress) {
+      setValue("receiverAddress", userAddress);
+    }
+  }, []);
+
   return (
     <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-6 p-9">
       <div>

@@ -149,7 +149,11 @@ export function TableRowTransaction({
         </Table.BodyCell>
         <Table.BodyCell>
           <TokenInfo
-            id={transaction.orders[0].orderEvent.tokenIn?.address}
+            id={
+              equalTokensIn
+                ? transaction.orders[0].orderEvent.tokenIn?.address
+                : `0x`
+            }
             symbol={
               equalTokensIn
                 ? transaction.orders[0].orderEvent.tokenIn?.symbol
@@ -161,7 +165,11 @@ export function TableRowTransaction({
         </Table.BodyCell>
         <Table.BodyCell>
           <TokenInfo
-            id={transaction.orders[0].orderEvent.tokenOut?.address}
+            id={
+              equalTokensOut
+                ? transaction.orders[0].orderEvent.tokenOut?.address
+                : `0x`
+            }
             symbol={
               equalTokensOut
                 ? transaction.orders[0].orderEvent.tokenOut?.symbol

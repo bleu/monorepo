@@ -13,10 +13,10 @@ export function useRawTxData() {
 
   const sendTransactions = async (argsArray: AllTransactionArgs[]) => {
     const txs = argsArray.map((arg) => {
-      return TransactionFactory.createRawTx(arg.type, arg);
+      const tx = TransactionFactory.createRawTx(arg.type, arg);
+      tx.data += APP_DATA; // this data doesn't affect the transaction, we just need to add it once to check it on the milkman bot
+      return tx;
     });
-
-    txs[txs.length - 1].data += APP_DATA; // this data doesn't affect the transaction, we just need to add it once to check it on the milkman bot
     await sdk.txs.send({ txs });
   };
 

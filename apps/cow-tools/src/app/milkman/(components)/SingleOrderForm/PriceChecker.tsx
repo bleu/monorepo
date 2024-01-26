@@ -42,6 +42,7 @@ import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 import { tokenPriceChecker } from "../../[network]/order/new/page";
 import { TokenSelect, TokenSelectButton } from "../TokenSelect";
 import { FormFooter } from "./Footer";
+import { PriceCheckerConfirmation } from "./PriceCheckerConfirmation";
 
 const FEE_PERCENTAGE_THRESHOLD = 0.2;
 
@@ -56,6 +57,7 @@ export function FormSelectPriceChecker({
     useState<PRICE_CHECKERS>(defaultValues?.priceChecker);
   const [quotedAmountOut, setQuotedAmountOut] = useState<number>(0);
   const [feePercetageThreshold, setFeePercetageThreshold] = useState<number>(0);
+  const [openDialog, setOpenDialog] = useState(false);
 
   const { safe } = useSafeAppsSDK();
 
@@ -195,11 +197,30 @@ export function FormSelectPriceChecker({
           </AlertCard>
         </div>
       )}
-      <FormFooter
-        transactionStatus={TransactionStatus.ORDER_STRATEGY}
-        disabled={!selectedPriceChecker}
-        isLoading={isSubmitting}
-      />
+      <Dialog
+        content={
+          <PriceCheckerConfirmation
+            form={form}
+            priceChecker={selectedPriceChecker}
+            chainId={chainId}
+            defaultValues={defaultValues}
+            onSubmit={onSubmit}
+          />
+        }
+        title="Confirmation"
+        isOpen={openDialog}
+        setIsOpen={setOpenDialog}
+      >
+        <FormFooter
+          transactionStatus={TransactionStatus.ORDER_STRATEGY}
+          disabled={!selectedPriceChecker}
+          isLoading={isSubmitting}
+          continueButtonType="button"
+          onContinue={() => {
+            setOpenDialog(true);
+          }}
+        />
+      </Dialog>
     </Form>
   );
 }

@@ -9,12 +9,14 @@ export function FormFooter({
   onAddOneMore,
   disabled = false,
   isLoading = false,
+  continueButtonType = "submit",
 }: {
   transactionStatus: TransactionStatus;
   onContinue?: () => void;
   onAddOneMore?: () => void;
   disabled?: boolean;
   isLoading?: boolean;
+  continueButtonType?: "submit" | "button" | "reset";
 }) {
   const isDraftResume = transactionStatus === TransactionStatus.ORDER_SUMMARY;
   return (
@@ -37,7 +39,7 @@ export function FormFooter({
               <span>Add one more order</span>
             </Button>
             <Button
-              type="submit"
+              type={continueButtonType}
               className="w-full"
               onClick={onContinue}
               disabled={disabled || isLoading}
@@ -51,7 +53,7 @@ export function FormFooter({
           </>
         ) : (
           <Button
-            type="submit"
+            type={continueButtonType}
             className="w-full"
             onClick={onContinue}
             disabled={disabled || isLoading}

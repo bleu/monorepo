@@ -211,6 +211,22 @@ function OrderSummary({
                   <span>{value.toString()}</span>
                 </div>
               );
+            case "tokenSellAmount":
+            case "minOut":
+              // eslint-disable-next-line no-case-declarations
+              const unit =
+                field.key == "tokenSellAmount"
+                  ? data.tokenSell.symbol
+                  : data.tokenBuy.symbol;
+              return (
+                <div className="flex flex-row gap-x-2" key={field.key}>
+                  <span>{field.label}:</span>
+                  <span>
+                    {value} {unit}
+                  </span>
+                </div>
+              );
+
             default:
               return (
                 <div className="flex flex-row gap-x-2" key={field.key}>

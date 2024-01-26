@@ -6,12 +6,14 @@ import {
   ChevronUpIcon,
 } from "@radix-ui/react-icons";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { formatUnits } from "viem";
 
 import Table from "#/components/Table";
 import { IUserMilkmanTransaction } from "#/hooks/useUserMilkmanTransactions";
 import { ICowOrder } from "#/lib/cow/fetchCowOrder";
+import { fetchTokenInfo } from "#/lib/fetchTokenInfo";
+import { ChainId } from "#/utils/chainsPublicClients";
 import { cowTokenList } from "#/utils/cowTokenList";
 
 import { SwapStatus, TransactionStatus } from "../../utils/type";
@@ -24,6 +26,34 @@ export function TableRowTransaction({
 }: {
   transaction: IUserMilkmanTransaction;
 }) {
+  const [tokenOutAmounts, setTokenOutAmounts] = useState<string[]>();
+
+  useEffect(() => {
+    const newTokenOutAmountPromises = transaction.orders.map((order) => {
+      const filledCowOrder = order.cowOrders.filter(
+        (cowOrder) => cowOrder.status == "fulfilled",
+      )[0];
+
+      if (filledCowOrder) {
+        return fetchTokenInfo(
+          filledCowOrder.buyToken,
+          order.orderEvent.chainId as ChainId,
+          "decimals",
+        ).then((decimals) => {
+          return formatUnits(
+            BigInt(filledCowOrder.executedBuyAmount || 0),
+            decimals as number,
+          );
+        });
+      }
+      return Promise.resolve("");
+    });
+
+    Promise.all(newTokenOutAmountPromises).then((values) =>
+      setTokenOutAmounts(values),
+    );
+  }, []);
+
   function getSwapStatus(
     hasToken?: boolean,
     cowOrders?: ICowOrder[],
@@ -128,6 +158,11 @@ export function TableRowTransaction({
     0,
   );
 
+  const totalAmountTokenOut = tokenOutAmounts?.reduce(
+    (acc, amount) => acc + Number(amount),
+    0,
+  );
+
   return (
     <>
       <Table.BodyRow key={transaction.id}>
@@ -149,7 +184,11 @@ export function TableRowTransaction({
         </Table.BodyCell>
         <Table.BodyCell>
           <TokenInfo
-            id={transaction.orders[0].orderEvent.tokenIn?.address}
+            id={
+              equalTokensIn
+                ? transaction.orders[0].orderEvent.tokenIn?.address
+                : `0x`
+            }
             symbol={
               equalTokensIn
                 ? transaction.orders[0].orderEvent.tokenIn?.symbol
@@ -161,13 +200,22 @@ export function TableRowTransaction({
         </Table.BodyCell>
         <Table.BodyCell>
           <TokenInfo
-            id={transaction.orders[0].orderEvent.tokenOut?.address}
+            id={
+              equalTokensOut
+                ? transaction.orders[0].orderEvent.tokenOut?.address
+                : `0x`
+            }
             symbol={
               equalTokensOut
                 ? transaction.orders[0].orderEvent.tokenOut?.symbol
                 : "Multiple Tokens"
             }
             chainId={transaction.orders[0].orderEvent.chainId}
+            amount={
+              equalTokensOut && transactionStatus === TransactionStatus.EXECUTED
+                ? totalAmountTokenOut
+                : undefined
+            }
           />
         </Table.BodyCell>
         <Table.BodyCell>
@@ -199,8 +247,9 @@ export function TableRowTransaction({
         transaction.orders.map((order, index) => (
           <TableRowOrder
             key={order.orderEvent.id}
-            order={order.orderEvent}
+            order={order}
             orderStatus={orderStatus[index]}
+            tokenOutAmount={tokenOutAmounts?.[index]}
           />
         ))}
     </>

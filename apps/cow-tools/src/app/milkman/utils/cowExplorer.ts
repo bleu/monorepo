@@ -1,7 +1,7 @@
 import { Address } from "@bleu-fi/utils";
 import { goerli, mainnet } from "viem/chains";
 
-export type chainId = typeof goerli.id | typeof mainnet.id;
+import { ChainId } from "#/utils/chainsPublicClients";
 
 const cowExplorerBaseUrl = "https://explorer.cow.fi/";
 
@@ -14,7 +14,7 @@ export function buildAccountCowExplorerUrl({
   chainId,
   address,
 }: {
-  chainId?: chainId;
+  chainId?: ChainId;
   address: Address;
 }) {
   if (!chainId) return undefined;

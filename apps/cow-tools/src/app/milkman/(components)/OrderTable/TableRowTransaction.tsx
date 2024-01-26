@@ -211,7 +211,11 @@ export function TableRowTransaction({
                 : "Multiple Tokens"
             }
             chainId={transaction.orders[0].orderEvent.chainId}
-            amount={equalTokensOut ? totalAmountTokenOut : undefined}
+            amount={
+              equalTokensOut && transactionStatus === TransactionStatus.EXECUTED
+                ? totalAmountTokenOut
+                : undefined
+            }
           />
         </Table.BodyCell>
         <Table.BodyCell>

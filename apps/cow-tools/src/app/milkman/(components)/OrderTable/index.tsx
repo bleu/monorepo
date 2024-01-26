@@ -1,5 +1,8 @@
 "use client";
 
+import { ReloadIcon } from "@radix-ui/react-icons";
+import { useEffect } from "react";
+
 import { Button } from "#/components";
 import { AlertCard } from "#/components/AlertCard";
 import { Spinner } from "#/components/Spinner";
@@ -9,7 +12,22 @@ import { useUserMilkmanTransactions } from "#/hooks/useUserMilkmanTransactions";
 import { TableRowTransaction } from "./TableRowTransaction";
 
 export function OrderTable() {
-  const { transactions, loaded, retry, error } = useUserMilkmanTransactions();
+  const { transactions, loaded, reload, error } = useUserMilkmanTransactions();
+
+  const anyTransactionPending = transactions?.some(
+    (transaction) => !transaction.processed,
+  );
+
+  useEffect(() => {
+    if (anyTransactionPending) {
+      const intervalId = setInterval(() => {
+        reload({ showSpinner: false });
+      }, 60000);
+      return () => {
+        clearInterval(intervalId);
+      };
+    }
+  }, [anyTransactionPending]);
 
   if (!loaded) {
     return <Spinner />;
@@ -23,7 +41,12 @@ export function OrderTable() {
             <h1 className="text-md m-2 text-center">
               Ops! Something unexpected happened.
             </h1>
-            <Button color="slate" onClick={retry}>
+            <Button
+              color="slate"
+              onClick={() => {
+                reload({ showSpinner: true });
+              }}
+            >
               Retry
             </Button>
           </div>
@@ -38,12 +61,19 @@ export function OrderTable() {
         <Table.HeaderCell>
           <span className="sr-only"></span>
         </Table.HeaderCell>
-        <Table.HeaderCell>Transaction Datetime</Table.HeaderCell>
+        <Table.HeaderCell>Tx Datetime</Table.HeaderCell>
         <Table.HeaderCell>Sell Token</Table.HeaderCell>
         <Table.HeaderCell>Buy Token</Table.HeaderCell>
         <Table.HeaderCell>Status</Table.HeaderCell>
         <Table.HeaderCell>
-          <span className="sr-only">Cancel</span>
+          <button
+            className="hover:text-blue7 items-center justify-center flex w-full h-full"
+            onClick={() => {
+              reload({ showSpinner: true });
+            }}
+          >
+            <ReloadIcon />
+          </button>
         </Table.HeaderCell>
       </Table.HeaderRow>
       <Table.Body classNames="max-h-80 overflow-y-auto">

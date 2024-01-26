@@ -280,8 +280,8 @@ export function useUserMilkmanTransactions() {
     [],
   );
 
-  const retry = () => {
-    setLoaded(false);
+  const reload = ({ showSpinner }: { showSpinner: boolean }) => {
+    setLoaded(!showSpinner);
     setRetryCount(retryCount + 1);
   };
 
@@ -311,7 +311,7 @@ export function useUserMilkmanTransactions() {
     loadOrders();
   }, [safe, retryCount]);
 
-  return { transactions, loaded, error, retry };
+  return { transactions, loaded, error, reload };
 }
 
 export async function getTokenBalance(

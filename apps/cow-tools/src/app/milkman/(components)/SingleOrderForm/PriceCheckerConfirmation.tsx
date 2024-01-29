@@ -53,7 +53,7 @@ export function PriceCheckerConfirmation({
       buyToken: defaultValues?.tokenBuy.address,
     })
       .then((expectedOut) => {
-        setExpectedOut(expectedOut);
+        setExpectedOut(expectedOut * (100 - data.allowedSlippageInBps));
         setLoadingExpectedOut(false);
       })
       .catch((error) => {
@@ -75,7 +75,7 @@ export function PriceCheckerConfirmation({
   if (Object.keys(errors).length || expectedOutError) {
     return (
       <AlertCard style="error" title="Error">
-        Error validating the price checker. Please review the parameters
+        Error validating the price checker. Please review the parameters.
       </AlertCard>
     );
   }
@@ -87,11 +87,11 @@ export function PriceCheckerConfirmation({
           {formatNumber(defaultValues?.tokenSellAmount, 4)}{" "}
           {defaultValues?.tokenSell.symbol} to{" "}
           {formatNumber(expectedOutAmount || 0, 4)}{" "}
-          {defaultValues?.tokenBuy.symbol}{" "}
+          {defaultValues?.tokenBuy.symbol}
+          {". "}
         </b>
-        without consider the allowed slippage. Note that this is an estimation
-        based on the current market situation. This value will change when the
-        order is executed.
+        Note that this is an estimation based on the current market situation
+        that can change on the order execution.
       </span>
       <Button
         type="submit"

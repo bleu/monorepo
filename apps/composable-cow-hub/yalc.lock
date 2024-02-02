@@ -1,0 +1,8 @@
+{
+  "version": "v1",
+  "packages": {
+    "@bleu-fi/ui": {
+      "signature": "c5e9b39c8f4e87dd7a7ccbdd1af2ed75"
+    }
+  }
+}

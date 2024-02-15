@@ -37,8 +37,12 @@ export const gaugeInfo = gql`
         id
       }
       gauges {
-        id
-        symbol
+        gauge {
+          liquidityGauge {
+            id
+            symbol
+          }
+        }
       }
     }
   }

@@ -1,7 +1,7 @@
 import { createSchema } from "@ponder/core";
 
 export default createSchema((p) => ({
-  Swap: p.createTable({
+  Order: p.createTable({
     id: p.string(),
     chainId: p.int(),
     tokenInId: p.string().references("Token.id"),
@@ -9,20 +9,20 @@ export default createSchema((p) => ({
     tokenAmountIn: p.bigint(),
     tokenOutId: p.string().references("Token.id"),
     tokenOut: p.one("tokenOutId"),
-    priceChecker: p.bytes(),
-    priceCheckerData: p.bytes(),
-    orderContract: p.bytes(),
-    Transaction: p.bytes(),
-    TransactionId: p.string().references("Transaction.id"),
+    tokenAmountOut: p.bigint(),
+    appData: p.bytes(),
     to: p.bytes(),
-  }),
-  Transaction: p.createTable({
-    id: p.string(),
-    chainId: p.int(),
-    user: p.string().references("User.id"),
+    isSellOrder: p.boolean(),
+    isPartiallyFillable: p.boolean(),
+    validityBucketSeconds: p.bigint(),
+    sellTokenPriceOracle: p.bytes(),
+    buyTokenPriceOracle: p.bytes(),
+    strike: p.bigint(),
+    maxTimeSinceLastOracleUpdate: p.bigint(),
     blockNumber: p.bigint(),
     blockTimestamp: p.bigint(),
-    swaps: p.many("Swap.TransactionId"),
+    orderContract: p.bytes(),
+    user: p.string().references("User.id"),
   }),
   Token: p.createTable({
     id: p.string(),
@@ -36,6 +36,6 @@ export default createSchema((p) => ({
     id: p.string(),
     address: p.string(),
     chainId: p.int(),
-    transactions: p.many("Transaction.user"),
+    orders: p.many("Order.user"),
   }),
 }));

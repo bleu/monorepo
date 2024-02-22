@@ -1,5 +1,5 @@
 import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
-import { Address, encodeFunctionData,PublicClient } from "viem";
+import { Address, encodeFunctionData, PublicClient } from "viem";
 
 import { FALLBACK_STATES } from "#/app/amms/utils/type";
 

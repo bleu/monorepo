@@ -11,7 +11,7 @@ export function AlertCard({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="max-w-md" role="alert">
+    <div className="w-full justify-center" role="alert">
       <div
         className={cn(
           "font-bold text-slate12 rounded-t px-4 py-2 mt-1",

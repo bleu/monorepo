@@ -1,164 +1,71 @@
-import { Address } from "@bleu-fi/utils";
 import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
-import { erc20ABI } from "@wagmi/core";
-import { encodeFunctionData } from "viem";
+import { Address, encodeFunctionData } from "viem";
 
-import { milkmanAbi } from "#/lib/abis/milkman";
-import { ChainId } from "#/utils/chainsPublicClients";
+import { FALLBACK_STATES } from "#/app/amms/utils/type";
 
+import { signatureVerifierMuxerAbi } from "./abis/signatureVerifierMuxer";
 import {
-  encodePriceCheckerData,
-  encodePriceCheckerDataWithValidFromDecorator,
-} from "./encode";
-import {
-  priceCheckerAddressesMapping,
-  validFromDecorator,
-} from "./priceCheckersMappings";
-import { argType, PRICE_CHECKERS } from "./types";
-
-// Milkman's address is the same for all chains supported chains (mainnet and goerli)
-export const MILKMAN_ADDRESS = "0x11C76AD590ABDFFCD980afEC9ad951B160F02797";
+  COMPOSABLE_COW_ADDRESS,
+  EXTENSIBLE_FALLBACK_ADDRESS,
+} from "./contracts";
+import { createAmmSchema } from "./schema";
 
 export enum TRANSACTION_TYPES {
-  ERC20_APPROVE = "ERC20_APPROVE",
-  MILKMAN_ORDER = "MILKMAN_ORDER",
-  MILKMAN_CANCEL = "MILKMAN_CANCEL",
+  SET_FALLBACK_HANDLER = "SET_FALLBACK_HANDLER",
+  SET_DOMAIN_VERIFIER = "SET_DOMAIN_VERIFIER",
 }
+
 export interface BaseArgs {
   type: TRANSACTION_TYPES;
 }
 
-export interface ERC20ApproveArgs extends BaseArgs {
-  type: TRANSACTION_TYPES.ERC20_APPROVE;
-  tokenAddress: Address;
-  spender: Address;
-  amount: bigint;
+export interface setFallbackHandlerArgs extends BaseArgs {
+  safeAddress: Address;
 }
 
-export interface MilkmanOrderArgs extends BaseArgs {
-  type: TRANSACTION_TYPES.MILKMAN_ORDER;
-  tokenAddressToSell: Address;
-  tokenAddressToBuy: Address;
-  toAddress: Address;
-  amount: bigint;
-  priceChecker: PRICE_CHECKERS;
-  isValidFromNeeded: boolean;
-  validFrom: string;
-  args: argType[];
-  twapDelay: number;
-  chainId: ChainId;
-}
-
-export interface MilkmanCancelArgs extends BaseArgs {
-  type: TRANSACTION_TYPES.MILKMAN_CANCEL;
-  contractAddress: Address;
-  tokenAddressToSell: Address;
-  tokenAddressToBuy: Address;
-  toAddress: Address;
-  amount: bigint;
-  priceChecker: Address;
-  priceCheckerData: `0x${string}`;
+export interface setDomainVerifierArgs extends BaseArgs {
+  safeAddress: Address;
+  domainSeparator: Address;
 }
 
 interface ITransaction<T> {
   createRawTx(args: T): BaseTransaction;
 }
 
-class ERC20ApproveRawTx implements ITransaction<ERC20ApproveArgs> {
-  createRawTx({
-    tokenAddress,
-    spender,
-    amount,
-  }: ERC20ApproveArgs): BaseTransaction {
+class SetFallbackHandlerTx implements ITransaction<setFallbackHandlerArgs> {
+  createRawTx({ safeAddress }: setFallbackHandlerArgs): BaseTransaction {
     return {
-      to: tokenAddress,
+      to: safeAddress,
       value: "0",
       data: encodeFunctionData({
-        abi: erc20ABI,
-        functionName: "approve",
-        args: [spender, amount],
+        abi: signatureVerifierMuxerAbi,
+        functionName: "setFallbackHandler",
+        args: [EXTENSIBLE_FALLBACK_ADDRESS],
       }),
     };
   }
 }
 
-class MilkmanOrderRawTx implements ITransaction<MilkmanOrderArgs> {
+class setDomainVerifierTx implements ITransaction<setDomainVerifierArgs> {
   createRawTx({
-    tokenAddressToSell,
-    tokenAddressToBuy,
-    toAddress,
-    amount,
-    priceChecker,
-    isValidFromNeeded,
-    validFrom,
-    twapDelay,
-    chainId,
-    args,
-  }: MilkmanOrderArgs): BaseTransaction {
-    const priceCheckerAddress = priceCheckerAddressesMapping[chainId][
-      priceChecker
-    ] as Address;
-    const priceCheckerData = encodePriceCheckerData(priceChecker, args);
-
+    safeAddress,
+    domainSeparator,
+  }: setDomainVerifierArgs): BaseTransaction {
     return {
-      to: MILKMAN_ADDRESS,
+      to: safeAddress,
       value: "0",
       data: encodeFunctionData({
-        abi: milkmanAbi,
-        functionName: "requestSwapExactTokensForTokens",
-        args: [
-          amount,
-          tokenAddressToSell,
-          tokenAddressToBuy,
-          toAddress,
-          isValidFromNeeded ? validFromDecorator[chainId] : priceCheckerAddress,
-          isValidFromNeeded
-            ? encodePriceCheckerDataWithValidFromDecorator({
-                priceCheckerAddress,
-                priceCheckerData,
-                validFrom,
-                twapDelay,
-              })
-            : priceCheckerData,
-        ],
-      }),
-    };
-  }
-}
-
-class MilkmanCancelRawTx implements ITransaction<MilkmanCancelArgs> {
-  createRawTx({
-    contractAddress,
-    tokenAddressToSell,
-    tokenAddressToBuy,
-    toAddress,
-    amount,
-    priceChecker,
-    priceCheckerData,
-  }: MilkmanCancelArgs): BaseTransaction {
-    return {
-      to: contractAddress,
-      value: "0",
-      data: encodeFunctionData({
-        abi: milkmanAbi,
-        functionName: "cancelSwap",
-        args: [
-          amount,
-          tokenAddressToSell,
-          tokenAddressToBuy,
-          toAddress,
-          priceChecker,
-          priceCheckerData,
-        ],
+        abi: signatureVerifierMuxerAbi,
+        functionName: "setDomainVerifier",
+        args: [domainSeparator, COMPOSABLE_COW_ADDRESS],
       }),
     };
   }
 }
 
 export interface TransactionBindings {
-  [TRANSACTION_TYPES.ERC20_APPROVE]: ERC20ApproveArgs;
-  [TRANSACTION_TYPES.MILKMAN_ORDER]: MilkmanOrderArgs;
-  [TRANSACTION_TYPES.MILKMAN_CANCEL]: MilkmanCancelArgs;
+  [TRANSACTION_TYPES.SET_FALLBACK_HANDLER]: setFallbackHandlerArgs;
+  [TRANSACTION_TYPES.SET_DOMAIN_VERIFIER]: setDomainVerifierArgs;
 }
 
 export type AllTransactionArgs = TransactionBindings[keyof TransactionBindings];
@@ -168,9 +75,8 @@ const TRANSACTION_CREATORS: {
     TransactionBindings[key]
   >;
 } = {
-  [TRANSACTION_TYPES.ERC20_APPROVE]: ERC20ApproveRawTx,
-  [TRANSACTION_TYPES.MILKMAN_ORDER]: MilkmanOrderRawTx,
-  [TRANSACTION_TYPES.MILKMAN_CANCEL]: MilkmanCancelRawTx,
+  [TRANSACTION_TYPES.SET_FALLBACK_HANDLER]: SetFallbackHandlerTx,
+  [TRANSACTION_TYPES.SET_DOMAIN_VERIFIER]: setDomainVerifierTx,
 };
 
 export class TransactionFactory {
@@ -182,4 +88,26 @@ export class TransactionFactory {
     const txCreator = new TransactionCreator();
     return txCreator.createRawTx(args);
   }
+}
+
+export function createAMMArgs(data: typeof createAmmSchema._type) {
+  const setFallbackTx = {
+    type: TRANSACTION_TYPES.SET_FALLBACK_HANDLER,
+    safeAddress: data.safeAddress,
+  } as setFallbackHandlerArgs;
+  const setDomainVerifierTx = {
+    type: TRANSACTION_TYPES.SET_DOMAIN_VERIFIER,
+    safeAddress: data.safeAddress,
+    domainSeparator: data.domainSeparator,
+  } as setDomainVerifierArgs;
+  return (() => {
+    switch (data.fallbackSetupState) {
+      case FALLBACK_STATES.HAS_NOTHING:
+        return [setFallbackTx, setDomainVerifierTx];
+      case FALLBACK_STATES.HAS_EXTENSIBLE_FALLBACK:
+        return [setDomainVerifierTx];
+      default:
+        return [];
+    }
+  })();
 }

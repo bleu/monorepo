@@ -66,7 +66,7 @@ export default function Page({
                 }
               />
 
-              <div className="flex min-w-[530px] flex-col items-center py-3">
+              <div className="flex w-[530px] max-x-md flex-col items-center py-3">
                 <div className="text-xl">Create AMM</div>
               </div>
             </div>

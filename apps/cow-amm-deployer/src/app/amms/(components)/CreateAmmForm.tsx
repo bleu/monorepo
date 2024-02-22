@@ -16,7 +16,7 @@ import { useFallbackState } from "#/hooks/useFallbackState";
 import { useRawTxData } from "#/hooks/useRawTxData";
 import { createAmmSchema } from "#/lib/schema";
 import { createAMMArgs } from "#/lib/transactionFactory";
-import { ChainId } from "#/utils/chainsPublicClients";
+import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 import { cowTokenList } from "#/utils/cowTokenList";
 
 import { FALLBACK_STATES, PRICE_ORACLES } from "../utils/type";
@@ -58,10 +58,10 @@ export function CreateAmmForm() {
   const token1 = watch("token1");
 
   const onSubmit = async (data: typeof createAmmSchema._type) => {
-    const txArgs = createAMMArgs(data);
-    await sendTransactions(txArgs);
-    // eslint-disable-next-line no-console
-    console.log("submit", data);
+    const publicClient = publicClientsFromIds[chainId as ChainId];
+    await createAMMArgs(data, publicClient).then((txArgs) => {
+      sendTransactions(txArgs);
+    });
   };
 
   useEffect(() => {

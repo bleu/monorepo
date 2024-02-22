@@ -11,8 +11,6 @@ export default function Page() {
   } = useSafeAppsSDK();
 
   if (chainId == goerli.id || chainId == mainnet.id) {
-    redirect(
-      `/amms/${NetworkFromNetworkChainId[chainId as NetworkChainId]}`,
-    );
+    redirect(`/amms/${NetworkFromNetworkChainId[chainId as NetworkChainId]}`);
   } else redirect("/amms/mainnet");
 }

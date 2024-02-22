@@ -1,6 +1,7 @@
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { TokenBalance } from "@gnosis.pm/safe-apps-sdk";
 import { useEffect, useState } from "react";
+import { isAddress } from "viem";
 
 export function useSafeBalances(): { assets: TokenBalance[]; loaded: boolean } {
   const { sdk } = useSafeAppsSDK();
@@ -15,7 +16,10 @@ export function useSafeBalances(): { assets: TokenBalance[]; loaded: boolean } {
       setAssets(
         balances.items.filter(
           (item) =>
-            parseInt(item.balance) > 0 && item.tokenInfo.type === "ERC20",
+            parseInt(item.balance) > 0 &&
+            item.tokenInfo.type === "ERC20" &&
+            item.tokenInfo.decimals > 0 &&
+            isAddress(item.tokenInfo.address),
         ),
       );
       setLoaded(true);

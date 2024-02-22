@@ -1,17 +1,24 @@
 "use client";
 
-import { Address, Network } from "@bleu-fi/utils";
+import { Network } from "@bleu-fi/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { gnosis, goerli, mainnet } from "viem/chains";
 
-import { TransactionCard } from "#/app/amms/(components)/TransactionCard";
+import { LinkComponent } from "#/components/Link";
 import WalletNotConnected from "#/components/WalletNotConnected";
 
-export type tokenPriceChecker = {
-  symbol: string;
-  address: string;
-  decimals: number;
-};
+import { CreateAmmForm } from "../../(components)/CreateAmmForm";
+
+function ArrowIcon() {
+  return (
+    <ArrowLeftIcon
+      height={16}
+      width={16}
+      className="text-slate10 duration-200 hover:text-amber10"
+    />
+  );
+}
 
 export default function Page({
   params,
@@ -25,8 +32,6 @@ export default function Page({
   if (!connected) {
     return <WalletNotConnected />;
   }
-
-  const addressLower = safe.safeAddress ? safe.safeAddress?.toLowerCase() : "";
 
   if (
     safe.chainId !== mainnet.id &&
@@ -47,10 +52,30 @@ export default function Page({
 
   return (
     <>
-      <TransactionCard
-        userAddress={addressLower as Address}
-        chainId={safe.chainId}
-      />
+      <div className="flex h-full items-center justify-center w-full">
+        <div className="my-4 flex flex-col rounded-lg border border-slate7 bg-blue3 text-white">
+          <div className="divide-y divide-slate7 h-full">
+            <div className="relative flex h-full w-full justify-center">
+              <LinkComponent
+                loaderColor="amber"
+                href={`/amms/${params.network}`}
+                content={
+                  <div className="absolute left-8 flex h-full items-center">
+                    <ArrowIcon />
+                  </div>
+                }
+              />
+
+              <div className="flex min-w-[530px] flex-col items-center py-3">
+                <div className="text-xl">Create AMM</div>
+              </div>
+            </div>
+            <div className="flex flex-col overflow-auto w-full h-full max-h-[550px]">
+              <CreateAmmForm />
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 }

@@ -21,21 +21,27 @@ import { useSafeBalances } from "#/hooks/useSafeBalances";
 import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 import { cowTokenList } from "#/utils/cowTokenList";
 
-import { tokenPriceChecker } from "../[network]/new/page";
+export interface IToken {
+  address: string;
+  symbol: string;
+  decimals: number;
+}
 
 export function TokenSelect({
   onSelectToken,
   tokenType,
   selectedToken,
+  label,
   disabeld = false,
 }: {
-  onSelectToken: (token: tokenPriceChecker) => void;
+  onSelectToken: (token: IToken) => void;
   tokenType: "sell" | "buy";
-  selectedToken?: tokenPriceChecker;
+  selectedToken?: IToken;
+  label: string;
   disabeld?: boolean;
 }) {
   const [open, setOpen] = useState(false);
-  const [token, setToken] = useState<tokenPriceChecker | undefined>(undefined);
+  const [token, setToken] = useState<IToken | undefined>(undefined);
 
   useEffect(() => {
     if (selectedToken) {
@@ -63,7 +69,7 @@ export function TokenSelect({
       setIsOpen={setOpen}
     >
       <TokenSelectButton
-        tokenType={tokenType}
+        label={label}
         token={token}
         disabeld={disabeld}
         onClick={() => setOpen(true)}
@@ -73,21 +79,19 @@ export function TokenSelect({
 }
 
 export function TokenSelectButton({
-  tokenType,
+  label,
   token,
   onClick,
   disabeld = false,
 }: {
-  tokenType: "sell" | "buy";
-  token?: tokenPriceChecker;
+  label: string;
+  token?: IToken;
   disabeld?: boolean;
   onClick?: () => void;
 }) {
   return (
     <div className="flex flex-col w-full">
-      <span className="mb-2 block text-sm text-slate12">
-        Token to {tokenType}
-      </span>
+      <span className="mb-2 block text-sm text-slate12">{label}</span>
       <button
         type="button"
         //same style as Input.tsx

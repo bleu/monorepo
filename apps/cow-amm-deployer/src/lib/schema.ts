@@ -43,7 +43,7 @@ export const createAmmSchema = z
     {
       message: "Balancer Pool Id is required",
       path: ["balancerPoolId"],
-    },
+    }
   )
   .refine(
     (data) => {
@@ -55,7 +55,7 @@ export const createAmmSchema = z
     {
       message: "Uniswap V2 Pool Address is required",
       path: ["uniswapV2Pair"],
-    },
+    }
   )
   .refine(
     (data) => {
@@ -67,5 +67,5 @@ export const createAmmSchema = z
     {
       message: "Tokens must be different",
       path: ["token0"],
-    },
+    }
   );

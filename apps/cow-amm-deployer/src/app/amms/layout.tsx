@@ -5,11 +5,11 @@ import { Footer } from "#/components/Footer";
 import { Header } from "#/components/Header";
 import { NetworksContextProvider } from "#/contexts/networks";
 
-const APP_DISPLAY_NAME = "Milkman orders";
+const APP_DISPLAY_NAME = "CoW Amm Manager";
 
 export const metadata: Metadata = {
-  title: `Cow Swap - ${APP_DISPLAY_NAME}`,
-  description: "Manage your milkman orders",
+  title: `Cow - ${APP_DISPLAY_NAME}`,
+  description: "Manage your CoW Amm",
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {

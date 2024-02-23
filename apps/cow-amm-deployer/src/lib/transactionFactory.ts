@@ -43,7 +43,7 @@ interface ITransaction<T> {
   createRawTx(args: T): BaseTransaction;
 }
 
-class SetFallbackHandlerTx implements ITransaction<setFallbackHandlerArgs> {
+class FallbackHandlerSetTx implements ITransaction<setFallbackHandlerArgs> {
   createRawTx({ safeAddress }: setFallbackHandlerArgs): BaseTransaction {
     return {
       to: safeAddress,
@@ -57,7 +57,7 @@ class SetFallbackHandlerTx implements ITransaction<setFallbackHandlerArgs> {
   }
 }
 
-class setDomainVerifierTx implements ITransaction<setDomainVerifierArgs> {
+class DomainVerifierSetTx implements ITransaction<setDomainVerifierArgs> {
   createRawTx({
     safeAddress,
     domainSeparator,
@@ -74,7 +74,7 @@ class setDomainVerifierTx implements ITransaction<setDomainVerifierArgs> {
   }
 }
 
-class createCowAmmModuleTx implements ITransaction<createCowAmmModuleArgs> {
+class CowAmmCreateModuleTx implements ITransaction<createCowAmmModuleArgs> {
   createRawTx({ safeAddress }: createCowAmmModuleArgs): BaseTransaction {
     return {
       to: COW_AMM_MODULE_FACTORY_ADDRESS,
@@ -88,7 +88,7 @@ class createCowAmmModuleTx implements ITransaction<createCowAmmModuleArgs> {
   }
 }
 
-class enableCowAmmModuleTx implements ITransaction<enableCowAmmModuleArgs> {
+class CowAmmEnableModuleTx implements ITransaction<enableCowAmmModuleArgs> {
   createRawTx({
     safeAddress,
     moduleAddress,
@@ -119,16 +119,16 @@ const TRANSACTION_CREATORS: {
     TransactionBindings[key]
   >;
 } = {
-  [TRANSACTION_TYPES.SET_FALLBACK_HANDLER]: SetFallbackHandlerTx,
-  [TRANSACTION_TYPES.SET_DOMAIN_VERIFIER]: setDomainVerifierTx,
-  [TRANSACTION_TYPES.CREATE_COW_AMM_MODULE]: createCowAmmModuleTx,
-  [TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE]: enableCowAmmModuleTx,
+  [TRANSACTION_TYPES.SET_FALLBACK_HANDLER]: FallbackHandlerSetTx,
+  [TRANSACTION_TYPES.SET_DOMAIN_VERIFIER]: DomainVerifierSetTx,
+  [TRANSACTION_TYPES.CREATE_COW_AMM_MODULE]: CowAmmCreateModuleTx,
+  [TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE]: CowAmmEnableModuleTx,
 };
 
 export class TransactionFactory {
   static createRawTx<T extends TRANSACTION_TYPES>(
     type: T,
-    args: TransactionBindings[T],
+    args: TransactionBindings[T]
   ): BaseTransaction {
     const TransactionCreator = TRANSACTION_CREATORS[type];
     const txCreator = new TransactionCreator();
@@ -138,13 +138,13 @@ export class TransactionFactory {
 
 export async function createAMMArgs(
   data: typeof createAmmSchema._type,
-  publicClient: PublicClient,
+  publicClient: PublicClient
 ) {
   const setFallbackTx = {
     type: TRANSACTION_TYPES.SET_FALLBACK_HANDLER,
     safeAddress: data.safeAddress,
   } as setFallbackHandlerArgs;
-  const setDomainVerifierTx = {
+  const DomainVerifierSetTx = {
     type: TRANSACTION_TYPES.SET_DOMAIN_VERIFIER,
     safeAddress: data.safeAddress,
     domainSeparator: data.domainSeparator,
@@ -152,9 +152,9 @@ export async function createAMMArgs(
   const fallbackTxs = (() => {
     switch (data.fallbackSetupState) {
       case FALLBACK_STATES.HAS_NOTHING:
-        return [setFallbackTx, setDomainVerifierTx];
+        return [setFallbackTx, DomainVerifierSetTx];
       case FALLBACK_STATES.HAS_EXTENSIBLE_FALLBACK:
-        return [setDomainVerifierTx];
+        return [DomainVerifierSetTx];
       default:
         return [];
     }

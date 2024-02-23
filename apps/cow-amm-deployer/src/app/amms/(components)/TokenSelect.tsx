@@ -19,7 +19,6 @@ import Table from "#/components/Table";
 import { Toast } from "#/components/Toast";
 import { useSafeBalances } from "#/hooks/useSafeBalances";
 import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
-import { cowTokenList } from "#/utils/cowTokenList";
 
 export interface IToken {
   address: string;
@@ -29,13 +28,11 @@ export interface IToken {
 
 export function TokenSelect({
   onSelectToken,
-  tokenType,
   selectedToken,
   label,
   disabeld = false,
 }: {
   onSelectToken: (token: IToken) => void;
-  tokenType: "sell" | "buy";
   selectedToken?: IToken;
   label: string;
   disabeld?: boolean;
@@ -62,9 +59,7 @@ export function TokenSelect({
 
   return (
     <Dialog
-      content={
-        <TokenModal onSelectToken={handleSelectToken} tokenType={tokenType} />
-      }
+      content={<TokenModal onSelectToken={handleSelectToken} />}
       isOpen={open}
       setIsOpen={setOpen}
     >
@@ -123,35 +118,13 @@ export function TokenSelectButton({
 
 function TokenModal({
   onSelectToken,
-  tokenType,
 }: {
   onSelectToken: (token: TokenBalance) => void;
-  tokenType: "sell" | "buy";
 }) {
   const {
     safe: { chainId },
   } = useSafeAppsSDK();
-  const [tokens, setTokens] = useState<(TokenBalance | undefined)[]>(
-    tokenType === "buy"
-      ? cowTokenList
-          .filter((token) => token.chainId === chainId)
-          .map((token) => {
-            return {
-              balance: "0",
-              fiatBalance: "0",
-              fiatConversion: "0",
-              tokenInfo: {
-                address: token.address,
-                decimals: token.decimals,
-                name: token.name,
-                symbol: token.symbol,
-                logoUri: token.logoURI,
-                type: TokenType.ERC20,
-              },
-            };
-          })
-      : [],
-  );
+  const [tokens, setTokens] = useState<(TokenBalance | undefined)[]>([]);
 
   const { assets, loaded } = useSafeBalances();
   useEffect(() => {

@@ -33,6 +33,7 @@ const getDefaultData = (chainId: ChainId) => {
   return {
     token0,
     token1,
+    chainId,
   };
 };
 
@@ -58,7 +59,7 @@ export function CreateAmmForm() {
   const token1 = watch("token1");
 
   const onSubmit = async (data: typeof createAmmSchema._type) => {
-    await createAMMArgs(data, chainId as ChainId).then((txArgs) => {
+    await createAMMArgs(data).then((txArgs) => {
       sendTransactions(txArgs);
     });
   };

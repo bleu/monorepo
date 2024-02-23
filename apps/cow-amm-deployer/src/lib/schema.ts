@@ -1,7 +1,7 @@
 import { isAddress } from "viem";
 import { z } from "zod";
 
-import { FALLBACK_STATES, PRICE_ORACLES } from "#/app/amms/utils/type";
+import { FALLBACK_STATES, PRICE_ORACLES } from "#/lib/types";
 
 const basicAddressSchema = z
   .string()

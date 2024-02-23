@@ -6,4 +6,4 @@ export const EXTENSIBLE_FALLBACK_ADDRESS =
 export const SETTLEMENT_CONTRACT_ADDRESS =
   "0x9008D19f58AAbD9eD0D60971565AA8510560ab41" as const;
 export const COW_AMM_MODULE_FACTORY_ADDRESS =
-  "0x860b225d1EDfFB3c94C8e08f85B61A8011955b39" as const; // TODO: replace to the production address
+  "0x01dB9BE56c1DdDCC26F952c8DcA0A4341A370000" as const; // TODO: replace to the production address

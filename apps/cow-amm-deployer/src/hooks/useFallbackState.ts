@@ -3,13 +3,13 @@ import { SafeInfo } from "@gnosis.pm/safe-apps-sdk";
 import { useEffect, useState } from "react";
 import { Address } from "viem";
 
-import { FALLBACK_STATES } from "#/app/amms/utils/type";
 import { gpV2SettlementAbi } from "#/lib/abis/gpv2Settlement";
 import { signatureVerifierMuxerAbi } from "#/lib/abis/signatureVerifierMuxer";
 import {
   COMPOSABLE_COW_ADDRESS,
   SETTLEMENT_CONTRACT_ADDRESS,
 } from "#/lib/contracts";
+import { FALLBACK_STATES } from "#/lib/types";
 import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 
 export async function fetchDomainSeparator({

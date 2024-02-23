@@ -16,10 +16,10 @@ import { useFallbackState } from "#/hooks/useFallbackState";
 import { useRawTxData } from "#/hooks/useRawTxData";
 import { createAmmSchema } from "#/lib/schema";
 import { createAMMArgs } from "#/lib/transactionFactory";
-import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
+import { ChainId } from "#/utils/chainsPublicClients";
 import { cowTokenList } from "#/utils/cowTokenList";
 
-import { FALLBACK_STATES, PRICE_ORACLES } from "../utils/type";
+import { FALLBACK_STATES, PRICE_ORACLES } from "../../../lib/types";
 import { FallbackAndDomainWarning } from "./FallbackAndDomainWarning";
 import { IToken, TokenSelect } from "./TokenSelect";
 
@@ -48,7 +48,7 @@ export function CreateAmmForm() {
   const {
     setValue,
     watch,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = form;
   const { fallbackState, domainSeparator } = useFallbackState();
   const { sendTransactions } = useRawTxData();
@@ -58,8 +58,7 @@ export function CreateAmmForm() {
   const token1 = watch("token1");
 
   const onSubmit = async (data: typeof createAmmSchema._type) => {
-    const publicClient = publicClientsFromIds[chainId as ChainId];
-    await createAMMArgs(data, publicClient).then((txArgs) => {
+    await createAMMArgs(data, chainId as ChainId).then((txArgs) => {
       sendTransactions(txArgs);
     });
   };
@@ -126,20 +125,23 @@ export function CreateAmmForm() {
         name="minTradedToken0"
       />
       <PriceOracleFields form={form} />
-      <FallbackAndDomainWarning
-        confirmedFallbackSetup={confirmedFallbackSetup}
-        setConfirmedFallbackSetup={setConfirmedFallbackSetup}
-      />
-      <div className="flex justify-center gap-x-5">
+      {fallbackState !== FALLBACK_STATES.HAS_DOMAIN_VERIFIER && (
+        <FallbackAndDomainWarning
+          confirmedFallbackSetup={confirmedFallbackSetup}
+          setConfirmedFallbackSetup={setConfirmedFallbackSetup}
+        />
+      )}
+      <div className="flex justify-center gap-x-5 mt-2">
         <Button
           type="submit"
           className="w-full"
           disabled={
-            fallbackState != FALLBACK_STATES.HAS_DOMAIN_VERIFIER &&
-            !confirmedFallbackSetup
+            (fallbackState != FALLBACK_STATES.HAS_DOMAIN_VERIFIER &&
+              !confirmedFallbackSetup) ||
+            isSubmitting
           }
         >
-          <span>Create AMM</span>
+          {isSubmitting ? <Spinner size="sm" /> : <span>Create AMM</span>}
         </Button>
       </div>
     </Form>

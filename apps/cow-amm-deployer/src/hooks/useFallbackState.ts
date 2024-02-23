@@ -6,7 +6,10 @@ import { Address } from "viem";
 import { FALLBACK_STATES } from "#/app/amms/utils/type";
 import { gpV2SettlementAbi } from "#/lib/abis/gpv2Settlement";
 import { signatureVerifierMuxerAbi } from "#/lib/abis/signatureVerifierMuxer";
-import { COMPOSABLE_COW_ADDRESS, SETTLEMENT_CONTRACT } from "#/lib/contracts";
+import {
+  COMPOSABLE_COW_ADDRESS,
+  SETTLEMENT_CONTRACT_ADDRESS,
+} from "#/lib/contracts";
 import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 
 export async function fetchDomainSeparator({
@@ -16,7 +19,7 @@ export async function fetchDomainSeparator({
 }): Promise<Address> {
   const publicClient = publicClientsFromIds[safe.chainId as ChainId];
   return publicClient.readContract({
-    address: SETTLEMENT_CONTRACT,
+    address: SETTLEMENT_CONTRACT_ADDRESS,
     abi: gpV2SettlementAbi,
     functionName: "domainSeparator",
   });

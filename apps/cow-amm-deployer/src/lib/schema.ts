@@ -1,7 +1,7 @@
 import { isAddress } from "viem";
 import { z } from "zod";
 
-import { PRICE_ORACLES } from "#/app/amms/utils/type";
+import { FALLBACK_STATES, PRICE_ORACLES } from "#/app/amms/utils/type";
 
 const basicAddressSchema = z
   .string()
@@ -27,6 +27,9 @@ export const createAmmSchema = z
     token1: baseTokenSchema,
     minTradedToken0: z.coerce.number().positive(),
     priceOracle: z.nativeEnum(PRICE_ORACLES),
+    fallbackSetupState: z.nativeEnum(FALLBACK_STATES),
+    safeAddress: basicAddressSchema,
+    domainSeparator: bytes32Schema,
     balancerPoolId: bytes32Schema.optional(),
     uniswapV2Pair: basicAddressSchema.optional(),
   })

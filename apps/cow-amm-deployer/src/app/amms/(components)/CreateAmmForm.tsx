@@ -2,19 +2,25 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { slateDarkA } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
-import { FieldValues, useForm, UseFormReturn } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { useForm, UseFormReturn } from "react-hook-form";
 
 import { Button } from "#/components";
 import { Input } from "#/components/Input";
 import { Select, SelectItem } from "#/components/Select";
+import { Spinner } from "#/components/Spinner";
 import { Tooltip } from "#/components/Tooltip";
 import { Form, FormMessage } from "#/components/ui/form";
 import { Label } from "#/components/ui/label";
+import { useFallbackState } from "#/hooks/useFallbackState";
+import { useRawTxData } from "#/hooks/useRawTxData";
 import { createAmmSchema } from "#/lib/schema";
-import { ChainId } from "#/utils/chainsPublicClients";
+import { createAMMArgs } from "#/lib/transactionFactory";
+import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 import { cowTokenList } from "#/utils/cowTokenList";
 
-import { PRICE_ORACLES } from "../utils/type";
+import { FALLBACK_STATES, PRICE_ORACLES } from "../utils/type";
+import { FallbackAndDomainWarning } from "./FallbackAndDomainWarning";
 import { IToken, TokenSelect } from "./TokenSelect";
 
 const getDefaultData = (chainId: ChainId) => {
@@ -32,7 +38,7 @@ const getDefaultData = (chainId: ChainId) => {
 
 export function CreateAmmForm() {
   const {
-    safe: { chainId },
+    safe: { chainId, safeAddress },
   } = useSafeAppsSDK();
   const form = useForm<typeof createAmmSchema._type>({
     resolver: zodResolver(createAmmSchema),
@@ -44,72 +50,97 @@ export function CreateAmmForm() {
     watch,
     formState: { errors },
   } = form;
+  const { fallbackState, domainSeparator } = useFallbackState();
+  const { sendTransactions } = useRawTxData();
+  const [confirmedFallbackSetup, setConfirmedFallbackSetup] = useState(false);
+
   const token0 = watch("token0");
   const token1 = watch("token1");
 
-  const onSubmit = (data: FieldValues) => {
-    // TODO: Implement this
-    // eslint-disable-next-line no-console
-    console.log("submit", data);
+  const onSubmit = async (data: typeof createAmmSchema._type) => {
+    const publicClient = publicClientsFromIds[chainId as ChainId];
+    await createAMMArgs(data, publicClient).then((txArgs) => {
+      sendTransactions(txArgs);
+    });
   };
 
+  useEffect(() => {
+    if (fallbackState && domainSeparator) {
+      setValue("domainSeparator", domainSeparator);
+      setValue("fallbackSetupState", fallbackState);
+    }
+  }, [fallbackState, setValue]);
+
+  useEffect(() => {
+    setValue("safeAddress", safeAddress);
+  }, [safeAddress, setValue]);
+
+  if (!fallbackState || !domainSeparator) {
+    return <Spinner />;
+  }
+
   return (
-    <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-6 p-9">
-      <div>
-        <div className="flex flex-col h-fit justify-between gap-y-7">
-          <div className="flex h-fit justify-between gap-x-7">
-            <div className="w-full flex flex-col">
-              <TokenSelect
-                onSelectToken={(token: IToken) => {
-                  setValue("token0", {
-                    decimals: token.decimals,
-                    address: token.address,
-                    symbol: token.symbol,
-                  });
-                }}
-                label="First Token"
-                tokenType="sell"
-                selectedToken={token0 ?? undefined}
-              />
-              {errors.token0 && (
-                <FormMessage className="mt-1 h-6 text-sm text-tomato10">
-                  <span>{errors.token0.message}</span>
-                </FormMessage>
-              )}
-            </div>
-            <div className="w-full flex flex-col">
-              <TokenSelect
-                onSelectToken={(token: IToken) => {
-                  setValue("token1", {
-                    decimals: token.decimals,
-                    address: token.address,
-                    symbol: token.symbol,
-                  });
-                }}
-                label="Second Token"
-                tokenType="sell"
-                selectedToken={token1 ?? undefined}
-              />
-              {errors.token1 && (
-                <FormMessage className="mt-1 h-6 text-sm text-tomato10">
-                  <span>{errors.token1.message}</span>
-                </FormMessage>
-              )}
-            </div>
-          </div>
-          <Input
-            label="Minimum traded first token"
-            type="number"
-            step={10 ** -token0.decimals}
-            name="minTradedToken0"
+    <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-3 p-9">
+      <div className="flex h-fit justify-between gap-x-7">
+        <div className="w-full flex flex-col">
+          <TokenSelect
+            onSelectToken={(token: IToken) => {
+              setValue("token0", {
+                decimals: token.decimals,
+                address: token.address,
+                symbol: token.symbol,
+              });
+            }}
+            label="First Token"
+            selectedToken={token0 ?? undefined}
           />
-          <PriceOracleFields form={form} />
-          <div className="flex justify-center gap-x-5">
-            <Button type="submit" className="w-full">
-              <span>Create AMM</span>
-            </Button>
-          </div>
+          {errors.token0 && (
+            <FormMessage className="mt-1 h-6 text-sm text-tomato10">
+              <span>{errors.token0.message}</span>
+            </FormMessage>
+          )}
         </div>
+        <div className="w-full flex flex-col">
+          <TokenSelect
+            onSelectToken={(token: IToken) => {
+              setValue("token1", {
+                decimals: token.decimals,
+                address: token.address,
+                symbol: token.symbol,
+              });
+            }}
+            label="Second Token"
+            selectedToken={token1 ?? undefined}
+          />
+          {errors.token1 && (
+            <FormMessage className="mt-1 h-6 text-sm text-tomato10">
+              <span>{errors.token1.message}</span>
+            </FormMessage>
+          )}
+        </div>
+      </div>
+      <Input
+        label="Minimum amount of the first token to be traded on each order"
+        type="number"
+        step={10 ** -token0.decimals}
+        name="minTradedToken0"
+      />
+      <PriceOracleFields form={form} />
+      <FallbackAndDomainWarning
+        confirmedFallbackSetup={confirmedFallbackSetup}
+        setConfirmedFallbackSetup={setConfirmedFallbackSetup}
+      />
+      <div className="flex justify-center gap-x-5">
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={
+            fallbackState != FALLBACK_STATES.HAS_DOMAIN_VERIFIER &&
+            !confirmedFallbackSetup
+          }
+        >
+          <span>Create AMM</span>
+        </Button>
       </div>
     </Form>
   );
@@ -130,7 +161,7 @@ function PriceOracleFields({
   const priceOracle = watch("priceOracle");
 
   return (
-    <div className="flex flex-col justify-between gap-y-7">
+    <div className="flex flex-col justify-between gap-y-3">
       <div>
         <div className="flex gap-x-2 items-center">
           <Label>Price checker</Label>
@@ -164,7 +195,7 @@ function PriceOracleFields({
         <Input label="Balancer Pool Id" {...register("balancerPoolId")} />
       )}
       {priceOracle === PRICE_ORACLES.UNI && (
-        <Input label="Uniswap V2 Pool Id" {...register("uniswapV2Pair")} />
+        <Input label="Uniswap V2 Pool Address" {...register("uniswapV2Pair")} />
       )}
     </div>
   );

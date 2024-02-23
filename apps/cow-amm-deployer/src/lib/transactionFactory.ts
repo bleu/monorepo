@@ -32,7 +32,7 @@ interface ITransaction<T> {
   createRawTx(args: T): BaseTransaction;
 }
 
-class SetFallbackHandlerTx implements ITransaction<setFallbackHandlerArgs> {
+class FallbackHandlerSetTx implements ITransaction<setFallbackHandlerArgs> {
   createRawTx({ safeAddress }: setFallbackHandlerArgs): BaseTransaction {
     return {
       to: safeAddress,
@@ -46,7 +46,7 @@ class SetFallbackHandlerTx implements ITransaction<setFallbackHandlerArgs> {
   }
 }
 
-class setDomainVerifierTx implements ITransaction<setDomainVerifierArgs> {
+class DomainVerifierSetTx implements ITransaction<setDomainVerifierArgs> {
   createRawTx({
     safeAddress,
     domainSeparator,
@@ -75,8 +75,8 @@ const TRANSACTION_CREATORS: {
     TransactionBindings[key]
   >;
 } = {
-  [TRANSACTION_TYPES.SET_FALLBACK_HANDLER]: SetFallbackHandlerTx,
-  [TRANSACTION_TYPES.SET_DOMAIN_VERIFIER]: setDomainVerifierTx,
+  [TRANSACTION_TYPES.SET_FALLBACK_HANDLER]: FallbackHandlerSetTx,
+  [TRANSACTION_TYPES.SET_DOMAIN_VERIFIER]: DomainVerifierSetTx,
 };
 
 export class TransactionFactory {
@@ -95,7 +95,7 @@ export function createAMMArgs(data: typeof createAmmSchema._type) {
     type: TRANSACTION_TYPES.SET_FALLBACK_HANDLER,
     safeAddress: data.safeAddress,
   } as setFallbackHandlerArgs;
-  const setDomainVerifierTx = {
+  const DomainVerifierSetTx = {
     type: TRANSACTION_TYPES.SET_DOMAIN_VERIFIER,
     safeAddress: data.safeAddress,
     domainSeparator: data.domainSeparator,
@@ -103,9 +103,9 @@ export function createAMMArgs(data: typeof createAmmSchema._type) {
   return (() => {
     switch (data.fallbackSetupState) {
       case FALLBACK_STATES.HAS_NOTHING:
-        return [setFallbackTx, setDomainVerifierTx];
+        return [setFallbackTx, DomainVerifierSetTx];
       case FALLBACK_STATES.HAS_EXTENSIBLE_FALLBACK:
-        return [setDomainVerifierTx];
+        return [DomainVerifierSetTx];
       default:
         return [];
     }

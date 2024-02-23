@@ -25,10 +25,10 @@ import { IToken, TokenSelect } from "./TokenSelect";
 
 const getDefaultData = (chainId: ChainId) => {
   const token0 = cowTokenList.find(
-    (token) => token.chainId === chainId && token.symbol === "WETH"
+    (token) => token.chainId === chainId && token.symbol === "WETH",
   );
   const token1 = cowTokenList.find(
-    (token) => token.chainId === chainId && token.symbol === "COW"
+    (token) => token.chainId === chainId && token.symbol === "COW",
   );
   return {
     token0,
@@ -92,7 +92,6 @@ export function CreateAmmForm() {
               });
             }}
             label="First Token"
-            tokenType="sell"
             selectedToken={token0 ?? undefined}
           />
           {errors.token0 && (
@@ -111,7 +110,6 @@ export function CreateAmmForm() {
               });
             }}
             label="Second Token"
-            tokenType="sell"
             selectedToken={token1 ?? undefined}
           />
           {errors.token1 && (
@@ -122,7 +120,7 @@ export function CreateAmmForm() {
         </div>
       </div>
       <Input
-        label="Minimum traded first token"
+        label="Minimum amount of the first token to be traded on each order"
         type="number"
         step={10 ** -token0.decimals}
         name="minTradedToken0"

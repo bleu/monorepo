@@ -128,7 +128,7 @@ const TRANSACTION_CREATORS: {
 export class TransactionFactory {
   static createRawTx<T extends TRANSACTION_TYPES>(
     type: T,
-    args: TransactionBindings[T]
+    args: TransactionBindings[T],
   ): BaseTransaction {
     const TransactionCreator = TRANSACTION_CREATORS[type];
     const txCreator = new TransactionCreator();
@@ -138,7 +138,7 @@ export class TransactionFactory {
 
 export async function createAMMArgs(
   data: typeof createAmmSchema._type,
-  publicClient: PublicClient
+  publicClient: PublicClient,
 ) {
   const setFallbackTx = {
     type: TRANSACTION_TYPES.SET_FALLBACK_HANDLER,

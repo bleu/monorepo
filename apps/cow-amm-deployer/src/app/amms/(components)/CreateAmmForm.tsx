@@ -25,14 +25,15 @@ import { IToken, TokenSelect } from "./TokenSelect";
 
 const getDefaultData = (chainId: ChainId) => {
   const token0 = cowTokenList.find(
-    (token) => token.chainId === chainId && token.symbol === "WETH"
+    (token) => token.chainId === chainId && token.symbol === "WETH",
   );
   const token1 = cowTokenList.find(
-    (token) => token.chainId === chainId && token.symbol === "COW"
+    (token) => token.chainId === chainId && token.symbol === "COW",
   );
   return {
     token0,
     token1,
+    chainId,
   };
 };
 
@@ -58,7 +59,7 @@ export function CreateAmmForm() {
   const token1 = watch("token1");
 
   const onSubmit = async (data: typeof createAmmSchema._type) => {
-    await createAMMArgs(data, chainId as ChainId).then((txArgs) => {
+    await createAMMArgs(data).then((txArgs) => {
       sendTransactions(txArgs);
     });
   };

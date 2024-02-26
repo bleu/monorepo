@@ -1,7 +1,11 @@
+import { capitalize } from "@bleu-fi/utils";
 import { isAddress } from "viem";
 import { z } from "zod";
 
 import { FALLBACK_STATES, PRICE_ORACLES } from "#/lib/types";
+import { ChainId } from "#/utils/chainsPublicClients";
+
+import { fetchCowQuote } from "./cow/fetchCowQuote";
 
 const basicAddressSchema = z
   .string()
@@ -32,6 +36,7 @@ export const createAmmSchema = z
     domainSeparator: bytes32Schema,
     balancerPoolId: bytes32Schema.optional(),
     uniswapV2Pair: basicAddressSchema.optional(),
+    chainId: z.number().int(),
   })
   .refine(
     (data) => {
@@ -43,7 +48,7 @@ export const createAmmSchema = z
     {
       message: "Balancer Pool Id is required",
       path: ["balancerPoolId"],
-    }
+    },
   )
   .refine(
     (data) => {
@@ -55,7 +60,7 @@ export const createAmmSchema = z
     {
       message: "Uniswap V2 Pool Address is required",
       path: ["uniswapV2Pair"],
-    }
+    },
   )
   .refine(
     (data) => {
@@ -67,5 +72,22 @@ export const createAmmSchema = z
     {
       message: "Tokens must be different",
       path: ["token0"],
-    }
-  );
+    },
+  )
+  .superRefine((data, ctx) => {
+    return fetchCowQuote({
+      tokenIn: data.token0,
+      tokenOut: data.token1,
+      amountIn: 1e18, // hardcoded value since we're just checking if the route exists or not
+      chainId: data.chainId as ChainId,
+      priceQuality: "fast",
+    }).then((res) => {
+      if (res.errorType) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: capitalize(res.description),
+          path: ["token0"],
+        });
+      }
+    });
+  });

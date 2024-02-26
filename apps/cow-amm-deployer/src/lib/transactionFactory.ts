@@ -192,7 +192,7 @@ const TRANSACTION_CREATORS: {
 export class TransactionFactory {
   static createRawTx<T extends TRANSACTION_TYPES>(
     type: T,
-    args: TransactionBindings[T]
+    args: TransactionBindings[T],
   ): BaseTransaction {
     const TransactionCreator = TRANSACTION_CREATORS[type];
     const txCreator = new TransactionCreator();
@@ -200,11 +200,8 @@ export class TransactionFactory {
   }
 }
 
-export async function createAMMArgs(
-  data: typeof createAmmSchema._type,
-  chainId: ChainId
-) {
-  const publicClient = publicClientsFromIds[chainId];
+export async function createAMMArgs(data: typeof createAmmSchema._type) {
+  const publicClient = publicClientsFromIds[data.chainId as ChainId];
   const setFallbackTx = {
     type: TRANSACTION_TYPES.SET_FALLBACK_HANDLER,
     safeAddress: data.safeAddress,
@@ -243,7 +240,7 @@ export async function createAMMArgs(
   await uploadAppData({
     fullAppData: appDataContent,
     appDataHex,
-    chainId: chainId,
+    chainId: data.chainId as ChainId,
   });
 
   return [

@@ -1,5 +1,5 @@
 import { Address } from "@bleu-fi/utils";
-import { goerli, mainnet } from "viem/chains";
+import { gnosis, goerli, mainnet } from "viem/chains";
 
 import { ChainId } from "#/utils/chainsPublicClients";
 
@@ -8,6 +8,7 @@ const cowExplorerBaseUrl = "https://explorer.cow.fi/";
 const cowExplorerUrl = {
   [mainnet.id]: "",
   [goerli.id]: "goerli",
+  [gnosis.id]: "gc",
 };
 
 export function buildAccountCowExplorerUrl({

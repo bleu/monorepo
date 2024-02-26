@@ -3,7 +3,7 @@
 import { Network } from "@bleu-fi/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
-import { gnosis, goerli, mainnet } from "viem/chains";
+import { gnosis } from "viem/chains";
 
 import { LinkComponent } from "#/components/Link";
 import WalletNotConnected from "#/components/WalletNotConnected";
@@ -33,11 +33,7 @@ export default function Page({
     return <WalletNotConnected />;
   }
 
-  if (
-    safe.chainId !== mainnet.id &&
-    safe.chainId !== goerli.id &&
-    safe.chainId !== gnosis.id
-  ) {
+  if (safe.chainId !== gnosis.id) {
     return (
       <div className="flex h-full w-full flex-col items-center rounded-3xl px-12 py-16 md:py-20">
         <div className="text-center text-3xl text-amber9">

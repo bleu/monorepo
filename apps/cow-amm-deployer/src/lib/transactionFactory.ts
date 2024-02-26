@@ -1,8 +1,11 @@
+import { MetadataApi } from "@cowprotocol/app-data";
 import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
-import { Address, encodeFunctionData, PublicClient } from "viem";
+import { Address, encodeFunctionData, parseUnits } from "viem";
 
-import { FALLBACK_STATES } from "#/app/amms/utils/type";
+import { FALLBACK_STATES, PRICE_ORACLES } from "#/lib/types";
+import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 
+import { cowAmmModuleAbi } from "./abis/cowAmmModule";
 import { cowAmmModuleFactoryAbi } from "./abis/cowAmmModuleFactory";
 import { gnosisSafeV12 } from "./abis/gnosisSafeV12";
 import { signatureVerifierMuxerAbi } from "./abis/signatureVerifierMuxer";
@@ -11,6 +14,11 @@ import {
   COW_AMM_MODULE_FACTORY_ADDRESS,
   EXTENSIBLE_FALLBACK_ADDRESS,
 } from "./contracts";
+import { uploadAppData } from "./cow/uploadAppData";
+import {
+  encodePriceOracleData,
+  PRICE_ORACLES_ADDRESSES,
+} from "./encodePriceOracleData";
 import { createAmmSchema } from "./schema";
 
 export enum TRANSACTION_TYPES {
@@ -18,6 +26,7 @@ export enum TRANSACTION_TYPES {
   SET_DOMAIN_VERIFIER = "SET_DOMAIN_VERIFIER",
   CREATE_COW_AMM_MODULE = "CREATE_COW_AMM_MODULE",
   ENABLE_COW_AMM_MODULE = "ENABLE_COW_AMM_MODULE",
+  CREATE_COW_AMM = "CREATE_COW_AMM",
 }
 
 export interface BaseArgs {
@@ -25,18 +34,35 @@ export interface BaseArgs {
 }
 
 export interface setFallbackHandlerArgs extends BaseArgs {
+  type: TRANSACTION_TYPES.SET_FALLBACK_HANDLER;
   safeAddress: Address;
 }
 export interface setDomainVerifierArgs extends BaseArgs {
+  type: TRANSACTION_TYPES.SET_DOMAIN_VERIFIER;
   safeAddress: Address;
   domainSeparator: Address;
 }
 export interface createCowAmmModuleArgs extends BaseArgs {
+  type: TRANSACTION_TYPES.CREATE_COW_AMM_MODULE;
   safeAddress: Address;
 }
 export interface enableCowAmmModuleArgs extends BaseArgs {
+  type: TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE;
   safeAddress: Address;
   moduleAddress: Address;
+}
+
+export interface creteCowAmmArgs extends BaseArgs {
+  type: TRANSACTION_TYPES.CREATE_COW_AMM;
+  moduleAddress: Address;
+  token0: Address;
+  token1: Address;
+  token0Decimals: number;
+  minTradedToken0: number;
+  priceOracle: PRICE_ORACLES;
+  appData: `0x${string}`;
+  balancerPoolId?: `0x${string}`;
+  uniswapV2Pair?: Address;
 }
 
 interface ITransaction<T> {
@@ -105,11 +131,48 @@ class CowAmmEnableModuleTx implements ITransaction<enableCowAmmModuleArgs> {
   }
 }
 
+class CowAmmCreateTx implements ITransaction<creteCowAmmArgs> {
+  createRawTx({
+    moduleAddress,
+    token0,
+    token1,
+    token0Decimals,
+    minTradedToken0,
+    priceOracle,
+    balancerPoolId,
+    uniswapV2Pair,
+    appData,
+  }: creteCowAmmArgs): BaseTransaction {
+    const priceOracleData = encodePriceOracleData({
+      priceOracle,
+      balancerPoolId,
+      uniswapV2Pair,
+    });
+
+    return {
+      to: moduleAddress,
+      value: "0",
+      data: encodeFunctionData({
+        abi: cowAmmModuleAbi,
+        functionName: "createAmm",
+        args: [
+          token0,
+          token1,
+          parseUnits(String(minTradedToken0), token0Decimals),
+          PRICE_ORACLES_ADDRESSES[priceOracle],
+          priceOracleData,
+          appData,
+        ],
+      }),
+    };
+  }
+}
 export interface TransactionBindings {
   [TRANSACTION_TYPES.SET_FALLBACK_HANDLER]: setFallbackHandlerArgs;
   [TRANSACTION_TYPES.SET_DOMAIN_VERIFIER]: setDomainVerifierArgs;
   [TRANSACTION_TYPES.CREATE_COW_AMM_MODULE]: createCowAmmModuleArgs;
   [TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE]: enableCowAmmModuleArgs;
+  [TRANSACTION_TYPES.CREATE_COW_AMM]: creteCowAmmArgs;
 }
 
 export type AllTransactionArgs = TransactionBindings[keyof TransactionBindings];
@@ -123,6 +186,7 @@ const TRANSACTION_CREATORS: {
   [TRANSACTION_TYPES.SET_DOMAIN_VERIFIER]: DomainVerifierSetTx,
   [TRANSACTION_TYPES.CREATE_COW_AMM_MODULE]: CowAmmCreateModuleTx,
   [TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE]: CowAmmEnableModuleTx,
+  [TRANSACTION_TYPES.CREATE_COW_AMM]: CowAmmCreateTx,
 };
 
 export class TransactionFactory {
@@ -136,10 +200,8 @@ export class TransactionFactory {
   }
 }
 
-export async function createAMMArgs(
-  data: typeof createAmmSchema._type,
-  publicClient: PublicClient,
-) {
+export async function createAMMArgs(data: typeof createAmmSchema._type) {
+  const publicClient = publicClientsFromIds[data.chainId as ChainId];
   const setFallbackTx = {
     type: TRANSACTION_TYPES.SET_FALLBACK_HANDLER,
     safeAddress: data.safeAddress,
@@ -167,6 +229,20 @@ export async function createAMMArgs(
     args: [data.safeAddress],
   });
 
+  const metadataApi = new MetadataApi();
+
+  const appDataDoc = await metadataApi.generateAppDataDoc({
+    appCode: "CoW AMM Bleu Ui",
+  });
+  const { appDataHex, appDataContent } =
+    await metadataApi.appDataToCid(appDataDoc);
+
+  await uploadAppData({
+    fullAppData: appDataContent,
+    appDataHex,
+    chainId: data.chainId as ChainId,
+  });
+
   return [
     ...fallbackTxs,
     {
@@ -178,5 +254,17 @@ export async function createAMMArgs(
       safeAddress: data.safeAddress,
       moduleAddress: predictCoWAmmModuleAddress,
     } as enableCowAmmModuleArgs,
+    {
+      type: TRANSACTION_TYPES.CREATE_COW_AMM,
+      moduleAddress: predictCoWAmmModuleAddress,
+      token0: data.token0.address,
+      token1: data.token1.address,
+      token0Decimals: data.token0.decimals,
+      minTradedToken0: data.minTradedToken0,
+      priceOracle: data.priceOracle,
+      appData: appDataHex,
+      balancerPoolId: data.balancerPoolId,
+      uniswapV2Pair: data.uniswapV2Pair,
+    } as creteCowAmmArgs,
   ];
 }

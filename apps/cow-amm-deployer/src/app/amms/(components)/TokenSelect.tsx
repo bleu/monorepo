@@ -122,7 +122,7 @@ function TokenModal({
   onSelectToken: (token: TokenBalance) => void;
 }) {
   const {
-    safe: { chainId },
+    safe: { chainId, safeAddress },
   } = useSafeAppsSDK();
   const [tokens, setTokens] = useState<(TokenBalance | undefined)[]>([]);
 
@@ -176,16 +176,18 @@ function TokenModal({
       return;
     }
 
-    const tokensContracts = ["name", "symbol", "decimals"].map(
+    const tokensContracts = ["name", "symbol", "decimals", "balanceOf"].map(
       (functionName) => ({
         abi: erc20ABI,
         address: tokenSearchQuery,
         functionName: functionName,
+        args: functionName === "balanceOf" ? [safeAddress] : [],
       }),
     );
+
     const data = await publicClient.multicall({ contracts: tokensContracts });
 
-    if (data.some((result) => result.error)) {
+    if (data.some((result) => result.error) || !data[3].result) {
       setIsNotifierOpen(true);
       return;
     }
@@ -284,13 +286,8 @@ function TokenModal({
 function ToastContent() {
   return (
     <div className="flex h-14 flex-row items-center justify-between px-4 py-8">
-      <div className="flex flex-col justify-between space-y-1">
-        <h1 className="text-md font-medium text-slate12">
-          Error importing token
-        </h1>
-        <h3 className="mb-2 text-sm leading-3 text-slate11">
-          Check if the address is correct.
-        </h3>
+      <div className="flex flex-col justify-between space-y-1 text-slate11">
+        Error: Check if the address is correct or if you really have this token.
       </div>
     </div>
   );

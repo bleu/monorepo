@@ -192,7 +192,7 @@ const TRANSACTION_CREATORS: {
 export class TransactionFactory {
   static createRawTx<T extends TRANSACTION_TYPES>(
     type: T,
-    args: TransactionBindings[T]
+    args: TransactionBindings[T],
   ): BaseTransaction {
     const TransactionCreator = TRANSACTION_CREATORS[type];
     const txCreator = new TransactionCreator();

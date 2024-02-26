@@ -3,15 +3,14 @@ import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
 import { Address, encodeFunctionData, parseUnits } from "viem";
 
 import { FALLBACK_STATES, PRICE_ORACLES } from "#/lib/types";
-import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
+import { ChainId } from "#/utils/chainsPublicClients";
 
 import { cowAmmModuleAbi } from "./abis/cowAmmModule";
-import { cowAmmModuleFactoryAbi } from "./abis/cowAmmModuleFactory";
 import { gnosisSafeV12 } from "./abis/gnosisSafeV12";
 import { signatureVerifierMuxerAbi } from "./abis/signatureVerifierMuxer";
 import {
   COMPOSABLE_COW_ADDRESS,
-  COW_AMM_MODULE_FACTORY_ADDRESS,
+  COW_AMM_MODULE_ADDRESS,
   EXTENSIBLE_FALLBACK_ADDRESS,
 } from "./contracts";
 import { uploadAppData } from "./cow/uploadAppData";
@@ -24,7 +23,6 @@ import { createAmmSchema } from "./schema";
 export enum TRANSACTION_TYPES {
   SET_FALLBACK_HANDLER = "SET_FALLBACK_HANDLER",
   SET_DOMAIN_VERIFIER = "SET_DOMAIN_VERIFIER",
-  CREATE_COW_AMM_MODULE = "CREATE_COW_AMM_MODULE",
   ENABLE_COW_AMM_MODULE = "ENABLE_COW_AMM_MODULE",
   CREATE_COW_AMM = "CREATE_COW_AMM",
 }
@@ -42,19 +40,13 @@ export interface setDomainVerifierArgs extends BaseArgs {
   safeAddress: Address;
   domainSeparator: Address;
 }
-export interface createCowAmmModuleArgs extends BaseArgs {
-  type: TRANSACTION_TYPES.CREATE_COW_AMM_MODULE;
-  safeAddress: Address;
-}
 export interface enableCowAmmModuleArgs extends BaseArgs {
   type: TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE;
   safeAddress: Address;
-  moduleAddress: Address;
 }
 
 export interface creteCowAmmArgs extends BaseArgs {
   type: TRANSACTION_TYPES.CREATE_COW_AMM;
-  moduleAddress: Address;
   token0: Address;
   token1: Address;
   token0Decimals: number;
@@ -99,33 +91,15 @@ class DomainVerifierSetTx implements ITransaction<setDomainVerifierArgs> {
     };
   }
 }
-
-class CowAmmCreateModuleTx implements ITransaction<createCowAmmModuleArgs> {
-  createRawTx({ safeAddress }: createCowAmmModuleArgs): BaseTransaction {
-    return {
-      to: COW_AMM_MODULE_FACTORY_ADDRESS,
-      value: "0",
-      data: encodeFunctionData({
-        abi: cowAmmModuleFactoryAbi,
-        functionName: "create",
-        args: [safeAddress],
-      }),
-    };
-  }
-}
-
 class CowAmmEnableModuleTx implements ITransaction<enableCowAmmModuleArgs> {
-  createRawTx({
-    safeAddress,
-    moduleAddress,
-  }: enableCowAmmModuleArgs): BaseTransaction {
+  createRawTx({ safeAddress }: enableCowAmmModuleArgs): BaseTransaction {
     return {
       to: safeAddress,
       value: "0",
       data: encodeFunctionData({
         abi: gnosisSafeV12,
         functionName: "enableModule",
-        args: [moduleAddress],
+        args: [COW_AMM_MODULE_ADDRESS],
       }),
     };
   }
@@ -133,7 +107,6 @@ class CowAmmEnableModuleTx implements ITransaction<enableCowAmmModuleArgs> {
 
 class CowAmmCreateTx implements ITransaction<creteCowAmmArgs> {
   createRawTx({
-    moduleAddress,
     token0,
     token1,
     token0Decimals,
@@ -150,7 +123,7 @@ class CowAmmCreateTx implements ITransaction<creteCowAmmArgs> {
     });
 
     return {
-      to: moduleAddress,
+      to: COW_AMM_MODULE_ADDRESS,
       value: "0",
       data: encodeFunctionData({
         abi: cowAmmModuleAbi,
@@ -170,7 +143,6 @@ class CowAmmCreateTx implements ITransaction<creteCowAmmArgs> {
 export interface TransactionBindings {
   [TRANSACTION_TYPES.SET_FALLBACK_HANDLER]: setFallbackHandlerArgs;
   [TRANSACTION_TYPES.SET_DOMAIN_VERIFIER]: setDomainVerifierArgs;
-  [TRANSACTION_TYPES.CREATE_COW_AMM_MODULE]: createCowAmmModuleArgs;
   [TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE]: enableCowAmmModuleArgs;
   [TRANSACTION_TYPES.CREATE_COW_AMM]: creteCowAmmArgs;
 }
@@ -184,7 +156,6 @@ const TRANSACTION_CREATORS: {
 } = {
   [TRANSACTION_TYPES.SET_FALLBACK_HANDLER]: FallbackHandlerSetTx,
   [TRANSACTION_TYPES.SET_DOMAIN_VERIFIER]: DomainVerifierSetTx,
-  [TRANSACTION_TYPES.CREATE_COW_AMM_MODULE]: CowAmmCreateModuleTx,
   [TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE]: CowAmmEnableModuleTx,
   [TRANSACTION_TYPES.CREATE_COW_AMM]: CowAmmCreateTx,
 };
@@ -201,7 +172,6 @@ export class TransactionFactory {
 }
 
 export async function createAMMArgs(data: typeof createAmmSchema._type) {
-  const publicClient = publicClientsFromIds[data.chainId as ChainId];
   const setFallbackTx = {
     type: TRANSACTION_TYPES.SET_FALLBACK_HANDLER,
     safeAddress: data.safeAddress,
@@ -222,13 +192,6 @@ export async function createAMMArgs(data: typeof createAmmSchema._type) {
     }
   })();
 
-  const predictCoWAmmModuleAddress = await publicClient.readContract({
-    address: COW_AMM_MODULE_FACTORY_ADDRESS,
-    abi: cowAmmModuleFactoryAbi,
-    functionName: "predictAddress",
-    args: [data.safeAddress],
-  });
-
   const metadataApi = new MetadataApi();
 
   const appDataDoc = await metadataApi.generateAppDataDoc({
@@ -246,17 +209,11 @@ export async function createAMMArgs(data: typeof createAmmSchema._type) {
   return [
     ...fallbackTxs,
     {
-      type: TRANSACTION_TYPES.CREATE_COW_AMM_MODULE,
-      safeAddress: data.safeAddress,
-    } as createCowAmmModuleArgs,
-    {
       type: TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE,
       safeAddress: data.safeAddress,
-      moduleAddress: predictCoWAmmModuleAddress,
     } as enableCowAmmModuleArgs,
     {
       type: TRANSACTION_TYPES.CREATE_COW_AMM,
-      moduleAddress: predictCoWAmmModuleAddress,
       token0: data.token0.address,
       token1: data.token1.address,
       token0Decimals: data.token0.decimals,

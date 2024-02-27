@@ -1,28 +1,21 @@
 import { createConfig } from "@ponder/core";
 import { http } from "viem";
-import { milkmanAbi } from "./abis/Milkman";
+import { composableCowAbi } from "./abis/ComposableCow";
 
 export default createConfig({
   networks: {
-    mainnet: {
-      chainId: 1,
-      transport: http(process.env.PONDER_RPC_URL_MAINNET),
-    },
-    goerli: {
-      chainId: 5,
-      transport: http(process.env.PONDER_RPC_URL_GOERLI),
+    sepolia: {
+      chainId: 11155111,
+      transport: http(process.env.PONDER_RPC_URL_SEPOLIA),
     },
   },
   contracts: {
-    milkman: {
-      abi: milkmanAbi,
-      address: "0x11C76AD590ABDFFCD980afEC9ad951B160F02797",
+    composable: {
+      abi: composableCowAbi,
+      address: "0xfdaFc9d1902f4e0b84f65F49f244b32b31013b74",
       network: {
-        goerli: {
-          startBlock: 8083917,
-        },
-        mainnet: {
-          startBlock: 16124030,
+        sepolia: {
+          startBlock: 5245332, //contract creation block
         },
       },
     },

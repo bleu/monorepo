@@ -57,7 +57,8 @@ export async function decodeAndSaveCoWAmm(
   context: contextType,
   eventId: string
 ): Promise<{ cowAmmParametersId: string }> {
-  const newStaticInput = `0x${staticInput.slice(66)}` as const;
+  // on the CoW AMM calls, the first 32 bytes aren't used by us, so we will remove them
+  const usefulStaticInput = `0x${staticInput.slice(66)}` as const;
   const cowAmmData = decodeAbiParameters(
     [
       { name: "token0", type: "address" },
@@ -67,15 +68,13 @@ export async function decodeAndSaveCoWAmm(
       { name: "priceOracleData", type: "bytes" },
       { name: "appData", type: "bytes32" },
     ],
-    newStaticInput
+    usefulStaticInput
   );
-  console.log("cowAmmData");
 
   const [token0, token1] = await Promise.all([
     getToken(cowAmmData[0], context),
     getToken(cowAmmData[1], context),
   ]);
-  console.log("x");
 
   const CoWAmmParameters = await context.db.CowAmmParameters.create({
     id: eventId,
@@ -89,7 +88,6 @@ export async function decodeAndSaveCoWAmm(
       appData: cowAmmData[5],
     },
   });
-  console.log("CowAmmParameters");
   return { cowAmmParametersId: CoWAmmParameters.id };
 }
 

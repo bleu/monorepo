@@ -6,11 +6,17 @@ export default createSchema((p) => ({
     chainId: p.int(),
     blockNumber: p.bigint(),
     blockTimestamp: p.bigint(),
-    orderContract: p.hex(),
+    handler: p.hex(),
     user: p.string().references("User.id"),
+    staticInput: p.hex(),
     decodedSuccess: p.boolean(),
-    OrderParametersId: p.string().references("OrderParameters.id").optional(),
-    orderParameters: p.one("OrderParametersId"),
+    stopLossParametersId: p
+      .string()
+      .references("StopLossParameters.id")
+      .optional(),
+    stopLossParameters: p.one("stopLossParametersId"),
+    cowAmmParametersId: p.string().references("CowAmmParameters.id").optional(),
+    cowAmmParameters: p.one("cowAmmParametersId"),
   }),
   Token: p.createTable({
     id: p.string(),
@@ -26,7 +32,7 @@ export default createSchema((p) => ({
     chainId: p.int(),
     orders: p.many("Order.user"),
   }),
-  OrderParameters: p.createTable({
+  StopLossParameters: p.createTable({
     id: p.string(),
     orderId: p.string().references("Order.id"),
     tokenInId: p.string().references("Token.id"),
@@ -44,5 +50,17 @@ export default createSchema((p) => ({
     buyTokenPriceOracle: p.hex(),
     strike: p.bigint(),
     maxTimeSinceLastOracleUpdate: p.bigint(),
+  }),
+  CowAmmParameters: p.createTable({
+    id: p.string(),
+    orderId: p.string().references("Order.id"),
+    token0Id: p.string().references("Token.id"),
+    token0: p.one("token0Id"),
+    token1Id: p.string().references("Token.id"),
+    token1: p.one("token1Id"),
+    minTradedToken0: p.bigint(),
+    priceOracle: p.hex(),
+    priceOracleData: p.hex(),
+    appData: p.hex(),
   }),
 }));

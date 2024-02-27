@@ -8,6 +8,10 @@ export default createConfig({
       chainId: 11155111,
       transport: http(process.env.PONDER_RPC_URL_SEPOLIA),
     },
+    gnosis: {
+      chainId: 100,
+      transport: http(process.env.PONDER_RPC_URL_GNOSIS),
+    },
   },
   contracts: {
     composable: {
@@ -16,6 +20,9 @@ export default createConfig({
       network: {
         sepolia: {
           startBlock: 5245332, //contract creation block
+        },
+        gnosis: {
+          startBlock: 31005430,
         },
       },
     },

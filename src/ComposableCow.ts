@@ -58,7 +58,8 @@ ponder.on("composable:ConditionalOrderCreated", async ({ event, context }) => {
     });
   }
 
-  //decode stop loss static input
+  // Decode stop loss static input
+  // stop loss address: 0xE8212F30C28B4AAB467DF3725C14d6e89C2eB967
   try {
     const stopLossData = decodeAbiParameters(
       [

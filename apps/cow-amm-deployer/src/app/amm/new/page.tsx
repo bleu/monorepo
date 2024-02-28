@@ -8,7 +8,7 @@ import { gnosis } from "viem/chains";
 import { LinkComponent } from "#/components/Link";
 import WalletNotConnected from "#/components/WalletNotConnected";
 
-import { CreateAmmForm } from "../../(components)/CreateAmmForm";
+import { CreateAmmForm } from "../(components)/CreateAmmForm";
 
 function ArrowIcon() {
   return (
@@ -54,7 +54,7 @@ export default function Page({
             <div className="relative flex h-full w-full justify-center">
               <LinkComponent
                 loaderColor="amber"
-                href={`/amms/${params.network}`}
+                href={`/amm`}
                 content={
                   <div className="absolute left-8 flex h-full items-center">
                     <ArrowIcon />

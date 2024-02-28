@@ -73,6 +73,25 @@ export const PREDEFINED_CLASSES = {
       dark: "hover:bg-accent hover:text-accent-foreground",
     },
   },
+  tomato: {
+    solid: {
+      light: "bg-tomato9 text-slate12 hover:bg-tomato10 border-tomato9",
+      medium: "bg-tomato4 text-slate12 hover:bg-tomato5 border-tomato4",
+      dark: "bg-tomato3 text-slate12 hover:bg-tomato4 border-tomato3",
+    },
+    outline: {
+      light:
+        "bg-transparent text-tomato9 border-tomato9 hover:bg-tomato2 hover:border-tomato2",
+      medium:
+        "bg-transparent text-tomato4 border-tomato4 hover:bg-tomato2 hover:border-tomato2",
+      dark: "bg-transparent text-tomato3 border-tomato3 hover:bg-tomato2 hover:border-tomato2",
+    },
+    ghost: {
+      light: "hover:bg-accent hover:text-accent-foreground",
+      medium: "hover:bg-accent hover:text-accent-foreground",
+      dark: "hover:bg-accent hover:text-accent-foreground",
+    },
+  },
 } as const;
 
 type ButtonColor = keyof typeof PREDEFINED_CLASSES;

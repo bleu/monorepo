@@ -16,24 +16,28 @@ import { useFallbackState } from "#/hooks/useFallbackState";
 import { useRawTxData } from "#/hooks/useRawTxData";
 import { createAmmSchema } from "#/lib/schema";
 import { createAMMArgs } from "#/lib/transactionFactory";
+import { FALLBACK_STATES, IToken, PRICE_ORACLES } from "#/lib/types";
 import { ChainId } from "#/utils/chainsPublicClients";
 import { cowTokenList } from "#/utils/cowTokenList";
 
-import { FALLBACK_STATES, PRICE_ORACLES } from "../../../lib/types";
 import { FallbackAndDomainWarning } from "./FallbackAndDomainWarning";
-import { IToken, TokenSelect } from "./TokenSelect";
+import { TokenSelect } from "./TokenSelect";
 
 const getDefaultData = (chainId: ChainId) => {
   const token0 = cowTokenList.find(
-    (token) => token.chainId === chainId && token.symbol === "WETH",
+    (token) => token.chainId === chainId && token.symbol === "COW",
   );
   const token1 = cowTokenList.find(
-    (token) => token.chainId === chainId && token.symbol === "COW",
+    (token) => token.chainId === chainId && token.symbol === "wstETH",
   );
   return {
     token0,
     token1,
     chainId,
+    minTradedToken0: 0.2,
+    priceOracle: PRICE_ORACLES.BALANCER,
+    balancerPoolId:
+      "0x4cdabe9e07ca393943acfb9286bbbd0d0a310ff600020000000000000000005c",
   };
 };
 
@@ -181,6 +185,7 @@ function PriceOracleFields({
             setValue("priceOracle", priceOracle as PRICE_ORACLES);
           }}
           className="w-full mt-2"
+          value={priceOracle}
         >
           {Object.values(PRICE_ORACLES).map((value) => (
             <SelectItem value={value} key={value}>

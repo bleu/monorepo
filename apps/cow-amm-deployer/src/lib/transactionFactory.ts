@@ -132,7 +132,7 @@ class CowAmmCreateTx implements ITransaction<creteCowAmmArgs> {
           token0,
           token1,
           parseUnits(String(minTradedToken0), token0Decimals),
-          PRICE_ORACLES_ADDRESSES[priceOracle],
+          PRICE_ORACLES_ADDRESSES[priceOracle] as Address,
           priceOracleData,
           appData,
         ],

@@ -23,6 +23,11 @@ export type Scalars = {
   Int8: { input: any; output: any; }
 };
 
+export type Aggregation_Interval =
+  | 'day'
+  | 'hour'
+  | '%future added value';
+
 export type AmpUpdate = {
   __typename?: 'AmpUpdate';
   endAmp: Scalars['BigInt']['output'];
@@ -193,6 +198,7 @@ export type Balancer = {
   poolCount: Scalars['Int']['output'];
   pools?: Maybe<Array<Pool>>;
   protocolFeesCollector?: Maybe<Scalars['Bytes']['output']>;
+  snapshots?: Maybe<Array<BalancerSnapshot>>;
   totalLiquidity: Scalars['BigDecimal']['output'];
   totalProtocolFee?: Maybe<Scalars['BigDecimal']['output']>;
   totalSwapCount: Scalars['BigInt']['output'];
@@ -207,6 +213,15 @@ export type BalancerPoolsArgs = {
   orderDirection?: InputMaybe<OrderDirection>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<Pool_Filter>;
+};
+
+
+export type BalancerSnapshotsArgs = {
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<BalancerSnapshot_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<BalancerSnapshot_Filter>;
 };
 
 export type BalancerSnapshot = {
@@ -366,6 +381,7 @@ export type Balancer_Filter = {
   protocolFeesCollector_not?: InputMaybe<Scalars['Bytes']['input']>;
   protocolFeesCollector_not_contains?: InputMaybe<Scalars['Bytes']['input']>;
   protocolFeesCollector_not_in?: InputMaybe<Array<Scalars['Bytes']['input']>>;
+  snapshots_?: InputMaybe<BalancerSnapshot_Filter>;
   totalLiquidity?: InputMaybe<Scalars['BigDecimal']['input']>;
   totalLiquidity_gt?: InputMaybe<Scalars['BigDecimal']['input']>;
   totalLiquidity_gte?: InputMaybe<Scalars['BigDecimal']['input']>;
@@ -413,6 +429,7 @@ export type Balancer_OrderBy =
   | 'poolCount'
   | 'pools'
   | 'protocolFeesCollector'
+  | 'snapshots'
   | 'totalLiquidity'
   | 'totalProtocolFee'
   | 'totalSwapCount'
@@ -812,6 +829,7 @@ export type InvestType =
 export type JoinExit = {
   __typename?: 'JoinExit';
   amounts: Array<Scalars['BigDecimal']['output']>;
+  block?: Maybe<Scalars['BigInt']['output']>;
   id: Scalars['ID']['output'];
   pool: Pool;
   sender: Scalars['Bytes']['output'];
@@ -832,6 +850,14 @@ export type JoinExit_Filter = {
   amounts_not_contains?: InputMaybe<Array<Scalars['BigDecimal']['input']>>;
   amounts_not_contains_nocase?: InputMaybe<Array<Scalars['BigDecimal']['input']>>;
   and?: InputMaybe<Array<InputMaybe<JoinExit_Filter>>>;
+  block?: InputMaybe<Scalars['BigInt']['input']>;
+  block_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  block_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  block_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  block_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  block_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  block_not?: InputMaybe<Scalars['BigInt']['input']>;
+  block_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
   id?: InputMaybe<Scalars['ID']['input']>;
   id_gt?: InputMaybe<Scalars['ID']['input']>;
   id_gte?: InputMaybe<Scalars['ID']['input']>;
@@ -927,6 +953,7 @@ export type JoinExit_Filter = {
 
 export type JoinExit_OrderBy =
   | 'amounts'
+  | 'block'
   | 'id'
   | 'pool'
   | 'pool__address'
@@ -1295,6 +1322,7 @@ export type Pool = {
   isInRecoveryMode?: Maybe<Scalars['Boolean']['output']>;
   isPaused?: Maybe<Scalars['Boolean']['output']>;
   joinExitEnabled?: Maybe<Scalars['Boolean']['output']>;
+  joinsExits?: Maybe<Array<JoinExit>>;
   lambda?: Maybe<Scalars['BigDecimal']['output']>;
   lastJoinExitAmp?: Maybe<Scalars['BigInt']['output']>;
   lastPostJoinExitInvariant?: Maybe<Scalars['BigDecimal']['output']>;
@@ -1385,6 +1413,15 @@ export type PoolHistoricalValuesArgs = {
   orderDirection?: InputMaybe<OrderDirection>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<PoolHistoricalLiquidity_Filter>;
+};
+
+
+export type PoolJoinsExitsArgs = {
+  first?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<JoinExit_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<JoinExit_Filter>;
 };
 
 
@@ -2572,6 +2609,7 @@ export type Pool_Filter = {
   joinExitEnabled_in?: InputMaybe<Array<Scalars['Boolean']['input']>>;
   joinExitEnabled_not?: InputMaybe<Scalars['Boolean']['input']>;
   joinExitEnabled_not_in?: InputMaybe<Array<Scalars['Boolean']['input']>>;
+  joinsExits_?: InputMaybe<JoinExit_Filter>;
   lambda?: InputMaybe<Scalars['BigDecimal']['input']>;
   lambda_gt?: InputMaybe<Scalars['BigDecimal']['input']>;
   lambda_gte?: InputMaybe<Scalars['BigDecimal']['input']>;
@@ -3093,6 +3131,7 @@ export type Pool_OrderBy =
   | 'isInRecoveryMode'
   | 'isPaused'
   | 'joinExitEnabled'
+  | 'joinsExits'
   | 'lambda'
   | 'lastJoinExitAmp'
   | 'lastPostJoinExitInvariant'
@@ -4485,6 +4524,7 @@ export type SubscriptionUsersArgs = {
 
 export type Swap = {
   __typename?: 'Swap';
+  block?: Maybe<Scalars['BigInt']['output']>;
   caller: Scalars['Bytes']['output'];
   id: Scalars['ID']['output'];
   poolId: Pool;
@@ -4668,6 +4708,14 @@ export type Swap_Filter = {
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<Swap_Filter>>>;
+  block?: InputMaybe<Scalars['BigInt']['input']>;
+  block_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  block_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  block_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  block_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  block_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  block_not?: InputMaybe<Scalars['BigInt']['input']>;
+  block_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
   caller?: InputMaybe<Scalars['Bytes']['input']>;
   caller_contains?: InputMaybe<Scalars['Bytes']['input']>;
   caller_gt?: InputMaybe<Scalars['Bytes']['input']>;
@@ -4834,6 +4882,7 @@ export type Swap_Filter = {
 };
 
 export type Swap_OrderBy =
+  | 'block'
   | 'caller'
   | 'id'
   | 'poolId'
@@ -5995,6 +6044,14 @@ export type AprPoolsQueryVariables = Exact<{
 
 export type AprPoolsQuery = { __typename?: 'Query', pools: Array<{ __typename?: 'Pool', id: string, address: any, symbol?: string | null, poolType?: string | null, createTime: number, tokens?: Array<{ __typename?: 'PoolToken', address: string, symbol: string, weight?: any | null }> | null }> };
 
+export type WeightedPoolsAboveLiquidityWithTokensQueryVariables = Exact<{
+  tokens?: InputMaybe<Array<Scalars['Bytes']['input']> | Scalars['Bytes']['input']>;
+  liquidityThreshold: Scalars['BigDecimal']['input'];
+}>;
+
+
+export type WeightedPoolsAboveLiquidityWithTokensQuery = { __typename?: 'Query', pools: Array<{ __typename?: 'Pool', id: string }> };
+
 
 export const InternalBalanceDocument = gql`
     query InternalBalance($userAddress: ID!) {
@@ -6205,40 +6262,54 @@ export const AprPoolsDocument = gql`
   }
 }
     `;
+export const WeightedPoolsAboveLiquidityWithTokensDocument = gql`
+    query weightedPoolsAboveLiquidityWithTokens($tokens: [Bytes!], $liquidityThreshold: BigDecimal!) {
+  pools(
+    where: {poolType: "Weighted", tokensList_contains: $tokens, totalLiquidity_gt: $liquidityThreshold}
+    orderBy: totalLiquidity
+    orderDirection: desc
+  ) {
+    id
+  }
+}
+    `;
 
-export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string) => Promise<T>;
+export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
 
-const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationType) => action();
+const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationType, variables) => action();
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
     InternalBalance(variables: InternalBalanceQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<InternalBalanceQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<InternalBalanceQuery>(InternalBalanceDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'InternalBalance', 'query');
+      return withWrapper((wrappedRequestHeaders) => client.request<InternalBalanceQuery>(InternalBalanceDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'InternalBalance', 'query', variables);
     },
     SingleInternalBalance(variables: SingleInternalBalanceQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<SingleInternalBalanceQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<SingleInternalBalanceQuery>(SingleInternalBalanceDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'SingleInternalBalance', 'query');
+      return withWrapper((wrappedRequestHeaders) => client.request<SingleInternalBalanceQuery>(SingleInternalBalanceDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'SingleInternalBalance', 'query', variables);
     },
     PoolsWhereOwner(variables: PoolsWhereOwnerQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<PoolsWhereOwnerQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<PoolsWhereOwnerQuery>(PoolsWhereOwnerDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PoolsWhereOwner', 'query');
+      return withWrapper((wrappedRequestHeaders) => client.request<PoolsWhereOwnerQuery>(PoolsWhereOwnerDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PoolsWhereOwner', 'query', variables);
     },
     PoolsWherePoolTypeInAndId(variables: PoolsWherePoolTypeInAndIdQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<PoolsWherePoolTypeInAndIdQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<PoolsWherePoolTypeInAndIdQuery>(PoolsWherePoolTypeInAndIdDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PoolsWherePoolTypeInAndId', 'query');
+      return withWrapper((wrappedRequestHeaders) => client.request<PoolsWherePoolTypeInAndIdQuery>(PoolsWherePoolTypeInAndIdDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PoolsWherePoolTypeInAndId', 'query', variables);
     },
     PoolsWherePoolType(variables?: PoolsWherePoolTypeQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<PoolsWherePoolTypeQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<PoolsWherePoolTypeQuery>(PoolsWherePoolTypeDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PoolsWherePoolType', 'query');
+      return withWrapper((wrappedRequestHeaders) => client.request<PoolsWherePoolTypeQuery>(PoolsWherePoolTypeDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PoolsWherePoolType', 'query', variables);
     },
     poolSnapshotInRange(variables: PoolSnapshotInRangeQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<PoolSnapshotInRangeQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<PoolSnapshotInRangeQuery>(PoolSnapshotInRangeDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'poolSnapshotInRange', 'query');
+      return withWrapper((wrappedRequestHeaders) => client.request<PoolSnapshotInRangeQuery>(PoolSnapshotInRangeDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'poolSnapshotInRange', 'query', variables);
     },
     Pool(variables: PoolQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<PoolQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<PoolQuery>(PoolDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Pool', 'query');
+      return withWrapper((wrappedRequestHeaders) => client.request<PoolQuery>(PoolDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Pool', 'query', variables);
     },
     PoolRateProviders(variables: PoolRateProvidersQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<PoolRateProvidersQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<PoolRateProvidersQuery>(PoolRateProvidersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PoolRateProviders', 'query');
+      return withWrapper((wrappedRequestHeaders) => client.request<PoolRateProvidersQuery>(PoolRateProvidersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'PoolRateProviders', 'query', variables);
     },
     APRPools(variables: AprPoolsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AprPoolsQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<AprPoolsQuery>(AprPoolsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'APRPools', 'query');
+      return withWrapper((wrappedRequestHeaders) => client.request<AprPoolsQuery>(AprPoolsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'APRPools', 'query', variables);
+    },
+    weightedPoolsAboveLiquidityWithTokens(variables: WeightedPoolsAboveLiquidityWithTokensQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<WeightedPoolsAboveLiquidityWithTokensQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<WeightedPoolsAboveLiquidityWithTokensQuery>(WeightedPoolsAboveLiquidityWithTokensDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'weightedPoolsAboveLiquidityWithTokens', 'query', variables);
     }
   };
 }
@@ -6274,6 +6345,9 @@ export function getSdkWithHooks(client: GraphQLClient, withWrapper: SdkFunctionW
     },
     useAprPools(variables: AprPoolsQueryVariables, config?: SWRConfigInterface<AprPoolsQuery, ClientError>) {
       return useSWR<AprPoolsQuery, ClientError>(genKey<AprPoolsQueryVariables>('AprPools', variables), () => sdk.APRPools(variables), config);
+    },
+    useWeightedPoolsAboveLiquidityWithTokens(variables: WeightedPoolsAboveLiquidityWithTokensQueryVariables, config?: SWRConfigInterface<WeightedPoolsAboveLiquidityWithTokensQuery, ClientError>) {
+      return useSWR<WeightedPoolsAboveLiquidityWithTokensQuery, ClientError>(genKey<WeightedPoolsAboveLiquidityWithTokensQueryVariables>('WeightedPoolsAboveLiquidityWithTokens', variables), () => sdk.weightedPoolsAboveLiquidityWithTokens(variables), config);
     }
   };
 }

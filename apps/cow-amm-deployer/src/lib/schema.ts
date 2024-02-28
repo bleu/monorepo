@@ -7,11 +7,11 @@ import { FALLBACK_STATES, PRICE_ORACLES } from "#/lib/types";
 import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 
 import { minimalPriceOracleAbi } from "./abis/minimalPriceOracle";
-import { fetchCowQuote } from "./cow/fetchCowQuote";
 import {
   encodePriceOracleData,
   PRICE_ORACLES_ADDRESSES,
 } from "./encodePriceOracleData";
+import { fetchCowQuote } from "./orderBookApi/fetchCowQuote";
 
 const basicAddressSchema = z
   .string()

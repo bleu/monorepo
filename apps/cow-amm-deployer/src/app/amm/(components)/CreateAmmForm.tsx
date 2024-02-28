@@ -1,3 +1,4 @@
+import { Address } from "@bleu-fi/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { TokenBalance } from "@gnosis.pm/safe-apps-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,9 +24,11 @@ import { Label } from "#/components/ui/label";
 import { useFallbackState } from "#/hooks/useFallbackState";
 import { useRawTxData } from "#/hooks/useRawTxData";
 import { useSafeBalances } from "#/hooks/useSafeBalances";
+import { pools } from "#/lib/gqlBalancer";
 import { createAmmSchema } from "#/lib/schema";
 import { createAMMArgs } from "#/lib/transactionFactory";
 import { FALLBACK_STATES, IToken, PRICE_ORACLES } from "#/lib/types";
+import { ChainId } from "#/utils/chainsPublicClients";
 
 import { FallbackAndDomainWarning } from "./FallbackAndDomainWarning";
 import { TokenSelect } from "./TokenSelect";
@@ -64,6 +67,10 @@ export function CreateAmmForm() {
 
   const token0 = watch("token0");
   const token1 = watch("token1");
+
+  const tokenAddresses = [token0?.address, token1?.address].filter(
+    (address) => address,
+  ) as Address[];
 
   const onSubmit = async (data: typeof createAmmSchema._type) => {
     await createAMMArgs(data).then((txArgs) => {
@@ -128,7 +135,11 @@ export function CreateAmmForm() {
           )}
         </div>
       </div>
-      <PriceOracleFields form={form} />
+      <PriceOracleFields
+        form={form}
+        chainId={chainId as ChainId}
+        tokenAddresses={tokenAddresses}
+      />
       <Accordion className="w-full" type="single" collapsible>
         <AccordionItem value="advancedOptions" key="advancedOption">
           <AccordionTrigger>Advanced Options</AccordionTrigger>
@@ -169,8 +180,12 @@ export function CreateAmmForm() {
 
 function PriceOracleFields({
   form,
+  chainId,
+  tokenAddresses,
 }: {
   form: UseFormReturn<typeof createAmmSchema._type>;
+  chainId: ChainId;
+  tokenAddresses: Address[];
 }) {
   const {
     setValue,
@@ -182,9 +197,9 @@ function PriceOracleFields({
   const priceOracle = watch("priceOracle");
 
   return (
-    <div className="flex flex-col justify-between gap-y-3">
+    <div className="flex flex-col gap-y-3">
       <div>
-        <div className="flex gap-x-2 items-center">
+        <div className="flex gap-x-2">
           <Label>Price oracle</Label>
           <Tooltip
             content={
@@ -214,11 +229,37 @@ function PriceOracleFields({
         )}
       </div>
       {priceOracle === PRICE_ORACLES.BALANCER && (
-        <Input label="Balancer Pool Id" {...register("balancerPoolId")} />
+        <div className="flex flex-col gap-y-1">
+          <Input label="Balancer Pool Id" {...register("balancerPoolId")} />
+          <button
+            type="button"
+            className="flex flex-row text-blue9 outline-none hover:text-amber9 text-xs"
+            onClick={async () => {
+              setValue(
+                "balancerPoolId",
+                await getBalancerPoolId(chainId, tokenAddresses),
+              );
+            }}
+          >
+            Load from subgraph
+          </button>
+        </div>
       )}
       {priceOracle === PRICE_ORACLES.UNI && (
         <Input label="Uniswap V2 Pool Address" {...register("uniswapV2Pair")} />
       )}
     </div>
   );
+}
+
+async function getBalancerPoolId(chainId: number, tokens: Address[]) {
+  if (tokens.length !== 2 || tokens[0] === tokens[1]) return;
+  const poolsData = await pools
+    .gql(String(chainId) || "1")
+    .weightedPoolsAboveLiquidityWithTokens({
+      tokens,
+      liquidityThreshold: "1000",
+    });
+
+  return poolsData?.pools[0]?.id;
 }

@@ -13,11 +13,11 @@ import {
   COW_AMM_MODULE_ADDRESS,
   EXTENSIBLE_FALLBACK_ADDRESS,
 } from "./contracts";
-import { uploadAppData } from "./cow/uploadAppData";
 import {
   encodePriceOracleData,
   PRICE_ORACLES_ADDRESSES,
 } from "./encodePriceOracleData";
+import { uploadAppData } from "./orderBookApi/uploadAppData";
 import { createAmmSchema } from "./schema";
 
 export enum TRANSACTION_TYPES {

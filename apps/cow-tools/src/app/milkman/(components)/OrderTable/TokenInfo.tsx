@@ -1,5 +1,4 @@
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
-import Image from "next/image";
 
 import { cowTokenList } from "#/utils/cowTokenList";
 import { truncateAddress } from "#/utils/truncate";
@@ -16,20 +15,21 @@ export function TokenInfo({
   amount?: number | string;
 }) {
   const tokenLogoUri = cowTokenList.find(
-    (token) => token.address === id && token.chainId === chainId,
+    (token) =>
+      token.address.toLowerCase() === id?.toLowerCase() &&
+      token.chainId === chainId,
   )?.logoURI;
   return (
     <div className="flex items-center gap-x-1">
       <div className="w-12">
         <div className="flex items-center justify-center">
           <div className="rounded-full bg-white p-1">
-            <Image
+            <img
               src={tokenLogoUri || "/assets/generic-token-logo.png"}
               className="rounded-full"
               alt="Token Logo"
               height={28}
               width={28}
-              quality={100}
             />
           </div>
         </div>

@@ -8,8 +8,8 @@ import {
   COW_AMM_HANDLER_ADDRESS,
   COW_AMM_MODULE_ADDRESS,
 } from "#/lib/contracts";
-import { UserCurrentAmmQuery } from "#/lib/gql/generated";
-import { composableCowApi } from "#/lib/gql/sdk";
+import { UserCurrentAmmQuery } from "#/lib/gqlComposableCow/generated";
+import { composableCowApi } from "#/lib/gqlComposableCow/sdk";
 import { ICowAmm, PRICE_ORACLES, PriceOracleData } from "#/lib/types";
 import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 

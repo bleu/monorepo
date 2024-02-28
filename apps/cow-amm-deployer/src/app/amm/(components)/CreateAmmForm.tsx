@@ -33,7 +33,7 @@ import { TokenSelect } from "./TokenSelect";
 const getNewMinTradeToken0 = (newToken0: IToken, assets: TokenBalance[]) => {
   const asset0 = assets.find(
     (asset) =>
-      asset.tokenInfo.address.toLowerCase() === newToken0.address.toLowerCase(),
+      asset.tokenInfo.address.toLowerCase() === newToken0.address.toLowerCase()
   );
   return 10 / Number(asset0?.fiatConversion);
 };
@@ -185,7 +185,7 @@ function PriceOracleFields({
     <div className="flex flex-col justify-between gap-y-3">
       <div>
         <div className="flex gap-x-2 items-center">
-          <Label>Price checker</Label>
+          <Label>Price oracle</Label>
           <Tooltip
             content={
               "The price oracle is what will define the price of the orders the AMM will make."

@@ -113,14 +113,14 @@ export function decodePriceOracleData({
   if (priceOracle === PRICE_ORACLES.BALANCER) {
     const [balancerPoolId] = decodeAbiParameters(
       [{ type: "bytes32", name: "poolId" }],
-      priceOracleData,
+      priceOracleData
     );
     return { balancerPoolId: balancerPoolId as `0x${string}` };
   }
   if (priceOracle === PRICE_ORACLES.UNI) {
     const [uniswapV2PairAddress] = decodeAbiParameters(
       [{ type: "address", name: "pairAddress" }],
-      priceOracleData,
+      priceOracleData
     );
     return { uniswapV2PairAddress };
   }
@@ -145,6 +145,7 @@ export function useRunningAMM(): {
   cowAmm?: ICowAmm;
   loaded: boolean;
   isAmmRunning: boolean;
+  error: boolean;
 } {
   const {
     safe: { safeAddress, chainId },
@@ -153,51 +154,56 @@ export function useRunningAMM(): {
   const [cowAmm, setCowAmm] = useState<ICowAmm>();
   const [isAmmRunning, setIsAmmRunning] = useState<boolean>(false);
   const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
   const { assets } = useSafeBalances();
 
   useEffect(() => {
     async function loadCowAmm() {
-      const [gqlInfo, newIsAmmRunning] = await Promise.all([
-        fetchLastAmmInfo({
-          chainId: chainId as ChainId,
-          safeAddress: safeAddress as Address,
-        }),
-        checkAmmRunning(chainId as ChainId, safeAddress as Address),
-      ]);
+      try {
+        const [gqlInfo, newIsAmmRunning] = await Promise.all([
+          fetchLastAmmInfo({
+            chainId: chainId as ChainId,
+            safeAddress: safeAddress as Address,
+          }),
+          checkAmmRunning(chainId as ChainId, safeAddress as Address),
+        ]);
 
-      const token0 = assets.find(
-        (asset) =>
-          asset.tokenInfo.address.toLowerCase() ===
-          gqlInfo?.token0?.address.toLowerCase(),
-      );
-      const token1 = assets.find(
-        (asset) =>
-          asset.tokenInfo.address.toLowerCase() ===
-          gqlInfo?.token1?.address.toLowerCase(),
-      );
+        const token0 = assets.find(
+          (asset) =>
+            asset.tokenInfo.address.toLowerCase() ===
+            gqlInfo?.token0?.address.toLowerCase()
+        );
+        const token1 = assets.find(
+          (asset) =>
+            asset.tokenInfo.address.toLowerCase() ===
+            gqlInfo?.token1?.address.toLowerCase()
+        );
 
-      if (!token0 || !token1) {
-        setLoaded(true);
-        return;
+        if (!token0 || !token1) {
+          setLoaded(true);
+          return;
+        }
+
+        const totalUsdValue =
+          (Number(token0.fiatBalance) || 0) + (Number(token1.fiatBalance) || 0);
+
+        setCowAmm({
+          token0,
+          token1,
+          totalUsdValue,
+          minTradedToken0: gqlInfo?.minTradedToken0 as number,
+          priceOracle: gqlInfo?.priceOracleType as PRICE_ORACLES,
+          priceOracleData: gqlInfo?.priceOracleDataDecoded as PriceOracleData,
+        });
+        setIsAmmRunning(newIsAmmRunning);
+      } catch (e) {
+        setError(true);
       }
-
-      const totalUsdValue =
-        (Number(token0.fiatBalance) || 0) + (Number(token1.fiatBalance) || 0);
-
-      setCowAmm({
-        token0,
-        token1,
-        totalUsdValue,
-        minTradedToken0: gqlInfo?.minTradedToken0 as number,
-        priceOracle: gqlInfo?.priceOracleType as PRICE_ORACLES,
-        priceOracleData: gqlInfo?.priceOracleDataDecoded as PriceOracleData,
-      });
-      setIsAmmRunning(newIsAmmRunning);
       setLoaded(true);
     }
 
     loadCowAmm();
   }, [safeAddress, chainId, assets]);
 
-  return { cowAmm, loaded, isAmmRunning };
+  return { cowAmm, loaded, isAmmRunning, error };
 }

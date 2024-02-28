@@ -105,15 +105,14 @@ export function HomePageWrapper() {
     <div className="flex w-full justify-center">
       <Dialog
         content={
-          <div className="flex flex-col gapy-2">
-            <span>
+          <div className="flex flex-col gap-y-2">
+            <span className="text-slate12">
               This will make CoW AMM stop to re-balancing the funds on your
               behalf. The tokens will stay on your Safe Wallet.
             </span>
-            <div className="flex gap-4">
+            <div className="flex">
               <Button
                 className="flex items-center gap-1 py-3 px-6"
-                color="tomato"
                 onClick={async () => {
                   await sendTransactions([
                     {
@@ -123,13 +122,7 @@ export function HomePageWrapper() {
                   router.refresh();
                 }}
               >
-                Stop
-              </Button>
-              <Button
-                className="flex items-center gap-1 py-3 px-6"
-                onClick={() => setOpenDialog(false)}
-              >
-                Cancel
+                Confirm
               </Button>
             </div>
           </div>

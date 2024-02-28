@@ -1,7 +1,9 @@
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { TokenBalance } from "@gnosis.pm/safe-apps-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { slateDarkA } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
 
@@ -10,44 +12,45 @@ import { Input } from "#/components/Input";
 import { Select, SelectItem } from "#/components/Select";
 import { Spinner } from "#/components/Spinner";
 import { Tooltip } from "#/components/Tooltip";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "#/components/ui/accordion";
 import { Form, FormMessage } from "#/components/ui/form";
 import { Label } from "#/components/ui/label";
 import { useFallbackState } from "#/hooks/useFallbackState";
 import { useRawTxData } from "#/hooks/useRawTxData";
+import { useSafeBalances } from "#/hooks/useSafeBalances";
 import { createAmmSchema } from "#/lib/schema";
 import { createAMMArgs } from "#/lib/transactionFactory";
 import { FALLBACK_STATES, IToken, PRICE_ORACLES } from "#/lib/types";
-import { ChainId } from "#/utils/chainsPublicClients";
-import { cowTokenList } from "#/utils/cowTokenList";
 
 import { FallbackAndDomainWarning } from "./FallbackAndDomainWarning";
 import { TokenSelect } from "./TokenSelect";
 
-const getDefaultData = (chainId: ChainId) => {
-  const token0 = cowTokenList.find(
-    (token) => token.chainId === chainId && token.symbol === "COW",
+const getNewMinTradeToken0 = (newToken0: IToken, assets: TokenBalance[]) => {
+  const asset0 = assets.find(
+    (asset) =>
+      asset.tokenInfo.address.toLowerCase() === newToken0.address.toLowerCase(),
   );
-  const token1 = cowTokenList.find(
-    (token) => token.chainId === chainId && token.symbol === "wstETH",
-  );
-  return {
-    token0,
-    token1,
-    chainId,
-    minTradedToken0: 0.2,
-    priceOracle: PRICE_ORACLES.BALANCER,
-    balancerPoolId:
-      "0x4cdabe9e07ca393943acfb9286bbbd0d0a310ff600020000000000000000005c",
-  };
+  return 10 / Number(asset0?.fiatConversion);
 };
 
 export function CreateAmmForm() {
   const {
-    safe: { chainId, safeAddress },
+    safe: { safeAddress, chainId },
   } = useSafeAppsSDK();
+  const router = useRouter();
+  const { assets } = useSafeBalances();
+
   const form = useForm<typeof createAmmSchema._type>({
     resolver: zodResolver(createAmmSchema),
-    defaultValues: getDefaultData(chainId as ChainId),
+    defaultValues: {
+      chainId,
+      safeAddress: safeAddress,
+    },
   });
 
   const {
@@ -66,6 +69,7 @@ export function CreateAmmForm() {
     await createAMMArgs(data).then((txArgs) => {
       sendTransactions(txArgs);
     });
+    router.push("/amm");
   };
 
   useEffect(() => {
@@ -94,6 +98,7 @@ export function CreateAmmForm() {
                 address: token.address,
                 symbol: token.symbol,
               });
+              setValue("minTradedToken0", getNewMinTradeToken0(token, assets));
             }}
             label="First Token"
             selectedToken={token0 ?? undefined}
@@ -123,13 +128,22 @@ export function CreateAmmForm() {
           )}
         </div>
       </div>
-      <Input
-        label="Minimum amount of the first token to be traded on each order"
-        type="number"
-        step={10 ** -token0.decimals}
-        name="minTradedToken0"
-      />
       <PriceOracleFields form={form} />
+      <Accordion className="w-full" type="single" collapsible>
+        <AccordionItem value="advancedOptions" key="advancedOption">
+          <AccordionTrigger>Advanced Options</AccordionTrigger>
+          <AccordionContent>
+            <Input
+              label="Minimum first token amount on each order"
+              type="number"
+              step={10 ** (-token0?.decimals || 18)}
+              name="minTradedToken0"
+              tooltipText="This parameter is used to not overload the CoW Orderbook with small orders. By default, 10 dollars worth of the first token will be the minimum amount for each order."
+            />
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+
       {fallbackState !== FALLBACK_STATES.HAS_DOMAIN_VERIFIER && (
         <FallbackAndDomainWarning
           confirmedFallbackSetup={confirmedFallbackSetup}

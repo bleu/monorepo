@@ -33,6 +33,7 @@ export function encodePriceOracleData({
 }
 
 export const PRICE_ORACLES_ADDRESSES = {
+  // TODO: COW-161 Add mainnet addresses
   [PRICE_ORACLES.BALANCER]: "0xd3a84895080609e1163C80b2Bd65736DB1B86bEC",
   [PRICE_ORACLES.UNI]: "0xE089049027B95C2745D1a954BC1D245352D884e9",
 } as const;

@@ -18,13 +18,8 @@ import { Dialog } from "#/components/Dialog";
 import Table from "#/components/Table";
 import { Toast } from "#/components/Toast";
 import { useSafeBalances } from "#/hooks/useSafeBalances";
+import { IToken } from "#/lib/types";
 import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
-
-export interface IToken {
-  address: string;
-  symbol: string;
-  decimals: number;
-}
 
 export function TokenSelect({
   onSelectToken,

@@ -13,6 +13,7 @@ export function fetchTokenInfo<T>(
     | "allowance"
     | "balanceOf"
     | "totalSupply",
+  args?: readonly [`0x${string}`, `0x${string}`] | readonly [`0x${string}`],
 ) {
   const publicClient = publicClientsFromIds[chainId as ChainId];
 
@@ -20,5 +21,6 @@ export function fetchTokenInfo<T>(
     address: tokenAddress,
     abi: erc20ABI,
     functionName: info,
+    args,
   }) as Promise<T>;
 }

@@ -25,6 +25,7 @@ export enum TRANSACTION_TYPES {
   SET_DOMAIN_VERIFIER = "SET_DOMAIN_VERIFIER",
   ENABLE_COW_AMM_MODULE = "ENABLE_COW_AMM_MODULE",
   CREATE_COW_AMM = "CREATE_COW_AMM",
+  STOP_COW_AMM = "STOP_COW_AMM",
 }
 
 export interface BaseArgs {
@@ -43,6 +44,10 @@ export interface setDomainVerifierArgs extends BaseArgs {
 export interface enableCowAmmModuleArgs extends BaseArgs {
   type: TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE;
   safeAddress: Address;
+}
+
+export interface stopCowAmmArgs extends BaseArgs {
+  type: TRANSACTION_TYPES.STOP_COW_AMM;
 }
 
 export interface creteCowAmmArgs extends BaseArgs {
@@ -132,10 +137,23 @@ class CowAmmCreateTx implements ITransaction<creteCowAmmArgs> {
           token0,
           token1,
           parseUnits(String(minTradedToken0), token0Decimals),
-          PRICE_ORACLES_ADDRESSES[priceOracle],
+          PRICE_ORACLES_ADDRESSES[priceOracle] as Address,
           priceOracleData,
           appData,
         ],
+      }),
+    };
+  }
+}
+
+class CowAmmStopTx implements ITransaction<stopCowAmmArgs> {
+  createRawTx(): BaseTransaction {
+    return {
+      to: COW_AMM_MODULE_ADDRESS,
+      value: "0",
+      data: encodeFunctionData({
+        abi: cowAmmModuleAbi,
+        functionName: "closeAmm",
       }),
     };
   }
@@ -145,6 +163,7 @@ export interface TransactionBindings {
   [TRANSACTION_TYPES.SET_DOMAIN_VERIFIER]: setDomainVerifierArgs;
   [TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE]: enableCowAmmModuleArgs;
   [TRANSACTION_TYPES.CREATE_COW_AMM]: creteCowAmmArgs;
+  [TRANSACTION_TYPES.STOP_COW_AMM]: stopCowAmmArgs;
 }
 
 export type AllTransactionArgs = TransactionBindings[keyof TransactionBindings];
@@ -158,6 +177,7 @@ const TRANSACTION_CREATORS: {
   [TRANSACTION_TYPES.SET_DOMAIN_VERIFIER]: DomainVerifierSetTx,
   [TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE]: CowAmmEnableModuleTx,
   [TRANSACTION_TYPES.CREATE_COW_AMM]: CowAmmCreateTx,
+  [TRANSACTION_TYPES.STOP_COW_AMM]: CowAmmStopTx,
 };
 
 export class TransactionFactory {

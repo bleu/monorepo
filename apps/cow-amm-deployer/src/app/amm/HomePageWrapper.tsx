@@ -9,9 +9,11 @@ import {
 } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { gnosis, mainnet } from "viem/chains";
 
 import { Button } from "#/components";
+import { Dialog } from "#/components/Dialog";
 import { LinkComponent } from "#/components/Link";
 import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
@@ -30,6 +32,7 @@ export function HomePageWrapper() {
   const { sendTransactions } = useRawTxData();
   const { safe, connected } = useSafeAppsSDK();
   const { loaded, isAmmRunning, cowAmm } = useRunningAMM();
+  const [openDialog, setOpenDialog] = useState(false);
 
   if (!connected) {
     return <WalletNotConnected />;
@@ -100,6 +103,41 @@ export function HomePageWrapper() {
 
   return (
     <div className="flex w-full justify-center">
+      <Dialog
+        content={
+          <div className="flex flex-col gapy-2">
+            <span>
+              This will make CoW AMM stop to re-balancing the funds on your
+              behalf. The tokens will stay on your Safe Wallet.
+            </span>
+            <div className="flex gap-4">
+              <Button
+                className="flex items-center gap-1 py-3 px-6"
+                color="tomato"
+                onClick={async () => {
+                  await sendTransactions([
+                    {
+                      type: TRANSACTION_TYPES.STOP_COW_AMM,
+                    },
+                  ]);
+                  router.refresh();
+                }}
+              >
+                Stop
+              </Button>
+              <Button
+                className="flex items-center gap-1 py-3 px-6"
+                onClick={() => setOpenDialog(false)}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        }
+        title="Stop CoW AMM Confirmation"
+        isOpen={openDialog}
+        setIsOpen={setOpenDialog}
+      />
       <div className="my-10 flex w-9/12 flex-col gap-y-5 justify center">
         <div className="flex items-center justify-between gap-x-8">
           <div className="flex flex-col gap-1">
@@ -119,13 +157,8 @@ export function HomePageWrapper() {
             <Button
               className="flex items-center gap-1 py-3 px-6 "
               color="tomato"
-              onClick={async () => {
-                await sendTransactions([
-                  {
-                    type: TRANSACTION_TYPES.STOP_COW_AMM,
-                  },
-                ]);
-                router.refresh();
+              onClick={() => {
+                setOpenDialog(true);
               }}
             >
               <StopIcon />

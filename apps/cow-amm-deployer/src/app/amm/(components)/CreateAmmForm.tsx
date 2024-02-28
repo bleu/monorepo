@@ -49,6 +49,7 @@ export function CreateAmmForm() {
     resolver: zodResolver(createAmmSchema),
     defaultValues: {
       chainId,
+      safeAddress: safeAddress,
     },
   });
 

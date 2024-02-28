@@ -3,7 +3,7 @@ import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
 import { Address, encodeFunctionData, parseUnits } from "viem";
 
 import { FALLBACK_STATES, PRICE_ORACLES } from "#/lib/types";
-import { ChainId } from "#/utils/chainsPublicClients";
+import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 
 import { cowAmmModuleAbi } from "./abis/cowAmmModule";
 import { gnosisSafeV12 } from "./abis/gnosisSafeV12";
@@ -212,6 +212,23 @@ export async function createAMMArgs(data: typeof createAmmSchema._type) {
     }
   })();
 
+  const publicClient = publicClientsFromIds[data.chainId as ChainId];
+
+  const isCoWAmmModuleEnabled = await publicClient.readContract({
+    address: data.safeAddress as Address,
+    abi: gnosisSafeV12,
+    functionName: "isModuleEnabled",
+    args: [COW_AMM_MODULE_ADDRESS],
+  });
+  const enableCoWAmmTxs = isCoWAmmModuleEnabled
+    ? []
+    : [
+        {
+          type: TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE,
+          safeAddress: data.safeAddress,
+        } as enableCowAmmModuleArgs,
+      ];
+
   const metadataApi = new MetadataApi();
 
   const appDataDoc = await metadataApi.generateAppDataDoc({
@@ -228,10 +245,7 @@ export async function createAMMArgs(data: typeof createAmmSchema._type) {
 
   return [
     ...fallbackTxs,
-    {
-      type: TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE,
-      safeAddress: data.safeAddress,
-    } as enableCowAmmModuleArgs,
+    ...enableCoWAmmTxs,
     {
       type: TRANSACTION_TYPES.CREATE_COW_AMM,
       token0: data.token0.address,

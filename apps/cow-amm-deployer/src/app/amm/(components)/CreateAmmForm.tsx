@@ -33,7 +33,7 @@ import { TokenSelect } from "./TokenSelect";
 const getNewMinTradeToken0 = (newToken0: IToken, assets: TokenBalance[]) => {
   const asset0 = assets.find(
     (asset) =>
-      asset.tokenInfo.address.toLowerCase() === newToken0.address.toLowerCase()
+      asset.tokenInfo.address.toLowerCase() === newToken0.address.toLowerCase(),
   );
   return 10 / Number(asset0?.fiatConversion);
 };

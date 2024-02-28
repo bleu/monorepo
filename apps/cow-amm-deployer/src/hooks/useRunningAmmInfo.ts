@@ -113,14 +113,14 @@ export function decodePriceOracleData({
   if (priceOracle === PRICE_ORACLES.BALANCER) {
     const [balancerPoolId] = decodeAbiParameters(
       [{ type: "bytes32", name: "poolId" }],
-      priceOracleData
+      priceOracleData,
     );
     return { balancerPoolId: balancerPoolId as `0x${string}` };
   }
   if (priceOracle === PRICE_ORACLES.UNI) {
     const [uniswapV2PairAddress] = decodeAbiParameters(
       [{ type: "address", name: "pairAddress" }],
-      priceOracleData
+      priceOracleData,
     );
     return { uniswapV2PairAddress };
   }
@@ -171,12 +171,12 @@ export function useRunningAMM(): {
         const token0 = assets.find(
           (asset) =>
             asset.tokenInfo.address.toLowerCase() ===
-            gqlInfo?.token0?.address.toLowerCase()
+            gqlInfo?.token0?.address.toLowerCase(),
         );
         const token1 = assets.find(
           (asset) =>
             asset.tokenInfo.address.toLowerCase() ===
-            gqlInfo?.token1?.address.toLowerCase()
+            gqlInfo?.token1?.address.toLowerCase(),
         );
 
         if (!token0 || !token1) {

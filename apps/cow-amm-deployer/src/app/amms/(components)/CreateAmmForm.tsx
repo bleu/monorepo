@@ -167,7 +167,7 @@ function PriceOracleFields({
     <div className="flex flex-col justify-between gap-y-3">
       <div>
         <div className="flex gap-x-2 items-center">
-          <Label>Price checker</Label>
+          <Label>Price oracle</Label>
           <Tooltip
             content={
               "The price oracle is what will define the price of the orders the AMM will make."

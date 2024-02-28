@@ -8,13 +8,16 @@ import {
   StopIcon,
 } from "@radix-ui/react-icons";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { gnosis, mainnet } from "viem/chains";
 
 import { Button } from "#/components";
 import { LinkComponent } from "#/components/Link";
 import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
+import { useRawTxData } from "#/hooks/useRawTxData";
 import { useRunningAMM } from "#/hooks/useRunningAmmInfo";
+import { TRANSACTION_TYPES } from "#/lib/transactionFactory";
 import { PRICE_ORACLES } from "#/lib/types";
 import { getBalancerPoolUrl } from "#/utils/balancerPoolUrl";
 import { ChainId } from "#/utils/chainsPublicClients";
@@ -23,6 +26,8 @@ import { getUniV2PairUrl } from "#/utils/univ2pairUrl";
 import { PoolCompositionTable } from "./(components)/PoolCompositionTable";
 
 export function HomePageWrapper() {
+  const router = useRouter();
+  const { sendTransactions } = useRawTxData();
   const { safe, connected } = useSafeAppsSDK();
   const { loaded, isAmmRunning, cowAmm } = useRunningAMM();
 
@@ -114,7 +119,14 @@ export function HomePageWrapper() {
             <Button
               className="flex items-center gap-1 py-3 px-6 "
               color="tomato"
-              disabled
+              onClick={async () => {
+                await sendTransactions([
+                  {
+                    type: TRANSACTION_TYPES.STOP_COW_AMM,
+                  },
+                ]);
+                router.refresh();
+              }}
             >
               <StopIcon />
               Stop

@@ -20,18 +20,16 @@ export function TokenInfo({
   )?.logoURI;
   return (
     <div className="flex items-center gap-x-1">
-      <div className="w-12">
-        <div className="flex items-center justify-center">
-          <div className="rounded-full bg-white p-1">
-            <Image
-              src={tokenLogoUri || "/assets/generic-token-logo.png"}
-              className="rounded-full"
-              alt="Token Logo"
-              height={28}
-              width={28}
-              quality={100}
-            />
-          </div>
+      <div className="flex items-center justify-center">
+        <div className="rounded-full bg-white p-1">
+          <Image
+            src={tokenLogoUri || "/assets/generic-token-logo.png"}
+            className="rounded-full"
+            alt="Token Logo"
+            height={28}
+            width={28}
+            quality={100}
+          />
         </div>
       </div>
       {symbol ? symbol : truncateAddress(id)}{" "}

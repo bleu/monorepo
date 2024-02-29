@@ -22,7 +22,7 @@ import { useRunningAMM } from "#/hooks/useRunningAmmInfo";
 import { TRANSACTION_TYPES } from "#/lib/transactionFactory";
 import { PRICE_ORACLES } from "#/lib/types";
 import { getBalancerPoolUrl } from "#/utils/balancerPoolUrl";
-import { ChainId } from "#/utils/chainsPublicClients";
+import { ChainId, supportedChainIds } from "#/utils/chainsPublicClients";
 import { getUniV2PairUrl } from "#/utils/univ2pairUrl";
 
 import { PoolCompositionTable } from "./(components)/PoolCompositionTable";
@@ -42,7 +42,7 @@ export default function Page() {
     return <Spinner />;
   }
 
-  if (safe.chainId !== mainnet.id && safe.chainId !== gnosis.id) {
+  if (!supportedChainIds.includes(safe.chainId)) {
     return (
       <div className="flex h-full w-full flex-col items-center rounded-3xl px-12 py-16 md:py-20">
         <div className="text-center text-3xl text-amber9">
@@ -117,6 +117,7 @@ export default function Page() {
                   await sendTransactions([
                     {
                       type: TRANSACTION_TYPES.STOP_COW_AMM,
+                      chainId: safe.chainId as ChainId,
                     },
                   ]);
                   router.refresh();

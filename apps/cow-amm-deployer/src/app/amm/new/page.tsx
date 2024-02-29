@@ -3,10 +3,10 @@
 import { Network } from "@bleu-fi/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
-import { gnosis } from "viem/chains";
 
 import { LinkComponent } from "#/components/Link";
 import WalletNotConnected from "#/components/WalletNotConnected";
+import { supportedChainIds } from "#/utils/chainsPublicClients";
 
 import { CreateAmmForm } from "../(components)/CreateAmmForm";
 
@@ -33,7 +33,7 @@ export default function Page({
     return <WalletNotConnected />;
   }
 
-  if (safe.chainId !== gnosis.id) {
+  if (!supportedChainIds.includes(safe.chainId)) {
     return (
       <div className="flex h-full w-full flex-col items-center rounded-3xl px-12 py-16 md:py-20">
         <div className="text-center text-3xl text-amber9">
@@ -61,7 +61,6 @@ export default function Page({
                   </div>
                 }
               />
-
               <div className="flex min-w-[530px] flex-col items-center py-3">
                 <div className="text-xl">Create AMM</div>
               </div>

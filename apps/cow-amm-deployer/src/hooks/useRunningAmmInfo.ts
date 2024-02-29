@@ -131,7 +131,7 @@ export async function checkAmmRunning(chainId: ChainId, safeAddress: Address) {
   const publicClient = publicClientsFromIds[chainId];
   return publicClient
     .readContract({
-      address: COW_AMM_MODULE_ADDRESS,
+      address: COW_AMM_MODULE_ADDRESS[chainId],
       abi: cowAmmModuleAbi,
       functionName: "activeOrders",
       args: [safeAddress],

@@ -123,6 +123,7 @@ export function HomePageWrapper() {
                 await sendTransactions([
                   {
                     type: TRANSACTION_TYPES.STOP_COW_AMM,
+                    chainId: safe.chainId as ChainId,
                   },
                 ]);
                 router.refresh();

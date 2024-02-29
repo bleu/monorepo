@@ -12,6 +12,7 @@ import { Button } from "#/components";
 import { Input } from "#/components/Input";
 import { Select, SelectItem } from "#/components/Select";
 import { Spinner } from "#/components/Spinner";
+import { Toast } from "#/components/Toast";
 import { Tooltip } from "#/components/Tooltip";
 import {
   Accordion,
@@ -25,6 +26,7 @@ import { useFallbackState } from "#/hooks/useFallbackState";
 import { useRawTxData } from "#/hooks/useRawTxData";
 import { useSafeBalances } from "#/hooks/useSafeBalances";
 import { pools } from "#/lib/gqlBalancer";
+import { pairs } from "#/lib/gqlUniswapV2";
 import { createAmmSchema } from "#/lib/schema";
 import { createAMMArgs } from "#/lib/transactionFactory";
 import { FALLBACK_STATES, IToken, PRICE_ORACLES } from "#/lib/types";
@@ -142,7 +144,11 @@ export function CreateAmmForm() {
       />
       <Accordion className="w-full" type="single" collapsible>
         <AccordionItem value="advancedOptions" key="advancedOption">
-          <AccordionTrigger>Advanced Options</AccordionTrigger>
+          <AccordionTrigger
+            className={errors.minTradedToken0 ? "text-tomato7" : ""}
+          >
+            Advanced Options
+          </AccordionTrigger>
           <AccordionContent>
             <Input
               label="Minimum first token amount on each order"
@@ -195,6 +201,7 @@ function PriceOracleFields({
   } = form;
 
   const priceOracle = watch("priceOracle");
+  const [isNotifierOpen, setIsNotifierOpen] = useState(false);
 
   return (
     <div className="flex flex-col gap-y-3">
@@ -234,11 +241,14 @@ function PriceOracleFields({
           <button
             type="button"
             className="flex flex-row text-blue9 outline-none hover:text-amber9 text-xs"
-            onClick={async () => {
-              setValue(
-                "balancerPoolId",
-                await getBalancerPoolId(chainId, tokenAddresses),
-              );
+            onClick={() => {
+              getBalancerPoolId(chainId, tokenAddresses)
+                .then((id) => {
+                  setValue("balancerPoolId", id);
+                })
+                .catch(() => {
+                  setIsNotifierOpen(true);
+                });
             }}
           >
             Load from subgraph
@@ -246,14 +256,60 @@ function PriceOracleFields({
         </div>
       )}
       {priceOracle === PRICE_ORACLES.UNI && (
-        <Input label="Uniswap V2 Pool Address" {...register("uniswapV2Pair")} />
+        <div className="flex flex-col gap-y-1">
+          <Input
+            label="Uniswap V2 Pool Address"
+            {...register("uniswapV2Pair")}
+          />
+          <button
+            type="button"
+            className="flex flex-row text-blue9 outline-none hover:text-amber9 text-xs"
+            onClick={() => {
+              getUniswapV2PairAddress(
+                chainId,
+                tokenAddresses[0],
+                tokenAddresses[1],
+              )
+                .then((address) => {
+                  setValue("uniswapV2Pair", address);
+                })
+                .catch(() => {
+                  setIsNotifierOpen(true);
+                });
+            }}
+          >
+            Load from subgraph
+          </button>
+        </div>
       )}
+      <Toast
+        content={<ErrorFillingPriceOracleData />}
+        isOpen={isNotifierOpen}
+        setIsOpen={setIsNotifierOpen}
+        duration={5000}
+        variant="alert"
+      />
+    </div>
+  );
+}
+
+function ErrorFillingPriceOracleData() {
+  return (
+    <div className="flex h-14 flex-row items-center justify-between px-4 py-8">
+      <div className="flex flex-col justify-between space-y-1">
+        <h1 className="text-md font-medium text-slate12">Error</h1>
+        <h3 className="mb-2 text-sm leading-3 text-slate11">
+          Check if tokens are valid and pool exists
+        </h3>
+      </div>
     </div>
   );
 }
 
 async function getBalancerPoolId(chainId: number, tokens: Address[]) {
-  if (tokens.length !== 2 || tokens[0] === tokens[1]) return;
+  if (tokens.length !== 2 || tokens[0] === tokens[1])
+    throw new Error("Invalid tokens");
+
   const poolsData = await pools
     .gql(String(chainId) || "1")
     .weightedPoolsAboveLiquidityWithTokens({
@@ -261,5 +317,24 @@ async function getBalancerPoolId(chainId: number, tokens: Address[]) {
       liquidityThreshold: "1000",
     });
 
+  if (poolsData?.pools.length === 0) throw new Error("Pool not found");
+
   return poolsData?.pools[0]?.id;
+}
+
+async function getUniswapV2PairAddress(
+  chainId: number,
+  token0: Address,
+  token1: Address,
+) {
+  if (token0 === token1) throw new Error("Invalid tokens");
+  const pairsData = await pairs.gql(String(chainId) || "1").pairsWhereTokens({
+    token0,
+    token1,
+    reserveUSDThreshold: "1000",
+  });
+
+  if (pairsData?.pairs.length === 0) throw new Error("Pool not found");
+
+  return pairsData?.pairs[0]?.id;
 }

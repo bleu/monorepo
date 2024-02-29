@@ -6,6 +6,7 @@ export enum Subgraph {
   BalancerGauges = "balancer-gauges",
   Balancer = "balancer",
   BalancerApiV3 = "balancer-api-v3",
+  UniswapV2 = "uniswap-v2",
 }
 
 // IMPORTANT NOTE:
@@ -110,6 +111,24 @@ export const SUBGRAPHS = {
     },
     endpointFor(network: Network) {
       return this.endpoints()[network];
+    },
+  },
+  [Subgraph.UniswapV2]: {
+    name: Subgraph.UniswapV2,
+    endpoints() {
+      const baseEndpoint =
+        "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v2-dev";
+      return {
+        [Network.Ethereum]: `${baseEndpoint}`,
+      };
+    },
+    endpointFor(network: Network) {
+      if (network === Network.Ethereum) {
+        return this.endpoints()[network];
+      }
+      throw new Error(
+        `UniswapV2 subgraph is not deployed on network ${network}`,
+      );
     },
   },
 };

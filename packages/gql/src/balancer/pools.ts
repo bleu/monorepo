@@ -217,3 +217,22 @@ export const aprPools = gql`
     }
   }
 `;
+
+export const weightedPoolsAboveLiquidityWithTokens = gql`
+  query weightedPoolsAboveLiquidityWithTokens(
+    $tokens: [Bytes!]
+    $liquidityThreshold: BigDecimal!
+  ) {
+    pools(
+      where: {
+        poolType: "Weighted"
+        tokensList_contains: $tokens
+        totalLiquidity_gt: $liquidityThreshold
+      }
+      orderBy: totalLiquidity
+      orderDirection: desc
+    ) {
+      id
+    }
+  }
+`;

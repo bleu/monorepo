@@ -1,5 +1,4 @@
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import Image from "next/image";
 
 import { cowTokenList } from "#/utils/cowTokenList";
@@ -8,15 +7,14 @@ import { truncateAddress } from "#/utils/truncate";
 export function TokenInfo({
   symbol,
   id,
+  chainId,
   amount,
 }: {
   symbol?: string | null;
   id?: string;
+  chainId?: number;
   amount?: number | string;
 }) {
-  const {
-    safe: { chainId },
-  } = useSafeAppsSDK();
   const tokenLogoUri = cowTokenList.find(
     (token) => token.address === id && token.chainId === chainId,
   )?.logoURI;

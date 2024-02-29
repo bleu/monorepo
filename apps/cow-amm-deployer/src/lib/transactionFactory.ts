@@ -13,11 +13,11 @@ import {
   COW_AMM_MODULE_ADDRESS,
   EXTENSIBLE_FALLBACK_ADDRESS,
 } from "./contracts";
-import { uploadAppData } from "./cow/uploadAppData";
 import {
   encodePriceOracleData,
   PRICE_ORACLES_ADDRESSES,
 } from "./encodePriceOracleData";
+import { uploadAppData } from "./orderBookApi/uploadAppData";
 import { createAmmSchema } from "./schema";
 
 export enum TRANSACTION_TYPES {
@@ -43,11 +43,13 @@ export interface setDomainVerifierArgs extends BaseArgs {
 }
 export interface enableCowAmmModuleArgs extends BaseArgs {
   type: TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE;
+  chainId: ChainId;
   safeAddress: Address;
 }
 
 export interface stopCowAmmArgs extends BaseArgs {
   type: TRANSACTION_TYPES.STOP_COW_AMM;
+  chainId: ChainId;
 }
 
 export interface creteCowAmmArgs extends BaseArgs {
@@ -60,6 +62,7 @@ export interface creteCowAmmArgs extends BaseArgs {
   appData: `0x${string}`;
   balancerPoolId?: `0x${string}`;
   uniswapV2Pair?: Address;
+  chainId: ChainId;
 }
 
 interface ITransaction<T> {
@@ -97,14 +100,17 @@ class DomainVerifierSetTx implements ITransaction<setDomainVerifierArgs> {
   }
 }
 class CowAmmEnableModuleTx implements ITransaction<enableCowAmmModuleArgs> {
-  createRawTx({ safeAddress }: enableCowAmmModuleArgs): BaseTransaction {
+  createRawTx({
+    safeAddress,
+    chainId,
+  }: enableCowAmmModuleArgs): BaseTransaction {
     return {
       to: safeAddress,
       value: "0",
       data: encodeFunctionData({
         abi: gnosisSafeV12,
         functionName: "enableModule",
-        args: [COW_AMM_MODULE_ADDRESS],
+        args: [COW_AMM_MODULE_ADDRESS[chainId]],
       }),
     };
   }
@@ -120,6 +126,7 @@ class CowAmmCreateTx implements ITransaction<creteCowAmmArgs> {
     balancerPoolId,
     uniswapV2Pair,
     appData,
+    chainId,
   }: creteCowAmmArgs): BaseTransaction {
     const priceOracleData = encodePriceOracleData({
       priceOracle,
@@ -128,7 +135,7 @@ class CowAmmCreateTx implements ITransaction<creteCowAmmArgs> {
     });
 
     return {
-      to: COW_AMM_MODULE_ADDRESS,
+      to: COW_AMM_MODULE_ADDRESS[chainId],
       value: "0",
       data: encodeFunctionData({
         abi: cowAmmModuleAbi,
@@ -147,9 +154,9 @@ class CowAmmCreateTx implements ITransaction<creteCowAmmArgs> {
 }
 
 class CowAmmStopTx implements ITransaction<stopCowAmmArgs> {
-  createRawTx(): BaseTransaction {
+  createRawTx({ chainId }: stopCowAmmArgs): BaseTransaction {
     return {
-      to: COW_AMM_MODULE_ADDRESS,
+      to: COW_AMM_MODULE_ADDRESS[chainId],
       value: "0",
       data: encodeFunctionData({
         abi: cowAmmModuleAbi,
@@ -225,8 +232,9 @@ export async function createAMMArgs(data: typeof createAmmSchema._type) {
     : [
         {
           type: TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE,
-          safeAddress: data.safeAddress,
-        } as enableCowAmmModuleArgs,
+          safeAddress: data.safeAddress as Address,
+          chainId: data.chainId as ChainId,
+        } as const,
       ];
 
   const metadataApi = new MetadataApi();
@@ -248,14 +256,15 @@ export async function createAMMArgs(data: typeof createAmmSchema._type) {
     ...enableCoWAmmTxs,
     {
       type: TRANSACTION_TYPES.CREATE_COW_AMM,
-      token0: data.token0.address,
-      token1: data.token1.address,
+      token0: data.token0.address as Address,
+      token1: data.token1.address as Address,
       token0Decimals: data.token0.decimals,
       minTradedToken0: data.minTradedToken0,
-      priceOracle: data.priceOracle,
-      appData: appDataHex,
-      balancerPoolId: data.balancerPoolId,
-      uniswapV2Pair: data.uniswapV2Pair,
-    } as creteCowAmmArgs,
+      priceOracle: data.priceOracle as PRICE_ORACLES,
+      appData: appDataHex as `0x${string}`,
+      balancerPoolId: data.balancerPoolId as `0x${string}` | undefined,
+      uniswapV2Pair: data.uniswapV2Pair as Address | undefined,
+      chainId: data.chainId as ChainId,
+    } as const,
   ];
 }

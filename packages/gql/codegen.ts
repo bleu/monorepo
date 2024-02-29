@@ -6,6 +6,7 @@ export enum Subgraph {
   BalancerGauges = "balancer-gauges",
   Balancer = "balancer",
   BalancerApiV3 = "balancer-api-v3",
+  UniswapV2 = "uniswap-v2",
 }
 
 // IMPORTANT NOTE:
@@ -26,15 +27,15 @@ export const SUBGRAPHS = {
 
       return {
         [Network.Ethereum]: `${baseEndpoint}/balancer-pool-metadata`,
-        [Network.Sepolia]: `https://api.studio.thegraph.com/query/48427/bal-pool-metadata-sepolia/v0`,
         [Network.Goerli]: `${baseEndpoint}/bal-pools-metadata-goerli`,
         [Network.Polygon]: `${baseEndpoint}/balancer-pools-metadata-matic`,
         [Network.PolygonZKEVM]: `https://api.studio.thegraph.com/query/49707/balacer-pool-metadata-zkevm/version/latest`,
         [Network.Arbitrum]: `${baseEndpoint}/bal-pools-metadata-arb`,
         [Network.Gnosis]: `${baseEndpoint}/balancer-pools-metadata-gnosis`,
         [Network.Optimism]: `${baseEndpoint}/balancer-pools-metadata-op`,
-        // TODO: deploy Base and Avalanche subgraphs
+        // TODO: deploy Base, Avalanche and sepolia subgraphs
         [Network.Base]: `${baseEndpoint}/balancer-pool-metadata`,
+        [Network.Sepolia]: `${baseEndpoint}/balancer-pool-metadata`,
         [Network.Avalanche]: `${baseEndpoint}/balancer-pool-metadata`,
       };
     },
@@ -110,6 +111,24 @@ export const SUBGRAPHS = {
     },
     endpointFor(network: Network) {
       return this.endpoints()[network];
+    },
+  },
+  [Subgraph.UniswapV2]: {
+    name: Subgraph.UniswapV2,
+    endpoints() {
+      const baseEndpoint =
+        "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v2-dev";
+      return {
+        [Network.Ethereum]: `${baseEndpoint}`,
+      };
+    },
+    endpointFor(network: Network) {
+      if (network === Network.Ethereum) {
+        return this.endpoints()[network];
+      }
+      throw new Error(
+        `UniswapV2 subgraph is not deployed on network ${network}`,
+      );
     },
   },
 };

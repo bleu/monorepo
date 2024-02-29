@@ -21,6 +21,11 @@ export type Scalars = {
   Int8: { input: any; output: any; }
 };
 
+export type Aggregation_Interval =
+  | 'day'
+  | 'hour'
+  | '%future added value';
+
 export type BlockChangedFilter = {
   number_gte: Scalars['Int']['input'];
 };
@@ -2402,15 +2407,15 @@ export const GaugeDocument = gql`
 }
     `;
 
-export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string) => Promise<T>;
+export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
 
-const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationType) => action();
+const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationType, variables) => action();
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
     Gauge(variables: GaugeQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GaugeQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GaugeQuery>(GaugeDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Gauge', 'query');
+      return withWrapper((wrappedRequestHeaders) => client.request<GaugeQuery>(GaugeDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Gauge', 'query', variables);
     }
   };
 }

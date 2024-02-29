@@ -8,8 +8,8 @@ import {
   COW_AMM_HANDLER_ADDRESS,
   COW_AMM_MODULE_ADDRESS,
 } from "#/lib/contracts";
-import { UserCurrentAmmQuery } from "#/lib/gql/generated";
-import { composableCowApi } from "#/lib/gql/sdk";
+import { UserCurrentAmmQuery } from "#/lib/gqlComposableCow/generated";
+import { composableCowApi } from "#/lib/gqlComposableCow/sdk";
 import { ICowAmm, PRICE_ORACLES, PriceOracleData } from "#/lib/types";
 import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 
@@ -131,7 +131,7 @@ export async function checkAmmRunning(chainId: ChainId, safeAddress: Address) {
   const publicClient = publicClientsFromIds[chainId];
   return publicClient
     .readContract({
-      address: COW_AMM_MODULE_ADDRESS,
+      address: COW_AMM_MODULE_ADDRESS[chainId],
       abi: cowAmmModuleAbi,
       functionName: "activeOrders",
       args: [safeAddress],

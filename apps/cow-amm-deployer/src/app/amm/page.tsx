@@ -1,5 +1,6 @@
 "use client";
 
+import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import {
   ArrowTopRightIcon,
@@ -61,28 +62,30 @@ export default function Page() {
         <div className="my-10 flex w-9/12 flex-col gap-y-5 justify center">
           <div className="flex items-center justify-between gap-x-8">
             <div className="flex flex-col gap-1">
-              <h1 className="text-3xl text-slate12">
-                CoW AMM (Automatic Market Maker)
-              </h1>
+              <h1 className="text-3xl text-slate12">CoW AMM</h1>
+              <h2 className="text-xl text-slate12">
+                The first MEV-Capturing AMM, brought to you by CoW DAO
+              </h2>
               <span>
-                There isn't any AMM running. Create it to provide liquidity
-                without suffering with LVR.
+                This safe does not have any CoW AMM liquidity pools active.
+                Create a liquidity pool to enjoy passive rebalancing without
+                losing from LVR.
               </span>
-            </div>
-            <div className="flex gap-4">
-              <LinkComponent
-                loaderColor="amber"
-                href={`/amm/new`}
-                content={
-                  <Button
-                    className="flex items-center gap-1 py-3 px-6"
-                    title="New order"
-                  >
-                    <PlusIcon />
-                    Create AMM
-                  </Button>
-                }
-              />
+              <div className="flex gap-4 mt-2">
+                <LinkComponent
+                  loaderColor="amber"
+                  href={`/amm/new`}
+                  content={
+                    <Button
+                      className="flex items-center gap-1 py-3 px-6"
+                      title="New order"
+                    >
+                      <PlusIcon />
+                      Create CoW AMM LP
+                    </Button>
+                  }
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -107,8 +110,9 @@ export default function Page() {
         content={
           <div className="flex flex-col gap-y-2">
             <span className="text-slate12">
-              This will make CoW AMM stop to re-balancing the funds on your
-              behalf. The tokens will stay on your Safe Wallet.
+              Clicking confirm will make the CoW AMM LP position created stop.
+              This means that the position will no longer be actively
+              rebalanced. Don't worry, the tokens will stay on your Safe Wallet.
             </span>
             <div className="flex">
               <Button
@@ -135,9 +139,10 @@ export default function Page() {
       <div className="my-10 flex w-9/12 flex-col gap-y-5 justify center">
         <div className="flex items-center justify-between gap-x-8">
           <div className="flex flex-col gap-1">
-            <h1 className="text-3xl text-slate12">
-              CoW AMM (Automatic Market Maker)
-            </h1>
+            <h1 className="text-3xl text-slate12">CoW AMM</h1>
+            <h2 className="text-xl text-slate12">
+              The first MEV-Capturing AMM, brought to you by CoW DAO
+            </h2>
             <div className="flex flex-row gap-x-1 items-center">
               <span>Using price information from {cowAmm.priceOracle}</span>
               {priceOracleLink && (
@@ -147,21 +152,18 @@ export default function Page() {
               )}
             </div>
           </div>
-          <div className="flex gap-4">
-            <Button
-              className="flex items-center gap-1 py-3 px-6 "
-              color="tomato"
-              onClick={() => {
-                setOpenDialog(true);
-              }}
-            >
-              <StopIcon />
-              Stop
-            </Button>
-            <Button className="flex items-center gap-1 py-3 px-6" disabled>
-              <Pencil2Icon />
-              Edit
-            </Button>
+          <div className="flex flex-col bg-blue3 p-5 rounded-lg w-min-64">
+            <span className="text-sm text-slate9">Total Value</span>
+            <span className="text-2xl">
+              ${" "}
+              {formatNumber(
+                cowAmm.totalUsdValue,
+                2,
+                "decimal",
+                "compact",
+                0.01,
+              )}
+            </span>
           </div>
         </div>
         <div className="flex flex-col">
@@ -170,6 +172,22 @@ export default function Page() {
           </span>
         </div>
         <PoolCompositionTable cowAmm={cowAmm} />
+        <div className="flex gap-4">
+          <Button
+            className="flex items-center gap-1 py-3 px-6 "
+            color="tomato"
+            onClick={() => {
+              setOpenDialog(true);
+            }}
+          >
+            <StopIcon />
+            Stop CoW AMM LP position
+          </Button>
+          <Button className="flex items-center gap-1 py-3 px-6" disabled>
+            <Pencil2Icon />
+            Edit CoW AMM parameters
+          </Button>
+        </div>
       </div>
     </div>
   );

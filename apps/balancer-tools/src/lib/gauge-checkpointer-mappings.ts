@@ -10,6 +10,7 @@ export const apiChainNameToNetworkNumber = {
   ZKEVM: 1_101,
   FANTOM: 0,
   OPTIMISM: 10,
+  SEPOLIA: 11155111,
   "%future added value": 0,
 };
 
@@ -25,5 +26,6 @@ export const apiChainNameToGaugeType = {
   ZKEVM: "PolygonZkEvm",
   FANTOM: "Fanton",
   OPTIMISM: "Optimism",
+  SEPOLIA: "Sepolia",
   "%future added value": "Ethereum",
 };

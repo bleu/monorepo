@@ -13,10 +13,7 @@ export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
         <Table.HeaderCell>Tokens</Table.HeaderCell>
         <Table.HeaderCell>Balance</Table.HeaderCell>
         <Table.HeaderCell>Price</Table.HeaderCell>
-        <Table.HeaderCell>
-          Value ($
-          {formatNumber(cowAmm.totalUsdValue, 2, "decimal", "compact", 0.01)})
-        </Table.HeaderCell>
+        <Table.HeaderCell>Value</Table.HeaderCell>
         <Table.HeaderCell>Value %</Table.HeaderCell>
       </Table.HeaderRow>
       <Table.Body>

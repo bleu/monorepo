@@ -109,7 +109,7 @@ export function CreateAmmForm() {
               });
               setValue("minTradedToken0", getNewMinTradeToken0(token, assets));
             }}
-            label="First Token"
+            label="Select pair"
             selectedToken={token0 ?? undefined}
           />
           {errors.token0 && (
@@ -127,7 +127,6 @@ export function CreateAmmForm() {
                 symbol: token.symbol,
               });
             }}
-            label="Second Token"
             selectedToken={token1 ?? undefined}
           />
           {errors.token1 && (
@@ -207,7 +206,7 @@ function PriceOracleFields({
     <div className="flex flex-col gap-y-3">
       <div>
         <div className="flex gap-x-2">
-          <Label>Price oracle</Label>
+          <Label>Price oracle source</Label>
           <Tooltip
             content={
               "The price oracle is what will define the price of the orders the AMM will make."
@@ -237,7 +236,11 @@ function PriceOracleFields({
       </div>
       {priceOracle === PRICE_ORACLES.BALANCER && (
         <div className="flex flex-col gap-y-1">
-          <Input label="Balancer Pool Id" {...register("balancerPoolId")} />
+          <Input
+            label="Balancer Pool Id"
+            {...register("balancerPoolId")}
+            tooltipText="The address of the Balancer pool that will be used as the price oracle. If you click on the load button it will try to find the most liquid pool address using the Balancer subgraph."
+          />
           <button
             type="button"
             className="flex flex-row text-blue9 outline-none hover:text-amber9 text-xs"
@@ -260,6 +263,7 @@ function PriceOracleFields({
           <Input
             label="Uniswap V2 Pool Address"
             {...register("uniswapV2Pair")}
+            tooltipText="The address of the Uniswap V2 pool that will be used as the price oracle. If you click on the load button it will try to find the most liquid pool address using the Uniswap V2 subgraph."
           />
           <button
             type="button"

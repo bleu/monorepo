@@ -16,7 +16,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <NetworksContextProvider>
       <div className="flex flex-col h-screen">
-        <Header linkUrl={"/milkman"} imageSrc={"/assets/milkman.svg"} />
+        <Header linkUrl={"/amm"} imageSrc={"/assets/milkman.svg"} />
 
         <div className="flex flex-1 overflow-auto p-4 sm:flex-row sm:gap-x-8 text-white">
           {children}

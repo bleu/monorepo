@@ -29,7 +29,7 @@ export function TokenSelect({
 }: {
   onSelectToken: (token: IToken) => void;
   selectedToken?: IToken;
-  label: string;
+  label?: string;
   disabeld?: boolean;
 }) {
   const [open, setOpen] = useState(false);
@@ -74,14 +74,14 @@ export function TokenSelectButton({
   onClick,
   disabeld = false,
 }: {
-  label: string;
+  label?: string;
   token?: IToken;
   disabeld?: boolean;
   onClick?: () => void;
 }) {
   return (
     <div className="flex flex-col w-full">
-      <span className="mb-2 block text-sm text-slate12">{label}</span>
+      <span className="mb-2 h-5 block text-sm text-slate12">{label}</span>
       <button
         type="button"
         //same style as Input.tsx

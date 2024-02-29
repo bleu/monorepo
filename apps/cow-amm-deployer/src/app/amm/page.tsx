@@ -42,7 +42,8 @@ export default function Page() {
     return <Spinner />;
   }
 
-  if (safe.chainId !== mainnet.id && safe.chainId !== gnosis.id) {
+  // TODO: COW-161
+  if (safe.chainId !== gnosis.id) {
     return (
       <div className="flex h-full w-full flex-col items-center rounded-3xl px-12 py-16 md:py-20">
         <div className="text-center text-3xl text-amber9">

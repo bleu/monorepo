@@ -33,6 +33,7 @@ export default function Page({
     return <WalletNotConnected />;
   }
 
+  // TODO: COW-161
   if (safe.chainId !== gnosis.id) {
     return (
       <div className="flex h-full w-full flex-col items-center rounded-3xl px-12 py-16 md:py-20">

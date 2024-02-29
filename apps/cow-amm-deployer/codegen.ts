@@ -5,7 +5,7 @@ const config: CodegenConfig = {
   schema: "https://composable-cow-api.up.railway.app",
   documents: "src/**/*.(ts|tsx)",
   generates: {
-    "src/lib/gql/generated.ts": {
+    "src/lib/gqlComposableCow/generated.ts": {
       plugins: [
         "typescript",
         "typescript-operations",

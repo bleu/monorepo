@@ -225,7 +225,7 @@ export async function createAMMArgs(data: typeof createAmmSchema._type) {
     address: data.safeAddress as Address,
     abi: gnosisSafeV12,
     functionName: "isModuleEnabled",
-    args: [COW_AMM_MODULE_ADDRESS],
+    args: [COW_AMM_MODULE_ADDRESS[data.chainId as ChainId]],
   });
   const enableCoWAmmTxs = isCoWAmmModuleEnabled
     ? []

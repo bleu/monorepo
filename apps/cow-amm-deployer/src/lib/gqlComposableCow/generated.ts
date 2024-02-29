@@ -33,8 +33,6 @@ export type CowAmmParameters = {
 };
 
 export type CowAmmParametersFilter = {
-  AND?: InputMaybe<Array<InputMaybe<CowAmmParametersFilter>>>;
-  OR?: InputMaybe<Array<InputMaybe<CowAmmParametersFilter>>>;
   appData?: InputMaybe<Scalars['String']['input']>;
   appData_gt?: InputMaybe<Scalars['String']['input']>;
   appData_gte?: InputMaybe<Scalars['String']['input']>;
@@ -111,8 +109,8 @@ export type CowAmmParametersFilter = {
 
 export type CowAmmParametersPage = {
   __typename?: 'CowAmmParametersPage';
-  items: Array<CowAmmParameters>;
-  pageInfo: PageInfo;
+  items?: Maybe<Array<CowAmmParameters>>;
+  pageInfo?: Maybe<PageInfo>;
 };
 
 export type Order = {
@@ -132,8 +130,6 @@ export type Order = {
 };
 
 export type OrderFilter = {
-  AND?: InputMaybe<Array<InputMaybe<OrderFilter>>>;
-  OR?: InputMaybe<Array<InputMaybe<OrderFilter>>>;
   blockNumber?: InputMaybe<Scalars['BigInt']['input']>;
   blockNumber_gt?: InputMaybe<Scalars['BigInt']['input']>;
   blockNumber_gte?: InputMaybe<Scalars['BigInt']['input']>;
@@ -222,8 +218,8 @@ export type OrderFilter = {
 
 export type OrderPage = {
   __typename?: 'OrderPage';
-  items: Array<Order>;
-  pageInfo: PageInfo;
+  items?: Maybe<Array<Order>>;
+  pageInfo?: Maybe<PageInfo>;
 };
 
 export type PageInfo = {
@@ -237,15 +233,15 @@ export type PageInfo = {
 export type Query = {
   __typename?: 'Query';
   cowAmmParameters?: Maybe<CowAmmParameters>;
-  cowAmmParameterss: CowAmmParametersPage;
+  cowAmmParameterss?: Maybe<CowAmmParametersPage>;
   order?: Maybe<Order>;
-  orders: OrderPage;
+  orders?: Maybe<OrderPage>;
   stopLossParameters?: Maybe<StopLossParameters>;
-  stopLossParameterss: StopLossParametersPage;
+  stopLossParameterss?: Maybe<StopLossParametersPage>;
   token?: Maybe<Token>;
-  tokens: TokenPage;
+  tokens?: Maybe<TokenPage>;
   user?: Maybe<User>;
-  users: UserPage;
+  users?: Maybe<UserPage>;
 };
 
 
@@ -355,8 +351,6 @@ export type StopLossParameters = {
 };
 
 export type StopLossParametersFilter = {
-  AND?: InputMaybe<Array<InputMaybe<StopLossParametersFilter>>>;
-  OR?: InputMaybe<Array<InputMaybe<StopLossParametersFilter>>>;
   appData?: InputMaybe<Scalars['String']['input']>;
   appData_gt?: InputMaybe<Scalars['String']['input']>;
   appData_gte?: InputMaybe<Scalars['String']['input']>;
@@ -481,8 +475,8 @@ export type StopLossParametersFilter = {
 
 export type StopLossParametersPage = {
   __typename?: 'StopLossParametersPage';
-  items: Array<StopLossParameters>;
-  pageInfo: PageInfo;
+  items?: Maybe<Array<StopLossParameters>>;
+  pageInfo?: Maybe<PageInfo>;
 };
 
 export type Token = {
@@ -496,8 +490,6 @@ export type Token = {
 };
 
 export type TokenFilter = {
-  AND?: InputMaybe<Array<InputMaybe<TokenFilter>>>;
-  OR?: InputMaybe<Array<InputMaybe<TokenFilter>>>;
   address?: InputMaybe<Scalars['String']['input']>;
   address_gt?: InputMaybe<Scalars['String']['input']>;
   address_gte?: InputMaybe<Scalars['String']['input']>;
@@ -556,8 +548,8 @@ export type TokenFilter = {
 
 export type TokenPage = {
   __typename?: 'TokenPage';
-  items: Array<Token>;
-  pageInfo: PageInfo;
+  items?: Maybe<Array<Token>>;
+  pageInfo?: Maybe<PageInfo>;
 };
 
 export type User = {
@@ -575,12 +567,10 @@ export type UserOrdersArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Scalars['String']['input']>;
   orderDirection?: InputMaybe<Scalars['String']['input']>;
-  where?: InputMaybe<UserFilter>;
+  timestamp?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type UserFilter = {
-  AND?: InputMaybe<Array<InputMaybe<UserFilter>>>;
-  OR?: InputMaybe<Array<InputMaybe<UserFilter>>>;
   address?: InputMaybe<Scalars['String']['input']>;
   address_contains?: InputMaybe<Scalars['String']['input']>;
   address_ends_with?: InputMaybe<Scalars['String']['input']>;
@@ -613,8 +603,8 @@ export type UserFilter = {
 
 export type UserPage = {
   __typename?: 'UserPage';
-  items: Array<User>;
-  pageInfo: PageInfo;
+  items?: Maybe<Array<User>>;
+  pageInfo?: Maybe<PageInfo>;
 };
 
 export type UserCurrentAmmQueryVariables = Exact<{
@@ -623,7 +613,7 @@ export type UserCurrentAmmQueryVariables = Exact<{
 }>;
 
 
-export type UserCurrentAmmQuery = { __typename?: 'Query', orders: { __typename?: 'OrderPage', items: Array<{ __typename?: 'Order', id: string, chainId: number, blockNumber: any, blockTimestamp: any, handler: string, decodedSuccess: boolean, staticInput: string, cowAmmParameters?: { __typename?: 'CowAmmParameters', id: string, minTradedToken0: any, priceOracle: string, priceOracleData: string, appData: string, token0: { __typename?: 'Token', id: string, address: string, symbol: string, decimals: number }, token1: { __typename?: 'Token', id: string, address: string, symbol: string, decimals: number } } | null }> } };
+export type UserCurrentAmmQuery = { __typename?: 'Query', orders?: { __typename?: 'OrderPage', items?: Array<{ __typename?: 'Order', id: string, chainId: number, blockNumber: any, blockTimestamp: any, handler: string, decodedSuccess: boolean, staticInput: string, cowAmmParameters?: { __typename?: 'CowAmmParameters', id: string, minTradedToken0: any, priceOracle: string, priceOracleData: string, appData: string, token0: { __typename?: 'Token', id: string, address: string, symbol: string, decimals: number }, token1: { __typename?: 'Token', id: string, address: string, symbol: string, decimals: number } } | null }> | null } | null };
 
 
 export const UserCurrentAmmDocument = gql`
@@ -632,7 +622,7 @@ export const UserCurrentAmmDocument = gql`
     where: {user: $userId, handler: $handler}
     limit: 1
     orderBy: "blockNumber"
-    orderDirection: "asc"
+    orderDirection: "desc"
   ) {
     items {
       id

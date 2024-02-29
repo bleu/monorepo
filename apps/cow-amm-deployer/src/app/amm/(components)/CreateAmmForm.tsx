@@ -78,7 +78,7 @@ export function CreateAmmForm() {
     await createAMMArgs(data).then((txArgs) => {
       sendTransactions(txArgs);
     });
-    router.push("/amm");
+    router.push("/amm/createtxprocessing");
   };
 
   useEffect(() => {

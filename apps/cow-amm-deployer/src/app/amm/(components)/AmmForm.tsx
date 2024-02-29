@@ -6,7 +6,7 @@ import { slateDarkA } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useForm, UseFormReturn } from "react-hook-form";
+import { FieldValues, useForm, UseFormReturn } from "react-hook-form";
 
 import { Button } from "#/components";
 import { Input } from "#/components/Input";
@@ -27,8 +27,8 @@ import { useRawTxData } from "#/hooks/useRawTxData";
 import { useSafeBalances } from "#/hooks/useSafeBalances";
 import { pools } from "#/lib/gqlBalancer";
 import { pairs } from "#/lib/gqlUniswapV2";
-import { createAmmSchema } from "#/lib/schema";
-import { createAMMArgs } from "#/lib/transactionFactory";
+import { ammFormSchema } from "#/lib/schema";
+import { buildTxAMMArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
 import { FALLBACK_STATES, IToken, PRICE_ORACLES } from "#/lib/types";
 import { ChainId } from "#/utils/chainsPublicClients";
 
@@ -43,18 +43,27 @@ const getNewMinTradeToken0 = (newToken0: IToken, assets: TokenBalance[]) => {
   return 10 / Number(asset0?.fiatConversion);
 };
 
-export function CreateAmmForm() {
+export function AmmForm({
+  transactionType,
+  defaultValues,
+}: {
+  transactionType:
+    | TRANSACTION_TYPES.CREATE_COW_AMM
+    | TRANSACTION_TYPES.EDIT_COW_AMM;
+  defaultValues?: FieldValues;
+}) {
   const {
     safe: { safeAddress, chainId },
   } = useSafeAppsSDK();
   const router = useRouter();
   const { assets } = useSafeBalances();
 
-  const form = useForm<typeof createAmmSchema._type>({
-    resolver: zodResolver(createAmmSchema),
+  const form = useForm<typeof ammFormSchema._type>({
+    resolver: zodResolver(ammFormSchema),
     defaultValues: {
+      ...defaultValues,
+      safeAddress,
       chainId,
-      safeAddress: safeAddress,
     },
   });
 
@@ -74,11 +83,14 @@ export function CreateAmmForm() {
     (address) => address,
   ) as Address[];
 
-  const onSubmit = async (data: typeof createAmmSchema._type) => {
-    await createAMMArgs(data).then((txArgs) => {
-      sendTransactions(txArgs);
-    });
-    router.push("/amm/createtxprocessing");
+  const onSubmit = async (data: typeof ammFormSchema._type) => {
+    await buildTxAMMArgs({ data, transactionType })
+      .then((txArgs) => {
+        sendTransactions(txArgs);
+      })
+      .then(() => {
+        router.push("/amm/createtxprocessing");
+      });
   };
 
   useEffect(() => {
@@ -188,7 +200,7 @@ function PriceOracleFields({
   chainId,
   tokenAddresses,
 }: {
-  form: UseFormReturn<typeof createAmmSchema._type>;
+  form: UseFormReturn<typeof ammFormSchema._type>;
   chainId: ChainId;
   tokenAddresses: Address[];
 }) {

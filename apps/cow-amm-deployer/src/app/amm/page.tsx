@@ -62,7 +62,7 @@ export default function Page() {
         <div className="my-10 flex w-9/12 flex-col gap-y-5 justify center">
           <div className="flex items-center justify-between gap-x-8">
             <div className="flex flex-col gap-1">
-              <h1 className="text-3xl text-slate12">CoW AMM ()</h1>
+              <h1 className="text-3xl text-slate12">CoW AMM</h1>
               <h2 className="text-xl text-slate12">
                 The first MEV-Capturing AMM, brought to you by CoW DAO
               </h2>

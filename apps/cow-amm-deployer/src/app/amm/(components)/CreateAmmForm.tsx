@@ -38,7 +38,7 @@ import { TokenSelect } from "./TokenSelect";
 const getNewMinTradeToken0 = (newToken0: IToken, assets: TokenBalance[]) => {
   const asset0 = assets.find(
     (asset) =>
-      asset.tokenInfo.address.toLowerCase() === newToken0.address.toLowerCase(),
+      asset.tokenInfo.address.toLowerCase() === newToken0.address.toLowerCase()
   );
   return 10 / Number(asset0?.fiatConversion);
 };
@@ -71,7 +71,7 @@ export function CreateAmmForm() {
   const token1 = watch("token1");
 
   const tokenAddresses = [token0?.address, token1?.address].filter(
-    (address) => address,
+    (address) => address
   ) as Address[];
 
   const onSubmit = async (data: typeof createAmmSchema._type) => {
@@ -268,7 +268,7 @@ function PriceOracleFields({
               getUniswapV2PairAddress(
                 chainId,
                 tokenAddresses[0],
-                tokenAddresses[1],
+                tokenAddresses[1]
               )
                 .then((address) => {
                   setValue("uniswapV2Pair", address);
@@ -325,7 +325,7 @@ async function getBalancerPoolId(chainId: number, tokens: Address[]) {
 async function getUniswapV2PairAddress(
   chainId: number,
   token0: Address,
-  token1: Address,
+  token1: Address
 ) {
   if (token0 === token1) throw new Error("Invalid tokens");
   const pairsData = await pairs.gql(String(chainId) || "1").pairsWhereTokens({

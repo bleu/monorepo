@@ -94,11 +94,11 @@ export default function Page() {
     cowAmm.priceOracle === PRICE_ORACLES.BALANCER
       ? getBalancerPoolUrl(
           safe.chainId as ChainId,
-          cowAmm.priceOracleData?.balancerPoolId,
+          cowAmm.priceOracleData?.balancerPoolId
         )
       : getUniV2PairUrl(
           safe.chainId as ChainId,
-          cowAmm.priceOracleData?.uniswapV2PairAddress,
+          cowAmm.priceOracleData?.uniswapV2PairAddress
         );
 
   return (

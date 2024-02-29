@@ -7,7 +7,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@ponder/core": "0.2.10"
+    "@ponder/core": "0.2.0"
   },
   "devDependencies": {
     "@types/node": "^18.19.3",

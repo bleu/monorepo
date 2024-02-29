@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@ponder/core':
-    specifier: 0.2.10
-    version: 0.2.10(@types/node@18.19.3)(typescript@5.3.3)(viem@1.19.15)
+    specifier: 0.2.0
+    version: 0.2.0(@types/node@18.19.3)(typescript@5.3.3)(viem@1.19.15)
 
 devDependencies:
   '@types/node':
@@ -47,8 +47,8 @@ packages:
       is-fullwidth-code-point: 4.0.0
     dev: false
 
-  /@ast-grep/napi-darwin-arm64@0.19.3:
-    resolution: {integrity: sha512-emLNSpyey1m/qgHEE+CXgQ68s47bCsgDn36JeWsRp3XGvJa5Nbu7HlywjD3qxLCi+nIkwGni/2bcD+zEieI7gQ==}
+  /@ast-grep/napi-darwin-arm64@0.17.1:
+    resolution: {integrity: sha512-QO5EyZLXUyJyyS1Q/IQyllayDVb2zgWyWEWhl//B8Y8iuXYEPPj3eIbqVyo3zhgEDLgtd8RZOipgWJLQTmKJPw==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [darwin]
@@ -56,8 +56,8 @@ packages:
     dev: false
     optional: true
 
-  /@ast-grep/napi-darwin-x64@0.19.3:
-    resolution: {integrity: sha512-aftYFczI9xhnLxpss/enDSlbnYltny4StSFV05TQ/EqsrQjSQu8+MxKNerFmL4dXO2hdU426s9ib9Ax575zc9w==}
+  /@ast-grep/napi-darwin-x64@0.17.1:
+    resolution: {integrity: sha512-vaZUNCaDdNDwe6lEmyRF89omtItm4dAFJvCEXUzpcVF7aX5eKg/8sj176gDPLkErNcE5Eqenc9+2aSFc2ppWhw==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [darwin]
@@ -65,8 +65,8 @@ packages:
     dev: false
     optional: true
 
-  /@ast-grep/napi-linux-arm64-gnu@0.19.3:
-    resolution: {integrity: sha512-rbfngSm2w/vR+akQUYZmtCQOXFLWKEEuyDwgNPHJ3UN9Yi90g1yzS2j8I1DxsKRUuN+0TTuqa+TT9lMelxljAw==}
+  /@ast-grep/napi-linux-arm64-gnu@0.17.1:
+    resolution: {integrity: sha512-vSidne672ClHpTtkv+d6F+Vit6rvPOPpwFvrsmf/SJnIUZr2PXbdp2z1zxUy0w+41LIMEPdWd99wmiCbBFWAGg==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
@@ -74,8 +74,8 @@ packages:
     dev: false
     optional: true
 
-  /@ast-grep/napi-linux-x64-gnu@0.19.3:
-    resolution: {integrity: sha512-WjGHyXTBJEcj/+TQHG1tlAC45FrxM8oskNnc11b5DieeZ6ezeiPQbi6dJhZm+HDvsaoJt3caBRRsSKfJFo4olQ==}
+  /@ast-grep/napi-linux-x64-gnu@0.17.1:
+    resolution: {integrity: sha512-njoCGNqpg2cVTNPvjq2Jp8bT30x6EGd/Bl8hzAJTHo9KYDTYGPmdGdr3TVOoUcSgsIqiveNFZ5yaVg8pNez7uA==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -83,17 +83,8 @@ packages:
     dev: false
     optional: true
 
-  /@ast-grep/napi-linux-x64-musl@0.19.3:
-    resolution: {integrity: sha512-q0p1SUHq0W9BDVcuKYNm0SX0FyPzYc3JpbwGUOu1U6yg2F6JZwY03JekSAGNsXBNcqWFObtJfQiPOX9UQkee9Q==}
-    engines: {node: '>= 10'}
-    cpu: [x64]
-    os: [linux]
-    requiresBuild: true
-    dev: false
-    optional: true
-
-  /@ast-grep/napi-win32-arm64-msvc@0.19.3:
-    resolution: {integrity: sha512-x1hC5n+Iudb9otOLVSrSm4Isa8PGByKt7WabuPtLVR4BGbSJ4pF1gdNjcOXT9icBbwhzT7DEOjSSoaQsqbi4WQ==}
+  /@ast-grep/napi-win32-arm64-msvc@0.17.1:
+    resolution: {integrity: sha512-LhFRY7Vl8tCM93RqDdCO5tpseVFwoZKfoNyLF2zBwKi/fOfZ+g0iMlhpaFU6vtlGq1MECUxtZTK80NQr7HIcCA==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [win32]
@@ -101,8 +92,8 @@ packages:
     dev: false
     optional: true
 
-  /@ast-grep/napi-win32-ia32-msvc@0.19.3:
-    resolution: {integrity: sha512-GYgc4wYE/2u3C/y0Hoi0+uzooo/zYswpZj2psm/95YJxsEAjnsXGpGDk+B8u7qK3UeSiB5Bl/iqGdhaDDhR8Cw==}
+  /@ast-grep/napi-win32-ia32-msvc@0.17.1:
+    resolution: {integrity: sha512-UmnekTcxUPxIhZdR8AxABuxkgIYCd+uKAMg0PcumwTLstbXVC3wWpNe93wDpioRV7hgG/W8hxH+9cs4m9E2f5w==}
     engines: {node: '>= 10'}
     cpu: [ia32]
     os: [win32]
@@ -110,8 +101,8 @@ packages:
     dev: false
     optional: true
 
-  /@ast-grep/napi-win32-x64-msvc@0.19.3:
-    resolution: {integrity: sha512-qRPVhnYPdzX2i7jeYht7+D/uOL2Igfz3TCr/0XmtVwjfgCFxEeuR2sgfs5r326Yl/Mt+nbNE/o4CcvWy+P0KwA==}
+  /@ast-grep/napi-win32-x64-msvc@0.17.1:
+    resolution: {integrity: sha512-3YpFwuDaMXSE29wxUNfik1sY8NTgzlAzCCyiD654T+ZjBGXAr+9XlIx1Sp0qjMjoQeVAxhg48RnzZZDs8fWpPA==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
@@ -119,18 +110,17 @@ packages:
     dev: false
     optional: true
 
-  /@ast-grep/napi@0.19.3:
-    resolution: {integrity: sha512-8QAhX5EcUQXb0sZeHr1RMBjW8cyiY1yZGi5YNfYn0S2KT+ejtDC43Dhpwtzbxoz/Dg2vdt9DhMfxaN4do2HJww==}
+  /@ast-grep/napi@0.17.1:
+    resolution: {integrity: sha512-IxCE3wSIKpyR3cJIkfwMfDeNf6e+R4X2pw9X5kc8OrCCmvrNfHfvWtmVqBZOREd7peshvkB/yi9jTx31VklQGw==}
     engines: {node: '>= 10'}
     optionalDependencies:
-      '@ast-grep/napi-darwin-arm64': 0.19.3
-      '@ast-grep/napi-darwin-x64': 0.19.3
-      '@ast-grep/napi-linux-arm64-gnu': 0.19.3
-      '@ast-grep/napi-linux-x64-gnu': 0.19.3
-      '@ast-grep/napi-linux-x64-musl': 0.19.3
-      '@ast-grep/napi-win32-arm64-msvc': 0.19.3
-      '@ast-grep/napi-win32-ia32-msvc': 0.19.3
-      '@ast-grep/napi-win32-x64-msvc': 0.19.3
+      '@ast-grep/napi-darwin-arm64': 0.17.1
+      '@ast-grep/napi-darwin-x64': 0.17.1
+      '@ast-grep/napi-linux-arm64-gnu': 0.17.1
+      '@ast-grep/napi-linux-x64-gnu': 0.17.1
+      '@ast-grep/napi-win32-arm64-msvc': 0.17.1
+      '@ast-grep/napi-win32-ia32-msvc': 0.17.1
+      '@ast-grep/napi-win32-x64-msvc': 0.17.1
     dev: false
 
   /@babel/code-frame@7.23.5:
@@ -477,8 +467,8 @@ packages:
     dev: false
     optional: true
 
-  /@ponder/core@0.2.10(@types/node@18.19.3)(typescript@5.3.3)(viem@1.19.15):
-    resolution: {integrity: sha512-LkEqwiqbs0qjyg9y4Mg45D62aJiPWtQqgIXqc5bh45BOeHbxEe+1RMStJtGhtkz3rHz+hkrgChlJMMWnfKznxA==}
+  /@ponder/core@0.2.0(@types/node@18.19.3)(typescript@5.3.3)(viem@1.19.15):
+    resolution: {integrity: sha512-LopFBd1A0oLwtvMeSJ/Fcp94TRZqOGSP3UKbsvF2XaSWaKiSBE+CP+KJFlwpIfkRamjRQlktI39SefwQHOj64w==}
     engines: {node: '>=18.14'}
     hasBin: true
     peerDependencies:
@@ -488,7 +478,7 @@ packages:
       typescript:
         optional: true
     dependencies:
-      '@ast-grep/napi': 0.19.3
+      '@ast-grep/napi': 0.17.1
       '@babel/code-frame': 7.23.5
       abitype: 0.10.3(typescript@5.3.3)
       async-mutex: 0.4.0
@@ -496,7 +486,6 @@ packages:
       cac: 6.7.14
       conf: 12.0.0
       cors: 2.8.5
-      dataloader: 2.2.2
       detect-package-manager: 3.0.1
       dotenv: 16.3.1
       emittery: 1.0.1
@@ -509,9 +498,9 @@ packages:
       ink: 4.4.1(react@18.2.0)
       kysely: 0.26.3
       magic-string: 0.30.5
+      p-limit: 5.0.0
       p-queue: 7.4.1
       pg: 8.11.3
-      pg-connection-string: 2.6.2
       picocolors: 1.0.0
       pino: 8.17.1
       prom-client: 15.0.0
@@ -522,7 +511,6 @@ packages:
       viem: 1.19.15(typescript@5.3.3)
       vite: 5.0.11(@types/node@18.19.3)
       vite-node: 1.2.0(@types/node@18.19.3)
-      vite-tsconfig-paths: 4.3.1(typescript@5.3.3)(vite@5.0.11)
     transitivePeerDependencies:
       - '@types/node'
       - '@types/react'
@@ -1236,10 +1224,6 @@ packages:
       shebang-command: 2.0.0
       which: 2.0.2
 
-  /dataloader@2.2.2:
-    resolution: {integrity: sha512-8YnDaaf7N3k/q5HnTJVuzSyLETjoZjVmHc4AeKAzOvKHEFQKcn64OKBfzHYtE9zGjctNM7V9I0MfnUVLpi7M5g==}
-    dev: false
-
   /debounce-fn@5.1.2:
     resolution: {integrity: sha512-Sr4SdOZ4vw6eQDvPYNxHogvrxmCIld/VenC5JbNrFwMiwd7lY/Z18ZFfo+EWNG4DD9nFlAujWAo/wGuOPHmy5A==}
     engines: {node: '>=12'}
@@ -1829,10 +1813,6 @@ packages:
       slash: 3.0.0
     dev: true
 
-  /globrex@0.1.2:
-    resolution: {integrity: sha512-uHJgbwAMwNFf5mLst7IWLNg14x1CkeqglJb/K3doi4dw6q2IvAAmM/Y81kevy83wP+Sst+nutFTYOGg3d1lsxg==}
-    dev: false
-
   /gopd@1.0.1:
     resolution: {integrity: sha512-d65bNlIadxvpb/A2abVdlqKqV563juRnZ1Wtk6s1sIR8uNsXR70xqIzVqxVf1eTqDunwT2MkczEeaezCKTZhwA==}
     dependencies:
@@ -2376,6 +2356,13 @@ packages:
     dependencies:
       yocto-queue: 0.1.0
     dev: true
+
+  /p-limit@5.0.0:
+    resolution: {integrity: sha512-/Eaoq+QyLSiXQ4lyYV23f14mZRQcXnxfHrN0vCai+ak9G0pp9iEQukIIZq5NccEvwRB8PUnZT0KsOoDCINS1qQ==}
+    engines: {node: '>=18'}
+    dependencies:
+      yocto-queue: 1.0.0
+    dev: false
 
   /p-locate@5.0.0:
     resolution: {integrity: sha512-LaNjtRWUBY++zB5nE/NwcaoMylSPk+S+ZHNB1TzdbMJMny6dynpAGt7X/tl/QYq3TIeE6nxHppbo2LGymrG5Pw==}
@@ -3114,19 +3101,6 @@ packages:
       typescript: 5.3.3
     dev: true
 
-  /tsconfck@3.0.2(typescript@5.3.3):
-    resolution: {integrity: sha512-6lWtFjwuhS3XI4HsX4Zg0izOI3FU/AI9EGVlPEUMDIhvLPMD4wkiof0WCoDgW7qY+Dy198g4d9miAqUHWHFH6Q==}
-    engines: {node: ^18 || >=20}
-    hasBin: true
-    peerDependencies:
-      typescript: ^5.0.0
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      typescript: 5.3.3
-    dev: false
-
   /tslib@2.6.2:
     resolution: {integrity: sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==}
     dev: false
@@ -3257,23 +3231,6 @@ packages:
       - terser
     dev: false
 
-  /vite-tsconfig-paths@4.3.1(typescript@5.3.3)(vite@5.0.11):
-    resolution: {integrity: sha512-cfgJwcGOsIxXOLU/nELPny2/LUD/lcf1IbfyeKTv2bsupVbTH/xpFtdQlBmIP1GEK2CjjLxYhFfB+QODFAx5aw==}
-    peerDependencies:
-      vite: '*'
-    peerDependenciesMeta:
-      vite:
-        optional: true
-    dependencies:
-      debug: 4.3.4
-      globrex: 0.1.2
-      tsconfck: 3.0.2(typescript@5.3.3)
-      vite: 5.0.11(@types/node@18.19.3)
-    transitivePeerDependencies:
-      - supports-color
-      - typescript
-    dev: false
-
   /vite@5.0.11(@types/node@18.19.3):
     resolution: {integrity: sha512-XBMnDjZcNAw/G1gEiskiM1v6yzM4GE5aMGvhWTlHAYYhxb7S3/V1s3m2LDHa8Vh6yIWYYB0iJwsEaS523c4oYA==}
     engines: {node: ^18.0.0 || >=20.0.0}
@@ -3373,6 +3330,11 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
     dev: true
+
+  /yocto-queue@1.0.0:
+    resolution: {integrity: sha512-9bnSc/HEW2uRy67wc+T8UwauLuPJVn28jb+GtJY16iiKWyvmYJRXVT4UamsAEGQfPohgr2q4Tq0sQbQlxTfi1g==}
+    engines: {node: '>=12.20'}
+    dev: false
 
   /yoga-wasm-web@0.3.3:
     resolution: {integrity: sha512-N+d4UJSJbt/R3wqY7Coqs5pcV0aUj2j9IaQ3rNj9bVCLld8tTGKRa2USARjnvZJWVx1NDmQev8EknoczaOQDOA==}

@@ -310,6 +310,20 @@ function ErrorFillingPriceOracleData() {
   );
 }
 
+function ErrorFillingPriceOracleData() {
+  return (
+    <div className="flex h-14 flex-row items-center justify-between px-4 py-8">
+      <div className="flex flex-col justify-between space-y-1">
+        <h1 className="text-md font-medium text-slate12">Error</h1>
+        <h3 className="mb-2 text-sm leading-3 text-slate11">
+          Check if tokens are valid and pool exists
+        </h3>
+      </div>
+    </div>
+  );
+}
+
+
 async function getBalancerPoolId(chainId: number, tokens: Address[]) {
   if (tokens.length !== 2 || tokens[0] === tokens[1])
     throw new Error("Invalid tokens");

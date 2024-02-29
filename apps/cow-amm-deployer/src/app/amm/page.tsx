@@ -124,7 +124,7 @@ export default function Page() {
                       chainId: safe.chainId as ChainId,
                     },
                   ]);
-                  router.refresh();
+                  router.push("/amm/stoptxprocessing");
                 }}
               >
                 Confirm

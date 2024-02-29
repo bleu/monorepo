@@ -21,7 +21,7 @@ gql(`
     where: {user: $userId, handler: $handler}
     limit: 1
     orderBy: "blockNumber"
-    orderDirection: "asc"
+    orderDirection: "desc"
   ) {
     items {
       id
@@ -55,7 +55,7 @@ gql(`
 }
 `);
 
-const NULL_ACTIVE_ORDER =
+export const NULL_ACTIVE_ORDER =
   "0x0000000000000000000000000000000000000000000000000000000000000000" as const;
 
 export async function fetchLastAmmInfo({
@@ -70,7 +70,7 @@ export async function fetchLastAmmInfo({
     handler: COW_AMM_HANDLER_ADDRESS[chainId as ChainId],
   });
 
-  const order = orders.items[0];
+  const order = orders?.items?.[0];
   if (!order || !order.decodedSuccess) return;
 
   return decodePriceOracle({ cowAmmParameters: order.cowAmmParameters });
@@ -85,6 +85,7 @@ export const ADDRESSES_PRICE_ORACLES = {
 export async function decodePriceOracle({
   cowAmmParameters,
 }: {
+  // @ts-ignore
   cowAmmParameters: UserCurrentAmmQuery["orders"]["items"][0]["cowAmmParameters"];
 }) {
   const priceOracle =
@@ -127,7 +128,10 @@ export function decodePriceOracleData({
   throw new Error("Unknown price oracle");
 }
 
-export async function checkAmmRunning(chainId: ChainId, safeAddress: Address) {
+export async function checkIsAmmRunning(
+  chainId: ChainId,
+  safeAddress: Address,
+) {
   const publicClient = publicClientsFromIds[chainId];
   return publicClient
     .readContract({
@@ -146,6 +150,7 @@ export function useRunningAMM(): {
   loaded: boolean;
   isAmmRunning: boolean;
   error: boolean;
+  updateAmmInfo: () => Promise<void>;
 } {
   const {
     safe: { safeAddress, chainId },
@@ -157,53 +162,60 @@ export function useRunningAMM(): {
   const [error, setError] = useState(false);
   const { assets } = useSafeBalances();
 
-  useEffect(() => {
-    async function loadCowAmm() {
-      try {
-        const [gqlInfo, newIsAmmRunning] = await Promise.all([
-          fetchLastAmmInfo({
-            chainId: chainId as ChainId,
-            safeAddress: safeAddress as Address,
-          }),
-          checkAmmRunning(chainId as ChainId, safeAddress as Address),
-        ]);
+  async function loadCoWAmmRunning() {
+    const newIsAmmRunning = await checkIsAmmRunning(
+      chainId as ChainId,
+      safeAddress as Address,
+    );
+    setIsAmmRunning(newIsAmmRunning);
+  }
 
-        const token0 = assets.find(
-          (asset) =>
-            asset.tokenInfo.address.toLowerCase() ===
-            gqlInfo?.token0?.address.toLowerCase(),
-        );
-        const token1 = assets.find(
-          (asset) =>
-            asset.tokenInfo.address.toLowerCase() ===
-            gqlInfo?.token1?.address.toLowerCase(),
-        );
+  async function loadCowAmm() {
+    const gqlInfo = await fetchLastAmmInfo({
+      chainId: chainId as ChainId,
+      safeAddress: safeAddress as Address,
+    });
 
-        if (!token0 || !token1) {
-          setLoaded(true);
-          return;
-        }
+    const token0 = assets.find(
+      (asset) =>
+        asset.tokenInfo.address.toLowerCase() ===
+        gqlInfo?.token0?.address.toLowerCase(),
+    );
+    const token1 = assets.find(
+      (asset) =>
+        asset.tokenInfo.address.toLowerCase() ===
+        gqlInfo?.token1?.address.toLowerCase(),
+    );
 
-        const totalUsdValue =
-          (Number(token0.fiatBalance) || 0) + (Number(token1.fiatBalance) || 0);
-
-        setCowAmm({
-          token0,
-          token1,
-          totalUsdValue,
-          minTradedToken0: gqlInfo?.minTradedToken0 as number,
-          priceOracle: gqlInfo?.priceOracleType as PRICE_ORACLES,
-          priceOracleData: gqlInfo?.priceOracleDataDecoded as PriceOracleData,
-        });
-        setIsAmmRunning(newIsAmmRunning);
-      } catch (e) {
-        setError(true);
-      }
-      setLoaded(true);
+    if (!token0 || !token1) {
+      return;
     }
 
-    loadCowAmm();
+    const totalUsdValue =
+      (Number(token0.fiatBalance) || 0) + (Number(token1.fiatBalance) || 0);
+
+    setCowAmm({
+      token0,
+      token1,
+      totalUsdValue,
+      minTradedToken0: gqlInfo?.minTradedToken0 as number,
+      priceOracle: gqlInfo?.priceOracleType as PRICE_ORACLES,
+      priceOracleData: gqlInfo?.priceOracleDataDecoded as PriceOracleData,
+    });
+  }
+
+  async function updateAmmInfo(): Promise<void> {
+    setLoaded(false);
+    setError(false);
+    await Promise.all([loadCoWAmmRunning(), loadCowAmm()]).catch(() => {
+      setError(true);
+    });
+    setLoaded(true);
+  }
+
+  useEffect(() => {
+    updateAmmInfo();
   }, [safeAddress, chainId, assets]);
 
-  return { cowAmm, loaded, isAmmRunning, error };
+  return { cowAmm, loaded, isAmmRunning, error, updateAmmInfo };
 }

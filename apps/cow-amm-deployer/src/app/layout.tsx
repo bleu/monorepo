@@ -28,10 +28,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <div className="flex flex-1 overflow-auto p-4 sm:flex-row sm:gap-x-8 text-white">
                 {children}
               </div>
-              <Footer
-                githubLink="https://github.com/bleu-fi"
-                discordLink="https://discord.gg/Z78vQvmHN2"
-              />
+              <Footer twitterLink="https://twitter.com/cowswap" />
             </div>
           </NetworksContextProvider>
         </RootLayout>

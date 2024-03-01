@@ -29,7 +29,7 @@ const predefinedClasses = {
       dark: { style: "bg-beige", border: "border-0" },
       darkWithBorder: {
         style: "bg-beige",
-        border: "border border-darkBrown rounded",
+        border: "border border-amm-brown rounded",
       },
     },
   },

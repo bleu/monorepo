@@ -20,7 +20,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full">
       <Fonts />
-      <body className="bg-darkBrown flex h-full flex-col">
+      <body className="bg-amm-brown flex h-full flex-col">
         <RootLayout>
           <NetworksContextProvider>
             <div className="flex flex-col h-screen">

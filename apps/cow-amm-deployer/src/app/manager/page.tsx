@@ -109,7 +109,7 @@ export default function Page() {
               )}
             </div>
           </div>
-          <div className="flex flex-col bg-amber9 text-darkBrown py-2 px-8 rounded-lg">
+          <div className="flex flex-col bg-amber9 text-amm-brown py-2 px-8 rounded-lg">
             <span className="text-sm">Total Value</span>
             <span className="text-2xl">
               ${" "}

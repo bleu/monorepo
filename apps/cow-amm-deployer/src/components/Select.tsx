@@ -19,8 +19,8 @@ type SelectItemProps = React.ComponentPropsWithRef<typeof SelectPrimitive.Item>;
 interface ISelectItem extends SelectItemProps {
   theme?: "dark" | "light";
 }
-const baseDark = "bg-darkBrown text-seashell data-[highlighted]:bg-brown7";
-const baseLight = "bg-beige text-darkBrown data-[highlighted]:bg-brown11";
+const baseDark = "bg-amm-brown text-seashell data-[highlighted]:bg-brown7";
+const baseLight = "bg-beige text-amm-brown data-[highlighted]:bg-brown11";
 
 export const Select = forwardRef<HTMLButtonElement, ISelect>(
   (

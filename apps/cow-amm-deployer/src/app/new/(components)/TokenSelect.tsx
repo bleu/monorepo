@@ -85,7 +85,7 @@ export function TokenSelectButton({
       <button
         type="button"
         //same style as Input.tsx
-        className="px-2w-full selection:color-white box-border flex h-[35px] w-full appearance-none items-center justify-between gap-2 rounded-[4px] bg-darkBrown px-[10px] py-1 text-[15px] leading-none text-seashell shadow-[0_0_0_1px] shadow-brown6 outline-none selection:bg-brown9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-brown1"
+        className="px-2w-full selection:color-white box-border flex h-[35px] w-full appearance-none items-center justify-between gap-2 rounded-[4px] bg-amm-brown/50 px-[10px] py-1 text-[15px] leading-none text-seashell shadow-[0_0_0_1px] shadow-brown6 outline-none selection:bg-brown9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-brown1"
         disabled={disabeld}
         onClick={onClick}
       >
@@ -212,7 +212,7 @@ function TokenModal({
           <input
             type="text"
             placeholder="Search name or paste address"
-            className="h-9 w-full appearance-none items-center justify-center rounded-l-[4px] bg-darkBrown px-[10px] text-sm leading-none text-slate12 outline-none"
+            className="h-9 w-full appearance-none items-center justify-center rounded-l-[4px] bg-amm-brown px-[10px] text-sm leading-none text-slate12 outline-none"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setTokenSearchQuery(e.target.value)
             }
@@ -231,7 +231,7 @@ function TokenModal({
           </Button>
         </div>
       </div>
-      <Table color="beige" classNames="text-darkBrown">
+      <Table color="beige" classNames="text-amm-brown">
         <Table.HeaderRow>
           <Table.HeaderCell>
             <span className="sr-only">Token Logo</span>

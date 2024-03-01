@@ -11,7 +11,7 @@ export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
     <Table
       color="beige"
       shade="darkWithBorder"
-      classNames="overflow-y-auto text-darkBrown"
+      classNames="overflow-y-auto text-amm-brown"
     >
       <Table.HeaderRow>
         <Table.HeaderCell>Tokens</Table.HeaderCell>

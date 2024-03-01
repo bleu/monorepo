@@ -11,7 +11,7 @@ function ArrowIcon() {
     <ArrowLeftIcon
       height={16}
       width={16}
-      className="text-darkBrown duration-200 hover:text-amber9"
+      className="text-amm-brown duration-200 hover:text-amber9"
     />
   );
 }
@@ -28,7 +28,7 @@ export function FormWrapper({
   return (
     <>
       <div className="flex h-full items-center justify-center w-full">
-        <div className="my-4 flex flex-col rounded-lg border border-3 bg-beige border-seashell text-darkBrown">
+        <div className="my-4 flex flex-col rounded-lg border border-3 bg-beige border-seashell text-amm-brown">
           <div className="divide-y divide-brown4 h-full">
             <div className="relative flex h-full w-full justify-center">
               <LinkComponent

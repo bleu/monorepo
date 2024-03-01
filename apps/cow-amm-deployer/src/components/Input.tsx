@@ -24,7 +24,7 @@ export const BaseInput = React.forwardRef<
     {...props}
     ref={ref}
     className={cn(
-      "w-full selection:color-white box-border inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] bg-darkBrown px-[10px] text-[15px] leading-none text-seashell shadow-[0_0_0_1px] shadow-brown6 outline-none selection:bg-brown9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-brown2",
+      "w-full selection:color-white box-border inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] bg-amm-brown px-[10px] text-[15px] leading-none text-seashell shadow-[0_0_0_1px] shadow-brown6 outline-none selection:bg-brown9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-brown2",
       props.className,
     )}
   />
@@ -47,7 +47,7 @@ export const Input = React.forwardRef<HTMLInputElement, IInput>(
     return (
       <div className="flex flex-col">
         <div className="flex flex-row justify-between">
-          <FormLabel className="mb-2 block text-sm text-darkBrown">
+          <FormLabel className="mb-2 block text-sm text-amm-brown">
             {label}
           </FormLabel>
           {tooltipText && (

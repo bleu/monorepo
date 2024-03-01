@@ -144,7 +144,8 @@ export const ammFormSchema = z
         balancerPoolId: data.balancerPoolId as `0x${string}`,
         uniswapV2Pair: data.uniswapV2Pair as Address,
       });
-      const priceOracleAddress = PRICE_ORACLES_ADDRESSES[data.priceOracle];
+      const priceOracleAddress =
+        PRICE_ORACLES_ADDRESSES[data.chainId as ChainId][data.priceOracle];
       const publicClient = publicClientsFromIds[data.chainId as ChainId];
       await publicClient.readContract({
         abi: minimalPriceOracleAbi,

@@ -2,22 +2,30 @@
 
 import { Network } from "@bleu-fi/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { ArrowLeftIcon } from "@radix-ui/react-icons";
+import { FieldValues } from "react-hook-form";
+import { formatUnits } from "viem";
 
-import { LinkComponent } from "#/components/Link";
+import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
+import { useRunningAMM } from "#/hooks/useRunningAmmInfo";
+import { TRANSACTION_TYPES } from "#/lib/transactionFactory";
+import { ICowAmm } from "#/lib/types";
 import { supportedChainIds } from "#/utils/chainsPublicClients";
 
-import { CreateAmmForm } from "../(components)/CreateAmmForm";
+import { FormWrapper } from "../(components)/FormWrapper";
 
-function ArrowIcon() {
-  return (
-    <ArrowLeftIcon
-      height={16}
-      width={16}
-      className="text-slate10 duration-200 hover:text-amber10"
-    />
-  );
+function cowAmmToFormValues(cowAmm: ICowAmm): FieldValues {
+  return {
+    token0: cowAmm.token0.tokenInfo,
+    token1: cowAmm.token1.tokenInfo,
+    minTradedToken0: formatUnits(
+      BigInt(cowAmm.minTradedToken0),
+      cowAmm.token0.tokenInfo.decimals,
+    ),
+    priceOracle: cowAmm.priceOracle,
+    balancerPoolId: cowAmm.priceOracleData.balancerPoolId,
+    uniswapV2Pair: cowAmm.priceOracleData.uniswapV2PairAddress,
+  };
 }
 
 export default function Page({
@@ -28,10 +36,21 @@ export default function Page({
   };
 }) {
   const { safe, connected } = useSafeAppsSDK();
+  const { loaded, isAmmRunning, cowAmm } = useRunningAMM();
 
   if (!connected) {
     return <WalletNotConnected />;
   }
+
+  if (!loaded) {
+    return <Spinner />;
+  }
+
+  const transactionType = isAmmRunning
+    ? TRANSACTION_TYPES.EDIT_COW_AMM
+    : TRANSACTION_TYPES.CREATE_COW_AMM;
+
+  const defaultValues = cowAmm ? cowAmmToFormValues(cowAmm) : undefined;
 
   if (!supportedChainIds.includes(safe.chainId)) {
     return (
@@ -47,30 +66,9 @@ export default function Page({
   }
 
   return (
-    <>
-      <div className="flex h-full items-center justify-center w-full">
-        <div className="my-4 flex flex-col rounded-lg border border-slate7 bg-blue3 text-white">
-          <div className="divide-y divide-slate7 h-full">
-            <div className="relative flex h-full w-full justify-center">
-              <LinkComponent
-                loaderColor="amber"
-                href={`/amm`}
-                content={
-                  <div className="absolute left-8 flex h-full items-center">
-                    <ArrowIcon />
-                  </div>
-                }
-              />
-              <div className="flex min-w-[530px] flex-col items-center py-3">
-                <div className="text-xl">Create AMM</div>
-              </div>
-            </div>
-            <div className="flex flex-col overflow-auto w-full h-full max-h-[550px]">
-              <CreateAmmForm />
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
+    <FormWrapper
+      transactionType={transactionType}
+      defaultValues={defaultValues}
+    />
   );
 }

@@ -31,7 +31,7 @@ const bytes32Schema = z
   .length(66)
   .refine((value) => value.startsWith("0x"));
 
-export const createAmmSchema = z
+export const ammFormSchema = z
   .object({
     token0: baseTokenSchema,
     token1: baseTokenSchema,

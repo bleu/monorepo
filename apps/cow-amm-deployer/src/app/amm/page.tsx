@@ -123,8 +123,10 @@ export default function Page() {
                       type: TRANSACTION_TYPES.STOP_COW_AMM,
                       chainId: safe.chainId as ChainId,
                     },
-                  ]);
-                  router.push("/amm/stoptxprocessing");
+                  ]).then(() => {
+                    router.push("/amm/stoptxprocessing");
+                  });
+                  setOpenDialog(false);
                 }}
               >
                 Confirm
@@ -183,7 +185,12 @@ export default function Page() {
             <StopIcon />
             Stop CoW AMM LP position
           </Button>
-          <Button className="flex items-center gap-1 py-3 px-6" disabled>
+          <Button
+            className="flex items-center gap-1 py-3 px-6"
+            onClick={() => {
+              router.push("/amm/new");
+            }}
+          >
             <Pencil2Icon />
             Edit CoW AMM parameters
           </Button>

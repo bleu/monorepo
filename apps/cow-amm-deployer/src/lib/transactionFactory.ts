@@ -18,13 +18,14 @@ import {
   PRICE_ORACLES_ADDRESSES,
 } from "./encodePriceOracleData";
 import { uploadAppData } from "./orderBookApi/uploadAppData";
-import { createAmmSchema } from "./schema";
+import { ammFormSchema } from "./schema";
 
 export enum TRANSACTION_TYPES {
   SET_FALLBACK_HANDLER = "SET_FALLBACK_HANDLER",
   SET_DOMAIN_VERIFIER = "SET_DOMAIN_VERIFIER",
   ENABLE_COW_AMM_MODULE = "ENABLE_COW_AMM_MODULE",
   CREATE_COW_AMM = "CREATE_COW_AMM",
+  EDIT_COW_AMM = "EDIT_COW_AMM",
   STOP_COW_AMM = "STOP_COW_AMM",
 }
 
@@ -63,6 +64,10 @@ export interface creteCowAmmArgs extends BaseArgs {
   balancerPoolId?: `0x${string}`;
   uniswapV2Pair?: Address;
   chainId: ChainId;
+}
+
+export interface editCowAmmArgs extends Omit<creteCowAmmArgs, "type"> {
+  type: TRANSACTION_TYPES.EDIT_COW_AMM;
 }
 
 interface ITransaction<T> {
@@ -153,6 +158,43 @@ class CowAmmCreateTx implements ITransaction<creteCowAmmArgs> {
   }
 }
 
+class CowAmmEditTx implements ITransaction<editCowAmmArgs> {
+  createRawTx({
+    token0,
+    token1,
+    token0Decimals,
+    minTradedToken0,
+    priceOracle,
+    balancerPoolId,
+    uniswapV2Pair,
+    appData,
+    chainId,
+  }: editCowAmmArgs): BaseTransaction {
+    const priceOracleData = encodePriceOracleData({
+      priceOracle,
+      balancerPoolId,
+      uniswapV2Pair,
+    });
+
+    return {
+      to: COW_AMM_MODULE_ADDRESS[chainId],
+      value: "0",
+      data: encodeFunctionData({
+        abi: cowAmmModuleAbi,
+        functionName: "replaceAmm",
+        args: [
+          token0,
+          token1,
+          parseUnits(String(minTradedToken0), token0Decimals),
+          PRICE_ORACLES_ADDRESSES[priceOracle] as Address,
+          priceOracleData,
+          appData,
+        ],
+      }),
+    };
+  }
+}
+
 class CowAmmStopTx implements ITransaction<stopCowAmmArgs> {
   createRawTx({ chainId }: stopCowAmmArgs): BaseTransaction {
     return {
@@ -171,6 +213,7 @@ export interface TransactionBindings {
   [TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE]: enableCowAmmModuleArgs;
   [TRANSACTION_TYPES.CREATE_COW_AMM]: creteCowAmmArgs;
   [TRANSACTION_TYPES.STOP_COW_AMM]: stopCowAmmArgs;
+  [TRANSACTION_TYPES.EDIT_COW_AMM]: editCowAmmArgs;
 }
 
 export type AllTransactionArgs = TransactionBindings[keyof TransactionBindings];
@@ -185,6 +228,7 @@ const TRANSACTION_CREATORS: {
   [TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE]: CowAmmEnableModuleTx,
   [TRANSACTION_TYPES.CREATE_COW_AMM]: CowAmmCreateTx,
   [TRANSACTION_TYPES.STOP_COW_AMM]: CowAmmStopTx,
+  [TRANSACTION_TYPES.EDIT_COW_AMM]: CowAmmEditTx,
 };
 
 export class TransactionFactory {
@@ -198,7 +242,15 @@ export class TransactionFactory {
   }
 }
 
-export async function createAMMArgs(data: typeof createAmmSchema._type) {
+export async function buildTxAMMArgs({
+  data,
+  transactionType,
+}: {
+  data: typeof ammFormSchema._type;
+  transactionType:
+    | TRANSACTION_TYPES.CREATE_COW_AMM
+    | TRANSACTION_TYPES.EDIT_COW_AMM;
+}): Promise<AllTransactionArgs[]> {
   const setFallbackTx = {
     type: TRANSACTION_TYPES.SET_FALLBACK_HANDLER,
     safeAddress: data.safeAddress,
@@ -255,7 +307,7 @@ export async function createAMMArgs(data: typeof createAmmSchema._type) {
     ...fallbackTxs,
     ...enableCoWAmmTxs,
     {
-      type: TRANSACTION_TYPES.CREATE_COW_AMM,
+      type: transactionType,
       token0: data.token0.address as Address,
       token1: data.token1.address as Address,
       token0Decimals: data.token0.decimals,

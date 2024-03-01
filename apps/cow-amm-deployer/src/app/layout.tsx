@@ -30,7 +30,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </div>
               <Footer
                 githubLink="https://github.com/bleu-fi"
-                discordLink="https://discord.gg/Z78vQvmHN2"
+                discordLink="https://discord.gg/cowprotocol"
+                twitterLink="https://twitter.com/cowswap"
               />
             </div>
           </NetworksContextProvider>

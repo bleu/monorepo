@@ -3,9 +3,19 @@ import Image from "next/image";
 import Button from "./Button";
 import { LinkComponent } from "./Link";
 
-export function HomeWrapper({ isAmmRunning }: { isAmmRunning: boolean }) {
+export function HomeWrapper({
+  isAmmRunning,
+  goToSafe = false,
+}: {
+  isAmmRunning: boolean;
+  goToSafe?: boolean;
+}) {
   const href = isAmmRunning ? "/manager" : "/new";
-  const title = isAmmRunning ? "Manage your COW AMM" : "Create a COW AMM";
+  const title = goToSafe
+    ? "Open App in Safe"
+    : isAmmRunning
+      ? "Manage your COW AMM"
+      : "Create a COW AMM";
 
   return (
     <div className="flex w-full justify-center h-full">
@@ -22,7 +32,11 @@ export function HomeWrapper({ isAmmRunning }: { isAmmRunning: boolean }) {
         </h2>
         <LinkComponent
           loaderColor="amber"
-          href={href}
+          href={
+            goToSafe
+              ? "https://app.safe.global/share/safe-app?appUrl=http%3A%2F%2Flocalhost%3A3000&chain=sep"
+              : href
+          }
           content={
             <Button
               className="flex items-center gap-1 py-3 px-6"

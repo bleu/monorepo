@@ -5,17 +5,14 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import {
   ArrowTopRightIcon,
   Pencil2Icon,
-  PlusIcon,
   StopIcon,
 } from "@radix-ui/react-icons";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useState } from "react";
-import { gnosis, mainnet } from "viem/chains";
 
-import { Button } from "#/components";
+import Button from "#/components/Button";
 import { Dialog } from "#/components/Dialog";
-import { LinkComponent } from "#/components/Link";
 import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { useRawTxData } from "#/hooks/useRawTxData";
@@ -26,13 +23,14 @@ import { getBalancerPoolUrl } from "#/utils/balancerPoolUrl";
 import { ChainId, supportedChainIds } from "#/utils/chainsPublicClients";
 import { getUniV2PairUrl } from "#/utils/univ2pairUrl";
 
+import { UnsuportedChain } from "../../components/UnsuportedChain";
 import { PoolCompositionTable } from "./(components)/PoolCompositionTable";
 
 export default function Page() {
   const router = useRouter();
   const { sendTransactions } = useRawTxData();
   const { safe, connected } = useSafeAppsSDK();
-  const { loaded, isAmmRunning, cowAmm } = useRunningAMM();
+  const { loaded, cowAmm } = useRunningAMM();
   const [openDialog, setOpenDialog] = useState(false);
 
   if (!connected) {
@@ -44,53 +42,11 @@ export default function Page() {
   }
 
   if (!supportedChainIds.includes(safe.chainId)) {
-    return (
-      <div className="flex h-full w-full flex-col items-center rounded-3xl px-12 py-16 md:py-20">
-        <div className="text-center text-3xl text-amber9">
-          This app isn't available on this network
-        </div>
-        <div className="text-xl text-white">
-          Please change to {gnosis.name} or {mainnet.name}
-        </div>
-      </div>
-    );
+    return <UnsuportedChain />;
   }
 
-  if (!isAmmRunning || !cowAmm) {
-    return (
-      <div className="flex w-full justify-center">
-        <div className="my-10 flex w-9/12 flex-col gap-y-5 justify center">
-          <div className="flex items-center justify-between gap-x-8">
-            <div className="flex flex-col gap-1">
-              <h1 className="text-3xl text-slate12">CoW AMM</h1>
-              <h2 className="text-xl text-slate12">
-                The first MEV-Capturing AMM, brought to you by CoW DAO
-              </h2>
-              <span>
-                This safe does not have any CoW AMM liquidity pools active.
-                Create a liquidity pool to enjoy passive rebalancing without
-                losing from LVR.
-              </span>
-              <div className="flex gap-4 mt-2">
-                <LinkComponent
-                  loaderColor="amber"
-                  href={`/amm/new`}
-                  content={
-                    <Button
-                      className="flex items-center gap-1 py-3 px-6"
-                      title="New order"
-                    >
-                      <PlusIcon />
-                      Create CoW AMM LP
-                    </Button>
-                  }
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+  if (!cowAmm) {
+    redirect("/new");
   }
 
   const priceOracleLink =
@@ -108,30 +64,29 @@ export default function Page() {
     <div className="flex w-full justify-center">
       <Dialog
         content={
-          <div className="flex flex-col gap-y-2">
-            <span className="text-slate12">
+          <div className="flex flex-col gap-3">
+            <span className="text-seashell">
               Clicking confirm will make the CoW AMM LP position created stop.
               This means that the position will no longer be actively
               rebalanced. Don't worry, the tokens will stay on your Safe Wallet.
             </span>
-            <div className="flex">
-              <Button
-                className="flex items-center gap-1 py-3 px-6"
-                onClick={async () => {
-                  await sendTransactions([
-                    {
-                      type: TRANSACTION_TYPES.STOP_COW_AMM,
-                      chainId: safe.chainId as ChainId,
-                    },
-                  ]).then(() => {
-                    router.push("/amm/stoptxprocessing");
-                  });
-                  setOpenDialog(false);
-                }}
-              >
-                Confirm
-              </Button>
-            </div>
+            <Button
+              className="text-center gap-1 py-3 px-6"
+              color="tomato"
+              onClick={async () => {
+                await sendTransactions([
+                  {
+                    type: TRANSACTION_TYPES.STOP_COW_AMM,
+                    chainId: safe.chainId as ChainId,
+                  },
+                ]).then(() => {
+                  router.push("/stoptxprocessing");
+                });
+                setOpenDialog(false);
+              }}
+            >
+              Confirm
+            </Button>
           </div>
         }
         title="Stop CoW AMM Confirmation"
@@ -141,9 +96,9 @@ export default function Page() {
       <div className="my-10 flex w-9/12 flex-col gap-y-5 justify center">
         <div className="flex items-center justify-between gap-x-8">
           <div className="flex flex-col gap-1">
-            <h1 className="text-3xl text-slate12">CoW AMM</h1>
-            <h2 className="text-xl text-slate12">
-              The first MEV-Capturing AMM, brought to you by CoW DAO
+            <h2 className="text-2xl">
+              The first <i className="text-purple9">MEV-Capturing AMM</i>,
+              brought to you by <i className="text-amber9">CoW DAO</i>{" "}
             </h2>
             <div className="flex flex-row gap-x-1 items-center">
               <span>Using price information from {cowAmm.priceOracle}</span>
@@ -154,8 +109,8 @@ export default function Page() {
               )}
             </div>
           </div>
-          <div className="flex flex-col bg-blue3 p-5 rounded-lg w-min-64">
-            <span className="text-sm text-slate9">Total Value</span>
+          <div className="flex flex-col bg-amber9 text-darkBrown py-2 px-8 rounded-lg">
+            <span className="text-sm">Total Value</span>
             <span className="text-2xl">
               ${" "}
               {formatNumber(
@@ -169,7 +124,7 @@ export default function Page() {
           </div>
         </div>
         <div className="flex flex-col">
-          <span className="text-xl my-2 border-b-2 border-blue7">
+          <span className="text-xl my-2 border-b-2 border-amber9">
             AMM Composition
           </span>
         </div>
@@ -188,7 +143,7 @@ export default function Page() {
           <Button
             className="flex items-center gap-1 py-3 px-6"
             onClick={() => {
-              router.push("/amm/new");
+              router.push("/new");
             }}
           >
             <Pencil2Icon />

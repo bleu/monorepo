@@ -1,6 +1,6 @@
 "use client";
 
-import { slateDarkA } from "@radix-ui/colors";
+import { brownDark } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import cn from "clsx";
 import React, { HTMLProps } from "react";
@@ -24,7 +24,7 @@ export const BaseInput = React.forwardRef<
     {...props}
     ref={ref}
     className={cn(
-      "w-full selection:color-white box-border inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] bg-blue4 px-[10px] text-[15px] leading-none text-slate12 shadow-[0_0_0_1px] shadow-blue6 outline-none selection:bg-blue9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-blue1",
+      "w-full selection:color-white box-border inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] bg-darkBrown px-[10px] text-[15px] leading-none text-seashell shadow-[0_0_0_1px] shadow-brown6 outline-none selection:bg-brown9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-brown2",
       props.className,
     )}
   />
@@ -47,17 +47,17 @@ export const Input = React.forwardRef<HTMLInputElement, IInput>(
     return (
       <div className="flex flex-col">
         <div className="flex flex-row justify-between">
-          <FormLabel className="mb-2 block text-sm text-slate12">
+          <FormLabel className="mb-2 block text-sm text-darkBrown">
             {label}
           </FormLabel>
           {tooltipText && (
             <Tooltip content={tooltipText}>
               {tooltipLink ? (
                 <a href={tooltipLink} target="_blank">
-                  <InfoCircledIcon color={slateDarkA.slateA11} />
+                  <InfoCircledIcon color={brownDark.brown8} />
                 </a>
               ) : (
-                <InfoCircledIcon color={slateDarkA.slateA11} />
+                <InfoCircledIcon color={brownDark.brown8} />
               )}
             </Tooltip>
           )}

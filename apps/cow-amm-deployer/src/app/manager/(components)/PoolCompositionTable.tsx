@@ -8,7 +8,11 @@ import { TokenInfo } from "./TokenInfo";
 
 export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
   return (
-    <Table color="blue" shade="darkWithBorder" classNames="overflow-y-auto">
+    <Table
+      color="beige"
+      shade="darkWithBorder"
+      classNames="overflow-y-auto text-darkBrown"
+    >
       <Table.HeaderRow>
         <Table.HeaderCell>Tokens</Table.HeaderCell>
         <Table.HeaderCell>Balance</Table.HeaderCell>

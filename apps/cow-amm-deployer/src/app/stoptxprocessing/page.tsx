@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { Address } from "viem";
 
 import { Spinner } from "#/components/Spinner";
-import { checkIsAmmRunning, fetchLastAmmInfo } from "#/hooks/useRunningAmmInfo";
+import { checkIsAmmRunning } from "#/hooks/useRunningAmmInfo";
 import { ChainId } from "#/utils/chainsPublicClients";
 
 export default function Page() {
@@ -15,23 +15,17 @@ export default function Page() {
   } = useSafeAppsSDK();
   const router = useRouter();
 
-  async function redirectToHomeIfAmmIsRunningAndIndexed() {
-    const [isAmmRunning, cowAmmDataIndexed] = await Promise.all([
-      checkIsAmmRunning(chainId as ChainId, safeAddress as Address),
-      fetchLastAmmInfo({
-        chainId: chainId as ChainId,
-        safeAddress: safeAddress as Address,
-      }),
-    ]);
-    if (isAmmRunning && cowAmmDataIndexed) {
-      router.push("/amm");
+  async function redirectToHomeIfAmmIsNotRunning() {
+    const isAmmRunning = await checkIsAmmRunning(
+      chainId as ChainId,
+      safeAddress as Address,
+    );
+    if (!isAmmRunning) {
+      router.push("/");
     }
   }
   useEffect(() => {
-    const intervalId = setInterval(
-      redirectToHomeIfAmmIsRunningAndIndexed,
-      1000,
-    );
+    const intervalId = setInterval(redirectToHomeIfAmmIsNotRunning, 1000);
     return () => clearInterval(intervalId);
   }, []);
 

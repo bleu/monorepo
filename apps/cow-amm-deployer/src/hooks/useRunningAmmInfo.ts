@@ -160,7 +160,7 @@ export function useRunningAMM(): {
   const [isAmmRunning, setIsAmmRunning] = useState<boolean>(false);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
-  const { assets } = useSafeBalances();
+  const { assets, loaded: assetLoaded } = useSafeBalances();
 
   async function loadCoWAmmRunning() {
     const newIsAmmRunning = await checkIsAmmRunning(
@@ -205,7 +205,6 @@ export function useRunningAMM(): {
   }
 
   async function updateAmmInfo(): Promise<void> {
-    setLoaded(false);
     setError(false);
     await Promise.all([loadCoWAmmRunning(), loadCowAmm()]).catch(() => {
       setError(true);
@@ -214,6 +213,7 @@ export function useRunningAMM(): {
   }
 
   useEffect(() => {
+    if (!assetLoaded) return;
     updateAmmInfo();
   }, [safeAddress, chainId, assets]);
 

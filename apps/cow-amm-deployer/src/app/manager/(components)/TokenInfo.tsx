@@ -21,7 +21,7 @@ export function TokenInfo({
   return (
     <div className="flex items-center gap-x-1">
       <div className="flex items-center justify-center">
-        <div className="rounded-full bg-white p-1">
+        <div className="rounded-full bg-seashell p-1">
           <Image
             src={tokenLogoUri || "/assets/generic-token-logo.png"}
             className="rounded-full"

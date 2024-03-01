@@ -4,6 +4,7 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { FieldValues } from "react-hook-form";
 import { formatUnits } from "viem";
 
+import { HomeWrapper } from "#/components/HomeWrapper";
 import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { useRunningAMM } from "#/hooks/useRunningAmmInfo";
@@ -11,7 +12,6 @@ import { TRANSACTION_TYPES } from "#/lib/transactionFactory";
 import { ICowAmm } from "#/lib/types";
 import { supportedChainIds } from "#/utils/chainsPublicClients";
 
-import { UnsuportedChain } from "../../components/UnsuportedChain";
 import { FormWrapper } from "./(components)/FormWrapper";
 
 function cowAmmToFormValues(cowAmm: ICowAmm): FieldValues {
@@ -48,7 +48,7 @@ export default function Page() {
     isAmmRunning && cowAmm ? cowAmmToFormValues(cowAmm) : undefined;
 
   if (!supportedChainIds.includes(safe.chainId)) {
-    return <UnsuportedChain />;
+    <HomeWrapper isAmmRunning={false} unsuportedChain={true} />;
   }
 
   return (

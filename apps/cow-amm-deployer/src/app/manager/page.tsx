@@ -13,6 +13,7 @@ import { useState } from "react";
 
 import Button from "#/components/Button";
 import { Dialog } from "#/components/Dialog";
+import { HomeWrapper } from "#/components/HomeWrapper";
 import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { useRawTxData } from "#/hooks/useRawTxData";
@@ -23,7 +24,6 @@ import { getBalancerPoolUrl } from "#/utils/balancerPoolUrl";
 import { ChainId, supportedChainIds } from "#/utils/chainsPublicClients";
 import { getUniV2PairUrl } from "#/utils/univ2pairUrl";
 
-import { UnsuportedChain } from "../../components/UnsuportedChain";
 import { PoolCompositionTable } from "./(components)/PoolCompositionTable";
 
 export default function Page() {
@@ -42,7 +42,7 @@ export default function Page() {
   }
 
   if (!supportedChainIds.includes(safe.chainId)) {
-    return <UnsuportedChain />;
+    <HomeWrapper isAmmRunning={false} unsuportedChain={true} />;
   }
 
   if (!cowAmm) {

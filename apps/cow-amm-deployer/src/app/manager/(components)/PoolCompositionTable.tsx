@@ -42,10 +42,11 @@ export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
                 $ {formatNumber(token.fiatConversion, 4)}
               </Table.BodyCell>
               <Table.BodyCell>
-                ${" "}
                 {formatNumber(token.fiatBalance, 2, "decimal", "compact", 0.01)}
               </Table.BodyCell>
-              <Table.BodyCell>{formatNumber(valuePct, 2)} %</Table.BodyCell>
+              <Table.BodyCell>
+                {formatNumber(valuePct, 2)} {valuePct ? "%" : ""}
+              </Table.BodyCell>
             </Table.BodyRow>
           );
         })}

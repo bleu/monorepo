@@ -149,7 +149,44 @@ class CowAmmCreateTx implements ITransaction<creteCowAmmArgs> {
           token0,
           token1,
           parseUnits(String(minTradedToken0), token0Decimals),
-          PRICE_ORACLES_ADDRESSES[priceOracle] as Address,
+          PRICE_ORACLES_ADDRESSES[chainId][priceOracle] as Address,
+          priceOracleData,
+          appData,
+        ],
+      }),
+    };
+  }
+}
+
+class CowAmmEditTx implements ITransaction<editCowAmmArgs> {
+  createRawTx({
+    token0,
+    token1,
+    token0Decimals,
+    minTradedToken0,
+    priceOracle,
+    balancerPoolId,
+    uniswapV2Pair,
+    appData,
+    chainId,
+  }: editCowAmmArgs): BaseTransaction {
+    const priceOracleData = encodePriceOracleData({
+      priceOracle,
+      balancerPoolId,
+      uniswapV2Pair,
+    });
+
+    return {
+      to: COW_AMM_MODULE_ADDRESS[chainId],
+      value: "0",
+      data: encodeFunctionData({
+        abi: cowAmmModuleAbi,
+        functionName: "replaceAmm",
+        args: [
+          token0,
+          token1,
+          parseUnits(String(minTradedToken0), token0Decimals),
+          PRICE_ORACLES_ADDRESSES[chainId][priceOracle] as Address,
           priceOracleData,
           appData,
         ],

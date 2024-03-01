@@ -9,6 +9,8 @@ const {
   cyanDark,
   mintDark,
   greenDark,
+  brownDark,
+  purpleDark,
 } = require("@radix-ui/colors");
 
 /** @type {import("tailwindcss").Config} */
@@ -24,6 +26,7 @@ module.exports = {
     },
     fontFamily: {
       sans: ["var(--font-family-sans)", "sans-serif"],
+      flecha: ["var(--font-family-flecha-s)", ""],
     },
     extend: {
       colors: {
@@ -35,6 +38,15 @@ module.exports = {
         ...cyanDark,
         ...mintDark,
         ...greenDark,
+        ...brownDark,
+        ...purpleDark,
+        darkBrown: "#211715",
+        beige: "#E3DED4",
+        lightBlue: "#57C3FF",
+        purple: "#B462FA",
+        yellow: "#F5BD24",
+        orange: "#FE970C",
+        seashell: "#F6F2E7",
       },
       keyframes: {
         "accordion-down": {

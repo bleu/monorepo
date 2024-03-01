@@ -24,6 +24,15 @@ const predefinedClasses = {
       },
     },
   },
+  beige: {
+    solid: {
+      dark: { style: "bg-beige", border: "border-0" },
+      darkWithBorder: {
+        style: "bg-beige",
+        border: "border border-darkBrown rounded",
+      },
+    },
+  },
 } as const;
 
 type TableColor = keyof typeof predefinedClasses;
@@ -101,7 +110,7 @@ function HeaderCell({
       onClick={onClick}
       scope="col"
       className={cn(
-        "text-slate12 text-left text-sm font-semibold",
+        "text-left text-sm font-semibold",
         onClick ? "cursor-pointer" : "",
         classNames,
       )}
@@ -192,7 +201,7 @@ function BodyCell({
   return (
     <td
       className={cn(
-        "whitespace-nowrap text-sm text-slate10",
+        "whitespace-nowrap text-sm",
         customWidth ? cn(customWidth, "pl-4") : colSpan === 1 ? padding : "p-0",
         classNames,
       )}

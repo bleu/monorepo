@@ -7,7 +7,8 @@ export const formatNumber = (
   notation: Notation = "compact",
   lessThanThresholdToReplace = 0.001,
 ) => {
-  if (number === 0) return "0";
+  if (number == 0) return "0";
+  if (Number.isNaN(number)) return "-";
   if (Math.abs(Number(number)) < lessThanThresholdToReplace) {
     return `< ${lessThanThresholdToReplace.toLocaleString("en-US")}`;
   }

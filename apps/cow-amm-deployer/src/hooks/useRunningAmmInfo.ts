@@ -75,11 +75,13 @@ export async function fetchLastAmmInfo({
 
   return decodePriceOracle({ cowAmmParameters: order.cowAmmParameters });
 }
-
 export const ADDRESSES_PRICE_ORACLES = {
-  // TODO: COW-161 Add mainnet addresses
+  "0xad37fe3ddedf8cdee1022da1b17412cfb6495596": PRICE_ORACLES.BALANCER,
+  "0x573cc0c800048f94e022463b9214d92c2d65e97b": PRICE_ORACLES.UNI,
   "0xd3a84895080609e1163c80b2bd65736db1b86bec": PRICE_ORACLES.BALANCER,
   "0xe089049027b95c2745d1a954bc1d245352d884e9": PRICE_ORACLES.UNI,
+  "0xb2efb68ab1798c04700afd7f625c0ffbde974756": PRICE_ORACLES.BALANCER,
+  "0xe45ae383873f9f7e3e42deb12886f481999696b6": PRICE_ORACLES.UNI,
 } as const;
 
 export async function decodePriceOracle({
@@ -160,7 +162,7 @@ export function useRunningAMM(): {
   const [isAmmRunning, setIsAmmRunning] = useState<boolean>(false);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
-  const { assets } = useSafeBalances();
+  const { assets, loaded: assetLoaded } = useSafeBalances();
 
   async function loadCoWAmmRunning() {
     const newIsAmmRunning = await checkIsAmmRunning(
@@ -205,7 +207,6 @@ export function useRunningAMM(): {
   }
 
   async function updateAmmInfo(): Promise<void> {
-    setLoaded(false);
     setError(false);
     await Promise.all([loadCoWAmmRunning(), loadCowAmm()]).catch(() => {
       setError(true);
@@ -214,6 +215,7 @@ export function useRunningAMM(): {
   }
 
   useEffect(() => {
+    if (!assetLoaded) return;
     updateAmmInfo();
   }, [safeAddress, chainId, assets]);
 

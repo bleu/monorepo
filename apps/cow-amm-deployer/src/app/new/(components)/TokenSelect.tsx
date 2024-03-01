@@ -81,16 +81,16 @@ export function TokenSelectButton({
 }) {
   return (
     <div className="flex flex-col w-full">
-      <span className="mb-2 h-5 block text-sm text-slate12">{label}</span>
+      <span className="mb-2 h-5 block text-sm">{label}</span>
       <button
         type="button"
         //same style as Input.tsx
-        className="px-2w-full selection:color-white box-border flex h-[35px] w-full appearance-none items-center justify-between gap-2 rounded-[4px] bg-blue4 px-[10px] py-1 text-[15px] leading-none text-slate12 shadow-[0_0_0_1px] shadow-blue6 outline-none selection:bg-blue9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-blue1"
+        className="px-2w-full selection:color-white box-border flex h-[35px] w-full appearance-none items-center justify-between gap-2 rounded-[4px] bg-darkBrown px-[10px] py-1 text-[15px] leading-none text-seashell shadow-[0_0_0_1px] shadow-brown6 outline-none selection:bg-brown9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-brown1"
         disabled={disabeld}
         onClick={onClick}
       >
         <div className="flex items-center gap-1">
-          <div className="rounded-full bg-white p-[3px]">
+          <div className="rounded-full bg-beige p-[3px]">
             <Image
               src={
                 tokenLogoUri[token?.symbol as keyof typeof tokenLogoUri] ||
@@ -205,14 +205,14 @@ function TokenModal({
     setTokens((prevTokens) => [token, ...prevTokens]);
   }
   return (
-    <div className="max-h-[30rem] divide-y divide-slate7 overflow-y-scroll text-white scrollbar-thin scrollbar-track-blue3 scrollbar-thumb-slate12">
+    <div className="max-h-[30rem] divide-y divide-slate7 overflow-y-scroll text-seashell scrollbar-thin scrollbar-track-brown3 scrollbar-thumb-beige">
       <div className="flex h-full w-full flex-col items-center justify-center gap-y-4 py-4">
         <div className="text-xl">Token Search</div>
         <div className="flex w-full items-center px-10">
           <input
             type="text"
             placeholder="Search name or paste address"
-            className="h-9 w-full appearance-none items-center justify-center rounded-l-[4px] bg-blue4 px-[10px] text-sm leading-none text-slate12 outline-none"
+            className="h-9 w-full appearance-none items-center justify-center rounded-l-[4px] bg-darkBrown px-[10px] text-sm leading-none text-slate12 outline-none"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setTokenSearchQuery(e.target.value)
             }
@@ -231,7 +231,7 @@ function TokenModal({
           </Button>
         </div>
       </div>
-      <Table color="blue">
+      <Table color="beige" classNames="text-darkBrown">
         <Table.HeaderRow>
           <Table.HeaderCell>
             <span className="sr-only">Token Logo</span>
@@ -298,7 +298,7 @@ function TokenRow({
   return (
     <Table.BodyRow
       key={token.tokenInfo.address}
-      classNames="hover:bg-blue4 hover:cursor-pointer"
+      classNames="hover:bg-brown9 hover:cursor-pointer"
       onClick={() => onSelectToken(token)}
     >
       <Table.BodyCell customWidth="w-12">

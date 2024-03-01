@@ -1,14 +1,20 @@
-import { DiscordLogoIcon, GitHubLogoIcon } from "@radix-ui/react-icons";
+import {
+  DiscordLogoIcon,
+  GitHubLogoIcon,
+  TwitterLogoIcon,
+} from "@radix-ui/react-icons";
 
 export function Footer({
   githubLink,
   discordLink,
+  twitterLink,
 }: {
-  githubLink: string;
-  discordLink: string;
+  githubLink?: string;
+  discordLink?: string;
+  twitterLink?: string;
 }) {
   return (
-    <footer className="flex w-full justify-between bg-blue2 p-4">
+    <footer className="flex w-full justify-between p-4">
       <span className="text-sm text-slate12/90">
         developed by&nbsp;
         <a
@@ -30,6 +36,12 @@ export function Footer({
           <a target="_blank" href={discordLink} className="text-slate12/90">
             <DiscordLogoIcon width={20} height={20} />
             <span className="sr-only">Discord account</span>
+          </a>
+        )}
+        {twitterLink && (
+          <a target="_blank" href={twitterLink} className="text-slate12/90">
+            <TwitterLogoIcon width={20} height={20} />
+            <span className="sr-only">Twitter account</span>
           </a>
         )}
       </div>

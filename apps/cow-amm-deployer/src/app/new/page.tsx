@@ -1,10 +1,10 @@
 "use client";
 
-import { Network } from "@bleu-fi/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { FieldValues } from "react-hook-form";
 import { formatUnits } from "viem";
 
+import { HomeWrapper } from "#/components/HomeWrapper";
 import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { useRunningAMM } from "#/hooks/useRunningAmmInfo";
@@ -12,7 +12,7 @@ import { TRANSACTION_TYPES } from "#/lib/transactionFactory";
 import { ICowAmm } from "#/lib/types";
 import { supportedChainIds } from "#/utils/chainsPublicClients";
 
-import { FormWrapper } from "../(components)/FormWrapper";
+import { FormWrapper } from "./(components)/FormWrapper";
 
 function cowAmmToFormValues(cowAmm: ICowAmm): FieldValues {
   return {
@@ -28,13 +28,7 @@ function cowAmmToFormValues(cowAmm: ICowAmm): FieldValues {
   };
 }
 
-export default function Page({
-  params,
-}: {
-  params: {
-    network: Network;
-  };
-}) {
+export default function Page() {
   const { safe, connected } = useSafeAppsSDK();
   const { loaded, isAmmRunning, cowAmm } = useRunningAMM();
 
@@ -50,19 +44,11 @@ export default function Page({
     ? TRANSACTION_TYPES.EDIT_COW_AMM
     : TRANSACTION_TYPES.CREATE_COW_AMM;
 
-  const defaultValues = cowAmm ? cowAmmToFormValues(cowAmm) : undefined;
+  const defaultValues =
+    isAmmRunning && cowAmm ? cowAmmToFormValues(cowAmm) : undefined;
 
   if (!supportedChainIds.includes(safe.chainId)) {
-    return (
-      <div className="flex h-full w-full flex-col items-center rounded-3xl px-12 py-16 md:py-20">
-        <div className="text-center text-3xl text-amber9">
-          You are on the wrong network
-        </div>
-        <div className="text-xl text-white">
-          Please change to {params.network}
-        </div>
-      </div>
-    );
+    <HomeWrapper isAmmRunning={false} unsuportedChain={true} />;
   }
 
   return (

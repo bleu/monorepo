@@ -2,7 +2,7 @@ import { Address } from "@bleu-fi/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { TokenBalance } from "@gnosis.pm/safe-apps-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { slateDarkA } from "@radix-ui/colors";
+import { brownDark } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -89,7 +89,7 @@ export function AmmForm({
         sendTransactions(txArgs);
       })
       .then(() => {
-        router.push("/amm/createtxprocessing");
+        router.push("/createtxprocessing");
       });
   };
 
@@ -156,7 +156,7 @@ export function AmmForm({
       <Accordion className="w-full" type="single" collapsible>
         <AccordionItem value="advancedOptions" key="advancedOption">
           <AccordionTrigger
-            className={errors.minTradedToken0 ? "text-tomato7" : ""}
+            className={errors.minTradedToken0 ? "text-tomato10" : ""}
           >
             Advanced Options
           </AccordionTrigger>
@@ -224,7 +224,7 @@ function PriceOracleFields({
               "The price oracle is what will define the price of the orders the AMM will make."
             }
           >
-            <InfoCircledIcon className="w-4 h-4" color={slateDarkA.slateA11} />
+            <InfoCircledIcon className="w-4 h-4" color={brownDark.brown8} />
           </Tooltip>
         </div>
         <Select

@@ -45,7 +45,7 @@ export const ammFormSchema = z
     chainId: z.number().int(),
   })
   .refine(
-    // validate if balancer pool id is required
+    // validate if balancer Pool ID is required
     (data) => {
       if (data.priceOracle === PRICE_ORACLES.BALANCER) {
         return !!data.balancerPoolId;
@@ -53,7 +53,7 @@ export const ammFormSchema = z
       return true;
     },
     {
-      message: "Balancer Pool Id is required",
+      message: "Balancer Pool ID is required",
       path: ["balancerPoolId"],
     },
   )

@@ -20,7 +20,7 @@ export function FallbackAndDomainWarning({
           onChange={() => setConfirmedFallbackSetup(!confirmedFallbackSetup)}
           label="Approve fallback and domain verifier setup"
         />
-        <Tooltip content="To use the CoW AMM you need to use the right fallback and domain verifier. Click here for more information">
+        <Tooltip content="To use the CoW AMM you need to use the right fallback and domain verifier. Click here for more information.">
           <a
             href={
               "https://blog.cow.fi/all-you-need-to-know-about-cow-swaps-new-safe-fallback-handler-8ef0439925d1"

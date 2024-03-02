@@ -24,7 +24,7 @@ export const BaseInput = React.forwardRef<
     {...props}
     ref={ref}
     className={cn(
-      "w-full selection:color-white box-border inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] bg-amm-brown px-[10px] text-[15px] leading-none text-seashell shadow-[0_0_0_1px] shadow-brown6 outline-none selection:bg-brown9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-brown2",
+      "w-full selection:color-white border border-border box-border inline-flex h-[35px] appearance-none items-center justify-center bg-input px-[10px] text-[15px] leading-none text-background outline-none selection:bg-primary-content disabled:bg-brown9 ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50",
       props.className,
     )}
   />
@@ -46,8 +46,8 @@ export const Input = React.forwardRef<HTMLInputElement, IInput>(
 
     return (
       <div className="flex flex-col">
-        <div className="flex flex-row justify-between">
-          <FormLabel className="mb-2 block text-sm text-amm-brown">
+        <div className="flex flex-row gap-x-2 items-center mb-2">
+          <FormLabel className="block text-sm text-background">
             {label}
           </FormLabel>
           {tooltipText && (
@@ -70,7 +70,7 @@ export const Input = React.forwardRef<HTMLInputElement, IInput>(
           />
         </FormControl>
         {errorMessage && (
-          <FormMessage className="mt-1 h-6 text-sm text-tomato10">
+          <FormMessage className="mt-1 h-6 text-sm text-destructive">
             <span>{errorMessage}</span>
           </FormMessage>
         )}

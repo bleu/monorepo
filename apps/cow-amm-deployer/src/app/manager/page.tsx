@@ -5,13 +5,13 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import {
   ArrowTopRightIcon,
   Pencil2Icon,
-  StopIcon,
+  ResetIcon,
 } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { redirect, useRouter } from "next/navigation";
 import { useState } from "react";
 
-import Button from "#/components/Button";
+import { Button } from "#/components/Button";
 import { Dialog } from "#/components/Dialog";
 import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
@@ -65,14 +65,14 @@ export default function Page() {
       <Dialog
         content={
           <div className="flex flex-col gap-3">
-            <span className="text-seashell">
+            <span className="text-primary-foreground">
               Clicking confirm will make the CoW AMM LP position created stop.
               This means that the position will no longer be actively
               rebalanced. Don't worry, the tokens will stay on your Safe Wallet.
             </span>
             <Button
               className="text-center gap-1 py-3 px-6"
-              color="tomato"
+              variant="destructive"
               onClick={async () => {
                 await sendTransactions([
                   {
@@ -93,23 +93,23 @@ export default function Page() {
         isOpen={openDialog}
         setIsOpen={setOpenDialog}
       />
-      <div className="my-10 flex w-9/12 flex-col gap-y-5 justify center">
+      <div className="my-10 flex w-9/12 flex-col gap-y-5 justify-center">
         <div className="flex items-center justify-between gap-x-8">
           <div className="flex flex-col gap-1">
-            <h2 className="text-2xl">
-              The first <i className="text-purple9">MEV-Capturing AMM</i>,
-              brought to you by <i className="text-amber9">CoW DAO</i>{" "}
+            <h2 className="text-2xl font-serif">
+              The first <i className="text-purple">MEV-Capturing AMM</i>,<br />
+              brought to you by <i className="text-yellow">CoW DAO</i>{" "}
             </h2>
             <div className="flex flex-row gap-x-1 items-center">
               <span>Using price information from {cowAmm.priceOracle}</span>
               {priceOracleLink && (
                 <Link href={priceOracleLink} target="_blank">
-                  <ArrowTopRightIcon className="hover:text-slate11" />
+                  <ArrowTopRightIcon className="hover:text-primary-foreground" />
                 </Link>
               )}
             </div>
           </div>
-          <div className="flex flex-col bg-amber9 text-amm-brown py-2 px-8 rounded-lg">
+          <div className="flex flex-col bg-yellow/40 text-foreground py-2 px-8">
             <span className="text-sm">Total Value</span>
             <span className="text-2xl">
               ${" "}
@@ -124,7 +124,7 @@ export default function Page() {
           </div>
         </div>
         <div className="flex flex-col">
-          <span className="text-xl my-2 border-b-2 border-amber9">
+          <span className="text-xl my-2 border-b-2 border-primary">
             AMM Composition
           </span>
         </div>
@@ -132,12 +132,12 @@ export default function Page() {
         <div className="flex gap-4">
           <Button
             className="flex items-center gap-1 py-3 px-6 "
-            color="tomato"
+            variant="destructive"
             onClick={() => {
               setOpenDialog(true);
             }}
           >
-            <StopIcon />
+            <ResetIcon />
             Stop CoW AMM LP position
           </Button>
           <Button

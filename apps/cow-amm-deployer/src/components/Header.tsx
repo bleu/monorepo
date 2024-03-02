@@ -19,7 +19,7 @@ export function Header({ linkUrl, imageSrc, children, onLinkClick }: IHeader) {
     safe: { safeAddress },
   } = useSafeAppsSDK();
   return (
-    <div className="flex h-20 w-full items-center p-4 text-white">
+    <div className="flex h-20 w-full items-center p-4 text-foreground">
       <div className="mr-auto flex sm:flex-1 justify-start">
         <Link
           href={linkUrl}
@@ -40,8 +40,9 @@ export function Header({ linkUrl, imageSrc, children, onLinkClick }: IHeader) {
       </div>
       {children && <div className="flex flex-1 justify-center">{children}</div>}
       <div className="ml-auto flex flex-1 justify-end">
-        <div className="text-slate12 border-slate12 rounded-md text-center text-sm font-semibold border focus-visible:outline-blue7 focus-visible:outline-offset-2 disabled:opacity-40 py-3 px-5">
+        <div className="text-secondary-foreground bg-secondary/30 border-secondary/50 text-center text-sm font-semibold border focus-visible:outline-brown7 focus-visible:outline-offset-2 disabled:opacity-40 py-3 px-5">
           {truncateAddress(safeAddress)}
+          {/* - TODO add link to Etherscan */}
         </div>
       </div>
     </div>

@@ -13,12 +13,12 @@ export function Checkbox({ id, checked, onChange, label }: ICheckbox) {
   return (
     <div className="flex items-center">
       <CheckboxPrimitive.Root
-        className="flex h-[15px] w-[15px] appearance-none items-center justify-center rounded-[4px] bg-white outline-none hover:bg-slate12 focus:shadow-[0_0_0_2px_black]"
+        className="flex h-[15px] w-[15px] appearance-none items-center justify-center bg-white outline-none hover:text-foreground ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
         checked={checked}
         onClick={() => onChange()}
         id={id}
       >
-        <CheckboxPrimitive.Indicator className="text-slate3">
+        <CheckboxPrimitive.Indicator className="text-brown1">
           <CheckIcon />
         </CheckboxPrimitive.Indicator>
       </CheckboxPrimitive.Root>

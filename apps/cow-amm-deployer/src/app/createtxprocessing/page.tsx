@@ -36,8 +36,8 @@ export default function Page() {
   }, []);
 
   return (
-    <div className="flex h-full w-full flex-col items-center rounded-3xl px-12 py-16 md:py-20">
-      <div className="text-center text-3xl text-amber9">
+    <div className="flex h-full w-full flex-col items-center px-12 py-16 md:py-20">
+      <div className="text-center text-3xl text-yellow/30">
         The transaction is being processed
       </div>
       <Spinner />

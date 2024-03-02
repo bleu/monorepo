@@ -195,43 +195,6 @@ class CowAmmEditTx implements ITransaction<editCowAmmArgs> {
   }
 }
 
-class CowAmmEditTx implements ITransaction<editCowAmmArgs> {
-  createRawTx({
-    token0,
-    token1,
-    token0Decimals,
-    minTradedToken0,
-    priceOracle,
-    balancerPoolId,
-    uniswapV2Pair,
-    appData,
-    chainId,
-  }: editCowAmmArgs): BaseTransaction {
-    const priceOracleData = encodePriceOracleData({
-      priceOracle,
-      balancerPoolId,
-      uniswapV2Pair,
-    });
-
-    return {
-      to: COW_AMM_MODULE_ADDRESS[chainId],
-      value: "0",
-      data: encodeFunctionData({
-        abi: cowAmmModuleAbi,
-        functionName: "replaceAmm",
-        args: [
-          token0,
-          token1,
-          parseUnits(String(minTradedToken0), token0Decimals),
-          PRICE_ORACLES_ADDRESSES[priceOracle] as Address,
-          priceOracleData,
-          appData,
-        ],
-      }),
-    };
-  }
-}
-
 class CowAmmStopTx implements ITransaction<stopCowAmmArgs> {
   createRawTx({ chainId }: stopCowAmmArgs): BaseTransaction {
     return {
@@ -271,7 +234,7 @@ const TRANSACTION_CREATORS: {
 export class TransactionFactory {
   static createRawTx<T extends TRANSACTION_TYPES>(
     type: T,
-    args: TransactionBindings[T],
+    args: TransactionBindings[T]
   ): BaseTransaction {
     const TransactionCreator = TRANSACTION_CREATORS[type];
     const txCreator = new TransactionCreator();
@@ -297,7 +260,7 @@ export async function buildTxAMMArgs({
     safeAddress: data.safeAddress,
     domainSeparator: data.domainSeparator,
   } as setDomainVerifierArgs;
-  const fallbackTxs = (() => {
+  const _fallbackTxs = (() => {
     switch (data.fallbackSetupState) {
       case FALLBACK_STATES.HAS_NOTHING:
         return [setFallbackTx, DomainVerifierSetTx];
@@ -341,7 +304,7 @@ export async function buildTxAMMArgs({
   });
 
   return [
-    ...fallbackTxs,
+    // ...fallbackTxs,
     ...enableCoWAmmTxs,
     {
       type: transactionType,

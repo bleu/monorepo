@@ -14,7 +14,7 @@ export function encodePriceOracleData({
 }): `0x${string}` {
   if (priceOracle === PRICE_ORACLES.BALANCER) {
     if (!balancerPoolId) {
-      throw new Error("Balancer Pool Id is required");
+      throw new Error("Balancer Pool ID is required");
     }
     return encodeAbiParameters(
       [{ name: "poolId", type: "bytes32" }],

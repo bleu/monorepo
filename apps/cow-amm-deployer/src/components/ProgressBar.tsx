@@ -12,16 +12,16 @@ export function ProgressBar({ variant = "notification" }: IProgressBar) {
   let bgColor;
   switch (variant) {
     case "notification":
-      bgColor = "bg-blue6";
+      bgColor = "bg-brown6";
       break;
     case "pending":
-      bgColor = "bg-amber6";
+      bgColor = "bg-yellow/60";
       break;
     case "alert":
-      bgColor = "bg-tomato6";
+      bgColor = "bg-destructive/60";
       break;
     case "success":
-      bgColor = "bg-green6";
+      bgColor = "bg-green/60";
       break;
   }
 
@@ -44,7 +44,7 @@ export function ProgressBar({ variant = "notification" }: IProgressBar) {
     <Progress.Root
       className="relative inset-0 h-[4px] w-full overflow-hidden bg-white"
       style={{
-        transform: "translateZ(0)",
+        transform: "transandZ(0)",
       }}
       value={progress}
     >
@@ -53,7 +53,7 @@ export function ProgressBar({ variant = "notification" }: IProgressBar) {
           "h-full w-full transition-transform duration-[60ms]",
           bgColor,
         )}
-        style={{ transform: `translateX(-${100 - progress}%)` }}
+        style={{ transform: `transandX(-${100 - progress}%)` }}
       />
     </Progress.Root>
   );

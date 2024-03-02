@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import Button from "./Button";
+import { Button } from "./Button";
 import { LinkComponent } from "./Link";
 
 export function HomeWrapper({
@@ -14,8 +14,8 @@ export function HomeWrapper({
   const title = goToSafe
     ? "Open App in Safe"
     : isAmmRunning
-      ? "Manage your COW AMM"
-      : "Create a COW AMM";
+      ? "Manage your CoW AMM"
+      : "Create a CoW AMM";
 
   return (
     <div className="flex w-full justify-center h-full">
@@ -26,12 +26,11 @@ export function HomeWrapper({
           width={400}
           alt="CoW Amm Logo"
         />
-        <h2 className="text-5xl text-center text-seashell w-2/3">
-          The first <i className="text-purple9">MEV-Capturing AMM</i>, brought
-          to you by <i className="text-amber9">CoW DAO</i>
+        <h2 className="text-6xl leading-snug text-center w-full font-serif">
+          The first <i className="text-purple">MEV-Capturing AMM</i>,
+          <br /> brought to you by <i className="text-yellow">CoW DAO</i>
         </h2>
         <LinkComponent
-          loaderColor="amber"
           href={
             goToSafe
               ? "https://app.safe.global/share/safe-app?appUrl=http%3A%2F%2Flocalhost%3A3000&chain=sep"
@@ -39,7 +38,8 @@ export function HomeWrapper({
           }
           content={
             <Button
-              className="flex items-center gap-1 py-3 px-6"
+              size="lg"
+              className="flex items-center gap-1 py-8 px-7 text-xl"
               title="Go to the app"
             >
               {title}

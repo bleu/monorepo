@@ -5,21 +5,8 @@ enum SpinnerSize {
   md = 12,
   lg = 20,
 }
-
-export enum SpinnerColor {
-  amber = "amber9",
-  blue = "blue9",
-}
-
-export function Spinner({
-  size = "md",
-  color = "amber",
-}: {
-  size?: keyof typeof SpinnerSize;
-  color?: keyof typeof SpinnerColor;
-}) {
+export function Spinner({ size = "md" }: { size?: keyof typeof SpinnerSize }) {
   const SpinnerSizeNumber = SpinnerSize[size];
-  const SpinnerColorString = SpinnerColor[color];
   return (
     <div
       className={cn("flex w-full flex-col items-center rounded-3xl", {
@@ -28,15 +15,11 @@ export function Spinner({
     >
       <div
         className={cn(
-          "border-6 mx-2 animate-spin rounded-full border-2 border-solid border-l-slate10",
+          "border-6 mx-2 animate-spin rounded-full border-2 border-solid border-l-primary border-brown12",
           {
             "h-4 w-4": SpinnerSizeNumber === SpinnerSize.sm,
             "h-12 w-12": SpinnerSizeNumber === SpinnerSize.md,
             "h-20 w-20": SpinnerSizeNumber === SpinnerSize.lg,
-          },
-          {
-            "border-amber10": SpinnerColorString === SpinnerColor.amber,
-            "border-blue10": SpinnerColorString === SpinnerColor.blue,
           },
         )}
       />

@@ -35,21 +35,21 @@ export function Dialog({
         <DialogPrimitive.Overlay
           id="dialog-overlay"
           className={cn(
-            "bg-blackA9 data-[state=open]:animate-overlayShow fixed inset-0",
+            "bg-black/20 data-[state=open]:animate-overlayShow fixed inset-0",
           )}
         />
         <DialogPrimitive.Content
           className={cn(
-            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-[6px] bg-amm-brown shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] focus:outline-none",
+            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-[6px] bg-darkBrown focus:outline-none bg-input text-background",
             customWidth ? customWidth : "w-[90vw] max-w-[450px]",
             noPadding ? "p-0" : "p-[25px]",
           )}
           onCloseAutoFocus={onClose}
         >
-          <DialogPrimitive.Title className="text-2xl font-medium text-seashell">
+          <DialogPrimitive.Title className="text-2xl font-medium text-brown11">
             {title}
           </DialogPrimitive.Title>
-          <DialogPrimitive.Description className="text-base text-seashell">
+          <DialogPrimitive.Description className="text-base text-brown11">
             {subtitle}
           </DialogPrimitive.Description>
 
@@ -60,7 +60,7 @@ export function Dialog({
           </div>
           <DialogPrimitive.Close asChild>
             <button
-              className="absolute right-[10px] top-[10px] inline-flex h-[30px] w-[30px] items-center justify-center text-slate12 hover:font-black	focus:shadow-[0_0_0_2px] focus:shadow-slate2 focus:outline-none"
+              className="absolute right-[10px] top-[10px] inline-flex h-[30px] w-[30px] items-center justify-center text-sand12 hover:font-black	focus:outline-none"
               aria-label="Close"
             >
               <Cross2Icon />

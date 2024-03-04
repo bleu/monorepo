@@ -113,11 +113,15 @@ export function AmmForm({
   }
 
   return (
-    <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-3 p-9">
+    <Form
+      {...form}
+      onSubmit={onSubmit}
+      className="flex flex-col gap-y-3 px-9 pb-9"
+    >
       <div className="flex h-fit justify-between gap-x-7">
         <div className="w-full flex flex-col">
           <div className="flex flex-col w-full">
-            <span className="mb-2 h-5 block text-sm">Select pair</span>
+            <span className="mb-2 h-5 block text-sm">Token Pair</span>
             <TokenSelect
               onSelectToken={(token: IToken) => {
                 setValue("token0", {
@@ -242,7 +246,7 @@ function PriceOracleFields({
       <div className="flex flex-col gap-x-7">
         <div className="w-full">
           <div className="flex gap-x-2 mb-2">
-            <Label>Price oracle source</Label>
+            <Label>Price Oracle Source</Label>
             <Tooltip
               content={
                 "The AMM relies on price oracle exclusively for generating orders that will plausibly be settled in the current market conditions"
@@ -281,7 +285,7 @@ function PriceOracleFields({
           />
           <button
             type="button"
-            className="flex flex-row outline-none hover:text-highlighted text-xs"
+            className="flex flex-row outline-none hover:text-highlight text-xs"
             onClick={() => {
               getBalancerPoolId(chainId, tokenAddresses)
                 .then((id) => {
@@ -305,7 +309,7 @@ function PriceOracleFields({
           />
           <button
             type="button"
-            className="flex flex-row outline-none hover:text-highlighted text-xs"
+            className="flex flex-row outline-none hover:text-highlight text-xs"
             onClick={() => {
               getUniswapV2PairAddress(
                 chainId,

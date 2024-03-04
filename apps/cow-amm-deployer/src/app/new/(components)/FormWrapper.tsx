@@ -28,37 +28,33 @@ export function FormWrapper({
   const backHref =
     transactionType === TRANSACTION_TYPES.CREATE_COW_AMM ? "/" : "/manager";
   return (
-    <>
-      <div className="flex h-full items-center justify-center w-full">
-        <div className="my-4 flex flex-col rounded-lg border bg-card border-card-foreground text-card-foreground">
-          <div className="divide-y divide-brown4 h-full">
-            <div className="relative flex h-full w-full justify-center">
-              <LinkComponent
-                href={backHref}
-                content={
-                  <div className="absolute left-8 flex h-full items-center">
-                    <ArrowIcon />
-                  </div>
-                }
-              />
-              <div className="flex min-w-[530px] flex-col items-center py-3">
-                <div className="text-xl">
-                  {transactionType === TRANSACTION_TYPES.CREATE_COW_AMM
-                    ? "Create"
-                    : "Edit"}{" "}
-                  AMM
-                </div>
+    <div className="flex h-full items-center justify-center w-full">
+      <div className="my-4 flex flex-col border-2 border-foreground bg-card border-card-foreground text-card-foreground">
+        <div className="relative flex h-full w-full justify-center">
+          <LinkComponent
+            href={backHref}
+            content={
+              <div className="absolute left-8 flex h-full items-center">
+                <ArrowIcon />
               </div>
-            </div>
-            <div className="flex flex-col overflow-auto w-full h-full max-h-[550px]">
-              <AmmForm
-                defaultValues={defaultValues}
-                transactionType={transactionType}
-              />
+            }
+          />
+          <div className="flex min-w-[530px] flex-col items-center py-3">
+            <div className="text-xl">
+              {transactionType === TRANSACTION_TYPES.CREATE_COW_AMM
+                ? "Create"
+                : "Edit"}{" "}
+              AMM
             </div>
           </div>
         </div>
+        <div className="flex flex-col overflow-auto w-full h-full max-h-[550px]">
+          <AmmForm
+            defaultValues={defaultValues}
+            transactionType={transactionType}
+          />
+        </div>
       </div>
-    </>
+    </div>
   );
 }

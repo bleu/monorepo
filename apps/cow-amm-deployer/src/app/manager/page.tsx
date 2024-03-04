@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import { redirect, useRouter } from "next/navigation";
 import { useState } from "react";
+import { Address } from "viem";
 
 import { Button } from "#/components/Button";
 import { Dialog } from "#/components/Dialog";
@@ -17,6 +18,7 @@ import { Spinner } from "#/components/Spinner";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { useRawTxData } from "#/hooks/useRawTxData";
 import { useRunningAMM } from "#/hooks/useRunningAmmInfo";
+import { buildAccountCowExplorerUrl } from "#/lib/cowExplorer";
 import { TRANSACTION_TYPES } from "#/lib/transactionFactory";
 import { PRICE_ORACLES } from "#/lib/types";
 import { getBalancerPoolUrl } from "#/utils/balancerPoolUrl";
@@ -53,11 +55,11 @@ export default function Page() {
     cowAmm.priceOracle === PRICE_ORACLES.BALANCER
       ? getBalancerPoolUrl(
           safe.chainId as ChainId,
-          cowAmm.priceOracleData?.balancerPoolId,
+          cowAmm.priceOracleData?.balancerPoolId
         )
       : getUniV2PairUrl(
           safe.chainId as ChainId,
-          cowAmm.priceOracleData?.uniswapV2PairAddress,
+          cowAmm.priceOracleData?.uniswapV2PairAddress
         );
 
   return (
@@ -100,11 +102,11 @@ export default function Page() {
               The first <i className="text-purple">MEV-Capturing AMM</i>,<br />
               brought to you by <i className="text-yellow">CoW DAO</i>{" "}
             </h2>
-            <div className="flex flex-row gap-x-1 items-center">
+            <div className="flex flex-row gap-x-1 items-center hover:text-foreground/90">
               <span>Using price information from {cowAmm.priceOracle}</span>
               {priceOracleLink && (
                 <Link href={priceOracleLink} target="_blank">
-                  <ArrowTopRightIcon className="hover:text-primary-foreground" />
+                  <ArrowTopRightIcon />
                 </Link>
               )}
             </div>
@@ -118,7 +120,7 @@ export default function Page() {
                 2,
                 "decimal",
                 "compact",
-                0.01,
+                0.01
               )}
             </span>
           </div>
@@ -127,6 +129,22 @@ export default function Page() {
           <span className="text-xl my-2 border-b-2 border-primary">
             AMM Composition
           </span>
+          <Link
+            className="text-primary hover:text-primary/90 inline-flex items-center gap-1 text-sm"
+            href={
+              new URL(
+                buildAccountCowExplorerUrl({
+                  chainId: safe.chainId as ChainId,
+                  address: safe.safeAddress as Address,
+                })
+              )
+            }
+            rel="noreferrer noopener"
+            target="_blank"
+          >
+            See in CoW Explorer
+            <ArrowTopRightIcon className="hover:text-primary" />
+          </Link>
         </div>
         <PoolCompositionTable cowAmm={cowAmm} />
         <div className="flex gap-4">

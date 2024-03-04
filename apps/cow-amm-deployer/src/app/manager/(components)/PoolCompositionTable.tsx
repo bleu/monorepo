@@ -20,7 +20,7 @@ export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
         <Table.HeaderCell>Balance</Table.HeaderCell>
         <Table.HeaderCell>Price</Table.HeaderCell>
         <Table.HeaderCell>Value</Table.HeaderCell>
-        <Table.HeaderCell>Value %</Table.HeaderCell>
+        <Table.HeaderCell>Weight</Table.HeaderCell>
       </Table.HeaderRow>
       <Table.Body>
         {[cowAmm.token0, cowAmm.token1].map((token) => {
@@ -38,13 +38,14 @@ export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
               <Table.BodyCell>
                 {formatNumber(
                   formatUnits(BigInt(token.balance), token.tokenInfo.decimals),
-                  4,
+                  4
                 )}
               </Table.BodyCell>
               <Table.BodyCell>
                 $ {formatNumber(token.fiatConversion, 4)}
               </Table.BodyCell>
               <Table.BodyCell>
+                ${" "}
                 {formatNumber(token.fiatBalance, 2, "decimal", "compact", 0.01)}
               </Table.BodyCell>
               <Table.BodyCell>

@@ -16,9 +16,8 @@ export function buildAccountCowExplorerUrl({
   chainId,
   address,
 }: {
-  chainId?: ChainId;
+  chainId: ChainId;
   address: Address;
 }) {
-  if (!chainId) return undefined;
   return `${cowExplorerBaseUrl}${cowExplorerUrl[chainId]}/address/${address}`;
 }

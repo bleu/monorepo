@@ -21,7 +21,7 @@ export function Footer({
           target="_blank"
           rel="noopener noreferrer"
           href="https://github.com/bleu-fi"
-          className="font-bold text-brown3"
+          className="font-bold text-primary"
         >
           bleu
         </a>

@@ -63,7 +63,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <RootLayout>
           <NetworksContextProvider>
             <div className="flex flex-col h-screen">
-              <Header linkUrl={"/"} imageSrc={"/assets/cow-amm.svg"} />
+              <Header linkUrl={"/"} imageSrc={"/assets/cow-amm-deployer.svg"} />
               <div className="flex flex-1 overflow-auto p-4 sm:flex-row sm:gap-x-8 text-foreground">
                 {children}
               </div>

@@ -110,7 +110,7 @@ function HeaderCell({
       onClick={onClick}
       scope="col"
       className={cn(
-        "text-left text-sm font-bold",
+        "text-left text-md font-bold",
         onClick ? "cursor-pointer" : "",
         classNames,
       )}

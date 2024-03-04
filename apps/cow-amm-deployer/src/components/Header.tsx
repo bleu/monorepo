@@ -28,16 +28,9 @@ export function Header({ linkUrl, imageSrc, children, onLinkClick }: IHeader) {
           onClick={onLinkClick}
           className="flex items-center gap-3 justify-self-start"
         >
-          <>
-            {imageSrc && (
-              <Image
-                src={imageSrc}
-                height={50}
-                width={200}
-                alt="CoW AMM Logo"
-              />
-            )}
-          </>
+          {imageSrc && (
+            <Image src={imageSrc} height={75} width={300} alt="CoW AMM Logo" />
+          )}
         </Link>
       </div>
       {children && <div className="flex flex-1 justify-center">{children}</div>}

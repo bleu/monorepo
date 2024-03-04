@@ -76,6 +76,7 @@ export default function Page() {
               className="text-center gap-1 py-3 px-6"
               variant="destructive"
               onClick={async () => {
+                setOpenDialog(false);
                 await sendTransactions([
                   {
                     type: TRANSACTION_TYPES.STOP_COW_AMM,
@@ -84,7 +85,6 @@ export default function Page() {
                 ]).then(() => {
                   router.push("/stoptxprocessing");
                 });
-                setOpenDialog(false);
               }}
             >
               Confirm
@@ -99,7 +99,7 @@ export default function Page() {
         <div className="flex items-center justify-between gap-x-8">
           <div className="flex flex-col gap-1">
             <h2 className="text-2xl font-serif">
-              The first <i className="text-purple">MEV-Capturing AMM</i>,<br />
+              The first <i className="text-purple">MEV-Capturing AMM</i>,
               brought to you by <i className="text-yellow">CoW DAO</i>{" "}
             </h2>
             <div className="flex flex-row gap-x-1 items-center hover:text-foreground/90">
@@ -156,7 +156,7 @@ export default function Page() {
             }}
           >
             <ResetIcon />
-            Stop CoW AMM LP position
+            Stop CoW AMM LP
           </Button>
           <Button
             className="flex items-center gap-1 py-3 px-6"
@@ -165,7 +165,7 @@ export default function Page() {
             }}
           >
             <Pencil2Icon />
-            Edit CoW AMM parameters
+            Edit CoW AMM LP parameters
           </Button>
         </div>
       </div>

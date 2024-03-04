@@ -2,17 +2,12 @@ import { MetadataApi } from "@cowprotocol/app-data";
 import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
 import { Address, encodeFunctionData, parseUnits } from "viem";
 
-import { FALLBACK_STATES, PRICE_ORACLES } from "#/lib/types";
+import { PRICE_ORACLES } from "#/lib/types";
 import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 
 import { cowAmmModuleAbi } from "./abis/cowAmmModule";
 import { gnosisSafeV12 } from "./abis/gnosisSafeV12";
-import { signatureVerifierMuxerAbi } from "./abis/signatureVerifierMuxer";
-import {
-  COMPOSABLE_COW_ADDRESS,
-  COW_AMM_MODULE_ADDRESS,
-  EXTENSIBLE_FALLBACK_ADDRESS,
-} from "./contracts";
+import { COW_AMM_MODULE_ADDRESS } from "./contracts";
 import {
   encodePriceOracleData,
   PRICE_ORACLES_ADDRESSES,
@@ -21,8 +16,6 @@ import { uploadAppData } from "./orderBookApi/uploadAppData";
 import { ammFormSchema } from "./schema";
 
 export enum TRANSACTION_TYPES {
-  SET_FALLBACK_HANDLER = "SET_FALLBACK_HANDLER",
-  SET_DOMAIN_VERIFIER = "SET_DOMAIN_VERIFIER",
   ENABLE_COW_AMM_MODULE = "ENABLE_COW_AMM_MODULE",
   CREATE_COW_AMM = "CREATE_COW_AMM",
   EDIT_COW_AMM = "EDIT_COW_AMM",
@@ -31,16 +24,6 @@ export enum TRANSACTION_TYPES {
 
 export interface BaseArgs {
   type: TRANSACTION_TYPES;
-}
-
-export interface setFallbackHandlerArgs extends BaseArgs {
-  type: TRANSACTION_TYPES.SET_FALLBACK_HANDLER;
-  safeAddress: Address;
-}
-export interface setDomainVerifierArgs extends BaseArgs {
-  type: TRANSACTION_TYPES.SET_DOMAIN_VERIFIER;
-  safeAddress: Address;
-  domainSeparator: Address;
 }
 export interface enableCowAmmModuleArgs extends BaseArgs {
   type: TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE;
@@ -72,37 +55,6 @@ export interface editCowAmmArgs extends Omit<creteCowAmmArgs, "type"> {
 
 interface ITransaction<T> {
   createRawTx(args: T): BaseTransaction;
-}
-
-class FallbackHandlerSetTx implements ITransaction<setFallbackHandlerArgs> {
-  createRawTx({ safeAddress }: setFallbackHandlerArgs): BaseTransaction {
-    return {
-      to: safeAddress,
-      value: "0",
-      data: encodeFunctionData({
-        abi: signatureVerifierMuxerAbi,
-        functionName: "setFallbackHandler",
-        args: [EXTENSIBLE_FALLBACK_ADDRESS],
-      }),
-    };
-  }
-}
-
-class DomainVerifierSetTx implements ITransaction<setDomainVerifierArgs> {
-  createRawTx({
-    safeAddress,
-    domainSeparator,
-  }: setDomainVerifierArgs): BaseTransaction {
-    return {
-      to: safeAddress,
-      value: "0",
-      data: encodeFunctionData({
-        abi: signatureVerifierMuxerAbi,
-        functionName: "setDomainVerifier",
-        args: [domainSeparator, COMPOSABLE_COW_ADDRESS],
-      }),
-    };
-  }
 }
 class CowAmmEnableModuleTx implements ITransaction<enableCowAmmModuleArgs> {
   createRawTx({
@@ -208,8 +160,6 @@ class CowAmmStopTx implements ITransaction<stopCowAmmArgs> {
   }
 }
 export interface TransactionBindings {
-  [TRANSACTION_TYPES.SET_FALLBACK_HANDLER]: setFallbackHandlerArgs;
-  [TRANSACTION_TYPES.SET_DOMAIN_VERIFIER]: setDomainVerifierArgs;
   [TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE]: enableCowAmmModuleArgs;
   [TRANSACTION_TYPES.CREATE_COW_AMM]: creteCowAmmArgs;
   [TRANSACTION_TYPES.STOP_COW_AMM]: stopCowAmmArgs;
@@ -223,8 +173,6 @@ const TRANSACTION_CREATORS: {
     TransactionBindings[key]
   >;
 } = {
-  [TRANSACTION_TYPES.SET_FALLBACK_HANDLER]: FallbackHandlerSetTx,
-  [TRANSACTION_TYPES.SET_DOMAIN_VERIFIER]: DomainVerifierSetTx,
   [TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE]: CowAmmEnableModuleTx,
   [TRANSACTION_TYPES.CREATE_COW_AMM]: CowAmmCreateTx,
   [TRANSACTION_TYPES.STOP_COW_AMM]: CowAmmStopTx,
@@ -251,26 +199,6 @@ export async function buildTxAMMArgs({
     | TRANSACTION_TYPES.CREATE_COW_AMM
     | TRANSACTION_TYPES.EDIT_COW_AMM;
 }): Promise<AllTransactionArgs[]> {
-  const setFallbackTx = {
-    type: TRANSACTION_TYPES.SET_FALLBACK_HANDLER,
-    safeAddress: data.safeAddress,
-  } as setFallbackHandlerArgs;
-  const DomainVerifierSetTx = {
-    type: TRANSACTION_TYPES.SET_DOMAIN_VERIFIER,
-    safeAddress: data.safeAddress,
-    domainSeparator: data.domainSeparator,
-  } as setDomainVerifierArgs;
-  const _fallbackTxs = (() => {
-    switch (data.fallbackSetupState) {
-      case FALLBACK_STATES.HAS_NOTHING:
-        return [setFallbackTx, DomainVerifierSetTx];
-      case FALLBACK_STATES.HAS_EXTENSIBLE_FALLBACK:
-        return [DomainVerifierSetTx];
-      default:
-        return [];
-    }
-  })();
-
   const publicClient = publicClientsFromIds[data.chainId as ChainId];
 
   const isCoWAmmModuleEnabled = await publicClient.readContract({
@@ -304,7 +232,6 @@ export async function buildTxAMMArgs({
   });
 
   return [
-    // ...fallbackTxs,
     ...enableCoWAmmTxs,
     {
       type: transactionType,

@@ -245,7 +245,7 @@ function PriceOracleFields({
             <Label>Price oracle source</Label>
             <Tooltip
               content={
-                "The price oracle is what will define the price of the orders the AMM will make."
+                "The AMM relies on price oracle exclusively for generating orders that will plausibly be settled in the current market conditions"
               }
             >
               <InfoCircledIcon className="w-4 h-4" color={brownDark.brown8} />

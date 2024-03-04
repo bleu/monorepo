@@ -46,10 +46,10 @@ export function Dialog({
           )}
           onCloseAutoFocus={onClose}
         >
-          <DialogPrimitive.Title className="text-2xl font-medium text-brown11">
+          <DialogPrimitive.Title className="text-2xl font-medium text-background">
             {title}
           </DialogPrimitive.Title>
-          <DialogPrimitive.Description className="text-base text-brown11">
+          <DialogPrimitive.Description className="text-base text-background">
             {subtitle}
           </DialogPrimitive.Description>
 

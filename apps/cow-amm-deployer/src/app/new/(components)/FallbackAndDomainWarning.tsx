@@ -26,6 +26,7 @@ export function FallbackAndDomainWarning({
               "https://blog.cow.fi/all-you-need-to-know-about-cow-swaps-new-safe-fallback-handler-8ef0439925d1"
             }
             target="_blank"
+            rel="noopener noreferrer"
           >
             <InfoCircledIcon />
           </a>

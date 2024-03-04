@@ -11,11 +11,11 @@ import { RootLayout } from "#/components/RootLayout";
 import { NetworksContextProvider } from "#/contexts/networks";
 import { cn } from "#/lib/utils";
 
-const APP_DISPLAY_NAME = "CoW Amm Manager";
+const APP_DISPLAY_NAME = "CoW AMM Manager";
 
 export const metadata: Metadata = {
   title: `Cow - ${APP_DISPLAY_NAME}`,
-  description: "Manage your CoW Amm",
+  description: "Manage your CoW AMM",
 };
 
 const flechaS = localFont({
@@ -57,7 +57,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         className={cn(
           flechaS.variable,
           circularStd.variable,
-          "bg-background flex h-full flex-col font-sans font-normal text-foreground",
+          "bg-background flex h-full flex-col font-sans font-normal text-foreground"
         )}
       >
         <RootLayout>

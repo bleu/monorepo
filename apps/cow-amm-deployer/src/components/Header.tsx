@@ -32,7 +32,7 @@ export function Header({ linkUrl, imageSrc, children, onLinkClick }: IHeader) {
                 src={imageSrc}
                 height={50}
                 width={200}
-                alt="CoW Amm Logo"
+                alt="CoW AMM Logo"
               />
             )}
           </>

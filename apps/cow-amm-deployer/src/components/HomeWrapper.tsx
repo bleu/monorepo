@@ -32,7 +32,7 @@ export function HomeWrapper({
           src="/assets/cow-amm.svg"
           height={100}
           width={400}
-          alt="CoW Amm Logo"
+          alt="CoW AMM Logo"
         />
         <h2 className="text-6xl leading-snug text-center w-full font-serif">
           The first <i className="text-purple">MEV-Capturing AMM</i>,

@@ -30,7 +30,7 @@ export function TokenSelect({
   const [tokens, setTokens] = useState<TokenBalance[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedValue, setSelectedValue] = useState<IToken | undefined>(
-    undefined
+    undefined,
   );
   const [isNotifierOpen, setIsNotifierOpen] = useState(false);
 

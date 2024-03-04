@@ -96,7 +96,7 @@ export function TokenSelect({
           <Button
             variant="outline"
             type="button"
-            className="justify-start px-2"
+            className="justify-start px-2 justify-between"
             disabled={disabled}
             onClick={() => setOpen(true)}
           >

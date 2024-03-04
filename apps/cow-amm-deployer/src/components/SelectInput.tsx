@@ -17,7 +17,7 @@ const SelectInput = ({
     <label className="block text-sm text-sand1" htmlFor={name}>
       {label}
       <Select.SelectRoot onValueChange={onValueChange} name={name}>
-        <Select.SelectTrigger className="h-[35px] inline-flex w-full items-center justify-start gap-[5px] bg-input">
+        <Select.SelectTrigger className="h-[35px] inline-flex w-full items-center gap-[5px] bg-input">
           <Select.SelectValue />
         </Select.SelectTrigger>
         <Select.SelectContent className="z-[10000] w-full overflow-hidden bg-input text-sand1">

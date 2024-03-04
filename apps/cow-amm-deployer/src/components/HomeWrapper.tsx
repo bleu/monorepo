@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 
 import { Button } from "./Button";
@@ -17,6 +19,12 @@ export function HomeWrapper({
       ? "Manage your CoW AMM"
       : "Create a CoW AMM";
 
+  if (typeof window === "undefined") return null;
+
+  const currentHref = encodeURIComponent(
+    window.location.href.split("/").slice(0, 3).join("/")
+  );
+
   return (
     <div className="flex w-full justify-center h-full">
       <div className="flex flex-col items-center gap-16 justify-center">
@@ -33,7 +41,7 @@ export function HomeWrapper({
         <LinkComponent
           href={
             goToSafe
-              ? "https://app.safe.global/share/safe-app?appUrl=http%3A%2F%2Flocalhost%3A3000&chain=sep"
+              ? `https://app.safe.global/share/safe-app?appUrl=${currentHref}&chain=sep`
               : href
           }
           content={

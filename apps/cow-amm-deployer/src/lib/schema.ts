@@ -55,7 +55,7 @@ export const ammFormSchema = z
     {
       message: "Balancer Pool ID is required",
       path: ["balancerPoolId"],
-    }
+    },
   )
   .refine(
     // validate if uniswap v2 pool address is required
@@ -68,7 +68,7 @@ export const ammFormSchema = z
     {
       message: "Uniswap V2 Pool Address is required",
       path: ["uniswapV2Pair"],
-    }
+    },
   )
   .refine(
     // validate if tokens are different
@@ -81,7 +81,7 @@ export const ammFormSchema = z
     {
       message: "Tokens must be different",
       path: ["token0"],
-    }
+    },
   )
   .superRefine(async (data, ctx) => {
     // validate if there are balances of tokens
@@ -114,7 +114,7 @@ export const ammFormSchema = z
         code: z.ZodIssueCode.custom,
         message: `No balance of token`,
         path: [x],
-      })
+      }),
     );
     return !path.length;
   })

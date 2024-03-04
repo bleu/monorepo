@@ -53,7 +53,7 @@ export function TokenSelect({
         <span className="mb-2 block text-sm text-slate12">Token</span>
         <button
           type="button"
-          className="px-2w-full selection:color-white box-border flex h-[35px] w-full appearance-none items-center justify-between gap-2 rounded-[4px] bg-blue4 px-[10px] py-1 text-[15px] leading-none text-slate12 shadow-[0_0_0_1px] shadow-blue6 outline-none selection:bg-blue9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-blue1"
+          className="px-2 w-full selection:color-white box-border flex h-[35px] w-full appearance-none items-center justify-between gap-2 rounded-[4px] bg-blue4 px-[10px] py-1 text-[15px] leading-none text-slate12 shadow-[0_0_0_1px] shadow-blue6 outline-none selection:bg-blue9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-blue1"
         >
           <div className="flex items-center gap-1">
             <Image
@@ -109,7 +109,7 @@ function TokenModal({
   const internalBalancesTokenAdresses = internalBalanceData?.user
     ?.userInternalBalances
     ? internalBalanceData.user.userInternalBalances.map(
-        (token) => token.tokenInfo?.address.toLowerCase(),
+        (token) => token.tokenInfo?.address.toLowerCase()
       )
     : [];
 
@@ -142,7 +142,7 @@ function TokenModal({
     const data = await multicall({ contracts: tokensContracts });
     const walletBalanceData = tokenAdresses.map((tokenAddress, index) => {
       const token = tokenList.find(
-        (obj) => obj.address.toLowerCase() === tokenAddress.toLowerCase(),
+        (obj) => obj.address.toLowerCase() === tokenAddress.toLowerCase()
       );
       const { result } = data[index];
       return {
@@ -159,7 +159,7 @@ function TokenModal({
         const internalBalance =
           internalBalanceData?.user?.userInternalBalances?.find(
             (internalBalanceInfo) =>
-              internalBalanceInfo.tokenInfo?.address === token.tokenAddress,
+              internalBalanceInfo.tokenInfo?.address === token.tokenAddress
           );
 
         if (internalBalance && internalBalance.tokenInfo) {
@@ -323,7 +323,7 @@ function TokenRow({
       classNames="hover:bg-blue4 hover:cursor-pointer"
       onClick={() => {
         router.push(
-          `/internalmanager/${chainName}/${operationKind}/token/${token.tokenAddress}`,
+          `/internalmanager/${chainName}/${operationKind}/token/${token.tokenAddress}`
         );
       }}
     >

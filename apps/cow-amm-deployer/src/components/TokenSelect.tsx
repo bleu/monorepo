@@ -63,6 +63,17 @@ export function TokenSelect({
     }
   }, [selectedToken, loaded, assets]);
 
+  useEffect(() => {
+    if (selectedToken) {
+      const asset = assets.find(
+        (asset) =>
+          asset.tokenInfo.address.toLowerCase() ===
+          selectedToken.address.toLowerCase(),
+      );
+      setTokenUri(asset?.tokenInfo.logoUri);
+    }
+  }, [assets]);
+
   function handleSelectToken(token: TokenBalance) {
     const tokenForPriceChecker = {
       address: token.tokenInfo.address,

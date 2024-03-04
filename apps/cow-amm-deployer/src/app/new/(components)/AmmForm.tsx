@@ -9,12 +9,11 @@ import { useEffect, useState } from "react";
 import { FieldValues, useForm, UseFormReturn } from "react-hook-form";
 
 import { Button } from "#/components";
-import { TokenSelect } from "#/components/AltTokenSelect";
-// import { TokenSelect } from "./TokenSelect";
 import { Input } from "#/components/Input";
 import { SelectInput } from "#/components/SelectInput";
 import { Spinner } from "#/components/Spinner";
 import { Toast } from "#/components/Toast";
+import { TokenSelect } from "#/components/TokenSelect";
 import { Tooltip } from "#/components/Tooltip";
 import {
   Accordion,
@@ -40,7 +39,7 @@ import { FallbackAndDomainWarning } from "./FallbackAndDomainWarning";
 const getNewMinTradeToken0 = (newToken0: IToken, assets: TokenBalance[]) => {
   const asset0 = assets.find(
     (asset) =>
-      asset.tokenInfo.address.toLowerCase() === newToken0.address.toLowerCase(),
+      asset.tokenInfo.address.toLowerCase() === newToken0.address.toLowerCase()
   );
 
   if (!asset0?.fiatConversion) return 0;
@@ -85,7 +84,7 @@ export function AmmForm({
   const token1 = watch("token1");
 
   const tokenAddresses = [token0?.address, token1?.address].filter(
-    (address) => address,
+    (address) => address
   ) as Address[];
 
   const onSubmit = async (data: typeof ammFormSchema._type) => {
@@ -128,7 +127,7 @@ export function AmmForm({
                 });
                 setValue(
                   "minTradedToken0",
-                  getNewMinTradeToken0(token, assets),
+                  getNewMinTradeToken0(token, assets)
                 );
               }}
               selectedToken={token0 ?? undefined}
@@ -174,7 +173,7 @@ export function AmmForm({
           <AccordionTrigger
             className={cn(
               errors.minTradedToken0 ? "text-destructive" : "",
-              "pt-0",
+              "pt-0"
             )}
           >
             Advanced Options
@@ -307,7 +306,7 @@ function PriceOracleFields({
               getUniswapV2PairAddress(
                 chainId,
                 tokenAddresses[0],
-                tokenAddresses[1],
+                tokenAddresses[1]
               )
                 .then((address) => {
                   setValue("uniswapV2Pair", address);
@@ -364,7 +363,7 @@ async function getBalancerPoolId(chainId: number, tokens: Address[]) {
 async function getUniswapV2PairAddress(
   chainId: number,
   token0: Address,
-  token1: Address,
+  token1: Address
 ) {
   if (token0 === token1) throw new Error("Invalid tokens");
   const pairsData = await pairs.gql(String(chainId) || "1").pairsWhereTokens({

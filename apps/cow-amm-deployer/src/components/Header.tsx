@@ -35,9 +35,9 @@ export function Header({ linkUrl, imageSrc, children, onLinkClick }: IHeader) {
       </div>
       {children && <div className="flex flex-1 justify-center">{children}</div>}
       <div className="ml-auto flex flex-1 justify-end">
-        <div className="text-secondary-foreground bg-secondary/30 border-secondary/50 text-center text-sm font-semibold border focus-visible:outline-brown7 focus-visible:outline-offset-2 disabled:opacity-40 py-3 px-5">
+        <div className="border-foreground text-center text-sm font-semibold border focus-visible:outline-brown7 focus-visible:outline-offset-2 disabled:opacity-40 py-3 px-5">
           <Link
-            className="text-primary hover:text-primary/90 inline-flex items-center gap-1"
+            className="hover:text-highlight inline-flex items-center gap-1"
             href={
               new URL(
                 buildAccountCowExplorerUrl({
@@ -50,7 +50,7 @@ export function Header({ linkUrl, imageSrc, children, onLinkClick }: IHeader) {
             target="_blank"
           >
             {truncateAddress(safe.safeAddress)}
-            <ArrowTopRightIcon className="hover:text-primary" />
+            <ArrowTopRightIcon />
           </Link>
         </div>
       </div>

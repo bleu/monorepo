@@ -80,12 +80,12 @@ export function AmmForm({
   const { sendTransactions } = useRawTxData();
   const [confirmedFallbackSetup, setConfirmedFallbackSetup] = useState(false);
 
-  const token0 = watch("token0");
-  const token1 = watch("token1");
+  const formData = watch();
 
-  const tokenAddresses = [token0?.address, token1?.address].filter(
-    (address) => address,
-  ) as Address[];
+  const tokenAddresses = [
+    formData?.token0?.address,
+    formData?.token1?.address,
+  ].filter((address) => address) as Address[];
 
   const onSubmit = async (data: typeof ammFormSchema._type) => {
     await buildTxAMMArgs({ data, transactionType })
@@ -113,11 +113,15 @@ export function AmmForm({
   }
 
   return (
-    <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-3 p-9">
+    <Form
+      {...form}
+      onSubmit={onSubmit}
+      className="flex flex-col gap-y-3 px-9 pb-9"
+    >
       <div className="flex h-fit justify-between gap-x-7">
         <div className="w-full flex flex-col">
           <div className="flex flex-col w-full">
-            <span className="mb-2 h-5 block text-sm">Select pair</span>
+            <span className="mb-2 h-5 block text-sm">Token Pair</span>
             <TokenSelect
               onSelectToken={(token: IToken) => {
                 setValue("token0", {
@@ -130,7 +134,7 @@ export function AmmForm({
                   getNewMinTradeToken0(token, assets),
                 );
               }}
-              selectedToken={token0 ?? undefined}
+              selectedToken={formData?.token0 ?? undefined}
             />
             {errors.token0 && (
               <FormMessage className="mt-1 h-6 text-sm text-destructive">
@@ -152,7 +156,7 @@ export function AmmForm({
                   symbol: token.symbol,
                 });
               }}
-              selectedToken={token1 ?? undefined}
+              selectedToken={formData?.token1 ?? undefined}
             />
             {errors.token1 && (
               <FormMessage className="mt-1 h-6 text-sm text-destructive">
@@ -181,7 +185,7 @@ export function AmmForm({
             <Input
               label="Minimum first token amount on each order"
               type="number"
-              step={10 ** (-token0?.decimals || 18)}
+              step={10 ** (-formData?.token0?.decimals || 18)}
               name="minTradedToken0"
               tooltipText="This parameter is used to not overload the CoW Orderbook with small orders. By default, 10 dollars worth of the first token will be the minimum amount for each order."
             />
@@ -204,7 +208,8 @@ export function AmmForm({
           disabled={
             (fallbackState != FALLBACK_STATES.HAS_DOMAIN_VERIFIER &&
               !confirmedFallbackSetup) ||
-            isSubmitting
+            isSubmitting ||
+            !(formData?.token0 && formData?.token1 && formData?.priceOracle)
           }
         >
           <span>
@@ -242,7 +247,7 @@ function PriceOracleFields({
       <div className="flex flex-col gap-x-7">
         <div className="w-full">
           <div className="flex gap-x-2 mb-2">
-            <Label>Price oracle source</Label>
+            <Label>Price Oracle Source</Label>
             <Tooltip
               content={
                 "The AMM relies on price oracle exclusively for generating orders that will plausibly be settled in the current market conditions"
@@ -281,7 +286,7 @@ function PriceOracleFields({
           />
           <button
             type="button"
-            className="flex flex-row outline-none hover:text-highlighted text-xs"
+            className="flex flex-row outline-none hover:text-highlight text-xs"
             onClick={() => {
               getBalancerPoolId(chainId, tokenAddresses)
                 .then((id) => {
@@ -305,7 +310,7 @@ function PriceOracleFields({
           />
           <button
             type="button"
-            className="flex flex-row outline-none hover:text-highlighted text-xs"
+            className="flex flex-row outline-none hover:text-highlight text-xs"
             onClick={() => {
               getUniswapV2PairAddress(
                 chainId,

@@ -22,7 +22,7 @@ export function HomeWrapper({
   if (typeof window === "undefined") return null;
 
   const currentHref = encodeURIComponent(
-    window.location.href.split("/").slice(0, 3).join("/")
+    window.location.href.split("/").slice(0, 3).join("/"),
   );
 
   return (

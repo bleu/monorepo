@@ -38,7 +38,7 @@ export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
               <Table.BodyCell>
                 {formatNumber(
                   formatUnits(BigInt(token.balance), token.tokenInfo.decimals),
-                  4
+                  4,
                 )}
               </Table.BodyCell>
               <Table.BodyCell>

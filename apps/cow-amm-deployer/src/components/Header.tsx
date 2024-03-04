@@ -50,7 +50,7 @@ export function Header({ linkUrl, imageSrc, children, onLinkClick }: IHeader) {
                 buildAccountCowExplorerUrl({
                   chainId: safe.chainId as ChainId,
                   address: safe.safeAddress as Address,
-                })
+                }),
               )
             }
             rel="noreferrer noopener"

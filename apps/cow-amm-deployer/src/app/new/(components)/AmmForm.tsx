@@ -281,7 +281,7 @@ function PriceOracleFields({
           />
           <button
             type="button"
-            className="flex flex-row text-brown3 outline-none hover:text-yellow/30 text-xs"
+            className="flex flex-row outline-none hover:text-highlighted text-xs"
             onClick={() => {
               getBalancerPoolId(chainId, tokenAddresses)
                 .then((id) => {
@@ -305,7 +305,7 @@ function PriceOracleFields({
           />
           <button
             type="button"
-            className="flex flex-row text-brown3 outline-none hover:text-yellow/30 text-xs"
+            className="flex flex-row outline-none hover:text-highlighted text-xs"
             onClick={() => {
               getUniswapV2PairAddress(
                 chainId,

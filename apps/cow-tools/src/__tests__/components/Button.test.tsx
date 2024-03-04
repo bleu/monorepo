@@ -22,8 +22,9 @@ describe("Button component", () => {
         Test Button
       </Button>,
     );
-    const firstIconParent = screen.getByRole("button").querySelector("svg")
-      ?.parentElement;
+    const firstIconParent = screen
+      .getByRole("button")
+      .querySelector("svg")?.parentElement;
     expect(firstIconParent).toHaveClass("mr-2");
 
     rerender(
@@ -32,8 +33,9 @@ describe("Button component", () => {
         <ButtonIcon icon={<DotIcon />} />
       </Button>,
     );
-    const secondIconParent = screen.getByRole("button").querySelector("svg")
-      ?.parentElement;
+    const secondIconParent = screen
+      .getByRole("button")
+      .querySelector("svg")?.parentElement;
     expect(secondIconParent).toHaveClass("ml-2");
   });
 

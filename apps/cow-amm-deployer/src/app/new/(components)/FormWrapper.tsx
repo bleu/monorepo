@@ -11,7 +11,7 @@ function ArrowIcon() {
     <ArrowLeftIcon
       height={16}
       width={16}
-      className="text-darkBrown duration-200 hover:text-amber9"
+      className="text-background duration-200 hover:text-highlight"
     />
   );
 }
@@ -25,15 +25,16 @@ export function FormWrapper({
     | TRANSACTION_TYPES.EDIT_COW_AMM;
   defaultValues?: FieldValues;
 }) {
+  const backHref =
+    transactionType === TRANSACTION_TYPES.CREATE_COW_AMM ? "/" : "/manager";
   return (
     <>
       <div className="flex h-full items-center justify-center w-full">
-        <div className="my-4 flex flex-col rounded-lg border border-3 bg-beige border-seashell text-darkBrown">
+        <div className="my-4 flex flex-col rounded-lg border bg-card border-card-foreground text-card-foreground">
           <div className="divide-y divide-brown4 h-full">
             <div className="relative flex h-full w-full justify-center">
               <LinkComponent
-                loaderColor="amber"
-                href={`/`}
+                href={backHref}
                 content={
                   <div className="absolute left-8 flex h-full items-center">
                     <ArrowIcon />

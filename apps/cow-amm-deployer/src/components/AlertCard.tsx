@@ -14,19 +14,14 @@ export function AlertCard({
     <div className="w-full justify-center" role="alert">
       <div
         className={cn(
-          "font-bold text-slate12 rounded-t px-4 py-2 mt-1",
-          style === "error" ? "bg-tomato9" : "bg-amber9",
+          "font-bold text-sand12 px-4 py-2 border-t border-x border-border",
+          style === "error" ? "bg-destructive" : "bg-accent",
         )}
       >
-        {capitalize(style)} : {title}
+        {capitalize(style)}: {title}
       </div>
       <div
-        className={cn(
-          "border rounded-b px-4 py-3 max-w-prose text-base",
-          style === "error"
-            ? "bg-tomato12 border-red-400 text-tomato7"
-            : "bg-amber12 border-yellow-300 text-yellow-800 ",
-        )}
+        className={cn("px-4 py-3 max-w-prose text-base border border-border")}
       >
         {children}
       </div>

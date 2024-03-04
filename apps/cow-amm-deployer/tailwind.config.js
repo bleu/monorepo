@@ -1,17 +1,8 @@
 /* eslint-env node */
 /* eslint-disable @typescript-eslint/no-var-requires */
-const {
-  blackA,
-  blueDark,
-  tomatoDark,
-  slateDark,
-  amberDark,
-  cyanDark,
-  mintDark,
-  greenDark,
-  brownDark,
-  purpleDark,
-} = require("@radix-ui/colors");
+const { sandDark, brownDark } = require("@radix-ui/colors");
+
+const defaultTheme = require("tailwindcss/defaultTheme");
 
 /** @type {import("tailwindcss").Config} */
 module.exports = {
@@ -25,28 +16,54 @@ module.exports = {
       },
     },
     fontFamily: {
-      sans: ["var(--font-family-sans)", "sans-serif"],
-      flecha: ["var(--font-family-flecha-s)", ""],
+      serif: ["var(--font-family-serif)", ...defaultTheme.fontFamily.serif],
+      sans: ["var(--font-family-sans)", ...defaultTheme.fontFamily.sans],
     },
     extend: {
       colors: {
-        ...blackA,
-        ...slateDark,
-        ...blueDark,
-        ...amberDark,
-        ...tomatoDark,
-        ...cyanDark,
-        ...mintDark,
-        ...greenDark,
+        ...sandDark,
         ...brownDark,
-        ...purpleDark,
-        darkBrown: "#211715",
-        beige: "#E3DED4",
-        lightBlue: "#57C3FF",
         purple: "#B462FA",
-        yellow: "#F5BD24",
-        orange: "#FE970C",
-        seashell: "#F6F2E7",
+        yellow: "hsla(44, 91%, 55%, 1);",
+
+        success: "hsl(var(--success) / <alpha-value>)",
+        info: "hsl(var(--info) / <alpha-value>)",
+        warning: "hsl(var(--warning) / <alpha-value>)",
+        highlight: "hsl(var(--highlight) / <alpha-value>)",
+
+        border: "hsl(var(--border) / <alpha-value>)",
+        input: "hsl(var(--input) / <alpha-value>)",
+        ring: "hsl(var(--ring) / <alpha-value>)",
+        background: "hsl(var(--background) / <alpha-value>)",
+        foreground: "hsl(var(--foreground) / <alpha-value>)",
+        primary: {
+          DEFAULT: "hsl(var(--primary) / <alpha-value>)",
+          foreground: "hsl(var(--primary-foreground) / <alpha-value>)",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary) / <alpha-value>)",
+          foreground: "hsl(var(--secondary-foreground) / <alpha-value>)",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive) / <alpha-value>)",
+          foreground: "hsl(var(--destructive-foreground) / <alpha-value>)",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted) / <alpha-value>)",
+          foreground: "hsl(var(--muted-foreground) / <alpha-value>)",
+        },
+        accent: {
+          DEFAULT: "hsl(var(--accent) / <alpha-value>)",
+          foreground: "hsl(var(--accent-foreground) / <alpha-value>)",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover) / <alpha-value>)",
+          foreground: "hsl(var(--popover-foreground) / <alpha-value>)",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card) / <alpha-value>)",
+          foreground: "hsl(var(--card-foreground) / <alpha-value>)",
+        },
       },
       keyframes: {
         "accordion-down": {
@@ -66,34 +83,34 @@ module.exports = {
           to: { opacity: 1 },
         },
         contentShow: {
-          from: { opacity: 0, transform: "translate(-50%, -48%) scale(0.96)" },
-          to: { opacity: 1, transform: "translate(-50%, -50%) scale(1)" },
+          from: { opacity: 0, transform: "transand(-50%, -48%) scale(0.96)" },
+          to: { opacity: 1, transform: "transand(-50%, -50%) scale(1)" },
         },
         slideDownAndFade: {
-          from: { opacity: 0, transform: "translateY(-2px)" },
-          to: { opacity: 1, transform: "translateY(0)" },
+          from: { opacity: 0, transform: "transandY(-2px)" },
+          to: { opacity: 1, transform: "transandY(0)" },
         },
         slideLeftAndFade: {
-          from: { opacity: 0, transform: "translateX(2px)" },
-          to: { opacity: 1, transform: "translateX(0)" },
+          from: { opacity: 0, transform: "transandX(2px)" },
+          to: { opacity: 1, transform: "transandX(0)" },
         },
         slideUpAndFade: {
-          from: { opacity: 0, transform: "translateY(2px)" },
-          to: { opacity: 1, transform: "translateY(0)" },
+          from: { opacity: 0, transform: "transandY(2px)" },
+          to: { opacity: 1, transform: "transandY(0)" },
         },
         slideRightAndFade: {
-          from: { opacity: 0, transform: "translateX(2px)" },
-          to: { opacity: 1, transform: "translateX(0)" },
+          from: { opacity: 0, transform: "transandX(2px)" },
+          to: { opacity: 1, transform: "transandX(0)" },
         },
         slideIn: {
           from: {
-            transform: "translateX(calc(100% + var(--viewport-padding)))",
+            transform: "transandX(calc(100% + var(--viewport-padding)))",
           },
-          to: { transform: "translateX(0))" },
+          to: { transform: "transandX(0))" },
         },
         swipeOut: {
-          from: { transform: "translateX(var(--radix-toast-swipe-end-x))" },
-          to: { transform: "translateX(calc(100% + var(--viewport-padding)))" },
+          from: { transform: "transandX(var(--radix-toast-swipe-end-x))" },
+          to: { transform: "transandX(calc(100% + var(--viewport-padding)))" },
         },
         slideDown: {
           from: { height: 0 },

@@ -96,8 +96,10 @@ export function OgImage({ appName }: { appName: string }) {
         />
       </svg>
       <div tw="flex flex-col ml-24">
-        <div tw="text-white text-[80px] font-thin">CoW Swap</div>
-        <div tw="text-white font-bold text-[80px] font-bold">{appName}</div>
+        <div tw="text-foreground text-[80px] font-thin">CoW Swap</div>
+        <div tw="text-foreground font-bold text-[80px] font-bold">
+          {appName}
+        </div>
       </div>
     </div>
   );

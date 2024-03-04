@@ -1,6 +1,5 @@
 /* eslint-env node */
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { withSentryConfig } = require("@sentry/nextjs");
 
 /** @type {import('next').NextConfig} */
 const moduleExports = {
@@ -19,10 +18,6 @@ const moduleExports = {
       },
     ];
   },
-  experimental: {
-    // Add the "@sentry/profiling-node" to serverComponentsExternalPackages.
-    serverComponentsExternalPackages: ["@sentry/profiling-node"],
-  },
   transpilePackages: ["@bleu-fi/gql"],
   reactStrictMode: true,
   swcMinify: true,
@@ -33,13 +28,8 @@ const moduleExports = {
    */
   webpack: (config) => {
     config.resolve.fallback = { fs: false, net: false, tls: false };
-    config.externals.push("pino-pretty", "lokijs", "encoding", {
-      "@sentry/profiling-node": "commonjs @sentry/profiling-node",
-    });
+    config.externals.push("pino-pretty", "lokijs", "encoding");
     return config;
-  },
-  sentry: {
-    hideSourceMaps: true,
   },
   images: {
     domains: [
@@ -47,6 +37,7 @@ const moduleExports = {
       "raw.githubusercontent.com",
       "assets-cdn.trustwallet.com",
       "beethoven-assets.s3.eu-central-1.amazonaws.com",
+      "safe-transaction-assets.safe.global",
     ],
     remotePatterns: [
       {
@@ -98,38 +89,14 @@ const moduleExports = {
         port: "",
         pathname: "/static/images/currencies/**",
       },
+      {
+        protocol: "https",
+        hostname: "safe-transaction-assets.safe.global",
+        port: "",
+        pathname: "/tokens/logos/**",
+      },
     ],
   },
 };
 
-module.exports = withSentryConfig(
-  moduleExports,
-  {
-    // For all available options, see:
-    // https://github.com/getsentry/sentry-webpack-plugin#options
-
-    // Suppresses source map uploading logs during build
-    silent: true,
-    org: "bleu",
-    project: "cowswap-tools",
-  },
-  {
-    // For all available options, see:
-    // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
-
-    // Upload a larger set of source maps for prettier stack traces (increases build time)
-    widenClientFileUpload: true,
-
-    // Transpiles SDK to be compatible with IE11 (increases bundle size)
-    transpileClientSDK: true,
-
-    // Routes browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers (increases server load)
-    tunnelRoute: "/monitoring",
-
-    // Hides source maps from generated client bundles
-    hideSourceMaps: true,
-
-    // Automatically tree-shake Sentry logger statements to reduce bundle size
-    disableLogger: true,
-  },
-);
+module.exports = moduleExports;

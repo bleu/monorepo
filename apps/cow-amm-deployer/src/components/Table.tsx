@@ -8,36 +8,36 @@ const TableContext = createContext({});
 const predefinedClasses = {
   gray: {
     solid: {
-      dark: { style: "bg-slate3", border: "border-0" },
+      dark: { style: "bg-sand/90", border: "border-0" },
       darkWithBorder: {
-        style: "bg-slate3",
-        border: "border border-slate7 rounded",
+        style: "bg-sand/90",
+        border: "border border-sand7",
       },
     },
   },
-  blue: {
+  brown: {
     solid: {
-      dark: { style: "bg-blue3", border: "border-0" },
+      dark: { style: "bg-primary/90", border: "border-0" },
       darkWithBorder: {
-        style: "bg-blue3",
-        border: "border border-blue6 rounded",
+        style: "bg-primary/90",
+        border: "border border-brown6",
       },
     },
   },
-  beige: {
+  foreground: {
     solid: {
-      dark: { style: "bg-beige", border: "border-0" },
+      dark: { style: "bg-foreground", border: "border-0" },
       darkWithBorder: {
-        style: "bg-beige",
-        border: "border border-darkBrown rounded",
+        style: "bg-foreground",
+        border: "border border-border",
       },
     },
   },
 } as const;
 
 type TableColor = keyof typeof predefinedClasses;
-type TableVariant = keyof typeof predefinedClasses.blue;
-type TableShade = keyof typeof predefinedClasses.blue.solid;
+type TableVariant = keyof typeof predefinedClasses.brown;
+type TableShade = keyof typeof predefinedClasses.brown.solid;
 
 function useTableContext() {
   const context = useContext(TableContext);
@@ -74,7 +74,7 @@ export default function Table({
       >
         <table
           className={cn(
-            "divide-y divide-slate7 min-w-full rounded",
+            "divide-y divide-sand7 min-w-full",
             predefinedClasses[color][variant][shade].style,
             "w-full h-full",
           )}
@@ -110,7 +110,7 @@ function HeaderCell({
       onClick={onClick}
       scope="col"
       className={cn(
-        "text-left text-sm font-semibold",
+        "text-left text-md font-bold",
         onClick ? "cursor-pointer" : "",
         classNames,
       )}
@@ -155,7 +155,7 @@ function BodyCellLink({
         <Link
           href={href}
           className={cn([
-            "whitespace-nowrap text-sm text-slate10 p-4 flex",
+            "whitespace-nowrap text-sm text-primary-foreground p-4 flex",
             linkClassNames,
           ])}
         >

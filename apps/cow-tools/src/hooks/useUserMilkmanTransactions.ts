@@ -210,11 +210,10 @@ async function getQueuedMilkmanTransactions({
     ),
   );
   const queuedMilkmanTransactionQueueDetails =
-    queuedTransactionQueueDetails.filter(
-      (transactionDetails) =>
-        transactionDetails.txData?.dataDecoded?.parameters?.[0].valueDecoded?.some(
-          (value) => value.to?.toLowerCase() == MILKMAN_ADDRESS.toLowerCase(),
-        ),
+    queuedTransactionQueueDetails.filter((transactionDetails) =>
+      transactionDetails.txData?.dataDecoded?.parameters?.[0].valueDecoded?.some(
+        (value) => value.to?.toLowerCase() == MILKMAN_ADDRESS.toLowerCase(),
+      ),
     );
 
   const [tokensIn, tokensOut] = await Promise.all(

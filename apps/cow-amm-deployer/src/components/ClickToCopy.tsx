@@ -36,10 +36,10 @@ export function ClickToCopy({
               <ClipboardCopyIcon
                 width={18}
                 height={18}
-                className="text-slate11"
+                className="text-primary-foreground"
               />
             ) : (
-              <CheckIcon width={18} height={18} className="text-mint9" />
+              <CheckIcon width={18} height={18} className="text-highlight" />
             )}
           </>
         </CopyToClipboard>

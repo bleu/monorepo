@@ -10,9 +10,10 @@ import { FieldValues, useForm, UseFormReturn } from "react-hook-form";
 
 import { Button } from "#/components";
 import { Input } from "#/components/Input";
-import { Select, SelectItem } from "#/components/Select";
+import { SelectInput } from "#/components/SelectInput";
 import { Spinner } from "#/components/Spinner";
 import { Toast } from "#/components/Toast";
+import { TokenSelect } from "#/components/TokenSelect";
 import { Tooltip } from "#/components/Tooltip";
 import {
   Accordion,
@@ -30,16 +31,19 @@ import { pairs } from "#/lib/gqlUniswapV2";
 import { ammFormSchema } from "#/lib/schema";
 import { buildTxAMMArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
 import { FALLBACK_STATES, IToken, PRICE_ORACLES } from "#/lib/types";
+import { cn } from "#/lib/utils";
 import { ChainId } from "#/utils/chainsPublicClients";
 
 import { FallbackAndDomainWarning } from "./FallbackAndDomainWarning";
-import { TokenSelect } from "./TokenSelect";
 
 const getNewMinTradeToken0 = (newToken0: IToken, assets: TokenBalance[]) => {
   const asset0 = assets.find(
     (asset) =>
       asset.tokenInfo.address.toLowerCase() === newToken0.address.toLowerCase(),
   );
+
+  if (!asset0?.fiatConversion) return 0;
+
   return 10 / Number(asset0?.fiatConversion);
 };
 
@@ -112,40 +116,50 @@ export function AmmForm({
     <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-3 p-9">
       <div className="flex h-fit justify-between gap-x-7">
         <div className="w-full flex flex-col">
-          <TokenSelect
-            onSelectToken={(token: IToken) => {
-              setValue("token0", {
-                decimals: token.decimals,
-                address: token.address,
-                symbol: token.symbol,
-              });
-              setValue("minTradedToken0", getNewMinTradeToken0(token, assets));
-            }}
-            label="Select pair"
-            selectedToken={token0 ?? undefined}
-          />
-          {errors.token0 && (
-            <FormMessage className="mt-1 h-6 text-sm text-tomato10">
-              <span>{errors.token0.message}</span>
-            </FormMessage>
-          )}
+          <div className="flex flex-col w-full">
+            <span className="mb-2 h-5 block text-sm">Select pair</span>
+            <TokenSelect
+              onSelectToken={(token: IToken) => {
+                setValue("token0", {
+                  decimals: token.decimals,
+                  address: token.address,
+                  symbol: token.symbol,
+                });
+                setValue(
+                  "minTradedToken0",
+                  getNewMinTradeToken0(token, assets),
+                );
+              }}
+              selectedToken={token0 ?? undefined}
+            />
+            {errors.token0 && (
+              <FormMessage className="mt-1 h-6 text-sm text-destructive">
+                <span>{errors.token0.message}</span>
+              </FormMessage>
+            )}
+          </div>
         </div>
-        <div className="w-full flex flex-col">
-          <TokenSelect
-            onSelectToken={(token: IToken) => {
-              setValue("token1", {
-                decimals: token.decimals,
-                address: token.address,
-                symbol: token.symbol,
-              });
-            }}
-            selectedToken={token1 ?? undefined}
-          />
-          {errors.token1 && (
-            <FormMessage className="mt-1 h-6 text-sm text-tomato10">
-              <span>{errors.token1.message}</span>
-            </FormMessage>
-          )}
+        <div className="flex flex-col w-full">
+          <div className="w-full flex flex-col">
+            <span className="mb-2 h-5 block text-sm text-transparent">
+              Select pair
+            </span>
+            <TokenSelect
+              onSelectToken={(token: IToken) => {
+                setValue("token1", {
+                  decimals: token.decimals,
+                  address: token.address,
+                  symbol: token.symbol,
+                });
+              }}
+              selectedToken={token1 ?? undefined}
+            />
+            {errors.token1 && (
+              <FormMessage className="mt-1 h-6 text-sm text-destructive">
+                <span>{errors.token1.message}</span>
+              </FormMessage>
+            )}
+          </div>
         </div>
       </div>
       <PriceOracleFields
@@ -156,7 +170,10 @@ export function AmmForm({
       <Accordion className="w-full" type="single" collapsible>
         <AccordionItem value="advancedOptions" key="advancedOption">
           <AccordionTrigger
-            className={errors.minTradedToken0 ? "text-tomato10" : ""}
+            className={cn(
+              errors.minTradedToken0 ? "text-destructive" : "",
+              "pt-0",
+            )}
           >
             Advanced Options
           </AccordionTrigger>
@@ -180,6 +197,8 @@ export function AmmForm({
       )}
       <div className="flex justify-center gap-x-5 mt-2">
         <Button
+          loading={isSubmitting}
+          variant="highlight"
           type="submit"
           className="w-full"
           disabled={
@@ -188,7 +207,11 @@ export function AmmForm({
             isSubmitting
           }
         >
-          {isSubmitting ? <Spinner size="sm" /> : <span>Create AMM</span>}
+          <span>
+            {transactionType === TRANSACTION_TYPES.CREATE_COW_AMM
+              ? "Create AMM"
+              : "Edit AMM"}
+          </span>
         </Button>
       </div>
     </Form>
@@ -216,46 +239,49 @@ function PriceOracleFields({
 
   return (
     <div className="flex flex-col gap-y-3">
-      <div>
-        <div className="flex gap-x-2">
-          <Label>Price oracle source</Label>
-          <Tooltip
-            content={
-              "The price oracle is what will define the price of the orders the AMM will make."
-            }
-          >
-            <InfoCircledIcon className="w-4 h-4" color={brownDark.brown8} />
-          </Tooltip>
+      <div className="flex flex-col gap-x-7">
+        <div className="w-full">
+          <div className="flex gap-x-2 mb-2">
+            <Label>Price oracle source</Label>
+            <Tooltip
+              content={
+                "The AMM relies on price oracle exclusively for generating orders that will plausibly be settled in the current market conditions"
+              }
+            >
+              <InfoCircledIcon className="w-4 h-4" color={brownDark.brown8} />
+            </Tooltip>
+          </div>
+          <SelectInput
+            name="priceOracle"
+            options={Object.values(PRICE_ORACLES).map((value) => ({
+              id: value,
+              value,
+            }))}
+            onValueChange={(priceOracle) => {
+              setValue("priceOracle", priceOracle as PRICE_ORACLES);
+            }}
+            placeholder={priceOracle}
+          />
+          {errors.priceOracle && (
+            <FormMessage className="h-6 text-sm text-destructive w-full">
+              <p className="text-wrap">
+                {errors.priceOracle.message as string}
+              </p>
+            </FormMessage>
+          )}
         </div>
-        <Select
-          onValueChange={(priceOracle) => {
-            setValue("priceOracle", priceOracle as PRICE_ORACLES);
-          }}
-          className="w-full mt-2"
-          value={priceOracle}
-        >
-          {Object.values(PRICE_ORACLES).map((value) => (
-            <SelectItem value={value} key={value}>
-              {value}
-            </SelectItem>
-          ))}
-        </Select>
-        {errors.priceOracle && (
-          <FormMessage className="h-6 text-sm text-tomato10 w-full">
-            <p className="text-wrap">{errors.priceOracle.message as string}</p>
-          </FormMessage>
-        )}
       </div>
+
       {priceOracle === PRICE_ORACLES.BALANCER && (
         <div className="flex flex-col gap-y-1">
           <Input
-            label="Balancer Pool Id"
+            label="Balancer Pool ID"
             {...register("balancerPoolId")}
             tooltipText="The address of the Balancer pool that will be used as the price oracle. If you click on the load button it will try to find the most liquid pool address using the Balancer subgraph."
           />
           <button
             type="button"
-            className="flex flex-row text-blue9 outline-none hover:text-amber9 text-xs"
+            className="flex flex-row text-brown3 outline-none hover:text-yellow/30 text-xs"
             onClick={() => {
               getBalancerPoolId(chainId, tokenAddresses)
                 .then((id) => {
@@ -279,7 +305,7 @@ function PriceOracleFields({
           />
           <button
             type="button"
-            className="flex flex-row text-blue9 outline-none hover:text-amber9 text-xs"
+            className="flex flex-row text-brown3 outline-none hover:text-yellow/30 text-xs"
             onClick={() => {
               getUniswapV2PairAddress(
                 chainId,
@@ -312,10 +338,10 @@ function PriceOracleFields({
 function ErrorFillingPriceOracleData() {
   return (
     <div className="flex h-14 flex-row items-center justify-between px-4 py-8">
-      <div className="flex flex-col justify-between space-y-1">
-        <h1 className="text-md font-medium text-slate12">Error</h1>
-        <h3 className="mb-2 text-sm leading-3 text-slate11">
-          Check if tokens are valid and pool exists
+      <div className="flex flex-col justify-between space-y-1 text-destructive-foreground">
+        <h1 className="font-normal">Error</h1>
+        <h3 className="mb-2 text-sm leading-3">
+          Check that tokens are valid and pool exists
         </h3>
       </div>
     </div>

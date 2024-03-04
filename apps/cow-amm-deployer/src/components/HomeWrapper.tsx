@@ -1,61 +1,64 @@
-import Image from "next/image";
-import { gnosis, mainnet } from "viem/chains";
+"use client";
 
-import Button from "./Button";
+import Image from "next/image";
+
+import { Button } from "./Button";
 import { LinkComponent } from "./Link";
 
 export function HomeWrapper({
   isAmmRunning,
   goToSafe = false,
-  unsuportedChain = false,
 }: {
   isAmmRunning: boolean;
   goToSafe?: boolean;
-  unsuportedChain?: boolean;
 }) {
   const href = isAmmRunning ? "/manager" : "/new";
   const title = goToSafe
     ? "Open App in Safe"
     : isAmmRunning
-      ? "Manage your COW AMM"
-      : "Create a COW AMM";
+      ? "Manage your CoW AMM"
+      : "Create a CoW AMM";
+
+  if (typeof window === "undefined") return null;
+
+  const currentHref = encodeURIComponent(
+    window.location.href.split("/").slice(0, 3).join("/"),
+  );
 
   return (
     <div className="flex w-full justify-center h-full">
-      <div className="flex flex-col items-center gap-16 justify-center">
+      <div className="flex flex-col items-center gap-8 justify-center">
         <Image
           src="/assets/cow-amm.svg"
           height={100}
           width={400}
-          alt="CoW Amm Logo"
+          alt="CoW AMM Logo"
         />
-        <h2 className="text-5xl text-center text-seashell w-2/3">
-          The first <i className="text-purple9">MEV-Capturing AMM</i>, brought
-          to you by <i className="text-amber9">CoW DAO</i>
+        <h2 className="text-6xl mt-8 leading-snug text-center w-full font-serif">
+          The first <i className="text-purple">MEV-Capturing AMM</i>,
+          <br /> brought to you by <i className="text-yellow">CoW DAO</i>
         </h2>
-        {unsuportedChain ? (
-          <span className="text-2xl text-center text-seashell w-2/3">
-            This app isn't available on this network. Please change to{" "}
-            {gnosis.name} or {mainnet.name}
-          </span>
-        ) : (
-          <LinkComponent
-            loaderColor="amber"
-            href={
-              goToSafe
-                ? "https://app.safe.global/share/safe-app?appUrl=http%3A%2F%2Flocalhost%3A3000&chain=eth"
-                : href
-            }
-            content={
-              <Button
-                className="flex items-center gap-1 py-3 px-6"
-                title="Go to the app"
-              >
-                {title}
-              </Button>
-            }
-          />
-        )}
+        <span className="text-prose w-3/4 text-lg text-center">
+          CoW AMM is a production-ready implementation of an FM-AMM that
+          supplies liquidity for trades made on CoW Protocol. Solvers compete
+          with each other for the right to trade against the AMM
+        </span>
+        <LinkComponent
+          href={
+            goToSafe
+              ? `https://app.safe.global/share/safe-app?appUrl=${currentHref}&chain=sep`
+              : href
+          }
+          content={
+            <Button
+              size="lg"
+              className="flex items-center gap-1 py-8 px-7 text-xl"
+              title="Go to the app"
+            >
+              {title}
+            </Button>
+          }
+        />
       </div>
     </div>
   );

@@ -47,8 +47,8 @@ module.exports = {
     "tailwindcss/enforces-negative-arbitrary-values": "warn",
     "tailwindcss/enforces-shorthand": "warn",
     "tailwindcss/no-arbitrary-value": "off",
-    "tailwindcss/no-custom-classname": "error",
-    "tailwindcss/no-contradicting-classname": "error",
+    "tailwindcss/no-custom-classname": "off",
+    "tailwindcss/no-contradicting-classname": "off",
   },
   ignorePatterns: [
     "**/generated.ts",

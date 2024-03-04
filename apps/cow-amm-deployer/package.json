@@ -11,7 +11,7 @@
     "start": "next start",
     "lint": "eslint '**/*.{ts,tsx}'",
     "lint:fix": "eslint '**/*.{ts,tsx}' --fix",
-    "test:jest": "pnpm exec jest",
+    "test:jest": "pnpm exec jest --passWithNoTests",
     "test:watch": "pnpm exec jest --watchAll --verbose",
     "codegen": "graphql-codegen --config codegen.ts"
   },

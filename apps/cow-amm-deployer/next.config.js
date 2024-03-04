@@ -37,6 +37,7 @@ const moduleExports = {
       "raw.githubusercontent.com",
       "assets-cdn.trustwallet.com",
       "beethoven-assets.s3.eu-central-1.amazonaws.com",
+      "safe-transaction-assets.safe.global",
     ],
     remotePatterns: [
       {
@@ -87,6 +88,12 @@ const moduleExports = {
         hostname: "app.stakewise.io",
         port: "",
         pathname: "/static/images/currencies/**",
+      },
+      {
+        protocol: "https",
+        hostname: "safe-transaction-assets.safe.global",
+        port: "",
+        pathname: "/tokens/logos/**",
       },
     ],
   },

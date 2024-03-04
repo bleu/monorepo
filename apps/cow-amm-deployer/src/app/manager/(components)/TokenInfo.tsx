@@ -1,29 +1,26 @@
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
-import Image from "next/image";
 
-import { cowprotocolTokenLogoUrl } from "#/lib/utils";
+import { ImageFallback } from "#/components/ImageFallback";
 import { truncateAddress } from "#/utils/truncate";
 
 export function TokenInfo({
   symbol,
   id,
-  chainId,
   amount,
+  logoUri,
 }: {
+  logoUri: string;
   symbol?: string | null;
   id?: string;
-  chainId?: number;
   amount?: number | string;
 }) {
-  const tokenLogoUri =
-    id && chainId ? cowprotocolTokenLogoUrl(id, chainId) : "";
-
   return (
     <div className="flex items-center gap-x-1">
       <div className="flex items-center justify-center">
         <div className="rounded-full">
-          <Image
-            src={tokenLogoUri || "/assets/generic-token-logo.png"}
+          <ImageFallback
+            src={logoUri}
+            fallbackSrc="/assets/generic-token-logo.png"
             className="rounded-full"
             alt="Token Logo"
             height={28}

@@ -1,5 +1,4 @@
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { formatUnits } from "viem";
 
 import Table from "#/components/Table";
@@ -8,7 +7,6 @@ import { ICowAmm } from "#/lib/types";
 import { TokenInfo } from "./TokenInfo";
 
 export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
-  const { safe } = useSafeAppsSDK();
   return (
     <Table
       color="foreground"
@@ -32,7 +30,7 @@ export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
                 <TokenInfo
                   symbol={token.tokenInfo.symbol}
                   id={token.tokenInfo.address}
-                  chainId={safe.chainId}
+                  logoUri={token.tokenInfo.logoUri}
                 />
               </Table.BodyCell>
               <Table.BodyCell>

@@ -1,8 +1,6 @@
 /* eslint-disable tailwindcss/no-custom-classname */
 import { TokenBalance } from "@gnosis.pm/safe-apps-sdk";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
-import Image from "next/image";
-import { tokenLogoUri } from "public/tokens/logoUri";
 import React, { useEffect, useState } from "react";
 
 import { Command, CommandInput, CommandItem } from "#/components/ui/command";
@@ -15,7 +13,7 @@ import { useSafeBalances } from "#/hooks/useSafeBalances";
 import { IToken } from "#/lib/types";
 
 import { Button } from "./Button";
-import { Toast } from "./Toast";
+import { ImageFallback } from "./ImageFallback";
 
 export function TokenSelect({
   onSelectToken,
@@ -32,11 +30,7 @@ export function TokenSelect({
   const [selectedValue, setSelectedValue] = useState<IToken | undefined>(
     undefined,
   );
-  const [isNotifierOpen, setIsNotifierOpen] = useState(false);
-
-  // const {
-  //   safe: { chainId, safeAddress },
-  // } = useSafeAppsSDK();
+  const [tokenUri, setTokenUri] = useState<string>();
 
   const { assets, loaded } = useSafeBalances();
 
@@ -68,9 +62,6 @@ export function TokenSelect({
       });
     }
   }, [selectedToken, loaded, assets]);
-  // const [tokenSearchQuery, setTokenSearchQuery] = useState("");
-  // const [isNotifierOpen, setIsNotifierOpen] = useState(false);
-  // const publicClient = publicClientsFromIds[chainId as ChainId];
 
   function handleSelectToken(token: TokenBalance) {
     const tokenForPriceChecker = {
@@ -81,6 +72,7 @@ export function TokenSelect({
     onSelectToken(tokenForPriceChecker);
     setSelectedValue(tokenForPriceChecker);
     setOpen(false);
+    setTokenUri(token.tokenInfo.logoUri);
   }
 
   function filterTokens(token: TokenBalance) {
@@ -102,12 +94,9 @@ export function TokenSelect({
           >
             <div className="flex items-center gap-1">
               <div className="rounded-full bg-input p-[3px]">
-                <Image
-                  src={
-                    tokenLogoUri[
-                      selectedValue?.symbol as keyof typeof tokenLogoUri
-                    ] || "/assets/generic-token-logo.png"
-                  }
+                <ImageFallback
+                  src={tokenUri}
+                  fallbackSrc="/assets/generic-token-logo.png"
                   className="rounded-full"
                   alt="Token Logo"
                   height={22}
@@ -134,12 +123,9 @@ export function TokenSelect({
                 onSelect={() => handleSelectToken(token)}
               >
                 <div className="flex items-center">
-                  <Image
-                    src={
-                      tokenLogoUri[
-                        token.tokenInfo.symbol as keyof typeof tokenLogoUri
-                      ] || "/assets/generic-token-logo.png"
-                    }
+                  <ImageFallback
+                    src={token.tokenInfo.logoUri}
+                    fallbackSrc="/assets/generic-token-logo.png"
                     alt="Token Logo"
                     height={22}
                     width={22}
@@ -151,23 +137,6 @@ export function TokenSelect({
           </Command>
         </PopoverContent>
       </Popover>
-      <Toast
-        content={<ToastContent />}
-        isOpen={isNotifierOpen}
-        setIsOpen={setIsNotifierOpen}
-        duration={5000}
-        variant="alert"
-      />
     </>
-  );
-}
-
-function ToastContent() {
-  return (
-    <div className="flex h-14 flex-row items-center justify-between px-4 py-8">
-      <div className="flex flex-col justify-between space-y-1 text-primary-foreground">
-        Error: Check if the address is correct or if you really have this token.
-      </div>
-    </div>
   );
 }

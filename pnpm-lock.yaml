@@ -342,16 +342,16 @@ importers:
         specifier: 1.0.7
         version: 1.0.7(@types/react-dom@18.2.19)(@types/react@18.2.61)(react-dom@18.2.0)(react@18.2.0)
       '@safe-global/api-kit':
-        specifier: ^2.0.0
+        specifier: ^2.2.0
         version: 2.2.0
       '@safe-global/protocol-kit':
-        specifier: ^2.0.0
-        version: 2.0.0
+        specifier: ^3.0.1
+        version: 3.0.1
       '@safe-global/safe-core-sdk-types':
-        specifier: ^2.3.0
-        version: 2.3.0
+        specifier: ^4.0.1
+        version: 4.0.1
       '@safe-global/safe-gateway-typescript-sdk':
-        specifier: ^3.13.3
+        specifier: ^3.18.0
         version: 3.18.0
       '@sentry/nextjs':
         specifier: ^7.91.0

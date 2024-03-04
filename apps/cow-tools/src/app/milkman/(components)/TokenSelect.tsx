@@ -146,7 +146,7 @@ function TokenModal({
               },
             };
           })
-      : []
+      : [],
   );
 
   const { assets, loaded } = useSafeBalances();
@@ -204,7 +204,7 @@ function TokenModal({
         abi: erc20ABI,
         address: tokenSearchQuery,
         functionName: functionName,
-      })
+      }),
     );
     const data = await publicClient.multicall({ contracts: tokensContracts });
 
@@ -271,14 +271,14 @@ function TokenModal({
             .sort((a, b) =>
               formatUnits(
                 BigInt(a!.balance),
-                a!.tokenInfo.decimals ? a!.tokenInfo.decimals : 0
+                a!.tokenInfo.decimals ? a!.tokenInfo.decimals : 0,
               ) <
               formatUnits(
                 BigInt(b!.balance),
-                b!.tokenInfo.decimals ? b!.tokenInfo.decimals : 0
+                b!.tokenInfo.decimals ? b!.tokenInfo.decimals : 0,
               )
                 ? 1
-                : -1
+                : -1,
             )
             .map((token) => {
               if (token) {
@@ -355,7 +355,7 @@ function TokenRow({
         {token.balance
           ? formatUnits(
               BigInt(token.balance),
-              token.tokenInfo.decimals ? token.tokenInfo.decimals : 0
+              token.tokenInfo.decimals ? token.tokenInfo.decimals : 0,
             )
           : ""}
       </Table.BodyCell>

@@ -3,10 +3,10 @@ import { gql } from "graphql-tag";
 import { useEffect, useState } from "react";
 import { Address, decodeAbiParameters, formatUnits } from "viem";
 
-import { cowAmmModuleAbi } from "#/lib/abis/cowAmmModule";
+import { composableCowAbi } from "#/lib/abis/composableCow";
 import {
+  COMPOSABLE_COW_ADDRESS,
   COW_AMM_HANDLER_ADDRESS,
-  COW_AMM_MODULE_ADDRESS,
 } from "#/lib/contracts";
 import { fetchTokenUsdPrice } from "#/lib/fetchTokenUsdPrice";
 import { UserCurrentAmmQuery } from "#/lib/gqlComposableCow/generated";
@@ -29,6 +29,7 @@ gql(`
       chainId
       blockNumber
       blockTimestamp
+      hash
       handler
       decodedSuccess
       staticInput
@@ -56,9 +57,6 @@ gql(`
 }
 `);
 
-export const NULL_ACTIVE_ORDER =
-  "0x0000000000000000000000000000000000000000000000000000000000000000" as const;
-
 export async function fetchLastAmmInfo({
   chainId,
   safeAddress,
@@ -74,7 +72,10 @@ export async function fetchLastAmmInfo({
   const order = orders?.items?.[0];
   if (!order || !order.decodedSuccess) return;
 
-  return decodePriceOracle({ cowAmmParameters: order.cowAmmParameters });
+  return decodePriceOracle({
+    cowAmmParameters: order.cowAmmParameters,
+    hash: order.hash as `0x${string}`,
+  });
 }
 export const ADDRESSES_PRICE_ORACLES = {
   "0xad37fe3ddedf8cdee1022da1b17412cfb6495596": PRICE_ORACLES.BALANCER,
@@ -87,9 +88,11 @@ export const ADDRESSES_PRICE_ORACLES = {
 
 export async function decodePriceOracle({
   cowAmmParameters,
+  hash,
 }: {
   // @ts-ignore
   cowAmmParameters: UserCurrentAmmQuery["orders"]["items"][0]["cowAmmParameters"];
+  hash: `0x${string}`;
 }) {
   const priceOracle =
     ADDRESSES_PRICE_ORACLES[
@@ -102,6 +105,7 @@ export async function decodePriceOracle({
 
   return {
     ...cowAmmParameters,
+    hash: hash,
     priceOracleType: priceOracle,
     priceOracleDataDecoded,
   };
@@ -134,18 +138,15 @@ export function decodePriceOracleData({
 export async function checkIsAmmRunning(
   chainId: ChainId,
   safeAddress: Address,
+  hashParameters: `0x${string}`,
 ) {
   const publicClient = publicClientsFromIds[chainId];
-  return publicClient
-    .readContract({
-      address: COW_AMM_MODULE_ADDRESS[chainId],
-      abi: cowAmmModuleAbi,
-      functionName: "activeOrders",
-      args: [safeAddress],
-    })
-    .then((activeOrder) => {
-      return activeOrder != NULL_ACTIVE_ORDER;
-    });
+  return publicClient.readContract({
+    address: COMPOSABLE_COW_ADDRESS,
+    abi: composableCowAbi,
+    functionName: "singleOrders",
+    args: [safeAddress, hashParameters],
+  });
 }
 
 export function useRunningAMM(): {
@@ -165,10 +166,11 @@ export function useRunningAMM(): {
   const [error, setError] = useState(false);
   const { assets, loaded: assetLoaded } = useSafeBalances();
 
-  async function loadCoWAmmRunning() {
+  async function loadCoWAmmRunning(hash: `0x${string}`) {
     const newIsAmmRunning = await checkIsAmmRunning(
       chainId as ChainId,
       safeAddress as Address,
+      hash,
     );
     setIsAmmRunning(newIsAmmRunning);
   }
@@ -216,12 +218,13 @@ export function useRunningAMM(): {
 
     const totalUsdValue = token0ExternalUsdValue + token1ExternalUsdValue;
 
-    setCowAmm({
+    return {
       token0: {
         ...token0,
         externalUsdPrice: token0ExternalUsdPrice,
         externalUsdValue: token0ExternalUsdValue,
       },
+      hash: gqlInfo?.hash as `0x${string}`,
       token1: {
         ...token1,
         externalUsdPrice: token1ExternalUsdPrice,
@@ -231,14 +234,20 @@ export function useRunningAMM(): {
       minTradedToken0: gqlInfo?.minTradedToken0 as number,
       priceOracle: gqlInfo?.priceOracleType as PRICE_ORACLES,
       priceOracleData: gqlInfo?.priceOracleDataDecoded as PriceOracleData,
-    });
+    };
   }
 
   async function updateAmmInfo(): Promise<void> {
     setError(false);
-    await Promise.all([loadCoWAmmRunning(), loadCowAmm()]).catch(() => {
-      setError(true);
-    });
+    await loadCowAmm()
+      .then(async (newCowAmm) => {
+        if (!newCowAmm) return;
+        setCowAmm(newCowAmm);
+        await loadCoWAmmRunning(newCowAmm.hash);
+      })
+      .catch(() => {
+        setError(true);
+      });
     setLoaded(true);
   }
 

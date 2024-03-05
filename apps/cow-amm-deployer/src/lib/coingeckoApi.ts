@@ -17,11 +17,6 @@ export const COINGECK_PLATFORMS: Record<ChainId, string | null> = {
   [sepolia.id]: null,
 };
 
-/**
- * This is a text of 429 HTTP code
- * https://saturncloud.io/blog/catching-javascript-fetch-failing-with-cloudflare-429-missing-cors-header/
- */
-
 export async function getCoingeckoUsdPrice({
   address,
   chainId,

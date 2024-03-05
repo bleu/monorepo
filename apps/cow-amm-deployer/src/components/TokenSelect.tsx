@@ -127,6 +127,7 @@ export function TokenSelect({
         <PopoverContent>
           <Command>
             <CommandInput
+              // TODO: COW-179
               disabled
               placeholder="Search token..."
               className="h-9"

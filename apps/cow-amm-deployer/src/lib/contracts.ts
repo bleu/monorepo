@@ -7,9 +7,9 @@ export const SETTLEMENT_CONTRACT_ADDRESS =
   "0x9008D19f58AAbD9eD0D60971565AA8510560ab41" as const;
 
 export const COW_AMM_MODULE_ADDRESS = {
-  [mainnet.id]: "0x49D3d6e387E0CD2AC08cBe2323B341E70ccA3561",
-  [gnosis.id]: "0x758fe3195f6499fd64de2b96a0b97D0441c10bAB",
-  [sepolia.id]: "0x311eCe22daa29dBe1F253aBFee9dD4b360257aA1",
+  [mainnet.id]: "0x413e10D3A38F002eDd45d57Be1833ea133f5F5a4",
+  [gnosis.id]: "0xAa06a7274c97Bdb8375f403A4db565E7375De94e",
+  [sepolia.id]: "0x5660096d77dE391bAad64481C0f5241542f1a14a",
 } as const;
 
 export const COW_AMM_HANDLER_ADDRESS = {

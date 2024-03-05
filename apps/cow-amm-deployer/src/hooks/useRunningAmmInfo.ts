@@ -1,13 +1,14 @@
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { gql } from "graphql-tag";
 import { useEffect, useState } from "react";
-import { Address, decodeAbiParameters } from "viem";
+import { Address, decodeAbiParameters, formatUnits } from "viem";
 
 import { cowAmmModuleAbi } from "#/lib/abis/cowAmmModule";
 import {
   COW_AMM_HANDLER_ADDRESS,
   COW_AMM_MODULE_ADDRESS,
 } from "#/lib/contracts";
+import { fetchTokenUsdPrice } from "#/lib/fetchTokenUsdPrice";
 import { UserCurrentAmmQuery } from "#/lib/gqlComposableCow/generated";
 import { composableCowApi } from "#/lib/gqlComposableCow/sdk";
 import { ICowAmm, PRICE_ORACLES, PriceOracleData } from "#/lib/types";
@@ -193,12 +194,39 @@ export function useRunningAMM(): {
       return;
     }
 
-    const totalUsdValue =
-      (Number(token0.fiatBalance) || 0) + (Number(token1.fiatBalance) || 0);
+    const [token0ExternalUsdPrice, token1ExternalUsdPrice] = await Promise.all([
+      fetchTokenUsdPrice({
+        tokenAddress: token0.tokenInfo.address as Address,
+        tokenDecimals: token0.tokenInfo.decimals,
+        chainId: chainId as ChainId,
+      }).catch(() => 0),
+      fetchTokenUsdPrice({
+        tokenAddress: token1.tokenInfo.address as Address,
+        tokenDecimals: token1.tokenInfo.decimals,
+        chainId: chainId as ChainId,
+      }).catch(() => 0),
+    ]);
+
+    const [token0ExternalUsdValue, token1ExternalUsdValue] = [
+      token0ExternalUsdPrice *
+        Number(formatUnits(BigInt(token0.balance), token0.tokenInfo.decimals)),
+      token1ExternalUsdPrice *
+        Number(formatUnits(BigInt(token1.balance), token1.tokenInfo.decimals)),
+    ];
+
+    const totalUsdValue = token0ExternalUsdValue + token1ExternalUsdValue;
 
     setCowAmm({
-      token0,
-      token1,
+      token0: {
+        ...token0,
+        externalUsdPrice: token0ExternalUsdPrice,
+        externalUsdValue: token0ExternalUsdValue,
+      },
+      token1: {
+        ...token1,
+        externalUsdPrice: token1ExternalUsdPrice,
+        externalUsdValue: token1ExternalUsdValue,
+      },
       totalUsdValue,
       minTradedToken0: gqlInfo?.minTradedToken0 as number,
       priceOracle: gqlInfo?.priceOracleType as PRICE_ORACLES,

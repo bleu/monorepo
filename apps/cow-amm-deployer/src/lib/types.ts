@@ -23,8 +23,14 @@ export interface PriceOracleData {
   uniswapV2PairAddress?: Address;
 }
 export interface ICowAmm {
-  token0: TokenBalance;
-  token1: TokenBalance;
+  token0: TokenBalance & {
+    externalUsdPrice: number;
+    externalUsdValue: number;
+  };
+  token1: TokenBalance & {
+    externalUsdPrice: number;
+    externalUsdValue: number;
+  };
   totalUsdValue: number;
   minTradedToken0: number;
   priceOracle: PRICE_ORACLES;

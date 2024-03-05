@@ -1,4 +1,5 @@
 /* eslint-disable tailwindcss/no-custom-classname */
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { TokenBalance } from "@gnosis.pm/safe-apps-sdk";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import React, { useEffect, useState } from "react";
@@ -11,9 +12,10 @@ import {
 } from "#/components/ui/popover";
 import { useSafeBalances } from "#/hooks/useSafeBalances";
 import { IToken } from "#/lib/types";
+import { ChainId } from "#/utils/chainsPublicClients";
 
 import { Button } from "./Button";
-import { ImageFallback } from "./ImageFallback";
+import { TokenLogo } from "./TokenLogo";
 
 export function TokenSelect({
   onSelectToken,
@@ -33,6 +35,7 @@ export function TokenSelect({
   const [tokenUri, setTokenUri] = useState<string>();
 
   const { assets, loaded } = useSafeBalances();
+  const { safe } = useSafeAppsSDK();
 
   useEffect(() => {
     if (selectedToken) {
@@ -105,9 +108,10 @@ export function TokenSelect({
           >
             <div className="flex items-center gap-1">
               <div className="rounded-full bg-input p-[3px]">
-                <ImageFallback
+                <TokenLogo
                   src={tokenUri}
-                  fallbackSrc="/assets/generic-token-logo.png"
+                  tokenAddress={selectedValue?.address}
+                  chainId={safe.chainId as ChainId}
                   className="rounded-full"
                   alt="Token Logo"
                   height={22}
@@ -134,10 +138,12 @@ export function TokenSelect({
                 onSelect={() => handleSelectToken(token)}
               >
                 <div className="flex items-center">
-                  <ImageFallback
+                  <TokenLogo
                     src={token.tokenInfo.logoUri}
-                    fallbackSrc="/assets/generic-token-logo.png"
+                    tokenAddress={token.tokenInfo.address}
+                    chainId={safe.chainId as ChainId}
                     alt="Token Logo"
+                    className="rounded-full"
                     height={22}
                     width={22}
                   />

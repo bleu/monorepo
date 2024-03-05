@@ -1,6 +1,8 @@
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 
-import { ImageFallback } from "#/components/ImageFallback";
+import { TokenLogo } from "#/components/TokenLogo";
+import { ChainId } from "#/utils/chainsPublicClients";
 import { truncateAddress } from "#/utils/truncate";
 
 export function TokenInfo({
@@ -14,13 +16,15 @@ export function TokenInfo({
   id?: string;
   amount?: number | string;
 }) {
+  const { safe } = useSafeAppsSDK();
   return (
     <div className="flex items-center gap-x-1">
       <div className="flex items-center justify-center">
         <div className="rounded-full">
-          <ImageFallback
+          <TokenLogo
             src={logoUri}
-            fallbackSrc="/assets/generic-token-logo.png"
+            tokenAddress={id}
+            chainId={safe.chainId as ChainId}
             className="rounded-full"
             alt="Token Logo"
             height={28}

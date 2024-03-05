@@ -1,5 +1,4 @@
-import { GraphQLClient } from 'graphql-request';
-import { GraphQLClientRequestHeaders } from 'graphql-request/build/cjs/types';
+import { GraphQLClient, RequestOptions } from 'graphql-request';
 import gql from 'graphql-tag';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -8,6 +7,7 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: 
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+type GraphQLClientRequestHeaders = RequestOptions['requestHeaders'];
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string; output: string; }
@@ -122,7 +122,9 @@ export type Order = {
   cowAmmParametersId?: Maybe<Scalars['String']['output']>;
   decodedSuccess: Scalars['Boolean']['output'];
   handler: Scalars['String']['output'];
+  hash: Scalars['String']['output'];
   id: Scalars['String']['output'];
+  salt: Scalars['String']['output'];
   staticInput: Scalars['String']['output'];
   stopLossParameters?: Maybe<StopLossParameters>;
   stopLossParametersId?: Maybe<Scalars['String']['output']>;
@@ -176,6 +178,14 @@ export type OrderFilter = {
   handler_lte?: InputMaybe<Scalars['String']['input']>;
   handler_not?: InputMaybe<Scalars['String']['input']>;
   handler_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  hash?: InputMaybe<Scalars['String']['input']>;
+  hash_gt?: InputMaybe<Scalars['String']['input']>;
+  hash_gte?: InputMaybe<Scalars['String']['input']>;
+  hash_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  hash_lt?: InputMaybe<Scalars['String']['input']>;
+  hash_lte?: InputMaybe<Scalars['String']['input']>;
+  hash_not?: InputMaybe<Scalars['String']['input']>;
+  hash_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   id?: InputMaybe<Scalars['String']['input']>;
   id_contains?: InputMaybe<Scalars['String']['input']>;
   id_ends_with?: InputMaybe<Scalars['String']['input']>;
@@ -186,6 +196,14 @@ export type OrderFilter = {
   id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   id_not_starts_with?: InputMaybe<Scalars['String']['input']>;
   id_starts_with?: InputMaybe<Scalars['String']['input']>;
+  salt?: InputMaybe<Scalars['String']['input']>;
+  salt_gt?: InputMaybe<Scalars['String']['input']>;
+  salt_gte?: InputMaybe<Scalars['String']['input']>;
+  salt_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  salt_lt?: InputMaybe<Scalars['String']['input']>;
+  salt_lte?: InputMaybe<Scalars['String']['input']>;
+  salt_not?: InputMaybe<Scalars['String']['input']>;
+  salt_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   staticInput?: InputMaybe<Scalars['String']['input']>;
   staticInput_gt?: InputMaybe<Scalars['String']['input']>;
   staticInput_gte?: InputMaybe<Scalars['String']['input']>;
@@ -613,7 +631,7 @@ export type UserCurrentAmmQueryVariables = Exact<{
 }>;
 
 
-export type UserCurrentAmmQuery = { __typename?: 'Query', orders?: { __typename?: 'OrderPage', items?: Array<{ __typename?: 'Order', id: string, chainId: number, blockNumber: any, blockTimestamp: any, handler: string, decodedSuccess: boolean, staticInput: string, cowAmmParameters?: { __typename?: 'CowAmmParameters', id: string, minTradedToken0: any, priceOracle: string, priceOracleData: string, appData: string, token0: { __typename?: 'Token', id: string, address: string, symbol: string, decimals: number }, token1: { __typename?: 'Token', id: string, address: string, symbol: string, decimals: number } } | null }> | null } | null };
+export type UserCurrentAmmQuery = { __typename?: 'Query', orders?: { __typename?: 'OrderPage', items?: Array<{ __typename?: 'Order', id: string, chainId: number, blockNumber: any, blockTimestamp: any, hash: string, handler: string, decodedSuccess: boolean, staticInput: string, cowAmmParameters?: { __typename?: 'CowAmmParameters', id: string, minTradedToken0: any, priceOracle: string, priceOracleData: string, appData: string, token0: { __typename?: 'Token', id: string, address: string, symbol: string, decimals: number }, token1: { __typename?: 'Token', id: string, address: string, symbol: string, decimals: number } } | null }> | null } | null };
 
 
 export const UserCurrentAmmDocument = gql`
@@ -629,6 +647,7 @@ export const UserCurrentAmmDocument = gql`
       chainId
       blockNumber
       blockTimestamp
+      hash
       handler
       decodedSuccess
       staticInput
@@ -659,7 +678,7 @@ export const UserCurrentAmmDocument = gql`
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
 
-const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationType, variables) => action();
+const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationType, _variables) => action();
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {

@@ -1,5 +1,5 @@
 {
-  "name": "CoW AMM Manager",
-  "description": "UI to manage your CoW AMM",
+  "name": "CoW AMM Deployer",
+  "description": "UI to deploy and manage your CoW AMM",
   "iconPath": "favicon.ico"
 }

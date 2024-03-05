@@ -35,4 +35,5 @@ export interface ICowAmm {
   minTradedToken0: number;
   priceOracle: PRICE_ORACLES;
   priceOracleData: PriceOracleData;
+  hash: `0x${string}`;
 }

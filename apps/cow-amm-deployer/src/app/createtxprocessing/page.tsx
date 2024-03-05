@@ -16,14 +16,13 @@ export default function Page() {
   const router = useRouter();
 
   async function redirectToHomeIfAmmIsRunningAndIndexed() {
-    const [isAmmRunning, cowAmmDataIndexed] = await Promise.all([
-      checkIsAmmRunning(chainId as ChainId, safeAddress as Address),
-      fetchLastAmmInfo({
-        chainId: chainId as ChainId,
-        safeAddress: safeAddress as Address,
-      }),
-    ]);
-    if (isAmmRunning && cowAmmDataIndexed) {
+    const isAmmRunning = await fetchLastAmmInfo({
+      chainId: chainId as ChainId,
+      safeAddress: safeAddress as Address,
+    }).then((data) =>
+      checkIsAmmRunning(chainId as ChainId, safeAddress as Address, data.hash),
+    );
+    if (isAmmRunning) {
       router.push("/manager");
     }
   }

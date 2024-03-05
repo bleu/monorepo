@@ -1,3 +1,4 @@
+import { composableCowAbi } from "../abis/ComposableCow";
 import { erc20Abi } from "../abis/erc20";
 import { contextType } from "./types";
 
@@ -19,6 +20,25 @@ export function getErc20Data(address: `0x${string}`, context: contextType) {
     callERC20Contract<number>(address, "decimals", context).catch(() => 0),
     callERC20Contract<string>(address, "name", context).catch(() => ""),
   ]);
+}
+
+export function getHash({
+  handler,
+  salt,
+  staticInput,
+  context,
+}: {
+  handler: `0x${string}`;
+  salt: `0x${string}`;
+  staticInput: `0x${string}`;
+  context: contextType;
+}) {
+  return context.client.readContract({
+    abi: composableCowAbi,
+    address: context.contracts.composable.address,
+    functionName: "hash",
+    args: [{ handler, salt, staticInput }],
+  });
 }
 
 export async function getToken(address: `0x${string}`, context: contextType) {

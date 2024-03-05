@@ -1,5 +1,6 @@
 import { ponder } from "@/generated";
 import { decodeAndSaveHandler } from "./handlerDecoders";
+import { getHash } from "./utils";
 
 ponder.on("composable:ConditionalOrderCreated", async ({ event, context }) => {
   const userId = `${event.args.owner}-${context.network.chainId}`;
@@ -16,6 +17,12 @@ ponder.on("composable:ConditionalOrderCreated", async ({ event, context }) => {
       },
     });
   }
+  const hash = await getHash({
+    salt: event.args.params.salt,
+    staticInput: event.args.params.staticInput,
+    handler: event.args.params.handler,
+    context,
+  });
 
   try {
     const handlerData = await decodeAndSaveHandler(
@@ -41,6 +48,8 @@ ponder.on("composable:ConditionalOrderCreated", async ({ event, context }) => {
     await context.db.Order.create({
       id: event.log.id,
       data: {
+        hash: hash,
+        salt: event.args.params.salt,
         chainId: context.network.chainId,
         blockNumber: event.block.number,
         blockTimestamp: event.block.timestamp,

@@ -34,6 +34,8 @@ ponder.on("composable:ConditionalOrderCreated", async ({ event, context }) => {
     await context.db.Order.create({
       id: event.log.id,
       data: {
+        hash: hash,
+        salt: event.args.params.salt,
         chainId: context.network.chainId,
         blockNumber: event.block.number,
         blockTimestamp: event.block.timestamp,

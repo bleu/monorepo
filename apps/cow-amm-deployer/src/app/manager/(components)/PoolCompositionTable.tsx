@@ -1,12 +1,17 @@
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
+import { tomatoDark } from "@radix-ui/colors";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { formatUnits } from "viem";
 
 import Table from "#/components/Table";
+import { Tooltip } from "#/components/Tooltip";
 import { ICowAmm } from "#/lib/types";
 
 import { TokenInfo } from "./TokenInfo";
 
 export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
+  const anyTokenWithoutUsdPrice =
+    !cowAmm.token0.externalUsdPrice || !cowAmm.token1.externalUsdPrice;
   return (
     <Table
       color="foreground"
@@ -23,7 +28,7 @@ export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
       <Table.Body>
         {[cowAmm.token0, cowAmm.token1].map((token) => {
           const valuePct =
-            (Number(token.fiatBalance) * 100) / cowAmm.totalUsdValue;
+            (Number(token.externalUsdValue) * 100) / cowAmm.totalUsdValue;
           return (
             <Table.BodyRow key={token.tokenInfo.address}>
               <Table.BodyCell>
@@ -40,19 +45,47 @@ export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
                 )}
               </Table.BodyCell>
               <Table.BodyCell>
-                $ {formatNumber(token.fiatConversion, 4)}
+                <div className="flex items-center flex-row gap-2">
+                  <>$ {formatNumber(token.externalUsdPrice, 4)} </>
+                  {!token.externalUsdPrice && <PriceErrorTooltip />}
+                </div>
               </Table.BodyCell>
               <Table.BodyCell>
-                ${" "}
-                {formatNumber(token.fiatBalance, 2, "decimal", "compact", 0.01)}
+                <div className="flex items-center flex-row gap-2">
+                  <>
+                    ${" "}
+                    {formatNumber(
+                      token.externalUsdValue,
+                      2,
+                      "decimal",
+                      "compact",
+                      0.01,
+                    )}
+                  </>
+                  {!token.externalUsdPrice && <PriceErrorTooltip />}
+                </div>
               </Table.BodyCell>
               <Table.BodyCell>
-                {formatNumber(valuePct, 2)} {valuePct ? "%" : ""}
+                <div className="flex items-center flex-row gap-2">
+                  <>
+                    {anyTokenWithoutUsdPrice ? "-" : formatNumber(valuePct, 2)}{" "}
+                    {valuePct && !anyTokenWithoutUsdPrice ? "%" : ""}
+                  </>
+                  {!token.externalUsdPrice && <PriceErrorTooltip />}
+                </div>
               </Table.BodyCell>
             </Table.BodyRow>
           );
         })}
       </Table.Body>
     </Table>
+  );
+}
+
+function PriceErrorTooltip() {
+  return (
+    <Tooltip content="Error fetching token USD price">
+      <InfoCircledIcon className="w-4 h-4" color={tomatoDark.tomato10} />
+    </Tooltip>
   );
 }

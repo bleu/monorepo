@@ -127,10 +127,10 @@ export function TokenSelect({
         <PopoverContent>
           <Command>
             <CommandInput
+              disabled
               placeholder="Search token..."
               className="h-9"
-              // @ts-expect-error
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onValueChange={(search: string) => setSearchQuery(search)}
             />
             {tokens.filter(filterTokens).map((token) => (
               <CommandItem

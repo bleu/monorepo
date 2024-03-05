@@ -1049,7 +1049,7 @@ packages:
       '@babel/core': 7.23.6
       '@babel/generator': 7.23.6
       '@babel/parser': 7.23.6
-      '@babel/runtime': 7.23.6
+      '@babel/runtime': 7.24.0
       '@babel/traverse': 7.23.6
       '@babel/types': 7.23.6
       babel-preset-fbjs: 3.4.0(@babel/core@7.23.6)
@@ -1108,7 +1108,7 @@ packages:
       '@babel/traverse': 7.23.6
       '@babel/types': 7.23.6
       convert-source-map: 2.0.0
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4
       gensync: 1.0.0-beta.2
       json5: 2.2.3
       semver: 6.3.1
@@ -1690,7 +1690,6 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       regenerator-runtime: 0.14.1
-    dev: false
 
   /@babel/template@7.22.15:
     resolution: {integrity: sha512-QPErUVm4uyJa60rkI73qneDacvdvzxshT3kksGqlGWYdOTIUOwJ7RDUL8sGqslY1uXWSL6xMFKEXDS3ox2uF0w==}
@@ -1712,7 +1711,7 @@ packages:
       '@babel/helper-split-export-declaration': 7.22.6
       '@babel/parser': 7.23.6
       '@babel/types': 7.23.6
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4
       globals: 11.12.0
     transitivePeerDependencies:
       - supports-color
@@ -3584,7 +3583,7 @@ packages:
       graphql-ws: 5.14.3(graphql@16.8.1)
       isomorphic-ws: 5.0.0(ws@8.15.1)
       tslib: 2.6.2
-      ws: 8.15.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      ws: 8.15.1
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -3637,7 +3636,7 @@ packages:
       graphql: 16.8.1
       isomorphic-ws: 5.0.0(ws@8.15.1)
       tslib: 2.6.2
-      ws: 8.15.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      ws: 8.15.1
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -3919,7 +3918,7 @@ packages:
       '@types/json-stable-stringify': 1.0.36
       '@whatwg-node/fetch': 0.9.14
       chalk: 4.1.2
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4
       dotenv: 16.3.1
       graphql: 16.8.1
       graphql-request: 6.1.0(graphql@16.8.1)
@@ -4071,7 +4070,7 @@ packages:
       isomorphic-ws: 5.0.0(ws@8.15.1)
       tslib: 2.6.2
       value-or-promise: 1.0.12
-      ws: 8.15.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      ws: 8.15.1
     transitivePeerDependencies:
       - '@types/node'
       - bufferutil
@@ -5511,7 +5510,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.6
+      '@babel/runtime': 7.24.0
       '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.2.18)(@types/react@18.2.46)(react-dom@18.2.0)(react@18.2.0)
       '@types/react': 18.2.46
       '@types/react-dom': 18.2.18
@@ -6536,7 +6535,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.6
+      '@babel/runtime': 7.24.0
       '@radix-ui/react-use-callback-ref': 1.0.1(@types/react@18.2.46)(react@18.2.0)
       '@types/react': 18.2.46
       react: 18.2.0
@@ -6588,7 +6587,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.6
+      '@babel/runtime': 7.24.0
       '@radix-ui/rect': 1.0.1
       '@types/react': 18.2.46
       react: 18.2.0
@@ -6633,7 +6632,7 @@ packages:
   /@radix-ui/rect@1.0.1:
     resolution: {integrity: sha512-fyrgCaedtvMg9NK3en0pnOYJdtfwxUcNolezkNPUsoX57X8oQk+NkqcvzHXD2uKNij6GXmWU9NDru2IWjrO4BQ==}
     dependencies:
-      '@babel/runtime': 7.23.6
+      '@babel/runtime': 7.24.0
     dev: false
 
   /@rainbow-me/rainbowkit@1.3.1(@types/react@18.2.46)(react-dom@18.2.0)(react@18.2.0)(viem@1.20.3)(wagmi@1.4.12):
@@ -7132,7 +7131,7 @@ packages:
   /@solana/web3.js@1.87.6:
     resolution: {integrity: sha512-LkqsEBgTZztFiccZZXnawWa8qNCATEqE97/d0vIwjTclmVlc8pBpD1DmjfVHtZ1HS5fZorFlVhXfpwnCNDZfyg==}
     dependencies:
-      '@babel/runtime': 7.23.6
+      '@babel/runtime': 7.24.0
       '@noble/curves': 1.3.0
       '@noble/hashes': 1.3.3
       '@solana/buffer-layout': 4.0.1
@@ -8827,7 +8826,7 @@ packages:
     resolution: {integrity: sha512-RZNwNclF7+MS/8bDg70amg32dyeZGZxiDuQmZxKLAlQjr3jGyLx+4Kkk58UO7D2QdgFIQCovuSuZESne6RG6XQ==}
     engines: {node: '>= 6.0.0'}
     dependencies:
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4
     transitivePeerDependencies:
       - supports-color
 
@@ -8835,7 +8834,7 @@ packages:
     resolution: {integrity: sha512-o/zjMZRhJxny7OyEF+Op8X+efiELC7k7yOjMzgfzVqOzXqkBkWI79YoTdOtsuWd5BWhAGAuOY/Xa6xpiaWXiNg==}
     engines: {node: '>= 14'}
     dependencies:
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -10791,6 +10790,17 @@ packages:
     dependencies:
       ms: 2.1.3
 
+  /debug@4.3.4:
+    resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
+    engines: {node: '>=6.0'}
+    peerDependencies:
+      supports-color: '*'
+    peerDependenciesMeta:
+      supports-color:
+        optional: true
+    dependencies:
+      ms: 2.1.2
+
   /debug@4.3.4(supports-color@8.1.1):
     resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
     engines: {node: '>=6.0'}
@@ -11992,7 +12002,7 @@ packages:
     peerDependencies:
       eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8
     dependencies:
-      '@babel/runtime': 7.23.6
+      '@babel/runtime': 7.24.0
       aria-query: 5.3.0
       array-includes: 3.1.7
       array.prototype.flatmap: 1.3.2
@@ -13827,7 +13837,7 @@ packages:
     dependencies:
       '@tootallnate/once': 2.0.0
       agent-base: 6.0.2
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -13837,7 +13847,7 @@ packages:
     engines: {node: '>= 14'}
     dependencies:
       agent-base: 7.1.0
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -13882,7 +13892,7 @@ packages:
     engines: {node: '>= 6'}
     dependencies:
       agent-base: 6.0.2
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4
     transitivePeerDependencies:
       - supports-color
 
@@ -13891,7 +13901,7 @@ packages:
     engines: {node: '>= 14'}
     dependencies:
       agent-base: 7.1.0
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -14700,7 +14710,7 @@ packages:
     peerDependencies:
       ws: '*'
     dependencies:
-      ws: 8.15.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      ws: 8.15.1
     dev: true
 
   /isows@1.0.3(ws@8.13.0):
@@ -14758,7 +14768,7 @@ packages:
     resolution: {integrity: sha512-n3s8EwkdFIJCG3BPKBYvskgXGoy88ARzvegkitk60NxRdwltLOTaH7CUiMRXvwYorl0Q712iEjcWB+fK/MrWVw==}
     engines: {node: '>=10'}
     dependencies:
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4
       istanbul-lib-coverage: 3.2.2
       source-map: 0.6.1
     transitivePeerDependencies:
@@ -15509,7 +15519,7 @@ packages:
       whatwg-encoding: 2.0.0
       whatwg-mimetype: 3.0.0
       whatwg-url: 11.0.0
-      ws: 8.15.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      ws: 8.15.1
       xml-name-validator: 4.0.0
     transitivePeerDependencies:
       - bufferutil
@@ -16189,7 +16199,7 @@ packages:
   /media-query-parser@2.0.2:
     resolution: {integrity: sha512-1N4qp+jE0pL5Xv4uEcwVUhIkwdUO3S/9gML90nqKA7v7FcOS5vUtatfzok9S9U1EJU8dHWlcv95WLnKmmxZI9w==}
     dependencies:
-      '@babel/runtime': 7.23.6
+      '@babel/runtime': 7.24.0
     dev: false
 
   /media-typer@0.3.0:
@@ -18216,7 +18226,7 @@ packages:
     dependencies:
       '@assemblyscript/loader': 0.9.4
       bl: 5.1.0
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.4
       minimist: 1.2.8
       node-fetch: 2.7.0
       readable-stream: 3.6.2
@@ -18592,7 +18602,7 @@ packages:
   /relay-runtime@12.0.0:
     resolution: {integrity: sha512-QU6JKr1tMsry22DXNy9Whsq5rmvwr3LSZiiWV/9+DFpuTWvp+WFhobWMc8TC4OjKFfNhEZy7mOiqUAn5atQtug==}
     dependencies:
-      '@babel/runtime': 7.23.6
+      '@babel/runtime': 7.24.0
       fbjs: 3.0.5
       invariant: 2.2.4
     transitivePeerDependencies:
@@ -18784,7 +18794,7 @@ packages:
   /rpc-websockets@7.9.0:
     resolution: {integrity: sha512-DwKewQz1IUA5wfLvgM8wDpPRcr+nWSxuFxx5CbrI2z/MyyZ4nXLM86TvIA+cI1ZAdqC8JIBR1mZR55dzaLU+Hw==}
     dependencies:
-      '@babel/runtime': 7.23.6
+      '@babel/runtime': 7.24.0
       eventemitter3: 4.0.7
       uuid: 8.3.2
       ws: 8.15.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
@@ -21596,6 +21606,19 @@ packages:
       utf-8-validate:
         optional: true
     dev: false
+
+  /ws@8.15.1:
+    resolution: {integrity: sha512-W5OZiCjXEmk0yZ66ZN82beM5Sz7l7coYxpRkzS+p9PP+ToQry8szKh+61eNktr7EA9DOwvFGhfC605jDHbP6QQ==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+    dev: true
 
   /ws@8.15.1(bufferutil@4.0.8)(utf-8-validate@5.0.10):
     resolution: {integrity: sha512-W5OZiCjXEmk0yZ66ZN82beM5Sz7l7coYxpRkzS+p9PP+ToQry8szKh+61eNktr7EA9DOwvFGhfC605jDHbP6QQ==}

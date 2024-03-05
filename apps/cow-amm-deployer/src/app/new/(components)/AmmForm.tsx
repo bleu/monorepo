@@ -1,6 +1,5 @@
 import { Address } from "@bleu-fi/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { TokenBalance } from "@gnosis.pm/safe-apps-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { brownDark } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
@@ -25,7 +24,7 @@ import { Form, FormMessage } from "#/components/ui/form";
 import { Label } from "#/components/ui/label";
 import { useFallbackState } from "#/hooks/useFallbackState";
 import { useRawTxData } from "#/hooks/useRawTxData";
-import { useSafeBalances } from "#/hooks/useSafeBalances";
+import { fetchTokenUsdPrice } from "#/lib/fetchTokenUsdPrice";
 import { pools } from "#/lib/gqlBalancer";
 import { pairs } from "#/lib/gqlUniswapV2";
 import { ammFormSchema } from "#/lib/schema";
@@ -36,15 +35,14 @@ import { ChainId } from "#/utils/chainsPublicClients";
 
 import { FallbackAndDomainWarning } from "./FallbackAndDomainWarning";
 
-const getNewMinTradeToken0 = (newToken0: IToken, assets: TokenBalance[]) => {
-  const asset0 = assets.find(
-    (asset) =>
-      asset.tokenInfo.address.toLowerCase() === newToken0.address.toLowerCase(),
-  );
-
-  if (!asset0?.fiatConversion) return 0;
-
-  return 10 / Number(asset0?.fiatConversion);
+const getNewMinTradeToken0 = (newToken0: IToken, chainId: ChainId) => {
+  return fetchTokenUsdPrice({
+    tokenAddress: newToken0.address as Address,
+    tokenDecimals: newToken0.decimals,
+    chainId,
+  })
+    .then((price) => 10 / price)
+    .catch(() => 0);
 };
 
 export function AmmForm({
@@ -60,7 +58,6 @@ export function AmmForm({
     safe: { safeAddress, chainId },
   } = useSafeAppsSDK();
   const router = useRouter();
-  const { assets } = useSafeBalances();
 
   const form = useForm<typeof ammFormSchema._type>({
     resolver: zodResolver(ammFormSchema),
@@ -123,7 +120,7 @@ export function AmmForm({
           <div className="flex flex-col w-full">
             <span className="mb-2 h-5 block text-sm">Token Pair</span>
             <TokenSelect
-              onSelectToken={(token: IToken) => {
+              onSelectToken={async (token: IToken) => {
                 setValue("token0", {
                   decimals: token.decimals,
                   address: token.address,
@@ -131,7 +128,7 @@ export function AmmForm({
                 });
                 setValue(
                   "minTradedToken0",
-                  getNewMinTradeToken0(token, assets),
+                  await getNewMinTradeToken0(token, chainId as ChainId),
                 );
               }}
               selectedToken={formData?.token0 ?? undefined}

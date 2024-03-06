@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 import { Address, decodeAbiParameters, formatUnits } from "viem";
 
 import { composableCowAbi } from "#/lib/abis/composableCow";
+import { cowAmmModuleAbi } from "#/lib/abis/cowAmmModule";
 import {
   COMPOSABLE_COW_ADDRESS,
   COW_AMM_HANDLER_ADDRESS,
+  COW_AMM_MODULE_ADDRESS,
 } from "#/lib/contracts";
 import { fetchTokenUsdPrice } from "#/lib/fetchTokenUsdPrice";
 import { UserCurrentAmmQuery } from "#/lib/gqlComposableCow/generated";
@@ -149,12 +151,29 @@ export async function checkIsAmmRunning(
   });
 }
 
+export async function checkAmmIsFromModule(
+  chainId: ChainId,
+  safeAddress: Address,
+  hashParameters: `0x${string}`,
+): Promise<boolean> {
+  const publicClient = publicClientsFromIds[chainId];
+  return publicClient
+    .readContract({
+      address: COW_AMM_MODULE_ADDRESS[chainId],
+      abi: cowAmmModuleAbi,
+      functionName: "activeOrders",
+      args: [safeAddress],
+    })
+    .then((result) => result.toLowerCase() === hashParameters.toLowerCase());
+}
+
 export function useRunningAMM(): {
   cowAmm?: ICowAmm;
   loaded: boolean;
   isAmmRunning: boolean;
   error: boolean;
   updateAmmInfo: () => Promise<void>;
+  isAmmFromModule: boolean;
 } {
   const {
     safe: { safeAddress, chainId },
@@ -162,17 +181,18 @@ export function useRunningAMM(): {
 
   const [cowAmm, setCowAmm] = useState<ICowAmm>();
   const [isAmmRunning, setIsAmmRunning] = useState<boolean>(false);
+  const [isAmmFromModule, setIsAmmFromModule] = useState<boolean>(false);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
   const { assets, loaded: assetLoaded } = useSafeBalances();
 
   async function loadCoWAmmRunning(hash: `0x${string}`) {
-    const newIsAmmRunning = await checkIsAmmRunning(
-      chainId as ChainId,
-      safeAddress as Address,
-      hash,
-    );
+    const [newIsAmmRunning, newIsAmmFromModule] = await Promise.all([
+      checkIsAmmRunning(chainId as ChainId, safeAddress as Address, hash),
+      checkAmmIsFromModule(chainId as ChainId, safeAddress as Address, hash),
+    ]);
     setIsAmmRunning(newIsAmmRunning);
+    setIsAmmFromModule(newIsAmmFromModule);
   }
 
   async function loadCowAmm() {
@@ -243,6 +263,7 @@ export function useRunningAMM(): {
       .then(async (newCowAmm) => {
         if (!newCowAmm) return;
         setCowAmm(newCowAmm);
+
         await loadCoWAmmRunning(newCowAmm.hash);
       })
       .catch(() => {
@@ -256,5 +277,12 @@ export function useRunningAMM(): {
     updateAmmInfo();
   }, [safeAddress, chainId, assets]);
 
-  return { cowAmm, loaded, isAmmRunning, error, updateAmmInfo };
+  return {
+    cowAmm,
+    loaded,
+    isAmmRunning,
+    error,
+    updateAmmInfo,
+    isAmmFromModule,
+  };
 }

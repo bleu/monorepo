@@ -2,8 +2,10 @@
 
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { tomatoDark } from "@radix-ui/colors";
 import {
   ArrowTopRightIcon,
+  ExclamationTriangleIcon,
   Pencil2Icon,
   ResetIcon,
 } from "@radix-ui/react-icons";
@@ -15,6 +17,7 @@ import { Address } from "viem";
 import { Button } from "#/components/Button";
 import { Dialog } from "#/components/Dialog";
 import { Spinner } from "#/components/Spinner";
+import { Tooltip } from "#/components/Tooltip";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { useRawTxData } from "#/hooks/useRawTxData";
 import { useRunningAMM } from "#/hooks/useRunningAmmInfo";
@@ -32,7 +35,7 @@ export default function Page() {
   const router = useRouter();
   const { sendTransactions } = useRawTxData();
   const { safe, connected } = useSafeAppsSDK();
-  const { loaded, cowAmm } = useRunningAMM();
+  const { loaded, cowAmm, isAmmFromModule } = useRunningAMM();
   const [openDialog, setOpenDialog] = useState(false);
 
   if (!connected) {
@@ -147,10 +150,11 @@ export default function Page() {
           </Link>
         </div>
         <PoolCompositionTable cowAmm={cowAmm} />
-        <div className="flex gap-4">
+        <div className="flex gap-4 items-center ">
           <Button
             className="flex items-center gap-1 py-3 px-6 "
             variant="destructive"
+            disabled={!isAmmFromModule}
             onClick={() => {
               setOpenDialog(true);
             }}
@@ -163,10 +167,19 @@ export default function Page() {
             onClick={() => {
               router.push("/new");
             }}
+            disabled={!isAmmFromModule}
           >
             <Pencil2Icon />
             Edit CoW AMM LP parameters
           </Button>
+          {!isAmmFromModule && (
+            <Tooltip content="This CoW AMM LP position was not created from the supported module.">
+              <ExclamationTriangleIcon
+                className="size-6"
+                color={tomatoDark.tomato10}
+              />
+            </Tooltip>
+          )}
         </div>
       </div>
     </div>

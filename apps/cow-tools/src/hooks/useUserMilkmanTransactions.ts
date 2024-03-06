@@ -202,7 +202,11 @@ async function getQueuedMilkmanTransactions({
 }): Promise<IUserMilkmanTransaction[]> {
   const queuedTransaction = (
     await getTransactionQueue(chainId, address)
-  ).results.filter((result) => result.type == "TRANSACTION") as Transaction[];
+  ).results.filter((result) => {
+    if (result.type != "TRANSACTION") return false;
+    if (!(`methodName` in result.transaction.txInfo)) return false;
+    return result.transaction.txInfo.methodName === "multiSend";
+  }) as Transaction[];
 
   const queuedTransactionQueueDetails = await Promise.all(
     queuedTransaction.map((transaction) =>

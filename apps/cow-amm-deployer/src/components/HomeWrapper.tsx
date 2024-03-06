@@ -3,6 +3,7 @@
 import Image from "next/image";
 
 import { Button } from "./Button";
+import Fathom from "./Fathom";
 import { LinkComponent } from "./Link";
 
 export function HomeWrapper({
@@ -59,6 +60,7 @@ export function HomeWrapper({
             </Button>
           }
         />
+        <Fathom />
       </div>
     </div>
   );

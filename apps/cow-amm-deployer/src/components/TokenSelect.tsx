@@ -30,7 +30,7 @@ export function TokenSelect({
   const [tokens, setTokens] = useState<TokenBalance[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedValue, setSelectedValue] = useState<IToken | undefined>(
-    undefined,
+    undefined
   );
   const [tokenUri, setTokenUri] = useState<string>();
 
@@ -71,7 +71,7 @@ export function TokenSelect({
       const asset = assets.find(
         (asset) =>
           asset.tokenInfo.address.toLowerCase() ===
-          selectedToken.address.toLowerCase(),
+          selectedToken.address.toLowerCase()
       );
       setTokenUri(asset?.tokenInfo.logoUri);
     }
@@ -133,6 +133,9 @@ export function TokenSelect({
               className="h-9"
               onValueChange={(search: string) => setSearchQuery(search)}
             />
+            {tokens.filter(filterTokens).length === 0 && (
+              <CommandItem disabled>No tokens found on the Safe</CommandItem>
+            )}
             {tokens.filter(filterTokens).map((token) => (
               <CommandItem
                 key={token.tokenInfo.address}

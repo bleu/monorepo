@@ -133,6 +133,9 @@ export function TokenSelect({
               className="h-9"
               onValueChange={(search: string) => setSearchQuery(search)}
             />
+            {tokens.filter(filterTokens).length === 0 && (
+              <CommandItem disabled>No tokens found on the Safe</CommandItem>
+            )}
             {tokens.filter(filterTokens).map((token) => (
               <CommandItem
                 key={token.tokenInfo.address}

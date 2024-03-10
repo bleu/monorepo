@@ -20,12 +20,6 @@ export function HomeWrapper({
       ? "Manage your CoW AMM"
       : "Create a CoW AMM";
 
-  if (typeof window === "undefined") return null;
-
-  const currentHref = encodeURIComponent(
-    window.location.href.split("/").slice(0, 3).join("/"),
-  );
-
   return (
     <div className="flex w-full justify-center h-full">
       <div className="flex flex-col items-center gap-8 justify-center">
@@ -47,7 +41,7 @@ export function HomeWrapper({
         <LinkComponent
           href={
             goToSafe
-              ? `https://app.safe.global/share/safe-app?appUrl=${currentHref}&chain=sep`
+              ? `https://app.safe.global/share/safe-app?appUrl=https%3A%2F%2Fdeploy-cow-amm.bleu.fi%2F&chain=eth`
               : href
           }
           content={

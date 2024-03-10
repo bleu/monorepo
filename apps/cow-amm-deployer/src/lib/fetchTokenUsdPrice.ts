@@ -19,10 +19,12 @@ export async function fetchTokenUsdPrice({
   tokenDecimals: number;
   chainId: ChainId;
 }): Promise<number> {
-  return getCoingeckoUsdPrice({
-    chainId,
-    address: tokenAddress,
-  }).catch(() => {
+  try {
+    return await getCoingeckoUsdPrice({
+      chainId,
+      address: tokenAddress,
+    });
+  } catch (error) {
     return getCowProtocolUsdPrice({ chainId, tokenAddress, tokenDecimals });
-  });
+  }
 }

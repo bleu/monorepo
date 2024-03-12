@@ -17,10 +17,10 @@ export const metadata: Metadata = {
   title: `Cow - ${APP_DISPLAY_NAME}`,
   description: "Manage your CoW AMM",
   twitter: {
-    images: "/assets/preview-image.svg",
+    images: "/assets/preview-image.png",
   },
   openGraph: {
-    images: "/assets/preview-image.svg",
+    images: "/assets/preview-image.png",
   },
 };
 
@@ -63,7 +63,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         className={cn(
           flechaS.variable,
           circularStd.variable,
-          "bg-background flex h-full flex-col font-sans font-normal text-foreground"
+          "bg-background flex h-full flex-col font-sans font-normal text-foreground",
         )}
       >
         <RootLayout>

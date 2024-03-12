@@ -17,10 +17,10 @@ export const metadata: Metadata = {
   title: `Cow - ${APP_DISPLAY_NAME}`,
   description: "Manage your CoW AMM",
   twitter: {
-    images: "/assets/preview-image.svg",
+    images: "/assets/preview-image.png",
   },
   openGraph: {
-    images: "/assets/preview-image.svg",
+    images: "/assets/preview-image.png",
   },
 };
 

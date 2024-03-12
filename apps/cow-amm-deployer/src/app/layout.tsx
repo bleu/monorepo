@@ -63,7 +63,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         className={cn(
           flechaS.variable,
           circularStd.variable,
-          "bg-background flex h-full flex-col font-sans font-normal text-foreground",
+          "bg-background flex h-full flex-col font-sans font-normal text-foreground"
         )}
       >
         <RootLayout>

@@ -16,8 +16,8 @@ export const rateProviderAbi = [
 ];
 
 const throttle = pThrottle({
-  limit: 20,
-  interval: 1_000,
+  interval: 100,
+  limit: 10,
 });
 
 export const getRates = async (

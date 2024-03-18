@@ -1,7 +1,7 @@
-import { desc, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 
 import { db } from "../../../db";
-import { tokenPrices } from "../../../db/schema";
+import { calendar, tokenPrices } from "../../../db/schema";
 import { addToTable, BALANCER_START_DATE, logIfVerbose } from "../../../index";
 import { fetchTokenPrice } from "./fetchTokenPrices";
 
@@ -9,16 +9,23 @@ const BAL_ADDRESS = "0xba100000625a3754423978a60c9317c58a424e3d";
 export async function fetchBalPrices() {
   logIfVerbose("Start fetching BAL prices process");
 
-  const latestBalPriceTimestamp = await db
-    .select({ timestamp: tokenPrices.timestamp })
-    .from(tokenPrices)
-    .where(eq(tokenPrices.tokenAddress, BAL_ADDRESS))
-    .orderBy(desc(tokenPrices.timestamp))
+  const firstTimestampWithoutBalPrice = await db
+    .select({ timestamp: calendar.timestamp })
+    .from(calendar)
+    .leftJoin(
+      tokenPrices,
+      and(
+        eq(calendar.timestamp, tokenPrices.timestamp),
+        eq(tokenPrices.tokenAddress, BAL_ADDRESS),
+      ),
+    )
+    .orderBy(asc(calendar.timestamp))
     .limit(1);
 
   if (
-    latestBalPriceTimestamp[0].timestamp?.toDateString() ===
-    new Date().toDateString()
+    firstTimestampWithoutBalPrice.length &&
+    firstTimestampWithoutBalPrice?.[0]?.timestamp?.toDateString() ===
+      new Date().toDateString()
   ) {
     logIfVerbose("BAL prices are up to date");
   }
@@ -26,8 +33,10 @@ export async function fetchBalPrices() {
   const prices = await fetchTokenPrice(
     "ethereum",
     BAL_ADDRESS,
-    new Date(latestBalPriceTimestamp[0]?.timestamp || BALANCER_START_DATE),
+    new Date(firstTimestampWithoutBalPrice[0].timestamp || BALANCER_START_DATE),
   );
 
-  return await addToTable(tokenPrices, prices);
+  await addToTable(tokenPrices, prices);
+
+  return;
 }

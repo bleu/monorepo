@@ -34,5 +34,5 @@ jobs:
           IS_GITHUB: ${{ secrets.IS_GITHUB }}
         run: |
           echo "Running ETL Process..."
-          node -r esbuild-register src/dailySeed.ts
+          node -r esbuild-register src/index.ts
         working-directory: ./packages/balancer-apr

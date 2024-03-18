@@ -24,6 +24,7 @@ export async function transformPools() {
       LOWER(raw_data->>'network'),
       (raw_data->>'poolTypeVersion')::NUMERIC
     FROM pools
+    WHERE raw_data IS NOT NULL AND raw_data::text <> '{}'::text
     ON CONFLICT (external_id) DO UPDATE
     SET
       address = excluded.address,

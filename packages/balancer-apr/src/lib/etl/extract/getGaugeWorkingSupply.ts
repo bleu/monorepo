@@ -43,8 +43,8 @@ const abi = [
 ] as const;
 
 const throttle = pThrottle({
-  limit: 15,
-  interval: 1_000,
+  limit: 10,
+  interval: 100,
 });
 
 const WEEK = 86400n * 7n;

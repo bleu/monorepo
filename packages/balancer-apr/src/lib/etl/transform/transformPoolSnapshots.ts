@@ -2,7 +2,17 @@ import { sql } from "drizzle-orm";
 
 import { db } from "../../../db/index";
 import { logIfVerbose } from "../../../index";
-
+/**
+ * Transforms raw pool snapshot data into a normalized format and inserts it into the database.
+ *
+ * The transformation process includes:
+ * 1. Inserting new pools from the snapshot data into the `pools` table.
+ * 2. Updating the `pool_snapshots_temp` table with normalized data.
+ * 3. Calculating the next timestamp change for each snapshot.
+ * 4. Inserting the transformed snapshots into the `pool_snapshots` table.
+ * 5. Calculating the liquidity for each snapshot and updating the `pool_snapshots` table.
+ * 6. Updating the `network_slug` for each snapshot based on the associated pool.
+ */
 export async function transformPoolSnapshots() {
   logIfVerbose("Starting Pool Snapshots Transformation");
 

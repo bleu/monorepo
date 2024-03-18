@@ -31,17 +31,13 @@ export type ChainName =
   | "base";
 
 const RPC_ENDPOINT_MAP = {
-  [mainnet.id]:
-    "https://mainnet.chainnodes.org/adcffa0f-ce12-4929-933a-38735d1f5210",
-  [optimism.id]:
-    "https://optimism-mainnet.chainnodes.org/adcffa0f-ce12-4929-933a-38735d1f5210",
-  [arbitrum.id]:
-    "https://arbitrum-one.chainnodes.org/adcffa0f-ce12-4929-933a-38735d1f5210",
-  [gnosis.id]:
-    "https://gnosis-mainnet.chainnodes.org/adcffa0f-ce12-4929-933a-38735d1f5210",
-  [polygon.id]:
-    "https://polygon-mainnet.chainnodes.org/adcffa0f-ce12-4929-933a-38735d1f5210",
-  [polygonZkEvm.id]: "https://1rpc.io/zkevm",
+  [mainnet.id]: process.env.MAINNET_RPC_URL,
+  [optimism.id]: process.env.OPTIMISM_RPC_URL,
+  [arbitrum.id]: process.env.ARBITRUM_RPC_URL,
+  [gnosis.id]: process.env.GNOSIS_RPC_URL,
+  [polygon.id]: process.env.POLYGON_RPC_URL,
+  [polygonZkEvm.id]: process.env.POLYGONZKEVM_RPC_URL,
+  [base.id]: process.env.BASE_RPC_URL,
 } as const;
 
 export function createClientForChain(chain: ChainType) {

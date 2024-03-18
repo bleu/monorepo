@@ -135,15 +135,15 @@ export async function fetchTokenPrice(
       `${getNetworkSlug(network)}:${tokenAddress}`,
     );
   } catch (error) {
-    // @ts-expect-error
-    if (error?.message?.includes?.("No price data available")) return [];
-
     logIfVerbose(
       `${network}:${tokenAddress}:${dateToEpoch(
         start,
         // @ts-expect-error
       )} Failed fetching price: ${error.message}`,
     );
+    // @ts-expect-error
+    if (error?.message?.includes?.("No price data available")) return [];
+
     return [];
   }
 

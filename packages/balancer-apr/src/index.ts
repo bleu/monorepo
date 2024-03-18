@@ -47,9 +47,14 @@ export function logIfVerbose(message: unknown) {
 
 export async function addToTable(
   table: any,
-  items: any,
+  items?: any[],
   onConflictStatement: any = null,
 ) {
+  console.log("addToTable", table, onConflictStatement, items);
+  if (!items?.length) {
+    return [];
+  }
+
   const chunkedItems = [...chunks(items, BATCH_SIZE)];
   return await Promise.all(
     chunkedItems.map(async (items) => {
@@ -98,12 +103,13 @@ export async function runETLs() {
   await extractTokenDecimals();
 
   await transformPools();
+
   await transformPoolSnapshots();
 
   await fetchTokenPrices();
   await extractGaugesSnapshot();
 
-  await removeLiquidityBootstraping();
+  await removeLiquidityBootstraping(); // TODO remove also from pool_snapshots and pool_snapshots_temp and pool_rewards
   await transformRewardsData();
 
   await extractPoolRateProviderSnapshots();

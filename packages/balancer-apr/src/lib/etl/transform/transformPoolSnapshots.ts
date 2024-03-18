@@ -2,7 +2,17 @@ import { sql } from "drizzle-orm";
 
 import { db } from "../../../db/index";
 import { logIfVerbose } from "../../../index";
-
+/**
+ * Transforms raw pool snapshot data into a normalized format and inserts it into the database.
+ *
+ * The transformation process includes:
+ * 1. Inserting new pools from the snapshot data into the `pools` table.
+ * 2. Updating the `pool_snapshots_temp` table with normalized data.
+ * 3. Calculating the next timestamp change for each snapshot.
+ * 4. Inserting the transformed snapshots into the `pool_snapshots` table.
+ * 5. Calculating the liquidity for each snapshot and updating the `pool_snapshots` table.
+ * 6. Updating the `network_slug` for each snapshot based on the associated pool.
+ */
 export async function transformPoolSnapshots() {
   logIfVerbose("Starting Pool Snapshots Transformation");
 
@@ -100,4 +110,56 @@ WHERE p.id = next_change.id AND p.next_timestamp_change IS NULL;
           EXCLUDED.raw_data,
           EXCLUDED.network_slug);
 `);
+
+  await calculateLiquidity();
+
+  return await db.execute(sql`
+UPDATE
+	pool_snapshots ps
+SET
+	network_slug = p.network_slug
+FROM (
+	SELECT
+		pools.external_id,
+		pools.network_slug
+	FROM
+		pools) p
+WHERE
+	ps.pool_external_id = p.external_id
+	AND ps.network_slug IS NULL;`);
+}
+
+async function calculateLiquidity() {
+  return await db.execute(sql`
+  UPDATE
+	pool_snapshots ps
+SET
+	calculated_liquidity = sq.calculated_liquidity,
+	calculated_liquidity_error = sq.calculated_liquidity_error
+FROM (
+	SELECT
+		ps.id,
+		ps. "timestamp",
+		sum((ps.amounts ->> pt.token_index)::numeric * tp.price_usd) AS calculated_liquidity,
+		CASE WHEN ps.liquidity > 0 THEN
+		(sum((ps.amounts ->> pt.token_index)::numeric * tp.price_usd) - ps.liquidity) / ps.liquidity
+	ELSE
+		0
+		END AS calculated_liquidity_error,
+		ps.liquidity,
+		ps.total_shares,
+		ps.swap_volume,
+		ps.swap_fees,
+		ps.network_slug
+	FROM
+		pool_snapshots ps
+		JOIN pool_tokens pt ON pt.pool_external_id = ps.pool_external_id
+		JOIN token_prices tp ON tp. "timestamp" = ps. "timestamp"
+			AND tp.token_address = pt.token_address
+		GROUP BY
+			ps.liquidity,
+			ps.id) sq
+WHERE
+	ps.id = sq.id
+	AND ps.calculated_liquidity IS NULL;`);
 }

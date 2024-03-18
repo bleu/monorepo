@@ -24,8 +24,21 @@ export async function gql(
         variables,
       }),
     });
-    return response.json();
+    if (!response.ok) {
+      console.log("response", response);
+      throw new Error(
+        `GraphQL query failed with status ${response.status}: ${response.statusText}`,
+      );
+    }
+
+    const json = await response.json();
+    if (json.errors) {
+      console.log("json", json);
+      throw new Error(`GraphQL query failed: ${json.errors[0].message}`);
+    }
+    return json;
   } catch (e) {
     console.log("err", e);
+    throw e;
   }
 }

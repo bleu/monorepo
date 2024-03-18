@@ -3,7 +3,7 @@ import { sql } from "drizzle-orm";
 import { db } from "../../../db/index";
 import { pools } from "../../../db/schema";
 import { logIfVerbose } from "../../../index";
-import { transformNetworks } from "../../../transformNetworks";
+import { transformNetworks } from "./transformNetworks";
 
 export async function transformPools() {
   logIfVerbose("Starting Pools Transformation");
@@ -24,6 +24,7 @@ export async function transformPools() {
       LOWER(raw_data->>'network'),
       (raw_data->>'poolTypeVersion')::NUMERIC
     FROM pools
+    WHERE raw_data IS NOT NULL AND raw_data::text <> '{}'::text
     ON CONFLICT (external_id) DO UPDATE
     SET
       address = excluded.address,

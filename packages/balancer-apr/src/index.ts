@@ -6,15 +6,12 @@ import "dotenv/config";
 
 import { sql } from "drizzle-orm";
 
-import { calculatePoolRewardsSnapshots } from "./calculatePoolRewardsSnapshots";
-import { calculateTokenWeightSnapshots } from "./calculateTokenWeightSnapshots";
 import { chunks } from "./chunks";
 import {
   NETWORK_TO_BALANCER_ENDPOINT_MAP,
   NETWORK_TO_REWARDS_ENDPOINT_MAP,
 } from "./config";
 import { db } from "./db/index";
-import { fetchTokenPrices } from "./fetchTokenPrices";
 import { extractBlocks } from "./lib/etl/extract/extractBlocks";
 import { extractGauges } from "./lib/etl/extract/extractGauges";
 import { extractGaugesSnapshot } from "./lib/etl/extract/extractGaugesSnapshot";
@@ -25,6 +22,9 @@ import { extractPools } from "./lib/etl/extract/extractPools";
 import { extractPoolSnapshots } from "./lib/etl/extract/extractPoolSnapshots";
 import { extractTokenDecimals } from "./lib/etl/extract/extractTokenDecimals";
 import { fetchBalPrices } from "./lib/etl/extract/fetchBalPrices";
+import { fetchTokenPrices } from "./lib/etl/extract/fetchTokenPrices";
+import { calculatePoolRewardsSnapshots } from "./lib/etl/load/calculatePoolRewardsSnapshots";
+import { calculateTokenWeightSnapshots } from "./lib/etl/load/calculateTokenWeightSnapshots";
 import { loadAPRs } from "./lib/etl/load/loadAPRs";
 import { loadBalEmission } from "./lib/etl/load/loadBalEmission";
 import { loadCalendar } from "./lib/etl/load/loadCalendar";
@@ -47,13 +47,18 @@ export function logIfVerbose(message: unknown) {
 
 export async function addToTable(
   table: any,
-  items: any,
-  onConflictStatement?: any,
+  items?: any[],
+  onConflictStatement: any = null,
 ) {
+  console.log("addToTable", table, onConflictStatement, items);
+  if (!items?.length) {
+    return [];
+  }
+
   const chunkedItems = [...chunks(items, BATCH_SIZE)];
   return await Promise.all(
     chunkedItems.map(async (items) => {
-      onConflictStatement
+      return onConflictStatement
         ? await db
             .insert(table)
             .values(items)
@@ -81,30 +86,30 @@ export async function removeLiquidityBootstraping() {
 export async function runETLs() {
   logIfVerbose("Starting ETL processes");
 
-  await Promise.all([loadCalendar(), loadNetworks()]);
+  await loadCalendar();
+  await loadNetworks();
 
-  await Promise.all([loadVebalRounds(), loadBalEmission()]);
+  await loadVebalRounds();
+  await loadBalEmission();
 
-  await Promise.all([
-    extractBlocks(),
-    extractPools(),
-    extractPoolSnapshots(),
-    extractPoolRewards(),
-  ]);
+  await extractBlocks();
+  await extractPools();
+  await extractPoolSnapshots();
+  await extractPoolRewards();
 
-  await Promise.all([
-    extractGauges(),
-    extractPoolRateProviders(),
-    fetchBalPrices(),
-    fetchTokenPrices(),
-    extractTokenDecimals(),
-  ]);
+  await extractGauges();
+  await extractPoolRateProviders();
+  await fetchBalPrices();
+  await extractTokenDecimals();
 
   await transformPools();
+
   await transformPoolSnapshots();
+
+  await fetchTokenPrices();
   await extractGaugesSnapshot();
 
-  await removeLiquidityBootstraping();
+  await removeLiquidityBootstraping(); // TODO remove also from pool_snapshots and pool_snapshots_temp and pool_rewards
   await transformRewardsData();
 
   await extractPoolRateProviderSnapshots();

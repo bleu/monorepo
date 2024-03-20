@@ -119,11 +119,13 @@ export const ammFormSchema = z
     return !path.length;
   })
   .superRefine((data, ctx) => {
-    // validate if route exists
+    // hardcoded value since we're just checking if the route exists or not
+    // we're using 100 times the minTradedToken0 to cover high gas price (mainly for mainnet)
+    const amountIn = data.minTradedToken0 * 100 ** data.token0.decimals;
     return fetchCowQuote({
       tokenIn: data.token0,
       tokenOut: data.token1,
-      amountIn: 1e18, // hardcoded value since we're just checking if the route exists or not
+      amountIn,
       chainId: data.chainId as ChainId,
       priceQuality: "fast",
     }).then((res) => {

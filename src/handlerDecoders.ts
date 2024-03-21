@@ -52,7 +52,7 @@ export async function decodeAndSaveStopLoss(
   return { stopLossParametersId: StopLossParameters.id };
 }
 
-export async function decodeAndSaveCoWAmm(
+export async function decodeAndSaveProductConstant(
   staticInput: `0x${string}`,
   context: contextType,
   eventId: string
@@ -93,15 +93,15 @@ export async function decodeAndSaveCoWAmm(
 
 export const decodeAndSaveFunctions = {
   [1]: {
-    "0x34323b933096534e43958f6c7bf44f2bb59424da": decodeAndSaveCoWAmm,
+    "0x34323b933096534e43958f6c7bf44f2bb59424da": decodeAndSaveProductConstant,
     "0xe8212f30c28b4aab467df3725c14d6e89c2eb967": decodeAndSaveStopLoss,
   },
   [100]: {
-    "0xb148f40fff05b5ce6b22752cf8e454b556f7a851": decodeAndSaveCoWAmm,
+    "0xb148f40fff05b5ce6b22752cf8e454b556f7a851": decodeAndSaveProductConstant,
     "0xe8212f30c28b4aab467df3725c14d6e89c2eb967": decodeAndSaveStopLoss,
   },
   [11155111]: {
-    "0x4bb23bf4802b4bbe9195637289bb4ffc835b221b": decodeAndSaveCoWAmm,
+    "0x4bb23bf4802b4bbe9195637289bb4ffc835b221b": decodeAndSaveProductConstant,
     "0xe8212f30c28b4aab467df3725c14d6e89c2eb967": decodeAndSaveStopLoss,
   },
 };

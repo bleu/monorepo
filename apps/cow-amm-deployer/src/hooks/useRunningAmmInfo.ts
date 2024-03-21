@@ -21,7 +21,7 @@ import { useSafeBalances } from "./useSafeBalances";
 gql(`
 query UserCurrentAmm($userId: String!, $handlerId: String!) {
   orders(
-    where: {user: $userId, orderHandlerId: $handlerId}
+    where: {userId: $userId, orderHandlerId: $handlerId}
     limit: 1
     orderBy: "blockNumber"
     orderDirection: "desc"

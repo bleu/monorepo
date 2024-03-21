@@ -129,8 +129,8 @@ export type Order = {
   staticInput: Scalars['String']['output'];
   stopLossData?: Maybe<StopLossOrder>;
   stopLossDataId?: Maybe<Scalars['String']['output']>;
-  user: Scalars['String']['output'];
-  userId: User;
+  user: User;
+  userId: Scalars['String']['output'];
 };
 
 export type OrderFilter = {
@@ -226,16 +226,16 @@ export type OrderFilter = {
   stopLossDataId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   stopLossDataId_not_starts_with?: InputMaybe<Scalars['String']['input']>;
   stopLossDataId_starts_with?: InputMaybe<Scalars['String']['input']>;
-  user?: InputMaybe<Scalars['String']['input']>;
-  user_contains?: InputMaybe<Scalars['String']['input']>;
-  user_ends_with?: InputMaybe<Scalars['String']['input']>;
-  user_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  user_not?: InputMaybe<Scalars['String']['input']>;
-  user_not_contains?: InputMaybe<Scalars['String']['input']>;
-  user_not_ends_with?: InputMaybe<Scalars['String']['input']>;
-  user_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  user_not_starts_with?: InputMaybe<Scalars['String']['input']>;
-  user_starts_with?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
+  userId_contains?: InputMaybe<Scalars['String']['input']>;
+  userId_ends_with?: InputMaybe<Scalars['String']['input']>;
+  userId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  userId_not?: InputMaybe<Scalars['String']['input']>;
+  userId_not_contains?: InputMaybe<Scalars['String']['input']>;
+  userId_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  userId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  userId_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  userId_starts_with?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type OrderHandler = {
@@ -713,7 +713,7 @@ export type UserCurrentAmmQuery = { __typename?: 'Query', orders?: { __typename?
 export const UserCurrentAmmDocument = gql`
     query UserCurrentAmm($userId: String!, $handlerId: String!) {
   orders(
-    where: {user: $userId, orderHandlerId: $handlerId}
+    where: {userId: $userId, orderHandlerId: $handlerId}
     limit: 1
     orderBy: "blockNumber"
     orderDirection: "desc"

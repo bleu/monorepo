@@ -35,7 +35,7 @@ query UserCurrentAmm($userId: String!, $handlerId: String!) {
       orderHandlerId
       decodedSuccess
       staticInput
-      ProductConstantOrder {
+      productConstantOrder {
         id
         token0 {
           id
@@ -75,7 +75,7 @@ export async function fetchLastAmmInfo({
   if (!order || !order.decodedSuccess) return;
 
   return decodePriceOracle({
-    ProductConstantOrder: order.ProductConstantOrder,
+    productConstantOrder: order.productConstantOrder,
     hash: order.hash as `0x${string}`,
   });
 }
@@ -89,24 +89,24 @@ export const ADDRESSES_PRICE_ORACLES = {
 } as const;
 
 export async function decodePriceOracle({
-  ProductConstantOrder,
+  productConstantOrder,
   hash,
 }: {
   // @ts-ignore
-  ProductConstantOrder: UserCurrentAmmQuery["orders"]["items"][0]["ProductConstantOrder"];
+  productConstantOrder: UserCurrentAmmQuery["orders"]["items"][0]["productConstantOrder"];
   hash: `0x${string}`;
 }) {
   const priceOracle =
     ADDRESSES_PRICE_ORACLES[
-      ProductConstantOrder?.priceOracle.toLowerCase() as keyof typeof ADDRESSES_PRICE_ORACLES
+      productConstantOrder?.priceOracle.toLowerCase() as keyof typeof ADDRESSES_PRICE_ORACLES
     ];
   const priceOracleDataDecoded = decodePriceOracleData({
     priceOracle,
-    priceOracleData: ProductConstantOrder?.priceOracleData as `0x${string}`,
+    priceOracleData: productConstantOrder?.priceOracleData as `0x${string}`,
   });
 
   return {
-    ...ProductConstantOrder,
+    ...productConstantOrder,
     hash: hash,
     priceOracleType: priceOracle,
     priceOracleDataDecoded,
@@ -123,14 +123,14 @@ export function decodePriceOracleData({
   if (priceOracle === PRICE_ORACLES.BALANCER) {
     const [balancerPoolId] = decodeAbiParameters(
       [{ type: "bytes32", name: "poolId" }],
-      priceOracleData,
+      priceOracleData
     );
     return { balancerPoolId: balancerPoolId as `0x${string}` };
   }
   if (priceOracle === PRICE_ORACLES.UNI) {
     const [uniswapV2PairAddress] = decodeAbiParameters(
       [{ type: "address", name: "pairAddress" }],
-      priceOracleData,
+      priceOracleData
     );
     return { uniswapV2PairAddress };
   }
@@ -140,7 +140,7 @@ export function decodePriceOracleData({
 export async function checkIsAmmRunning(
   chainId: ChainId,
   safeAddress: Address,
-  orderHash: `0x${string}`,
+  orderHash: `0x${string}`
 ) {
   const publicClient = publicClientsFromIds[chainId];
   return publicClient.readContract({
@@ -154,7 +154,7 @@ export async function checkIsAmmRunning(
 export async function checkAmmIsFromModule(
   chainId: ChainId,
   safeAddress: Address,
-  orderHash: `0x${string}`,
+  orderHash: `0x${string}`
 ): Promise<boolean> {
   const publicClient = publicClientsFromIds[chainId];
   return publicClient
@@ -204,12 +204,12 @@ export function useRunningAMM(): {
     const token0 = assets.find(
       (asset) =>
         asset.tokenInfo.address.toLowerCase() ===
-        gqlInfo?.token0?.address.toLowerCase(),
+        gqlInfo?.token0?.address.toLowerCase()
     );
     const token1 = assets.find(
       (asset) =>
         asset.tokenInfo.address.toLowerCase() ===
-        gqlInfo?.token1?.address.toLowerCase(),
+        gqlInfo?.token1?.address.toLowerCase()
     );
 
     if (!token0 || !token1) {

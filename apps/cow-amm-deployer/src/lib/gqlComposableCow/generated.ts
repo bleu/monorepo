@@ -20,21 +20,22 @@ export type Scalars = {
 
 export type Order = {
   __typename?: 'Order';
-  OrderHandler?: Maybe<OrderHandler>;
-  ProductConstantOrder?: Maybe<ProductConstantOrder>;
-  StopLossOrder?: Maybe<StopLossOrder>;
   blockNumber: Scalars['BigInt']['output'];
   blockTimestamp: Scalars['BigInt']['output'];
   chainId: Scalars['Int']['output'];
   decodedSuccess: Scalars['Boolean']['output'];
   hash: Scalars['String']['output'];
   id: Scalars['String']['output'];
+  orderHandler?: Maybe<OrderHandler>;
   orderHandlerId?: Maybe<Scalars['String']['output']>;
+  productConstantOrder?: Maybe<ProductConstantOrder>;
   productConstantOrderId?: Maybe<Scalars['String']['output']>;
   salt: Scalars['String']['output'];
   staticInput: Scalars['String']['output'];
+  stopLossOrder?: Maybe<StopLossOrder>;
   stopLossOrderId?: Maybe<Scalars['String']['output']>;
   user: Scalars['String']['output'];
+  userId: User;
 };
 
 export type OrderFilter = {
@@ -706,7 +707,7 @@ export type UserCurrentAmmQueryVariables = Exact<{
 }>;
 
 
-export type UserCurrentAmmQuery = { __typename?: 'Query', orders?: { __typename?: 'OrderPage', items?: Array<{ __typename?: 'Order', id: string, chainId: number, blockNumber: any, blockTimestamp: any, hash: string, orderHandlerId?: string | null, decodedSuccess: boolean, staticInput: string, ProductConstantOrder?: { __typename?: 'ProductConstantOrder', id: string, minTradedToken0: any, priceOracle: string, priceOracleData: string, appData: string, token0: { __typename?: 'Token', id: string, address: string, symbol: string, decimals: number }, token1: { __typename?: 'Token', id: string, address: string, symbol: string, decimals: number } } | null }> | null } | null };
+export type UserCurrentAmmQuery = { __typename?: 'Query', orders?: { __typename?: 'OrderPage', items?: Array<{ __typename?: 'Order', id: string, chainId: number, blockNumber: any, blockTimestamp: any, hash: string, orderHandlerId?: string | null, decodedSuccess: boolean, staticInput: string, productConstantOrder?: { __typename?: 'ProductConstantOrder', id: string, minTradedToken0: any, priceOracle: string, priceOracleData: string, appData: string, token0: { __typename?: 'Token', id: string, address: string, symbol: string, decimals: number }, token1: { __typename?: 'Token', id: string, address: string, symbol: string, decimals: number } } | null }> | null } | null };
 
 
 export const UserCurrentAmmDocument = gql`
@@ -726,7 +727,7 @@ export const UserCurrentAmmDocument = gql`
       orderHandlerId
       decodedSuccess
       staticInput
-      ProductConstantOrder {
+      productConstantOrder {
         id
         token0 {
           id

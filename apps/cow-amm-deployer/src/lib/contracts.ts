@@ -13,7 +13,7 @@ export const COW_AMM_MODULE_ADDRESS = {
 } as const;
 
 export const COW_AMM_HANDLER_ADDRESS = {
-  [mainnet.id]: "0x34323b933096534e43958f6c7bf44f2bb59424da",
-  [gnosis.id]: "0xb148f40fff05b5ce6b22752cf8e454b556f7a851",
-  [sepolia.id]: "0x4bb23bf4802b4bbe9195637289bb4ffc835b221b",
+  [mainnet.id]: "0x34323B933096534e43958F6c7Bf44F2Bb59424DA",
+  [gnosis.id]: "0xB148F40fff05b5CE6B22752cf8E454B556f7a851",
+  [sepolia.id]: "0x4Bb23BF4802B4Bbe9195637289Bb4FfC835b221b",
 } as const;

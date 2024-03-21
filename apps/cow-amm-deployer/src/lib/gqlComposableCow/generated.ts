@@ -18,22 +18,117 @@ export type Scalars = {
   BigInt: { input: any; output: any; }
 };
 
+export type ConstantProductData = {
+  __typename?: 'ConstantProductData';
+  appData: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  minTradedToken0: Scalars['BigInt']['output'];
+  orderId: Scalars['String']['output'];
+  priceOracle: Scalars['String']['output'];
+  priceOracleData: Scalars['String']['output'];
+  token0: Token;
+  token0Id: Scalars['String']['output'];
+  token1: Token;
+  token1Id: Scalars['String']['output'];
+};
+
+export type ConstantProductDataFilter = {
+  appData?: InputMaybe<Scalars['String']['input']>;
+  appData_gt?: InputMaybe<Scalars['String']['input']>;
+  appData_gte?: InputMaybe<Scalars['String']['input']>;
+  appData_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  appData_lt?: InputMaybe<Scalars['String']['input']>;
+  appData_lte?: InputMaybe<Scalars['String']['input']>;
+  appData_not?: InputMaybe<Scalars['String']['input']>;
+  appData_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  id_contains?: InputMaybe<Scalars['String']['input']>;
+  id_ends_with?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  id_not?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  id_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  id_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  id_starts_with?: InputMaybe<Scalars['String']['input']>;
+  minTradedToken0?: InputMaybe<Scalars['BigInt']['input']>;
+  minTradedToken0_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  minTradedToken0_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  minTradedToken0_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  minTradedToken0_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  minTradedToken0_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  minTradedToken0_not?: InputMaybe<Scalars['BigInt']['input']>;
+  minTradedToken0_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  orderId?: InputMaybe<Scalars['String']['input']>;
+  orderId_contains?: InputMaybe<Scalars['String']['input']>;
+  orderId_ends_with?: InputMaybe<Scalars['String']['input']>;
+  orderId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  orderId_not?: InputMaybe<Scalars['String']['input']>;
+  orderId_not_contains?: InputMaybe<Scalars['String']['input']>;
+  orderId_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  orderId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  orderId_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  orderId_starts_with?: InputMaybe<Scalars['String']['input']>;
+  priceOracle?: InputMaybe<Scalars['String']['input']>;
+  priceOracleData?: InputMaybe<Scalars['String']['input']>;
+  priceOracleData_gt?: InputMaybe<Scalars['String']['input']>;
+  priceOracleData_gte?: InputMaybe<Scalars['String']['input']>;
+  priceOracleData_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  priceOracleData_lt?: InputMaybe<Scalars['String']['input']>;
+  priceOracleData_lte?: InputMaybe<Scalars['String']['input']>;
+  priceOracleData_not?: InputMaybe<Scalars['String']['input']>;
+  priceOracleData_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  priceOracle_gt?: InputMaybe<Scalars['String']['input']>;
+  priceOracle_gte?: InputMaybe<Scalars['String']['input']>;
+  priceOracle_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  priceOracle_lt?: InputMaybe<Scalars['String']['input']>;
+  priceOracle_lte?: InputMaybe<Scalars['String']['input']>;
+  priceOracle_not?: InputMaybe<Scalars['String']['input']>;
+  priceOracle_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  token0Id?: InputMaybe<Scalars['String']['input']>;
+  token0Id_contains?: InputMaybe<Scalars['String']['input']>;
+  token0Id_ends_with?: InputMaybe<Scalars['String']['input']>;
+  token0Id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  token0Id_not?: InputMaybe<Scalars['String']['input']>;
+  token0Id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  token0Id_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  token0Id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  token0Id_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  token0Id_starts_with?: InputMaybe<Scalars['String']['input']>;
+  token1Id?: InputMaybe<Scalars['String']['input']>;
+  token1Id_contains?: InputMaybe<Scalars['String']['input']>;
+  token1Id_ends_with?: InputMaybe<Scalars['String']['input']>;
+  token1Id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  token1Id_not?: InputMaybe<Scalars['String']['input']>;
+  token1Id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  token1Id_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  token1Id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  token1Id_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  token1Id_starts_with?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ConstantProductDataPage = {
+  __typename?: 'ConstantProductDataPage';
+  items?: Maybe<Array<ConstantProductData>>;
+  pageInfo?: Maybe<PageInfo>;
+};
+
 export type Order = {
   __typename?: 'Order';
   blockNumber: Scalars['BigInt']['output'];
   blockTimestamp: Scalars['BigInt']['output'];
   chainId: Scalars['Int']['output'];
+  constantProductData?: Maybe<ConstantProductData>;
+  constantProductDataId?: Maybe<Scalars['String']['output']>;
   decodedSuccess: Scalars['Boolean']['output'];
   hash: Scalars['String']['output'];
   id: Scalars['String']['output'];
   orderHandler?: Maybe<OrderHandler>;
   orderHandlerId?: Maybe<Scalars['String']['output']>;
-  productConstantOrder?: Maybe<ProductConstantOrder>;
-  productConstantOrderId?: Maybe<Scalars['String']['output']>;
   salt: Scalars['String']['output'];
   staticInput: Scalars['String']['output'];
-  stopLossOrder?: Maybe<StopLossOrder>;
-  stopLossOrderId?: Maybe<Scalars['String']['output']>;
+  stopLossData?: Maybe<StopLossOrder>;
+  stopLossDataId?: Maybe<Scalars['String']['output']>;
   user: Scalars['String']['output'];
   userId: User;
 };
@@ -63,6 +158,16 @@ export type OrderFilter = {
   chainId_lte?: InputMaybe<Scalars['Int']['input']>;
   chainId_not?: InputMaybe<Scalars['Int']['input']>;
   chainId_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  constantProductDataId?: InputMaybe<Scalars['String']['input']>;
+  constantProductDataId_contains?: InputMaybe<Scalars['String']['input']>;
+  constantProductDataId_ends_with?: InputMaybe<Scalars['String']['input']>;
+  constantProductDataId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  constantProductDataId_not?: InputMaybe<Scalars['String']['input']>;
+  constantProductDataId_not_contains?: InputMaybe<Scalars['String']['input']>;
+  constantProductDataId_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  constantProductDataId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  constantProductDataId_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  constantProductDataId_starts_with?: InputMaybe<Scalars['String']['input']>;
   decodedSuccess?: InputMaybe<Scalars['Boolean']['input']>;
   decodedSuccess_in?: InputMaybe<Array<InputMaybe<Scalars['Boolean']['input']>>>;
   decodedSuccess_not?: InputMaybe<Scalars['Boolean']['input']>;
@@ -95,16 +200,6 @@ export type OrderFilter = {
   orderHandlerId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   orderHandlerId_not_starts_with?: InputMaybe<Scalars['String']['input']>;
   orderHandlerId_starts_with?: InputMaybe<Scalars['String']['input']>;
-  productConstantOrderId?: InputMaybe<Scalars['String']['input']>;
-  productConstantOrderId_contains?: InputMaybe<Scalars['String']['input']>;
-  productConstantOrderId_ends_with?: InputMaybe<Scalars['String']['input']>;
-  productConstantOrderId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  productConstantOrderId_not?: InputMaybe<Scalars['String']['input']>;
-  productConstantOrderId_not_contains?: InputMaybe<Scalars['String']['input']>;
-  productConstantOrderId_not_ends_with?: InputMaybe<Scalars['String']['input']>;
-  productConstantOrderId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  productConstantOrderId_not_starts_with?: InputMaybe<Scalars['String']['input']>;
-  productConstantOrderId_starts_with?: InputMaybe<Scalars['String']['input']>;
   salt?: InputMaybe<Scalars['String']['input']>;
   salt_gt?: InputMaybe<Scalars['String']['input']>;
   salt_gte?: InputMaybe<Scalars['String']['input']>;
@@ -121,16 +216,16 @@ export type OrderFilter = {
   staticInput_lte?: InputMaybe<Scalars['String']['input']>;
   staticInput_not?: InputMaybe<Scalars['String']['input']>;
   staticInput_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  stopLossOrderId?: InputMaybe<Scalars['String']['input']>;
-  stopLossOrderId_contains?: InputMaybe<Scalars['String']['input']>;
-  stopLossOrderId_ends_with?: InputMaybe<Scalars['String']['input']>;
-  stopLossOrderId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  stopLossOrderId_not?: InputMaybe<Scalars['String']['input']>;
-  stopLossOrderId_not_contains?: InputMaybe<Scalars['String']['input']>;
-  stopLossOrderId_not_ends_with?: InputMaybe<Scalars['String']['input']>;
-  stopLossOrderId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  stopLossOrderId_not_starts_with?: InputMaybe<Scalars['String']['input']>;
-  stopLossOrderId_starts_with?: InputMaybe<Scalars['String']['input']>;
+  stopLossDataId?: InputMaybe<Scalars['String']['input']>;
+  stopLossDataId_contains?: InputMaybe<Scalars['String']['input']>;
+  stopLossDataId_ends_with?: InputMaybe<Scalars['String']['input']>;
+  stopLossDataId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  stopLossDataId_not?: InputMaybe<Scalars['String']['input']>;
+  stopLossDataId_not_contains?: InputMaybe<Scalars['String']['input']>;
+  stopLossDataId_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  stopLossDataId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  stopLossDataId_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  stopLossDataId_starts_with?: InputMaybe<Scalars['String']['input']>;
   user?: InputMaybe<Scalars['String']['input']>;
   user_contains?: InputMaybe<Scalars['String']['input']>;
   user_ends_with?: InputMaybe<Scalars['String']['input']>;
@@ -210,115 +305,37 @@ export type PageInfo = {
   startCursor?: Maybe<Scalars['String']['output']>;
 };
 
-export type ProductConstantOrder = {
-  __typename?: 'ProductConstantOrder';
-  appData: Scalars['String']['output'];
-  id: Scalars['String']['output'];
-  minTradedToken0: Scalars['BigInt']['output'];
-  orderId: Scalars['String']['output'];
-  priceOracle: Scalars['String']['output'];
-  priceOracleData: Scalars['String']['output'];
-  token0: Token;
-  token0Id: Scalars['String']['output'];
-  token1: Token;
-  token1Id: Scalars['String']['output'];
-};
-
-export type ProductConstantOrderFilter = {
-  appData?: InputMaybe<Scalars['String']['input']>;
-  appData_gt?: InputMaybe<Scalars['String']['input']>;
-  appData_gte?: InputMaybe<Scalars['String']['input']>;
-  appData_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  appData_lt?: InputMaybe<Scalars['String']['input']>;
-  appData_lte?: InputMaybe<Scalars['String']['input']>;
-  appData_not?: InputMaybe<Scalars['String']['input']>;
-  appData_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  id_contains?: InputMaybe<Scalars['String']['input']>;
-  id_ends_with?: InputMaybe<Scalars['String']['input']>;
-  id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  id_not?: InputMaybe<Scalars['String']['input']>;
-  id_not_contains?: InputMaybe<Scalars['String']['input']>;
-  id_not_ends_with?: InputMaybe<Scalars['String']['input']>;
-  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  id_not_starts_with?: InputMaybe<Scalars['String']['input']>;
-  id_starts_with?: InputMaybe<Scalars['String']['input']>;
-  minTradedToken0?: InputMaybe<Scalars['BigInt']['input']>;
-  minTradedToken0_gt?: InputMaybe<Scalars['BigInt']['input']>;
-  minTradedToken0_gte?: InputMaybe<Scalars['BigInt']['input']>;
-  minTradedToken0_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
-  minTradedToken0_lt?: InputMaybe<Scalars['BigInt']['input']>;
-  minTradedToken0_lte?: InputMaybe<Scalars['BigInt']['input']>;
-  minTradedToken0_not?: InputMaybe<Scalars['BigInt']['input']>;
-  minTradedToken0_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
-  orderId?: InputMaybe<Scalars['String']['input']>;
-  orderId_contains?: InputMaybe<Scalars['String']['input']>;
-  orderId_ends_with?: InputMaybe<Scalars['String']['input']>;
-  orderId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  orderId_not?: InputMaybe<Scalars['String']['input']>;
-  orderId_not_contains?: InputMaybe<Scalars['String']['input']>;
-  orderId_not_ends_with?: InputMaybe<Scalars['String']['input']>;
-  orderId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  orderId_not_starts_with?: InputMaybe<Scalars['String']['input']>;
-  orderId_starts_with?: InputMaybe<Scalars['String']['input']>;
-  priceOracle?: InputMaybe<Scalars['String']['input']>;
-  priceOracleData?: InputMaybe<Scalars['String']['input']>;
-  priceOracleData_gt?: InputMaybe<Scalars['String']['input']>;
-  priceOracleData_gte?: InputMaybe<Scalars['String']['input']>;
-  priceOracleData_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  priceOracleData_lt?: InputMaybe<Scalars['String']['input']>;
-  priceOracleData_lte?: InputMaybe<Scalars['String']['input']>;
-  priceOracleData_not?: InputMaybe<Scalars['String']['input']>;
-  priceOracleData_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  priceOracle_gt?: InputMaybe<Scalars['String']['input']>;
-  priceOracle_gte?: InputMaybe<Scalars['String']['input']>;
-  priceOracle_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  priceOracle_lt?: InputMaybe<Scalars['String']['input']>;
-  priceOracle_lte?: InputMaybe<Scalars['String']['input']>;
-  priceOracle_not?: InputMaybe<Scalars['String']['input']>;
-  priceOracle_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  token0Id?: InputMaybe<Scalars['String']['input']>;
-  token0Id_contains?: InputMaybe<Scalars['String']['input']>;
-  token0Id_ends_with?: InputMaybe<Scalars['String']['input']>;
-  token0Id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  token0Id_not?: InputMaybe<Scalars['String']['input']>;
-  token0Id_not_contains?: InputMaybe<Scalars['String']['input']>;
-  token0Id_not_ends_with?: InputMaybe<Scalars['String']['input']>;
-  token0Id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  token0Id_not_starts_with?: InputMaybe<Scalars['String']['input']>;
-  token0Id_starts_with?: InputMaybe<Scalars['String']['input']>;
-  token1Id?: InputMaybe<Scalars['String']['input']>;
-  token1Id_contains?: InputMaybe<Scalars['String']['input']>;
-  token1Id_ends_with?: InputMaybe<Scalars['String']['input']>;
-  token1Id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  token1Id_not?: InputMaybe<Scalars['String']['input']>;
-  token1Id_not_contains?: InputMaybe<Scalars['String']['input']>;
-  token1Id_not_ends_with?: InputMaybe<Scalars['String']['input']>;
-  token1Id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  token1Id_not_starts_with?: InputMaybe<Scalars['String']['input']>;
-  token1Id_starts_with?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type ProductConstantOrderPage = {
-  __typename?: 'ProductConstantOrderPage';
-  items?: Maybe<Array<ProductConstantOrder>>;
-  pageInfo?: Maybe<PageInfo>;
-};
-
 export type Query = {
   __typename?: 'Query';
+  constantProductData?: Maybe<ConstantProductData>;
+  constantProductDatas?: Maybe<ConstantProductDataPage>;
   order?: Maybe<Order>;
   orderHandler?: Maybe<OrderHandler>;
   orderHandlers?: Maybe<OrderHandlerPage>;
   orders?: Maybe<OrderPage>;
-  productConstantOrder?: Maybe<ProductConstantOrder>;
-  productConstantOrders?: Maybe<ProductConstantOrderPage>;
   stopLossOrder?: Maybe<StopLossOrder>;
   stopLossOrders?: Maybe<StopLossOrderPage>;
   token?: Maybe<Token>;
   tokens?: Maybe<TokenPage>;
   user?: Maybe<User>;
   users?: Maybe<UserPage>;
+};
+
+
+export type QueryConstantProductDataArgs = {
+  id: Scalars['String']['input'];
+  timestamp?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryConstantProductDatasArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  timestamp?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ConstantProductDataFilter>;
 };
 
 
@@ -353,23 +370,6 @@ export type QueryOrdersArgs = {
   orderDirection?: InputMaybe<Scalars['String']['input']>;
   timestamp?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<OrderFilter>;
-};
-
-
-export type QueryProductConstantOrderArgs = {
-  id: Scalars['String']['input'];
-  timestamp?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type QueryProductConstantOrdersArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Scalars['String']['input']>;
-  orderDirection?: InputMaybe<Scalars['String']['input']>;
-  timestamp?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<ProductConstantOrderFilter>;
 };
 
 
@@ -707,7 +707,7 @@ export type UserCurrentAmmQueryVariables = Exact<{
 }>;
 
 
-export type UserCurrentAmmQuery = { __typename?: 'Query', orders?: { __typename?: 'OrderPage', items?: Array<{ __typename?: 'Order', id: string, chainId: number, blockNumber: any, blockTimestamp: any, hash: string, orderHandlerId?: string | null, decodedSuccess: boolean, staticInput: string, productConstantOrder?: { __typename?: 'ProductConstantOrder', id: string, minTradedToken0: any, priceOracle: string, priceOracleData: string, appData: string, token0: { __typename?: 'Token', id: string, address: string, symbol: string, decimals: number }, token1: { __typename?: 'Token', id: string, address: string, symbol: string, decimals: number } } | null }> | null } | null };
+export type UserCurrentAmmQuery = { __typename?: 'Query', orders?: { __typename?: 'OrderPage', items?: Array<{ __typename?: 'Order', id: string, chainId: number, blockNumber: any, blockTimestamp: any, hash: string, orderHandlerId?: string | null, decodedSuccess: boolean, staticInput: string, constantProductData?: { __typename?: 'ConstantProductData', id: string, minTradedToken0: any, priceOracle: string, priceOracleData: string, appData: string, token0: { __typename?: 'Token', id: string, address: string, symbol: string, decimals: number }, token1: { __typename?: 'Token', id: string, address: string, symbol: string, decimals: number } } | null }> | null } | null };
 
 
 export const UserCurrentAmmDocument = gql`
@@ -727,7 +727,7 @@ export const UserCurrentAmmDocument = gql`
       orderHandlerId
       decodedSuccess
       staticInput
-      productConstantOrder {
+      constantProductData {
         id
         token0 {
           id

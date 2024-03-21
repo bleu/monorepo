@@ -40,9 +40,9 @@ export class DefaultHandlerHelper extends IHandlerHelper {
   type = undefined;
 
   async decodeAndSaveOrder(
-    staticInput: `0x${string}`,
-    context: contextType,
-    eventId: string
+    _staticInput: `0x${string}`,
+    _context: contextType,
+    _eventId: string
   ): Promise<IOrderDecodingParameters> {
     return {
       decodedSuccess: false,

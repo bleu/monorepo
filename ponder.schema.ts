@@ -6,19 +6,27 @@ export default createSchema((p) => ({
     chainId: p.int(),
     blockNumber: p.bigint(),
     blockTimestamp: p.bigint(),
-    handler: p.hex(),
     hash: p.hex(),
     salt: p.hex(),
-    user: p.string().references("User.id"),
+    userId: p.string().references("User.id"),
+    user: p.one("userId"),
     staticInput: p.hex(),
     decodedSuccess: p.boolean(),
-    stopLossParametersId: p
+    stopLossDataId: p.string().references("StopLossOrder.id").optional(),
+    stopLossData: p.one("stopLossDataId"),
+    orderHandlerId: p.string().references("OrderHandler.id").optional(),
+    orderHandler: p.one("orderHandlerId"),
+    constantProductDataId: p
       .string()
-      .references("StopLossParameters.id")
+      .references("ConstantProductData.id")
       .optional(),
-    stopLossParameters: p.one("stopLossParametersId"),
-    cowAmmParametersId: p.string().references("CowAmmParameters.id").optional(),
-    cowAmmParameters: p.one("cowAmmParametersId"),
+    constantProductData: p.one("constantProductDataId"),
+  }),
+  OrderHandler: p.createTable({
+    id: p.string(),
+    type: p.string().optional(),
+    address: p.hex(),
+    chainId: p.int(),
   }),
   Token: p.createTable({
     id: p.string(),
@@ -32,9 +40,9 @@ export default createSchema((p) => ({
     id: p.string(),
     address: p.string(),
     chainId: p.int(),
-    orders: p.many("Order.user"),
+    orders: p.many("Order.userId"),
   }),
-  StopLossParameters: p.createTable({
+  StopLossOrder: p.createTable({
     id: p.string(),
     orderId: p.string().references("Order.id"),
     tokenInId: p.string().references("Token.id"),
@@ -53,7 +61,7 @@ export default createSchema((p) => ({
     strike: p.bigint(),
     maxTimeSinceLastOracleUpdate: p.bigint(),
   }),
-  CowAmmParameters: p.createTable({
+  ConstantProductData: p.createTable({
     id: p.string(),
     orderId: p.string().references("Order.id"),
     token0Id: p.string().references("Token.id"),

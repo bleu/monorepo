@@ -1,3 +1,4 @@
+import { Address } from "viem";
 import { composableCowAbi } from "../abis/ComposableCow";
 import { erc20Abi } from "../abis/erc20";
 import { contextType } from "./types";
@@ -60,4 +61,26 @@ export async function getToken(address: `0x${string}`, context: contextType) {
     });
   }
   return token;
+}
+
+export async function getUser(
+  address: Address,
+  chainId: number,
+  context: contextType
+) {
+  const userId = `${address}-${chainId}`;
+  let user = await context.db.User.findUnique({
+    id: userId,
+  });
+
+  if (!user) {
+    user = await context.db.User.create({
+      id: userId,
+      data: {
+        address,
+        chainId,
+      },
+    });
+  }
+  return user;
 }

@@ -9,17 +9,18 @@ export default createSchema((p) => ({
     hash: p.hex(),
     salt: p.hex(),
     user: p.string().references("User.id"),
+    userId: p.one("user"),
     staticInput: p.hex(),
     decodedSuccess: p.boolean(),
     stopLossOrderId: p.string().references("StopLossOrder.id").optional(),
-    StopLossOrder: p.one("stopLossOrderId"),
+    stopLossOrder: p.one("stopLossOrderId"),
     orderHandlerId: p.string().references("OrderHandler.id").optional(),
-    OrderHandler: p.one("orderHandlerId"),
+    orderHandler: p.one("orderHandlerId"),
     productConstantOrderId: p
       .string()
       .references("ProductConstantOrder.id")
       .optional(),
-    ProductConstantOrder: p.one("productConstantOrderId"),
+    productConstantOrder: p.one("productConstantOrderId"),
   }),
   OrderHandler: p.createTable({
     id: p.string(),

@@ -2,7 +2,7 @@ import type { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
   overwrite: true,
-  schema: "https://composable-cow-api.up.railway.app",
+  schema: "https://composable-cow-api-staging.up.railway.app/",
   documents: "src/**/*.(ts|tsx)",
   generates: {
     "src/lib/gqlComposableCow/generated.ts": {

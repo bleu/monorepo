@@ -19,9 +19,9 @@ import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 import { useSafeBalances } from "./useSafeBalances";
 
 gql(`
-  query UserCurrentAmm($userId: String!, $handler: String!) {
+query UserCurrentAmm($userId: String!, $handlerId: String!) {
   orders(
-    where: {user: $userId, handler: $handler}
+    where: {userId: $userId, orderHandlerId: $handlerId}
     limit: 1
     orderBy: "blockNumber"
     orderDirection: "desc"
@@ -32,10 +32,10 @@ gql(`
       blockNumber
       blockTimestamp
       hash
-      handler
+      orderHandlerId
       decodedSuccess
       staticInput
-      cowAmmParameters {
+      constantProductData {
         id
         token0 {
           id
@@ -68,14 +68,14 @@ export async function fetchLastAmmInfo({
 }) {
   const { orders } = await composableCowApi.UserCurrentAmm({
     userId: `${safeAddress}-${chainId}`,
-    handler: COW_AMM_HANDLER_ADDRESS[chainId as ChainId],
+    handlerId: `${COW_AMM_HANDLER_ADDRESS[chainId as ChainId]}-${chainId}`,
   });
 
   const order = orders?.items?.[0];
   if (!order || !order.decodedSuccess) return;
 
   return decodePriceOracle({
-    cowAmmParameters: order.cowAmmParameters,
+    constantProductData: order.constantProductData,
     hash: order.hash as `0x${string}`,
   });
 }
@@ -89,24 +89,24 @@ export const ADDRESSES_PRICE_ORACLES = {
 } as const;
 
 export async function decodePriceOracle({
-  cowAmmParameters,
+  constantProductData,
   hash,
 }: {
   // @ts-ignore
-  cowAmmParameters: UserCurrentAmmQuery["orders"]["items"][0]["cowAmmParameters"];
+  constantProductData: UserCurrentAmmQuery["orders"]["items"][0]["constantProductData"];
   hash: `0x${string}`;
 }) {
   const priceOracle =
     ADDRESSES_PRICE_ORACLES[
-      cowAmmParameters?.priceOracle.toLowerCase() as keyof typeof ADDRESSES_PRICE_ORACLES
+      constantProductData?.priceOracle.toLowerCase() as keyof typeof ADDRESSES_PRICE_ORACLES
     ];
   const priceOracleDataDecoded = decodePriceOracleData({
     priceOracle,
-    priceOracleData: cowAmmParameters?.priceOracleData as `0x${string}`,
+    priceOracleData: constantProductData?.priceOracleData as `0x${string}`,
   });
 
   return {
-    ...cowAmmParameters,
+    ...constantProductData,
     hash: hash,
     priceOracleType: priceOracle,
     priceOracleDataDecoded,
@@ -140,21 +140,21 @@ export function decodePriceOracleData({
 export async function checkIsAmmRunning(
   chainId: ChainId,
   safeAddress: Address,
-  hashParameters: `0x${string}`,
+  orderHash: `0x${string}`,
 ) {
   const publicClient = publicClientsFromIds[chainId];
   return publicClient.readContract({
     address: COMPOSABLE_COW_ADDRESS,
     abi: composableCowAbi,
     functionName: "singleOrders",
-    args: [safeAddress, hashParameters],
+    args: [safeAddress, orderHash],
   });
 }
 
 export async function checkAmmIsFromModule(
   chainId: ChainId,
   safeAddress: Address,
-  hashParameters: `0x${string}`,
+  orderHash: `0x${string}`,
 ): Promise<boolean> {
   const publicClient = publicClientsFromIds[chainId];
   return publicClient
@@ -164,7 +164,7 @@ export async function checkAmmIsFromModule(
       functionName: "activeOrders",
       args: [safeAddress],
     })
-    .then((result) => result.toLowerCase() === hashParameters.toLowerCase());
+    .then((result) => result.toLowerCase() === orderHash.toLowerCase());
 }
 
 export function useRunningAMM(): {
@@ -263,7 +263,6 @@ export function useRunningAMM(): {
       .then(async (newCowAmm) => {
         if (!newCowAmm) return;
         setCowAmm(newCowAmm);
-
         await loadCoWAmmRunning(newCowAmm.hash);
       })
       .catch(() => {

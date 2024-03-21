@@ -6,7 +6,6 @@ export default createSchema((p) => ({
     chainId: p.int(),
     blockNumber: p.bigint(),
     blockTimestamp: p.bigint(),
-    handler: p.hex(),
     hash: p.hex(),
     salt: p.hex(),
     user: p.string().references("User.id"),
@@ -14,11 +13,19 @@ export default createSchema((p) => ({
     decodedSuccess: p.boolean(),
     stopLossOrderId: p.string().references("StopLossOrder.id").optional(),
     StopLossOrder: p.one("stopLossOrderId"),
+    orderHandlerId: p.string().references("OrderHandler.id").optional(),
+    OrderHandler: p.one("orderHandlerId"),
     productConstantOrderId: p
       .string()
       .references("ProductConstantOrder.id")
       .optional(),
     ProductConstantOrder: p.one("productConstantOrderId"),
+  }),
+  OrderHandler: p.createTable({
+    id: p.string(),
+    type: p.string().optional(),
+    address: p.hex(),
+    chainId: p.int(),
   }),
   Token: p.createTable({
     id: p.string(),

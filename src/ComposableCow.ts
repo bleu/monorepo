@@ -1,66 +1,65 @@
 import { ponder } from "@/generated";
-import { decodeAndSaveHandler } from "./handlerDecoders";
-import { getHash } from "./utils";
+import { DefaultHandlerHelper, getHandlerHelper } from "./handler";
+import { getHash, getUser } from "./utils";
 
 ponder.on("composable:ConditionalOrderCreated", async ({ event, context }) => {
-  const userId = `${event.args.owner}-${context.network.chainId}`;
-  let user = await context.db["User"].findUnique({
-    id: userId,
-  });
+  const handlerHelper = getHandlerHelper(
+    event.args.params.handler,
+    context.network.chainId
+  );
 
-  if (!user) {
-    user = await context.db.User.create({
-      id: userId,
-      data: {
-        address: event.args.owner,
-        chainId: context.network.chainId,
-      },
-    });
-  }
-  const hash = await getHash({
-    salt: event.args.params.salt,
-    staticInput: event.args.params.staticInput,
-    handler: event.args.params.handler,
-    context,
-  });
-
-  try {
-    const handlerData = await decodeAndSaveHandler(
-      event.args.params.handler,
-      event.args.params.staticInput,
+  const [user, hash, orderHandler] = await Promise.all([
+    getUser(event.args.owner, context.network.chainId, context),
+    getHash({
+      salt: event.args.params.salt,
+      staticInput: event.args.params.staticInput,
+      handler: event.args.params.handler,
       context,
-      `${event.log.id}-${context.network.chainId}`
-    );
-    await context.db.Order.create({
-      id: event.log.id,
-      data: {
-        hash: hash,
-        salt: event.args.params.salt,
-        chainId: context.network.chainId,
-        blockNumber: event.block.number,
-        blockTimestamp: event.block.timestamp,
-        handler: event.args.params.handler,
-        staticInput: event.args.params.staticInput,
-        decodedSuccess: true,
-        user: user.id,
-        ...handlerData,
-      },
+    }),
+    handlerHelper.getOrderHandler(event.args.params.handler, context),
+  ]);
+
+  await handlerHelper
+    .decodeAndSaveOrder(event.args.params.staticInput, context, event.log.id)
+    .then(async (handlerData) => {
+      await context.db.Order.create({
+        id: event.log.id,
+        data: {
+          hash: hash,
+          salt: event.args.params.salt,
+          chainId: context.network.chainId,
+          blockNumber: event.block.number,
+          blockTimestamp: event.block.timestamp,
+          staticInput: event.args.params.staticInput,
+          user: user.id,
+          orderHandlerId: orderHandler.id,
+          ...handlerData,
+        },
+      });
+    })
+    .catch(async (e) => {
+      console.log(e);
+      const defaultHandlerHelper = new DefaultHandlerHelper();
+      const handlerData = await defaultHandlerHelper.decodeAndSaveOrder(
+        event.args.params.staticInput,
+        context,
+        event.log.id
+      );
+      await context.db.Order.create({
+        id: event.log.id,
+        data: {
+          hash: hash,
+          salt: event.args.params.salt,
+          chainId: context.network.chainId,
+          blockNumber: event.block.number,
+          blockTimestamp: event.block.timestamp,
+          staticInput: event.args.params.staticInput,
+          user: user.id,
+          orderHandlerId: event.args.params.handler,
+          ...handlerData,
+        },
+      });
     });
-  } catch (e) {
-    await context.db.Order.create({
-      id: event.log.id,
-      data: {
-        hash: hash,
-        salt: event.args.params.salt,
-        chainId: context.network.chainId,
-        blockNumber: event.block.number,
-        blockTimestamp: event.block.timestamp,
-        handler: event.args.params.handler,
-        staticInput: event.args.params.staticInput,
-        decodedSuccess: false,
-        user: user.id,
-      },
-    });
-    return;
-  }
+
+  return;
 });

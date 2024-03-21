@@ -5,8 +5,8 @@ import { getToken } from "./utils";
 type OrderType = "StopLoss" | "ProductConstant" | undefined;
 
 interface IOrderDecodingParameters {
-  stopLossOrderId?: string;
-  productConstantOrderId?: string;
+  stopLossDataId?: string;
+  constantProductDataId?: string;
   decodedSuccess: boolean;
 }
 
@@ -100,7 +100,7 @@ class StopLossHandlerHelper extends IHandlerHelper {
         maxTimeSinceLastOracleUpdate: stopLossData[12],
       },
     });
-    return { stopLossOrderId: StopLossOrder.id, decodedSuccess: true };
+    return { stopLossDataId: StopLossOrder.id, decodedSuccess: true };
   }
 }
 
@@ -131,7 +131,7 @@ class ProductConstantHandlerHelper extends IHandlerHelper {
       getToken(cowAmmData[1], context),
     ]);
 
-    const ProductConstantOrder = await context.db.ProductConstantOrder.create({
+    const ConstantProductData = await context.db.ConstantProductData.create({
       id: eventId,
       data: {
         orderId: eventId,
@@ -144,7 +144,7 @@ class ProductConstantHandlerHelper extends IHandlerHelper {
       },
     });
     return {
-      productConstantOrderId: ProductConstantOrder.id,
+      constantProductDataId: ConstantProductData.id,
       decodedSuccess: true,
     };
   }

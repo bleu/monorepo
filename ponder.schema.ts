@@ -12,15 +12,15 @@ export default createSchema((p) => ({
     userId: p.one("user"),
     staticInput: p.hex(),
     decodedSuccess: p.boolean(),
-    stopLossOrderId: p.string().references("StopLossOrder.id").optional(),
-    stopLossOrder: p.one("stopLossOrderId"),
+    stopLossDataId: p.string().references("StopLossOrder.id").optional(),
+    stopLossData: p.one("stopLossDataId"),
     orderHandlerId: p.string().references("OrderHandler.id").optional(),
     orderHandler: p.one("orderHandlerId"),
-    productConstantOrderId: p
+    constantProductDataId: p
       .string()
-      .references("ProductConstantOrder.id")
+      .references("ConstantProductData.id")
       .optional(),
-    productConstantOrder: p.one("productConstantOrderId"),
+    constantProductData: p.one("constantProductDataId"),
   }),
   OrderHandler: p.createTable({
     id: p.string(),
@@ -61,7 +61,7 @@ export default createSchema((p) => ({
     strike: p.bigint(),
     maxTimeSinceLastOracleUpdate: p.bigint(),
   }),
-  ProductConstantOrder: p.createTable({
+  ConstantProductData: p.createTable({
     id: p.string(),
     orderId: p.string().references("Order.id"),
     token0Id: p.string().references("Token.id"),

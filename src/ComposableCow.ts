@@ -2,6 +2,7 @@ import { ponder } from "@/generated";
 import { DefaultHandlerHelper, getHandlerHelper } from "./handler";
 import { getHash, getUser } from "./utils";
 
+// @ts-ignore
 ponder.on("composable:ConditionalOrderCreated", async ({ event, context }) => {
   const handlerHelper = getHandlerHelper(
     event.args.params.handler,
@@ -15,6 +16,10 @@ ponder.on("composable:ConditionalOrderCreated", async ({ event, context }) => {
       staticInput: event.args.params.staticInput,
       handler: event.args.params.handler,
       context,
+      // @ts-ignore
+    }).catch((e) => {
+      console.error(e);
+      return null;
     }),
     handlerHelper.getOrderHandler(event.args.params.handler, context),
   ]);
@@ -38,8 +43,7 @@ ponder.on("composable:ConditionalOrderCreated", async ({ event, context }) => {
         },
       });
     })
-    .catch(async (e) => {
-      // console.log(e);
+    .catch(async () => {
       const defaultHandlerHelper = new DefaultHandlerHelper();
       const handlerData = await defaultHandlerHelper.decodeAndSaveOrder(
         event.args.params.staticInput,

@@ -1,6 +1,6 @@
 import { Address, decodeAbiParameters } from "viem";
 import { contextType } from "./types";
-import { getToken } from "./utils";
+import { bytes32ToAddress, getToken } from "./utils";
 
 type OrderType = "StopLoss" | "ProductConstant" | undefined;
 
@@ -94,8 +94,8 @@ class StopLossHandlerHelper extends IHandlerHelper {
         isSellOrder: stopLossData[6],
         isPartiallyFillable: stopLossData[7],
         validityBucketSeconds: stopLossData[8],
-        sellTokenPriceOracle: stopLossData[9],
-        buyTokenPriceOracle: stopLossData[10],
+        sellTokenPriceOracle: bytes32ToAddress(stopLossData[9]),
+        buyTokenPriceOracle: bytes32ToAddress(stopLossData[10]),
         strike: stopLossData[11],
         maxTimeSinceLastOracleUpdate: stopLossData[12],
       },

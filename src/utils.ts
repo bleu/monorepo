@@ -42,6 +42,10 @@ export function getHash({
   });
 }
 
+export function bytes32ToAddress(hex: `0x${string}`): Address {
+  return `0x${hex.slice(26)}`;
+}
+
 export async function getToken(address: `0x${string}`, context: contextType) {
   const tokenId = `${address}-${context.network.chainId}`;
   let token = await context.db.Token.findUnique({

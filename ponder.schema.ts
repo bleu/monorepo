@@ -7,6 +7,7 @@ export default createSchema((p) => ({
     blockNumber: p.bigint(),
     blockTimestamp: p.bigint(),
     hash: p.hex(),
+    txHash: p.hex(),
     salt: p.hex(),
     userId: p.string().references("User.id"),
     user: p.one("userId"),

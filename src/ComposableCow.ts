@@ -26,6 +26,7 @@ ponder.on("composable:ConditionalOrderCreated", async ({ event, context }) => {
         id: event.log.id,
         data: {
           hash: hash,
+          txHash: event.transaction.hash,
           salt: event.args.params.salt,
           chainId: context.network.chainId,
           blockNumber: event.block.number,
@@ -38,7 +39,7 @@ ponder.on("composable:ConditionalOrderCreated", async ({ event, context }) => {
       });
     })
     .catch(async (e) => {
-      console.log(e);
+      // console.log(e);
       const defaultHandlerHelper = new DefaultHandlerHelper();
       const handlerData = await defaultHandlerHelper.decodeAndSaveOrder(
         event.args.params.staticInput,
@@ -49,6 +50,7 @@ ponder.on("composable:ConditionalOrderCreated", async ({ event, context }) => {
         id: event.log.id,
         data: {
           hash: hash,
+          txHash: event.transaction.hash,
           salt: event.args.params.salt,
           chainId: context.network.chainId,
           blockNumber: event.block.number,

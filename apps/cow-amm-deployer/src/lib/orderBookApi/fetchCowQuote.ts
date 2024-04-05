@@ -1,3 +1,5 @@
+import { parseUnits } from "viem";
+
 import { ChainId } from "#/utils/chainsPublicClients";
 
 import { COW_API_URL_BY_CHAIN_ID } from ".";
@@ -35,7 +37,9 @@ export async function fetchCowQuote({
     priceQuality,
     sellTokenBalance: "erc20",
     buyTokenBalance: "erc20",
-    sellAmountBeforeFee: amountIn.toLocaleString().replaceAll(",", ""),
+    sellAmountBeforeFee: String(
+      parseUnits(amountIn.toString(), tokenIn.decimals),
+    ),
     signingScheme: "eip1271",
     onChainOrder: true,
     appData:

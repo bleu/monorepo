@@ -121,7 +121,7 @@ export const ammFormSchema = z
   .superRefine((data, ctx) => {
     // hardcoded value since we're just checking if the route exists or not
     // we're using 100 times the minTradedToken0 to cover high gas price (mainly for mainnet)
-    const amountIn = data.minTradedToken0 * 100 ** data.token0.decimals;
+    const amountIn = data.minTradedToken0 * 100;
     return fetchCowQuote({
       tokenIn: data.token0,
       tokenOut: data.token1,

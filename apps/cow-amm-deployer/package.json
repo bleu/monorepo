@@ -38,7 +38,7 @@
     "@radix-ui/react-tabs": "^1.0.4",
     "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/react-tooltip": "1.0.7",
-    "@safe-global/api-kit": "^2.2.0",
+    "@safe-global/api-kit": "^2.3.0",
     "@safe-global/protocol-kit": "^3.0.1",
     "@safe-global/safe-core-sdk-types": "^4.0.1",
     "@safe-global/safe-gateway-typescript-sdk": "^3.18.0",

@@ -2,10 +2,10 @@ name: setup JS dependencies
 runs:
   using: composite
   steps:
-    - uses: pnpm/action-setup@v2
+    - uses: pnpm/action-setup@v3
       with:
-        version: 8
-    - uses: actions/setup-node@v3
+        version: 9
+    - uses: actions/setup-node@v4
       with:
         node-version-file: ".tool-versions"
         cache: "pnpm"

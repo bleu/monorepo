@@ -140,10 +140,7 @@ export function FormSelectPriceChecker({
                 "Quoted using the CoW API and includes fees. This value will change on the feature, since another quote will be made on order posting."
               }
             >
-              <InfoCircledIcon
-                className="size-4"
-                color={slateDarkA.slateA11}
-              />
+              <InfoCircledIcon className="size-4" color={slateDarkA.slateA11} />
             </Tooltip>
           </div>
         )}

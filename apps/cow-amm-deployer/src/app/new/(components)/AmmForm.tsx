@@ -48,9 +48,9 @@ const getNewMinTradeToken0 = (newToken0: IToken, chainId: ChainId) => {
       Number(
         formatUnits(
           parseUnits(String(amount), newToken0.decimals),
-          newToken0.decimals
-        )
-      )
+          newToken0.decimals,
+        ),
+      ),
     )
     .catch(() => 0);
 };
@@ -138,7 +138,7 @@ export function AmmForm({
                 });
                 setValue(
                   "minTradedToken0",
-                  await getNewMinTradeToken0(token, chainId as ChainId)
+                  await getNewMinTradeToken0(token, chainId as ChainId),
                 );
               }}
               selectedToken={formData?.token0 ?? undefined}
@@ -183,7 +183,7 @@ export function AmmForm({
           <AccordionTrigger
             className={cn(
               errors.minTradedToken0 ? "text-destructive" : "",
-              "pt-0"
+              "pt-0",
             )}
           >
             Advanced Options
@@ -260,7 +260,7 @@ function PriceOracleFields({
                 "The AMM relies on price oracle exclusively for generating orders that will plausibly be settled in the current market conditions"
               }
             >
-              <InfoCircledIcon className="w-4 h-4" color={brownDark.brown8} />
+              <InfoCircledIcon className="size-4" color={brownDark.brown8} />
             </Tooltip>
           </div>
           <SelectInput
@@ -322,7 +322,7 @@ function PriceOracleFields({
               getUniswapV2PairAddress(
                 chainId,
                 tokenAddresses[0],
-                tokenAddresses[1]
+                tokenAddresses[1],
               )
                 .then((address) => {
                   setValue("uniswapV2Pair", address);
@@ -379,7 +379,7 @@ async function getBalancerPoolId(chainId: number, tokens: Address[]) {
 async function getUniswapV2PairAddress(
   chainId: number,
   token0: Address,
-  token1: Address
+  token1: Address,
 ) {
   if (token0 === token1) throw new Error("Invalid tokens");
   const pairsData = await pairs.gql(String(chainId) || "1").pairsWhereTokens({

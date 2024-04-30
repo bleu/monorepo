@@ -16,14 +16,14 @@
   "devDependencies": {
     "@bleu-fi/tsconfig": "workspace:*",
     "@bleu-fi/utils": "workspace:^",
-    "@types/node": "20.10.6",
+    "@types/node": "20.12.7",
     "@typescript-eslint/eslint-plugin": "^6.17.0",
     "@typescript-eslint/parser": "^6.17.0",
     "drizzle-kit": "^0.20.9",
     "esbuild-register": "^3.5.0",
     "graphql": "16.8.1",
     "micromatch": "4.0.5",
-    "typescript": "5.3.3"
+    "typescript": "5.4.5"
   },
   "peerDependencies": {
     "@types/react": ">=18",

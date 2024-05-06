@@ -40,7 +40,7 @@
     "@radix-ui/react-tooltip": "1.0.7",
     "@safe-global/api-kit": "^2.2.0",
     "@safe-global/protocol-kit": "^3.0.1",
-    "@safe-global/safe-core-sdk-types": "^4.0.1",
+    "@safe-global/safe-core-sdk-types": "^4.1.0",
     "@safe-global/safe-gateway-typescript-sdk": "^3.18.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",

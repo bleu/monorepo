@@ -19,6 +19,8 @@ jobs:
 
       - name: Set up pnpm
         uses: ./.github/workflows/setup-pnpm
+        with:
+          npm_token: ${{ secrets.NPM_TOKEN }}
 
       - name: Install Dependencies
         run: pnpm install

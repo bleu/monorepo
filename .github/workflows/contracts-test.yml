@@ -33,6 +33,8 @@ jobs:
           submodules: recursive
 
       - uses: ./.github/workflows/setup-pnpm
+        with:
+        npm_token: ${{ secrets.NPM_TOKEN }}
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1

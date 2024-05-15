@@ -7,6 +7,7 @@ export enum Subgraph {
   Balancer = "balancer",
   BalancerApiV3 = "balancer-api-v3",
   UniswapV2 = "uniswap-v2",
+  Sushi = "sushi",
 }
 
 // IMPORTANT NOTE:
@@ -29,11 +30,11 @@ export const SUBGRAPHS = {
         [Network.Ethereum]: `${baseEndpoint}/balancer-pool-metadata`,
         [Network.Goerli]: `${baseEndpoint}/bal-pools-metadata-goerli`,
         [Network.Polygon]: `${baseEndpoint}/balancer-pools-metadata-matic`,
-        [Network.PolygonZKEVM]: `https://api.studio.thegraph.com/query/49707/balacer-pool-metadata-zkevm/version/latest`,
         [Network.Arbitrum]: `${baseEndpoint}/bal-pools-metadata-arb`,
         [Network.Gnosis]: `${baseEndpoint}/balancer-pools-metadata-gnosis`,
         [Network.Optimism]: `${baseEndpoint}/balancer-pools-metadata-op`,
         // TODO: deploy Base, Avalanche and sepolia subgraphs
+        [Network.PolygonZKEVM]: `${baseEndpoint}/balancer-pool-metadata`,
         [Network.Base]: `${baseEndpoint}/balancer-pool-metadata`,
         [Network.Sepolia]: `${baseEndpoint}/balancer-pool-metadata`,
         [Network.Avalanche]: `${baseEndpoint}/balancer-pool-metadata`,
@@ -127,8 +128,24 @@ export const SUBGRAPHS = {
         return this.endpoints()[network];
       }
       throw new Error(
-        `UniswapV2 subgraph is not deployed on network ${network}`,
+        `UniswapV2 subgraph is not deployed on network ${network}`
       );
+    },
+  },
+  [Subgraph.Sushi]: {
+    name: Subgraph.Sushi,
+    endpoints() {
+      const baseEndpoint = "https://api.thegraph.com/subgraphs/name/sushiswap";
+      return {
+        [Network.Ethereum]: `${baseEndpoint}/exchange`,
+        [Network.Gnosis]: `${baseEndpoint}/xdai-exchange`,
+      };
+    },
+    endpointFor(network: Network) {
+      if (network === Network.Ethereum) {
+        return this.endpoints()[network];
+      }
+      throw new Error(`Sushi subgraph is not deployed on network ${network}`);
     },
   },
 };
@@ -165,9 +182,9 @@ const generates = Object.assign(
             },
           ],
         ])
-        .flat(1),
-    ),
-  ),
+        .flat(1)
+    )
+  )
 );
 
 const config: CodegenConfig = {

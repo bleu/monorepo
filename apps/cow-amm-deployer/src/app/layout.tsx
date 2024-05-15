@@ -1,14 +1,10 @@
 import "#/global.css";
-import "@rainbow-me/rainbowkit/styles.css";
 
 import { Metadata } from "next";
 import localFont from "next/font/local";
 import * as React from "react";
 
-import { Footer } from "#/components/Footer";
-import { Header } from "#/components/Header";
 import { RootLayout } from "#/components/RootLayout";
-import { NetworksContextProvider } from "#/contexts/networks";
 import { cn } from "#/lib/utils";
 
 const APP_DISPLAY_NAME = "CoW AMM Manager";
@@ -63,20 +59,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         className={cn(
           flechaS.variable,
           circularStd.variable,
-          "bg-background flex h-full flex-col font-sans font-normal text-foreground",
+          "bg-background flex h-full flex-col font-sans font-normal text-foreground"
         )}
       >
-        <RootLayout>
-          <NetworksContextProvider>
-            <div className="flex flex-col h-screen">
-              <Header linkUrl={"/"} imageSrc={"/assets/cow-amm-deployer.svg"} />
-              <div className="flex flex-1 overflow-auto p-4 sm:flex-row sm:gap-x-8 text-foreground">
-                {children}
-              </div>
-              <Footer twitterLink="https://twitter.com/cowswap" />
-            </div>
-          </NetworksContextProvider>
-        </RootLayout>
+        <RootLayout>{children}</RootLayout>
       </body>
     </html>
   );

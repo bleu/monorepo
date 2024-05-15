@@ -6,6 +6,10 @@
       "#/*": ["./src/*"]
     }
   },
+  "content": [
+    "./node_modules/@bleu-fi/ui/dist/**/*",
+    "./src/**/*.{js,ts,jsx,tsx}"
+  ],
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"],
   "types": ["node", "jest", "@testing-library/jest-dom"]

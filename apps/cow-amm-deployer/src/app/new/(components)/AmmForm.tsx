@@ -9,6 +9,7 @@ import { FieldValues, useForm, UseFormReturn } from "react-hook-form";
 import { formatUnits, parseUnits } from "viem";
 
 import { Button } from "#/components";
+import { AlertCard } from "#/components/AlertCard";
 import { Input } from "#/components/Input";
 import { SelectInput } from "#/components/SelectInput";
 import { Spinner } from "#/components/Spinner";
@@ -48,9 +49,9 @@ const getNewMinTradeToken0 = (newToken0: IToken, chainId: ChainId) => {
       Number(
         formatUnits(
           parseUnits(String(amount), newToken0.decimals),
-          newToken0.decimals,
-        ),
-      ),
+          newToken0.decimals
+        )
+      )
     )
     .catch(() => 0);
 };
@@ -138,7 +139,7 @@ export function AmmForm({
                 });
                 setValue(
                   "minTradedToken0",
-                  await getNewMinTradeToken0(token, chainId as ChainId),
+                  await getNewMinTradeToken0(token, chainId as ChainId)
                 );
               }}
               selectedToken={formData?.token0 ?? undefined}
@@ -183,7 +184,7 @@ export function AmmForm({
           <AccordionTrigger
             className={cn(
               errors.minTradedToken0 ? "text-destructive" : "",
-              "pt-0",
+              "pt-0"
             )}
           >
             Advanced Options
@@ -322,7 +323,7 @@ function PriceOracleFields({
               getUniswapV2PairAddress(
                 chainId,
                 tokenAddresses[0],
-                tokenAddresses[1],
+                tokenAddresses[1]
               )
                 .then((address) => {
                   setValue("uniswapV2Pair", address);
@@ -334,6 +335,27 @@ function PriceOracleFields({
           >
             Load from subgraph
           </button>
+        </div>
+      )}
+      {priceOracle === PRICE_ORACLES.CUSTOM && (
+        <div className="flex flex-col gap-y-1">
+          <AlertCard style="warning" title="Advanced option">
+            <span>
+              This options allows you to set specified any contract as the price
+              oracle. This is an advanced feature and should be used with
+              caution.
+            </span>
+          </AlertCard>
+          <Input
+            label="Price Oracle Address"
+            {...register("customPriceOracleAddress")}
+            tooltipText="The address of the contract that will be used as the price oracle."
+          />
+          <Input
+            label="Price Oracle Data"
+            {...register("customPriceOracleData")}
+            tooltipText="The bytes data that will be used to query the price oracle."
+          />
         </div>
       )}
       <Toast
@@ -379,7 +401,7 @@ async function getBalancerPoolId(chainId: number, tokens: Address[]) {
 async function getUniswapV2PairAddress(
   chainId: number,
   token0: Address,
-  token1: Address,
+  token1: Address
 ) {
   if (token0 === token1) throw new Error("Invalid tokens");
   const pairsData = await pairs.gql(String(chainId) || "1").pairsWhereTokens({

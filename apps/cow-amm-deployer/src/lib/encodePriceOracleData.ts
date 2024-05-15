@@ -2,23 +2,34 @@ import { Address, encodeAbiParameters } from "viem";
 import { gnosis, mainnet, sepolia } from "viem/chains";
 
 import { PRICE_ORACLES } from "#/lib/types";
+import { ChainId } from "#/utils/chainsPublicClients";
+
+export interface IEncodePriceOracleData {
+  priceOracle: PRICE_ORACLES;
+  balancerPoolId?: `0x${string}`;
+  uniswapV2Pair?: Address;
+  customPriceOracleData?: `0x${string}`;
+}
+
+export interface IGetPriceOracleAddress {
+  chainId: ChainId;
+  priceOracle: PRICE_ORACLES;
+  customPriceOracleAddress?: Address;
+}
 
 export function encodePriceOracleData({
   priceOracle,
   balancerPoolId,
   uniswapV2Pair,
-}: {
-  priceOracle: PRICE_ORACLES;
-  balancerPoolId?: `0x${string}`;
-  uniswapV2Pair?: Address;
-}): `0x${string}` {
+  customPriceOracleData,
+}: IEncodePriceOracleData): `0x${string}` {
   if (priceOracle === PRICE_ORACLES.BALANCER) {
     if (!balancerPoolId) {
       throw new Error("Balancer Pool ID is required");
     }
     return encodeAbiParameters(
       [{ name: "poolId", type: "bytes32" }],
-      [balancerPoolId],
+      [balancerPoolId]
     );
   }
   if (priceOracle === PRICE_ORACLES.UNI) {
@@ -27,10 +38,30 @@ export function encodePriceOracleData({
     }
     return encodeAbiParameters(
       [{ name: "pairAddress", type: "address" }],
-      [uniswapV2Pair],
+      [uniswapV2Pair]
     );
   }
+  if (priceOracle === PRICE_ORACLES.CUSTOM) {
+    if (!customPriceOracleData) {
+      throw new Error("Custom price oracle data is required");
+    }
+    return customPriceOracleData;
+  }
   throw new Error("Unknown price oracle");
+}
+
+export function getPriceOracleAddress({
+  chainId,
+  priceOracle,
+  customPriceOracleAddress,
+}: IGetPriceOracleAddress) {
+  if (priceOracle === PRICE_ORACLES.CUSTOM) {
+    if (!customPriceOracleAddress) {
+      throw new Error("Custom price oracle address is required");
+    }
+    return customPriceOracleAddress;
+  }
+  return PRICE_ORACLES_ADDRESSES[chainId][priceOracle];
 }
 
 export const PRICE_ORACLES_ADDRESSES = {

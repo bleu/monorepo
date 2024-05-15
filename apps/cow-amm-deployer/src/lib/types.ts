@@ -4,6 +4,7 @@ import { Address } from "viem";
 export enum PRICE_ORACLES {
   BALANCER = "Balancer",
   UNI = "Uniswap",
+  CUSTOM = "Custom",
 }
 
 export enum FALLBACK_STATES {

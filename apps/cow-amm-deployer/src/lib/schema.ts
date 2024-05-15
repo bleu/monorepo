@@ -9,7 +9,9 @@ import { erc20ABI } from "./abis/erc20";
 import { minimalPriceOracleAbi } from "./abis/minimalPriceOracle";
 import {
   encodePriceOracleData,
-  PRICE_ORACLES_ADDRESSES,
+  getPriceOracleAddress,
+  IEncodePriceOracleData,
+  IGetPriceOracleAddress,
 } from "./encodePriceOracleData";
 import { fetchCowQuote } from "./orderBookApi/fetchCowQuote";
 
@@ -31,6 +33,8 @@ const bytes32Schema = z
   .length(66)
   .refine((value) => value.startsWith("0x"));
 
+const bytesSchema = z.string().refine((value) => value.startsWith("0x"));
+
 export const ammFormSchema = z
   .object({
     token0: baseTokenSchema,
@@ -40,9 +44,11 @@ export const ammFormSchema = z
     fallbackSetupState: z.nativeEnum(FALLBACK_STATES),
     safeAddress: basicAddressSchema,
     domainSeparator: bytes32Schema,
-    balancerPoolId: z.string().optional(),
-    uniswapV2Pair: z.string().optional(),
+    balancerPoolId: bytes32Schema.optional(),
+    uniswapV2Pair: basicAddressSchema.optional(),
     chainId: z.number().int(),
+    customPriceOracleAddress: basicAddressSchema.optional(),
+    customPriceOracleData: bytesSchema.optional(),
   })
   .refine(
     // validate if balancer Pool ID is required
@@ -55,7 +61,7 @@ export const ammFormSchema = z
     {
       message: "Balancer Pool ID is required",
       path: ["balancerPoolId"],
-    },
+    }
   )
   .refine(
     // validate if uniswap v2 pool address is required
@@ -68,7 +74,7 @@ export const ammFormSchema = z
     {
       message: "Uniswap V2 Pool Address is required",
       path: ["uniswapV2Pair"],
-    },
+    }
   )
   .refine(
     // validate if tokens are different
@@ -81,7 +87,7 @@ export const ammFormSchema = z
     {
       message: "Tokens must be different",
       path: ["token0"],
-    },
+    }
   )
   .superRefine(async (data, ctx) => {
     // validate if there are balances of tokens
@@ -114,7 +120,7 @@ export const ammFormSchema = z
         code: z.ZodIssueCode.custom,
         message: `No balance of token`,
         path: [x],
-      }),
+      })
     );
     return !path.length;
   })
@@ -141,13 +147,12 @@ export const ammFormSchema = z
   .superRefine(async (data, ctx) => {
     // validate if price oracle is working
     try {
-      const priceOracleData = encodePriceOracleData({
-        priceOracle: data.priceOracle,
-        balancerPoolId: data.balancerPoolId as `0x${string}`,
-        uniswapV2Pair: data.uniswapV2Pair as Address,
-      });
-      const priceOracleAddress =
-        PRICE_ORACLES_ADDRESSES[data.chainId as ChainId][data.priceOracle];
+      const priceOracleData = encodePriceOracleData(
+        data as IEncodePriceOracleData
+      );
+      const priceOracleAddress = getPriceOracleAddress(
+        data as IGetPriceOracleAddress
+      );
       const publicClient = publicClientsFromIds[data.chainId as ChainId];
       await publicClient.readContract({
         abi: minimalPriceOracleAbi,

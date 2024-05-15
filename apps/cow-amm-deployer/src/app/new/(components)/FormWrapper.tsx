@@ -39,7 +39,7 @@ export function FormWrapper({
               </div>
             }
           />
-          <div className="flex min-w-[530px] flex-col items-center py-3">
+          <div className="flex w-[530px] flex-col items-center py-3">
             <div className="text-xl">
               {transactionType === TRANSACTION_TYPES.CREATE_COW_AMM
                 ? "Create"
@@ -48,7 +48,7 @@ export function FormWrapper({
             </div>
           </div>
         </div>
-        <div className="flex flex-col overflow-auto size-full max-h-[550px]">
+        <div className="flex flex-col w-[530px] overflow-auto size-full max-h-[550px]">
           <AmmForm
             defaultValues={defaultValues}
             transactionType={transactionType}

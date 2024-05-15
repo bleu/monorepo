@@ -29,7 +29,7 @@ export function encodePriceOracleData({
     }
     return encodeAbiParameters(
       [{ name: "poolId", type: "bytes32" }],
-      [balancerPoolId]
+      [balancerPoolId],
     );
   }
   if (priceOracle === PRICE_ORACLES.UNI) {
@@ -38,7 +38,7 @@ export function encodePriceOracleData({
     }
     return encodeAbiParameters(
       [{ name: "pairAddress", type: "address" }],
-      [uniswapV2Pair]
+      [uniswapV2Pair],
     );
   }
   if (priceOracle === PRICE_ORACLES.CUSTOM) {

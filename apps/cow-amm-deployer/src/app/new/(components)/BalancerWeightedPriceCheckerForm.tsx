@@ -22,7 +22,7 @@ export function BalancerWeightedPriceCheckerForm({
   const token0 = watch("token0");
   const token1 = watch("token1");
   const tokenAddresses = [token0?.address, token1?.address].filter(
-    (address) => address
+    (address) => address,
   ) as Address[];
   return (
     <div className="flex flex-col gap-y-1">

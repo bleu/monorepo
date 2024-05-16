@@ -25,26 +25,29 @@ export function UniswapV2PriceChecker({
   return (
     <div className="flex flex-col gap-y-1">
       <Input
-        label="Uniswap V2 Pool Address"
+        label="Uniswap V2 Pair Address"
         {...register("uniswapV2Pair")}
-        tooltipText="The address of the Uniswap V2 pool that will be used as the price oracle. If you click on the load button it will try to find the most liquid pool address using the Uniswap V2 subgraph."
+        tooltipText="The address of the Uniswap V2 pair that will be used as the price oracle. Click on the load button it will try to find the most liquid pair address using the Uniswap V2's subgraph."
       />
       <button
         type="button"
         className="flex flex-row outline-none hover:text-highlight text-xs"
-        onClick={() => {
-          getUniswapV2PairAddress(chainId, tokenAddresses[0], tokenAddresses[1])
-            .then((address) => {
-              setValue("uniswapV2Pair", address);
-            })
-            .catch(() => {
-              toast({
-                title: "Pool not found",
-                description:
-                  "None Uniswap V2 Pair was found for the selected tokens.",
-                variant: "destructive",
-              });
+        onClick={async () => {
+          try {
+            const address = await getUniswapV2PairAddress(
+              chainId,
+              tokenAddresses[0],
+              tokenAddresses[1],
+            );
+            setValue("uniswapV2Pair", address);
+          } catch (error) {
+            toast({
+              title: "Pool not found",
+              description:
+                "None Uniswap V2 Pair was found for the selected tokens.",
+              variant: "destructive",
             });
+          }
         }}
       >
         Load from subgraph
@@ -65,7 +68,7 @@ async function getUniswapV2PairAddress(
     reserveUSDThreshold: "1000",
   });
 
-  if (pairsData?.pairs.length === 0) throw new Error("Pool not found");
+  if (pairsData?.pairs.length === 0) throw new Error("Pair not found");
 
   return pairsData?.pairs[0]?.id;
 }

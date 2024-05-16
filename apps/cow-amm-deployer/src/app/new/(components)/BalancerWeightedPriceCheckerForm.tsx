@@ -29,25 +29,24 @@ export function BalancerWeightedPriceCheckerForm({
       <Input
         label="Balancer Pool ID"
         {...register("balancerPoolId")}
-        tooltipText="The address of the Balancer pool that will be used as the price oracle. If you click on the load button it will try to find the most liquid pool address using the Balancer subgraph."
+        tooltipText="The address of the Balancer pool that will be used as the price oracle. Click on the load button it will try to find the most liquid pool address using the Balancer V2's subgraph."
       />
       <Button>Load from subgraph</Button>
       <button
         type="button"
         className="flex flex-row outline-none hover:text-highlight text-xs"
-        onClick={() => {
-          getBalancerPoolId(chainId, tokenAddresses)
-            .then((id) => {
-              setValue("balancerPoolId", id);
-            })
-            .catch(() => {
-              toast({
-                title: "Pool not found",
-                description:
-                  "None Balancer Weighted Pool was found for the selected tokens.",
-                variant: "destructive",
-              });
+        onClick={async () => {
+          try {
+            const id = await getBalancerPoolId(chainId, tokenAddresses);
+            setValue("balancerPoolId", id);
+          } catch (error) {
+            toast({
+              title: "Pool not found",
+              description:
+                "None Balancer Weighted Pool was found for the selected tokens.",
+              variant: "destructive",
             });
+          }
         }}
       >
         Load from subgraph

@@ -4,10 +4,10 @@ import { UseFormReturn } from "react-hook-form";
 import { Address } from "viem";
 
 import { Input } from "#/components/Input";
-import { pairs } from "#/lib/gqlUniswapV2";
+import { pairs } from "#/lib/gqlSushi";
 import { ammFormSchema } from "#/lib/schema";
 
-export function UniswapV2PriceChecker({
+export function SushiV2PriceChecker({
   form,
 }: {
   form: UseFormReturn<typeof ammFormSchema._type>;
@@ -25,23 +25,23 @@ export function UniswapV2PriceChecker({
   return (
     <div className="flex flex-col gap-y-1">
       <Input
-        label="Uniswap V2 Pool Address"
-        {...register("uniswapV2Pair")}
+        label="Sushi V2 Pool Address"
+        {...register("sushiV2Pair")}
         tooltipText="The address of the Uniswap V2 pool that will be used as the price oracle. If you click on the load button it will try to find the most liquid pool address using the Uniswap V2 subgraph."
       />
       <button
         type="button"
         className="flex flex-row outline-none hover:text-highlight text-xs"
         onClick={() => {
-          getUniswapV2PairAddress(chainId, tokenAddresses[0], tokenAddresses[1])
+          getSushiV2PairAddress(chainId, tokenAddresses[0], tokenAddresses[1])
             .then((address) => {
-              setValue("uniswapV2Pair", address);
+              setValue("sushiV2Pair", address);
             })
             .catch(() => {
               toast({
                 title: "Pair not found",
                 description:
-                  "None Uniswap V2 Pair with at least $1000 TVL was found for the selected tokens.",
+                  "None Sushi V2 Pair with at least $1000 TVL was found for the selected tokens.",
                 variant: "destructive",
               });
             });
@@ -53,13 +53,13 @@ export function UniswapV2PriceChecker({
   );
 }
 
-async function getUniswapV2PairAddress(
+async function getSushiV2PairAddress(
   chainId: number,
   token0: Address,
   token1: Address
 ) {
   if (token0 === token1) throw new Error("Invalid tokens");
-  const pairsData = await pairs.gql(String(chainId) || "1").pairsWhereTokens({
+  const pairsData = await pairs.gql(String(chainId)).pairsWhereTokens({
     token0: token0.toLowerCase(),
     token1: token1.toLowerCase(),
     reserveUSDThreshold: "1000",

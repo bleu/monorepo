@@ -4,6 +4,7 @@ import { Address } from "viem";
 export enum PRICE_ORACLES {
   BALANCER = "Balancer",
   UNI = "Uniswap",
+  SUSHI = "Sushi",
   CUSTOM = "Custom",
 }
 

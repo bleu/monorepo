@@ -44,7 +44,7 @@ export function BalancerWeightedPriceCheckerForm({
               toast({
                 title: "Pool not found",
                 description:
-                  "None Balancer Weighted Pool was found for the selected tokens.",
+                  "None Balancer Weighted Pool with at least $1000 TVL was found for the selected tokens.",
                 variant: "destructive",
               });
             });

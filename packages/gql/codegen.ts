@@ -142,7 +142,7 @@ export const SUBGRAPHS = {
       };
     },
     endpointFor(network: Network) {
-      if (network === Network.Ethereum) {
+      if (network === Network.Ethereum || network === Network.Gnosis) {
         return this.endpoints()[network];
       }
       throw new Error(`Sushi subgraph is not deployed on network ${network}`);

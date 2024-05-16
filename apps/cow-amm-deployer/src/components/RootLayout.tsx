@@ -1,6 +1,6 @@
 "use client";
 
-import { Toaster } from "@bleu-fi/ui";
+import { Toaster } from "@bleu/ui";
 import SafeProvider from "@gnosis.pm/safe-apps-react-sdk";
 import React from "react";
 

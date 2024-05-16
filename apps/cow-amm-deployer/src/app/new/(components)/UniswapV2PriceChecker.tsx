@@ -1,4 +1,4 @@
-import { toast } from "@bleu-fi/ui";
+import { toast } from "@bleu/ui";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { UseFormReturn } from "react-hook-form";
 import { Address } from "viem";
@@ -6,6 +6,7 @@ import { Address } from "viem";
 import { Input } from "#/components/Input";
 import { pairs } from "#/lib/gqlUniswapV2";
 import { ammFormSchema } from "#/lib/schema";
+import { loadDEXPriceCheckerErrorText } from "#/lib/utils";
 
 export function UniswapV2PriceChecker({
   form,
@@ -25,26 +26,28 @@ export function UniswapV2PriceChecker({
   return (
     <div className="flex flex-col gap-y-1">
       <Input
-        label="Uniswap V2 Pool Address"
+        label="Uniswap V2 Pair Address"
         {...register("uniswapV2Pair")}
-        tooltipText="The address of the Uniswap V2 pool that will be used as the price oracle. If you click on the load button it will try to find the most liquid pool address using the Uniswap V2 subgraph."
+        tooltipText="The address of the Uniswap V2 pair that will be used as the price oracle. Click on the load button it will try to find the most liquid pair address using the Uniswap V2's subgraph."
       />
       <button
         type="button"
         className="flex flex-row outline-none hover:text-highlight text-xs"
-        onClick={() => {
-          getUniswapV2PairAddress(chainId, tokenAddresses[0], tokenAddresses[1])
-            .then((address) => {
-              setValue("uniswapV2Pair", address);
-            })
-            .catch(() => {
-              toast({
-                title: "Pair not found",
-                description:
-                  "None Uniswap V2 Pair with at least $1000 TVL was found for the selected tokens.",
-                variant: "destructive",
-              });
+        onClick={async () => {
+          try {
+            const address = await getUniswapV2PairAddress(
+              chainId,
+              tokenAddresses[0],
+              tokenAddresses[1],
+            );
+            setValue("uniswapV2Pair", address);
+          } catch (error) {
+            toast({
+              title: "Pool not found",
+              description: loadDEXPriceCheckerErrorText("Sushi V2"),
+              variant: "destructive",
             });
+          }
         }}
       >
         Load from subgraph
@@ -65,7 +68,7 @@ async function getUniswapV2PairAddress(
     reserveUSDThreshold: "1000",
   });
 
-  if (pairsData?.pairs.length === 0) throw new Error("Pool not found");
+  if (pairsData?.pairs.length === 0) throw new Error("Pair not found");
 
   return pairsData?.pairs[0]?.id;
 }

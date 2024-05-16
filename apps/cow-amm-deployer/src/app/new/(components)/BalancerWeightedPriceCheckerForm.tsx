@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, toast } from "@bleu-fi/ui";
+import { Button, toast } from "@bleu/ui";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { UseFormReturn } from "react-hook-form";
 import { Address } from "viem";
@@ -8,6 +8,7 @@ import { Address } from "viem";
 import { Input } from "#/components/Input";
 import { pools } from "#/lib/gqlBalancer";
 import { ammFormSchema } from "#/lib/schema";
+import { loadDEXPriceCheckerErrorText } from "#/lib/utils";
 
 export function BalancerWeightedPriceCheckerForm({
   form,
@@ -29,25 +30,25 @@ export function BalancerWeightedPriceCheckerForm({
       <Input
         label="Balancer Pool ID"
         {...register("balancerPoolId")}
-        tooltipText="The address of the Balancer pool that will be used as the price oracle. If you click on the load button it will try to find the most liquid pool address using the Balancer subgraph."
+        tooltipText="The address of the Balancer pool that will be used as the price oracle. Click on the load button it will try to find the most liquid pool address using the Balancer V2's subgraph."
       />
       <Button>Load from subgraph</Button>
       <button
         type="button"
         className="flex flex-row outline-none hover:text-highlight text-xs"
-        onClick={() => {
-          getBalancerPoolId(chainId, tokenAddresses)
-            .then((id) => {
-              setValue("balancerPoolId", id);
-            })
-            .catch(() => {
-              toast({
-                title: "Pool not found",
-                description:
-                  "None Balancer Weighted Pool with at least $1000 TVL was found for the selected tokens.",
-                variant: "destructive",
-              });
+        onClick={async () => {
+          try {
+            const id = await getBalancerPoolId(chainId, tokenAddresses);
+            setValue("balancerPoolId", id);
+          } catch (error) {
+            toast({
+              title: "Pool not found",
+              description: loadDEXPriceCheckerErrorText(
+                "Balancer V2 Weighted Pool",
+              ),
+              variant: "destructive",
             });
+          }
         }}
       >
         Load from subgraph

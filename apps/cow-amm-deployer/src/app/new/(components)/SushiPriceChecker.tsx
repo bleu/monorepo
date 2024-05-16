@@ -1,4 +1,4 @@
-import { toast } from "@bleu-fi/ui";
+import { toast } from "@bleu/ui";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { UseFormReturn } from "react-hook-form";
 import { Address } from "viem";
@@ -6,6 +6,7 @@ import { Address } from "viem";
 import { Input } from "#/components/Input";
 import { pairs } from "#/lib/gqlSushi";
 import { ammFormSchema } from "#/lib/schema";
+import { loadDEXPriceCheckerErrorText } from "#/lib/utils";
 
 export function SushiV2PriceChecker({
   form,
@@ -25,9 +26,9 @@ export function SushiV2PriceChecker({
   return (
     <div className="flex flex-col gap-y-1">
       <Input
-        label="Sushi V2 Pool Address"
+        label="Sushi V2 Pair Address"
         {...register("sushiV2Pair")}
-        tooltipText="The address of the Uniswap V2 pool that will be used as the price oracle. If you click on the load button it will try to find the most liquid pool address using the Uniswap V2 subgraph."
+        tooltipText="The address of the Sushi V2 pair that will be used as the price oracle. Click on the load button it will try to find the most liquid pair address using the Sushi V2's subgraph."
       />
       <button
         type="button"
@@ -40,8 +41,7 @@ export function SushiV2PriceChecker({
             .catch(() => {
               toast({
                 title: "Pair not found",
-                description:
-                  "None Sushi V2 Pair with at least $1000 TVL was found for the selected tokens.",
+                description: loadDEXPriceCheckerErrorText("Sushi V2"),
                 variant: "destructive",
               });
             });

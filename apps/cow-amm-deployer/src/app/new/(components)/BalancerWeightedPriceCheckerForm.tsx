@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, toast } from "@bleu-fi/ui";
+import { Button, toast } from "@bleu/ui";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { UseFormReturn } from "react-hook-form";
 import { Address } from "viem";

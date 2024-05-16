@@ -128,7 +128,7 @@ export const SUBGRAPHS = {
         return this.endpoints()[network];
       }
       throw new Error(
-        `UniswapV2 subgraph is not deployed on network ${network}`
+        `UniswapV2 subgraph is not deployed on network ${network}`,
       );
     },
   },
@@ -182,9 +182,9 @@ const generates = Object.assign(
             },
           ],
         ])
-        .flat(1)
-    )
-  )
+        .flat(1),
+    ),
+  ),
 );
 
 const config: CodegenConfig = {

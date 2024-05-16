@@ -32,7 +32,7 @@ export function encodePriceOracleData({
       }
       return encodeAbiParameters(
         [{ name: "poolId", type: "bytes32" }],
-        [balancerPoolId]
+        [balancerPoolId],
       );
     case PRICE_ORACLES.UNI:
       if (!uniswapV2Pair) {
@@ -40,7 +40,7 @@ export function encodePriceOracleData({
       }
       return encodeAbiParameters(
         [{ name: "pairAddress", type: "address" }],
-        [uniswapV2Pair]
+        [uniswapV2Pair],
       );
     case PRICE_ORACLES.SUSHI:
       if (!sushiV2Pair) {
@@ -48,7 +48,7 @@ export function encodePriceOracleData({
       }
       return encodeAbiParameters(
         [{ name: "pairAddress", type: "address" }],
-        [sushiV2Pair]
+        [sushiV2Pair],
       );
     case PRICE_ORACLES.CUSTOM:
       if (!customPriceOracleData) {

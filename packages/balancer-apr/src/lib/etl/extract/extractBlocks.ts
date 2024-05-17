@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { dateToEpoch } from "@bleu-fi/utils/date";
 import { and, desc, eq, isNull, lt, not, sql } from "drizzle-orm";
+import { addToTable } from "lib/db/addToTable";
+import { logIfVerbose } from "lib/logIfVerbose";
 import pThrottle from "p-throttle";
 
 import { db } from "../../../db/index";
 import { blocks, calendar, networks } from "../../../db/schema";
-import { addToTable, logIfVerbose } from "../../../index";
 import { DefiLlamaAPI } from "../../../lib/defillama";
 
 const throttle = pThrottle({

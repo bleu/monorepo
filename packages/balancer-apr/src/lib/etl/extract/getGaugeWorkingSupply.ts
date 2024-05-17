@@ -1,7 +1,7 @@
+import { logIfVerbose } from "lib/logIfVerbose";
 import pThrottle from "p-throttle";
 import { Address, formatUnits, getContract } from "viem";
 
-import { logIfVerbose } from "../../../index";
 import { publicClients } from "../../../lib/chainsPublicClients";
 
 const abi = [
@@ -50,7 +50,7 @@ const throttle = pThrottle({
 const WEEK = 86400n * 7n;
 
 export const getGaugeWorkingSupply = async (
-  gaugeAddressNetworkTimestampBlockTuples: [Address, string, number, number][],
+  gaugeAddressNetworkTimestampBlockTuples: [Address, string, number, number][]
 ) => {
   if (gaugeAddressNetworkTimestampBlockTuples.length === 0) return [];
 
@@ -63,7 +63,7 @@ export const getGaugeWorkingSupply = async (
           logIfVerbose(
             `${network}:${address}:${timestamp} Fetching working supply, ${
               idx + 1
-            }/${gaugeAddressNetworkTimestampBlockTuples.length}`,
+            }/${gaugeAddressNetworkTimestampBlockTuples.length}`
           );
 
           const publicClient = publicClients[network];
@@ -71,7 +71,9 @@ export const getGaugeWorkingSupply = async (
           const gauge = getContract({
             address,
             abi,
-            publicClient,
+            client: {
+              public: publicClient,
+            },
           });
 
           const promises = [
@@ -81,7 +83,7 @@ export const getGaugeWorkingSupply = async (
 
           if (network !== "ethereum") {
             promises.push(
-              gauge.read.inflation_rate([BigInt(timestamp) / WEEK]),
+              gauge.read.inflation_rate([BigInt(timestamp) / WEEK])
             );
           }
 
@@ -92,7 +94,7 @@ export const getGaugeWorkingSupply = async (
 
             if (results[0].status === "rejected") {
               logIfVerbose(
-                `${network}:${address}:${timestamp} Error: ${results[0].reason.shortMessage}`,
+                `${network}:${address}:${timestamp} Error: ${results[0].reason.shortMessage}`
               );
             } else if (results[0]) {
               workingSupply = formatUnits(results[0].value, 18);
@@ -100,7 +102,7 @@ export const getGaugeWorkingSupply = async (
 
             if (results[1].status === "rejected") {
               logIfVerbose(
-                `${network}:${address}:${timestamp} Error: ${results[1].reason.shortMessage}`,
+                `${network}:${address}:${timestamp} Error: ${results[1].reason.shortMessage}`
               );
             } else if (results[1]) {
               totalSupply = formatUnits(results[1].value, 18);
@@ -108,7 +110,7 @@ export const getGaugeWorkingSupply = async (
 
             if (results[2] && results[2].status === "rejected") {
               logIfVerbose(
-                `${network}:${address}:${timestamp} Error: ${results[2]?.reason?.shortMessage}`,
+                `${network}:${address}:${timestamp} Error: ${results[2]?.reason?.shortMessage}`
               );
             } else if (results[2]) {
               inflationRate = formatUnits(results[2].value, 18);
@@ -122,13 +124,13 @@ export const getGaugeWorkingSupply = async (
             logIfVerbose(
               `Error fetching working supply ${network}:${address}:${timestamp}`,
               // @ts-expect-error
-              e,
+              e
             );
             return [null, null, null, null];
           }
         })();
-      },
-    ),
+      }
+    )
   );
 
   return responses.map(([_, workingSupply, totalSupply, inflationRate]) => {

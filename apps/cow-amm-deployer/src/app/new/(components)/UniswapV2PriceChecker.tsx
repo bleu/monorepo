@@ -6,6 +6,7 @@ import { Address } from "viem";
 import { Input } from "#/components/Input";
 import { pairs } from "#/lib/gqlUniswapV2";
 import { ammFormSchema } from "#/lib/schema";
+import { loadDEXPriceCheckerErrorText } from "#/lib/utils";
 
 export function UniswapV2PriceChecker({
   form,
@@ -43,8 +44,7 @@ export function UniswapV2PriceChecker({
           } catch (error) {
             toast({
               title: "Pool not found",
-              description:
-                "None Uniswap V2 Pair was found for the selected tokens.",
+              description: loadDEXPriceCheckerErrorText("Sushi V2"),
               variant: "destructive",
             });
           }
@@ -63,8 +63,8 @@ async function getUniswapV2PairAddress(
 ) {
   if (token0 === token1) throw new Error("Invalid tokens");
   const pairsData = await pairs.gql(String(chainId) || "1").pairsWhereTokens({
-    token0,
-    token1,
+    token0: token0.toLowerCase(),
+    token1: token1.toLowerCase(),
     reserveUSDThreshold: "1000",
   });
 

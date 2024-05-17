@@ -1,8 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { NETWORK_TO_BALANCER_ENDPOINT_MAP } from "../../../config";
+import { NETWORK_TO_BALANCER_ENDPOINT_MAP } from "lib/config";
+import { addToTable } from "lib/db/addToTable";
+import { logIfVerbose } from "lib/logIfVerbose";
+import { paginatedFetch } from "lib/paginatedFetch";
+
 import { pools } from "../../../db/schema";
-import { addToTable, logIfVerbose, networkNames } from "../../../index";
-import { paginatedFetch } from "../../../paginatedFetch";
+import { networkNames } from "../../../index";
 
 export const POOLS_WITHOUT_GAUGE_QUERY = `
 query PoolsWherePoolType($latestId: String!) {

@@ -1,8 +1,10 @@
 import { and, asc, eq } from "drizzle-orm";
+import { addToTable } from "lib/db/addToTable";
+import { logIfVerbose } from "lib/logIfVerbose";
 
 import { db } from "../../../db";
 import { calendar, tokenPrices } from "../../../db/schema";
-import { addToTable, BALANCER_START_DATE, logIfVerbose } from "../../../index";
+import { BALANCER_START_DATE } from "../../../index";
 import { fetchTokenPrice } from "./fetchTokenPrices";
 
 const BAL_ADDRESS = "0xba100000625a3754423978a60c9317c58a424e3d";

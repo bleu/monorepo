@@ -21,6 +21,7 @@ export type Scalars = {
   BigInt: { input: any; output: any; }
   Bytes: { input: any; output: any; }
   Int8: { input: any; output: any; }
+  Timestamp: { input: any; output: any; }
 };
 
 export type Aggregation_Interval =
@@ -631,6 +632,8 @@ export type CircuitBreaker_OrderBy =
 
 export type FxOracle = {
   __typename?: 'FXOracle';
+  decimals?: Maybe<Scalars['Int']['output']>;
+  divisor?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   tokens: Array<Scalars['Bytes']['output']>;
 };
@@ -639,6 +642,34 @@ export type FxOracle_Filter = {
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<FxOracle_Filter>>>;
+  decimals?: InputMaybe<Scalars['Int']['input']>;
+  decimals_gt?: InputMaybe<Scalars['Int']['input']>;
+  decimals_gte?: InputMaybe<Scalars['Int']['input']>;
+  decimals_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  decimals_lt?: InputMaybe<Scalars['Int']['input']>;
+  decimals_lte?: InputMaybe<Scalars['Int']['input']>;
+  decimals_not?: InputMaybe<Scalars['Int']['input']>;
+  decimals_not_in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  divisor?: InputMaybe<Scalars['String']['input']>;
+  divisor_contains?: InputMaybe<Scalars['String']['input']>;
+  divisor_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  divisor_ends_with?: InputMaybe<Scalars['String']['input']>;
+  divisor_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  divisor_gt?: InputMaybe<Scalars['String']['input']>;
+  divisor_gte?: InputMaybe<Scalars['String']['input']>;
+  divisor_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  divisor_lt?: InputMaybe<Scalars['String']['input']>;
+  divisor_lte?: InputMaybe<Scalars['String']['input']>;
+  divisor_not?: InputMaybe<Scalars['String']['input']>;
+  divisor_not_contains?: InputMaybe<Scalars['String']['input']>;
+  divisor_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  divisor_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  divisor_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  divisor_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  divisor_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  divisor_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  divisor_starts_with?: InputMaybe<Scalars['String']['input']>;
+  divisor_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
   id_gt?: InputMaybe<Scalars['ID']['input']>;
   id_gte?: InputMaybe<Scalars['ID']['input']>;
@@ -657,6 +688,8 @@ export type FxOracle_Filter = {
 };
 
 export type FxOracle_OrderBy =
+  | 'decimals'
+  | 'divisor'
   | 'id'
   | 'tokens'
   | '%future added value';
@@ -5945,6 +5978,8 @@ export type _Block_ = {
   hash?: Maybe<Scalars['Bytes']['output']>;
   /** The block number */
   number: Scalars['Int']['output'];
+  /** The hash of the parent block */
+  parentHash?: Maybe<Scalars['Bytes']['output']>;
   /** Integer representation of the timestamp stored in blocks for the chain */
   timestamp?: Maybe<Scalars['Int']['output']>;
 };

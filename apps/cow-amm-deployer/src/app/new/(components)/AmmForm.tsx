@@ -34,6 +34,7 @@ import { ChainId } from "#/utils/chainsPublicClients";
 import { BalancerWeightedPriceCheckerForm } from "./BalancerWeightedPriceCheckerForm";
 import { CustomPriceCheckerForm } from "./CustomPriceCheckerForm";
 import { FallbackAndDomainWarning } from "./FallbackAndDomainWarning";
+import { SushiV2PriceChecker } from "./SushiPriceChecker";
 import { UniswapV2PriceChecker } from "./UniswapV2PriceChecker";
 
 const getNewMinTradeToken0 = async (newToken0: IToken, chainId: ChainId) => {
@@ -281,6 +282,9 @@ function PriceOracleFields({
       )}
       {priceOracle === PRICE_ORACLES.CUSTOM && (
         <CustomPriceCheckerForm form={form} />
+      )}
+      {priceOracle === PRICE_ORACLES.SUSHI && (
+        <SushiV2PriceChecker form={form} />
       )}
     </div>
   );

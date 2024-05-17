@@ -8,6 +8,7 @@ import { Address } from "viem";
 import { Input } from "#/components/Input";
 import { pools } from "#/lib/gqlBalancer";
 import { ammFormSchema } from "#/lib/schema";
+import { loadDEXPriceCheckerErrorText } from "#/lib/utils";
 
 export function BalancerWeightedPriceCheckerForm({
   form,
@@ -42,8 +43,9 @@ export function BalancerWeightedPriceCheckerForm({
           } catch (error) {
             toast({
               title: "Pool not found",
-              description:
-                "None Balancer Weighted Pool was found for the selected tokens.",
+              description: loadDEXPriceCheckerErrorText(
+                "Balancer V2 Weighted Pool",
+              ),
               variant: "destructive",
             });
           }

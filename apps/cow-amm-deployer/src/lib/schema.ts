@@ -46,6 +46,7 @@ export const ammFormSchema = z
     domainSeparator: bytes32Schema,
     balancerPoolId: bytes32Schema.optional(),
     uniswapV2Pair: basicAddressSchema.optional(),
+    sushiV2Pair: basicAddressSchema.optional(),
     chainId: z.number().int(),
     customPriceOracleAddress: basicAddressSchema.optional(),
     customPriceOracleData: bytesSchema.optional(),

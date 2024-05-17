@@ -1,8 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { NETWORK_TO_REWARDS_ENDPOINT_MAP } from "../../../config";
+import { NETWORK_TO_REWARDS_ENDPOINT_MAP } from "lib/config";
+import { addToTable } from "lib/db/addToTable";
+import { logIfVerbose } from "lib/logIfVerbose";
+import { paginatedFetch } from "lib/paginatedFetch";
+
 import { poolRewards } from "../../../db/schema";
-import { addToTable, logIfVerbose, networkNamesRewards } from "../../../index";
-import { paginatedFetch } from "../../../paginatedFetch";
+import { networkNamesRewards } from "../../../index";
 
 export const POOL_REWARDS = `
 query PoolRewards($latestId: ID!) {

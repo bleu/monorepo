@@ -23,6 +23,7 @@ export interface IToken {
 export interface PriceOracleData {
   balancerPoolId?: `0x${string}`;
   uniswapV2PairAddress?: Address;
+  sushiSwapPairAddress?: Address;
 }
 export interface ICowAmm {
   token0: TokenBalance & {
@@ -38,4 +39,5 @@ export interface ICowAmm {
   priceOracle: PRICE_ORACLES;
   priceOracleData: PriceOracleData;
   hash: `0x${string}`;
+  priceOracleAddress: Address;
 }

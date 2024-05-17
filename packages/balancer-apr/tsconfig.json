@@ -2,6 +2,7 @@
   "compilerOptions": {
     "baseUrl": "src",
     "target": "ESNext",
+    "noEmit": true,
     "paths": {
       "*": ["*", "../*"],
       "lib/*": ["lib/*"]

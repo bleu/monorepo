@@ -39,7 +39,9 @@ const gaugesController = getContract({
       outputs: [{ name: "", type: "uint256" }],
     },
   ] as const,
-  publicClient,
+  client: {
+    public: publicClient,
+  },
 });
 
 const throttle = pThrottle({
@@ -48,7 +50,7 @@ const throttle = pThrottle({
 });
 
 export const getPoolRelativeWeights = async (
-  gaugeAddressTimestampTuples: [Address, number][],
+  gaugeAddressTimestampTuples: [Address, number][]
 ) => {
   if (gaugeAddressTimestampTuples.length === 0) return [];
 
@@ -59,7 +61,7 @@ export const getPoolRelativeWeights = async (
           logIfVerbose(
             `${address}:${timestamp} Fetching pool relative weight, ${
               idx + 1
-            }/${gaugeAddressTimestampTuples.length}`,
+            }/${gaugeAddressTimestampTuples.length}`
           );
           return await gaugesController.read.gauge_relative_weight([
             address,
@@ -69,12 +71,12 @@ export const getPoolRelativeWeights = async (
           logIfVerbose(
             `Error fetching relative weight ${address}:${timestamp}`,
             // @ts-expect-error
-            e,
+            e
           );
           return null;
         }
       })();
-    }),
+    })
   );
 
   return responses.map((response, index) => {

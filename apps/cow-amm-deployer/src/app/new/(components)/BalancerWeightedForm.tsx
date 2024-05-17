@@ -1,14 +1,16 @@
+"use client";
+
 import { toast } from "@bleu/ui";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { UseFormReturn } from "react-hook-form";
 import { Address } from "viem";
 
 import { Input } from "#/components/Input";
-import { pairs } from "#/lib/gqlUniswapV2";
+import { pools } from "#/lib/gqlBalancer";
 import { ammFormSchema } from "#/lib/schema";
 import { loadDEXPriceCheckerErrorText } from "#/lib/utils";
 
-export function UniswapV2PriceChecker({
+export function BalancerWeightedForm({
   form,
 }: {
   form: UseFormReturn<typeof ammFormSchema._type>;
@@ -26,25 +28,23 @@ export function UniswapV2PriceChecker({
   return (
     <div className="flex flex-col gap-y-1">
       <Input
-        label="Uniswap V2 Pair Address"
-        {...register("uniswapV2Pair")}
-        tooltipText="The address of the Uniswap V2 pair that will be used as the price oracle. Click on the load button it will try to find the most liquid pair address using the Uniswap V2's subgraph."
+        label="Balancer Pool ID"
+        {...register("balancerPoolId")}
+        tooltipText="The address of the Balancer pool that will be used as the price oracle. Click on the load button it will try to find the most liquid pool address using the Balancer V2's subgraph."
       />
       <button
         type="button"
         className="flex flex-row outline-none hover:text-highlight text-xs"
         onClick={async () => {
           try {
-            const address = await getUniswapV2PairAddress(
-              chainId,
-              tokenAddresses[0],
-              tokenAddresses[1],
-            );
-            setValue("uniswapV2Pair", address);
+            const id = await getBalancerPoolId(chainId, tokenAddresses);
+            setValue("balancerPoolId", id);
           } catch (error) {
             toast({
               title: "Pool not found",
-              description: loadDEXPriceCheckerErrorText("Sushi V2"),
+              description: loadDEXPriceCheckerErrorText(
+                "Balancer V2 Weighted Pool",
+              ),
               variant: "destructive",
             });
           }
@@ -56,19 +56,18 @@ export function UniswapV2PriceChecker({
   );
 }
 
-async function getUniswapV2PairAddress(
-  chainId: number,
-  token0: Address,
-  token1: Address,
-) {
-  if (token0 === token1) throw new Error("Invalid tokens");
-  const pairsData = await pairs.gql(String(chainId) || "1").pairsWhereTokens({
-    token0: token0.toLowerCase(),
-    token1: token1.toLowerCase(),
-    reserveUSDThreshold: "1000",
-  });
+async function getBalancerPoolId(chainId: number, tokens: Address[]) {
+  if (tokens.length !== 2 || tokens[0] === tokens[1])
+    throw new Error("Invalid tokens");
 
-  if (pairsData?.pairs.length === 0) throw new Error("Pair not found");
+  const poolsData = await pools
+    .gql(String(chainId) || "1")
+    .weightedPoolsAboveLiquidityWithTokens({
+      tokens,
+      liquidityThreshold: "1000",
+    });
 
-  return pairsData?.pairs[0]?.id;
+  if (poolsData?.pools.length === 0) throw new Error("Pool not found");
+
+  return poolsData?.pools[0]?.id;
 }

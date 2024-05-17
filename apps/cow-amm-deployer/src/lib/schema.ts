@@ -47,6 +47,13 @@ export const ammFormSchema = z
     balancerPoolId: bytes32Schema.optional(),
     uniswapV2Pair: basicAddressSchema.optional(),
     sushiV2Pair: basicAddressSchema.optional(),
+    chainlinkPriceFeed0: basicAddressSchema.optional(),
+    chainlinkPriceFeed1: basicAddressSchema.optional(),
+    chainlinkTimeThresholdInHours: z.coerce
+      .number()
+      .int()
+      .positive()
+      .optional(),
     chainId: z.number().int(),
     customPriceOracleAddress: basicAddressSchema.optional(),
     customPriceOracleData: bytesSchema.optional(),
@@ -75,6 +82,49 @@ export const ammFormSchema = z
     {
       message: "Uniswap V2 Pool Address is required",
       path: ["uniswapV2Pair"],
+    },
+  )
+  .refine(
+    // validate if sushi v2 pool address is required
+    (data) => {
+      if (data.priceOracle === PRICE_ORACLES.SUSHI) {
+        return !!data.sushiV2Pair;
+      }
+      return true;
+    },
+    {
+      message: "Sushi V2 Pool Address is required",
+      path: ["sushiV2Pair"],
+    },
+  )
+  .refine(
+    // validate if custom price oracle data is required
+    (data) => {
+      if (data.priceOracle === PRICE_ORACLES.CUSTOM) {
+        return !!data.customPriceOracleData;
+      }
+      return true;
+    },
+    {
+      message: "Custom price oracle data is required",
+      path: ["customPriceOracleData"],
+    },
+  )
+  .refine(
+    // validate if chainlink oracle data is required
+    (data) => {
+      if (data.priceOracle === PRICE_ORACLES.CHAINLINK) {
+        return (
+          !!data.chainlinkPriceFeed0 &&
+          !!data.chainlinkPriceFeed1 &&
+          !!data.chainlinkTimeThresholdInHours
+        );
+      }
+      return true;
+    },
+    {
+      message: "Chainlink price feed addresses are required",
+      path: ["chainlinkPriceFeed0", "chainlinkPriceFeed1"],
     },
   )
   .refine(

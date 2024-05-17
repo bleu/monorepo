@@ -382,7 +382,7 @@ importers:
         specifier: ^3.0.1
         version: 3.1.1
       '@safe-global/safe-core-sdk-types':
-        specifier: ^4.0.1
+        specifier: ^4.1.1
         version: 4.1.1
       '@safe-global/safe-gateway-typescript-sdk':
         specifier: ^3.18.0
@@ -596,8 +596,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       '@safe-global/safe-core-sdk-types':
-        specifier: ^2.3.0
-        version: 2.3.0
+        specifier: ^4.1.1
+        version: 4.1.1
       '@safe-global/safe-gateway-typescript-sdk':
         specifier: ^3.13.3
         version: 3.21.1
@@ -7027,19 +7027,6 @@ packages:
       - zod
     dev: false
 
-  /@safe-global/safe-core-sdk-types@2.3.0:
-    resolution: {integrity: sha512-dU0KkDV1KJNf11ajbUjWiSi4ygdyWfhk1M50lTJWUdCn1/2Bsb/hICM8LoEk6DCoFumxaoCet02SmYakXsW2CA==}
-    dependencies:
-      '@ethersproject/bignumber': 5.7.0
-      '@ethersproject/contracts': 5.7.0
-      '@safe-global/safe-deployments': 1.36.0
-      web3-core: 1.10.4
-      web3-utils: 1.10.4
-    transitivePeerDependencies:
-      - encoding
-      - supports-color
-    dev: false
-
   /@safe-global/safe-core-sdk-types@4.1.1:
     resolution: {integrity: sha512-5NIWG7OjV+C5iquux0yPcu8SHUzg1qJXJ/jAQcPwXGTC7ZVsFawnR43/l2Vg9zEwf0RF0xTm3W8DXkaBYORiEQ==}
     dependencies:
@@ -7073,7 +7060,7 @@ packages:
     resolution: {integrity: sha512-N1ZhksgwD3OBlwTv3R6KFEcPojl/W4ElJOeCZdi+vuI5QmTFwLq3OFf2zd2ROpKvxFdgZ6hUpb0dx9bVNEwYCA==}
     dependencies:
       '@noble/curves': 1.2.0
-      '@noble/hashes': 1.3.2
+      '@noble/hashes': 1.3.3
       '@scure/base': 1.1.6
     dev: false
 
@@ -7088,7 +7075,7 @@ packages:
   /@scure/bip39@1.2.1:
     resolution: {integrity: sha512-Z3/Fsz1yr904dduJD0NpiyRHhRYHdcnyh73FZWiV+/qhWi83wNJ3NWolYqCEN+ZWsUz2TWwajJggcRE9r1zUYg==}
     dependencies:
-      '@noble/hashes': 1.3.2
+      '@noble/hashes': 1.3.3
       '@scure/base': 1.1.6
     dev: false
 
@@ -19586,7 +19573,7 @@ packages:
       graphql: 15.8.0
       iterall: 1.3.0
       symbol-observable: 1.2.0
-      ws: 7.4.5
+      ws: 7.5.9
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate

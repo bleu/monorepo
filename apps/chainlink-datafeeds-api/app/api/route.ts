@@ -1,6 +1,8 @@
+const HOUR_IN_S = 3600;
+
 export async function GET() {
   const res = await fetch("https://data.chain.link/feeds", {
-    next: { revalidate: 60 }, // Revalidate every 60 seconds
+    next: { revalidate: HOUR_IN_S },
   });
   const rawHTML = await res.text();
 

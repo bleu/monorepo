@@ -989,8 +989,8 @@ importers:
   packages/math-poolsimulator:
     dependencies:
       '@balancer-labs/sor':
-        specifier: 4.1.1-beta.16
-        version: 4.1.1-beta.16(@ethersproject/abi@5.7.0)(@ethersproject/address@5.7.0)(@ethersproject/bignumber@5.7.0)(@ethersproject/constants@5.7.0)(@ethersproject/contracts@5.7.0)(@ethersproject/providers@5.7.2)
+        specifier: 4.1.1-beta.17
+        version: 4.1.1-beta.17(@ethersproject/abi@5.7.0)(@ethersproject/address@5.7.0)(@ethersproject/bignumber@5.7.0)(@ethersproject/constants@5.7.0)(@ethersproject/contracts@5.7.0)(@ethersproject/providers@5.7.2)
       '@bleu-fi/utils':
         specifier: workspace:^
         version: link:../utils
@@ -1751,8 +1751,8 @@ packages:
       '@babel/helper-validator-identifier': 7.24.5
       to-fast-properties: 2.0.0
 
-  /@balancer-labs/sor@4.1.1-beta.16(@ethersproject/abi@5.7.0)(@ethersproject/address@5.7.0)(@ethersproject/bignumber@5.7.0)(@ethersproject/constants@5.7.0)(@ethersproject/contracts@5.7.0)(@ethersproject/providers@5.7.2):
-    resolution: {integrity: sha512-EKS7J78r5jKDsGqOs2gzIyhOqYyDAmrwp/nY2bSsfymNXSTr7g3YS418UJl1hSQMBEeN4N2MnH0neM1oJxHHoQ==}
+  /@balancer-labs/sor@4.1.1-beta.17(@ethersproject/abi@5.7.0)(@ethersproject/address@5.7.0)(@ethersproject/bignumber@5.7.0)(@ethersproject/constants@5.7.0)(@ethersproject/contracts@5.7.0)(@ethersproject/providers@5.7.2):
+    resolution: {integrity: sha512-JcX/HeppyoIs+Sa3Z/pdZhqMOBAGajOwVkBkFA8rehd1K2qaU/k/a3OkbIidXjs4lQI9sJE1WO8RauCLtuLQfg==}
     peerDependencies:
       '@ethersproject/abi': ^5.4.1
       '@ethersproject/address': ^5.4.0

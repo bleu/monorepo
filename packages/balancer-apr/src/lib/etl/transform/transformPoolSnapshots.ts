@@ -1,7 +1,7 @@
 import { sql } from "drizzle-orm";
+import { logIfVerbose } from "lib/logIfVerbose";
 
 import { db } from "../../../db/index";
-import { logIfVerbose } from "../../../index";
 /**
  * Transforms raw pool snapshot data into a normalized format and inserts it into the database.
  *

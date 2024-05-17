@@ -1,4 +1,7 @@
 import { and, eq, gt, isNotNull, isNull, min, sql } from "drizzle-orm";
+import { vulnerabilityAffectedPools } from "lib/balancer/data/vulnerabilityAffectedPool";
+import { addToTable } from "lib/db/addToTable";
+import { logIfVerbose } from "lib/logIfVerbose";
 import { Address } from "viem";
 
 import { db } from "../../../db/index";
@@ -9,8 +12,7 @@ import {
   poolTokenRateProviders,
   poolTokenRateProvidersSnapshot,
 } from "../../../db/schema";
-import { addToTable, logIfVerbose, networkNames } from "../../../index";
-import { vulnerabilityAffectedPools } from "../../../vulnerabilityAffectedPool";
+import { networkNames } from "../../../index";
 import { getRates } from "./getRates";
 
 // export async function extractPoolRateProviderSnapshot(network: string) {

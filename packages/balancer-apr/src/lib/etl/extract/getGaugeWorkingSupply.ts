@@ -1,7 +1,7 @@
+import { logIfVerbose } from "lib/logIfVerbose";
 import pThrottle from "p-throttle";
 import { Address, formatUnits, getContract } from "viem";
 
-import { logIfVerbose } from "../../../index";
 import { publicClients } from "../../../lib/chainsPublicClients";
 
 const abi = [

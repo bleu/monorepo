@@ -1,8 +1,7 @@
+import { logIfVerbose } from "lib/logIfVerbose";
 import pThrottle from "p-throttle";
 import { Address, createPublicClient, getContract, http } from "viem";
 import { mainnet } from "viem/chains";
-
-import { logIfVerbose } from "../../../index";
 
 export const publicClient = createPublicClient({
   chain: mainnet,

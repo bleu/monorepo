@@ -2,7 +2,6 @@ import { MetadataApi } from "@cowprotocol/app-data";
 import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
 import { Address, encodeFunctionData, parseUnits } from "viem";
 
-import { PRICE_ORACLES } from "#/lib/types";
 import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 
 import { cowAmmModuleAbi } from "./abis/cowAmmModule";
@@ -10,7 +9,9 @@ import { gnosisSafeV12 } from "./abis/gnosisSafeV12";
 import { COW_AMM_MODULE_ADDRESS } from "./contracts";
 import {
   encodePriceOracleData,
-  PRICE_ORACLES_ADDRESSES,
+  getPriceOracleAddress,
+  IEncodePriceOracleData,
+  IGetPriceOracleAddress,
 } from "./encodePriceOracleData";
 import { uploadAppData } from "./orderBookApi/uploadAppData";
 import { ammFormSchema } from "./schema";
@@ -42,10 +43,9 @@ export interface creteCowAmmArgs extends BaseArgs {
   token1: Address;
   token0Decimals: number;
   minTradedToken0: number;
-  priceOracle: PRICE_ORACLES;
+  priceOracleAddress: Address;
   appData: `0x${string}`;
-  balancerPoolId?: `0x${string}`;
-  uniswapV2Pair?: Address;
+  priceOracleData: `0x${string}`;
   chainId: ChainId;
 }
 
@@ -79,18 +79,11 @@ class CowAmmCreateTx implements ITransaction<creteCowAmmArgs> {
     token1,
     token0Decimals,
     minTradedToken0,
-    priceOracle,
-    balancerPoolId,
-    uniswapV2Pair,
+    priceOracleAddress,
+    priceOracleData,
     appData,
     chainId,
   }: creteCowAmmArgs): BaseTransaction {
-    const priceOracleData = encodePriceOracleData({
-      priceOracle,
-      balancerPoolId,
-      uniswapV2Pair,
-    });
-
     return {
       to: COW_AMM_MODULE_ADDRESS[chainId],
       value: "0",
@@ -101,7 +94,7 @@ class CowAmmCreateTx implements ITransaction<creteCowAmmArgs> {
           token0,
           token1,
           parseUnits(String(minTradedToken0), token0Decimals),
-          PRICE_ORACLES_ADDRESSES[chainId][priceOracle] as Address,
+          priceOracleAddress,
           priceOracleData,
           appData,
         ],
@@ -116,18 +109,11 @@ class CowAmmEditTx implements ITransaction<editCowAmmArgs> {
     token1,
     token0Decimals,
     minTradedToken0,
-    priceOracle,
-    balancerPoolId,
-    uniswapV2Pair,
+    priceOracleAddress,
+    priceOracleData,
     appData,
     chainId,
   }: editCowAmmArgs): BaseTransaction {
-    const priceOracleData = encodePriceOracleData({
-      priceOracle,
-      balancerPoolId,
-      uniswapV2Pair,
-    });
-
     return {
       to: COW_AMM_MODULE_ADDRESS[chainId],
       value: "0",
@@ -138,7 +124,7 @@ class CowAmmEditTx implements ITransaction<editCowAmmArgs> {
           token0,
           token1,
           parseUnits(String(minTradedToken0), token0Decimals),
-          PRICE_ORACLES_ADDRESSES[chainId][priceOracle] as Address,
+          priceOracleAddress,
           priceOracleData,
           appData,
         ],
@@ -231,6 +217,11 @@ export async function buildTxAMMArgs({
     chainId: data.chainId as ChainId,
   });
 
+  const priceOracleData = encodePriceOracleData(data as IEncodePriceOracleData);
+  const priceOracleAddress = getPriceOracleAddress(
+    data as IGetPriceOracleAddress,
+  );
+
   return [
     ...enableCoWAmmTxs,
     {
@@ -239,10 +230,9 @@ export async function buildTxAMMArgs({
       token1: data.token1.address as Address,
       token0Decimals: data.token0.decimals,
       minTradedToken0: data.minTradedToken0,
-      priceOracle: data.priceOracle as PRICE_ORACLES,
+      priceOracleAddress,
+      priceOracleData,
       appData: appDataHex as `0x${string}`,
-      balancerPoolId: data.balancerPoolId as `0x${string}` | undefined,
-      uniswapV2Pair: data.uniswapV2Pair as Address | undefined,
       chainId: data.chainId as ChainId,
     } as const,
   ];

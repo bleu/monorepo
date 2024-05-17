@@ -18,6 +18,7 @@
   "dependencies": {
     "@bleu-fi/gql": "workspace:*",
     "@bleu-fi/tsconfig": "workspace:*",
+    "@bleu/ui": "^0.1.93",
     "@cowprotocol/app-data": "^2.0.2",
     "@gnosis.pm/safe-apps-react-sdk": "^4.6.2",
     "@gnosis.pm/safe-apps-sdk": "^7.8.0",

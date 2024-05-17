@@ -23,13 +23,11 @@ import { useRawTxData } from "#/hooks/useRawTxData";
 import { useRunningAMM } from "#/hooks/useRunningAmmInfo";
 import { buildAccountCowExplorerUrl } from "#/lib/cowExplorer";
 import { TRANSACTION_TYPES } from "#/lib/transactionFactory";
-import { PRICE_ORACLES } from "#/lib/types";
-import { getBalancerPoolUrl } from "#/utils/balancerPoolUrl";
 import { ChainId, supportedChainIds } from "#/utils/chainsPublicClients";
-import { getUniV2PairUrl } from "#/utils/univ2pairUrl";
 
 import { UnsuportedChain } from "../../components/UnsuportedChain";
 import { PoolCompositionTable } from "./(components)/PoolCompositionTable";
+import { PriceInformation } from "./(components)/PriceInformation";
 
 export default function Page() {
   const router = useRouter();
@@ -53,17 +51,6 @@ export default function Page() {
   if (!cowAmm) {
     redirect("/new");
   }
-
-  const priceOracleLink =
-    cowAmm.priceOracle === PRICE_ORACLES.BALANCER
-      ? getBalancerPoolUrl(
-          safe.chainId as ChainId,
-          cowAmm.priceOracleData?.balancerPoolId,
-        )
-      : getUniV2PairUrl(
-          safe.chainId as ChainId,
-          cowAmm.priceOracleData?.uniswapV2PairAddress,
-        );
 
   return (
     <div className="flex w-full justify-center">
@@ -105,14 +92,7 @@ export default function Page() {
               The first <i className="text-purple">MEV-Capturing AMM</i>,
               brought to you by <i className="text-yellow">CoW DAO</i>{" "}
             </h2>
-            <div className="flex flex-row gap-x-1 items-center hover:text-foreground/90">
-              <span>Using price information from {cowAmm.priceOracle}</span>
-              {priceOracleLink && (
-                <Link href={priceOracleLink} target="_blank">
-                  <ArrowTopRightIcon />
-                </Link>
-              )}
-            </div>
+            <PriceInformation cowAmm={cowAmm} />
           </div>
           <div className="flex flex-col bg-yellow/40 text-foreground py-2 px-8">
             <span className="text-sm">Total Value</span>

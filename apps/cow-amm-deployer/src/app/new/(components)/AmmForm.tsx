@@ -12,7 +12,6 @@ import { Button } from "#/components";
 import { Input } from "#/components/Input";
 import { SelectInput } from "#/components/SelectInput";
 import { Spinner } from "#/components/Spinner";
-import { Toast } from "#/components/Toast";
 import { TokenSelect } from "#/components/TokenSelect";
 import { Tooltip } from "#/components/Tooltip";
 import {
@@ -26,17 +25,19 @@ import { Label } from "#/components/ui/label";
 import { useFallbackState } from "#/hooks/useFallbackState";
 import { useRawTxData } from "#/hooks/useRawTxData";
 import { fetchTokenUsdPrice } from "#/lib/fetchTokenUsdPrice";
-import { pools } from "#/lib/gqlBalancer";
-import { pairs } from "#/lib/gqlUniswapV2";
 import { ammFormSchema } from "#/lib/schema";
 import { buildTxAMMArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
 import { FALLBACK_STATES, IToken, PRICE_ORACLES } from "#/lib/types";
 import { cn } from "#/lib/utils";
 import { ChainId } from "#/utils/chainsPublicClients";
 
+import { BalancerWeightedPriceCheckerForm } from "./BalancerWeightedPriceCheckerForm";
+import { CustomPriceCheckerForm } from "./CustomPriceCheckerForm";
 import { FallbackAndDomainWarning } from "./FallbackAndDomainWarning";
+import { SushiV2PriceChecker } from "./SushiPriceChecker";
+import { UniswapV2PriceChecker } from "./UniswapV2PriceChecker";
 
-const getNewMinTradeToken0 = (newToken0: IToken, chainId: ChainId) => {
+const getNewMinTradeToken0 = async (newToken0: IToken, chainId: ChainId) => {
   return fetchTokenUsdPrice({
     tokenAddress: newToken0.address as Address,
     tokenDecimals: newToken0.decimals,
@@ -89,15 +90,14 @@ export function AmmForm({
 
   const formData = watch();
 
-  const tokenAddresses = [
-    formData?.token0?.address,
-    formData?.token1?.address,
-  ].filter((address) => address) as Address[];
-
   const onSubmit = async (data: typeof ammFormSchema._type) => {
     await buildTxAMMArgs({ data, transactionType })
       .then((txArgs) => {
         sendTransactions(txArgs);
+      })
+      .catch((e: Error) => {
+        // eslint-disable-next-line no-console
+        console.error(e);
       })
       .then(() => {
         router.push("/createtxprocessing");
@@ -173,11 +173,7 @@ export function AmmForm({
           </div>
         </div>
       </div>
-      <PriceOracleFields
-        form={form}
-        chainId={chainId as ChainId}
-        tokenAddresses={tokenAddresses}
-      />
+      <PriceOracleFields form={form} />
       <Accordion className="w-full" type="single" collapsible>
         <AccordionItem value="advancedOptions" key="advancedOption">
           <AccordionTrigger
@@ -232,22 +228,16 @@ export function AmmForm({
 
 function PriceOracleFields({
   form,
-  chainId,
-  tokenAddresses,
 }: {
   form: UseFormReturn<typeof ammFormSchema._type>;
-  chainId: ChainId;
-  tokenAddresses: Address[];
 }) {
   const {
     setValue,
     formState: { errors },
     watch,
-    register,
   } = form;
 
   const priceOracle = watch("priceOracle");
-  const [isNotifierOpen, setIsNotifierOpen] = useState(false);
 
   return (
     <div className="flex flex-col gap-y-3">
@@ -285,110 +275,17 @@ function PriceOracleFields({
       </div>
 
       {priceOracle === PRICE_ORACLES.BALANCER && (
-        <div className="flex flex-col gap-y-1">
-          <Input
-            label="Balancer Pool ID"
-            {...register("balancerPoolId")}
-            tooltipText="The address of the Balancer pool that will be used as the price oracle. If you click on the load button it will try to find the most liquid pool address using the Balancer subgraph."
-          />
-          <button
-            type="button"
-            className="flex flex-row outline-none hover:text-highlight text-xs"
-            onClick={() => {
-              getBalancerPoolId(chainId, tokenAddresses)
-                .then((id) => {
-                  setValue("balancerPoolId", id);
-                })
-                .catch(() => {
-                  setIsNotifierOpen(true);
-                });
-            }}
-          >
-            Load from subgraph
-          </button>
-        </div>
+        <BalancerWeightedPriceCheckerForm form={form} />
       )}
       {priceOracle === PRICE_ORACLES.UNI && (
-        <div className="flex flex-col gap-y-1">
-          <Input
-            label="Uniswap V2 Pool Address"
-            {...register("uniswapV2Pair")}
-            tooltipText="The address of the Uniswap V2 pool that will be used as the price oracle. If you click on the load button it will try to find the most liquid pool address using the Uniswap V2 subgraph."
-          />
-          <button
-            type="button"
-            className="flex flex-row outline-none hover:text-highlight text-xs"
-            onClick={() => {
-              getUniswapV2PairAddress(
-                chainId,
-                tokenAddresses[0],
-                tokenAddresses[1],
-              )
-                .then((address) => {
-                  setValue("uniswapV2Pair", address);
-                })
-                .catch(() => {
-                  setIsNotifierOpen(true);
-                });
-            }}
-          >
-            Load from subgraph
-          </button>
-        </div>
+        <UniswapV2PriceChecker form={form} />
       )}
-      <Toast
-        content={<ErrorFillingPriceOracleData />}
-        isOpen={isNotifierOpen}
-        setIsOpen={setIsNotifierOpen}
-        duration={5000}
-        variant="alert"
-      />
+      {priceOracle === PRICE_ORACLES.CUSTOM && (
+        <CustomPriceCheckerForm form={form} />
+      )}
+      {priceOracle === PRICE_ORACLES.SUSHI && (
+        <SushiV2PriceChecker form={form} />
+      )}
     </div>
   );
-}
-
-function ErrorFillingPriceOracleData() {
-  return (
-    <div className="flex h-14 flex-row items-center justify-between px-4 py-8">
-      <div className="flex flex-col justify-between space-y-1 text-destructive-foreground">
-        <h1 className="font-normal">Error</h1>
-        <h3 className="mb-2 text-sm leading-3">
-          Check that tokens are valid and pool exists
-        </h3>
-      </div>
-    </div>
-  );
-}
-
-async function getBalancerPoolId(chainId: number, tokens: Address[]) {
-  if (tokens.length !== 2 || tokens[0] === tokens[1])
-    throw new Error("Invalid tokens");
-
-  const poolsData = await pools
-    .gql(String(chainId) || "1")
-    .weightedPoolsAboveLiquidityWithTokens({
-      tokens,
-      liquidityThreshold: "1000",
-    });
-
-  if (poolsData?.pools.length === 0) throw new Error("Pool not found");
-
-  return poolsData?.pools[0]?.id;
-}
-
-async function getUniswapV2PairAddress(
-  chainId: number,
-  token0: Address,
-  token1: Address,
-) {
-  if (token0 === token1) throw new Error("Invalid tokens");
-  const pairsData = await pairs.gql(String(chainId) || "1").pairsWhereTokens({
-    token0,
-    token1,
-    reserveUSDThreshold: "1000",
-  });
-
-  if (pairsData?.pairs.length === 0) throw new Error("Pool not found");
-
-  return pairsData?.pairs[0]?.id;
 }

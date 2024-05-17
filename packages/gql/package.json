@@ -14,7 +14,7 @@
     "@bleu-fi/utils": "workspace:^",
     "@bleu-fi/tsconfig": "workspace:*",
     "@graphql-codegen/cli": "5.0.0",
-    "@graphql-codegen/client-preset": "^4.1.0",
+    "@graphql-codegen/client-preset": "^4.2.6",
     "@graphql-codegen/typescript": "4.0.1",
     "@graphql-codegen/typescript-graphql-request": "6.1.0",
     "@graphql-codegen/typescript-operations": "4.0.1",

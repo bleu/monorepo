@@ -1,7 +1,7 @@
 import { sql } from "drizzle-orm";
+import { logIfVerbose } from "lib/logIfVerbose";
 
 import { db } from "../../../db/index";
-import { logIfVerbose } from "../../../index";
 
 export async function loadNetworks() {
   logIfVerbose("Loading networks");

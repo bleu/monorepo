@@ -1,9 +1,9 @@
+import { tokens } from "db/schema";
 import { and, isNotNull, isNull, sql } from "drizzle-orm";
+import { logIfVerbose } from "lib/logIfVerbose";
 import { type Address, getContract } from "viem";
 
 import { db } from "../../../db";
-import { tokens } from "../../../db/schema";
-import { logIfVerbose } from "../../../index";
 import { publicClients } from "../../../lib/chainsPublicClients";
 
 const abi = [
@@ -31,8 +31,8 @@ export const extractTokenDecimals = async () => {
       and(
         isNull(tokens.decimals),
         isNotNull(tokens.address),
-        isNotNull(tokens.networkSlug),
-      ),
+        isNotNull(tokens.networkSlug)
+      )
     );
 
   if (tokensWithoutDecimals.length === 0) return;
@@ -46,7 +46,9 @@ export const extractTokenDecimals = async () => {
         const token = getContract({
           address: address as Address,
           abi,
-          publicClient,
+          client: {
+            public: publicClient,
+          },
         });
 
         try {
@@ -56,7 +58,7 @@ export const extractTokenDecimals = async () => {
           logIfVerbose(`Error fetching decimals for ${address} on ${network}`);
           return null;
         }
-      }),
+      })
     )
   ).filter(Boolean) as {
     address: Address;

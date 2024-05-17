@@ -1,9 +1,10 @@
 import { SECONDS_IN_YEAR } from "@bleu-fi/utils/date";
 import { sql } from "drizzle-orm";
+import { addToTable } from "lib/db/addToTable";
+import { logIfVerbose } from "lib/logIfVerbose";
 
 import { db } from "../../../db/index";
 import { poolRewardsSnapshot } from "../../../db/schema";
-import { addToTable, logIfVerbose } from "../../../index";
 
 export async function calculatePoolRewardsSnapshots() {
   logIfVerbose("Calculating pool rewards snapshots");

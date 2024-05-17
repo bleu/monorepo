@@ -1,9 +1,10 @@
 import { dateToEpoch } from "@bleu-fi/utils/date";
 import { and, eq, isNull } from "drizzle-orm";
+import { addToTable } from "lib/db/addToTable";
+import { logIfVerbose } from "lib/logIfVerbose";
 
 import { db } from "../../../db/index";
 import { balEmission, calendar } from "../../../db/schema";
-import { addToTable, logIfVerbose } from "../../../index";
 import * as balEmissions from "../../../lib/balancer/emissions";
 
 export async function loadBalEmission() {

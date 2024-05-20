@@ -64,7 +64,7 @@ export async function decodePriceOracleWithData({
       "0x79200763b5bc95d8d6a3b53be1e9a494bc301940",
     ].includes(lowerCaseAddress)
   ) {
-    const [chainlinkPriceFeed0, chainlinkPriceFeed1, _timeThreshold, _backoff] =
+    const [chainlinkPriceFeed0, chainlinkPriceFeed1, timeThreshold, _backoff] =
       decodeAbiParameters(
         [
           { type: "address", name: "priceFeed0" },
@@ -74,13 +74,21 @@ export async function decodePriceOracleWithData({
         ],
         priceOracleData,
       );
+    const chainlinkTimeThresholdInHours = Number(timeThreshold) / 3600;
     return [
       PRICE_ORACLES.CHAINLINK,
       {
         chainlinkPriceFeed0,
         chainlinkPriceFeed1,
+        chainlinkTimeThresholdInHours,
       },
     ];
   }
-  return [PRICE_ORACLES.CUSTOM, {}];
+  return [
+    PRICE_ORACLES.CUSTOM,
+    {
+      customPriceOracleAddress: address,
+      customPriceOracleData: priceOracleData,
+    },
+  ];
 }

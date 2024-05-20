@@ -27,6 +27,9 @@ export interface PriceOracleData {
   sushiSwapPairAddress?: Address;
   chainlinkPriceFeed0?: Address;
   chainlinkPriceFeed1?: Address;
+  chainlinkTimeThresholdInHours?: number;
+  customPriceOracleAddress?: Address;
+  customPriceOracleData?: `0x${string}`;
 }
 export interface ICowAmm {
   token0: TokenBalance & {

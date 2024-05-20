@@ -266,7 +266,7 @@ function PriceOracleFields({
             placeholder={priceOracle}
           />
           {errors.priceOracle && (
-            <FormMessage className="h-6 text-sm text-destructive w-full">
+            <FormMessage className="text-sm text-destructive w-full">
               <p className="text-wrap">
                 {errors.priceOracle.message as string}
               </p>

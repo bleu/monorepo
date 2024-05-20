@@ -70,7 +70,7 @@ export const Input = React.forwardRef<HTMLInputElement, IInput>(
           />
         </FormControl>
         {errorMessage && (
-          <FormMessage className="mt-1 h-6 text-sm text-destructive">
+          <FormMessage className="mt-1 text-sm text-destructive">
             <span>{errorMessage}</span>
           </FormMessage>
         )}

@@ -31,8 +31,8 @@ export const extractTokenDecimals = async () => {
       and(
         isNull(tokens.decimals),
         isNotNull(tokens.address),
-        isNotNull(tokens.networkSlug)
-      )
+        isNotNull(tokens.networkSlug),
+      ),
     );
 
   if (tokensWithoutDecimals.length === 0) return;
@@ -58,7 +58,7 @@ export const extractTokenDecimals = async () => {
           logIfVerbose(`Error fetching decimals for ${address} on ${network}`);
           return null;
         }
-      })
+      }),
     )
   ).filter(Boolean) as {
     address: Address;

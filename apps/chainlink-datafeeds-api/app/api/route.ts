@@ -7,7 +7,7 @@ export async function GET() {
   const rawHTML = await res.text();
 
   const match = rawHTML.match(
-    /<script id="__NEXT_DATA__" type="application\/json">(.*?)<\/script>/
+    /<script id="__NEXT_DATA__" type="application\/json">(.*?)<\/script>/,
   );
 
   if (!match?.length) return Response.json({ error: "No data found" });

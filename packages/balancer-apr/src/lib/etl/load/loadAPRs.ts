@@ -1,10 +1,10 @@
 import "dotenv/config";
 
 import { sql } from "drizzle-orm";
+import { blockListRateProvider } from "lib/balancer/data/blockListRateProvider";
 import { logIfVerbose } from "lib/logIfVerbose";
 
 import { db } from "../../../db/index";
-import { blockListRateProvider } from "lib/balancer/data/blockListRateProvider";
 
 export async function loadAPRs() {
   await Promise.all([
@@ -222,9 +222,9 @@ async function loadTokenYieldNonWeightedAPR() {
               blockListRateProvider
                 .map(
                   (item: { rateProviderAddress: unknown }) =>
-                    `'${item.rateProviderAddress}'`
+                    `'${item.rateProviderAddress}'`,
                 )
-                .join(", ")
+                .join(", "),
             )})
     ) AS subquery ON subquery.timestamp = pool_snapshots.timestamp
     AND subquery.token_address = pool_tokens.token_address
@@ -289,9 +289,9 @@ async function loadTokenYieldWeightedAPR() {
               blockListRateProvider
                 .map(
                   (item: { rateProviderAddress: unknown }) =>
-                    `'${item.rateProviderAddress}'`
+                    `'${item.rateProviderAddress}'`,
                 )
-                .join(", ")
+                .join(", "),
             )})
     ) AS subquery ON subquery.timestamp = pool_snapshots.timestamp
     AND subquery.token_address = pool_tokens.token_address

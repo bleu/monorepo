@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, toast } from "@bleu/ui";
+import { toast } from "@bleu/ui";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { UseFormReturn } from "react-hook-form";
 import { Address } from "viem";
@@ -32,7 +32,6 @@ export function BalancerWeightedPriceCheckerForm({
         {...register("balancerPoolId")}
         tooltipText="The address of the Balancer pool that will be used as the price oracle. Click on the load button it will try to find the most liquid pool address using the Balancer V2's subgraph."
       />
-      <Button>Load from subgraph</Button>
       <button
         type="button"
         className="flex flex-row outline-none hover:text-highlight text-xs"

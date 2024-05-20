@@ -25,6 +25,8 @@ export interface PriceOracleData {
   balancerPoolId?: `0x${string}`;
   uniswapV2PairAddress?: Address;
   sushiSwapPairAddress?: Address;
+  chainlinkPriceFeed0?: Address;
+  chainlinkPriceFeed1?: Address;
 }
 export interface ICowAmm {
   token0: TokenBalance & {

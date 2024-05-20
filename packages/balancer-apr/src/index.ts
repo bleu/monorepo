@@ -6,12 +6,11 @@ import "dotenv/config";
 
 import { sql } from "drizzle-orm";
 
-import { chunks } from "./chunks";
+import { db } from "./db/index";
 import {
   NETWORK_TO_BALANCER_ENDPOINT_MAP,
   NETWORK_TO_REWARDS_ENDPOINT_MAP,
-} from "./config";
-import { db } from "./db/index";
+} from "./lib/config";
 import { extractBlocks } from "./lib/etl/extract/extractBlocks";
 import { extractGauges } from "./lib/etl/extract/extractGauges";
 import { extractGaugesSnapshot } from "./lib/etl/extract/extractGaugesSnapshot";
@@ -33,40 +32,9 @@ import { loadVebalRounds } from "./lib/etl/load/loadVebalRounds";
 import { transformPools } from "./lib/etl/transform/transformPools";
 import { transformPoolSnapshots } from "./lib/etl/transform/transformPoolSnapshots";
 import { transformRewardsData } from "./lib/etl/transform/transformRewardsData";
+import { logIfVerbose } from "./lib/logIfVerbose";
 
-export const BATCH_SIZE = 1_000;
 export const BALANCER_START_DATE = "2021-04-21";
-
-const isVerbose = process.argv.includes("-v");
-
-export function logIfVerbose(message: unknown) {
-  if (isVerbose) {
-    console.log(message);
-  }
-}
-
-export async function addToTable(
-  table: any,
-  items?: any[],
-  onConflictStatement: any = null,
-) {
-  console.log("addToTable", table, onConflictStatement, items);
-  if (!items?.length) {
-    return [];
-  }
-
-  const chunkedItems = [...chunks(items, BATCH_SIZE)];
-  return await Promise.all(
-    chunkedItems.map(async (items) => {
-      return onConflictStatement
-        ? await db
-            .insert(table)
-            .values(items)
-            .onConflictDoUpdate(onConflictStatement)
-        : await db.insert(table).values(items).onConflictDoNothing();
-    }),
-  );
-}
 
 export const networkNames = Object.keys(
   NETWORK_TO_BALANCER_ENDPOINT_MAP,

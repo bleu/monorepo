@@ -1,7 +1,7 @@
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { gql } from "graphql-tag";
 import { useEffect, useState } from "react";
-import { Address, decodeAbiParameters, formatUnits } from "viem";
+import { Address, formatUnits } from "viem";
 
 import { composableCowAbi } from "#/lib/abis/composableCow";
 import { cowAmmModuleAbi } from "#/lib/abis/cowAmmModule";
@@ -10,6 +10,7 @@ import {
   COW_AMM_HANDLER_ADDRESS,
   COW_AMM_MODULE_ADDRESS,
 } from "#/lib/contracts";
+import { decodePriceOracleWithData } from "#/lib/decodePriceOracle";
 import { fetchTokenUsdPrice } from "#/lib/fetchTokenUsdPrice";
 import { UserCurrentAmmQuery } from "#/lib/gqlComposableCow/generated";
 import { composableCowApi } from "#/lib/gqlComposableCow/sdk";
@@ -77,33 +78,27 @@ export async function fetchLastAmmInfo({
   return decodePriceOracle({
     constantProductData: order.constantProductData,
     hash: order.hash as `0x${string}`,
+    chainId: chainId as ChainId,
   });
 }
-export const ADDRESSES_PRICE_ORACLES = {
-  "0xad37fe3ddedf8cdee1022da1b17412cfb6495596": PRICE_ORACLES.BALANCER,
-  "0x573cc0c800048f94e022463b9214d92c2d65e97b": PRICE_ORACLES.UNI,
-  "0xd3a84895080609e1163c80b2bd65736db1b86bec": PRICE_ORACLES.BALANCER,
-  "0xe089049027b95c2745d1a954bc1d245352d884e9": PRICE_ORACLES.UNI,
-  "0xb2efb68ab1798c04700afd7f625c0ffbde974756": PRICE_ORACLES.BALANCER,
-  "0xe45ae383873f9f7e3e42deb12886f481999696b6": PRICE_ORACLES.UNI,
-} as const;
 
 export async function decodePriceOracle({
   constantProductData,
   hash,
+  chainId,
 }: {
   // @ts-ignore
   constantProductData: UserCurrentAmmQuery["orders"]["items"][0]["constantProductData"];
   hash: `0x${string}`;
+  chainId: ChainId;
 }) {
-  const priceOracle =
-    ADDRESSES_PRICE_ORACLES[
-      constantProductData?.priceOracle.toLowerCase() as keyof typeof ADDRESSES_PRICE_ORACLES
-    ];
-  const priceOracleDataDecoded = decodePriceOracleData({
-    priceOracle,
-    priceOracleData: constantProductData?.priceOracleData as `0x${string}`,
-  });
+  const [priceOracle, priceOracleDataDecoded] = await decodePriceOracleWithData(
+    {
+      address: constantProductData.priceOracle,
+      priceOracleData: constantProductData.priceOracleData,
+      chainId: chainId as ChainId,
+    },
+  );
 
   return {
     ...constantProductData,
@@ -111,30 +106,6 @@ export async function decodePriceOracle({
     priceOracleType: priceOracle,
     priceOracleDataDecoded,
   };
-}
-
-export function decodePriceOracleData({
-  priceOracle,
-  priceOracleData,
-}: {
-  priceOracle: PRICE_ORACLES;
-  priceOracleData: `0x${string}`;
-}): PriceOracleData {
-  if (priceOracle === PRICE_ORACLES.BALANCER) {
-    const [balancerPoolId] = decodeAbiParameters(
-      [{ type: "bytes32", name: "poolId" }],
-      priceOracleData,
-    );
-    return { balancerPoolId: balancerPoolId as `0x${string}` };
-  }
-  if (priceOracle === PRICE_ORACLES.UNI) {
-    const [uniswapV2PairAddress] = decodeAbiParameters(
-      [{ type: "address", name: "pairAddress" }],
-      priceOracleData,
-    );
-    return { uniswapV2PairAddress };
-  }
-  throw new Error("Unknown price oracle");
 }
 
 export async function checkIsAmmRunning(
@@ -254,6 +225,7 @@ export function useRunningAMM(): {
       minTradedToken0: gqlInfo?.minTradedToken0 as number,
       priceOracle: gqlInfo?.priceOracleType as PRICE_ORACLES,
       priceOracleData: gqlInfo?.priceOracleDataDecoded as PriceOracleData,
+      priceOracleAddress: gqlInfo?.priceOracle as Address,
     };
   }
 

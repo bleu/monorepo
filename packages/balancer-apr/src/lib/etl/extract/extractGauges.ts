@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { sql } from "drizzle-orm";
+import { ENDPOINT_V3, NETWORK_TO_REWARDS_ENDPOINT_MAP } from "lib/config";
+import { addToTable } from "lib/db/addToTable";
+import { gql } from "lib/gql";
+import { logIfVerbose } from "lib/logIfVerbose";
 
-import { ENDPOINT_V3, NETWORK_TO_REWARDS_ENDPOINT_MAP } from "../../../config";
 import { db } from "../../../db";
 import { gauges, pools } from "../../../db/schema";
-import { gql } from "../../../gql";
-import { addToTable, logIfVerbose, networkNamesRewards } from "../../../index";
+import { networkNamesRewards } from "../../../index";
 
 export const API_VOTING_GAUGES_QUERY = `
 query VeBalGetVotingList {

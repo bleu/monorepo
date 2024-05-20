@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
-import { logIfVerbose } from "./index";
+
+import { logIfVerbose } from "lib/logIfVerbose";
 
 export async function gql(
   endpoint: string,

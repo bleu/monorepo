@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
-import { gql } from "./gql";
-import { BATCH_SIZE, logIfVerbose } from "./index";
+import { BATCH_SIZE } from "lib/db/addToTable";
+import { gql } from "lib/gql/index";
+import { logIfVerbose } from "lib/logIfVerbose";
 
 export async function paginate<T>(
   initialId: string,

@@ -1,8 +1,8 @@
 import { dateToEpoch } from "@bleu-fi/utils/date";
+import { logIfVerbose } from "lib/logIfVerbose";
 import pThrottle from "p-throttle";
 import { Address, getContract } from "viem";
 
-import { logIfVerbose } from "../../../index";
 import { publicClients } from "../../chainsPublicClients";
 
 export const rateProviderAbi = [
@@ -33,7 +33,9 @@ export const getRates = async (
         const rateProvider = getContract({
           address,
           abi: rateProviderAbi,
-          publicClient,
+          client: {
+            public: publicClient,
+          },
         });
         return throttle(async () => {
           try {

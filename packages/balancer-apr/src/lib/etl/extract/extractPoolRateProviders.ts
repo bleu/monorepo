@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { vulnerabilityAffectedPools } from "lib/balancer/data/vulnerabilityAffectedPool";
+import { NETWORK_TO_BALANCER_ENDPOINT_MAP } from "lib/config";
+import { addToTable } from "lib/db/addToTable";
+import { logIfVerbose } from "lib/logIfVerbose";
+import { paginatedFetch } from "lib/paginatedFetch";
 import { zeroAddress } from "viem";
 
-import { NETWORK_TO_BALANCER_ENDPOINT_MAP } from "../../../config";
 import { pools, poolTokenRateProviders } from "../../../db/schema";
-import { addToTable, logIfVerbose, networkNames } from "../../../index";
-import { paginatedFetch } from "../../../paginatedFetch";
-import { vulnerabilityAffectedPools } from "../../../vulnerabilityAffectedPool";
+import { networkNames } from "../../../index";
 
 const RATE_PROVIDER = `
 query PoolRateProviders($latestId: String!) {

@@ -1,16 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { dateToEpoch } from "@bleu-fi/utils/date";
+import { NETWORK_TO_BALANCER_ENDPOINT_MAP } from "lib/config";
+import { addToTable, BATCH_SIZE } from "lib/db/addToTable";
+import { logIfVerbose } from "lib/logIfVerbose";
+import { paginatedFetch } from "lib/paginatedFetch";
 
-import { NETWORK_TO_BALANCER_ENDPOINT_MAP } from "../../../config";
 import { poolSnapshotsTemp } from "../../../db/schema";
-import {
-  addToTable,
-  BATCH_SIZE,
-  logIfVerbose,
-  networkNames,
-} from "../../../index";
-import { paginatedFetch } from "../../../paginatedFetch";
+import { networkNames } from "../../../index";
 
 const POOLS_SNAPSHOTS = `
 query PoolSnapshots($latestId: ID!, $today: Int!) {

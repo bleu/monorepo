@@ -1,10 +1,10 @@
 import "dotenv/config";
 
 import { sql } from "drizzle-orm";
+import { blockListRateProvider } from "lib/balancer/data/blockListRateProvider";
+import { logIfVerbose } from "lib/logIfVerbose";
 
-import { blockListRateProvider } from "../../../blockListRateProvider";
 import { db } from "../../../db/index";
-import { logIfVerbose } from "../../../index";
 
 export async function loadAPRs() {
   await Promise.all([
@@ -220,7 +220,10 @@ async function loadTokenYieldNonWeightedAPR() {
             AND p1.rate - p2.rate != 0
             AND p1.rate_provider_address NOT IN (${sql.raw(
               blockListRateProvider
-                .map((item) => `'${item.rateProviderAddress}'`)
+                .map(
+                  (item: { rateProviderAddress: unknown }) =>
+                    `'${item.rateProviderAddress}'`,
+                )
                 .join(", "),
             )})
     ) AS subquery ON subquery.timestamp = pool_snapshots.timestamp
@@ -284,7 +287,10 @@ async function loadTokenYieldWeightedAPR() {
             AND p1.rate - p2.rate != 0
             AND p1.rate_provider_address NOT IN (${sql.raw(
               blockListRateProvider
-                .map((item) => `'${item.rateProviderAddress}'`)
+                .map(
+                  (item: { rateProviderAddress: unknown }) =>
+                    `'${item.rateProviderAddress}'`,
+                )
                 .join(", "),
             )})
     ) AS subquery ON subquery.timestamp = pool_snapshots.timestamp

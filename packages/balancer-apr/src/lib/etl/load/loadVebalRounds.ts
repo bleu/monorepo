@@ -1,5 +1,7 @@
+import { addToTable } from "lib/db/addToTable";
+import { logIfVerbose } from "lib/logIfVerbose";
+
 import { vebalRounds } from "../../../db/schema";
-import { addToTable, logIfVerbose } from "../../../index";
 
 export async function loadVebalRounds() {
   logIfVerbose("Loading veBAL rounds");

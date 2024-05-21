@@ -151,34 +151,38 @@ class ProductConstantHandlerHelper extends IHandlerHelper {
 }
 
 export function getHandlerHelper(address: Address, chainId: number) {
+  const lowerCaseAddress = address.toLowerCase();
   if (
     chainId === 1 &&
-    address.toLowerCase() === "0x34323b933096534e43958f6c7bf44f2bb59424da"
+    lowerCaseAddress === "0x34323b933096534e43958f6c7bf44f2bb59424da"
   )
     return new ProductConstantHandlerHelper();
   if (
     chainId === 1 &&
-    address.toLowerCase() === "0xe8212f30c28b4aab467df3725c14d6e89c2eb967"
+    lowerCaseAddress === "0xe8212f30c28b4aab467df3725c14d6e89c2eb967"
   )
     return new StopLossHandlerHelper();
   if (
     chainId === 100 &&
-    address.toLowerCase() === "0xb148f40fff05b5ce6b22752cf8e454b556f7a851"
+    lowerCaseAddress === "0xb148f40fff05b5ce6b22752cf8e454b556f7a851"
   )
     return new ProductConstantHandlerHelper();
   if (
     chainId === 100 &&
-    address.toLowerCase() === "0xe8212f30c28b4aab467df3725c14d6e89c2eb967"
+    lowerCaseAddress === "0xe8212f30c28b4aab467df3725c14d6e89c2eb967"
   )
     return new StopLossHandlerHelper();
   if (
     chainId === 11155111 &&
-    address.toLowerCase() === "0x4bb23bf4802b4bbe9195637289bb4ffc835b221b"
+    "0x4bb23bf4802b4bbe9195637289bb4ffc835b221b" === lowerCaseAddress
   )
     return new ProductConstantHandlerHelper();
   if (
     chainId === 11155111 &&
-    address.toLowerCase() === "0xe8212f30c28b4aab467df3725c14d6e89c2eb967"
+    [
+      "0xe8212f30c28b4aab467df3725c14d6e89c2eb967",
+      "0xb560a403f8450164b8b745ecca41d8ced93c50a1",
+    ].includes(lowerCaseAddress)
   )
     return new StopLossHandlerHelper();
   return new DefaultHandlerHelper();

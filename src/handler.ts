@@ -159,7 +159,10 @@ export function getHandlerHelper(address: Address, chainId: number) {
     return new ProductConstantHandlerHelper();
   if (
     chainId === 1 &&
-    lowerCaseAddress === "0xe8212f30c28b4aab467df3725c14d6e89c2eb967"
+    [
+      "0xe8212f30c28b4aab467df3725c14d6e89c2eb967",
+      "0x6a8898f43676d8a3e9a5de286195558c3628a6d4",
+    ].includes(lowerCaseAddress)
   )
     return new StopLossHandlerHelper();
   if (
@@ -169,7 +172,10 @@ export function getHandlerHelper(address: Address, chainId: number) {
     return new ProductConstantHandlerHelper();
   if (
     chainId === 100 &&
-    lowerCaseAddress === "0xe8212f30c28b4aab467df3725c14d6e89c2eb967"
+    [
+      "0xe8212f30c28b4aab467df3725c14d6e89c2eb967",
+      "0x5951ebf7dc5ddb9fd2fd6d5c7f4bc7b7509b463b",
+    ].includes(lowerCaseAddress)
   )
     return new StopLossHandlerHelper();
   if (

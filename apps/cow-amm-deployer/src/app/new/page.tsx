@@ -27,6 +27,13 @@ function cowAmmToFormValues(cowAmm: ICowAmm): FieldValues {
     priceOracle: cowAmm.priceOracle,
     balancerPoolId: cowAmm.priceOracleData.balancerPoolId,
     uniswapV2Pair: cowAmm.priceOracleData.uniswapV2PairAddress,
+    sushiSwapPair: cowAmm.priceOracleData.sushiSwapPairAddress,
+    chainlinkPriceFeed0: cowAmm.priceOracleData.chainlinkPriceFeed0,
+    chainlinkPriceFeed1: cowAmm.priceOracleData.chainlinkPriceFeed1,
+    chainlinkTimeThresholdInHours:
+      cowAmm.priceOracleData.chainlinkTimeThresholdInHours,
+    customPriceOracleAddress: cowAmm.priceOracleData.customPriceOracleAddress,
+    customPriceOracleData: cowAmm.priceOracleData.customPriceOracleData,
   };
 }
 

@@ -56,5 +56,39 @@ export async function decodePriceOracleWithData({
     }
     return [PRICE_ORACLES.SUSHI, { sushiSwapPairAddress: pairAddress }];
   }
-  return [PRICE_ORACLES.CUSTOM, {}];
+
+  if (
+    [
+      "0xbd91a72dc3d9b5d9b16ee8638da1fc65311bd90a",
+      "0xf54c4bcc34a8750382b8fb0f0ec6f1a6c785af9c",
+      "0x79200763b5bc95d8d6a3b53be1e9a494bc301940",
+    ].includes(lowerCaseAddress)
+  ) {
+    const [chainlinkPriceFeed0, chainlinkPriceFeed1, timeThreshold, _backoff] =
+      decodeAbiParameters(
+        [
+          { type: "address", name: "priceFeed0" },
+          { type: "address", name: "priceFeed1" },
+          { type: "uint256", name: "timeThreshold" },
+          { type: "uint256", name: "backoff" },
+        ],
+        priceOracleData,
+      );
+    const chainlinkTimeThresholdInHours = Number(timeThreshold) / 3600;
+    return [
+      PRICE_ORACLES.CHAINLINK,
+      {
+        chainlinkPriceFeed0,
+        chainlinkPriceFeed1,
+        chainlinkTimeThresholdInHours,
+      },
+    ];
+  }
+  return [
+    PRICE_ORACLES.CUSTOM,
+    {
+      customPriceOracleAddress: address,
+      customPriceOracleData: priceOracleData,
+    },
+  ];
 }

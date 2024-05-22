@@ -3,9 +3,10 @@ import { Address } from "viem";
 
 export enum PRICE_ORACLES {
   BALANCER = "Balancer",
-  UNI = "Uniswap",
-  SUSHI = "Sushi",
+  UNI = "Uniswap V2",
+  SUSHI = "Sushi V2",
   CUSTOM = "Custom",
+  CHAINLINK = "Chainlink",
 }
 
 export enum FALLBACK_STATES {
@@ -24,6 +25,11 @@ export interface PriceOracleData {
   balancerPoolId?: `0x${string}`;
   uniswapV2PairAddress?: Address;
   sushiSwapPairAddress?: Address;
+  chainlinkPriceFeed0?: Address;
+  chainlinkPriceFeed1?: Address;
+  chainlinkTimeThresholdInHours?: number;
+  customPriceOracleAddress?: Address;
+  customPriceOracleData?: `0x${string}`;
 }
 export interface ICowAmm {
   token0: TokenBalance & {

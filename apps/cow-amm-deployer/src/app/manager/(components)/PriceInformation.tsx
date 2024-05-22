@@ -1,6 +1,7 @@
 import { ICowAmm, PRICE_ORACLES } from "#/lib/types";
 
 import { BalancerPriceInformation } from "./BalancerPriceInformation";
+import { ChainlinkPriceInformation } from "./ChainlinkPriceInformation";
 import { CustomPriceInformation } from "./CustomPriceInformation";
 import { SushiV2PriceInformation } from "./SushiV2PriceInformation";
 import { UniswapV2PriceInformation } from "./UniswapV2PriceInformation";
@@ -13,6 +14,8 @@ export function PriceInformation({ cowAmm }: { cowAmm: ICowAmm }) {
       return <BalancerPriceInformation cowAmm={cowAmm} />;
     case PRICE_ORACLES.SUSHI:
       return <SushiV2PriceInformation cowAmm={cowAmm} />;
+    case PRICE_ORACLES.CHAINLINK:
+      return <ChainlinkPriceInformation cowAmm={cowAmm} />;
     default:
       return <CustomPriceInformation cowAmm={cowAmm} />;
   }

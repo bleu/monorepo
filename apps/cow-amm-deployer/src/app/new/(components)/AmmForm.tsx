@@ -31,11 +31,12 @@ import { FALLBACK_STATES, IToken, PRICE_ORACLES } from "#/lib/types";
 import { cn } from "#/lib/utils";
 import { ChainId } from "#/utils/chainsPublicClients";
 
-import { BalancerWeightedPriceCheckerForm } from "./BalancerWeightedPriceCheckerForm";
-import { CustomPriceCheckerForm } from "./CustomPriceCheckerForm";
+import { BalancerWeightedForm } from "./BalancerWeightedForm";
+import { ChainlinkForm } from "./ChainlinkForm";
+import { CustomOracleForm } from "./CustomOracleForm";
 import { FallbackAndDomainWarning } from "./FallbackAndDomainWarning";
-import { SushiV2PriceChecker } from "./SushiPriceChecker";
-import { UniswapV2PriceChecker } from "./UniswapV2PriceChecker";
+import { SushiForm } from "./SushiForm";
+import { UniswapV2Form } from "./UniswapV2Form";
 
 const getNewMinTradeToken0 = async (newToken0: IToken, chainId: ChainId) => {
   return fetchTokenUsdPrice({
@@ -265,7 +266,7 @@ function PriceOracleFields({
             placeholder={priceOracle}
           />
           {errors.priceOracle && (
-            <FormMessage className="h-6 text-sm text-destructive w-full">
+            <FormMessage className="text-sm text-destructive w-full">
               <p className="text-wrap">
                 {errors.priceOracle.message as string}
               </p>
@@ -275,17 +276,12 @@ function PriceOracleFields({
       </div>
 
       {priceOracle === PRICE_ORACLES.BALANCER && (
-        <BalancerWeightedPriceCheckerForm form={form} />
+        <BalancerWeightedForm form={form} />
       )}
-      {priceOracle === PRICE_ORACLES.UNI && (
-        <UniswapV2PriceChecker form={form} />
-      )}
-      {priceOracle === PRICE_ORACLES.CUSTOM && (
-        <CustomPriceCheckerForm form={form} />
-      )}
-      {priceOracle === PRICE_ORACLES.SUSHI && (
-        <SushiV2PriceChecker form={form} />
-      )}
+      {priceOracle === PRICE_ORACLES.UNI && <UniswapV2Form form={form} />}
+      {priceOracle === PRICE_ORACLES.CUSTOM && <CustomOracleForm form={form} />}
+      {priceOracle === PRICE_ORACLES.SUSHI && <SushiForm form={form} />}
+      {priceOracle === PRICE_ORACLES.CHAINLINK && <ChainlinkForm form={form} />}
     </div>
   );
 }

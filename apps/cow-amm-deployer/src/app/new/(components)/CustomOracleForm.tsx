@@ -4,7 +4,7 @@ import { AlertCard } from "#/components/AlertCard";
 import { Input } from "#/components/Input";
 import { ammFormSchema } from "#/lib/schema";
 
-export function CustomPriceCheckerForm({
+export function CustomOracleForm({
   form,
 }: {
   form: UseFormReturn<typeof ammFormSchema._type>;

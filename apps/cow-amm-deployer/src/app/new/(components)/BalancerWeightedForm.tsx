@@ -10,7 +10,7 @@ import { pools } from "#/lib/gqlBalancer";
 import { ammFormSchema } from "#/lib/schema";
 import { loadDEXPriceCheckerErrorText } from "#/lib/utils";
 
-export function BalancerWeightedPriceCheckerForm({
+export function BalancerWeightedForm({
   form,
 }: {
   form: UseFormReturn<typeof ammFormSchema._type>;

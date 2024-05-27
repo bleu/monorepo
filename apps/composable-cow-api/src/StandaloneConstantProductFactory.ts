@@ -44,7 +44,7 @@ ponder.on(
       console.log(e);
       return;
     }
-  }
+  },
 );
 
 ponder.on(
@@ -63,5 +63,5 @@ ponder.on(
       id: `${event.args.amm}-${user.id}`,
       data: { disabled: true },
     });
-  }
+  },
 );

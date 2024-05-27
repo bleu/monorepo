@@ -4,7 +4,7 @@ import { erc20Abi } from "../abis/erc20";
 ponder.on("milkman:SwapRequested", async ({ event, context }) => {
   function callERC20Contract<T>(
     address: `0x${string}`,
-    functionName: "symbol" | "decimals" | "name"
+    functionName: "symbol" | "decimals" | "name",
   ): Promise<T> {
     return context.client.readContract({
       abi: erc20Abi,

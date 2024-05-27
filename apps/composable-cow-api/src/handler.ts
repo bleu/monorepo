@@ -14,7 +14,7 @@ interface IDecodeAndSaveInput {
 
 export abstract class IHandlerHelper {
   abstract decodeAndSaveOrder(
-    decodeAndSaveInput: IDecodeAndSaveInput
+    decodeAndSaveInput: IDecodeAndSaveInput,
   ): Promise<void>;
 }
 
@@ -43,7 +43,7 @@ export class StopLossHandlerHelper extends IHandlerHelper {
         { name: "strike", type: "int256" },
         { name: "maxTimeSinceLastOracleUpdate", type: "uint256" },
       ],
-      staticInput
+      staticInput,
     );
     const [tokenIn, tokenOut] = await Promise.all([
       getToken(stopLossData[0], context),
@@ -92,7 +92,7 @@ export class ProductConstantHandlerHelper extends IHandlerHelper {
         { name: "priceOracleData", type: "bytes" },
         { name: "appData", type: "bytes32" },
       ],
-      usefulStaticInput
+      usefulStaticInput,
     );
 
     const [token0, token1, user] = await Promise.all([
@@ -139,7 +139,7 @@ export class StandaloneProductConstantHandlerHelper extends IHandlerHelper {
         { name: "priceOracleData", type: "bytes" },
         { name: "appData", type: "bytes32" },
       ],
-      usefulStaticInput
+      usefulStaticInput,
     );
 
     const [token0Address, token1Address, userAddress] = await Promise.all([

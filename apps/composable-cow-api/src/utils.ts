@@ -6,7 +6,7 @@ import { contextType } from "./types";
 export function callERC20Contract<T>(
   address: `0x${string}`,
   functionName: "symbol" | "decimals" | "name",
-  context: contextType
+  context: contextType,
 ): Promise<T> {
   return context.client.readContract({
     abi: erc20Abi,

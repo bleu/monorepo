@@ -3,8 +3,7 @@ import { gnosis, mainnet, sepolia } from "viem/chains";
 // These addresses are the same for all supported chains (mainnet and goerli)
 export const COMPOSABLE_COW_ADDRESS =
   "0xfdaFc9d1902f4e0b84f65F49f244b32b31013b74" as const;
-export const SETTLEMENT_CONTRACT_ADDRESS =
-  "0x9008D19f58AAbD9eD0D60971565AA8510560ab41" as const;
+
 export const UNISWAP_V2_FACTORY_ADDRESS =
   "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f" as const;
 
@@ -24,4 +23,10 @@ export const COW_AMM_HANDLER_ADDRESS = {
   [mainnet.id]: "0x34323B933096534e43958F6c7Bf44F2Bb59424DA",
   [gnosis.id]: "0xB148F40fff05b5CE6B22752cf8E454B556f7a851",
   [sepolia.id]: "0x4Bb23BF4802B4Bbe9195637289Bb4FfC835b221b",
+} as const;
+
+export const COW_CONSTANT_PRODUCT_FACTORY = {
+  [mainnet.id]: "0x40664207e3375FB4b733d4743CE9b159331fd034",
+  [gnosis.id]: "0xdb1cba3a87f2db53b6e1e6af48e28ed877592ec0",
+  [sepolia.id]: "0xb808e8183e3a72d196457d127c7fd4befa0d7fd3",
 } as const;

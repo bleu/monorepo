@@ -48,9 +48,9 @@ const getNewMinTradeToken0 = async (newToken0: IToken, chainId: ChainId) => {
       Number(
         formatUnits(
           parseUnits(String(amount), newToken0.decimals),
-          newToken0.decimals
-        )
-      )
+          newToken0.decimals,
+        ),
+      ),
     )
     .catch(() => 0);
 };
@@ -87,18 +87,17 @@ export function AmmForm({
 
   const formData = watch();
 
-  const onSubmit = async (data: typeof ammFormSchema._type) => {
-    await buildTxAMMArgs({ data, transactionType })
-      .then((txArgs) => {
-        sendTransactions(txArgs);
-      })
-      .catch((e: Error) => {
-        // eslint-disable-next-line no-console
-        console.error(e);
-      })
-      .then(() => {
-        router.push("/createtxprocessing");
-      });
+  const onSubmit = (data: typeof ammFormSchema._type) => {
+    const txArgs = buildTxAMMArgs({ data, transactionType });
+
+    try {
+      sendTransactions(txArgs);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+    }
+
+    router.push("/createtxprocessing");
   };
 
   useEffect(() => {
@@ -124,7 +123,7 @@ export function AmmForm({
                 });
                 setValue(
                   "minTradedToken0",
-                  await getNewMinTradeToken0(token, chainId as ChainId)
+                  await getNewMinTradeToken0(token, chainId as ChainId),
                 );
               }}
               selectedToken={(formData?.token0 as IToken) ?? undefined}
@@ -187,7 +186,7 @@ export function AmmForm({
           <AccordionTrigger
             className={cn(
               errors.minTradedToken0 ? "text-destructive" : "",
-              "pt-0"
+              "pt-0",
             )}
           >
             Advanced Options

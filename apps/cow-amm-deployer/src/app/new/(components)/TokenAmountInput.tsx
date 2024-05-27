@@ -64,7 +64,7 @@ export function TokenAmountInput({
             onClick={() => {
               setValue(
                 fieldName,
-                convertStringToNumberAndRoundDown(walletAmount)
+                convertStringToNumberAndRoundDown(walletAmount),
               );
             }}
           >

@@ -1,23 +1,23 @@
-import { MetadataApi } from "@cowprotocol/app-data";
+// import { MetadataApi } from "@cowprotocol/app-data";
 import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
-import { Address, encodeFunctionData, parseUnits } from "viem";
+import { Address, encodeFunctionData, erc20Abi, parseUnits } from "viem";
 
-import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
+import { ChainId } from "#/utils/chainsPublicClients";
 
+import { ConstantProductFactoryABI } from "./abis/ConstantProductFactory";
 import { cowAmmModuleAbi } from "./abis/cowAmmModule";
-import { gnosisSafeV12 } from "./abis/gnosisSafeV12";
-import { COW_AMM_MODULE_ADDRESS } from "./contracts";
+import { BLEU_APP_DATA } from "./constants";
+import { COW_CONSTANT_PRODUCT_FACTORY } from "./contracts";
 import {
   encodePriceOracleData,
   getPriceOracleAddress,
   IEncodePriceOracleData,
   IGetPriceOracleAddress,
 } from "./encodePriceOracleData";
-import { uploadAppData } from "./orderBookApi/uploadAppData";
 import { ammFormSchema } from "./schema";
 
 export enum TRANSACTION_TYPES {
-  ENABLE_COW_AMM_MODULE = "ENABLE_COW_AMM_MODULE",
+  ERC20_APPROVE = "ERC20_APPROVE",
   CREATE_COW_AMM = "CREATE_COW_AMM",
   EDIT_COW_AMM = "EDIT_COW_AMM",
   STOP_COW_AMM = "STOP_COW_AMM",
@@ -26,21 +26,18 @@ export enum TRANSACTION_TYPES {
 export interface BaseArgs {
   type: TRANSACTION_TYPES;
 }
-export interface enableCowAmmModuleArgs extends BaseArgs {
-  type: TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE;
-  chainId: ChainId;
-  safeAddress: Address;
-}
 
 export interface stopCowAmmArgs extends BaseArgs {
   type: TRANSACTION_TYPES.STOP_COW_AMM;
   chainId: ChainId;
 }
 
-export interface creteCowAmmArgs extends BaseArgs {
+export interface createCowAmmArgs extends BaseArgs {
   type: TRANSACTION_TYPES.CREATE_COW_AMM;
   token0: Address;
   token1: Address;
+  amount0: bigint;
+  amount1: bigint;
   token0Decimals: number;
   minTradedToken0: number;
   priceOracleAddress: Address;
@@ -49,50 +46,62 @@ export interface creteCowAmmArgs extends BaseArgs {
   chainId: ChainId;
 }
 
-export interface editCowAmmArgs extends Omit<creteCowAmmArgs, "type"> {
+export interface editCowAmmArgs extends Omit<createCowAmmArgs, "type"> {
   type: TRANSACTION_TYPES.EDIT_COW_AMM;
 }
 
 interface ITransaction<T> {
   createRawTx(args: T): BaseTransaction;
 }
-class CowAmmEnableModuleTx implements ITransaction<enableCowAmmModuleArgs> {
+
+export interface ERC20ApproveArgs extends BaseArgs {
+  type: TRANSACTION_TYPES.ERC20_APPROVE;
+  tokenAddress: Address;
+  spender: Address;
+  amount: bigint;
+}
+class ERC20ApproveRawTx implements ITransaction<ERC20ApproveArgs> {
   createRawTx({
-    safeAddress,
-    chainId,
-  }: enableCowAmmModuleArgs): BaseTransaction {
+    tokenAddress,
+    spender,
+    amount,
+  }: ERC20ApproveArgs): BaseTransaction {
     return {
-      to: safeAddress,
+      to: tokenAddress,
       value: "0",
       data: encodeFunctionData({
-        abi: gnosisSafeV12,
-        functionName: "enableModule",
-        args: [COW_AMM_MODULE_ADDRESS[chainId]],
+        abi: erc20Abi,
+        functionName: "approve",
+        args: [spender, amount],
       }),
     };
   }
 }
 
-class CowAmmCreateTx implements ITransaction<creteCowAmmArgs> {
+class CowAmmCreateTx implements ITransaction<createCowAmmArgs> {
   createRawTx({
     token0,
+    amount0,
     token1,
+    amount1,
     token0Decimals,
     minTradedToken0,
     priceOracleAddress,
     priceOracleData,
     appData,
     chainId,
-  }: creteCowAmmArgs): BaseTransaction {
+  }: createCowAmmArgs): BaseTransaction {
     return {
-      to: COW_AMM_MODULE_ADDRESS[chainId],
+      to: COW_CONSTANT_PRODUCT_FACTORY[chainId],
       value: "0",
       data: encodeFunctionData({
-        abi: cowAmmModuleAbi,
-        functionName: "createAmm",
+        abi: ConstantProductFactoryABI,
+        functionName: "create",
         args: [
           token0,
+          amount0,
           token1,
+          amount1,
           parseUnits(String(minTradedToken0), token0Decimals),
           priceOracleAddress,
           priceOracleData,
@@ -115,7 +124,7 @@ class CowAmmEditTx implements ITransaction<editCowAmmArgs> {
     chainId,
   }: editCowAmmArgs): BaseTransaction {
     return {
-      to: COW_AMM_MODULE_ADDRESS[chainId],
+      to: COW_CONSTANT_PRODUCT_FACTORY[chainId],
       value: "0",
       data: encodeFunctionData({
         abi: cowAmmModuleAbi,
@@ -136,7 +145,7 @@ class CowAmmEditTx implements ITransaction<editCowAmmArgs> {
 class CowAmmStopTx implements ITransaction<stopCowAmmArgs> {
   createRawTx({ chainId }: stopCowAmmArgs): BaseTransaction {
     return {
-      to: COW_AMM_MODULE_ADDRESS[chainId],
+      to: COW_CONSTANT_PRODUCT_FACTORY[chainId],
       value: "0",
       data: encodeFunctionData({
         abi: cowAmmModuleAbi,
@@ -146,8 +155,9 @@ class CowAmmStopTx implements ITransaction<stopCowAmmArgs> {
   }
 }
 export interface TransactionBindings {
-  [TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE]: enableCowAmmModuleArgs;
-  [TRANSACTION_TYPES.CREATE_COW_AMM]: creteCowAmmArgs;
+  // [TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE]: enableCowAmmModuleArgs;
+  [TRANSACTION_TYPES.ERC20_APPROVE]: ERC20ApproveArgs;
+  [TRANSACTION_TYPES.CREATE_COW_AMM]: createCowAmmArgs;
   [TRANSACTION_TYPES.STOP_COW_AMM]: stopCowAmmArgs;
   [TRANSACTION_TYPES.EDIT_COW_AMM]: editCowAmmArgs;
 }
@@ -159,7 +169,8 @@ const TRANSACTION_CREATORS: {
     TransactionBindings[key]
   >;
 } = {
-  [TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE]: CowAmmEnableModuleTx,
+  // [TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE]: CowAmmEnableModuleTx,
+  [TRANSACTION_TYPES.ERC20_APPROVE]: ERC20ApproveRawTx,
   [TRANSACTION_TYPES.CREATE_COW_AMM]: CowAmmCreateTx,
   [TRANSACTION_TYPES.STOP_COW_AMM]: CowAmmStopTx,
   [TRANSACTION_TYPES.EDIT_COW_AMM]: CowAmmEditTx,
@@ -176,7 +187,7 @@ export class TransactionFactory {
   }
 }
 
-export async function buildTxAMMArgs({
+export function buildTxAMMArgs({
   data,
   transactionType,
 }: {
@@ -184,55 +195,36 @@ export async function buildTxAMMArgs({
   transactionType:
     | TRANSACTION_TYPES.CREATE_COW_AMM
     | TRANSACTION_TYPES.EDIT_COW_AMM;
-}): Promise<AllTransactionArgs[]> {
-  const publicClient = publicClientsFromIds[data.chainId as ChainId];
-
-  const isCoWAmmModuleEnabled = await publicClient.readContract({
-    address: data.safeAddress as Address,
-    abi: gnosisSafeV12,
-    functionName: "isModuleEnabled",
-    args: [COW_AMM_MODULE_ADDRESS[data.chainId as ChainId]],
-  });
-  const enableCoWAmmTxs = isCoWAmmModuleEnabled
-    ? []
-    : [
-        {
-          type: TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE,
-          safeAddress: data.safeAddress as Address,
-          chainId: data.chainId as ChainId,
-        } as const,
-      ];
-
-  const metadataApi = new MetadataApi();
-
-  const appDataDoc = await metadataApi.generateAppDataDoc({
-    appCode: "CoW AMM Bleu Ui",
-  });
-  const { appDataHex, appDataContent } =
-    await metadataApi.appDataToCid(appDataDoc);
-
-  await uploadAppData({
-    fullAppData: appDataContent,
-    appDataHex,
-    chainId: data.chainId as ChainId,
-  });
-
+}): AllTransactionArgs[] {
   const priceOracleData = encodePriceOracleData(data as IEncodePriceOracleData);
   const priceOracleAddress = getPriceOracleAddress(
     data as IGetPriceOracleAddress,
   );
 
   return [
-    ...enableCoWAmmTxs,
+    {
+      type: TRANSACTION_TYPES.ERC20_APPROVE,
+      tokenAddress: data.token0.address as Address,
+      spender: COW_CONSTANT_PRODUCT_FACTORY[data.chainId as ChainId],
+      amount: parseUnits(String(data.amount0), data.token0.decimals),
+    },
+    {
+      type: TRANSACTION_TYPES.ERC20_APPROVE,
+      tokenAddress: data.token1.address as Address,
+      spender: COW_CONSTANT_PRODUCT_FACTORY[data.chainId as ChainId],
+      amount: parseUnits(String(data.amount1), data.token1.decimals),
+    },
     {
       type: transactionType,
       token0: data.token0.address as Address,
       token1: data.token1.address as Address,
+      amount0: parseUnits(String(data.amount0), data.token0.decimals),
+      amount1: parseUnits(String(data.amount1), data.token1.decimals),
       token0Decimals: data.token0.decimals,
       minTradedToken0: data.minTradedToken0,
       priceOracleAddress,
       priceOracleData,
-      appData: appDataHex as `0x${string}`,
+      appData: BLEU_APP_DATA,
       chainId: data.chainId as ChainId,
     } as const,
   ];

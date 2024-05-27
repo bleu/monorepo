@@ -10,7 +10,7 @@ export enum PRICE_ORACLES {
 }
 
 export interface IToken {
-  address: string;
+  address: Address;
   symbol: string;
   decimals: number;
 }

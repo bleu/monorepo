@@ -7,11 +7,10 @@ import React from "react";
 import Fathom from "./Fathom";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
-import { HomeWrapper } from "./HomeWrapper";
 
 export function RootLayout({ children }: React.PropsWithChildren) {
   return (
-    <SafeProvider loader={<HomeWrapper isAmmRunning={false} goToSafe />}>
+    <SafeProvider>
       <Fathom />
       <div className="size-full">
         <div className="flex flex-col h-screen">

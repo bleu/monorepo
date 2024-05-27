@@ -2,54 +2,46 @@
 
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { tomatoDark } from "@radix-ui/colors";
 import {
   ArrowTopRightIcon,
-  ExclamationTriangleIcon,
   Pencil2Icon,
   ResetIcon,
 } from "@radix-ui/react-icons";
 import Link from "next/link";
-import { redirect, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Address } from "viem";
 
 import { Button } from "#/components/Button";
 import { Dialog } from "#/components/Dialog";
 import { Spinner } from "#/components/Spinner";
-import { Tooltip } from "#/components/Tooltip";
+import { UnsuportedChain } from "#/components/UnsuportedChain";
 import WalletNotConnected from "#/components/WalletNotConnected";
-import { useRawTxData } from "#/hooks/useRawTxData";
-import { useRunningAMM } from "#/hooks/useRunningAmmInfo";
+import { useStandaloneAMM } from "#/hooks/useStandaloneAmm";
 import { buildAccountCowExplorerUrl } from "#/lib/cowExplorer";
-import { TRANSACTION_TYPES } from "#/lib/transactionFactory";
 import { ChainId, supportedChainIds } from "#/utils/chainsPublicClients";
 
-import { UnsuportedChain } from "../../components/UnsuportedChain";
 import { PoolCompositionTable } from "./(components)/PoolCompositionTable";
 import { PriceInformation } from "./(components)/PriceInformation";
 
-export default function Page() {
-  const router = useRouter();
-  const { sendTransactions } = useRawTxData();
+export default function Page({ params }: { params: { id: Address } }) {
+  const { data: cowAmm, loading } = useStandaloneAMM(params.id);
+
+  // const router = useRouter()
+  // const { sendTransactions } = useRawTxData();
   const { safe, connected } = useSafeAppsSDK();
-  const { loaded, cowAmm, isAmmFromModule } = useRunningAMM();
+  // const { loaded, cowAmm } = useRunningAMM();
   const [openDialog, setOpenDialog] = useState(false);
 
   if (!connected) {
     return <WalletNotConnected />;
   }
 
-  if (!loaded) {
+  if (!cowAmm || loading) {
     return <Spinner />;
   }
 
   if (!supportedChainIds.includes(safe.chainId)) {
     return <UnsuportedChain />;
-  }
-
-  if (!cowAmm) {
-    redirect("/new");
   }
 
   return (
@@ -65,17 +57,17 @@ export default function Page() {
             <Button
               className="text-center gap-1 py-3 px-6"
               variant="destructive"
-              onClick={async () => {
-                setOpenDialog(false);
-                await sendTransactions([
-                  {
-                    type: TRANSACTION_TYPES.STOP_COW_AMM,
-                    chainId: safe.chainId as ChainId,
-                  },
-                ]).then(() => {
-                  router.push("/stoptxprocessing");
-                });
-              }}
+              // onClick={async () => {
+              //   setOpenDialog(false);
+              //   await sendTransactions([
+              //     {
+              //       type: TRANSACTION_TYPES.STOP_COW_AMM,
+              //       chainId: safe.chainId as ChainId,
+              //     },
+              //   ]).then(() => {
+              //     router.push("/stoptxprocessing");
+              //   });
+              // }}
             >
               Confirm
             </Button>
@@ -92,6 +84,7 @@ export default function Page() {
               The first <i className="text-purple">MEV-Capturing AMM</i>,
               brought to you by <i className="text-yellow">CoW DAO</i>{" "}
             </h2>
+            {/* @ts-ignore */}
             <PriceInformation cowAmm={cowAmm} />
           </div>
           <div className="flex flex-col bg-yellow/40 text-foreground py-2 px-8">
@@ -103,7 +96,7 @@ export default function Page() {
                 2,
                 "decimal",
                 "compact",
-                0.01,
+                0.01
               )}
             </span>
           </div>
@@ -119,7 +112,7 @@ export default function Page() {
                 buildAccountCowExplorerUrl({
                   chainId: safe.chainId as ChainId,
                   address: safe.safeAddress as Address,
-                }),
+                })
               )
             }
             rel="noreferrer noopener"
@@ -129,12 +122,13 @@ export default function Page() {
             <ArrowTopRightIcon className="hover:text-primary" />
           </Link>
         </div>
+        {/* @ts-ignore */}
         <PoolCompositionTable cowAmm={cowAmm} />
         <div className="flex gap-4 items-center ">
           <Button
             className="flex items-center gap-1 py-3 px-6 "
             variant="destructive"
-            disabled={!isAmmFromModule}
+            // disabled={!isAmmFromModule}
             onClick={() => {
               setOpenDialog(true);
             }}
@@ -144,22 +138,14 @@ export default function Page() {
           </Button>
           <Button
             className="flex items-center gap-1 py-3 px-6"
-            onClick={() => {
-              router.push("/new");
-            }}
-            disabled={!isAmmFromModule}
+            // onClick={() => {
+            //   router.push("/new");
+            // }}
+            // disabled={!isAmmFromModule}
           >
             <Pencil2Icon />
             Edit CoW AMM LP parameters
           </Button>
-          {!isAmmFromModule && (
-            <Tooltip content="This CoW AMM LP position was not created from the supported module.">
-              <ExclamationTriangleIcon
-                className="size-6"
-                color={tomatoDark.tomato10}
-              />
-            </Tooltip>
-          )}
         </div>
       </div>
     </div>

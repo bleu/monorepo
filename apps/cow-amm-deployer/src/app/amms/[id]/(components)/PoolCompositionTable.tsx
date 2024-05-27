@@ -1,7 +1,6 @@
 import { formatNumber } from "@bleu-fi/utils/formatNumber";
 import { tomatoDark } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
-import { formatUnits } from "viem";
 
 import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
@@ -30,20 +29,19 @@ export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
           const valuePct =
             (Number(token.externalUsdValue) * 100) / cowAmm.totalUsdValue;
           return (
-            <Table.BodyRow key={token.tokenInfo.address}>
+            // @ts-ignore
+            <Table.BodyRow key={token.address}>
               <Table.BodyCell>
                 <TokenInfo
-                  symbol={token.tokenInfo.symbol}
-                  id={token.tokenInfo.address}
-                  logoUri={token.tokenInfo.logoUri}
+                  // @ts-ignore
+                  symbol={token.symbol}
+                  // @ts-ignore
+                  id={token.address}
+                  // @ts-ignore
+                  logoUri={token.logoUri}
                 />
               </Table.BodyCell>
-              <Table.BodyCell>
-                {formatNumber(
-                  formatUnits(BigInt(token.balance), token.tokenInfo.decimals),
-                  4,
-                )}
-              </Table.BodyCell>
+              <Table.BodyCell>{formatNumber(token.balance, 4)}</Table.BodyCell>
               <Table.BodyCell>
                 <div className="flex items-center flex-row gap-2">
                   <>$ {formatNumber(token.externalUsdPrice, 4)} </>
@@ -59,7 +57,7 @@ export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
                       2,
                       "decimal",
                       "compact",
-                      0.01,
+                      0.01
                     )}
                   </>
                   {!token.externalUsdPrice && <PriceErrorTooltip />}

@@ -30,7 +30,7 @@ export function TokenSelect({
   const [tokens, setTokens] = useState<TokenBalance[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedValue, setSelectedValue] = useState<IToken | undefined>(
-    undefined,
+    undefined
   );
   const [tokenUri, setTokenUri] = useState<string>();
 
@@ -71,7 +71,7 @@ export function TokenSelect({
       const asset = assets.find(
         (asset) =>
           asset.tokenInfo.address.toLowerCase() ===
-          selectedToken.address.toLowerCase(),
+          selectedToken.address.toLowerCase()
       );
       setTokenUri(asset?.tokenInfo.logoUri);
     }
@@ -83,7 +83,9 @@ export function TokenSelect({
       symbol: token.tokenInfo.symbol,
       decimals: token.tokenInfo.decimals,
     };
+    // @ts-ignore
     onSelectToken(tokenForPriceChecker);
+    // @ts-ignore
     setSelectedValue(tokenForPriceChecker);
     setOpen(false);
     setTokenUri(token.tokenInfo.logoUri);

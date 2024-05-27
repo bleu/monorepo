@@ -4,7 +4,7 @@ import { load, trackPageview } from "fathom-client";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
 
-const appUrl = "deploy-cow-amm.bleu.fi";
+const appUrl = process.env.APP_URL ?? "deploy-cow-amm.bleu.fi";
 const fathomId = "VYHECOUI";
 
 function TrackPageView() {

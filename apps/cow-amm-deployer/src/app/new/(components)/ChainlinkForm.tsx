@@ -55,7 +55,9 @@ export function ChainlinkForm({
               CHAINS_ORACLE_ROUTER_FACTORY[chainId as ChainId];
             const oracleRouter = new oracleRouterFactory({
               chainId: chainId as ChainId,
+              // @ts-ignore
               token0,
+              // @ts-ignore
               token1,
             });
 

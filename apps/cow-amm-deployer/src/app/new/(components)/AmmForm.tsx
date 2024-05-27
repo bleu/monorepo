@@ -4,14 +4,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { brownDark } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { FieldValues, useForm, UseFormReturn } from "react-hook-form";
 import { formatUnits, parseUnits } from "viem";
 
 import { Button } from "#/components";
 import { Input } from "#/components/Input";
 import { SelectInput } from "#/components/SelectInput";
-import { Spinner } from "#/components/Spinner";
 import { TokenSelect } from "#/components/TokenSelect";
 import { Tooltip } from "#/components/Tooltip";
 import {
@@ -22,20 +21,19 @@ import {
 } from "#/components/ui/accordion";
 import { Form, FormMessage } from "#/components/ui/form";
 import { Label } from "#/components/ui/label";
-import { useFallbackState } from "#/hooks/useFallbackState";
 import { useRawTxData } from "#/hooks/useRawTxData";
-import { fetchTokenUsdPrice } from "#/lib/fetchTokenUsdPrice";
 import { ammFormSchema } from "#/lib/schema";
+import { fetchTokenUsdPrice } from "#/lib/tokenUtils";
 import { buildTxAMMArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
-import { FALLBACK_STATES, IToken, PRICE_ORACLES } from "#/lib/types";
+import { IToken, PRICE_ORACLES } from "#/lib/types";
 import { cn } from "#/lib/utils";
 import { ChainId } from "#/utils/chainsPublicClients";
 
 import { BalancerWeightedForm } from "./BalancerWeightedForm";
 import { ChainlinkForm } from "./ChainlinkForm";
 import { CustomOracleForm } from "./CustomOracleForm";
-import { FallbackAndDomainWarning } from "./FallbackAndDomainWarning";
 import { SushiForm } from "./SushiForm";
+import { TokenAmountInput } from "./TokenAmountInput";
 import { UniswapV2Form } from "./UniswapV2Form";
 
 const getNewMinTradeToken0 = async (newToken0: IToken, chainId: ChainId) => {
@@ -50,9 +48,9 @@ const getNewMinTradeToken0 = async (newToken0: IToken, chainId: ChainId) => {
       Number(
         formatUnits(
           parseUnits(String(amount), newToken0.decimals),
-          newToken0.decimals,
-        ),
-      ),
+          newToken0.decimals
+        )
+      )
     )
     .catch(() => 0);
 };
@@ -85,9 +83,7 @@ export function AmmForm({
     watch,
     formState: { errors, isSubmitting },
   } = form;
-  const { fallbackState, domainSeparator } = useFallbackState();
   const { sendTransactions } = useRawTxData();
-  const [confirmedFallbackSetup, setConfirmedFallbackSetup] = useState(false);
 
   const formData = watch();
 
@@ -106,19 +102,8 @@ export function AmmForm({
   };
 
   useEffect(() => {
-    if (fallbackState && domainSeparator) {
-      setValue("domainSeparator", domainSeparator);
-      setValue("fallbackSetupState", fallbackState);
-    }
-  }, [fallbackState, setValue]);
-
-  useEffect(() => {
     setValue("safeAddress", safeAddress);
   }, [safeAddress, setValue]);
-
-  if (!fallbackState || !domainSeparator) {
-    return <Spinner />;
-  }
 
   return (
     <Form
@@ -139,10 +124,10 @@ export function AmmForm({
                 });
                 setValue(
                   "minTradedToken0",
-                  await getNewMinTradeToken0(token, chainId as ChainId),
+                  await getNewMinTradeToken0(token, chainId as ChainId)
                 );
               }}
-              selectedToken={formData?.token0 ?? undefined}
+              selectedToken={(formData?.token0 as IToken) ?? undefined}
             />
             {errors.token0 && (
               <FormMessage className="mt-1 h-6 text-sm text-destructive">
@@ -164,7 +149,7 @@ export function AmmForm({
                   symbol: token.symbol,
                 });
               }}
-              selectedToken={formData?.token1 ?? undefined}
+              selectedToken={(formData?.token1 as IToken) ?? undefined}
             />
             {errors.token1 && (
               <FormMessage className="mt-1 h-6 text-sm text-destructive">
@@ -174,13 +159,35 @@ export function AmmForm({
           </div>
         </div>
       </div>
+      <div className="flex h-fit justify-between gap-x-7">
+        <div className="w-full flex flex-col">
+          <div className="flex flex-col w-full">
+            <span className="mb-2 h-5 block text-sm">Token amounts</span>
+            <TokenAmountInput
+              tokenFieldForm="token0"
+              form={form}
+              fieldName="amount0"
+            />
+          </div>
+        </div>
+        <div className="flex flex-col w-full">
+          <div className="w-full flex flex-col">
+            <span className="mb-2 h-5 block text-sm text-transparent" />
+            <TokenAmountInput
+              tokenFieldForm="token1"
+              form={form}
+              fieldName="amount1"
+            />
+          </div>
+        </div>
+      </div>
       <PriceOracleFields form={form} />
       <Accordion className="w-full" type="single" collapsible>
         <AccordionItem value="advancedOptions" key="advancedOption">
           <AccordionTrigger
             className={cn(
               errors.minTradedToken0 ? "text-destructive" : "",
-              "pt-0",
+              "pt-0"
             )}
           >
             Advanced Options
@@ -197,12 +204,6 @@ export function AmmForm({
         </AccordionItem>
       </Accordion>
 
-      {fallbackState !== FALLBACK_STATES.HAS_DOMAIN_VERIFIER && (
-        <FallbackAndDomainWarning
-          confirmedFallbackSetup={confirmedFallbackSetup}
-          setConfirmedFallbackSetup={setConfirmedFallbackSetup}
-        />
-      )}
       <div className="flex justify-center gap-x-5 mt-2">
         <Button
           loading={isSubmitting}
@@ -210,10 +211,14 @@ export function AmmForm({
           type="submit"
           className="w-full"
           disabled={
-            (fallbackState != FALLBACK_STATES.HAS_DOMAIN_VERIFIER &&
-              !confirmedFallbackSetup) ||
             isSubmitting ||
-            !(formData?.token0 && formData?.token1 && formData?.priceOracle)
+            !(
+              formData?.token0 &&
+              formData?.token1 &&
+              formData?.priceOracle &&
+              formData?.amount0 &&
+              formData?.amount1
+            )
           }
         >
           <span>

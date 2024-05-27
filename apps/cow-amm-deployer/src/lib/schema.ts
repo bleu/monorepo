@@ -2,7 +2,7 @@ import { capitalize } from "@bleu-fi/utils";
 import { Address, isAddress } from "viem";
 import { z } from "zod";
 
-import { FALLBACK_STATES, PRICE_ORACLES } from "#/lib/types";
+import { PRICE_ORACLES } from "#/lib/types";
 import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 
 import { erc20ABI } from "./abis/erc20";
@@ -41,9 +41,9 @@ export const ammFormSchema = z
     token1: baseTokenSchema,
     minTradedToken0: z.coerce.number().positive(),
     priceOracle: z.nativeEnum(PRICE_ORACLES),
-    fallbackSetupState: z.nativeEnum(FALLBACK_STATES),
     safeAddress: basicAddressSchema,
-    domainSeparator: bytes32Schema,
+    amount0: z.coerce.number().positive(),
+    amount1: z.coerce.number().positive(),
     balancerPoolId: bytes32Schema.optional(),
     uniswapV2Pair: basicAddressSchema.optional(),
     sushiV2Pair: basicAddressSchema.optional(),
@@ -69,7 +69,7 @@ export const ammFormSchema = z
     {
       message: "Balancer Pool ID is required",
       path: ["balancerPoolId"],
-    },
+    }
   )
   .refine(
     // validate if uniswap v2 pool address is required
@@ -82,7 +82,7 @@ export const ammFormSchema = z
     {
       message: "Uniswap V2 Pool Address is required",
       path: ["uniswapV2Pair"],
-    },
+    }
   )
   .refine(
     // validate if sushi v2 pool address is required
@@ -95,7 +95,7 @@ export const ammFormSchema = z
     {
       message: "Sushi V2 Pool Address is required",
       path: ["sushiV2Pair"],
-    },
+    }
   )
   .refine(
     // validate if custom price oracle data is required
@@ -108,7 +108,7 @@ export const ammFormSchema = z
     {
       message: "Custom price oracle data is required",
       path: ["customPriceOracleData"],
-    },
+    }
   )
   .refine(
     // validate if chainlink oracle data is required
@@ -125,7 +125,7 @@ export const ammFormSchema = z
     {
       message: "Chainlink price feed addresses are required",
       path: ["chainlinkPriceFeed0", "chainlinkPriceFeed1"],
-    },
+    }
   )
   .refine(
     // validate if tokens are different
@@ -138,7 +138,7 @@ export const ammFormSchema = z
     {
       message: "Tokens must be different",
       path: ["token0"],
-    },
+    }
   )
   .superRefine(async (data, ctx) => {
     // validate if there are balances of tokens
@@ -171,7 +171,7 @@ export const ammFormSchema = z
         code: z.ZodIssueCode.custom,
         message: `No balance of token`,
         path: [x],
-      }),
+      })
     );
     return !path.length;
   })
@@ -199,10 +199,10 @@ export const ammFormSchema = z
     // validate if price oracle is working
     try {
       const priceOracleData = encodePriceOracleData(
-        data as IEncodePriceOracleData,
+        data as IEncodePriceOracleData
       );
       const priceOracleAddress = getPriceOracleAddress(
-        data as IGetPriceOracleAddress,
+        data as IGetPriceOracleAddress
       );
       const publicClient = publicClientsFromIds[data.chainId as ChainId];
       await publicClient.readContract({

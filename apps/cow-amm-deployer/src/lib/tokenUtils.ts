@@ -1,9 +1,12 @@
 import { Address } from "@bleu-fi/utils";
+import { formatUnits } from "viem";
 
-import { ChainId } from "#/utils/chainsPublicClients";
+import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 
+import { erc20ABI } from "./abis/erc20";
 import { getCoingeckoUsdPrice } from "./coingeckoApi";
 import { getCowProtocolUsdPrice } from "./getCowProtocolUsdPrice";
+import { IToken } from "./types";
 
 /**
  * Fetches USD price for a given currency from coingecko or CowProtocol
@@ -27,4 +30,23 @@ export async function fetchTokenUsdPrice({
   } catch (error) {
     return getCowProtocolUsdPrice({ chainId, tokenAddress, tokenDecimals });
   }
+}
+
+export async function fetchWalletTokenBalance({
+  token,
+  walletAddress,
+  chainId,
+}: {
+  token: IToken;
+  walletAddress: Address;
+  chainId: ChainId;
+}): Promise<string> {
+  const publicClient = publicClientsFromIds[chainId];
+  const bigIntBalance = await publicClient.readContract({
+    abi: erc20ABI,
+    address: token.address as Address,
+    functionName: "balanceOf",
+    args: [walletAddress],
+  });
+  return formatUnits(bigIntBalance, token.decimals);
 }

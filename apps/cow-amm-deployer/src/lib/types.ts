@@ -9,12 +9,6 @@ export enum PRICE_ORACLES {
   CHAINLINK = "Chainlink",
 }
 
-export enum FALLBACK_STATES {
-  HAS_DOMAIN_VERIFIER = "HAS_DOMAIN_VERIFIER",
-  HAS_EXTENSIBLE_FALLBACK = "HAS_EXTENSIBLE_FALLBACK",
-  HAS_NOTHING = "HAS_NOTHING",
-}
-
 export interface IToken {
   address: string;
   symbol: string;

@@ -1,3 +1,4 @@
+import { toast } from "@bleu/ui";
 import { Address } from "@bleu-fi/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -87,17 +88,19 @@ export function AmmForm({
 
   const formData = watch();
 
-  const onSubmit = (data: typeof ammFormSchema._type) => {
+  const onSubmit = async (data: typeof ammFormSchema._type) => {
     const txArgs = buildTxAMMArgs({ data, transactionType });
 
     try {
-      sendTransactions(txArgs);
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error(e);
+      await sendTransactions(txArgs);
+      router.push("/createtxprocessing");
+    } catch {
+      toast({
+        title: `Transaction failed`,
+        description: "An error occurred while processing the transaction.",
+        variant: "destructive",
+      });
     }
-
-    router.push("/createtxprocessing");
   };
 
   useEffect(() => {

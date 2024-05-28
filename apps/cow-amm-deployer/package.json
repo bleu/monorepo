@@ -9,6 +9,7 @@
     "dev": "pnpm npm-run-all -l --parallel dev:**",
     "dev:next": "next dev",
     "start": "next start",
+    "format": "prettier --write .",
     "lint": "eslint '**/*.{ts,tsx}'",
     "lint:fix": "eslint '**/*.{ts,tsx}' --fix",
     "test:jest": "pnpm exec jest --passWithNoTests",

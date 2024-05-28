@@ -27,6 +27,7 @@ query($ammId: String!) {
     priceOracle
     order {
       handler
+      owner
       chainId
     }
     disabled
@@ -91,6 +92,7 @@ interface AmmQueryI {
       order: {
         handler: Address;
         chainId: ChainId;
+        owner: Address;
       };
       disabled: boolean;
       priceOracleAddress: Address;
@@ -244,8 +246,10 @@ export function useStandaloneAMM(ammId: Address) {
     loading: isSubgraphLoading || isBalancesLoading || isPricesLoading,
     error,
     data: {
+      id: ammId,
       token0,
       token1,
+      constantProductAddress: subgraphData.data.constantProductData.order.owner,
       totalUsdValue: token0.usdValue + token1.usdValue,
       minTradedToken0: subgraphData.data.constantProductData.minTradedToken0,
       disabled: subgraphData.data.constantProductData.disabled,

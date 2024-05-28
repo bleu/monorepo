@@ -1,7 +1,7 @@
 import { createConfig } from "@ponder/core";
 import { http } from "viem";
+
 import { composableCowAbi } from "./abis/ComposableCow";
-import { standaloneConstantProductAbi } from "./abis/StandaloneConstantProduct";
 import { standaloneConstantProductFactoryAbi } from "./abis/StandaloneContantProductFactory";
 
 export default createConfig({

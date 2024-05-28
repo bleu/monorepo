@@ -1,4 +1,3 @@
-// import { MetadataApi } from "@cowprotocol/app-data";
 import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
 import { Address, encodeFunctionData, erc20Abi, parseUnits } from "viem";
 

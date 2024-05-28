@@ -1,4 +1,5 @@
 import { Address } from "viem";
+
 import { composableCowAbi } from "../abis/ComposableCow";
 import { erc20Abi } from "../abis/erc20";
 import { contextType } from "./types";
@@ -6,7 +7,7 @@ import { contextType } from "./types";
 export function callERC20Contract<T>(
   address: `0x${string}`,
   functionName: "symbol" | "decimals" | "name",
-  context: contextType
+  context: contextType,
 ): Promise<T> {
   return context.client.readContract({
     abi: erc20Abi,
@@ -33,10 +34,10 @@ export function getHash({
   salt: `0x${string}`;
   staticInput: `0x${string}`;
   context: contextType;
-}) {
+}): Promise<`0x${string}`> {
   return context.client.readContract({
     abi: composableCowAbi,
-    address: context.contracts.composable.address,
+    address: "0xfdaFc9d1902f4e0b84f65F49f244b32b31013b74",
     functionName: "hash",
     args: [{ handler, salt, staticInput }],
   });
@@ -67,11 +68,8 @@ export async function getToken(address: `0x${string}`, context: contextType) {
   return token;
 }
 
-export async function getUser(
-  address: Address,
-  chainId: number,
-  context: contextType
-) {
+export async function getUser(address: Address, context: contextType) {
+  const chainId = context.network.chainId as number;
   const userId = `${address}-${chainId}`;
   let user = await context.db.User.findUnique({
     id: userId,
@@ -87,4 +85,8 @@ export async function getUser(
     });
   }
   return user;
+}
+
+export function getConstantProductId(handler: Address, userId: string) {
+  return `${handler}-${userId}`;
 }

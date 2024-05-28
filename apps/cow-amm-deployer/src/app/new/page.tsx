@@ -20,7 +20,7 @@ function cowAmmToFormValues(cowAmm: ICowAmm): FieldValues {
     token1: cowAmm.token1.tokenInfo,
     minTradedToken0: formatUnits(
       BigInt(cowAmm.minTradedToken0),
-      cowAmm.token0.tokenInfo.decimals
+      cowAmm.token0.tokenInfo.decimals,
     ),
     priceOracle: cowAmm.priceOracle,
     balancerPoolId: cowAmm.priceOracleData.balancerPoolId,

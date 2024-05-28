@@ -1,3 +1,4 @@
+import { toast } from "@bleu/ui";
 import { Address } from "@bleu-fi/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -48,9 +49,9 @@ const getNewMinTradeToken0 = async (newToken0: IToken, chainId: ChainId) => {
       Number(
         formatUnits(
           parseUnits(String(amount), newToken0.decimals),
-          newToken0.decimals
-        )
-      )
+          newToken0.decimals,
+        ),
+      ),
     )
     .catch(() => 0);
 };
@@ -88,17 +89,18 @@ export function AmmForm({
   const formData = watch();
 
   const onSubmit = async (data: typeof ammFormSchema._type) => {
-    await buildTxAMMArgs({ data, transactionType })
-      .then((txArgs) => {
-        sendTransactions(txArgs);
-      })
-      .catch((e: Error) => {
-        // eslint-disable-next-line no-console
-        console.error(e);
-      })
-      .then(() => {
-        router.push("/createtxprocessing");
+    const txArgs = buildTxAMMArgs({ data, transactionType });
+
+    try {
+      await sendTransactions(txArgs);
+      router.push("/createtxprocessing");
+    } catch {
+      toast({
+        title: `Transaction failed`,
+        description: "An error occurred while processing the transaction.",
+        variant: "destructive",
       });
+    }
   };
 
   useEffect(() => {
@@ -124,7 +126,7 @@ export function AmmForm({
                 });
                 setValue(
                   "minTradedToken0",
-                  await getNewMinTradeToken0(token, chainId as ChainId)
+                  await getNewMinTradeToken0(token, chainId as ChainId),
                 );
               }}
               selectedToken={(formData?.token0 as IToken) ?? undefined}
@@ -187,7 +189,7 @@ export function AmmForm({
           <AccordionTrigger
             className={cn(
               errors.minTradedToken0 ? "text-destructive" : "",
-              "pt-0"
+              "pt-0",
             )}
           >
             Advanced Options

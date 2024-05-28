@@ -97,7 +97,7 @@ export async function decodePriceOracle({
       address: constantProductData.priceOracle,
       priceOracleData: constantProductData.priceOracleData,
       chainId: chainId as ChainId,
-    }
+    },
   );
 
   return {
@@ -111,7 +111,7 @@ export async function decodePriceOracle({
 export async function checkIsAmmRunning(
   chainId: ChainId,
   safeAddress: Address,
-  orderHash: `0x${string}`
+  orderHash: `0x${string}`,
 ) {
   const publicClient = publicClientsFromIds[chainId];
   return publicClient.readContract({
@@ -125,7 +125,7 @@ export async function checkIsAmmRunning(
 export async function checkAmmIsFromModule(
   chainId: ChainId,
   safeAddress: Address,
-  orderHash: `0x${string}`
+  orderHash: `0x${string}`,
 ): Promise<boolean> {
   const publicClient = publicClientsFromIds[chainId];
   return publicClient
@@ -175,12 +175,12 @@ export function useRunningAMM(): {
     const token0 = assets.find(
       (asset) =>
         asset.tokenInfo.address.toLowerCase() ===
-        gqlInfo?.token0?.address.toLowerCase()
+        gqlInfo?.token0?.address.toLowerCase(),
     );
     const token1 = assets.find(
       (asset) =>
         asset.tokenInfo.address.toLowerCase() ===
-        gqlInfo?.token1?.address.toLowerCase()
+        gqlInfo?.token1?.address.toLowerCase(),
     );
 
     if (!token0 || !token1) {

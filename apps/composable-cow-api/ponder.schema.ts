@@ -9,25 +9,9 @@ export default createSchema((p) => ({
     hash: p.hex().optional(),
     txHash: p.hex(),
     salt: p.hex(),
-    userId: p.string().references("User.id"),
-    user: p.one("userId"),
     staticInput: p.hex(),
-    decodedSuccess: p.boolean(),
-    stopLossDataId: p.string().references("StopLossOrder.id").optional(),
-    stopLossData: p.one("stopLossDataId"),
-    orderHandlerId: p.string().references("OrderHandler.id").optional(),
-    orderHandler: p.one("orderHandlerId"),
-    constantProductDataId: p
-      .string()
-      .references("ConstantProductData.id")
-      .optional(),
-    constantProductData: p.one("constantProductDataId"),
-  }),
-  OrderHandler: p.createTable({
-    id: p.string(),
-    type: p.string().optional(),
-    address: p.hex(),
-    chainId: p.int(),
+    handler: p.hex(),
+    owner: p.string(),
   }),
   Token: p.createTable({
     id: p.string(),
@@ -41,11 +25,13 @@ export default createSchema((p) => ({
     id: p.string(),
     address: p.string(),
     chainId: p.int(),
-    orders: p.many("Order.userId"),
   }),
-  StopLossOrder: p.createTable({
+  StopLossData: p.createTable({
     id: p.string(),
     orderId: p.string().references("Order.id"),
+    order: p.one("orderId"),
+    userId: p.string().references("User.id"),
+    user: p.one("userId"),
     tokenInId: p.string().references("Token.id"),
     tokenIn: p.one("tokenInId"),
     tokenAmountIn: p.bigint(),
@@ -65,6 +51,9 @@ export default createSchema((p) => ({
   ConstantProductData: p.createTable({
     id: p.string(),
     orderId: p.string().references("Order.id"),
+    order: p.one("orderId"),
+    userId: p.string().references("User.id"),
+    user: p.one("userId"),
     token0Id: p.string().references("Token.id"),
     token0: p.one("token0Id"),
     token1Id: p.string().references("Token.id"),
@@ -73,5 +62,7 @@ export default createSchema((p) => ({
     priceOracle: p.hex(),
     priceOracleData: p.hex(),
     appData: p.hex(),
+    disabled: p.boolean().optional(),
+    version: p.string(),
   }),
 }));

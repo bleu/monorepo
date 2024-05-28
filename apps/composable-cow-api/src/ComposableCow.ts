@@ -1,4 +1,5 @@
 import { ponder } from "@/generated";
+
 import { getHandlerHelper } from "./handler";
 import { getHash } from "./utils";
 
@@ -37,6 +38,7 @@ ponder.on("composable:ConditionalOrderCreated", async ({ event, context }) => {
       owner: event.args.owner,
     });
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.log(e);
     return;
   }

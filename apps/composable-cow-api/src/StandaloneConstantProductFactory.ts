@@ -1,8 +1,10 @@
+import { Address } from "viem";
+
 import { ponder } from "@/generated";
+
+import { standaloneConstantProductFactoryAbi } from "../abis/StandaloneContantProductFactory";
 import { StandaloneProductConstantHandlerHelper } from "./handler";
 import { getHash, getUser } from "./utils";
-import { standaloneConstantProductFactoryAbi } from "../abis/StandaloneContantProductFactory";
-import { Address } from "viem";
 
 ponder.on(
   "standaloneConstantProductFactoryAbi:ConditionalOrderCreated",
@@ -41,6 +43,7 @@ ponder.on(
         owner: event.args.owner,
       });
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.log(e);
       return;
     }

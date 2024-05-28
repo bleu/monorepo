@@ -1,4 +1,4 @@
-import { SECONDS_IN_DAY } from "@bleu-fi/utils/date";
+import { SECONDS_IN_DAY } from "@bleu/utils/date";
 import { redirect } from "next/navigation";
 
 import { generatePoolPageLink } from "../../(utils)/getFilteredUrl";
@@ -18,6 +18,6 @@ export default function Page({ searchParams }: { searchParams: SearchParams }) {
   }
 
   return redirect(
-    generatePoolPageLink(startAtDate as Date, endAtDate as Date, searchParams),
+    generatePoolPageLink(startAtDate as Date, endAtDate as Date, searchParams)
   );
 }

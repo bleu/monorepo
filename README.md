@@ -30,7 +30,7 @@ A Safe App to interact to create milkman orders on CoW Protocol.
 
 ## Repository Structure
 
-The project uses a monorepo structure. See the repo's [wiki](https://github.com/bleu-fi/monorepo/wiki) to find more detail about each project structure.
+The project uses a monorepo structure. See the repo's [wiki](https://github.com/bleu/monorepo/wiki) to find more detail about each project structure.
 
 ## Pre-requisites
 
@@ -76,8 +76,8 @@ foundryup
 
 If you encounter any issues or need assistance:
 
-1. Review our [wiki](https://github.com/bleu-fi/monorepo/wiki)
-2. Check [open issues](https://github.com/bleu-fi/monorepo/issues) or create a new one.
+1. Review our [wiki](https://github.com/bleu/monorepo/wiki)
+2. Check [open issues](https://github.com/bleu/monorepo/issues) or create a new one.
 3. Reach out to us at [balancer@bleu.studio](mailto:balancer@bleu.studio).
 
 ## Contributors
@@ -86,7 +86,7 @@ A heartfelt thanks to all who've contributed:
 
 - **Nichollas Rennah** and **Marcos Tullyo**: Initial designs and development of for the metadata app.
 
-Wish to be listed? Make a contribution and [open an issue](https://github.com/bleu-fi/monorepo/issues/new) or send a pull request.
+Wish to be listed? Make a contribution and [open an issue](https://github.com/bleu/monorepo/issues/new) or send a pull request.
 
 ## Contributing
 

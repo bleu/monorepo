@@ -1,6 +1,6 @@
 "use client";
 
-import { formatNumber } from "@bleu-fi/utils/formatNumber";
+import { formatNumber } from "@bleu/utils/formatNumber";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import {
   ArrowTopRightIcon,
@@ -59,7 +59,7 @@ export default function Page({ params }: { params: { id: `0x${string}` } }) {
                 2,
                 "decimal",
                 "compact",
-                0.01,
+                0.01
               )}
             </span>
           </div>
@@ -75,7 +75,7 @@ export default function Page({ params }: { params: { id: `0x${string}` } }) {
                 buildAccountCowExplorerUrl({
                   chainId: safe.chainId as ChainId,
                   address: safe.safeAddress as Address,
-                }),
+                })
               )
             }
             rel="noreferrer noopener"

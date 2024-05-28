@@ -1,4 +1,4 @@
-import { Address, networkFor } from "@bleu-fi/utils";
+import { Address, networkFor } from "@bleu/utils";
 import { waitForTransaction } from "@wagmi/core";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -53,12 +53,12 @@ export function useManageUserBalance() {
 
     if (isDepositWithNoAllowance) {
       setNotification(
-        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.AUTHORIZING],
+        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.AUTHORIZING]
       );
       approveToken({ data, chain });
     } else {
       setNotification(
-        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.CONFIRMING],
+        NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.CONFIRMING]
       );
       try {
         setTransactionStatus(TransactionStatus.SUBMITTING);
@@ -80,24 +80,24 @@ export function useManageUserBalance() {
           push(`/internalmanager/${network}`);
           setTransactionStatus(TransactionStatus.CONFIRMED);
           setNotification(
-            NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.CONFIRMED],
+            NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.CONFIRMED]
           );
         }
         if (waitForTransactionData.status === "reverted") {
           push(`/internalmanager/${network}`);
           setNotification(
-            NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.PINNING_ERROR],
+            NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.PINNING_ERROR]
           );
         }
       } catch (error) {
         if (isDepositWithAllowance) {
           setNotification(
-            NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WRITE_ERROR],
+            NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WRITE_ERROR]
           );
           setTransactionStatus(TransactionStatus.APPROVED);
         } else {
           setNotification(
-            NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WRITE_ERROR],
+            NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.WRITE_ERROR]
           );
           setTransactionStatus(TransactionStatus.AUTHORIZING);
         }

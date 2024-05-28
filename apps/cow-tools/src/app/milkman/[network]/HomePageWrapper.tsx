@@ -4,7 +4,7 @@ import {
   Network,
   NetworkChainId,
   NetworkFromNetworkChainId,
-} from "@bleu-fi/utils";
+} from "@bleu/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { gnosis, goerli, mainnet } from "viem/chains";

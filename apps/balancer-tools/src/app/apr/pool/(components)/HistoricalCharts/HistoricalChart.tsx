@@ -1,6 +1,6 @@
 "use client";
 
-import { formatDate } from "@bleu-fi/utils";
+import { formatDate } from "@bleu/utils";
 import { blueDark } from "@radix-ui/colors";
 import { Data } from "plotly.js";
 import { useState } from "react";
@@ -48,7 +48,7 @@ export default function HistoricalChartWrapper({
     aprChartData,
     feeChartData,
     tvlChartData,
-    volumeChartData,
+    volumeChartData
   );
 
   const createdAt = Object.values(results.perDay[0])[0].externalCreatedAt;

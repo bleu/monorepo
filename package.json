@@ -1,5 +1,5 @@
 {
-  "name": "@bleu-fi/monorepo",
+  "name": "@bleu/monorepo",
   "version": "0.0.0",
   "private": true,
   "description": "",
@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/bleu-fi/monorepo.git"
+    "url": "https://github.com/bleu/monorepo.git"
   },
   "config": {
     "ghooks": {
@@ -32,11 +32,11 @@
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/bleu-fi/monorepo/issues"
+    "url": "https://github.com/bleu/monorepo/issues"
   },
-  "homepage": "https://github.com/bleu-fi/monorepo#readme",
+  "homepage": "https://github.com/bleu/monorepo#readme",
   "devDependencies": {
-    "@bleu-fi/eslint-config": "workspace:*",
+    "@bleu/eslint-config": "workspace:*",
     "@types/node": "^20.12.7",
     "concurrently": "^8.2.2",
     "ghooks": "^2.0.4",

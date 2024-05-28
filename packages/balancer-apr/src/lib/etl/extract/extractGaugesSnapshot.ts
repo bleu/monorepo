@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { dateToEpoch, epochToDate } from "@bleu-fi/utils/date";
+import { dateToEpoch, epochToDate } from "@bleu/utils/date";
 import { sql } from "drizzle-orm";
 import { addToTable } from "lib/db/addToTable";
 import { logIfVerbose } from "lib/logIfVerbose";
@@ -75,8 +75,8 @@ export async function extractGaugesSnapshot() {
             network!,
             dateToEpoch(timestamp),
             block!,
-          ],
-        ),
+          ]
+        )
       ),
     ]);
 
@@ -92,7 +92,7 @@ export async function extractGaugesSnapshot() {
           blockNumber: gaugeTimestamps[idx].block,
           ...workingSupplies[idx],
         };
-      },
+      }
     );
 
     if (insertData.length > 0)

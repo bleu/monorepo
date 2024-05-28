@@ -1,5 +1,5 @@
 "use client";
-import { Address } from "@bleu-fi/utils";
+import { Address } from "@bleu/utils";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import cn from "clsx";
@@ -119,7 +119,7 @@ function ProcessTransaction({ poolId }: { poolId: Address }) {
               "flex justify-center items-center",
               isTransactionDisabled
                 ? "w-full text-amber10 border border-amber4"
-                : "w-full text-slate12 bg-amber4 hover:bg-amber3 focus-visible:bg-amber3 disabled:bg-amber2",
+                : "w-full text-slate12 bg-amber4 hover:bg-amber3 focus-visible:bg-amber3 disabled:bg-amber2"
             )}
           >
             {isTransactionDisabled &&

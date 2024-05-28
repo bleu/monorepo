@@ -1,5 +1,5 @@
-import { dateToEpoch } from "@bleu-fi/utils/date";
-import { fetcher } from "@bleu-fi/utils/fetcher";
+import { dateToEpoch } from "@bleu/utils/date";
+import { fetcher } from "@bleu/utils/fetcher";
 import invariant from "tiny-invariant";
 
 type HistoricalPriceResponse = {
@@ -34,17 +34,17 @@ export class DefiLlamaAPI {
     coin: string,
     searchWidth: string = "600",
     span: string = "2000",
-    periodStep: string = "1d",
+    periodStep: string = "1d"
   ): Promise<HistoricalPriceResponse> {
     const self = this.getInstance();
     invariant(
       coin.split(":").length === 2,
-      'coins must be in format "chain:address"',
+      'coins must be in format "chain:address"'
     );
     invariant(startDate <= new Date(), "date must be in the past");
 
     const url = `${self.baseURL}/chart/${coin}?start=${dateToEpoch(
-      startDate,
+      startDate
     )}&span=${span}&period=${periodStep}&searchWidth=${searchWidth}`;
     return await fetcher<HistoricalPriceResponse>(url);
   }
@@ -56,7 +56,7 @@ export class DefiLlamaAPI {
         .toLowerCase()
         .replace("-", "_")
         .replace("gnosis", "xdai")
-        .replace("avalanche", "avax")}/${timestamp}`,
+        .replace("avalanche", "avax")}/${timestamp}`
     );
     return response.height;
   }

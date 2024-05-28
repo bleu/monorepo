@@ -1,4 +1,4 @@
-import { dateToEpoch, epochToDate } from "@bleu-fi/utils/date";
+import { dateToEpoch, epochToDate } from "@bleu/utils/date";
 import { sql } from "drizzle-orm";
 import { addToTable } from "lib/db/addToTable";
 import { logIfVerbose } from "lib/logIfVerbose";
@@ -65,7 +65,7 @@ export async function fetchTokenPrices() {
         t.network_slug) sq
   WHERE
     sq.timestamp < now() - interval '1 day';
-`),
+`)
   );
 
   const allTokenPrices = await Promise.all(
@@ -73,26 +73,26 @@ export async function fetchTokenPrices() {
       return throttle(async () => {
         logIfVerbose(
           `${networkSlug}:${address}:${dateToEpoch(
-            timestamp,
-          )} Fetching prices: ${idx + 1}/${tokenList.length}`,
+            timestamp
+          )} Fetching prices: ${idx + 1}/${tokenList.length}`
         );
         try {
           const prices = await fetchTokenPrice(
             networkSlug,
             address!,
-            timestamp!,
+            timestamp!
           );
           return prices;
         } catch (error) {
           logIfVerbose(
             `${networkSlug}:${address}:${dateToEpoch(
-              timestamp,
+              timestamp
               // @ts-expect-error
-            )} Failed fetching price: ${error.message}`,
+            )} Failed fetching price: ${error.message}`
           );
         }
       })();
-    }),
+    })
   );
 
   await addToTable(tokenPrices, allTokenPrices.filter(Boolean).flat());
@@ -122,25 +122,25 @@ function adjustTimestamp(entryTimestamp: number) {
 export async function fetchTokenPrice(
   network: string,
   tokenAddress: string,
-  start: Date,
+  start: Date
 ) {
   if (!tokenAddress || !network || !start) return [];
 
   let prices;
   try {
     logIfVerbose(
-      `${network}:${tokenAddress}:${dateToEpoch(start)} Fetching price`,
+      `${network}:${tokenAddress}:${dateToEpoch(start)} Fetching price`
     );
     prices = await DefiLlamaAPI.getHistoricalPrice(
       start,
-      `${getNetworkSlug(network)}:${tokenAddress}`,
+      `${getNetworkSlug(network)}:${tokenAddress}`
     );
   } catch (error) {
     logIfVerbose(
       `${network}:${tokenAddress}:${dateToEpoch(
-        start,
+        start
         // @ts-expect-error
-      )} Failed fetching price: ${error.message}`,
+      )} Failed fetching price: ${error.message}`
     );
     // @ts-expect-error
     if (error?.message?.includes?.("No price data available")) return [];

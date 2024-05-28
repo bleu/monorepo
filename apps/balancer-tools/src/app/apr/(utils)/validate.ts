@@ -1,7 +1,7 @@
-import POOLS_WITHOUT_GAUGES from "@bleu-fi/balancer-apr/src/lib/balancer/data/pools-without-gauge.json";
-import POOLS_WITH_LIVE_GAUGES from "@bleu-fi/balancer-apr/src/lib/balancer/data/voting-gauges.json";
-import { Network, networksOnBalancer } from "@bleu-fi/utils";
-import { parseMMDDYYYYToDate } from "@bleu-fi/utils/date";
+import POOLS_WITHOUT_GAUGES from "@bleu/balancer-apr/src/lib/balancer/data/pools-without-gauge.json";
+import POOLS_WITH_LIVE_GAUGES from "@bleu/balancer-apr/src/lib/balancer/data/voting-gauges.json";
+import { Network, networksOnBalancer } from "@bleu/utils";
+import { parseMMDDYYYYToDate } from "@bleu/utils/date";
 import { z } from "zod";
 
 import { PoolTypeNames } from "./types";
@@ -15,8 +15,8 @@ export const areSupportedNetwork = (value?: string | undefined) =>
     .split(",")
     .every((val) =>
       Object.values(networksOnBalancer).includes(
-        val.toLowerCase().trim() as Network,
-      ),
+        val.toLowerCase().trim() as Network
+      )
     );
 
 export const areSupportedTypes = (value?: string | undefined) =>
@@ -31,7 +31,7 @@ const DateSchema = OptionalNullableDate.refine(
   (date) =>
     date === null ||
     (!isNaN(date.getTime()) && date >= minDate && date <= currentDate),
-  { message: "Invalid date" },
+  { message: "Invalid date" }
 );
 
 export const QueryParamsPagesSchema = z
@@ -40,14 +40,14 @@ export const QueryParamsPagesSchema = z
       (poolId) =>
         !poolId ||
         POOLS_WITH_LIVE_GAUGES.some(
-          (g) => g.id.toLowerCase() === poolId?.toLowerCase(),
+          (g) => g.id.toLowerCase() === poolId?.toLowerCase()
         ) ||
         //@ts-ignore
         POOLS_WITHOUT_GAUGES.some(
           //@ts-ignore
-          (p) => p.id.toLowerCase() === poolId?.toLowerCase(),
+          (p) => p.id.toLowerCase() === poolId?.toLowerCase()
         ),
-      { message: "Pool with ID not found" },
+      { message: "Pool with ID not found" }
     ),
     startAt: DateSchema,
     endAt: DateSchema,
@@ -67,5 +67,5 @@ export const QueryParamsPagesSchema = z
     },
     {
       message: "Both startAt and endAt must be provided together",
-    },
+    }
   );

@@ -1,4 +1,4 @@
-import { Address } from "@bleu-fi/utils";
+import { Address } from "@bleu/utils";
 import { formatUnits } from "viem";
 
 import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";

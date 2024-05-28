@@ -4,15 +4,15 @@ version = "0.1.0"
 description = ""
 authors = ["José Ribeiro <jose@bleu.studio>"]
 readme = "README.md"
-packages = [{include = "gyro_eclp_api"}]
+packages = [{ include = "gyro_eclp_api" }]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
 fastapi = "^0.100.0"
-uvicorn = {extras = ["standard"], version = "^0.23.1"}
+uvicorn = { extras = ["standard"], version = "^0.23.1" }
 pytest = "^7.4.0"
 httpx = "^0.24.1"
-concentrated-lps = {git = "https://github.com/bleu-fi/concentrated-lps.git"}
+concentrated-lps = { git = "https://github.com/bleu/concentrated-lps.git" }
 
 [tool.poetry.scripts]
 dev = 'run:run'

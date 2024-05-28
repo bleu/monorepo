@@ -1,4 +1,4 @@
-import { Address, buildBlockExplorerAddressURL } from "@bleu-fi/utils";
+import { Address, buildBlockExplorerAddressURL } from "@bleu/utils";
 import { ArrowTopRightIcon, InfoCircledIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { formatUnits } from "viem";
@@ -38,12 +38,12 @@ export function TableRowOrder({
     cowTokenList.find(
       (token) =>
         token.address == order.orderEvent.tokenIn?.address &&
-        token.chainId == order.orderEvent.chainId,
+        token.chainId == order.orderEvent.chainId
     )?.decimals ||
     1;
   const tokenInAmount = formatUnits(
     order.orderEvent.tokenAmountIn,
-    tokenInDecimals,
+    tokenInDecimals
   );
 
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import { formatDate } from "@bleu-fi/utils";
+import { formatDate } from "@bleu/utils";
 import { greenDarkA } from "@radix-ui/colors";
 import { useRouter } from "next/navigation";
 import { Data, PlotMouseEvent, PlotType } from "plotly.js";
@@ -27,7 +27,7 @@ export default function TopPoolsChart({
       result.tokens
         .map(
           (t) =>
-            `${t.symbol}${t.weight ? `-${(t.weight! * 100).toFixed()}%` : ""}`,
+            `${t.symbol}${t.weight ? `-${(t.weight! * 100).toFixed()}%` : ""}`
         )
         .join(" "),
       `${result.apr.total.toFixed()}% APR`,
@@ -35,15 +35,15 @@ export default function TopPoolsChart({
 
   const longestyAxisLabelLength = Math.max(
     ...yAxisLabels.map(
-      ([tokenNames, aprLabel]) => tokenNames.length + aprLabel.length,
-    ),
+      ([tokenNames, aprLabel]) => tokenNames.length + aprLabel.length
+    )
   );
 
   const paddedYAxisLabels = yAxisLabels.map(([tokenNames, aprValue]) =>
     [
       tokenNames.padEnd(longestyAxisLabelLength - aprValue.length, " "),
       aprValue,
-    ].join(" "),
+    ].join(" ")
   );
 
   const chartData: Data = {
@@ -65,7 +65,7 @@ export default function TopPoolsChart({
       startAt,
       endAt,
       null,
-      clickedRoundData.poolId,
+      clickedRoundData.poolId
     );
     router.push(poolRedirectURL);
   }
@@ -75,7 +75,7 @@ export default function TopPoolsChart({
       <Plot
         onClick={onClickHandler}
         title={`Top APR Pools from ${formatDate(startAt)} to ${formatDate(
-          endAt,
+          endAt
         )}`}
         toolTip="Values are averaged for the given dates."
         data={[chartData]}

@@ -1,4 +1,4 @@
-import { dateToEpoch, SECONDS_IN_YEAR } from "@bleu-fi/utils/date";
+import { dateToEpoch, SECONDS_IN_YEAR } from "@bleu/utils/date";
 
 const INITIAL_RATE = 145000;
 const START_EPOCH_TIME = 1648465251;
@@ -6,10 +6,10 @@ const RATE_REDUCTION_TIME = SECONDS_IN_YEAR;
 const RATE_REDUCTION_COEFFICIENT = 2 ** (1 / 4);
 
 export const weekly = (
-  currentTimestamp: number = dateToEpoch(new Date()),
+  currentTimestamp: number = dateToEpoch(new Date())
 ): number => {
   const miningEpoch = Math.floor(
-    (currentTimestamp - START_EPOCH_TIME) / RATE_REDUCTION_TIME,
+    (currentTimestamp - START_EPOCH_TIME) / RATE_REDUCTION_TIME
   );
   return INITIAL_RATE * RATE_REDUCTION_COEFFICIENT ** -miningEpoch;
 };
@@ -26,10 +26,10 @@ export const between = (start: number, end: number): number => {
   if (end < start) throw "cannot finish before starting";
 
   const startingEpoch = Math.floor(
-    (start - START_EPOCH_TIME) / RATE_REDUCTION_TIME,
+    (start - START_EPOCH_TIME) / RATE_REDUCTION_TIME
   );
   const endingEpoch = Math.floor(
-    (end - START_EPOCH_TIME) / RATE_REDUCTION_TIME,
+    (end - START_EPOCH_TIME) / RATE_REDUCTION_TIME
   );
 
   let totalEmissions = 0;

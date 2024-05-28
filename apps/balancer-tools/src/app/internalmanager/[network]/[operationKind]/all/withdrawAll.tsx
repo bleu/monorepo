@@ -1,6 +1,6 @@
 "use client";
-import { InternalBalanceQuery } from "@bleu-fi/gql/src/balancer/__generated__/Ethereum";
-import { Address, networkFor } from "@bleu-fi/utils";
+import { InternalBalanceQuery } from "@bleu/gql/src/balancer/__generated__/Ethereum";
+import { Address, networkFor } from "@bleu/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
@@ -127,7 +127,7 @@ export function WithdrawAll() {
                   (
                     token: ArrElement<
                       GetDeepProp<InternalBalanceQuery, "userInternalBalances">
-                    >,
+                    >
                   ) => (
                     <Table.BodyRow key={token.tokenInfo?.address}>
                       <Table.BodyCell customWidth="w-12">
@@ -160,7 +160,7 @@ export function WithdrawAll() {
                         </div>
                       </Table.BodyCell>
                     </Table.BodyRow>
-                  ),
+                  )
                 )}
               </Table.Body>
             </Table>

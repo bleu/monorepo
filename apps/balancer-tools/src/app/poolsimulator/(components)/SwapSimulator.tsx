@@ -1,6 +1,6 @@
-import { AMM } from "@bleu-fi/math-poolsimulator/src";
-import { PoolPairData } from "@bleu-fi/math-poolsimulator/src/types";
-import { formatNumber } from "@bleu-fi/utils/formatNumber";
+import { AMM } from "@bleu/math-poolsimulator/src";
+import { PoolPairData } from "@bleu/math-poolsimulator/src/types";
+import { formatNumber } from "@bleu/utils/formatNumber";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@radix-ui/react-label";
 import { useEffect, useState } from "react";
@@ -104,35 +104,35 @@ function calculateSimulation({
   let amountOut = amm.exactTokenInForTokenOut(
     amount,
     tokenInSymbol,
-    tokenOutSymbol,
+    tokenOutSymbol
   );
   let effectivePrice = amm.effectivePriceForExactTokenInSwap(
     amount,
     tokenInSymbol,
-    tokenOutSymbol,
+    tokenOutSymbol
   );
   let priceImpact = amm.priceImpactForExactTokenInSwap(
     amount,
     tokenInSymbol,
-    tokenOutSymbol,
+    tokenOutSymbol
   );
 
   if (swapType == "Exact Out") {
     amountIn = amm.tokenInForExactTokenOut(
       amount,
       tokenInSymbol,
-      tokenOutSymbol,
+      tokenOutSymbol
     );
     amountOut = amount;
     effectivePrice = amm.effectivePriceForExactTokenOutSwap(
       amount,
       tokenInSymbol,
-      tokenOutSymbol,
+      tokenOutSymbol
     );
     priceImpact = amm.priceImpactForExactTokenOutSwap(
       amount,
       tokenInSymbol,
-      tokenOutSymbol,
+      tokenOutSymbol
     );
   }
 
@@ -389,7 +389,7 @@ function SimulationResult({
       <Label className="block text-sm text-slate12">Effective Price</Label>
       <BaseInput
         value={`${formatNumber(
-          effectivePrice,
+          effectivePrice
         )} ${tokenInSymbol}/${tokenOutSymbol}`}
         disabled
       />

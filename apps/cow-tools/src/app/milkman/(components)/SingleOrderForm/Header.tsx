@@ -1,4 +1,4 @@
-import { Network } from "@bleu-fi/utils";
+import { Network } from "@bleu/utils";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 
 import { TransactionStatus } from "#/app/milkman/utils/type";

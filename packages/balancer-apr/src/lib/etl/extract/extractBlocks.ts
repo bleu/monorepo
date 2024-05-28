@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { dateToEpoch } from "@bleu-fi/utils/date";
+import { dateToEpoch } from "@bleu/utils/date";
 import { and, desc, eq, isNull, lt, not, sql } from "drizzle-orm";
 import { addToTable } from "lib/db/addToTable";
 import { logIfVerbose } from "lib/logIfVerbose";
@@ -36,8 +36,8 @@ export async function extractBlocks() {
       blocks,
       and(
         eq(blocks.timestamp, calendar.timestamp),
-        eq(blocks.networkSlug, networks.slug),
-      ),
+        eq(blocks.networkSlug, networks.slug)
+      )
     )
     .where(
       and(
@@ -47,31 +47,31 @@ export async function extractBlocks() {
         not(
           and(
             eq(networks.slug, "arbitrum"),
-            lt(calendar.timestamp, CHAIN_FIRST_BLOCK_TIMESTAMP_MAP["arbitrum"]),
-          )!,
+            lt(calendar.timestamp, CHAIN_FIRST_BLOCK_TIMESTAMP_MAP["arbitrum"])
+          )!
         ),
         not(
           and(
             eq(networks.slug, "base"),
-            lt(calendar.timestamp, CHAIN_FIRST_BLOCK_TIMESTAMP_MAP["base"]),
-          )!,
+            lt(calendar.timestamp, CHAIN_FIRST_BLOCK_TIMESTAMP_MAP["base"])
+          )!
         ),
         not(
           and(
             eq(networks.slug, "optimism"),
-            lt(calendar.timestamp, CHAIN_FIRST_BLOCK_TIMESTAMP_MAP["optimism"]),
-          )!,
+            lt(calendar.timestamp, CHAIN_FIRST_BLOCK_TIMESTAMP_MAP["optimism"])
+          )!
         ),
         not(
           and(
             eq(networks.slug, "polygon-zkevm"),
             lt(
               calendar.timestamp,
-              CHAIN_FIRST_BLOCK_TIMESTAMP_MAP["polygon-zkevm"],
-            ),
-          )!,
-        ),
-      ),
+              CHAIN_FIRST_BLOCK_TIMESTAMP_MAP["polygon-zkevm"]
+            )
+          )!
+        )
+      )
     )
     .orderBy(desc(calendar.timestamp));
 
@@ -80,11 +80,11 @@ export async function extractBlocks() {
       return throttle(async () => {
         try {
           logIfVerbose(
-            `Fetching block for ${slug} at ${timestamp!.toISOString()}`,
+            `Fetching block for ${slug} at ${timestamp!.toISOString()}`
           );
           return await DefiLlamaAPI.findBlockNumber(
             slug!,
-            dateToEpoch(timestamp),
+            dateToEpoch(timestamp)
           );
         } catch (error) {
           // @ts-ignore
@@ -92,12 +92,12 @@ export async function extractBlocks() {
           // @ts-expect-error
           if (error.message.includes("Rate limit exceeded"))
             logIfVerbose(
-              `Rate limit while fetching block for ${slug} at ${timestamp!.toISOString()}`,
+              `Rate limit while fetching block for ${slug} at ${timestamp!.toISOString()}`
             );
           return null;
         }
       })();
-    }),
+    })
   );
 
   await addToTable(
@@ -114,7 +114,7 @@ export async function extractBlocks() {
           externalId: `${networkSlug}-${timestamp!.toISOString()}`,
         };
       })
-      .filter((block) => Object.keys(block).length > 0),
+      .filter((block) => Object.keys(block).length > 0)
   );
 
   logIfVerbose("Fetching blocks done");

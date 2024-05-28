@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@bleu/ui";
-import { formatDate } from "@bleu-fi/utils";
+import { formatDate } from "@bleu/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import Image from "next/image";
 import Link from "next/link";
@@ -24,7 +24,7 @@ export async function gql(
   endpoint: string,
   query: string,
   variables = {},
-  headers = {},
+  headers = {}
 ) {
   console.log(`Running GraphQL query on ${endpoint}`);
 
@@ -46,7 +46,7 @@ export async function gql(
     if (!response.ok) {
       console.log("response", response);
       throw new Error(
-        `GraphQL query failed with status ${response.status}: ${response.statusText}`,
+        `GraphQL query failed with status ${response.status}: ${response.statusText}`
       );
     }
 
@@ -100,7 +100,7 @@ export function HomeWrapper({ goToSafe = false }: { goToSafe?: boolean }) {
   const userId = `${safe.safeAddress}-${safe.chainId}`;
 
   const { data } = useSWR(CREATED_AMMS_FOR_USER_QUERY, (query) =>
-    gql(API_URL, query, { userId }),
+    gql(API_URL, query, { userId })
   );
 
   const rows = (data?.data?.constantProductDatas?.items ?? []).map(
@@ -112,7 +112,7 @@ export function HomeWrapper({ goToSafe = false }: { goToSafe?: boolean }) {
       state: item.disabled ? "Stopped" : "Running",
       link: `/amms/${item.id}`,
       createdAt: new Date(item.order.blockTimestamp * 1000),
-    }),
+    })
   );
 
   return (

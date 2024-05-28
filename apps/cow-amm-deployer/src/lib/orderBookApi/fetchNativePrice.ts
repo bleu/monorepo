@@ -1,4 +1,4 @@
-import { Address } from "@bleu-fi/utils";
+import { Address } from "@bleu/utils";
 
 import { ChainId } from "#/utils/chainsPublicClients";
 
@@ -10,7 +10,7 @@ export interface INativePrice {
 
 export async function getNativePrice(
   tokenAddress: Address,
-  chainId: ChainId,
+  chainId: ChainId
 ): Promise<number> {
   const url = COW_API_URL_BY_CHAIN_ID[chainId];
 

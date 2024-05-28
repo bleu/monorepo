@@ -1,6 +1,6 @@
 "use client";
 
-import { Address, Network, networkIdFor } from "@bleu-fi/utils";
+import { Address, Network, networkIdFor } from "@bleu/utils";
 import { useContext, useEffect } from "react";
 
 import { NetworksContext } from "#/contexts/networks";

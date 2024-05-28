@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import { db } from "@bleu-fi/balancer-apr/src/db";
+import { db } from "@bleu/balancer-apr/src/db";
 import {
   pools,
   poolSnapshots,
@@ -10,7 +10,7 @@ import {
   tokens as tokensTable,
   vebalApr,
   yieldTokenApr,
-} from "@bleu-fi/balancer-apr/src/db/schema";
+} from "@bleu/balancer-apr/src/db/schema";
 import {
   and,
   asc,
@@ -79,7 +79,7 @@ export async function fetchDataForDateRange({
       poolExternalId: rewardsTokenApr.poolExternalId,
       timestamp: rewardsTokenApr.timestamp,
       rewardValueSum: sql<number>`sum(${rewardsTokenApr.value})`.as(
-        "rewardValueSum",
+        "rewardValueSum"
       ),
     })
     .from(rewardsTokenApr)
@@ -109,24 +109,24 @@ export async function fetchDataForDateRange({
       avgApr: avgApr.as("avgApr"),
       avgFeeApr:
         sql<number>`cast(sum(${swapFeeApr.value}) /  count(${poolSnapshots.id})  as decimal)`.as(
-          "avgFeeApr",
+          "avgFeeApr"
         ),
       avgVebalApr:
         sql<number>`cast(sum(${vebalApr.value}) /  count(${poolSnapshots.id})  as decimal)`.as(
-          "avgVebalApr",
+          "avgVebalApr"
         ),
       avgVolume:
         sql<number>`cast(sum(${poolSnapshots.swapVolume}) /  count(${poolSnapshots.id})  as decimal)`.as(
-          "avgVolume",
+          "avgVolume"
         ),
       avgLiquidity: avgLiquidity.as("avgLiquidity"),
       avgYieldTokenApr:
         sql<number>`cast(sum(coalesce(${yieldAprSum.yieldValueSum},0)) /  count(${poolSnapshots.id}) as decimal)`.as(
-          "avgYieldTokenApr",
+          "avgYieldTokenApr"
         ),
       avgRewardTokenApr:
         sql<number>`cast(sum(coalesce(${rewardAprSum.rewardValueSum},0)) /  count(${poolSnapshots.id}) as decimal)`.as(
-          "avgRewardTokenApr",
+          "avgRewardTokenApr"
         ),
     })
     .from(poolSnapshots)
@@ -134,34 +134,34 @@ export async function fetchDataForDateRange({
       swapFeeApr,
       and(
         eq(poolSnapshots.poolExternalId, swapFeeApr.poolExternalId),
-        eq(poolSnapshots.timestamp, swapFeeApr.timestamp),
-      ),
+        eq(poolSnapshots.timestamp, swapFeeApr.timestamp)
+      )
     )
     .fullJoin(
       vebalApr,
       and(
         eq(vebalApr.poolExternalId, poolSnapshots.poolExternalId),
-        eq(vebalApr.timestamp, poolSnapshots.timestamp),
-      ),
+        eq(vebalApr.timestamp, poolSnapshots.timestamp)
+      )
     )
     .fullJoin(
       yieldAprSum,
       and(
         eq(yieldAprSum.poolExternalId, poolSnapshots.poolExternalId),
-        eq(yieldAprSum.timestamp, poolSnapshots.timestamp),
-      ),
+        eq(yieldAprSum.timestamp, poolSnapshots.timestamp)
+      )
     )
     .fullJoin(
       rewardAprSum,
       and(
         eq(rewardAprSum.poolExternalId, poolSnapshots.poolExternalId),
-        eq(rewardAprSum.timestamp, poolSnapshots.timestamp),
-      ),
+        eq(rewardAprSum.timestamp, poolSnapshots.timestamp)
+      )
     )
     .innerJoin(pools, eq(pools.externalId, poolSnapshots.poolExternalId))
     .innerJoin(
       poolTokens,
-      eq(poolTokens.poolExternalId, poolSnapshots.poolExternalId),
+      eq(poolTokens.poolExternalId, poolSnapshots.poolExternalId)
     )
     .innerJoin(tokensTable, eq(tokensTable.address, poolTokens.tokenAddress))
     .where(
@@ -176,14 +176,14 @@ export async function fetchDataForDateRange({
           : true) as SQLWrapper,
         (typesArray?.length
           ? inArray(pools.poolType, typesArray)
-          : true) as SQLWrapper,
-      ),
+          : true) as SQLWrapper
+      )
     )
     .groupBy(
       poolSnapshots.poolExternalId,
       pools.networkSlug,
       pools.symbol,
-      pools.poolType,
+      pools.poolType
     )
     .orderBy(orderBy)
     .having(gt(avgApr, 0))
@@ -203,17 +203,17 @@ export async function fetchDataForDateRange({
       tokensTable,
       and(
         eq(tokensTable.address, poolTokens.tokenAddress),
-        eq(tokensTable.networkSlug, poolTokens.networkSlug),
-      ),
+        eq(tokensTable.networkSlug, poolTokens.networkSlug)
+      )
     )
     .where(
       // @ts-expect-error
       orderedPoolAprForDate?.length
         ? inArray(
             poolTokens.poolExternalId,
-            orderedPoolAprForDate.map((p) => p.poolExternalId as string),
+            orderedPoolAprForDate.map((p) => p.poolExternalId as string)
           )
-        : true,
+        : true
     );
 
   const returnData = orderedPoolAprForDate.map((pool) => {

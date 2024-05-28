@@ -1,6 +1,6 @@
-import { Subgraph, SUBGRAPHS } from "@bleu-fi/gql/codegen";
-import uniswapV2Sdks from "@bleu-fi/gql/src/uniswap-v2";
-import { Network, networkFor } from "@bleu-fi/utils";
+import { Subgraph, SUBGRAPHS } from "@bleu/gql/codegen";
+import uniswapV2Sdks from "@bleu/gql/src/uniswap-v2";
+import { Network, networkFor } from "@bleu/utils";
 import { GraphQLClient } from "graphql-request";
 
 const clientFor = (client: Subgraph) => (chainId: string) => {

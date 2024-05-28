@@ -1,6 +1,6 @@
 "use client";
 
-import { Address, Network } from "@bleu-fi/utils";
+import { Address, Network } from "@bleu/utils";
 import {
   ArrowTopRightIcon,
   Pencil2Icon,
@@ -35,7 +35,7 @@ const Th = ({ className, children }: CellProps) => (
     scope="col"
     className={cn(
       "py-3.5 px-3 text-left text-sm font-semibold text-white",
-      className,
+      className
     )}
   >
     {children}

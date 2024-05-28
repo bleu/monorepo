@@ -1,20 +1,20 @@
-import { Subgraph, SUBGRAPHS } from "@bleu-fi/gql/codegen";
-import balancerSdks from "@bleu-fi/gql/src/balancer/index.server";
-import balancerApiV3Sdks from "@bleu-fi/gql/src/balancer-api-v3";
-import gaugesSdks from "@bleu-fi/gql/src/balancer-gauges/index.server";
-import poolMetadataSdks from "@bleu-fi/gql/src/balancer-pools-metadata/index.server";
+import { Subgraph, SUBGRAPHS } from "@bleu/gql/codegen";
+import balancerSdks from "@bleu/gql/src/balancer/index.server";
+import balancerApiV3Sdks from "@bleu/gql/src/balancer-api-v3";
+import gaugesSdks from "@bleu/gql/src/balancer-gauges/index.server";
+import poolMetadataSdks from "@bleu/gql/src/balancer-pools-metadata/index.server";
 import {
   Address,
   DELEGATE_OWNER,
   Network,
   networkFor,
   networkMultisigs,
-} from "@bleu-fi/utils";
+} from "@bleu/utils";
 import { GraphQLClient } from "graphql-request";
 
 export function impersonateWhetherDAO(
   chainId: string,
-  address: Address | undefined,
+  address: Address | undefined
 ) {
   const network = networkFor(chainId);
 
@@ -50,7 +50,7 @@ export const poolsMetadata = {
   client: clientFor(Subgraph.BalancerPoolsMetadata),
   gql: (chainId: number | string) =>
     poolMetadataSdks[networkFor(chainId)](
-      poolsMetadata.client(String(chainId)),
+      poolsMetadata.client(String(chainId))
     ),
 };
 

@@ -1,4 +1,4 @@
-import { Address } from "@bleu-fi/utils";
+import { Address } from "@bleu/utils";
 
 import { ChainId } from "#/utils/chainsPublicClients";
 
@@ -26,7 +26,7 @@ export interface ICowOrder {
 
 export async function getCowOrders(
   userAddress: Address,
-  chainId: ChainId,
+  chainId: ChainId
 ): Promise<ICowOrder[]> {
   const url = COW_API_URL_BY_CHAIN_ID[chainId];
 

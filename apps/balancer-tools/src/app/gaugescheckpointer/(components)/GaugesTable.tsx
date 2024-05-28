@@ -1,6 +1,6 @@
 "use client";
-import { NetworkChainId, NetworkFromNetworkChainId } from "@bleu-fi/utils";
-import { formatNumber } from "@bleu-fi/utils/formatNumber";
+import { NetworkChainId, NetworkFromNetworkChainId } from "@bleu/utils";
+import { formatNumber } from "@bleu/utils/formatNumber";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import { capitalize } from "lodash";
 import Link from "next/link";
@@ -40,7 +40,7 @@ export function GaugesTable({
   }
 
   const gaugeItemsSortedByBalToMint = gaugeItems.sort(
-    (a, b) => (b.balToMint || 0) - (a.balToMint || 0),
+    (a, b) => (b.balToMint || 0) - (a.balToMint || 0)
   );
 
   return (

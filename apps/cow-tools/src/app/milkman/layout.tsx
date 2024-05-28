@@ -22,7 +22,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {children}
         </div>
         <Footer
-          githubLink="https://github.com/bleu-fi"
+          githubLink="https://github.com/bleu"
           discordLink="https://discord.gg/Z78vQvmHN2"
         />
       </div>

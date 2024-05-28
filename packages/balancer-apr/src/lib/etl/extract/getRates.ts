@@ -1,4 +1,4 @@
-import { dateToEpoch } from "@bleu-fi/utils/date";
+import { dateToEpoch } from "@bleu/utils/date";
 import { logIfVerbose } from "lib/logIfVerbose";
 import pThrottle from "p-throttle";
 import { Address, getContract } from "viem";
@@ -21,7 +21,7 @@ const throttle = pThrottle({
 });
 
 export const getRates = async (
-  rateProviderAddressBlocksTuples: [Address, string, number, Date][],
+  rateProviderAddressBlocksTuples: [Address, string, number, Date][]
 ) => {
   if (rateProviderAddressBlocksTuples.length === 0) return [];
 
@@ -50,8 +50,8 @@ export const getRates = async (
             } else if (message.includes(`returned no data ("0x")`)) {
               logIfVerbose(
                 `${network}:${block}(${dateToEpoch(
-                  timestamp,
-                )}):${address}.getRate - error: returned no data ("0x")`,
+                  timestamp
+                )}):${address}.getRate - error: returned no data ("0x")`
               );
               return null;
             } else if (
@@ -59,30 +59,30 @@ export const getRates = async (
             ) {
               logIfVerbose(
                 `${network}:${block}(${dateToEpoch(
-                  timestamp,
-                )}):${address}.getRate - error: The contract function "getRate" reverted`,
+                  timestamp
+                )}):${address}.getRate - error: The contract function "getRate" reverted`
               );
               return null;
             } else if (
               message.includes(
-                `Cannot decode zero data ("0x") with ABI parameters.`,
+                `Cannot decode zero data ("0x") with ABI parameters.`
               )
             ) {
               logIfVerbose(
                 `${network}:${block}(${dateToEpoch(
-                  timestamp,
-                )}):${address}.getRate - error: Cannot decode zero data ("0x") with ABI parameters.`,
+                  timestamp
+                )}):${address}.getRate - error: Cannot decode zero data ("0x") with ABI parameters.`
               );
               return null;
             }
             logIfVerbose(
-              `Error getting rate for ${address} on ${network}:${block}: ${message}`,
+              `Error getting rate for ${address} on ${network}:${block}: ${message}`
             );
             return null;
           }
         })();
-      },
-    ),
+      }
+    )
   );
 
   return responses.map((response, index) => {

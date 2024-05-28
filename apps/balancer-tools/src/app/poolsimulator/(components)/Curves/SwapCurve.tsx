@@ -1,6 +1,6 @@
 "use client";
 
-import { formatNumber } from "@bleu-fi/utils/formatNumber";
+import { formatNumber } from "@bleu/utils/formatNumber";
 import { PlotType } from "plotly.js";
 
 import Plot from "#/components/Plot";
@@ -42,7 +42,7 @@ export function SwapCurve({
     amountIn: number,
     tokenIn: string,
     amountOut: number,
-    tokenOut: string,
+    tokenOut: string
   ) => {
     const formattedAmountIn = formatNumber(amountIn, 2);
     const formattedAmountOut = formatNumber(amountOut, 2);
@@ -54,7 +54,7 @@ export function SwapCurve({
     y: number[],
     legendGroup: string,
     showlegend = true,
-    hovertemplate: string[],
+    hovertemplate: string[]
   ) => {
     return {
       x,
@@ -71,7 +71,7 @@ export function SwapCurve({
   const createLimitPointDataObject = (
     x: number[],
     y: number[],
-    legendGroup: string,
+    legendGroup: string
   ) => {
     return {
       x,
@@ -89,7 +89,7 @@ export function SwapCurve({
   const createBetaRegionDataObject = (
     x_points: number[],
     y_points: number[],
-    legendGroup: string,
+    legendGroup: string
   ) => {
     const x = [x_points[0], x_points[1], x_points[1], x_points[0], x_points[0]];
     const y = [y_points[0], y_points[0], y_points[1], y_points[1], y_points[0]];
@@ -118,9 +118,9 @@ export function SwapCurve({
           amount,
           analysisTokenSymbol,
           -initialAmounts.pairTokenOut[index],
-          currentTabTokenSymbol,
-        ),
-      ),
+          currentTabTokenSymbol
+        )
+      )
     ),
     createDataObject(
       customAmounts.analysisTokenIn,
@@ -132,9 +132,9 @@ export function SwapCurve({
           amount,
           analysisTokenSymbol,
           -customAmounts.pairTokenOut[index],
-          currentTabTokenSymbol,
-        ),
-      ),
+          currentTabTokenSymbol
+        )
+      )
     ),
     createDataObject(
       initialAmounts.analysisTokenOut,
@@ -146,9 +146,9 @@ export function SwapCurve({
           initialAmounts.pairTokenIn[index],
           currentTabTokenSymbol,
           -amount,
-          analysisTokenSymbol,
-        ),
-      ),
+          analysisTokenSymbol
+        )
+      )
     ),
     createDataObject(
       customAmounts.analysisTokenOut,
@@ -160,9 +160,9 @@ export function SwapCurve({
           customAmounts.pairTokenIn[index],
           currentTabTokenSymbol,
           -amount,
-          analysisTokenSymbol,
-        ),
-      ),
+          analysisTokenSymbol
+        )
+      )
     ),
   ];
 
@@ -178,9 +178,9 @@ export function SwapCurve({
               amount.analysisTokenIn.slice(-1)[0],
             ],
             [amount.pairTokenIn.slice(-1)[0], amount.pairTokenOut.slice(-1)[0]],
-            legends[index],
+            legends[index]
           )
-        : INVISIBLE_TRACE, // Used to not mixup the traces colors
+        : INVISIBLE_TRACE // Used to not mixup the traces colors
     );
   });
 
@@ -190,9 +190,9 @@ export function SwapCurve({
         ? createBetaRegionDataObject(
             amount.betaLimits.analysis,
             amount.betaLimits.pair,
-            legends[index],
+            legends[index]
           )
-        : INVISIBLE_TRACE, // Used to not mixup the traces colors
+        : INVISIBLE_TRACE // Used to not mixup the traces colors
     );
   });
 
@@ -205,19 +205,19 @@ export function SwapCurve({
   }) {
     const initialAxisToken = findTokenBySymbol(
       initialData.tokens,
-      axisBalanceSymbol,
+      axisBalanceSymbol
     );
     const customAxisToken = findTokenBySymbol(
       customData.tokens,
-      axisBalanceSymbol,
+      axisBalanceSymbol
     );
     const initialOppositeAxisToken = findTokenBySymbol(
       initialData.tokens,
-      oppositeAxisBalanceSymbol,
+      oppositeAxisBalanceSymbol
     );
     const customOppositeAxisToken = findTokenBySymbol(
       customData.tokens,
-      oppositeAxisBalanceSymbol,
+      oppositeAxisBalanceSymbol
     );
     const axisBalances = [
       initialAxisToken?.balance || 0,
@@ -227,7 +227,7 @@ export function SwapCurve({
     const convertBalanceScale = (
       balance?: number,
       balanceRate?: number,
-      newRate?: number,
+      newRate?: number
     ) => {
       if (!balance || !balanceRate || !newRate) return 0;
       return (balance * balanceRate) / newRate;
@@ -237,12 +237,12 @@ export function SwapCurve({
       convertBalanceScale(
         initialOppositeAxisToken?.balance,
         initialOppositeAxisToken?.rate,
-        initialAxisToken?.rate,
+        initialAxisToken?.rate
       ),
       convertBalanceScale(
         customOppositeAxisToken?.balance,
         customOppositeAxisToken?.rate,
-        customAxisToken?.rate,
+        customAxisToken?.rate
       ),
     ];
 

@@ -1,9 +1,8 @@
-import { TokenBalance } from "@gnosis.pm/safe-apps-sdk";
 import useSWR from "swr";
 import { Address } from "viem";
 
 import { fetchTokenUsdPrice, fetchWalletTokenBalance } from "#/lib/tokenUtils";
-import { IToken, PRICE_ORACLES, PriceOracleData } from "#/lib/types";
+import { ICowAmm, IToken } from "#/lib/types";
 import { ChainId } from "#/utils/chainsPublicClients";
 
 // Constants
@@ -40,7 +39,7 @@ export async function gql<T>(
   endpoint: string,
   query: string,
   variables = {},
-  headers = {}
+  headers = {},
 ): Promise<T> {
   const defaultHeaders = {
     "Content-Type": "application/json",
@@ -60,7 +59,7 @@ export async function gql<T>(
 
   if (!response.ok) {
     throw new Error(
-      `GraphQL query failed with status ${response.status}: ${response.statusText}`
+      `GraphQL query failed with status ${response.status}: ${response.statusText}`,
     );
   }
 
@@ -73,24 +72,6 @@ export async function gql<T>(
 }
 
 // Interfaces
-export interface ICowStandaloneAmm {
-  token0: TokenBalance & {
-    externalUsdPrice: number;
-    externalUsdValue: number;
-  };
-  token1: TokenBalance & {
-    externalUsdPrice: number;
-    externalUsdValue: number;
-  };
-  totalUsdValue: number;
-  minTradedToken0: number;
-  priceOracle: PRICE_ORACLES;
-  priceOracleData: PriceOracleData;
-  handler: Address;
-  disabled: boolean;
-  priceOracleAddress: Address;
-}
-
 interface AmmQueryI {
   data: {
     constantProductData: {
@@ -105,8 +86,8 @@ interface AmmQueryI {
         symbol: string;
       };
       minTradedToken0: number;
-      priceOracle: PRICE_ORACLES;
-      priceOracleData: PriceOracleData;
+      priceOracle: Address;
+      priceOracleData: `0x${string}`;
       order: {
         handler: Address;
         chainId: ChainId;
@@ -212,7 +193,7 @@ export function useStandaloneAMM(ammId: Address) {
           token1SubgraphData,
         ]
       : null,
-    getBalancesFromContract
+    getBalancesFromContract,
   );
 
   const {
@@ -223,7 +204,7 @@ export function useStandaloneAMM(ammId: Address) {
     token0SubgraphData && token1SubgraphData && chainId
       ? ["prices", chainId, token0SubgraphData, token1SubgraphData]
       : null,
-    getTokensExternalPrices
+    getTokensExternalPrices,
   );
 
   if (
@@ -244,16 +225,16 @@ export function useStandaloneAMM(ammId: Address) {
   const token0 = {
     ...token0SubgraphData,
     balance: balancesData.token0.balance,
-    externalUsdPrice: pricesData.token0.externalUsdPrice,
-    externalUsdValue:
+    usdPrice: pricesData.token0.externalUsdPrice,
+    usdValue:
       Number(balancesData.token0.balance) * pricesData.token0.externalUsdPrice,
   };
 
   const token1 = {
     ...token1SubgraphData,
     balance: balancesData.token1.balance,
-    externalUsdPrice: pricesData.token1.externalUsdPrice,
-    externalUsdValue:
+    usdPrice: pricesData.token1.externalUsdPrice,
+    usdValue:
       Number(balancesData.token1.balance) * pricesData.token1.externalUsdPrice,
   };
 
@@ -265,12 +246,13 @@ export function useStandaloneAMM(ammId: Address) {
     data: {
       token0,
       token1,
-      totalUsdValue: token0.externalUsdValue + token1.externalUsdValue,
+      totalUsdValue: token0.usdValue + token1.usdValue,
       minTradedToken0: subgraphData.data.constantProductData.minTradedToken0,
-      handler: subgraphData.data.constantProductData.order.handler,
       disabled: subgraphData.data.constantProductData.disabled,
-      priceOracle: subgraphData.data.constantProductData.priceOracle,
-      priceOracleData: subgraphData.data.constantProductData.priceOracleData,
-    },
+      priceOracleAddress: subgraphData.data.constantProductData
+        .priceOracle as Address,
+      priceOracleData: subgraphData.data.constantProductData
+        .priceOracleData as `0x${string}`,
+    } as ICowAmm,
   };
 }

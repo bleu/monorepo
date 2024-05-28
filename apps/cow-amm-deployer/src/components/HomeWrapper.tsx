@@ -24,7 +24,7 @@ export async function gql(
   endpoint: string,
   query: string,
   variables = {},
-  headers = {}
+  headers = {},
 ) {
   console.log(`Running GraphQL query on ${endpoint}`);
 
@@ -46,7 +46,7 @@ export async function gql(
     if (!response.ok) {
       console.log("response", response);
       throw new Error(
-        `GraphQL query failed with status ${response.status}: ${response.statusText}`
+        `GraphQL query failed with status ${response.status}: ${response.statusText}`,
       );
     }
 
@@ -93,25 +93,14 @@ query($userId: String!) {
 
 const API_URL = "http://localhost:42069";
 
-export function HomeWrapper({
-  isAmmRunning,
-  goToSafe = false,
-}: {
-  isAmmRunning: boolean;
-  goToSafe?: boolean;
-}) {
-  const href = isAmmRunning ? "/manager" : "/new";
-  const title = goToSafe
-    ? "Open App in Safe"
-    : isAmmRunning
-      ? "Manage your CoW AMM"
-      : "Create a CoW AMM";
+export function HomeWrapper({ goToSafe = false }: { goToSafe?: boolean }) {
+  const title = goToSafe ? "Open App in Safe" : "Create a CoW AMM";
 
   const { safe } = useSafeAppsSDK();
   const userId = `${safe.safeAddress}-${safe.chainId}`;
 
   const { data } = useSWR(CREATED_AMMS_FOR_USER_QUERY, (query) =>
-    gql(API_URL, query, { userId })
+    gql(API_URL, query, { userId }),
   );
 
   const rows = (data?.data?.constantProductDatas?.items ?? []).map(
@@ -123,7 +112,7 @@ export function HomeWrapper({
       state: item.disabled ? "Stopped" : "Running",
       link: `/amms/${item.id}`,
       createdAt: new Date(item.order.blockTimestamp * 1000),
-    })
+    }),
   );
 
   return (
@@ -148,7 +137,7 @@ export function HomeWrapper({
           href={
             goToSafe
               ? `https://app.safe.global/share/safe-app?appUrl=https%3A%2F%2Fdeploy-cow-amm.bleu.fi%2F&chain=eth`
-              : href
+              : "/new"
           }
           content={
             <Button

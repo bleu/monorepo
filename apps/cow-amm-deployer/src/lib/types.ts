@@ -1,4 +1,3 @@
-import { TokenBalance } from "@gnosis.pm/safe-apps-sdk";
 import { Address } from "viem";
 
 export enum PRICE_ORACLES {
@@ -15,6 +14,12 @@ export interface IToken {
   decimals: number;
 }
 
+export interface ITokenExtended extends IToken {
+  balance: string;
+  usdPrice: number;
+  usdValue: number;
+}
+
 export interface PriceOracleData {
   balancerPoolId?: `0x${string}`;
   uniswapV2PairAddress?: Address;
@@ -26,18 +31,11 @@ export interface PriceOracleData {
   customPriceOracleData?: `0x${string}`;
 }
 export interface ICowAmm {
-  token0: TokenBalance & {
-    externalUsdPrice: number;
-    externalUsdValue: number;
-  };
-  token1: TokenBalance & {
-    externalUsdPrice: number;
-    externalUsdValue: number;
-  };
+  token0: ITokenExtended;
+  token1: ITokenExtended;
   totalUsdValue: number;
   minTradedToken0: number;
-  priceOracle: PRICE_ORACLES;
-  priceOracleData: PriceOracleData;
-  hash: `0x${string}`;
+  priceOracleData: `0x${string}`;
   priceOracleAddress: Address;
+  disabled: boolean;
 }

@@ -10,7 +10,7 @@ import { TokenInfo } from "./TokenInfo";
 
 export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
   const anyTokenWithoutUsdPrice =
-    !cowAmm.token0.externalUsdPrice || !cowAmm.token1.externalUsdPrice;
+    !cowAmm.token0.usdPrice || !cowAmm.token1.usdPrice;
   return (
     <Table
       color="foreground"
@@ -27,7 +27,7 @@ export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
       <Table.Body>
         {[cowAmm.token0, cowAmm.token1].map((token) => {
           const valuePct =
-            (Number(token.externalUsdValue) * 100) / cowAmm.totalUsdValue;
+            (Number(token.usdValue) * 100) / cowAmm.totalUsdValue;
           return (
             // @ts-ignore
             <Table.BodyRow key={token.address}>
@@ -44,8 +44,8 @@ export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
               <Table.BodyCell>{formatNumber(token.balance, 4)}</Table.BodyCell>
               <Table.BodyCell>
                 <div className="flex items-center flex-row gap-2">
-                  <>$ {formatNumber(token.externalUsdPrice, 4)} </>
-                  {!token.externalUsdPrice && <PriceErrorTooltip />}
+                  <>$ {formatNumber(token.usdPrice, 4)} </>
+                  {!token.usdPrice && <PriceErrorTooltip />}
                 </div>
               </Table.BodyCell>
               <Table.BodyCell>
@@ -53,14 +53,14 @@ export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
                   <>
                     ${" "}
                     {formatNumber(
-                      token.externalUsdValue,
+                      token.usdValue,
                       2,
                       "decimal",
                       "compact",
-                      0.01
+                      0.01,
                     )}
                   </>
-                  {!token.externalUsdPrice && <PriceErrorTooltip />}
+                  {!token.usdPrice && <PriceErrorTooltip />}
                 </div>
               </Table.BodyCell>
               <Table.BodyCell>
@@ -69,7 +69,7 @@ export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
                     {anyTokenWithoutUsdPrice ? "-" : formatNumber(valuePct, 2)}{" "}
                     {valuePct && !anyTokenWithoutUsdPrice ? "%" : ""}
                   </>
-                  {!token.externalUsdPrice && <PriceErrorTooltip />}
+                  {!token.usdPrice && <PriceErrorTooltip />}
                 </div>
               </Table.BodyCell>
             </Table.BodyRow>

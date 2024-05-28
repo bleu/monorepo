@@ -8,11 +8,9 @@ import {
   ResetIcon,
 } from "@radix-ui/react-icons";
 import Link from "next/link";
-import { useState } from "react";
 import { Address } from "viem";
 
 import { Button } from "#/components/Button";
-import { Dialog } from "#/components/Dialog";
 import { Spinner } from "#/components/Spinner";
 import { UnsuportedChain } from "#/components/UnsuportedChain";
 import WalletNotConnected from "#/components/WalletNotConnected";
@@ -23,14 +21,10 @@ import { ChainId, supportedChainIds } from "#/utils/chainsPublicClients";
 import { PoolCompositionTable } from "./(components)/PoolCompositionTable";
 import { PriceInformation } from "./(components)/PriceInformation";
 
-export default function Page({ params }: { params: { id: Address } }) {
+export default function Page({ params }: { params: { id: `0x${string}` } }) {
   const { data: cowAmm, loading } = useStandaloneAMM(params.id);
 
-  // const router = useRouter()
-  // const { sendTransactions } = useRawTxData();
   const { safe, connected } = useSafeAppsSDK();
-  // const { loaded, cowAmm } = useRunningAMM();
-  const [openDialog, setOpenDialog] = useState(false);
 
   if (!connected) {
     return <WalletNotConnected />;
@@ -46,37 +40,6 @@ export default function Page({ params }: { params: { id: Address } }) {
 
   return (
     <div className="flex w-full justify-center">
-      <Dialog
-        content={
-          <div className="flex flex-col gap-3">
-            <span className="text-primary-foreground">
-              Clicking confirm will make the CoW AMM LP position created stop.
-              This means that the position will no longer be actively
-              rebalanced. Don't worry, the tokens will stay on your Safe Wallet.
-            </span>
-            <Button
-              className="text-center gap-1 py-3 px-6"
-              variant="destructive"
-              // onClick={async () => {
-              //   setOpenDialog(false);
-              //   await sendTransactions([
-              //     {
-              //       type: TRANSACTION_TYPES.STOP_COW_AMM,
-              //       chainId: safe.chainId as ChainId,
-              //     },
-              //   ]).then(() => {
-              //     router.push("/stoptxprocessing");
-              //   });
-              // }}
-            >
-              Confirm
-            </Button>
-          </div>
-        }
-        title="Stop CoW AMM Confirmation"
-        isOpen={openDialog}
-        setIsOpen={setOpenDialog}
-      />
       <div className="my-10 flex w-9/12 flex-col gap-y-5 justify-center">
         <div className="flex items-center justify-between gap-x-8">
           <div className="flex flex-col gap-1">
@@ -96,7 +59,7 @@ export default function Page({ params }: { params: { id: Address } }) {
                 2,
                 "decimal",
                 "compact",
-                0.01
+                0.01,
               )}
             </span>
           </div>
@@ -112,7 +75,7 @@ export default function Page({ params }: { params: { id: Address } }) {
                 buildAccountCowExplorerUrl({
                   chainId: safe.chainId as ChainId,
                   address: safe.safeAddress as Address,
-                })
+                }),
               )
             }
             rel="noreferrer noopener"
@@ -122,27 +85,17 @@ export default function Page({ params }: { params: { id: Address } }) {
             <ArrowTopRightIcon className="hover:text-primary" />
           </Link>
         </div>
-        {/* @ts-ignore */}
         <PoolCompositionTable cowAmm={cowAmm} />
         <div className="flex gap-4 items-center ">
           <Button
             className="flex items-center gap-1 py-3 px-6 "
             variant="destructive"
-            // disabled={!isAmmFromModule}
-            onClick={() => {
-              setOpenDialog(true);
-            }}
+            disabled
           >
             <ResetIcon />
             Stop CoW AMM LP
           </Button>
-          <Button
-            className="flex items-center gap-1 py-3 px-6"
-            // onClick={() => {
-            //   router.push("/new");
-            // }}
-            // disabled={!isAmmFromModule}
-          >
+          <Button className="flex items-center gap-1 py-3 px-6" disabled>
             <Pencil2Icon />
             Edit CoW AMM LP parameters
           </Button>

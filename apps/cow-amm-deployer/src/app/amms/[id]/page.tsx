@@ -8,6 +8,7 @@ import {
   ResetIcon,
 } from "@radix-ui/react-icons";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Address } from "viem";
 
 import { Button } from "#/components/Button";
@@ -23,6 +24,7 @@ import { PriceInformation } from "./(components)/PriceInformation";
 
 export default function Page({ params }: { params: { id: `0x${string}` } }) {
   const { data: cowAmm, loading } = useStandaloneAMM(params.id);
+  const router = useRouter();
 
   const { safe, connected } = useSafeAppsSDK();
 
@@ -59,7 +61,7 @@ export default function Page({ params }: { params: { id: `0x${string}` } }) {
                 2,
                 "decimal",
                 "compact",
-                0.01
+                0.01,
               )}
             </span>
           </div>
@@ -75,7 +77,7 @@ export default function Page({ params }: { params: { id: `0x${string}` } }) {
                 buildAccountCowExplorerUrl({
                   chainId: safe.chainId as ChainId,
                   address: safe.safeAddress as Address,
-                })
+                }),
               )
             }
             rel="noreferrer noopener"
@@ -98,6 +100,14 @@ export default function Page({ params }: { params: { id: `0x${string}` } }) {
           <Button className="flex items-center gap-1 py-3 px-6" disabled>
             <Pencil2Icon />
             Edit CoW AMM LP parameters
+          </Button>
+          <Button
+            className="flex items-center gap-1 py-3 px-6"
+            onClick={() => {
+              router.push(`/amms/${params.id}/withdraw`);
+            }}
+          >
+            Withdraw
           </Button>
         </div>
       </div>

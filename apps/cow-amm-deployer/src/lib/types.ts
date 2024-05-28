@@ -34,7 +34,7 @@ export interface ICowAmm {
   id: string;
   token0: ITokenExtended;
   token1: ITokenExtended;
-  handlerAddress: Address;
+  constantProductAddress: Address;
   totalUsdValue: number;
   minTradedToken0: number;
   priceOracleData: `0x${string}`;

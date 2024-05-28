@@ -6,7 +6,7 @@ import { createContext, useContext } from "react";
 const TableContext = createContext({});
 
 const predefinedClasses = {
-  gray: {
+  sand: {
     solid: {
       dark: { style: "bg-sand/90", border: "border-0" },
       darkWithBorder: {
@@ -15,11 +15,11 @@ const predefinedClasses = {
       },
     },
   },
-  brown: {
+  background: {
     solid: {
-      dark: { style: "bg-primary/90", border: "border-0" },
+      dark: { style: "bg-background/90", border: "border-0" },
       darkWithBorder: {
-        style: "bg-primary/90",
+        style: "bg-background/90",
         border: "border border-brown6",
       },
     },
@@ -36,8 +36,8 @@ const predefinedClasses = {
 } as const;
 
 type TableColor = keyof typeof predefinedClasses;
-type TableVariant = keyof typeof predefinedClasses.brown;
-type TableShade = keyof typeof predefinedClasses.brown.solid;
+type TableVariant = keyof typeof predefinedClasses.background;
+type TableShade = keyof typeof predefinedClasses.background.solid;
 
 function useTableContext() {
   const context = useContext(TableContext);
@@ -53,7 +53,7 @@ function useTableContext() {
 
 export default function Table({
   children,
-  color = "gray",
+  color = "sand",
   variant = "solid",
   shade = "dark",
   classNames,

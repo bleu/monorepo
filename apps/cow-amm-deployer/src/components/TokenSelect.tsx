@@ -111,6 +111,7 @@ export function TokenSelect({
                 No results found
               </CommandEmpty>
               {getTokenList(chainId as ChainId).map((token) => (
+                // @ts-ignore
                 <CommandItem
                   key={token.address}
                   value={token.symbol + token.address}
@@ -126,6 +127,7 @@ export function TokenSelect({
                 </CommandItem>
               ))}
               {isAddress(search) && (
+                // @ts-ignore
                 <CommandItem
                   key={search}
                   value={search}

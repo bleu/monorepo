@@ -72,6 +72,7 @@ export function AmmForm({
   const router = useRouter();
 
   const form = useForm<typeof ammFormSchema._type>({
+    // @ts-ignore
     resolver: zodResolver(ammFormSchema),
     defaultValues: {
       ...defaultValues,
@@ -253,7 +254,7 @@ function PriceOracleFields({
           <SelectInput
             name="priceOracle"
             options={Object.values(PRICE_ORACLES).map((value) => ({
-              id,
+              id: value,
               value,
             }))}
             onValueChange={(priceOracle) => {

@@ -71,11 +71,7 @@ export function WithdrawForm({ cowAmm }: { cowAmm: ICowAmm }) {
   const { withdrawPct } = form.watch();
 
   return (
-    <Form
-      {...form}
-      onSubmit={onSubmit}
-      className="flex flex-col gap-y-3 px-9 pb-9"
-    >
+    <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-3">
       <div className="flex flex-col w-full">
         <span className="mb-2 h-5 block">
           Withdraw percentage: {withdrawPct}%

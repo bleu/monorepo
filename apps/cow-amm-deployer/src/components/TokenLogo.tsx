@@ -26,7 +26,7 @@ export const cowTokenListLogoUrl = (address?: string, chainId?: ChainId) => {
   return cowTokenList.find(
     (token) =>
       token.chainId === chainId &&
-      token.address.toLowerCase() === address?.toLowerCase()
+      token.address.toLowerCase() === address?.toLowerCase(),
   )?.logoURI;
 };
 

@@ -38,7 +38,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                 2,
                 "decimal",
                 "compact",
-                0.01
+                0.01,
               )}
             </span>
           </div>
@@ -54,7 +54,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                 buildAccountCowExplorerUrl({
                   chainId: ammData.order.chainId as ChainId,
                   address: ammData.order.owner as Address,
-                })
+                }),
               )
             }
             rel="noreferrer noopener"

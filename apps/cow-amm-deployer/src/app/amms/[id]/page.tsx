@@ -53,7 +53,7 @@ export default async function Page({ params }: { params: { id: string } }) {
               new URL(
                 buildAccountCowExplorerUrl({
                   chainId: ammData.order.chainId as ChainId,
-                  address: ammData.order.handler as Address,
+                  address: ammData.order.owner as Address,
                 })
               )
             }

@@ -1,4 +1,4 @@
-import { Address } from "@bleu-fi/utils";
+import { Address } from "@bleu/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import {
   getTransactionDetails,

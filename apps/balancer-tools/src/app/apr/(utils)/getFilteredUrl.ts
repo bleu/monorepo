@@ -1,6 +1,6 @@
-import { Pool } from "@bleu-fi/balancer-apr/src/lib/balancer/gauges";
-import { networkFor } from "@bleu-fi/utils";
-import { formatDateToMMDDYYYY } from "@bleu-fi/utils/date";
+import { Pool } from "@bleu/balancer-apr/src/lib/balancer/gauges";
+import { networkFor } from "@bleu/utils";
+import { formatDateToMMDDYYYY } from "@bleu/utils/date";
 
 import { SearchParams } from "../page";
 

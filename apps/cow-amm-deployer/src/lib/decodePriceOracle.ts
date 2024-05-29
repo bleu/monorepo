@@ -4,7 +4,7 @@ import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 
 import { uniswapV2PairAbi } from "./abis/uniswapV2Pair";
 import { UNISWAP_V2_FACTORY_ADDRESS } from "./contracts";
-import { PRICE_ORACLES, PriceOracleData } from "./types";
+import { PRICE_ORACLES, PriceOracleData, PriceOraclesValue } from "./types";
 
 export async function decodePriceOracleWithData({
   address,
@@ -14,7 +14,7 @@ export async function decodePriceOracleWithData({
   address: Address;
   priceOracleData: `0x${string}`;
   chainId: ChainId;
-}): Promise<[PRICE_ORACLES, PriceOracleData]> {
+}): Promise<[PriceOraclesValue, PriceOracleData]> {
   const lowerCaseAddress = address.toLowerCase();
   const publicClient = publicClientsFromIds[chainId];
 

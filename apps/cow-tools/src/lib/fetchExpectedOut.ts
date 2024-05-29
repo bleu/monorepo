@@ -1,4 +1,4 @@
-import { Address } from "@bleu-fi/utils";
+import { Address } from "@bleu/utils";
 import { FieldValues } from "react-hook-form";
 
 import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";

@@ -1,5 +1,5 @@
 import { toast } from "@bleu/ui";
-import { Address } from "@bleu-fi/utils";
+import { Address } from "@bleu/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { brownDark } from "@radix-ui/colors";
@@ -23,10 +23,11 @@ import {
 import { Form, FormMessage } from "#/components/ui/form";
 import { Label } from "#/components/ui/label";
 import { useRawTxData } from "#/hooks/useRawTxData";
+import { IToken } from "#/lib/fetchAmmData";
 import { ammFormSchema } from "#/lib/schema";
 import { fetchTokenUsdPrice } from "#/lib/tokenUtils";
 import { buildTxAMMArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
-import { IToken, PRICE_ORACLES } from "#/lib/types";
+import { PRICE_ORACLES, PriceOraclesValue } from "#/lib/types";
 import { cn } from "#/lib/utils";
 import { ChainId } from "#/utils/chainsPublicClients";
 
@@ -71,6 +72,7 @@ export function AmmForm({
   const router = useRouter();
 
   const form = useForm<typeof ammFormSchema._type>({
+    // @ts-ignore
     resolver: zodResolver(ammFormSchema),
     defaultValues: {
       ...defaultValues,
@@ -108,11 +110,7 @@ export function AmmForm({
   }, [safeAddress, setValue]);
 
   return (
-    <Form
-      {...form}
-      onSubmit={onSubmit}
-      className="flex flex-col gap-y-3 px-9 pb-9"
-    >
+    <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-3">
       <div className="flex h-fit justify-between gap-x-7">
         <div className="w-full flex flex-col">
           <div className="flex flex-col w-full">
@@ -130,12 +128,8 @@ export function AmmForm({
                 );
               }}
               selectedToken={(formData?.token0 as IToken) ?? undefined}
+              errorMessage={errors.token0?.message}
             />
-            {errors.token0 && (
-              <FormMessage className="mt-1 h-6 text-sm text-destructive">
-                <span>{errors.token0.message}</span>
-              </FormMessage>
-            )}
           </div>
         </div>
         <div className="flex flex-col w-full">
@@ -152,12 +146,8 @@ export function AmmForm({
                 });
               }}
               selectedToken={(formData?.token1 as IToken) ?? undefined}
+              errorMessage={errors.token1?.message}
             />
-            {errors.token1 && (
-              <FormMessage className="mt-1 h-6 text-sm text-destructive">
-                <span>{errors.token1.message}</span>
-              </FormMessage>
-            )}
           </div>
         </div>
       </div>
@@ -268,7 +258,7 @@ function PriceOracleFields({
               value,
             }))}
             onValueChange={(priceOracle) => {
-              setValue("priceOracle", priceOracle as PRICE_ORACLES);
+              setValue("priceOracle", priceOracle as PriceOraclesValue);
             }}
             placeholder={priceOracle}
           />

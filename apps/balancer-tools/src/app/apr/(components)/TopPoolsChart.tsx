@@ -1,6 +1,6 @@
 "use client";
 
-import { formatDate } from "@bleu-fi/utils";
+import { formatDate } from "@bleu/utils";
 import { greenDarkA } from "@radix-ui/colors";
 import { useRouter } from "next/navigation";
 import { Data, PlotMouseEvent, PlotType } from "plotly.js";

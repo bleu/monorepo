@@ -1,4 +1,4 @@
-import { Address, buildBlockExplorerTxUrl } from "@bleu-fi/utils";
+import { Address, buildBlockExplorerTxUrl } from "@bleu/utils";
 import { Chain } from "wagmi";
 
 import { useInternalBalance } from "#/contexts/InternalManagerContext";

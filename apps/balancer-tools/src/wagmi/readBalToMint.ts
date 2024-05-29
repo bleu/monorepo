@@ -1,4 +1,4 @@
-import { VeBalGetVotingListQuery } from "@bleu-fi/gql/src/balancer-api-v3/__generated__/Ethereum";
+import { VeBalGetVotingListQuery } from "@bleu/gql/src/balancer-api-v3/__generated__/Ethereum";
 import { readContract } from "@wagmi/core";
 
 import { apiChainNameToGaugeType } from "#/lib/gauge-checkpointer-mappings";

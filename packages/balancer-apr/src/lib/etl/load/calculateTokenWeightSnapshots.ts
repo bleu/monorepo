@@ -1,4 +1,4 @@
-import { dateToEpoch } from "@bleu-fi/utils/date";
+import { dateToEpoch } from "@bleu/utils/date";
 import { and, eq, gt, isNotNull, sql, sum } from "drizzle-orm";
 import { addToTable } from "lib/db/addToTable";
 

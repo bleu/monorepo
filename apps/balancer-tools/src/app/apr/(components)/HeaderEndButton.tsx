@@ -1,7 +1,7 @@
 "use client";
 
-import { capitalize, networkIdFor, networksOnBalancer } from "@bleu-fi/utils";
-import { formatDateToMMDDYYYY, parseMMDDYYYYToDate } from "@bleu-fi/utils/date";
+import { capitalize, networkIdFor, networksOnBalancer } from "@bleu/utils";
+import { formatDateToMMDDYYYY, parseMMDDYYYYToDate } from "@bleu/utils/date";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import {
   useParams,

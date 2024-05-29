@@ -1,11 +1,11 @@
-import { db } from "@bleu-fi/balancer-apr/src/db";
+import { db } from "@bleu/balancer-apr/src/db";
 import {
   poolSnapshots,
   rewardsTokenApr,
   swapFeeApr,
   vebalApr,
   yieldTokenApr,
-} from "@bleu-fi/balancer-apr/src/db/schema";
+} from "@bleu/balancer-apr/src/db/schema";
 import { and, between, eq, sql } from "drizzle-orm";
 
 export async function fetchAvgDataForPoolIdDateRange(

@@ -1,5 +1,5 @@
-import { NetworkChainId, NetworkFromNetworkChainId } from "@bleu-fi/utils";
-import { formatNumber } from "@bleu-fi/utils/formatNumber";
+import { NetworkChainId, NetworkFromNetworkChainId } from "@bleu/utils";
+import { formatNumber } from "@bleu/utils/formatNumber";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { FieldValues, useForm } from "react-hook-form";

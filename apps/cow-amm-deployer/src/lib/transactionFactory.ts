@@ -20,10 +20,19 @@ export enum TRANSACTION_TYPES {
   CREATE_COW_AMM = "CREATE_COW_AMM",
   EDIT_COW_AMM = "EDIT_COW_AMM",
   STOP_COW_AMM = "STOP_COW_AMM",
+  WITHDRAW = "WITHDRAW_COW_AMM",
 }
 
 export interface BaseArgs {
   type: TRANSACTION_TYPES;
+}
+
+export interface withdrawCowAMMargs extends BaseArgs {
+  type: TRANSACTION_TYPES.WITHDRAW;
+  amm: Address;
+  amount0: bigint;
+  amount1: bigint;
+  chainId: ChainId;
 }
 
 export interface stopCowAmmArgs extends BaseArgs {
@@ -58,6 +67,25 @@ export interface ERC20ApproveArgs extends BaseArgs {
   tokenAddress: Address;
   spender: Address;
   amount: bigint;
+}
+
+class CoWAMMWithdrawRawTx implements ITransaction<withdrawCowAMMargs> {
+  createRawTx({
+    amm,
+    amount0,
+    amount1,
+    chainId,
+  }: withdrawCowAMMargs): BaseTransaction {
+    return {
+      to: COW_CONSTANT_PRODUCT_FACTORY[chainId],
+      value: "0",
+      data: encodeFunctionData({
+        abi: ConstantProductFactoryABI,
+        functionName: "withdraw",
+        args: [amm, amount0, amount1],
+      }),
+    };
+  }
 }
 class ERC20ApproveRawTx implements ITransaction<ERC20ApproveArgs> {
   createRawTx({
@@ -154,11 +182,11 @@ class CowAmmStopTx implements ITransaction<stopCowAmmArgs> {
   }
 }
 export interface TransactionBindings {
-  // [TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE]: enableCowAmmModuleArgs;
   [TRANSACTION_TYPES.ERC20_APPROVE]: ERC20ApproveArgs;
   [TRANSACTION_TYPES.CREATE_COW_AMM]: createCowAmmArgs;
   [TRANSACTION_TYPES.STOP_COW_AMM]: stopCowAmmArgs;
   [TRANSACTION_TYPES.EDIT_COW_AMM]: editCowAmmArgs;
+  [TRANSACTION_TYPES.WITHDRAW]: withdrawCowAMMargs;
 }
 
 export type AllTransactionArgs = TransactionBindings[keyof TransactionBindings];
@@ -168,11 +196,11 @@ const TRANSACTION_CREATORS: {
     TransactionBindings[key]
   >;
 } = {
-  // [TRANSACTION_TYPES.ENABLE_COW_AMM_MODULE]: CowAmmEnableModuleTx,
   [TRANSACTION_TYPES.ERC20_APPROVE]: ERC20ApproveRawTx,
   [TRANSACTION_TYPES.CREATE_COW_AMM]: CowAmmCreateTx,
   [TRANSACTION_TYPES.STOP_COW_AMM]: CowAmmStopTx,
   [TRANSACTION_TYPES.EDIT_COW_AMM]: CowAmmEditTx,
+  [TRANSACTION_TYPES.WITHDRAW]: CoWAMMWithdrawRawTx,
 };
 
 export class TransactionFactory {

@@ -1,4 +1,4 @@
-import { Address, buildBlockExplorerAddressURL } from "@bleu-fi/utils";
+import { Address, buildBlockExplorerAddressURL } from "@bleu/utils";
 import { ArrowTopRightIcon, InfoCircledIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { formatUnits } from "viem";

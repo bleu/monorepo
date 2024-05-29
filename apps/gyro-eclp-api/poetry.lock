@@ -186,7 +186,7 @@ develop = false
 
 [package.source]
 type = "git"
-url = "https://github.com/bleu-fi/concentrated-lps.git"
+url = "https://github.com/bleu/concentrated-lps.git"
 reference = "HEAD"
 resolved_reference = "2754ca75fbadb73f155d01ca19ff54f01573589c"
 

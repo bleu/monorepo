@@ -1,5 +1,5 @@
 "use client";
-import { Address } from "@bleu-fi/utils";
+import { Address } from "@bleu/utils";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import cn from "clsx";

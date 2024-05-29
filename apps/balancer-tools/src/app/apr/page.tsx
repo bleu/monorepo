@@ -1,4 +1,4 @@
-import { SECONDS_IN_DAY } from "@bleu-fi/utils/date";
+import { SECONDS_IN_DAY } from "@bleu/utils/date";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 

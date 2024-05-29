@@ -1,4 +1,4 @@
-import { dateToEpoch, SECONDS_IN_YEAR } from "@bleu-fi/utils/date";
+import { dateToEpoch, SECONDS_IN_YEAR } from "@bleu/utils/date";
 
 const INITIAL_RATE = 145000;
 const START_EPOCH_TIME = 1648465251;

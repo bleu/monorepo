@@ -1,10 +1,21 @@
 {
-  "extends": "@bleu-fi/tsconfig/nextjs.json",
+  "extends": "@bleu/tsconfig/nextjs.json",
   "compilerOptions": {
+    "strict": true,
     "baseUrl": ".",
     "paths": {
       "#/*": ["./src/*"]
-    }
+    },
+    "plugins": [
+      {
+        "name": "@0no-co/graphqlsp",
+        "schema": "http://localhost:42069",
+        "tadaOutputLocation": "graphql-env.d.ts"
+      },
+      {
+        "name": "next"
+      }
+    ]
   },
   "content": ["./src/**/*.{js,ts,jsx,tsx}"],
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

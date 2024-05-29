@@ -1,5 +1,5 @@
-import { buildBlockExplorerTxUrl } from "@bleu-fi/utils";
-import { formatDateToLocalDatetime } from "@bleu-fi/utils/date";
+import { buildBlockExplorerTxUrl } from "@bleu/utils";
+import { formatDateToLocalDatetime } from "@bleu/utils/date";
 import {
   ArrowTopRightIcon,
   ChevronDownIcon,

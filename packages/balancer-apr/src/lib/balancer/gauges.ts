@@ -1,4 +1,4 @@
-import { NetworkChainId } from "@bleu-fi/utils";
+import { NetworkChainId } from "@bleu/utils";
 
 import POOLS_WITHOUT_GAUGES from "./data/pools-without-gauge.json";
 import POOLS_WITH_GAUGES from "./data/voting-gauges.json";

@@ -1,4 +1,4 @@
-import { Address, Network, networkIdFor } from "@bleu-fi/utils";
+import { Address, Network, networkIdFor } from "@bleu/utils";
 
 import { pools, poolsMetadata } from "#/lib/gql/server";
 

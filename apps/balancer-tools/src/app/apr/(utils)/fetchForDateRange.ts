@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import { db } from "@bleu-fi/balancer-apr/src/db";
+import { db } from "@bleu/balancer-apr/src/db";
 import {
   pools,
   poolSnapshots,
@@ -10,7 +10,7 @@ import {
   tokens as tokensTable,
   vebalApr,
   yieldTokenApr,
-} from "@bleu-fi/balancer-apr/src/db/schema";
+} from "@bleu/balancer-apr/src/db/schema";
 import {
   and,
   asc,

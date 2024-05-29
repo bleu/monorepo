@@ -1,6 +1,6 @@
 "use client";
 
-import { formatDateToMMDDYYYY, SECONDS_IN_DAY } from "@bleu-fi/utils/date";
+import { formatDateToMMDDYYYY, SECONDS_IN_DAY } from "@bleu/utils/date";
 import {
   CheckIcon,
   ChevronDownIcon,

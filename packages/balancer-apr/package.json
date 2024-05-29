@@ -1,5 +1,5 @@
 {
-  "name": "@bleu-fi/balancer-apr",
+  "name": "@bleu/balancer-apr",
   "version": "0.0.0",
   "license": "MIT",
   "main": "src/index.ts",
@@ -14,8 +14,8 @@
     "build": "node get-pool-data.js"
   },
   "devDependencies": {
-    "@bleu-fi/tsconfig": "workspace:*",
-    "@bleu-fi/utils": "workspace:^",
+    "@bleu/tsconfig": "workspace:*",
+    "@bleu/utils": "workspace:^",
     "@types/node": "20.12.12",
     "@typescript-eslint/eslint-plugin": "^6.17.0",
     "@typescript-eslint/parser": "^6.17.0",

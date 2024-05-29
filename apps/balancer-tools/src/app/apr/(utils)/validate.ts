@@ -1,7 +1,7 @@
-import POOLS_WITHOUT_GAUGES from "@bleu-fi/balancer-apr/src/lib/balancer/data/pools-without-gauge.json";
-import POOLS_WITH_LIVE_GAUGES from "@bleu-fi/balancer-apr/src/lib/balancer/data/voting-gauges.json";
-import { Network, networksOnBalancer } from "@bleu-fi/utils";
-import { parseMMDDYYYYToDate } from "@bleu-fi/utils/date";
+import POOLS_WITHOUT_GAUGES from "@bleu/balancer-apr/src/lib/balancer/data/pools-without-gauge.json";
+import POOLS_WITH_LIVE_GAUGES from "@bleu/balancer-apr/src/lib/balancer/data/voting-gauges.json";
+import { Network, networksOnBalancer } from "@bleu/utils";
+import { parseMMDDYYYYToDate } from "@bleu/utils/date";
 import { z } from "zod";
 
 import { PoolTypeNames } from "./types";

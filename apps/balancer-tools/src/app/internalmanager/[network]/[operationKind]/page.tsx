@@ -1,6 +1,6 @@
 "use client";
 
-import { Address, Network, NetworkChainId, networkFor } from "@bleu-fi/utils";
+import { Address, Network, NetworkChainId, networkFor } from "@bleu/utils";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { useEffect } from "react";
 import { useAccount, useNetwork } from "wagmi";

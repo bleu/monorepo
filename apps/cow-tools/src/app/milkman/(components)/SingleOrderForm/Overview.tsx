@@ -1,5 +1,5 @@
-import { formatDateToLocalDatetime } from "@bleu-fi/utils/date";
-import { formatNumber } from "@bleu-fi/utils/formatNumber";
+import { formatDateToLocalDatetime } from "@bleu/utils/date";
+import { formatNumber } from "@bleu/utils/formatNumber";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { FieldValues, useForm } from "react-hook-form";

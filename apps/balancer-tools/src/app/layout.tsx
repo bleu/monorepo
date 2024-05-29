@@ -18,7 +18,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <body className="bg-blue2 flex h-full flex-col">
         <RootLayout>{children}</RootLayout>
         <Footer
-          githubLink="https://github.com/bleu-fi/"
+          githubLink="https://github.com/bleu/"
           discordLink="https://discord.balancer.fi/"
         />
       </body>

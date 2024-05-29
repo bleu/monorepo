@@ -1,6 +1,6 @@
 "use client";
 
-import POOLS_WITH_LIVE_GAUGES from "@bleu-fi/balancer-apr/src/lib/balancer/data/voting-gauges.json";
+import POOLS_WITH_LIVE_GAUGES from "@bleu/balancer-apr/src/lib/balancer/data/voting-gauges.json";
 import { ReactNode, useEffect, useLayoutEffect, useState } from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
 

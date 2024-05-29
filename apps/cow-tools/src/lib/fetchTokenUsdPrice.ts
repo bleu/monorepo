@@ -1,4 +1,4 @@
-import { Address } from "@bleu-fi/utils";
+import { Address } from "@bleu/utils";
 import { goerli, mainnet } from "viem/chains";
 
 import { ChainId } from "#/utils/chainsPublicClients";

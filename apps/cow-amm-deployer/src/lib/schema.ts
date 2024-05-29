@@ -1,4 +1,4 @@
-import { capitalize } from "@bleu-fi/utils";
+import { capitalize } from "@bleu/utils";
 import { Address, formatUnits, isAddress } from "viem";
 import { z } from "zod";
 
@@ -73,7 +73,7 @@ export const ammFormSchema = z
   )
   .refine(
     // validate if uniswap v2 pool address is required
-    // @ts-ignore
+
     (data) => {
       if (data.priceOracle === PRICE_ORACLES.UNI) {
         return !!data.uniswapV2Pair;
@@ -87,7 +87,7 @@ export const ammFormSchema = z
   )
   .refine(
     // validate if sushi v2 pool address is required
-    // @ts-ignore
+
     (data) => {
       if (data.priceOracle === PRICE_ORACLES.SUSHI) {
         return !!data.sushiV2Pair;
@@ -101,7 +101,7 @@ export const ammFormSchema = z
   )
   .refine(
     // validate if custom price oracle data is required
-    // @ts-ignore
+
     (data) => {
       if (data.priceOracle === PRICE_ORACLES.CUSTOM) {
         return !!data.customPriceOracleData;
@@ -115,7 +115,7 @@ export const ammFormSchema = z
   )
   .refine(
     // validate if chainlink oracle data is required
-    // @ts-ignore
+
     (data) => {
       if (data.priceOracle === PRICE_ORACLES.CHAINLINK) {
         return (
@@ -133,7 +133,7 @@ export const ammFormSchema = z
   )
   .refine(
     // validate if tokens are different
-    // @ts-ignore
+
     (data) => {
       if (data.token0.address === data.token1.address) {
         return false;
@@ -145,7 +145,7 @@ export const ammFormSchema = z
       path: ["token0"],
     },
   )
-  // @ts-ignore
+
   .superRefine(async (data, ctx) => {
     // validate if there are balances of tokens
     const publicClient = publicClientsFromIds[data.chainId as ChainId];
@@ -183,7 +183,7 @@ export const ammFormSchema = z
     );
     return !path.length;
   })
-  // @ts-ignore
+
   .superRefine((data, ctx) => {
     // hardcoded value since we're just checking if the route exists or not
     // we're using 100 times the minTradedToken0 to cover high gas price (mainly for mainnet)
@@ -204,7 +204,7 @@ export const ammFormSchema = z
       }
     });
   })
-  // @ts-ignore
+
   .superRefine(async (data, ctx) => {
     // validate if price oracle is working
     try {
@@ -233,3 +233,7 @@ export const ammFormSchema = z
       });
     }
   });
+
+export const ammWithdrawSchema = z.object({
+  withdrawPct: z.coerce.number().positive().lte(100),
+});

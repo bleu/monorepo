@@ -1,4 +1,4 @@
-import { formatNumber } from "@bleu-fi/utils/formatNumber";
+import { formatNumber } from "@bleu/utils/formatNumber";
 import Image from "next/image";
 
 import { cowTokenList } from "#/utils/cowTokenList";

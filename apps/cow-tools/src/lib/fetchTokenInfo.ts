@@ -1,4 +1,4 @@
-import { Address } from "@bleu-fi/utils";
+import { Address } from "@bleu/utils";
 import { erc20ABI } from "@wagmi/core";
 
 import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";

@@ -1,5 +1,5 @@
-import { NetworkChainId, networkFor } from "@bleu-fi/utils";
-import { formatDateToLocalDatetime } from "@bleu-fi/utils/date";
+import { NetworkChainId, networkFor } from "@bleu/utils";
+import { formatDateToLocalDatetime } from "@bleu/utils/date";
 import { Pencil1Icon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import { FieldValues } from "react-hook-form";

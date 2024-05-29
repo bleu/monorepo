@@ -1,4 +1,4 @@
-import { Network } from "@bleu-fi/utils";
+import { Network } from "@bleu/utils";
 
 import { getSdk as ethereumSdk } from "./__generated__/Ethereum.server";
 import { getSdk as gnosisSdk } from "./__generated__/Gnosis.server";

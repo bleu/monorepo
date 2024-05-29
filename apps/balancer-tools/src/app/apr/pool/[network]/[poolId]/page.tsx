@@ -1,6 +1,6 @@
-import { db } from "@bleu-fi/balancer-apr/src/db";
-import { pools } from "@bleu-fi/balancer-apr/src/db/schema";
-import { SECONDS_IN_DAY } from "@bleu-fi/utils/date";
+import { db } from "@bleu/balancer-apr/src/db";
+import { pools } from "@bleu/balancer-apr/src/db/schema";
+import { SECONDS_IN_DAY } from "@bleu/utils/date";
 import { eq } from "drizzle-orm";
 import { Metadata, ResolvingMetadata } from "next";
 import { redirect } from "next/navigation";

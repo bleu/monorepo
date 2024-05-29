@@ -1,3 +1,3 @@
-import { runETLs } from "@bleu-fi/balancer-apr";
+import { runETLs } from "@bleu/balancer-apr";
 
 runETLs();

@@ -1,4 +1,4 @@
-import { Address, NetworkChainId, networkFor } from "@bleu-fi/utils";
+import { Address, NetworkChainId, networkFor } from "@bleu/utils";
 import { useState } from "react";
 import { FieldValues } from "react-hook-form";
 

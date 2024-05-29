@@ -1,6 +1,6 @@
 "use client";
 
-import { formatDate } from "@bleu-fi/utils";
+import { formatDate } from "@bleu/utils";
 import { blueDark } from "@radix-ui/colors";
 import { Data } from "plotly.js";
 import { useState } from "react";

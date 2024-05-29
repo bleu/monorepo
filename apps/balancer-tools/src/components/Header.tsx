@@ -1,6 +1,6 @@
 "use client";
 
-import { networkFor } from "@bleu-fi/utils";
+import { networkFor } from "@bleu/utils";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import Link from "next/link";

@@ -1,6 +1,6 @@
 "use client";
 
-import { formatNumber } from "@bleu-fi/utils/formatNumber";
+import { formatNumber } from "@bleu/utils/formatNumber";
 import {
   ChevronDownIcon,
   DashIcon,

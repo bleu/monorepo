@@ -1,4 +1,4 @@
-import { capitalize } from "@bleu-fi/utils";
+import { capitalize } from "@bleu/utils";
 import cn from "clsx";
 
 export function AlertCard({

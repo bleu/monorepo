@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { dateToEpoch, epochToDate } from "@bleu-fi/utils/date";
+import { dateToEpoch, epochToDate } from "@bleu/utils/date";
 import { sql } from "drizzle-orm";
 import { addToTable } from "lib/db/addToTable";
 import { logIfVerbose } from "lib/logIfVerbose";

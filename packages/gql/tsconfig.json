@@ -6,7 +6,7 @@
     }
   },
   "exclude": ["node_modules"],
-  "extends": "@bleu-fi/tsconfig/base.json",
+  "extends": "@bleu/tsconfig/base.json",
   "include": ["**/*.ts", "**/*.tsx", "../codegen.ts", "codegen.cjs"],
   "references": []
 }

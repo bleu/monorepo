@@ -1,6 +1,6 @@
-import { db } from "@bleu-fi/balancer-apr/src/db";
-import { tokenPrices } from "@bleu-fi/balancer-apr/src/db/schema";
-import { formatNumber } from "@bleu-fi/utils/formatNumber";
+import { db } from "@bleu/balancer-apr/src/db";
+import { tokenPrices } from "@bleu/balancer-apr/src/db/schema";
+import { formatNumber } from "@bleu/utils/formatNumber";
 import { and, between, eq, sql } from "drizzle-orm";
 
 const BAL_TOKEN_ADDRESS = "0xba100000625a3754423978a60c9317c58a424e3d";

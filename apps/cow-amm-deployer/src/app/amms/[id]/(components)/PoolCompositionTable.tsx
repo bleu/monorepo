@@ -1,17 +1,16 @@
-import { formatNumber } from "@bleu-fi/utils/formatNumber";
+"use client";
+import { formatNumber } from "@bleu/utils/formatNumber";
 import { tomatoDark } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
-import { formatUnits } from "viem";
 
 import Table from "#/components/Table";
+import { TokenInfo } from "#/components/TokenInfo";
 import { Tooltip } from "#/components/Tooltip";
-import { ICowAmm } from "#/lib/types";
-
-import { TokenInfo } from "./TokenInfo";
+import { ICowAmm } from "#/lib/fetchAmmData";
 
 export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
   const anyTokenWithoutUsdPrice =
-    !cowAmm.token0.externalUsdPrice || !cowAmm.token1.externalUsdPrice;
+    !cowAmm.token0.usdPrice || !cowAmm.token1.usdPrice;
   return (
     <Table
       color="foreground"
@@ -28,26 +27,17 @@ export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
       <Table.Body>
         {[cowAmm.token0, cowAmm.token1].map((token) => {
           const valuePct =
-            (Number(token.externalUsdValue) * 100) / cowAmm.totalUsdValue;
+            (Number(token.usdValue) * 100) / cowAmm.totalUsdValue;
           return (
-            <Table.BodyRow key={token.tokenInfo.address}>
+            <Table.BodyRow key={token.address}>
               <Table.BodyCell>
-                <TokenInfo
-                  symbol={token.tokenInfo.symbol}
-                  id={token.tokenInfo.address}
-                  logoUri={token.tokenInfo.logoUri}
-                />
+                <TokenInfo token={token} />
               </Table.BodyCell>
-              <Table.BodyCell>
-                {formatNumber(
-                  formatUnits(BigInt(token.balance), token.tokenInfo.decimals),
-                  4,
-                )}
-              </Table.BodyCell>
+              <Table.BodyCell>{formatNumber(token.balance, 4)}</Table.BodyCell>
               <Table.BodyCell>
                 <div className="flex items-center flex-row gap-2">
-                  <>$ {formatNumber(token.externalUsdPrice, 4)} </>
-                  {!token.externalUsdPrice && <PriceErrorTooltip />}
+                  <>$ {formatNumber(token.usdPrice, 4)} </>
+                  {!token.usdPrice && <PriceErrorTooltip />}
                 </div>
               </Table.BodyCell>
               <Table.BodyCell>
@@ -55,14 +45,14 @@ export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
                   <>
                     ${" "}
                     {formatNumber(
-                      token.externalUsdValue,
+                      token.usdValue,
                       2,
                       "decimal",
                       "compact",
                       0.01,
                     )}
                   </>
-                  {!token.externalUsdPrice && <PriceErrorTooltip />}
+                  {!token.usdPrice && <PriceErrorTooltip />}
                 </div>
               </Table.BodyCell>
               <Table.BodyCell>
@@ -71,7 +61,7 @@ export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
                     {anyTokenWithoutUsdPrice ? "-" : formatNumber(valuePct, 2)}{" "}
                     {valuePct && !anyTokenWithoutUsdPrice ? "%" : ""}
                   </>
-                  {!token.externalUsdPrice && <PriceErrorTooltip />}
+                  {!token.usdPrice && <PriceErrorTooltip />}
                 </div>
               </Table.BodyCell>
             </Table.BodyRow>

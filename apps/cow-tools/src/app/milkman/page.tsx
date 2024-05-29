@@ -1,6 +1,6 @@
 "use client";
 
-import { NetworkChainId, NetworkFromNetworkChainId } from "@bleu-fi/utils";
+import { NetworkChainId, NetworkFromNetworkChainId } from "@bleu/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { redirect } from "next/navigation";
 import { goerli, mainnet } from "viem/chains";

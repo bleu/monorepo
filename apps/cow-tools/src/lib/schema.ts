@@ -1,4 +1,4 @@
-import { Address, capitalize } from "@bleu-fi/utils";
+import { Address, capitalize } from "@bleu/utils";
 import { isAddress, PublicClient } from "viem";
 import { z } from "zod";
 

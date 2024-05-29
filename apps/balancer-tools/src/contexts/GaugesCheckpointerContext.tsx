@@ -1,6 +1,6 @@
 "use client";
 
-import { VeBalGetVotingListQuery } from "@bleu-fi/gql/src/balancer-api-v3/__generated__/Ethereum";
+import { VeBalGetVotingListQuery } from "@bleu/gql/src/balancer-api-v3/__generated__/Ethereum";
 import { createContext, PropsWithChildren, useContext, useState } from "react";
 
 import { Notification } from "#/hooks/useTransaction";

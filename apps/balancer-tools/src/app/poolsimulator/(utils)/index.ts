@@ -1,10 +1,10 @@
-import { PoolQuery } from "@bleu-fi/gql/src/balancer/__generated__/Ethereum";
-import { AMM } from "@bleu-fi/math-poolsimulator/src";
-import { ExtendedFx } from "@bleu-fi/math-poolsimulator/src/fx";
-import { ExtendedGyro2 } from "@bleu-fi/math-poolsimulator/src/gyro2";
-import { ExtendedGyro3 } from "@bleu-fi/math-poolsimulator/src/gyro3";
-import { ExtendedGyroEV2 } from "@bleu-fi/math-poolsimulator/src/gyroE";
-import { ExtendedMetaStableMath } from "@bleu-fi/math-poolsimulator/src/metastable";
+import { PoolQuery } from "@bleu/gql/src/balancer/__generated__/Ethereum";
+import { AMM } from "@bleu/math-poolsimulator/src";
+import { ExtendedFx } from "@bleu/math-poolsimulator/src/fx";
+import { ExtendedGyro2 } from "@bleu/math-poolsimulator/src/gyro2";
+import { ExtendedGyro3 } from "@bleu/math-poolsimulator/src/gyro3";
+import { ExtendedGyroEV2 } from "@bleu/math-poolsimulator/src/gyroE";
+import { ExtendedMetaStableMath } from "@bleu/math-poolsimulator/src/metastable";
 
 import { AnalysisData } from "#/contexts/PoolSimulatorContext";
 import { fetchECLPDerivativeParams } from "#/lib/eclp-derivative";

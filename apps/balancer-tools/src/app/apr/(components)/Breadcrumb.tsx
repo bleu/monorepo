@@ -1,8 +1,8 @@
 "use client";
 
-import { Pool } from "@bleu-fi/balancer-apr/src/lib/balancer/gauges";
-import { Network } from "@bleu-fi/utils";
-import { parseMMDDYYYYToDate } from "@bleu-fi/utils/date";
+import { Pool } from "@bleu/balancer-apr/src/lib/balancer/gauges";
+import { Network } from "@bleu/utils";
+import { parseMMDDYYYYToDate } from "@bleu/utils/date";
 import {
   ChevronRightIcon,
   ClipboardIcon,

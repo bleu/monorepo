@@ -1,15 +1,15 @@
 {
-  "name": "@bleu-fi/balancer-tools",
+  "name": "@bleu/balancer-tools",
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "pnpm --filter=\"@bleu-fi/balancer-apr\" build && next build",
+    "build": "pnpm --filter=\"@bleu/balancer-apr\" build && next build",
     "build:prepare:gql": "cd ../../ && pnpm run -C=packages/gql graphql:update-types",
     "build:prepare:wagmi": "pnpm run wagmi",
     "build:prepare": "pnpm npm-run-all -l --parallel 'build:prepare:gql'",
     "dev": "pnpm npm-run-all -l --parallel dev:**",
     "dev:next": "next dev",
-    "dev:get-pools": "pnpm --filter=\"@bleu-fi/balancer-apr\" build",
+    "dev:get-pools": "pnpm --filter=\"@bleu/balancer-apr\" build",
     "start": "next start",
     "wagmi": "wagmi generate",
     "wagmi:watch": "wagmi generate --watch",
@@ -19,10 +19,10 @@
     "test:watch": "pnpm exec jest --watchAll --verbose"
   },
   "dependencies": {
-    "@bleu-fi/balancer-apr": "workspace:^",
-    "@bleu-fi/gql": "workspace:*",
-    "@bleu-fi/math-poolsimulator": "workspace:*",
-    "@bleu-fi/tsconfig": "workspace:*",
+    "@bleu/balancer-apr": "workspace:^",
+    "@bleu/gql": "workspace:*",
+    "@bleu/math-poolsimulator": "workspace:*",
+    "@bleu/tsconfig": "workspace:*",
     "@hookform/resolvers": "3.3.2",
     "@radix-ui/colors": "^3.0.0",
     "@radix-ui/react-accordion": "^1.1.2",
@@ -75,8 +75,8 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@bleu-fi/eslint-config": "workspace:^",
-    "@bleu-fi/utils": "workspace:^",
+    "@bleu/eslint-config": "workspace:^",
+    "@bleu/utils": "workspace:^",
     "@testing-library/jest-dom": "6.1.6",
     "@testing-library/react": "^14.1.2",
     "@testing-library/user-event": "14.5.2",

@@ -1,5 +1,5 @@
-import { Address } from "@bleu-fi/utils";
-import { dateToEpoch } from "@bleu-fi/utils/date";
+import { Address } from "@bleu/utils";
+import { dateToEpoch } from "@bleu/utils/date";
 import { encodeAbiParameters } from "viem";
 
 import {

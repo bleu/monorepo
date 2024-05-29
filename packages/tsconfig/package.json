@@ -1,5 +1,5 @@
 {
-  "name": "@bleu-fi/tsconfig",
+  "name": "@bleu/tsconfig",
   "version": "0.0.0",
   "private": true,
   "files": [

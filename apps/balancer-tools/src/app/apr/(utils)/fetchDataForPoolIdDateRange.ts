@@ -1,4 +1,4 @@
-import { db } from "@bleu-fi/balancer-apr/src/db";
+import { db } from "@bleu/balancer-apr/src/db";
 import {
   pools,
   poolSnapshots,
@@ -8,8 +8,8 @@ import {
   tokens,
   vebalApr,
   yieldTokenApr,
-} from "@bleu-fi/balancer-apr/src/db/schema";
-import { dateToEpoch, formatDateToMMDDYYYY } from "@bleu-fi/utils/date";
+} from "@bleu/balancer-apr/src/db/schema";
+import { dateToEpoch, formatDateToMMDDYYYY } from "@bleu/utils/date";
 import { and, between, eq, sql } from "drizzle-orm";
 
 import { PoolStatsResults } from "./fetchDataTypes";

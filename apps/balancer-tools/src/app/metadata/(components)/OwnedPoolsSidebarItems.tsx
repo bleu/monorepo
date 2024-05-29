@@ -1,5 +1,5 @@
-import { PoolsWhereOwnerQuery } from "@bleu-fi/gql/src/balancer/__generated__/Ethereum";
-import { Address, networkFor, networkIdFor } from "@bleu-fi/utils";
+import { PoolsWhereOwnerQuery } from "@bleu/gql/src/balancer/__generated__/Ethereum";
+import { Address, networkFor, networkIdFor } from "@bleu/utils";
 import cn from "clsx";
 import Image from "next/image";
 import Link from "next/link";

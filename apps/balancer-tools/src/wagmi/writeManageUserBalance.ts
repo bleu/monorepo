@@ -1,4 +1,4 @@
-import { Address } from "@bleu-fi/utils";
+import { Address } from "@bleu/utils";
 import { prepareWriteContract, writeContract } from "@wagmi/core";
 import { parseUnits } from "viem";
 

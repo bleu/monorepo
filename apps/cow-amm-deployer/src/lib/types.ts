@@ -1,19 +1,15 @@
-import { TokenBalance } from "@gnosis.pm/safe-apps-sdk";
 import { Address } from "viem";
 
-export enum PRICE_ORACLES {
-  BALANCER = "Balancer",
-  UNI = "Uniswap V2",
-  SUSHI = "Sushi V2",
-  CUSTOM = "Custom",
-  CHAINLINK = "Chainlink",
-}
+export const PRICE_ORACLES = {
+  UNI: "Uniswap V2",
+  BALANCER: "Balancer",
+  SUSHI: "Sushi V2",
+  CHAINLINK: "Chainlink",
+  CUSTOM: "Custom",
+} as const;
 
-export interface IToken {
-  address: string;
-  symbol: string;
-  decimals: number;
-}
+export type PriceOraclesValue =
+  (typeof PRICE_ORACLES)[keyof typeof PRICE_ORACLES];
 
 export interface PriceOracleData {
   balancerPoolId?: `0x${string}`;
@@ -24,20 +20,4 @@ export interface PriceOracleData {
   chainlinkTimeThresholdInHours?: number;
   customPriceOracleAddress?: Address;
   customPriceOracleData?: `0x${string}`;
-}
-export interface ICowAmm {
-  token0: TokenBalance & {
-    externalUsdPrice: number;
-    externalUsdValue: number;
-  };
-  token1: TokenBalance & {
-    externalUsdPrice: number;
-    externalUsdValue: number;
-  };
-  totalUsdValue: number;
-  minTradedToken0: number;
-  priceOracle: PRICE_ORACLES;
-  priceOracleData: PriceOracleData;
-  hash: `0x${string}`;
-  priceOracleAddress: Address;
 }

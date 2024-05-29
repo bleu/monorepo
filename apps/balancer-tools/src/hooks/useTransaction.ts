@@ -1,4 +1,4 @@
-import { Address, buildBlockExplorerTxUrl } from "@bleu-fi/utils";
+import { Address, buildBlockExplorerTxUrl } from "@bleu/utils";
 import { Dispatch, useEffect, useState } from "react";
 
 import { PoolMetadataAttribute } from "#/contexts/PoolMetadataContext";

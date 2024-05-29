@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { dateToEpoch } from "@bleu-fi/utils/date";
+import { dateToEpoch } from "@bleu/utils/date";
 import { NETWORK_TO_BALANCER_ENDPOINT_MAP } from "lib/config";
 import { addToTable, BATCH_SIZE } from "lib/db/addToTable";
 import { logIfVerbose } from "lib/logIfVerbose";

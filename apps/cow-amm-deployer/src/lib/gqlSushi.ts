@@ -1,6 +1,6 @@
-import { Subgraph, SUBGRAPHS } from "@bleu-fi/gql/codegen";
-import sushiSdks from "@bleu-fi/gql/src/sushi";
-import { Network, networkFor } from "@bleu-fi/utils";
+import { Subgraph, SUBGRAPHS } from "@bleu/gql/codegen";
+import sushiSdks from "@bleu/gql/src/sushi";
+import { Network, networkFor } from "@bleu/utils";
 import { GraphQLClient } from "graphql-request";
 import { sepolia } from "viem/chains";
 

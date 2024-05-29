@@ -1,4 +1,4 @@
-import { Address } from "@bleu-fi/utils";
+import { Address } from "@bleu/utils";
 import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
 import { erc20ABI } from "@wagmi/core";
 import { encodeFunctionData } from "viem";

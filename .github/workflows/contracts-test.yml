@@ -34,7 +34,7 @@ jobs:
 
       - uses: ./.github/workflows/setup-pnpm
         with:
-        npm_token: ${{ secrets.NPM_TOKEN }}
+          npm_token: ${{ secrets.NPM_TOKEN }}
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1

@@ -1,6 +1,6 @@
 "use client";
 
-import { VeBalGetVotingListQuery } from "@bleu-fi/gql/src/balancer-api-v3/__generated__/Ethereum";
+import { VeBalGetVotingListQuery } from "@bleu/gql/src/balancer-api-v3/__generated__/Ethereum";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 

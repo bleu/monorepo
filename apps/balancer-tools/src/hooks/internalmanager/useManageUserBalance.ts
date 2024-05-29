@@ -1,4 +1,4 @@
-import { Address, networkFor } from "@bleu-fi/utils";
+import { Address, networkFor } from "@bleu/utils";
 import { waitForTransaction } from "@wagmi/core";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";

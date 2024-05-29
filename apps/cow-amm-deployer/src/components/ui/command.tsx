@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use client";
 
 import { type DialogProps } from "@radix-ui/react-dialog";

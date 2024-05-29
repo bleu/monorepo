@@ -126,9 +126,10 @@ export function buildBlockExplorerAddressURL({
   address,
 }: {
   chainId?: NetworkChainId;
-  address: Address;
+  address?: Address;
 }) {
-  if (!chainId) return undefined;
+  if (!chainId || !address) return undefined;
+
   const networkUrl = networkUrls[chainId as keyof typeof networkUrls];
   return {
     url: `${networkUrl.url}address/${address}`,

@@ -110,11 +110,7 @@ export function AmmForm({
   }, [safeAddress, setValue]);
 
   return (
-    <Form
-      {...form}
-      onSubmit={onSubmit}
-      className="flex flex-col gap-y-3 px-9 pb-9"
-    >
+    <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-3">
       <div className="flex h-fit justify-between gap-x-7">
         <div className="w-full flex flex-col">
           <div className="flex flex-col w-full">

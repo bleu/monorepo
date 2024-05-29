@@ -1,9 +1,5 @@
 import { formatNumber } from "@bleu/utils/formatNumber";
-import {
-  ArrowTopRightIcon,
-  Pencil2Icon,
-  ResetIcon,
-} from "@radix-ui/react-icons";
+import { ArrowTopRightIcon, Pencil2Icon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { Address } from "viem";
 
@@ -14,6 +10,7 @@ import { ChainId } from "#/utils/chainsPublicClients";
 
 import { PoolCompositionTable } from "./(components)/PoolCompositionTable";
 import { PriceInformation } from "./(components)/PriceInformation";
+import { TradingControlButton } from "./(components)/TradingControlButton";
 
 export default async function Page({ params }: { params: { id: string } }) {
   const ammData = await fetchAmmData(params.id);
@@ -27,8 +24,16 @@ export default async function Page({ params }: { params: { id: string } }) {
               The first <i className="text-purple">MEV-Capturing AMM</i>,
               brought to you by <i className="text-yellow">CoW DAO</i>
             </h2>
-            <PriceInformation cowAmm={ammData} />
+            {ammData.disabled ? (
+              <span>
+                This AMM is currently{" "}
+                <i className="text-destructive">disabled</i>
+              </span>
+            ) : (
+              <PriceInformation cowAmm={ammData} />
+            )}
           </div>
+
           <div className="flex flex-col bg-yellow/40 text-foreground py-2 px-8">
             <span className="text-sm">Total Value</span>
             <span className="text-2xl">
@@ -38,7 +43,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                 2,
                 "decimal",
                 "compact",
-                0.01,
+                0.01
               )}
             </span>
           </div>
@@ -54,7 +59,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                 buildAccountCowExplorerUrl({
                   chainId: ammData.order.chainId as ChainId,
                   address: ammData.order.owner as Address,
-                }),
+                })
               )
             }
             rel="noreferrer noopener"
@@ -66,20 +71,18 @@ export default async function Page({ params }: { params: { id: string } }) {
         </div>
         <PoolCompositionTable cowAmm={ammData} />
         <div className="flex gap-4 items-center">
-          <Button
-            className="flex items-center gap-1 py-3 px-6"
-            variant="destructive"
-            disabled
-          >
-            <ResetIcon />
-            Stop CoW AMM LP
-          </Button>
-          <Button className="flex items-center gap-1 py-3 px-6" disabled>
-            <Pencil2Icon />
-            Edit CoW AMM LP parameters
-          </Button>
+          <TradingControlButton ammData={ammData} />
+          {!ammData.disabled && (
+            <Button className="flex items-center gap-1 py-3 px-6" disabled>
+              <Pencil2Icon />
+              Edit parameters
+            </Button>
+          )}
           <Link href={`/amms/${params.id}/withdraw`}>
-            <Button className="flex items-center gap-1 py-3 px-6">
+            <Button
+              className="flex items-center gap-1 py-3 px-6"
+              variant="highlight"
+            >
               Withdraw
             </Button>
           </Link>

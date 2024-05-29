@@ -1,11 +1,11 @@
 import { Address, encodeAbiParameters } from "viem";
 import { gnosis, mainnet, sepolia } from "viem/chains";
 
-import { PRICE_ORACLES } from "#/lib/types";
+import { PRICE_ORACLES, PriceOraclesValue } from "#/lib/types";
 import { ChainId } from "#/utils/chainsPublicClients";
 
 export interface IEncodePriceOracleData {
-  priceOracle: PRICE_ORACLES;
+  priceOracle: PriceOraclesValue;
   balancerPoolId?: `0x${string}`;
   uniswapV2Pair?: Address;
   sushiV2Pair?: Address;
@@ -17,7 +17,7 @@ export interface IEncodePriceOracleData {
 
 export interface IGetPriceOracleAddress {
   chainId: ChainId;
-  priceOracle: PRICE_ORACLES;
+  priceOracle: PriceOraclesValue;
   customPriceOracleAddress?: Address;
 }
 

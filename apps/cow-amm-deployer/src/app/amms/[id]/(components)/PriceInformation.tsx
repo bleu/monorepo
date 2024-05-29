@@ -33,12 +33,12 @@ export function PriceInformation({ cowAmm }: { cowAmm: ICowAmm }) {
     [PRICE_ORACLES.BALANCER]: "Using price information from Balancer V2",
     [PRICE_ORACLES.SUSHI]: "Using price information from Sushi V2",
     [PRICE_ORACLES.CHAINLINK]: "Using price information from Chainlink",
-    default: "Using price information from custom contract",
+    [PRICE_ORACLES.CUSTOM]: "Using price information from custom contract",
   } as const;
 
   const priceOracle = decodedPriceOracleData[0];
-  // @ts-ignore
-  const label = labels[priceOracle] || labels.default;
+
+  const label = labels[priceOracle];
 
   return <PriceInformationComponent label={label} urls={priceFeedLinks} />;
 }

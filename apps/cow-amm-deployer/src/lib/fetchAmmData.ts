@@ -11,7 +11,7 @@ import { gnosis, sepolia } from "viem/chains";
 
 import { decodePriceOracleWithData } from "#/lib/decodePriceOracle";
 import { NEXT_PUBLIC_API_URL } from "#/lib/ponderApi";
-import { PRICE_ORACLES, PriceOracleData } from "#/lib/types";
+import { PRICE_ORACLES, PriceOracleData, PriceOraclesValue } from "#/lib/types";
 import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 
 import { priceFeedAbi } from "./abis/priceFeed";
@@ -62,7 +62,7 @@ export type ICowAmm = ResultOf<typeof AMM_QUERY>["constantProductData"] & {
   priceOracle: Address;
   token0: ITokenExtended;
   token1: ITokenExtended;
-  decodedPriceOracleData: [PRICE_ORACLES, PriceOracleData];
+  decodedPriceOracleData: [PriceOraclesValue, PriceOracleData];
   totalUsdValue: number;
   chainId: ChainId;
   priceFeedLinks: string[];
@@ -82,7 +82,7 @@ function validateAmmId(id: string) {
 }
 
 async function fetchPriceFeedLinks(
-  decodedData: [PRICE_ORACLES, PriceOracleData],
+  decodedData: [PriceOraclesValue, PriceOracleData],
   chainId: ChainId,
 ): Promise<string[]> {
   switch (decodedData[0]) {

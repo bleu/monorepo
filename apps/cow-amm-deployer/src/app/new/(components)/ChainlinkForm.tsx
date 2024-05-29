@@ -6,6 +6,7 @@ import { UseFormReturn } from "react-hook-form";
 
 import { Input } from "#/components/Input";
 import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/chainlinkPriceFeedRouter";
+import { IToken } from "#/lib/fetchAmmData";
 import { ammFormSchema } from "#/lib/schema";
 import { ChainId } from "#/utils/chainsPublicClients";
 
@@ -24,8 +25,8 @@ export function ChainlinkForm({
     safe: { chainId },
   } = useSafeAppsSDK();
 
-  const token0 = watch("token0");
-  const token1 = watch("token1");
+  const token0 = watch("token0") as IToken;
+  const token1 = watch("token1") as IToken;
   return (
     <div className="flex flex-col gap-y-1">
       <div className="flex h-fit justify-between gap-x-7">
@@ -55,9 +56,9 @@ export function ChainlinkForm({
               CHAINS_ORACLE_ROUTER_FACTORY[chainId as ChainId];
             const oracleRouter = new oracleRouterFactory({
               chainId: chainId as ChainId,
-              // @ts-ignore
+
               token0,
-              // @ts-ignore
+
               token1,
             });
 

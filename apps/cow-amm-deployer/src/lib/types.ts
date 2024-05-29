@@ -1,12 +1,15 @@
 import { Address } from "viem";
 
-export enum PRICE_ORACLES {
-  BALANCER = "Balancer",
-  UNI = "Uniswap V2",
-  SUSHI = "Sushi V2",
-  CUSTOM = "Custom",
-  CHAINLINK = "Chainlink",
-}
+export const PRICE_ORACLES = {
+  UNI: "Uniswap V2",
+  BALANCER: "Balancer",
+  SUSHI: "Sushi V2",
+  CHAINLINK: "Chainlink",
+  CUSTOM: "Custom",
+} as const;
+
+export type PriceOraclesValue =
+  (typeof PRICE_ORACLES)[keyof typeof PRICE_ORACLES];
 
 export interface PriceOracleData {
   balancerPoolId?: `0x${string}`;

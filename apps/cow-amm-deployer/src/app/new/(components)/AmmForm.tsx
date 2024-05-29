@@ -27,7 +27,7 @@ import { IToken } from "#/lib/fetchAmmData";
 import { ammFormSchema } from "#/lib/schema";
 import { fetchTokenUsdPrice } from "#/lib/tokenUtils";
 import { buildTxAMMArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
-import { PRICE_ORACLES } from "#/lib/types";
+import { PRICE_ORACLES, PriceOraclesValue } from "#/lib/types";
 import { cn } from "#/lib/utils";
 import { ChainId } from "#/utils/chainsPublicClients";
 
@@ -72,7 +72,6 @@ export function AmmForm({
   const router = useRouter();
 
   const form = useForm<typeof ammFormSchema._type>({
-    // @ts-ignore
     resolver: zodResolver(ammFormSchema),
     defaultValues: {
       ...defaultValues,
@@ -254,11 +253,11 @@ function PriceOracleFields({
           <SelectInput
             name="priceOracle"
             options={Object.values(PRICE_ORACLES).map((value) => ({
-              id: value,
+              id,
               value,
             }))}
             onValueChange={(priceOracle) => {
-              setValue("priceOracle", priceOracle as PRICE_ORACLES);
+              setValue("priceOracle", priceOracle as PriceOraclesValue);
             }}
             placeholder={priceOracle}
           />

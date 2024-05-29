@@ -23,7 +23,6 @@ import { ChainId } from "#/utils/chainsPublicClients";
 
 export function WithdrawForm({ cowAmm }: { cowAmm: ICowAmm }) {
   const form = useForm<typeof ammWithdrawSchema._type>({
-    // @ts-ignore
     resolver: zodResolver(ammWithdrawSchema),
     defaultValues: {
       withdrawPct: 50,

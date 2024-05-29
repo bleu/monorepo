@@ -16,8 +16,16 @@ interface ITokenSelectContext {
 }
 
 export const TokenSelectContext = React.createContext<ITokenSelectContext>(
-  {} as ITokenSelectContext
+  {} as ITokenSelectContext,
 );
+
+function fetchFromLocalStorage<T>(key: string): T | null {
+  if (typeof window === "undefined" || !window.localStorage) return null;
+  const item = localStorage.getItem(key) as string;
+  if (!item) return null;
+
+  return JSON.parse(item);
+}
 
 export const TokenSelectContextProvider = ({
   children,
@@ -28,17 +36,12 @@ export const TokenSelectContextProvider = ({
 
   const [importedTokenList, setImportedTokenList] = React.useState<
     ITokenWithChainId[]
-  >(
-    (JSON.parse(
-      // @ts-ignore
-      localStorage.getItem("importedTokens")
-    ) as ITokenWithChainId[] | null) ?? []
-  );
+  >(fetchFromLocalStorage("importedTokens") || []);
 
   function getTokenList(chainId: ChainId) {
     return [
       ...(cowTokenList.filter(
-        (token) => token.chainId === chainId
+        (token) => token.chainId === chainId,
       ) as IToken[]),
       ...importedTokenList,
     ];
@@ -49,7 +52,7 @@ export const TokenSelectContextProvider = ({
     setImportedTokenList(newImportedTokenList);
     localStorage.setItem(
       "importedTokens",
-      JSON.stringify(newImportedTokenList)
+      JSON.stringify(newImportedTokenList),
     );
   }
 

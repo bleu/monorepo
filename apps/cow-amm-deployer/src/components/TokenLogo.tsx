@@ -26,7 +26,7 @@ export const cowTokenListLogoUrl = (address?: string, chainId?: ChainId) => {
   return cowTokenList.find(
     (token) =>
       token.chainId === chainId &&
-      token.address.toLowerCase() === address?.toLowerCase(),
+      token.address.toLowerCase() === address?.toLowerCase()
   )?.logoURI;
 };
 
@@ -50,7 +50,7 @@ export const TokenLogo = ({
   className,
   quality,
 }: ImageFallbackProps) => {
-  const [imagesSrc, setImagesSrc] = useState<string[]>([
+  const imagesSrc = [
     cowprotocolTokenLogoUrl(tokenAddress, chainId),
     cowprotocolTokenLogoUrl(tokenAddress, 1),
     cowTokenListLogoUrl(tokenAddress, chainId),
@@ -58,17 +58,10 @@ export const TokenLogo = ({
     trustTokenLogoUrl(tokenAddress, chainId),
     trustTokenLogoUrl(tokenAddress, 1),
     FALLBACK_SRC,
-  ] as string[]);
+  ] as string[];
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    setImagesSrc([
-      cowprotocolTokenLogoUrl(tokenAddress, chainId),
-      cowprotocolTokenLogoUrl(tokenAddress, 1),
-      trustTokenLogoUrl(tokenAddress, chainId),
-      trustTokenLogoUrl(tokenAddress, 1),
-      FALLBACK_SRC,
-    ] as string[]);
     setIndex(0);
   }, [tokenAddress, chainId]);
 

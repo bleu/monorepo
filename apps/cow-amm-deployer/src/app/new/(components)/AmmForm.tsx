@@ -50,9 +50,9 @@ const getNewMinTradeToken0 = async (newToken0: IToken, chainId: ChainId) => {
       Number(
         formatUnits(
           parseUnits(String(amount), newToken0.decimals),
-          newToken0.decimals
-        )
-      )
+          newToken0.decimals,
+        ),
+      ),
     )
     .catch(() => 0);
 };
@@ -110,11 +110,7 @@ export function AmmForm({
   }, [safeAddress, setValue]);
 
   return (
-    <Form
-      {...form}
-      onSubmit={onSubmit}
-      className="flex flex-col gap-y-3 px-9 pb-9"
-    >
+    <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-3">
       <div className="flex h-fit justify-between gap-x-7">
         <div className="w-full flex flex-col">
           <div className="flex flex-col w-full">
@@ -128,7 +124,7 @@ export function AmmForm({
                 });
                 setValue(
                   "minTradedToken0",
-                  await getNewMinTradeToken0(token, chainId as ChainId)
+                  await getNewMinTradeToken0(token, chainId as ChainId),
                 );
               }}
               selectedToken={(formData?.token0 as IToken) ?? undefined}
@@ -183,7 +179,7 @@ export function AmmForm({
           <AccordionTrigger
             className={cn(
               errors.minTradedToken0 ? "text-destructive" : "",
-              "pt-0"
+              "pt-0",
             )}
           >
             Advanced Options

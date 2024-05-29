@@ -18,6 +18,9 @@ const moduleExports = {
       },
     ];
   },
+  experimental: {
+    reactCompiler: true,
+  },
   transpilePackages: ["@bleu/gql"],
   reactStrictMode: true,
   /**

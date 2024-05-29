@@ -4,6 +4,8 @@ import {
 } from "@bleu/utils";
 import { graphql, ResultOf } from "gql.tada";
 import request from "graphql-request";
+// @ts-expect-error
+import { cache } from "react";
 import { Address } from "viem";
 import { gnosis, sepolia } from "viem/chains";
 
@@ -81,7 +83,7 @@ function validateAmmId(id: string) {
 
 async function fetchPriceFeedLinks(
   decodedData: [PRICE_ORACLES, PriceOracleData],
-  chainId: ChainId
+  chainId: ChainId,
 ): Promise<string[]> {
   switch (decodedData[0]) {
     case PRICE_ORACLES.UNI: {
@@ -110,7 +112,7 @@ async function fetchPriceFeedLinks(
   }
 }
 
-export async function fetchAmmData(ammId: string): Promise<ICowAmm> {
+export const fetchAmmData = cache(async (ammId: string): Promise<ICowAmm> => {
   const [ammAddress, _, chainId] = validateAmmId(ammId);
 
   const subgraphData = await request(NEXT_PUBLIC_API_URL, AMM_QUERY, { ammId });
@@ -145,7 +147,7 @@ export async function fetchAmmData(ammId: string): Promise<ICowAmm> {
 
   const priceFeedLinks = await fetchPriceFeedLinks(
     decodedPriceOracleData,
-    chainId
+    chainId,
   );
 
   const token0 = {
@@ -173,7 +175,7 @@ export async function fetchAmmData(ammId: string): Promise<ICowAmm> {
     chainId,
     priceFeedLinks,
   } as ICowAmm;
-}
+});
 
 export function getUniV2PairUrl(chainId: ChainId, referencePair?: string) {
   if (chainId === gnosis.id) {

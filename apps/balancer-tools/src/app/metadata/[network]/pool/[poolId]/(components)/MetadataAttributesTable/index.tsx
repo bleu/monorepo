@@ -35,7 +35,7 @@ const Th = ({ className, children }: CellProps) => (
     scope="col"
     className={cn(
       "py-3.5 px-3 text-left text-sm font-semibold text-white",
-      className
+      className,
     )}
   >
     {children}

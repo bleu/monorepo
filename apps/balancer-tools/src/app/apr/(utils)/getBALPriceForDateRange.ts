@@ -17,8 +17,8 @@ export async function getBALPriceForDateRange(startAt: Date, endAt: Date) {
     .where(
       and(
         eq(tokenPrices.tokenAddress, BAL_TOKEN_ADDRESS),
-        between(tokenPrices.timestamp, startAt, endAt)
-      )
+        between(tokenPrices.timestamp, startAt, endAt),
+      ),
     )
     .groupBy(tokenPrices.tokenAddress)
     .execute();

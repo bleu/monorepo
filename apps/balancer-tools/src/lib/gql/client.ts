@@ -16,7 +16,7 @@ import { GraphQLClient } from "graphql-request";
 
 export function impersonateWhetherDAO(
   chainId: string,
-  address: Address | undefined
+  address: Address | undefined,
 ) {
   const network = networkFor(chainId);
 
@@ -52,7 +52,7 @@ export const poolsMetadata = {
   client: clientFor(Subgraph.BalancerPoolsMetadata),
   gql: (chainId: number | string) =>
     poolMetadataSdks[networkFor(chainId)](
-      poolsMetadata.client(String(chainId))
+      poolsMetadata.client(String(chainId)),
     ),
 };
 

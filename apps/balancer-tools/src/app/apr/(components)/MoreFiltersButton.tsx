@@ -135,7 +135,7 @@ export function MoreFiltersButton() {
         }
         return count;
       }, 0),
-    [selectedAttributes]
+    [selectedAttributes],
   );
 
   return (

@@ -72,7 +72,7 @@ export function PoolListTable({
       params.set("sort", accessor);
       return params.toString();
     },
-    [searchParams]
+    [searchParams],
   );
 
   const loadMorePools = async () => {
@@ -279,7 +279,7 @@ function APRHover({ apr }: { apr: APRwithoutBreakdown }) {
 
 function OrderIcon(
   searchParams: ReadonlyURLSearchParams,
-  fieldName: keyof PoolStats
+  fieldName: keyof PoolStats,
 ) {
   if (searchParams.get("sort") !== fieldName) return <DashIcon />;
 

@@ -26,7 +26,7 @@ type Props = {
 
 export async function generateMetadata(
   { params }: Props,
-  parent: ResolvingMetadata
+  parent: ResolvingMetadata,
 ): Promise<Metadata> {
   const externalId = params.poolId;
 
@@ -61,17 +61,17 @@ export default async function Page({
 
   if (!parsedParams.success) {
     const oneDayAgoFormated = new Date(
-      new Date().getTime() - SECONDS_IN_DAY * 1000
+      new Date().getTime() - SECONDS_IN_DAY * 1000,
     );
     const threeDaysAgoDateFormated = new Date(
-      new Date().getTime() - 3 * SECONDS_IN_DAY * 1000
+      new Date().getTime() - 3 * SECONDS_IN_DAY * 1000,
     );
     return redirect(
       generatePoolPageLink(
         threeDaysAgoDateFormated,
         oneDayAgoFormated,
-        searchParams
-      )
+        searchParams,
+      ),
     );
   }
 
@@ -83,7 +83,7 @@ export default async function Page({
   const poolData = await fetchDataForPoolIdDateRange(
     poolId,
     startAtDate,
-    endAtDate
+    endAtDate,
   );
 
   const actualNetwork = Object.values(poolData.perDay[0])[0].network;
@@ -97,8 +97,8 @@ export default async function Page({
           ...searchParams,
         },
         poolId,
-        actualNetwork
-      )
+        actualNetwork,
+      ),
     );
   }
 

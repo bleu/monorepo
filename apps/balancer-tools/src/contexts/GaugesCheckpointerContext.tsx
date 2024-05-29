@@ -28,7 +28,7 @@ type GaugesCheckpointerContextType = {
 };
 
 export const GaugesCheckpointerContext = createContext(
-  {} as GaugesCheckpointerContextType
+  {} as GaugesCheckpointerContextType,
 );
 
 export function GaugesCheckpointerProvider({ children }: PropsWithChildren) {
@@ -44,8 +44,8 @@ export function GaugesCheckpointerProvider({ children }: PropsWithChildren) {
   function removeSelectedGauge(selectedGauge: gaugeItem) {
     setSelectedGauges(
       selectedGauges.filter(
-        (gauge) => gauge.votingOption.id !== selectedGauge.votingOption.id
-      )
+        (gauge) => gauge.votingOption.id !== selectedGauge.votingOption.id,
+      ),
     );
   }
 

@@ -75,8 +75,8 @@ export async function extractGaugesSnapshot() {
             network!,
             dateToEpoch(timestamp),
             block!,
-          ]
-        )
+          ],
+        ),
       ),
     ]);
 
@@ -92,7 +92,7 @@ export async function extractGaugesSnapshot() {
           blockNumber: gaugeTimestamps[idx].block,
           ...workingSupplies[idx],
         };
-      }
+      },
     );
 
     if (insertData.length > 0)

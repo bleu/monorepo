@@ -12,7 +12,7 @@ export function fetchTokenInfo<T>(
     | "decimals"
     | "allowance"
     | "balanceOf"
-    | "totalSupply"
+    | "totalSupply",
 ) {
   const publicClient = publicClientsFromIds[chainId as ChainId];
 

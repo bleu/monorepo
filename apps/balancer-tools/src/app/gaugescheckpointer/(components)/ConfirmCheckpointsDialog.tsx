@@ -34,11 +34,11 @@ export function ConfirmCheckpointsDialog({
     2,
     "decimal",
     "standard",
-    0.01
+    0.01,
   );
 
   const anyArbitrumGauge = selectedGauges.some(
-    (gauge) => gauge.votingOption.chain === "ARBITRUM"
+    (gauge) => gauge.votingOption.chain === "ARBITRUM",
   );
 
   async function onSubmit(data: FieldValues) {

@@ -27,7 +27,7 @@ interface NetworksContextI {
 }
 
 export const NetworksContext = React.createContext<NetworksContextI>(
-  {} as NetworksContextI
+  {} as NetworksContextI,
 );
 
 export const NetworksContextProvider = ({

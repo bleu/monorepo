@@ -60,7 +60,7 @@ interface PoolSimulatorContextType {
     formData: PoolAttribute,
     setData: (data: AnalysisData) => void,
     changeTokens?: boolean,
-    data?: AnalysisData
+    data?: AnalysisData,
   ) => void;
   isGraphLoading: boolean;
   setIsGraphLoading: (value: boolean) => void;
@@ -78,7 +78,7 @@ export const defaultPool = {
 };
 
 export const PoolSimulatorContext = createContext(
-  {} as PoolSimulatorContextType
+  {} as PoolSimulatorContextType,
 );
 
 export const defaultAnalysisData: AnalysisData = {
@@ -115,10 +115,10 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
 
   function setAnalysisTokenBySymbol(symbol: string) {
     const initialToken = initialData.tokens.find(
-      (token) => token.symbol === symbol
+      (token) => token.symbol === symbol,
     );
     const customToken = customData.tokens.find(
-      (token) => token.symbol === symbol
+      (token) => token.symbol === symbol,
     );
     if (initialToken) setInitialAnalysisToken(initialToken);
     if (customToken) setCustomAnalysisToken(customToken);
@@ -126,10 +126,10 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
 
   function setCurrentTabTokenBySymbol(symbol: string) {
     const initialToken = initialData.tokens.find(
-      (token) => token.symbol === symbol
+      (token) => token.symbol === symbol,
     );
     const customToken = customData.tokens.find(
-      (token) => token.symbol === symbol
+      (token) => token.symbol === symbol,
     );
     if (initialToken) setInitialCurrentTabToken(initialToken);
     if (customToken) setCustomCurrentTabToken(customToken);
@@ -151,7 +151,7 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
 
   async function asyncSetAMM(
     data: AnalysisData,
-    setAMM: (amm: AMM<PoolPairData>) => void
+    setAMM: (amm: AMM<PoolPairData>) => void,
   ) {
     const amm = await convertAnalysisDataToAMM(data);
     if (amm) setAMM(amm);
@@ -166,7 +166,7 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
 
   async function handleImportPoolParametersById(
     formData: PoolAttribute,
-    setData: (data: AnalysisData) => void
+    setData: (data: AnalysisData) => void,
   ) {
     const poolData = await pools.gql(formData.network || "1").Pool({
       poolId: formData.poolId,
@@ -196,7 +196,7 @@ export function PoolSimulatorProvider({ children }: PropsWithChildren) {
         poolId: defaultPool.id,
         network: defaultPool.network,
       },
-      setInitialData
+      setInitialData,
     );
   }, []);
 

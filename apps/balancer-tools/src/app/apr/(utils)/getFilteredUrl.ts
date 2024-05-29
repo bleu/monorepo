@@ -34,7 +34,7 @@ function getFilterDataFromParams(searchParams: SearchParams) {
 
   // Convert values for each property if needed
   const convertedParams = Object.fromEntries(
-    Object.entries(rest).map(([key, value]) => [key, convert(key, value)])
+    Object.entries(rest).map(([key, value]) => [key, convert(key, value)]),
   );
 
   // Merge the converted params with default values
@@ -52,7 +52,7 @@ function getFilterDataFromParams(searchParams: SearchParams) {
 function generateQueryParams(
   startAt: Date,
   endAt: Date,
-  searchParams?: SearchParams | null
+  searchParams?: SearchParams | null,
 ) {
   const filteredData = getFilterDataFromParams(searchParams ?? {});
   const uniqueKeys = new Set(["startAt", "endAt"]);
@@ -69,7 +69,7 @@ function generateQueryParams(
     .join("&");
 
   return `startAt=${formatDateToMMDDYYYY(startAt)}&endAt=${formatDateToMMDDYYYY(
-    endAt
+    endAt,
   )}&${params}`;
 }
 
@@ -78,14 +78,14 @@ export function generatePoolPageLink(
   endAt: Date,
   searchParams?: SearchParams | null,
   poolId?: string,
-  network?: string
+  network?: string,
 ) {
   const queryParams = generateQueryParams(startAt, endAt, searchParams);
   if (poolId) {
     return `/apr/pool/${
       network || networkFor(new Pool(poolId).network)
     }/${poolId}?startAt=${formatDateToMMDDYYYY(
-      startAt
+      startAt,
     )}&endAt=${formatDateToMMDDYYYY(endAt)}`;
   } else {
     return `/apr?${queryParams}`;

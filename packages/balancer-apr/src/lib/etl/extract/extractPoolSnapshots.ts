@@ -42,7 +42,7 @@ export async function extractPoolSnapshots() {
     networkNames.map(async (networkName) => {
       const networkEndpoint = NETWORK_TO_BALANCER_ENDPOINT_MAP[networkName];
       await extractPoolSnapshotsForNetwork(networkEndpoint, networkName);
-    })
+    }),
   );
 }
 
@@ -57,14 +57,14 @@ async function processPoolSnapshots(data: any, network: string) {
         rawData: { ...snapshot, network },
         networkSlug: network,
         timestamp: new Date(snapshot.timestamp * 1000),
-      }))
+      })),
     );
   }
 }
 
 export async function extractPoolSnapshotsForNetwork(
   networkEndpoint: string,
-  network: string
+  network: string,
 ) {
   const today = new Date();
   today.setUTCHours(0, 0, 0, 0);
@@ -75,6 +75,6 @@ export async function extractPoolSnapshotsForNetwork(
     (data) => processPoolSnapshots(data, network),
     "",
     BATCH_SIZE,
-    { today: dateToEpoch(today) }
+    { today: dateToEpoch(today) },
   );
 }

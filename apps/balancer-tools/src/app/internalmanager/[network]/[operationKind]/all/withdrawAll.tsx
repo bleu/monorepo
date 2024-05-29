@@ -127,7 +127,7 @@ export function WithdrawAll() {
                   (
                     token: ArrElement<
                       GetDeepProp<InternalBalanceQuery, "userInternalBalances">
-                    >
+                    >,
                   ) => (
                     <Table.BodyRow key={token.tokenInfo?.address}>
                       <Table.BodyCell customWidth="w-12">
@@ -160,7 +160,7 @@ export function WithdrawAll() {
                         </div>
                       </Table.BodyCell>
                     </Table.BodyRow>
-                  )
+                  ),
                 )}
               </Table.Body>
             </Table>

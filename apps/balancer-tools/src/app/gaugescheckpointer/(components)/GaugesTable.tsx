@@ -40,7 +40,7 @@ export function GaugesTable({
   }
 
   const gaugeItemsSortedByBalToMint = gaugeItems.sort(
-    (a, b) => (b.balToMint || 0) - (a.balToMint || 0)
+    (a, b) => (b.balToMint || 0) - (a.balToMint || 0),
   );
 
   return (

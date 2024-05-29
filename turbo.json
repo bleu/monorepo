@@ -1,0 +1,108 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "pipeline": {
+    "build": {
+      "outputs": ["dist/**", "build/**", ".next/**"],
+      "dependsOn": ["^build", "build:prepare"],
+      "cache": true
+    },
+    "build:prepare": {
+      "outputs": [],
+      "dependsOn": ["build:prepare:gql", "build:prepare:wagmi"]
+    },
+    "build:prepare:gql": {
+      "outputs": [],
+      "dependsOn": ["^graphql:update-types"]
+    },
+    "build:prepare:wagmi": {
+      "outputs": [],
+      "dependsOn": ["^wagmi"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["^dev"]
+    },
+    "dev:next": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": []
+    },
+    "dev:get-pools": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": []
+    },
+    "start": {
+      "cache": false,
+      "dependsOn": ["^start"]
+    },
+    "lint": {
+      "outputs": [],
+      "dependsOn": ["^lint"],
+      "cache": true
+    },
+    "lint:fix": {
+      "outputs": [],
+      "dependsOn": ["^lint:fix"],
+      "cache": true
+    },
+    "test:jest": {
+      "outputs": ["coverage/**", "test-results/**"],
+      "dependsOn": ["^test:jest"],
+      "cache": true
+    },
+    "test:watch": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["^test:watch"]
+    },
+    "codegen": {
+      "outputs": ["codegen/**"],
+      "dependsOn": ["^graphql:update-types"],
+      "cache": true
+    },
+    "format:check": {
+      "outputs": [],
+      "dependsOn": ["^format:check"],
+      "cache": true
+    },
+    "format": {
+      "outputs": [],
+      "dependsOn": ["^format"],
+      "cache": true
+    },
+    "graphql:update-types": {
+      "outputs": [],
+      "dependsOn": [],
+      "cache": true
+    },
+    "graphql:check-types": {
+      "outputs": [],
+      "dependsOn": [],
+      "cache": true
+    },
+    "wagmi": {
+      "outputs": [],
+      "dependsOn": [],
+      "cache": true
+    },
+    "wagmi:watch": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": []
+    },
+    "migrations:generate": {
+      "outputs": [],
+      "dependsOn": []
+    },
+    "migrations:push": {
+      "outputs": [],
+      "dependsOn": []
+    },
+    "migrations:drop": {
+      "outputs": [],
+      "dependsOn": []
+    }
+  }
+}

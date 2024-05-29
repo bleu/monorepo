@@ -41,7 +41,7 @@ export function useStandaloneAMM(ammId: Address) {
     error: subgraphError,
     isLoading: isSubgraphLoading,
   } = useSWR(ammId, (ammId) =>
-    request(NEXT_PUBLIC_API_URL, AMM_QUERY, { ammId }),
+    request(NEXT_PUBLIC_API_URL, AMM_QUERY, { ammId })
   );
 
   const token0SubgraphData = subgraphData?.constantProductData?.token0;
@@ -55,16 +55,14 @@ export function useStandaloneAMM(ammId: Address) {
     error: balancesError,
     isLoading: isBalancesLoading,
   } = useSWR(
-    token0SubgraphData && token1SubgraphData && chainId
-      ? [
-          "balances",
-          chainId as ChainId,
-          ammAddress,
-          token0SubgraphData as IToken,
-          token1SubgraphData as IToken,
-        ]
-      : null,
-    getBalancesFromContract,
+    [
+      "balances",
+      chainId as ChainId,
+      ammAddress,
+      token0SubgraphData as IToken,
+      token1SubgraphData as IToken,
+    ],
+    getBalancesFromContract
   );
 
   const {
@@ -72,15 +70,13 @@ export function useStandaloneAMM(ammId: Address) {
     error: pricesError,
     isLoading: isPricesLoading,
   } = useSWR(
-    token0SubgraphData && token1SubgraphData && chainId
-      ? [
-          "prices",
-          chainId as ChainId,
-          token0SubgraphData as IToken,
-          token1SubgraphData as IToken,
-        ]
-      : null,
-    getTokensExternalPrices,
+    [
+      "prices",
+      chainId as ChainId,
+      token0SubgraphData as IToken,
+      token1SubgraphData as IToken,
+    ],
+    getTokensExternalPrices
   );
 
   if (

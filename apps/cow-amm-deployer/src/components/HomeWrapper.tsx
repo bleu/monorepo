@@ -10,46 +10,41 @@ import {
 } from "@bleu/ui";
 import { formatDate } from "@bleu/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { graphql } from "gql.tada";
+import request from "graphql-request";
 import Image from "next/image";
 import Link from "next/link";
 import useSWR from "swr";
 
-import gql from "#/lib/gql";
+import { NEXT_PUBLIC_API_URL } from "#/lib/ponderApi";
 
 import { Button } from "./Button";
 import Fathom from "./Fathom";
 import { LinkComponent } from "./Link";
 
-const CREATED_AMMS_FOR_USER_QUERY = `
-query($userId: String!) {
-  constantProductDatas(
-    where: {
-      userId:$userId,
-      version:"Standalone"
-    }
-  ){
-    items {
-      id
-      disabled
-      token0 {
-        address
-        decimals
-        symbol
-      }
-      token1 {
-        address
-        decimals
-        symbol
-      }
-      order {
-        blockTimestamp
+const CREATED_AMMS_FOR_USER_QUERY = graphql(`
+  query ($userId: String!) {
+    constantProductDatas(where: { userId: $userId, version: "Standalone" }) {
+      items {
+        id
+        disabled
+        token0 {
+          address
+          decimals
+          symbol
+        }
+        token1 {
+          address
+          decimals
+          symbol
+        }
+        order {
+          blockTimestamp
+        }
       }
     }
   }
-}
-`;
-
-const API_URL = "http://localhost:42069";
+`);
 
 export function HomeWrapper({ goToSafe = false }: { goToSafe?: boolean }) {
   const title = goToSafe ? "Open App in Safe" : "Create a CoW AMM";
@@ -57,21 +52,20 @@ export function HomeWrapper({ goToSafe = false }: { goToSafe?: boolean }) {
   const { safe } = useSafeAppsSDK();
   const userId = `${safe.safeAddress}-${safe.chainId}`;
 
-  const { data } = useSWR(CREATED_AMMS_FOR_USER_QUERY, (query) =>
-    gql(API_URL, query, { userId }),
+  const { data, isLoading } = useSWR(CREATED_AMMS_FOR_USER_QUERY, (query) =>
+    request(NEXT_PUBLIC_API_URL, query, { userId })
   );
 
-  const rows = (data?.data?.constantProductDatas?.items ?? []).map(
-    // @ts-expect-error
-    (item) => ({
-      id: item.id,
-      token0: item.token0.symbol,
-      token1: item.token1.symbol,
-      state: item.disabled ? "Stopped" : "Running",
-      link: `/amms/${item.id}`,
-      createdAt: new Date(item.order.blockTimestamp * 1000),
-    }),
-  );
+  if (isLoading || !data) return <>Loading...</>;
+
+  const rows = data.constantProductDatas.items.map((item) => ({
+    id: item.id,
+    token0: item.token0.symbol,
+    token1: item.token1.symbol,
+    state: item.disabled ? "Stopped" : "Running",
+    link: `/amms/${item.id}`,
+    createdAt: new Date((item.order.blockTimestamp as number) * 1000),
+  }));
 
   return (
     <div className="flex size-full justify-center">
@@ -128,7 +122,6 @@ export function HomeWrapper({ goToSafe = false }: { goToSafe?: boolean }) {
               </TableHeader>
               <TableBody>
                 {rows?.length ? (
-                  // @ts-expect-error
                   rows.map((row, index) => {
                     return (
                       <TableRow

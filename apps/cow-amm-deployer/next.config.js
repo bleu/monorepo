@@ -18,9 +18,11 @@ const moduleExports = {
       },
     ];
   },
+  experimental: {
+    reactCompiler: true,
+  },
   transpilePackages: ["@bleu/gql"],
   reactStrictMode: true,
-  swcMinify: true,
   /**
    * This configuration is following Rainbowkit Migration Guide to Viem
    * 3. Ensure bundler and polyfill compatibility

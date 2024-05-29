@@ -12,7 +12,7 @@ export function UniswapV2PriceInformation({ cowAmm }: { cowAmm: ICowAmm }) {
 
   const priceOracleLink = getUniV2PairUrl(
     safe.chainId as ChainId,
-    cowAmm.priceOracleData?.uniswapV2PairAddress
+    cowAmm.priceOracleData?.uniswapV2PairAddress,
   );
 
   return (

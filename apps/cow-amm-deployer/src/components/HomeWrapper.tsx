@@ -14,53 +14,11 @@ import Image from "next/image";
 import Link from "next/link";
 import useSWR from "swr";
 
+import gql from "#/lib/gql";
+
 import { Button } from "./Button";
 import Fathom from "./Fathom";
 import { LinkComponent } from "./Link";
-
-/* eslint-disable no-console */
-
-export async function gql(
-  endpoint: string,
-  query: string,
-  variables = {},
-  headers = {}
-) {
-  console.log(`Running GraphQL query on ${endpoint}`);
-
-  const defaultHeaders = {
-    "Content-Type": "application/json",
-  };
-  try {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        ...defaultHeaders,
-        ...headers,
-      },
-      body: JSON.stringify({
-        query,
-        variables,
-      }),
-    });
-    if (!response.ok) {
-      console.log("response", response);
-      throw new Error(
-        `GraphQL query failed with status ${response.status}: ${response.statusText}`
-      );
-    }
-
-    const json = await response.json();
-    if (json.errors) {
-      console.log("json", json);
-      throw new Error(`GraphQL query failed: ${json.errors[0].message}`);
-    }
-    return json;
-  } catch (e) {
-    console.log("err", e);
-    throw e;
-  }
-}
 
 const CREATED_AMMS_FOR_USER_QUERY = `
 query($userId: String!) {
@@ -100,7 +58,7 @@ export function HomeWrapper({ goToSafe = false }: { goToSafe?: boolean }) {
   const userId = `${safe.safeAddress}-${safe.chainId}`;
 
   const { data } = useSWR(CREATED_AMMS_FOR_USER_QUERY, (query) =>
-    gql(API_URL, query, { userId })
+    gql(API_URL, query, { userId }),
   );
 
   const rows = (data?.data?.constantProductDatas?.items ?? []).map(
@@ -112,7 +70,7 @@ export function HomeWrapper({ goToSafe = false }: { goToSafe?: boolean }) {
       state: item.disabled ? "Stopped" : "Running",
       link: `/amms/${item.id}`,
       createdAt: new Date(item.order.blockTimestamp * 1000),
-    })
+    }),
   );
 
   return (

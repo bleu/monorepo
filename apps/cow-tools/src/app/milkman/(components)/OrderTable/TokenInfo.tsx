@@ -16,7 +16,7 @@ export function TokenInfo({
   amount?: number | string;
 }) {
   const tokenLogoUri = cowTokenList.find(
-    (token) => token.address === id && token.chainId === chainId
+    (token) => token.address === id && token.chainId === chainId,
   )?.logoURI;
   return (
     <div className="flex items-center gap-x-1">

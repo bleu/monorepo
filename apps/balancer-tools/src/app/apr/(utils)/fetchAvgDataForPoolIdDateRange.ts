@@ -11,14 +11,14 @@ import { and, between, eq, sql } from "drizzle-orm";
 export async function fetchAvgDataForPoolIdDateRange(
   poolId: string,
   startDate: Date,
-  endDate: Date
+  endDate: Date,
 ) {
   const yieldAprSum = db
     .select({
       poolExternalId: yieldTokenApr.poolExternalId,
       timestamp: yieldTokenApr.timestamp,
       yieldValueSum: sql<number>`sum(${yieldTokenApr.value})`.as(
-        "yieldValueSum"
+        "yieldValueSum",
       ),
     })
     .from(yieldTokenApr)
@@ -30,7 +30,7 @@ export async function fetchAvgDataForPoolIdDateRange(
       poolExternalId: rewardsTokenApr.poolExternalId,
       timestamp: rewardsTokenApr.timestamp,
       rewardValueSum: sql<number>`sum(${rewardsTokenApr.value})`.as(
-        "rewardValueSum"
+        "rewardValueSum",
       ),
     })
     .from(rewardsTokenApr)
@@ -41,11 +41,11 @@ export async function fetchAvgDataForPoolIdDateRange(
       poolExternalId: poolSnapshots.poolExternalId,
       avgApr:
         sql<number>`cast(sum(coalesce(${swapFeeApr.value},0) + coalesce(${vebalApr.value},0) + coalesce(${yieldAprSum.yieldValueSum},0) + coalesce(${rewardAprSum.rewardValueSum},0)) / count(${poolSnapshots.timestamp}) as decimal)`.as(
-          "avgApr"
+          "avgApr",
         ),
       avgLiquidity:
         sql<number>`cast(sum(${poolSnapshots.liquidity}) / count(${poolSnapshots.timestamp}) as decimal)`.as(
-          "avgLiquidity"
+          "avgLiquidity",
         ),
     })
     .from(poolSnapshots)
@@ -53,35 +53,35 @@ export async function fetchAvgDataForPoolIdDateRange(
       swapFeeApr,
       and(
         eq(poolSnapshots.poolExternalId, swapFeeApr.poolExternalId),
-        eq(poolSnapshots.timestamp, swapFeeApr.timestamp)
-      )
+        eq(poolSnapshots.timestamp, swapFeeApr.timestamp),
+      ),
     )
     .fullJoin(
       vebalApr,
       and(
         eq(vebalApr.poolExternalId, poolSnapshots.poolExternalId),
-        eq(vebalApr.timestamp, poolSnapshots.timestamp)
-      )
+        eq(vebalApr.timestamp, poolSnapshots.timestamp),
+      ),
     )
     .fullJoin(
       yieldAprSum,
       and(
         eq(yieldAprSum.poolExternalId, poolSnapshots.poolExternalId),
-        eq(yieldAprSum.timestamp, poolSnapshots.timestamp)
-      )
+        eq(yieldAprSum.timestamp, poolSnapshots.timestamp),
+      ),
     )
     .fullJoin(
       rewardAprSum,
       and(
         eq(rewardAprSum.poolExternalId, poolSnapshots.poolExternalId),
-        eq(rewardAprSum.timestamp, poolSnapshots.timestamp)
-      )
+        eq(rewardAprSum.timestamp, poolSnapshots.timestamp),
+      ),
     )
     .where(
       and(
         between(poolSnapshots.timestamp, startDate, endDate),
-        eq(poolSnapshots.poolExternalId, poolId)
-      )
+        eq(poolSnapshots.poolExternalId, poolId),
+      ),
     )
     .groupBy(poolSnapshots.poolExternalId);
 

@@ -204,46 +204,46 @@ export async function calculateTokenWeightSnapshots() {
         poolExternalId: poolSnapshots.poolExternalId,
         amount:
           sql`(pool_snapshots.amounts->>pool_tokens.token_index)::NUMERIC`.as(
-            "amount"
+            "amount",
           ),
         tokenIndex: poolTokens.tokenIndex,
         priceUsd: tokenPrices.priceUSD,
         value:
           sql`CAST(token_prices.price_usd AS NUMERIC) * (pool_snapshots.amounts->>pool_tokens.token_index)::NUMERIC`.as(
-            "value"
+            "value",
           ),
-      }
+      },
     )
     .from(poolSnapshots)
     .innerJoin(
       poolTokenRateProviders,
-      eq(poolTokenRateProviders.poolExternalId, poolSnapshots.poolExternalId)
+      eq(poolTokenRateProviders.poolExternalId, poolSnapshots.poolExternalId),
     )
     .innerJoin(
       blocks,
       and(
         eq(blocks.networkSlug, poolSnapshots.networkSlug),
-        eq(blocks.timestamp, poolSnapshots.timestamp)
-      )
+        eq(blocks.timestamp, poolSnapshots.timestamp),
+      ),
     )
     .innerJoin(
       poolTokens,
-      eq(poolTokens.poolExternalId, poolSnapshots.poolExternalId)
+      eq(poolTokens.poolExternalId, poolSnapshots.poolExternalId),
     )
     .innerJoin(
       tokenPrices,
       and(
         eq(tokenPrices.tokenAddress, poolTokens.tokenAddress),
         eq(tokenPrices.timestamp, poolSnapshots.timestamp),
-        eq(tokenPrices.networkSlug, poolSnapshots.networkSlug)
-      )
+        eq(tokenPrices.networkSlug, poolSnapshots.networkSlug),
+      ),
     )
     .where(
       and(
         // inArray(poolSnapshots.poolExternalId, poolExternalIds),
         isNotNull(tokenPrices.priceUSD),
-        isNotNull(sql`(pool_snapshots.amounts->>pool_tokens.token_index)`)
-      )
+        isNotNull(sql`(pool_snapshots.amounts->>pool_tokens.token_index)`),
+      ),
     )
     .as("token_values");
 
@@ -274,8 +274,8 @@ export async function calculateTokenWeightSnapshots() {
       totalLiquidity,
       and(
         eq(tokenValues.poolExternalId, totalLiquidity.poolExternalId),
-        eq(tokenValues.timestamp, totalLiquidity.timestamp)
-      )
+        eq(tokenValues.timestamp, totalLiquidity.timestamp),
+      ),
     )
     .where(gt(totalLiquidity.totalLiquidity, "0"));
 
@@ -293,8 +293,8 @@ export async function calculateTokenWeightSnapshots() {
             0,
             0,
             0,
-            0
-          )
+            0,
+          ),
         );
         return {
           timestamp: utcMidnightTimestampOfCurrentDay,
@@ -302,10 +302,10 @@ export async function calculateTokenWeightSnapshots() {
           poolExternalId: item.poolExternalId,
           weight: item.weight,
           externalId: `${item.poolExternalId}-${item.token}-${dateToEpoch(
-            utcMidnightTimestampOfCurrentDay
+            utcMidnightTimestampOfCurrentDay,
           )}`,
         };
       })
-      .filter(Boolean)
+      .filter(Boolean),
   );
 }

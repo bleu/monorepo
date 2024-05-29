@@ -19,7 +19,7 @@ export const pairs = {
     if (chainId == String(sepolia.id))
       throw new Error("Sepolia isn't supported");
     return sushiSdks[networkFor(chainId) as SushiSupportedNetworks](
-      pairs.client(chainId)
+      pairs.client(chainId),
     );
   },
 };

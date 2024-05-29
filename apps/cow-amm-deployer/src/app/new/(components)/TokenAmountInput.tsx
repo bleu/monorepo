@@ -5,9 +5,9 @@ import { UseFormReturn } from "react-hook-form";
 import { Address } from "viem";
 
 import { Input } from "#/components/Input";
+import { IToken } from "#/lib/fetchAmmData";
 import { ammFormSchema } from "#/lib/schema";
 import { fetchWalletTokenBalance } from "#/lib/tokenUtils";
-import { IToken } from "#/lib/types";
 import { ChainId } from "#/utils/chainsPublicClients";
 
 export function TokenAmountInput({

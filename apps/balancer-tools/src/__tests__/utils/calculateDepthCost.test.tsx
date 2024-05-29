@@ -37,7 +37,7 @@ describe("calculateDepthCost for Gyro2", () => {
 
   beforeAll(async () => {
     const mockAmmPromise = await convertAnalysisDataToAMM(
-      mockAnalysisDataGyro2
+      mockAnalysisDataGyro2,
     );
     if (!mockAmmPromise)
       throw new Error("Failed to convert mock analysis data to AMM");
@@ -55,7 +55,7 @@ describe("calculateDepthCost for Gyro2", () => {
       "out",
       mockAnalysisDataGyro2,
       mockAmm,
-      mockAnalysisDataGyro2.poolType
+      mockAnalysisDataGyro2.poolType,
     );
 
     expect(result.type).toBe("price limit");
@@ -70,7 +70,7 @@ describe("calculateDepthCost for Gyro2", () => {
       "in",
       mockAnalysisDataGyro2,
       mockAmm,
-      mockAnalysisDataGyro2.poolType
+      mockAnalysisDataGyro2.poolType,
     );
 
     expect(result.type).toBe("2% of price change");
@@ -94,7 +94,7 @@ describe("calculateDepthCost for MetaStable", () => {
 
   beforeAll(async () => {
     const mockAmmPromise = await convertAnalysisDataToAMM(
-      mockAnalysisDataMetaStable
+      mockAnalysisDataMetaStable,
     );
     if (!mockAmmPromise)
       throw new Error("Failed to convert mock analysis data to AMM");
@@ -108,7 +108,7 @@ describe("calculateDepthCost for MetaStable", () => {
       "in",
       mockAnalysisDataMetaStable,
       mockAmm,
-      mockAnalysisDataMetaStable.poolType
+      mockAnalysisDataMetaStable.poolType,
     );
 
     expect(result.type).toBe("2% of price change");

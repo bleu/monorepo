@@ -1,12 +1,12 @@
 import { Address } from "@bleu/utils";
 import { formatUnits } from "viem";
 
+import { IToken } from "#/lib/fetchAmmData";
 import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 
 import { erc20ABI } from "./abis/erc20";
 import { getCoingeckoUsdPrice } from "./coingeckoApi";
 import { getCowProtocolUsdPrice } from "./getCowProtocolUsdPrice";
-import { IToken } from "./types";
 
 /**
  * Fetches USD price for a given currency from coingecko or CowProtocol

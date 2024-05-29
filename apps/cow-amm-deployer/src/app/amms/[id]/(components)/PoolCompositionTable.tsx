@@ -1,3 +1,4 @@
+"use client";
 import { formatNumber } from "@bleu/utils/formatNumber";
 import { tomatoDark } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
@@ -5,7 +6,7 @@ import { InfoCircledIcon } from "@radix-ui/react-icons";
 import Table from "#/components/Table";
 import { TokenInfo } from "#/components/TokenInfo";
 import { Tooltip } from "#/components/Tooltip";
-import { ICowAmm } from "#/lib/types";
+import { ICowAmm } from "#/lib/fetchAmmData";
 
 export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
   const anyTokenWithoutUsdPrice =
@@ -48,7 +49,7 @@ export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
                       2,
                       "decimal",
                       "compact",
-                      0.01
+                      0.01,
                     )}
                   </>
                   {!token.usdPrice && <PriceErrorTooltip />}

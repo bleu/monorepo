@@ -87,8 +87,8 @@ export function SearchPoolForm({
         !onlyVotingGauges ||
         (onlyVotingGauges &&
           POOLS_WITH_LIVE_GAUGES.some(
-            (liveGaugePool) => liveGaugePool.id === pool.id
-          ))
+            (liveGaugePool) => liveGaugePool.id === pool.id,
+          )),
     );
 
   const isPool = !!poolsData?.pools?.length;
@@ -102,7 +102,7 @@ export function SearchPoolForm({
           type: "notfound",
           message: "Pool not found. Check the Pool ID and network.",
         },
-        { shouldFocus: true }
+        { shouldFocus: true },
       );
       return;
     } else {
@@ -139,7 +139,7 @@ export function SearchPoolForm({
                     <SelectItem key={value} value={value}>
                       {label}
                     </SelectItem>
-                  )
+                  ),
                 )}
               </Select>
             )}

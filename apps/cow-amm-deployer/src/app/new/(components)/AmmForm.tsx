@@ -23,10 +23,11 @@ import {
 import { Form, FormMessage } from "#/components/ui/form";
 import { Label } from "#/components/ui/label";
 import { useRawTxData } from "#/hooks/useRawTxData";
+import { IToken } from "#/lib/fetchAmmData";
 import { ammFormSchema } from "#/lib/schema";
 import { fetchTokenUsdPrice } from "#/lib/tokenUtils";
 import { buildTxAMMArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
-import { IToken, PRICE_ORACLES } from "#/lib/types";
+import { PRICE_ORACLES } from "#/lib/types";
 import { cn } from "#/lib/utils";
 import { ChainId } from "#/utils/chainsPublicClients";
 
@@ -71,6 +72,7 @@ export function AmmForm({
   const router = useRouter();
 
   const form = useForm<typeof ammFormSchema._type>({
+    // @ts-ignore
     resolver: zodResolver(ammFormSchema),
     defaultValues: {
       ...defaultValues,

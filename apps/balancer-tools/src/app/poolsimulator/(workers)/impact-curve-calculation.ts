@@ -70,8 +70,8 @@ self.addEventListener(
           amm.priceImpactForExactTokenInSwap(
             amount,
             tokenIn.symbol,
-            tokenOut.symbol
-          ) * 100
+            tokenOut.symbol,
+          ) * 100,
       );
 
       const { trimmedIn: amountsIn, trimmedOut: priceImpact } =
@@ -80,7 +80,7 @@ self.addEventListener(
       const amountsOut = rawAmountsIn.map(
         (amount) =>
           amm.exactTokenInForTokenOut(amount, tokenIn.symbol, tokenOut.symbol) *
-          -1
+          -1,
       );
 
       const betaLimitIndex = getBetaLimitsIndexes({
@@ -114,5 +114,5 @@ self.addEventListener(
       swapDirection,
     };
     self.postMessage(result);
-  }
+  },
 );

@@ -28,7 +28,7 @@ export async function fetchExpectedOut({
   buyToken: Address;
 }): Promise<number> {
   const expectedArgs = priceCheckersArgumentsMapping[priceChecker]?.filter(
-    (arg) => arg.encodingLevel > 0
+    (arg) => arg.encodingLevel > 0,
   );
   const publicClient = publicClientsFromIds[chainId];
 
@@ -38,7 +38,7 @@ export async function fetchExpectedOut({
   });
   const expectedOutData = encodeExpectedOutArguments(
     priceChecker,
-    argsToEncode
+    argsToEncode,
   );
   const expectedOutCalculatorAddress =
     expectedOutCalculatorAddressesMapping[chainId][priceChecker];
@@ -52,7 +52,7 @@ export async function fetchExpectedOut({
   const expectedOutDecimals = await fetchTokenInfo(
     buyToken,
     chainId,
-    "decimals"
+    "decimals",
   );
   return Number(expectedOut) / 10 ** Number(expectedOutDecimals);
 }

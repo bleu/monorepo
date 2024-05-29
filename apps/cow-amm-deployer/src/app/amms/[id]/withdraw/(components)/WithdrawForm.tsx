@@ -1,3 +1,5 @@
+"use client";
+
 import { formatNumber, toast } from "@bleu/ui";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,16 +13,17 @@ import Table from "#/components/Table";
 import { TokenInfo } from "#/components/TokenInfo";
 import { Form } from "#/components/ui/form";
 import { useRawTxData } from "#/hooks/useRawTxData";
+import { ICowAmm } from "#/lib/fetchAmmData";
 import { ammWithdrawSchema } from "#/lib/schema";
 import {
   TRANSACTION_TYPES,
   withdrawCowAMMargs,
 } from "#/lib/transactionFactory";
-import { ICowAmm } from "#/lib/types";
 import { ChainId } from "#/utils/chainsPublicClients";
 
 export function WithdrawForm({ cowAmm }: { cowAmm: ICowAmm }) {
   const form = useForm<typeof ammWithdrawSchema._type>({
+    // @ts-ignore
     resolver: zodResolver(ammWithdrawSchema),
     defaultValues: {
       withdrawPct: 50,
@@ -43,7 +46,7 @@ export function WithdrawForm({ cowAmm }: { cowAmm: ICowAmm }) {
     );
     const txArgs = {
       type: TRANSACTION_TYPES.WITHDRAW,
-      amm: cowAmm.constantProductAddress,
+      amm: cowAmm.order.owner,
       amount0,
       amount1,
       chainId: chainId as ChainId,

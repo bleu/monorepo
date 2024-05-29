@@ -43,8 +43,8 @@ export default function HeaderEndButton() {
         parseMMDDYYYYToDate(startAtParam as string) as Date,
         parseMMDDYYYYToDate(endAtParam as string) as Date,
         null,
-        poolId
-      )
+        poolId,
+      ),
     );
   };
   const avaliableNetworks = Object.keys(networksOnBalancer).map((key) => ({
@@ -77,7 +77,7 @@ export default function HeaderEndButton() {
           } = values;
           handleDateUpdate(
             formatDateToMMDDYYYY(from),
-            formatDateToMMDDYYYY(to as Date)
+            formatDateToMMDDYYYY(to as Date),
           );
         }}
         initialDateFrom={startAtParam ?? undefined}

@@ -18,6 +18,6 @@ export default function Page({ searchParams }: { searchParams: SearchParams }) {
   }
 
   return redirect(
-    generatePoolPageLink(startAtDate as Date, endAtDate as Date, searchParams)
+    generatePoolPageLink(startAtDate as Date, endAtDate as Date, searchParams),
   );
 }

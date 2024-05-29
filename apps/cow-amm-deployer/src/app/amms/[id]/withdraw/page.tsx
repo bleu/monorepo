@@ -2,31 +2,39 @@
 
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
+import { useEffect, useState } from "react";
 
 import { LinkComponent } from "#/components/Link";
 import { Spinner } from "#/components/Spinner";
 import { UnsuportedChain } from "#/components/UnsuportedChain";
 import WalletNotConnected from "#/components/WalletNotConnected";
-import { useStandaloneAMM } from "#/hooks/useStandaloneAmm";
+import { fetchAmmData, ICowAmm } from "#/lib/fetchAmmData";
 import { supportedChainIds } from "#/utils/chainsPublicClients";
 
 import { WithdrawForm } from "./(components)/WithdrawForm";
 
 export default function Page({ params }: { params: { id: `0x${string}` } }) {
-  const { data: cowAmm, loading } = useStandaloneAMM(params.id);
+  const [ammData, setAmmData] = useState<ICowAmm>();
 
+  async function loadAmmData() {
+    const data = await fetchAmmData(params.id);
+    setAmmData(data);
+  }
   const { safe, connected } = useSafeAppsSDK();
+  useEffect(() => {
+    loadAmmData();
+  }, [params.id]);
 
   if (!connected) {
     return <WalletNotConnected />;
   }
 
-  if (!cowAmm || loading) {
-    return <Spinner />;
-  }
-
   if (!supportedChainIds.includes(safe.chainId)) {
     return <UnsuportedChain />;
+  }
+
+  if (!ammData) {
+    return <Spinner />;
   }
 
   return (
@@ -50,7 +58,7 @@ export default function Page({ params }: { params: { id: `0x${string}` } }) {
           </div>
         </div>
         <div className="flex flex-col w-[530px] overflow-auto size-full max-h-[550px]">
-          <WithdrawForm cowAmm={cowAmm} />
+          <WithdrawForm cowAmm={ammData} />
         </div>
       </div>
     </div>

@@ -12,7 +12,7 @@ import {
 export async function readBalToMint(
   votingOption: ArrElement<
     GetDeepProp<VeBalGetVotingListQuery, "veBalGetVotingList">
-  >
+  >,
 ) {
   const gaugeType = apiChainNameToGaugeType[votingOption.chain];
   return readContract({

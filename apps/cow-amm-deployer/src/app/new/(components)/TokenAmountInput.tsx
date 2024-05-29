@@ -1,4 +1,5 @@
-import { convertStringToNumberAndRoundDown, formatNumber } from "@bleu/ui";
+import { convertStringToNumberAndRoundDown } from "@bleu/ui";
+import { formatNumber } from "@bleu/utils/formatNumber";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
@@ -50,14 +51,14 @@ export function TokenAmountInput({
         type="number"
         step={1 / 10 ** (token ? token.decimals : 18)}
       />
-      {!maxButtonDisabled && (
-        <div className="flex gap-x-1 text-xs">
+      <div className="flex gap-x-1 text-xs">
+        <span>
           <span>
-            <span>
-              Wallet Balance:{" "}
-              {formatNumber(walletAmount, 4, "decimal", "standard", 0.0001)}
-            </span>
+            Wallet Balance:{" "}
+            {formatNumber(walletAmount, 4, "decimal", "standard", 0.0001)}
           </span>
+        </span>
+        {!maxButtonDisabled && (
           <button
             type="button"
             className="text-accent outline-none hover:text-accent/70"
@@ -70,8 +71,8 @@ export function TokenAmountInput({
           >
             Max
           </button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

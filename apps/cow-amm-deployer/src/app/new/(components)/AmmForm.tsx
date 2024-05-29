@@ -27,7 +27,7 @@ import { IToken } from "#/lib/fetchAmmData";
 import { ammFormSchema } from "#/lib/schema";
 import { fetchTokenUsdPrice } from "#/lib/tokenUtils";
 import { buildTxAMMArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
-import { PRICE_ORACLES } from "#/lib/types";
+import { PRICE_ORACLES, PriceOraclesValue } from "#/lib/types";
 import { cn } from "#/lib/utils";
 import { ChainId } from "#/utils/chainsPublicClients";
 
@@ -128,12 +128,8 @@ export function AmmForm({
                 );
               }}
               selectedToken={(formData?.token0 as IToken) ?? undefined}
+              errorMessage={errors.token0?.message}
             />
-            {errors.token0 && (
-              <FormMessage className="mt-1 h-6 text-sm text-destructive">
-                <span>{errors.token0.message}</span>
-              </FormMessage>
-            )}
           </div>
         </div>
         <div className="flex flex-col w-full">
@@ -150,12 +146,8 @@ export function AmmForm({
                 });
               }}
               selectedToken={(formData?.token1 as IToken) ?? undefined}
+              errorMessage={errors.token1?.message}
             />
-            {errors.token1 && (
-              <FormMessage className="mt-1 h-6 text-sm text-destructive">
-                <span>{errors.token1.message}</span>
-              </FormMessage>
-            )}
           </div>
         </div>
       </div>
@@ -266,7 +258,7 @@ function PriceOracleFields({
               value,
             }))}
             onValueChange={(priceOracle) => {
-              setValue("priceOracle", priceOracle as PRICE_ORACLES);
+              setValue("priceOracle", priceOracle as PriceOraclesValue);
             }}
             placeholder={priceOracle}
           />

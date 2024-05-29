@@ -1,7 +1,7 @@
 import { Address } from "viem";
 
+import { IToken } from "#/lib/fetchAmmData";
 import { fetchWalletTokenBalance } from "#/lib/tokenUtils";
-import { IToken } from "#/lib/types";
 import { ChainId } from "#/utils/chainsPublicClients";
 
 export async function getBalancesFromContract([

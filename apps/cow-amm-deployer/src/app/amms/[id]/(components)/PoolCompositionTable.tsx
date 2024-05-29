@@ -1,10 +1,11 @@
+"use client";
 import { formatNumber } from "@bleu/utils/formatNumber";
 import { tomatoDark } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 
 import Table from "#/components/Table";
 import { Tooltip } from "#/components/Tooltip";
-import { ICowAmm } from "#/lib/types";
+import { ICowAmm } from "#/lib/fetchAmmData";
 
 import { TokenInfo } from "./TokenInfo";
 

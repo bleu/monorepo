@@ -11,7 +11,7 @@ import {
   PopoverTrigger,
 } from "#/components/ui/popover";
 import { useSafeBalances } from "#/hooks/useSafeBalances";
-import { IToken } from "#/lib/types";
+import { IToken } from "#/lib/fetchAmmData";
 import { ChainId } from "#/utils/chainsPublicClients";
 
 import { Button } from "./Button";

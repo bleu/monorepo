@@ -1,5 +1,5 @@
+import { IToken } from "#/lib/fetchAmmData";
 import { fetchTokenUsdPrice } from "#/lib/tokenUtils";
-import { IToken } from "#/lib/types";
 import { ChainId } from "#/utils/chainsPublicClients";
 
 export async function getTokensExternalPrices([_, chainId, token0, token1]: [

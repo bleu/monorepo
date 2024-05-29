@@ -1,42 +1,44 @@
-import { Address } from "@bleu/utils";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { ResultOf } from "gql.tada";
+"use client";
 
-import { useDecodedPriceOracleData } from "#/hooks/useDecodedPriceOracleData";
-import { AMM_QUERY } from "#/hooks/useStandaloneAmm";
+import { ArrowTopRightIcon } from "@radix-ui/react-icons";
+import Link from "next/link";
+
+import { ICowAmm } from "#/lib/fetchAmmData";
 import { PRICE_ORACLES } from "#/lib/types";
-import { ChainId } from "#/utils/chainsPublicClients";
 
-import { BalancerPriceInformation } from "./BalancerPriceInformation";
-import { ChainlinkPriceInformation } from "./ChainlinkPriceInformation";
-import { CustomPriceInformation } from "./CustomPriceInformation";
-import { SushiV2PriceInformation } from "./SushiV2PriceInformation";
-import { UniswapV2PriceInformation } from "./UniswapV2PriceInformation";
-
-export function PriceInformation({
-  cowAmm,
+function PriceInformationComponent({
+  label,
+  urls,
 }: {
-  cowAmm: ResultOf<typeof AMM_QUERY>;
+  label: string;
+  urls: string[];
 }) {
-  const { safe } = useSafeAppsSDK();
-  const { isLoading, decodedData } = useDecodedPriceOracleData({
-    priceOracleAddress: cowAmm.constantProductData?.priceOracle as Address,
-    priceOracleData: cowAmm.constantProductData?.priceOracleData as Address,
-    chainId: safe.chainId as ChainId,
-  });
+  return (
+    <div className="flex flex-row gap-x-1 items-center hover:text-foreground/90">
+      <span>{label}</span>
+      {urls.map((url, index) => (
+        <Link key={index} href={url} target="_blank">
+          <ArrowTopRightIcon />
+        </Link>
+      ))}
+    </div>
+  );
+}
 
-  if (isLoading || !decodedData) return <>Loading...</>;
+export function PriceInformation({ cowAmm }: { cowAmm: ICowAmm }) {
+  const { decodedPriceOracleData, priceFeedLinks } = cowAmm;
 
-  switch (decodedData[0]) {
-    case PRICE_ORACLES.UNI:
-      return <UniswapV2PriceInformation cowAmm={cowAmm} />;
-    case PRICE_ORACLES.BALANCER:
-      return <BalancerPriceInformation cowAmm={cowAmm} />;
-    case PRICE_ORACLES.SUSHI:
-      return <SushiV2PriceInformation cowAmm={cowAmm} />;
-    case PRICE_ORACLES.CHAINLINK:
-      return <ChainlinkPriceInformation cowAmm={cowAmm} />;
-    default:
-      return <CustomPriceInformation cowAmm={cowAmm} />;
-  }
+  const labels = {
+    [PRICE_ORACLES.UNI]: "Using price information from Uniswap V2",
+    [PRICE_ORACLES.BALANCER]: "Using price information from Balancer V2",
+    [PRICE_ORACLES.SUSHI]: "Using price information from Sushi V2",
+    [PRICE_ORACLES.CHAINLINK]: "Using price information from Chainlink",
+    default: "Using price information from custom contract",
+  } as const;
+
+  const priceOracle = decodedPriceOracleData[0];
+  // @ts-ignore
+  const label = labels[priceOracle] || labels.default;
+
+  return <PriceInformationComponent label={label} urls={priceFeedLinks} />;
 }

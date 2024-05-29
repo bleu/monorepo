@@ -1,7 +1,4 @@
-"use client";
-
 import { formatNumber } from "@bleu/utils/formatNumber";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import {
   ArrowTopRightIcon,
   Pencil2Icon,
@@ -11,32 +8,20 @@ import Link from "next/link";
 import { Address } from "viem";
 
 import { Button } from "#/components/Button";
-import { Spinner } from "#/components/Spinner";
-import { UnsuportedChain } from "#/components/UnsuportedChain";
-import WalletNotConnected from "#/components/WalletNotConnected";
-import { useStandaloneAMM } from "#/hooks/useStandaloneAmm";
 import { buildAccountCowExplorerUrl } from "#/lib/cowExplorer";
-import { ChainId, supportedChainIds } from "#/utils/chainsPublicClients";
+import { fetchAmmData } from "#/lib/fetchAmmData";
+import { ChainId } from "#/utils/chainsPublicClients";
 
 import { PoolCompositionTable } from "./(components)/PoolCompositionTable";
 import { PriceInformation } from "./(components)/PriceInformation";
 
-export default function Page({ params }: { params: { id: `0x${string}` } }) {
-  const { data: cowAmm, loading } = useStandaloneAMM(params.id);
+async function getData({ params }: { params: { id: string } }) {
+  const ammData = await fetchAmmData(params.id);
+  return ammData;
+}
 
-  const { safe, connected } = useSafeAppsSDK();
-
-  if (!connected) {
-    return <WalletNotConnected />;
-  }
-
-  if (!cowAmm || loading) {
-    return <Spinner />;
-  }
-
-  if (!supportedChainIds.includes(safe.chainId)) {
-    return <UnsuportedChain />;
-  }
+export default async function Page({ params }: { params: { id: string } }) {
+  const ammData = await getData({ params });
 
   return (
     <div className="flex w-full justify-center">
@@ -45,21 +30,20 @@ export default function Page({ params }: { params: { id: `0x${string}` } }) {
           <div className="flex flex-col gap-1">
             <h2 className="text-2xl font-serif">
               The first <i className="text-purple">MEV-Capturing AMM</i>,
-              brought to you by <i className="text-yellow">CoW DAO</i>{" "}
+              brought to you by <i className="text-yellow">CoW DAO</i>
             </h2>
-            {/* @ts-ignore */}
-            <PriceInformation cowAmm={cowAmm} />
+            <PriceInformation cowAmm={ammData} />
           </div>
           <div className="flex flex-col bg-yellow/40 text-foreground py-2 px-8">
             <span className="text-sm">Total Value</span>
             <span className="text-2xl">
               ${" "}
               {formatNumber(
-                cowAmm.totalUsdValue,
+                ammData.totalUsdValue,
                 2,
                 "decimal",
                 "compact",
-                0.01,
+                0.01
               )}
             </span>
           </div>
@@ -73,9 +57,9 @@ export default function Page({ params }: { params: { id: `0x${string}` } }) {
             href={
               new URL(
                 buildAccountCowExplorerUrl({
-                  chainId: safe.chainId as ChainId,
-                  address: safe.safeAddress as Address,
-                }),
+                  chainId: ammData.order.chainId as ChainId,
+                  address: ammData.order.handler as Address,
+                })
               )
             }
             rel="noreferrer noopener"
@@ -85,10 +69,10 @@ export default function Page({ params }: { params: { id: `0x${string}` } }) {
             <ArrowTopRightIcon className="hover:text-primary" />
           </Link>
         </div>
-        <PoolCompositionTable cowAmm={cowAmm} />
-        <div className="flex gap-4 items-center ">
+        <PoolCompositionTable cowAmm={ammData} />
+        <div className="flex gap-4 items-center">
           <Button
-            className="flex items-center gap-1 py-3 px-6 "
+            className="flex items-center gap-1 py-3 px-6"
             variant="destructive"
             disabled
           >

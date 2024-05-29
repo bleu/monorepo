@@ -3,8 +3,8 @@ import { gnosis, mainnet, sepolia } from "viem/chains";
 
 import { ChainId } from "#/utils/chainsPublicClients";
 
+import { IToken } from "./fetchAmmData";
 import { getNativePrice } from "./orderBookApi/fetchNativePrice";
-import { IToken } from "./types";
 
 export const USDC: Record<ChainId, IToken> = {
   [mainnet.id]: {

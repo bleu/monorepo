@@ -1,11 +1,11 @@
 import { Address, formatUnits, PublicClient } from "viem";
 import { gnosis, mainnet, sepolia } from "viem/chains";
 
+import { IToken } from "#/lib/fetchAmmData";
 import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 
 import { priceFeedAbi } from "./abis/priceFeed";
 import { priceFeedRegisterAbi } from "./abis/priceFeedRegister";
-import { IToken } from "./types";
 
 export const PRICE_FEED_REGISTER_ADDRESS = {
   [mainnet.id]: "0x47Fb2585D2C56Fe188D0E6ec628a38b74fCeeeDf",

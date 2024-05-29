@@ -8,18 +8,6 @@ export enum PRICE_ORACLES {
   CHAINLINK = "Chainlink",
 }
 
-export interface IToken {
-  address: Address;
-  symbol: string;
-  decimals: number;
-}
-
-export interface ITokenExtended extends IToken {
-  balance: string;
-  usdPrice: number;
-  usdValue: number;
-}
-
 export interface PriceOracleData {
   balancerPoolId?: `0x${string}`;
   uniswapV2PairAddress?: Address;
@@ -29,13 +17,4 @@ export interface PriceOracleData {
   chainlinkTimeThresholdInHours?: number;
   customPriceOracleAddress?: Address;
   customPriceOracleData?: `0x${string}`;
-}
-export interface ICowAmm {
-  token0: ITokenExtended;
-  token1: ITokenExtended;
-  totalUsdValue: number;
-  minTradedToken0: number;
-  priceOracleData: `0x${string}`;
-  priceOracleAddress: Address;
-  disabled: boolean;
 }

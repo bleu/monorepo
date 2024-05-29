@@ -22,7 +22,7 @@ export function RootLayout({ children }: React.PropsWithChildren) {
               {children}
             </div>
             <Footer twitterLink="https://twitter.com/cowswap" />
-            <Toaster />
+            <Toaster position="top-right" />
           </div>
         </div>
       </TokenSelectContextProvider>

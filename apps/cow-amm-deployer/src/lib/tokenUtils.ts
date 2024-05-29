@@ -53,7 +53,7 @@ export async function fetchWalletTokenBalance({
 
 export async function fetchTokenInfo(
   tokenAddress: Address,
-  chainId: ChainId
+  chainId: ChainId,
 ): Promise<IToken> {
   const publicClient = publicClientsFromIds[chainId];
   const [symbol, decimals] = await Promise.all([

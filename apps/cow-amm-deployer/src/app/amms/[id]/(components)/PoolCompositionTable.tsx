@@ -4,10 +4,9 @@ import { tomatoDark } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 
 import Table from "#/components/Table";
+import { TokenInfo } from "#/components/TokenInfo";
 import { Tooltip } from "#/components/Tooltip";
 import { ICowAmm } from "#/lib/fetchAmmData";
-
-import { TokenInfo } from "./TokenInfo";
 
 export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
   const anyTokenWithoutUsdPrice =
@@ -30,17 +29,9 @@ export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
           const valuePct =
             (Number(token.usdValue) * 100) / cowAmm.totalUsdValue;
           return (
-            // @ts-ignore
             <Table.BodyRow key={token.address}>
               <Table.BodyCell>
-                <TokenInfo
-                  // @ts-ignore
-                  symbol={token.symbol}
-                  // @ts-ignore
-                  id={token.address}
-                  // @ts-ignore
-                  logoUri={token.logoUri}
-                />
+                <TokenInfo token={token} />
               </Table.BodyCell>
               <Table.BodyCell>{formatNumber(token.balance, 4)}</Table.BodyCell>
               <Table.BodyCell>

@@ -1,6 +1,8 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { gnosis, mainnet, sepolia } from "viem/chains";
 
+import { cowTokenList } from "#/lib/cowTokenList";
 import { ChainId } from "#/utils/chainsPublicClients";
 
 type ImageAttributes = React.DetailedHTMLProps<
@@ -8,7 +10,7 @@ type ImageAttributes = React.DetailedHTMLProps<
   HTMLImageElement
 >;
 
-type ImageFallbackProps = ImageAttributes & {
+type ImageFallbackProps = Omit<ImageAttributes, "src"> & {
   tokenAddress?: string;
   chainId?: ChainId;
   quality?: number;
@@ -17,17 +19,29 @@ type ImageFallbackProps = ImageAttributes & {
 const tokenUrlRoot =
   "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images";
 
-export const cowprotocolTokenLogoUrl = (
-  address?: string,
-  chainId?: ChainId,
-) => {
-  if (!address || !chainId) return;
-  return `${tokenUrlRoot}/${chainId}/${address.toLowerCase()}/logo.png`;
+export const cowprotocolTokenLogoUrl = (address?: string, chainId?: ChainId) =>
+  `${tokenUrlRoot}/${chainId}/${address?.toLowerCase()}/logo.png`;
+
+export const cowTokenListLogoUrl = (address?: string, chainId?: ChainId) => {
+  return cowTokenList.find(
+    (token) =>
+      token.chainId === chainId &&
+      token.address.toLowerCase() === address?.toLowerCase()
+  )?.logoURI;
 };
+
+const chainIdToName: Record<ChainId, string> = {
+  [mainnet.id]: "ethereum",
+  [gnosis.id]: "xdai",
+  [sepolia.id]: "ethereum",
+};
+
+export function trustTokenLogoUrl(address?: string, chainId?: ChainId): string {
+  return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/${chainIdToName[chainId || 1]}/assets/${address}/logo.png`;
+}
 
 const FALLBACK_SRC = "/assets/generic-token-logo.png";
 export const TokenLogo = ({
-  src,
   tokenAddress,
   chainId,
   alt,
@@ -36,11 +50,20 @@ export const TokenLogo = ({
   className,
   quality,
 }: ImageFallbackProps) => {
-  const [imageSrc, setImageSrc] = useState<string>();
+  const imagesSrc = [
+    cowprotocolTokenLogoUrl(tokenAddress, chainId),
+    cowprotocolTokenLogoUrl(tokenAddress, 1),
+    cowTokenListLogoUrl(tokenAddress, chainId),
+    cowTokenListLogoUrl(tokenAddress, 1),
+    trustTokenLogoUrl(tokenAddress, chainId),
+    trustTokenLogoUrl(tokenAddress, 1),
+    FALLBACK_SRC,
+  ] as string[];
+  const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    if (src) setImageSrc(src);
-  }, [src]);
+    setIndex(0);
+  }, [tokenAddress, chainId]);
 
   return (
     <Image
@@ -49,13 +72,9 @@ export const TokenLogo = ({
       height={Number(height)}
       quality={quality}
       alt={alt || ""}
-      src={imageSrc || FALLBACK_SRC}
+      src={imagesSrc[index]}
       onError={() => {
-        if (imageSrc === src)
-          setImageSrc(
-            cowprotocolTokenLogoUrl(tokenAddress, chainId) || FALLBACK_SRC,
-          );
-        else setImageSrc(FALLBACK_SRC);
+        setIndex(index + 1);
       }}
     />
   );

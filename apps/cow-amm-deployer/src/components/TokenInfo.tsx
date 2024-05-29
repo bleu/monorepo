@@ -1,40 +1,31 @@
-import { formatNumber } from "@bleu/utils/formatNumber";
+import { formatNumber } from "@bleu/ui";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 
 import { TokenLogo } from "#/components/TokenLogo";
+import { IToken, ITokenExtended } from "#/lib/types";
 import { ChainId } from "#/utils/chainsPublicClients";
-import { truncateAddress } from "#/utils/truncate";
 
-export function TokenInfo({
-  symbol,
-  id,
-  amount,
-  logoUri,
-}: {
-  logoUri: string;
-  symbol?: string | null;
-  id?: string;
-  amount?: number | string;
-}) {
+export function TokenInfo({ token }: { token: IToken | ITokenExtended }) {
   const { safe } = useSafeAppsSDK();
+
   return (
     <div className="flex items-center gap-x-1">
       <div className="flex items-center justify-center">
-        <div className="rounded-full">
+        <div className="rounded-full bg-white p-1">
           <TokenLogo
-            src={logoUri}
-            tokenAddress={id}
+            tokenAddress={token.address}
             chainId={safe.chainId as ChainId}
             className="rounded-full"
             alt="Token Logo"
-            height={28}
-            width={28}
+            height={22}
+            width={22}
             quality={100}
           />
         </div>
       </div>
-      {symbol ? symbol : truncateAddress(id)}{" "}
-      {amount && `(${formatNumber(amount, 4, "decimal", "compact", 0.001)})`}
+      {token.symbol}{" "}
+      {"balance" in token &&
+        `(${formatNumber(token.balance, 4, "decimal", "compact", 0.001)})`}
     </div>
   );
 }

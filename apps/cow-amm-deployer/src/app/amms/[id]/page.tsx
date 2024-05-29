@@ -15,13 +15,8 @@ import { ChainId } from "#/utils/chainsPublicClients";
 import { PoolCompositionTable } from "./(components)/PoolCompositionTable";
 import { PriceInformation } from "./(components)/PriceInformation";
 
-async function getData({ params }: { params: { id: string } }) {
-  const ammData = await fetchAmmData(params.id);
-  return ammData;
-}
-
 export default async function Page({ params }: { params: { id: string } }) {
-  const ammData = await getData({ params });
+  const ammData = await fetchAmmData(params.id);
 
   return (
     <div className="flex w-full justify-center">
@@ -83,6 +78,11 @@ export default async function Page({ params }: { params: { id: string } }) {
             <Pencil2Icon />
             Edit CoW AMM LP parameters
           </Button>
+          <Link href={`/amms/${params.id}/withdraw`}>
+            <Button className="flex items-center gap-1 py-3 px-6">
+              Withdraw
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

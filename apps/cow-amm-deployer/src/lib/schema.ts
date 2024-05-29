@@ -233,3 +233,7 @@ export const ammFormSchema = z
       });
     }
   });
+
+export const ammWithdrawSchema = z.object({
+  withdrawPct: z.coerce.number().positive().lte(100),
+});

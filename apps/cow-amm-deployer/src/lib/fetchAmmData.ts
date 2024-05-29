@@ -19,6 +19,7 @@ import { getTokensExternalPrices } from "./getTokensExternalPrices";
 export const AMM_QUERY = graphql(`
   query fetchAmmData($ammId: String!) {
     constantProductData(id: $ammId) {
+      id
       token0 {
         address
         decimals
@@ -35,6 +36,7 @@ export const AMM_QUERY = graphql(`
       order {
         handler
         chainId
+        owner
       }
       disabled
     }
@@ -79,7 +81,7 @@ function validateAmmId(id: string) {
 
 async function fetchPriceFeedLinks(
   decodedData: [PRICE_ORACLES, PriceOracleData],
-  chainId: ChainId,
+  chainId: ChainId
 ): Promise<string[]> {
   switch (decodedData[0]) {
     case PRICE_ORACLES.UNI: {
@@ -143,7 +145,7 @@ export async function fetchAmmData(ammId: string): Promise<ICowAmm> {
 
   const priceFeedLinks = await fetchPriceFeedLinks(
     decodedPriceOracleData,
-    chainId,
+    chainId
   );
 
   const token0 = {

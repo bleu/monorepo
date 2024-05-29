@@ -2,15 +2,23 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 
+import { useDecodedPriceOracleData } from "#/hooks/useDecodedPriceOracleData";
 import { ICowAmm } from "#/lib/types";
 import { ChainId } from "#/utils/chainsPublicClients";
 
 export function SushiV2PriceInformation({ cowAmm }: { cowAmm: ICowAmm }) {
   const { safe } = useSafeAppsSDK();
+  const { isLoading, decodedData } = useDecodedPriceOracleData({
+    priceOracleAddress: cowAmm.priceOracleAddress,
+    priceOracleData: cowAmm.priceOracleData,
+    chainId: safe.chainId as ChainId,
+  });
+
+  if (isLoading || !decodedData) return <>Loading...</>;
 
   const priceOracleLink = getSushiV2Pair(
     safe.chainId as ChainId,
-    cowAmm.priceOracleData?.sushiSwapPairAddress,
+    decodedData[1].sushiSwapPairAddress,
   );
 
   return (

@@ -53,7 +53,7 @@ export function HomeWrapper({ goToSafe = false }: { goToSafe?: boolean }) {
   const userId = `${safe.safeAddress}-${safe.chainId}`;
 
   const { data, isLoading } = useSWR(CREATED_AMMS_FOR_USER_QUERY, (query) =>
-    request(NEXT_PUBLIC_API_URL, query, { userId })
+    request(NEXT_PUBLIC_API_URL, query, { userId }),
   );
 
   if (isLoading || !data) return <>Loading...</>;

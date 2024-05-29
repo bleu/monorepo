@@ -10,7 +10,7 @@ import { ChainId } from "#/utils/chainsPublicClients";
 import { getBalancesFromContract } from "./getBalancesFromContract";
 import { getTokensExternalPrices } from "./getTokesFrom";
 
-const AMM_QUERY = graphql(`
+export const AMM_QUERY = graphql(`
   query fetchAmmData($ammId: String!) {
     constantProductData(id: $ammId) {
       token0 {
@@ -41,7 +41,7 @@ export function useStandaloneAMM(ammId: Address) {
     error: subgraphError,
     isLoading: isSubgraphLoading,
   } = useSWR(ammId, (ammId) =>
-    request(NEXT_PUBLIC_API_URL, AMM_QUERY, { ammId })
+    request(NEXT_PUBLIC_API_URL, AMM_QUERY, { ammId }),
   );
 
   const token0SubgraphData = subgraphData?.constantProductData?.token0;
@@ -62,7 +62,7 @@ export function useStandaloneAMM(ammId: Address) {
       token0SubgraphData as IToken,
       token1SubgraphData as IToken,
     ],
-    getBalancesFromContract
+    getBalancesFromContract,
   );
 
   const {
@@ -76,7 +76,7 @@ export function useStandaloneAMM(ammId: Address) {
       token0SubgraphData as IToken,
       token1SubgraphData as IToken,
     ],
-    getTokensExternalPrices
+    getTokensExternalPrices,
   );
 
   if (

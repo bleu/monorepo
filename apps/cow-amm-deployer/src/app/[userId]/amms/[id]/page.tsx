@@ -15,7 +15,11 @@ import { ChainId } from "#/utils/chainsPublicClients";
 import { PoolCompositionTable } from "./(components)/PoolCompositionTable";
 import { PriceInformation } from "./(components)/PriceInformation";
 
-export default async function Page({ params }: { params: { id: string } }) {
+export default async function Page({
+  params,
+}: {
+  params: { userId: string; id: string };
+}) {
   const ammData = await fetchAmmData(params.id);
 
   return (
@@ -38,7 +42,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                 2,
                 "decimal",
                 "compact",
-                0.01,
+                0.01
               )}
             </span>
           </div>
@@ -54,7 +58,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                 buildAccountCowExplorerUrl({
                   chainId: ammData.order.chainId as ChainId,
                   address: ammData.order.owner as Address,
-                }),
+                })
               )
             }
             rel="noreferrer noopener"
@@ -66,6 +70,15 @@ export default async function Page({ params }: { params: { id: string } }) {
         </div>
         <PoolCompositionTable cowAmm={ammData} />
         <div className="flex gap-4 items-center">
+          <Link href={`/${params.userId}/amms`}>
+            <Button
+              className="flex items-center gap-1 py-3 px-6"
+              variant="ghost"
+            >
+              <ResetIcon />
+              Back to AMMs table
+            </Button>
+          </Link>
           <Button
             className="flex items-center gap-1 py-3 px-6"
             variant="destructive"

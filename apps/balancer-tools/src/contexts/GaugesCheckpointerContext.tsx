@@ -1,6 +1,6 @@
 "use client";
 
-import { VeBalGetVotingListQuery } from "@bleu-fi/gql/src/balancer-api-v3/__generated__/Ethereum";
+import { VeBalGetVotingListQuery } from "@bleu/gql/src/balancer-api-v3/__generated__/Ethereum";
 import { createContext, PropsWithChildren, useContext, useState } from "react";
 
 import { Notification } from "#/hooks/useTransaction";
@@ -28,7 +28,7 @@ type GaugesCheckpointerContextType = {
 };
 
 export const GaugesCheckpointerContext = createContext(
-  {} as GaugesCheckpointerContextType,
+  {} as GaugesCheckpointerContextType
 );
 
 export function GaugesCheckpointerProvider({ children }: PropsWithChildren) {
@@ -44,8 +44,8 @@ export function GaugesCheckpointerProvider({ children }: PropsWithChildren) {
   function removeSelectedGauge(selectedGauge: gaugeItem) {
     setSelectedGauges(
       selectedGauges.filter(
-        (gauge) => gauge.votingOption.id !== selectedGauge.votingOption.id,
-      ),
+        (gauge) => gauge.votingOption.id !== selectedGauge.votingOption.id
+      )
     );
   }
 

@@ -1,4 +1,4 @@
-import { Address, buildBlockExplorerTxUrl } from "@bleu-fi/utils";
+import { Address, buildBlockExplorerTxUrl } from "@bleu/utils";
 import { Chain } from "wagmi";
 
 import { useGaugesCheckpointer } from "#/contexts/GaugesCheckpointerContext";
@@ -21,7 +21,7 @@ export function useTransactionStatus() {
       txHash: hash,
     });
     setNotification(
-      NOTIFICATION_MAP_GAUGES_CHECKPOINT[TransactionStatus.SUBMITTING],
+      NOTIFICATION_MAP_GAUGES_CHECKPOINT[TransactionStatus.SUBMITTING]
     );
     setTransactionUrl(txUrl);
   }

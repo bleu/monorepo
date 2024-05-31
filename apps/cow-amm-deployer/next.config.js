@@ -18,7 +18,7 @@ const moduleExports = {
       },
     ];
   },
-  transpilePackages: ["@bleu-fi/gql"],
+  transpilePackages: ["@bleu/gql"],
   reactStrictMode: true,
   swcMinify: true,
   /**

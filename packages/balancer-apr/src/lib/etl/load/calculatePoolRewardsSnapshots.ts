@@ -1,4 +1,4 @@
-import { SECONDS_IN_YEAR } from "@bleu-fi/utils/date";
+import { SECONDS_IN_YEAR } from "@bleu/utils/date";
 import { sql } from "drizzle-orm";
 import { addToTable } from "lib/db/addToTable";
 import { logIfVerbose } from "lib/logIfVerbose";

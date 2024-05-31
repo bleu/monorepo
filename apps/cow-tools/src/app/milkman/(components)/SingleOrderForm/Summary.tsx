@@ -1,5 +1,5 @@
-import { NetworkChainId, networkFor } from "@bleu-fi/utils";
-import { formatDateToLocalDatetime } from "@bleu-fi/utils/date";
+import { NetworkChainId, networkFor } from "@bleu/utils";
+import { formatDateToLocalDatetime } from "@bleu/utils/date";
 import { Pencil1Icon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import { FieldValues } from "react-hook-form";
@@ -38,14 +38,14 @@ export function OrderSummaryList({
 
   function createRawTransaction(data: FieldValues) {
     const sellAmountBigInt = BigInt(
-      Number(data.tokenSellAmount) * 10 ** data.tokenSell.decimals,
+      Number(data.tokenSellAmount) * 10 ** data.tokenSell.decimals
     );
     const priceCheckersArgs = priceCheckersArgumentsMapping[
       data.priceChecker as PRICE_CHECKERS
     ].map(
       (arg) =>
         arg.convertInput?.(data[arg.name], data.tokenBuy.decimals) ||
-        data[arg.name],
+        data[arg.name]
     );
 
     const ordersNumber = data.isTwapNeeded ? data.numberOfOrders : 1;
@@ -146,7 +146,7 @@ function OrderSummary({
         data.priceChecker != PRICE_CHECKERS.META && {
           label: arg.label,
           key: arg.name,
-        },
+        }
     ),
   ];
 

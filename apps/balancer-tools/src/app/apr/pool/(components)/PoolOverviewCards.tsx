@@ -1,6 +1,6 @@
-import { db } from "@bleu-fi/balancer-apr/src/db";
-import { pools } from "@bleu-fi/balancer-apr/src/db/schema";
-import { formatDate } from "@bleu-fi/utils";
+import { db } from "@bleu/balancer-apr/src/db";
+import { pools } from "@bleu/balancer-apr/src/db/schema";
+import { formatDate } from "@bleu/utils";
 import { eq } from "drizzle-orm";
 
 import OverviewCards, {
@@ -56,7 +56,7 @@ export default async function PoolOverviewCards({
         content: formatAPR(results.poolAverage.avgApr),
       },
       ...getDatesDetails(startAt, endAt),
-    ],
+    ]
   );
 
   return <OverviewCards cardsDetails={cardsDetails} />;

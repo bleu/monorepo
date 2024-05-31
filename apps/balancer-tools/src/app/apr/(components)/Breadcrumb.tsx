@@ -1,8 +1,8 @@
 "use client";
 
-import { Pool } from "@bleu-fi/balancer-apr/src/lib/balancer/gauges";
-import { Network } from "@bleu-fi/utils";
-import { parseMMDDYYYYToDate } from "@bleu-fi/utils/date";
+import { Pool } from "@bleu/balancer-apr/src/lib/balancer/gauges";
+import { Network } from "@bleu/utils";
+import { parseMMDDYYYYToDate } from "@bleu/utils/date";
 import {
   ChevronRightIcon,
   ClipboardIcon,
@@ -107,7 +107,7 @@ export default function Breadcrumb() {
               link={generatePoolPageLink(
                 parseMMDDYYYYToDate(searchParams.get("startAt")) as Date,
                 parseMMDDYYYYToDate(searchParams.get("endAt")) as Date,
-                { network },
+                { network }
               )}
             >
               {network}
@@ -124,7 +124,7 @@ export default function Breadcrumb() {
           <BreadcrumbItem
             link={generatePoolPageLink(
               parseMMDDYYYYToDate(searchParams.get("startAt")) as Date,
-              parseMMDDYYYYToDate(searchParams.get("endAt")) as Date,
+              parseMMDDYYYYToDate(searchParams.get("endAt")) as Date
             )}
           >
             <div className="flex items-center gap-x-2">

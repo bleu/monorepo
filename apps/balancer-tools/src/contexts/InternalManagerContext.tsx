@@ -1,7 +1,7 @@
 "use client";
 
-import { InternalBalanceQuery } from "@bleu-fi/gql/src/balancer/__generated__/Ethereum";
-import { Address } from "@bleu-fi/utils";
+import { InternalBalanceQuery } from "@bleu/gql/src/balancer/__generated__/Ethereum";
+import { Address } from "@bleu/utils";
 import {
   createContext,
   PropsWithChildren,
@@ -55,7 +55,7 @@ type InternalManagerContextType = {
 };
 
 export const InternalManagerContext = createContext(
-  {} as InternalManagerContextType,
+  {} as InternalManagerContextType
 );
 
 export function InternalManagerProvider({ children }: PropsWithChildren) {
@@ -63,7 +63,7 @@ export function InternalManagerProvider({ children }: PropsWithChildren) {
   const [notification, setNotification] = useState<Notification | null>(null);
   const [transactionUrl, setTransactionUrl] = useState<string>();
   const [transactionStatus, setTransactionStatus] = useState<TransactionStatus>(
-    TransactionStatus.AUTHORIZING,
+    TransactionStatus.AUTHORIZING
   );
   const [tokenList, setTokenList] = useState<tokenListItem[]>([]);
   const [hasEnoughAllowance, setHasEnoughAllowance] = useState<

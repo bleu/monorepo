@@ -1,4 +1,4 @@
-import { Address } from "@bleu-fi/utils";
+import { Address } from "@bleu/utils";
 import { goerli, mainnet } from "viem/chains";
 
 import { ChainId } from "#/utils/chainsPublicClients";
@@ -27,7 +27,7 @@ export async function fetchTokenUsdPrice({
       ? cowTokenList.find(
           (cowToken) =>
             cowToken.symbol === token.symbol &&
-            cowToken.chainId === chainIdCoinGecko,
+            cowToken.chainId === chainIdCoinGecko
         )?.address
       : token.address;
   if (!address) {
@@ -40,7 +40,7 @@ export async function fetchTokenUsdPrice({
   };
 
   const url = `${COINGECKO_BASE_URL}/simple/token_price/ethereum/?${new URLSearchParams(
-    params,
+    params
   )}`;
 
   return fetch(url)

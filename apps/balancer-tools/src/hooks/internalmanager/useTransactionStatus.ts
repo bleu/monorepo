@@ -1,4 +1,4 @@
-import { Address, buildBlockExplorerTxUrl } from "@bleu-fi/utils";
+import { Address, buildBlockExplorerTxUrl } from "@bleu/utils";
 import { Chain } from "wagmi";
 
 import { useInternalBalance } from "#/contexts/InternalManagerContext";
@@ -21,7 +21,7 @@ export function useTransactionStatus() {
       txHash: hash,
     });
     setNotification(
-      NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.SUBMITTING],
+      NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.SUBMITTING]
     );
     setTransactionUrl(txUrl);
   }

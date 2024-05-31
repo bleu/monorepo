@@ -1,4 +1,4 @@
-import { NetworkFromNetworkChainId } from "@bleu-fi/utils";
+import { NetworkFromNetworkChainId } from "@bleu/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
@@ -12,7 +12,7 @@ export function UniswapV2PriceInformation({ cowAmm }: { cowAmm: ICowAmm }) {
 
   const priceOracleLink = getUniV2PairUrl(
     safe.chainId as ChainId,
-    cowAmm.priceOracleData?.uniswapV2PairAddress,
+    cowAmm.priceOracleData?.uniswapV2PairAddress
   );
 
   return (

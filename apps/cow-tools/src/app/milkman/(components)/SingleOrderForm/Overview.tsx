@@ -1,5 +1,5 @@
-import { formatDateToLocalDatetime } from "@bleu-fi/utils/date";
-import { formatNumber } from "@bleu-fi/utils/formatNumber";
+import { formatDateToLocalDatetime } from "@bleu/utils/date";
+import { formatNumber } from "@bleu/utils/formatNumber";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { FieldValues, useForm } from "react-hook-form";
@@ -49,7 +49,7 @@ export function FormOrderOverview({
 
   const formData = watch();
   const tokenSell = assets.find(
-    (asset) => asset.tokenInfo.address === formData.tokenSell?.address,
+    (asset) => asset.tokenInfo.address === formData.tokenSell?.address
   );
 
   const walletAmount = !tokenSell
@@ -108,7 +108,7 @@ export function FormOrderOverview({
                       4,
                       "decimal",
                       "standard",
-                      0.0001,
+                      0.0001
                     )}
                   </span>
                 </span>
@@ -118,7 +118,7 @@ export function FormOrderOverview({
                   onClick={() => {
                     setValue(
                       "tokenSellAmount",
-                      convertAndRoundDown(walletAmount),
+                      convertAndRoundDown(walletAmount)
                     );
                   }}
                 >

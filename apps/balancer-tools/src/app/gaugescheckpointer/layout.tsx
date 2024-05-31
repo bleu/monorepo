@@ -1,6 +1,6 @@
 "use client";
 
-import { Network } from "@bleu-fi/utils";
+import { Network } from "@bleu/utils";
 import * as React from "react";
 import { useNetwork } from "wagmi";
 

@@ -1,4 +1,4 @@
-import { formatDate } from "@bleu-fi/utils";
+import { formatDate } from "@bleu/utils";
 
 import { KPI } from "./KPI";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { VeBalGetVotingListQuery } from "@bleu-fi/gql/src/balancer-api-v3/__generated__/Ethereum";
+import { VeBalGetVotingListQuery } from "@bleu/gql/src/balancer-api-v3/__generated__/Ethereum";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 
@@ -36,7 +36,7 @@ export default function page() {
   function votingListFilter(
     votingOption: ArrElement<
       GetDeepProp<VeBalGetVotingListQuery, "veBalGetVotingList">
-    >,
+    >
   ) {
     const currentTimestamp = Math.floor(Date.now() / 1000);
     return (
@@ -48,7 +48,7 @@ export default function page() {
   const [gaugeItems, setGaugeItems] = useState<gaugeItem[]>([]);
 
   async function updateGaugeItems(
-    votingOptions: GetDeepProp<VeBalGetVotingListQuery, "veBalGetVotingList">,
+    votingOptions: GetDeepProp<VeBalGetVotingListQuery, "veBalGetVotingList">
   ) {
     setLoading(true);
 
@@ -56,7 +56,7 @@ export default function page() {
     const balToMinOnEachGauge = await Promise.all(
       votingOptionsFiltered?.map(async (votingOption) => {
         return readBalToMint(votingOption);
-      }),
+      })
     );
     const newGaugeItems = votingOptionsFiltered.map((votingOption, index) => {
       return {

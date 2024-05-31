@@ -1,6 +1,6 @@
 "use client";
 
-import POOLS_WITH_LIVE_GAUGES from "@bleu-fi/balancer-apr/src/lib/balancer/data/voting-gauges.json";
+import POOLS_WITH_LIVE_GAUGES from "@bleu/balancer-apr/src/lib/balancer/data/voting-gauges.json";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { MultiSelectDropdown } from "./MultiSelectDropdown";
@@ -8,8 +8,8 @@ import { MultiSelectDropdown } from "./MultiSelectDropdown";
 const AVALIABLE_TOKENS = [
   ...new Set(
     POOLS_WITH_LIVE_GAUGES.flatMap((pool) =>
-      pool.tokens.map((token) => token.symbol),
-    ),
+      pool.tokens.map((token) => token.symbol)
+    )
   ),
 ];
 

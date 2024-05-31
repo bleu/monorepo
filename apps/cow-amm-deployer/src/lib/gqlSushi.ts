@@ -1,6 +1,6 @@
-import { Subgraph, SUBGRAPHS } from "@bleu-fi/gql/codegen";
-import sushiSdks from "@bleu-fi/gql/src/sushi";
-import { Network, networkFor } from "@bleu-fi/utils";
+import { Subgraph, SUBGRAPHS } from "@bleu/gql/codegen";
+import sushiSdks from "@bleu/gql/src/sushi";
+import { Network, networkFor } from "@bleu/utils";
 import { GraphQLClient } from "graphql-request";
 import { sepolia } from "viem/chains";
 
@@ -19,7 +19,7 @@ export const pairs = {
     if (chainId == String(sepolia.id))
       throw new Error("Sepolia isn't supported");
     return sushiSdks[networkFor(chainId) as SushiSupportedNetworks](
-      pairs.client(chainId),
+      pairs.client(chainId)
     );
   },
 };

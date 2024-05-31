@@ -1,4 +1,4 @@
-import { formatNumber } from "@bleu-fi/utils/formatNumber";
+import { formatNumber } from "@bleu/utils/formatNumber";
 import { useEffect, useState } from "react";
 import { FieldValues, UseFormReturn } from "react-hook-form";
 

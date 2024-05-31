@@ -1,4 +1,4 @@
-import { formatNumber } from "@bleu-fi/utils/formatNumber";
+import { formatNumber } from "@bleu/utils/formatNumber";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { slateDarkA } from "@radix-ui/colors";
@@ -82,7 +82,7 @@ export function FormSelectPriceChecker({
     selectedPriceChecker && {
       resolver: zodResolver(schema),
       defaultValues,
-    },
+    }
   );
 
   const {
@@ -103,11 +103,11 @@ export function FormSelectPriceChecker({
       priceQuality: "optimal",
     }).then((res) => {
       setQuotedAmountOut(
-        Number(res.quote.buyAmount) / 10 ** defaultValues?.tokenBuy.decimals,
+        Number(res.quote.buyAmount) / 10 ** defaultValues?.tokenBuy.decimals
       );
       setFeePercetageThreshold(
         Number(res.quote.feeAmount) /
-          (Number(res.quote.feeAmount) + Number(res.quote.sellAmount)),
+          (Number(res.quote.feeAmount) + Number(res.quote.sellAmount))
       );
     });
   }, []);
@@ -122,7 +122,7 @@ export function FormSelectPriceChecker({
     setValue("priceChecker", selectedPriceChecker);
     setValue(
       "priceCheckerAddress",
-      priceCheckerAddressesMapping[chainId][selectedPriceChecker],
+      priceCheckerAddressesMapping[chainId][selectedPriceChecker]
     );
   }, [selectedPriceChecker]);
 
@@ -237,7 +237,7 @@ function PriceCheckerInputs({
 }) {
   const priceCheckerAguments = filterPriceCheckerArguments
     ? priceCheckersArgumentsMapping[priceChecker].filter(
-        (arg) => arg.encodingLevel > 0,
+        (arg) => arg.encodingLevel > 0
       )
     : priceCheckersArgumentsMapping[priceChecker];
 
@@ -245,11 +245,11 @@ function PriceCheckerInputs({
     return;
   }
   const nonArrayArguments = priceCheckerAguments.filter(
-    (arg) => !arg.type.includes("[]"),
+    (arg) => !arg.type.includes("[]")
   );
 
   const arrayArguments = priceCheckerAguments.filter((arg) =>
-    arg.type.includes("[]"),
+    arg.type.includes("[]")
   );
 
   const { register } = form;
@@ -431,7 +431,7 @@ function MetaPriceCheckerInput({
         register(arg.name);
         setValue(
           arg.name,
-          arg.name === "swapPath" ? [defaultValues?.tokenSell.address] : [],
+          arg.name === "swapPath" ? [defaultValues?.tokenSell.address] : []
         );
       }
     });
@@ -439,7 +439,7 @@ function MetaPriceCheckerInput({
       register("expectedOutCalculatorsNotEncodedData");
       setValue(
         "expectedOutCalculatorsNotEncodedData",
-        defaultValues?.expectedOutCalculatorsNotEncodedData || [],
+        defaultValues?.expectedOutCalculatorsNotEncodedData || []
       );
     }
   }, []);
@@ -447,7 +447,7 @@ function MetaPriceCheckerInput({
   function addExpectedOutCalculators(
     data: FieldValues,
     selectedPriceChecker: PRICE_CHECKERS,
-    expectedArgs: PriceCheckerArgument[],
+    expectedArgs: PriceCheckerArgument[]
   ) {
     setValue("expectedOutCalculatorsNotEncodedData", [
       ...getValues("expectedOutCalculatorsNotEncodedData"),
@@ -463,8 +463,8 @@ function MetaPriceCheckerInput({
       encodeExpectedOutArguments(
         selectedPriceChecker,
         expectedArgs.map(
-          (arg) => arg.convertInput?.(data[arg.name]) || data[arg.name],
-        ),
+          (arg) => arg.convertInput?.(data[arg.name]) || data[arg.name]
+        )
       ),
     ]);
   }
@@ -472,14 +472,14 @@ function MetaPriceCheckerInput({
   function editExpectedOutCalculators(
     data: FieldValues,
     selectedPriceChecker: PRICE_CHECKERS,
-    expectedArgs: PriceCheckerArgument[],
+    expectedArgs: PriceCheckerArgument[]
   ) {
     const newExpectedOutCalculators = [...formData.expectedOutData];
     newExpectedOutCalculators[dialogIndex] = encodeExpectedOutArguments(
       selectedPriceChecker,
       expectedArgs.map(
-        (arg) => arg.convertInput?.(data[arg.name]) || data[arg.name],
-      ),
+        (arg) => arg.convertInput?.(data[arg.name]) || data[arg.name]
+      )
     );
     setValue("expectedOutData", newExpectedOutCalculators);
 
@@ -508,7 +508,7 @@ function MetaPriceCheckerInput({
     }
     setValue(
       "expectedOutCalculatorsNotEncodedData",
-      newExpectedOutCalculatorsNotEncodedData,
+      newExpectedOutCalculatorsNotEncodedData
     );
   }
 
@@ -531,14 +531,14 @@ function MetaPriceCheckerInput({
                 addExpectedOutCalculators(
                   data,
                   selectedPriceChecker,
-                  expectedArgs,
+                  expectedArgs
                 );
                 return;
               }
               editExpectedOutCalculators(
                 data,
                 selectedPriceChecker,
-                expectedArgs,
+                expectedArgs
               );
             }}
             defaultValues={valuesForDialog}
@@ -560,7 +560,7 @@ function MetaPriceCheckerInput({
           {["Token in", "Token out", "Expected Minimum Out Calculator"].map(
             (arg) => (
               <Table.HeaderCell key={arg}>{arg}</Table.HeaderCell>
-            ),
+            )
           )}
           <Table.HeaderCell>
             <Button
@@ -572,12 +572,12 @@ function MetaPriceCheckerInput({
                     ? {
                         fromToken:
                           formData.expectedOutCalculatorsNotEncodedData.slice(
-                            -1,
+                            -1
                           )[0].toToken,
                       }
                     : {
                         fromToken: defaultValues?.tokenSell,
-                      },
+                      }
                 );
                 setDialogIndex(-1);
                 setOpenDialog(true);
@@ -594,7 +594,7 @@ function MetaPriceCheckerInput({
                 getPriceCheckerFromAddressAndChain(
                   chainId as ChainId,
                   formData.expectedOutAddresses[rowIndex],
-                  true,
+                  true
                 );
               return (
                 <Table.BodyRow key={rowIndex}>
@@ -672,10 +672,10 @@ function MetaPriceCheckerInput({
                           setValue("expectedOutCalculatorsNotEncodedData", [
                             ...formData.expectedOutCalculatorsNotEncodedData.slice(
                               0,
-                              rowIndex,
+                              rowIndex
                             ),
                             ...formData.expectedOutCalculatorsNotEncodedData.slice(
-                              rowIndex + 1,
+                              rowIndex + 1
                             ),
                           ]);
                         }}
@@ -707,7 +707,7 @@ function AddMetaExpectedOutCalculatorStepDialog({
   onSubmit?: (
     data: FieldValues,
     priceChecker: PRICE_CHECKERS,
-    expectedArgs: PriceCheckerArgument[],
+    expectedArgs: PriceCheckerArgument[]
   ) => void;
   setIsOpen: (isOpen: boolean) => void;
 }) {
@@ -741,7 +741,7 @@ function AddMetaExpectedOutCalculatorStepDialog({
     selectedPriceChecker && {
       resolver: zodResolver(schema),
       defaultValues,
-    },
+    }
   );
 
   const {
@@ -768,15 +768,15 @@ function AddMetaExpectedOutCalculatorStepDialog({
     setValue("expectedOutCalculator", selectedPriceChecker);
     setValue(
       "expectedOutCalculatorAddress",
-      expectedOutCalculatorAddressesMapping[chainId][selectedPriceChecker],
+      expectedOutCalculatorAddressesMapping[chainId][selectedPriceChecker]
     );
   }, [selectedPriceChecker]);
 
   const priceCheckersToShow = deployedPriceCheckersByChain[chainId].filter(
     (priceChecker) =>
       ![PRICE_CHECKERS.FIXED_MIN_OUT, PRICE_CHECKERS.META].includes(
-        priceChecker as PRICE_CHECKERS,
-      ),
+        priceChecker as PRICE_CHECKERS
+      )
   );
 
   const toToken = watch("toToken");

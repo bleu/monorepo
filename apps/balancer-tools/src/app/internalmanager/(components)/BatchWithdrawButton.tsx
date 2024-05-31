@@ -1,4 +1,4 @@
-import { Address } from "@bleu-fi/utils";
+import { Address } from "@bleu/utils";
 import { MinusIcon } from "@radix-ui/react-icons";
 import { useAccount, useNetwork } from "wagmi";
 

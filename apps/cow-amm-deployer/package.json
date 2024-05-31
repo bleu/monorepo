@@ -1,5 +1,5 @@
 {
-  "name": "@bleu-fi/cow-amm-deployer",
+  "name": "@bleu/cow-amm-deployer",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -16,8 +16,8 @@
     "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
-    "@bleu-fi/gql": "workspace:*",
-    "@bleu-fi/tsconfig": "workspace:*",
+    "@bleu/gql": "workspace:*",
+    "@bleu/tsconfig": "workspace:*",
     "@bleu/ui": "^0.1.93",
     "@cowprotocol/app-data": "^2.0.2",
     "@gnosis.pm/safe-apps-react-sdk": "^4.6.2",
@@ -68,8 +68,8 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@bleu-fi/eslint-config": "workspace:^",
-    "@bleu-fi/utils": "workspace:^",
+    "@bleu/eslint-config": "workspace:^",
+    "@bleu/utils": "workspace:^",
     "@graphql-codegen/cli": "5.0.2",
     "@graphql-codegen/typescript-graphql-request": "6.2.0",
     "@testing-library/jest-dom": "6.4.2",

@@ -1,4 +1,4 @@
-import { formatNumber } from "@bleu-fi/utils/formatNumber";
+import { formatNumber } from "@bleu/utils/formatNumber";
 import { tomatoDark } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { formatUnits } from "viem";
@@ -41,7 +41,7 @@ export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
               <Table.BodyCell>
                 {formatNumber(
                   formatUnits(BigInt(token.balance), token.tokenInfo.decimals),
-                  4,
+                  4
                 )}
               </Table.BodyCell>
               <Table.BodyCell>
@@ -59,7 +59,7 @@ export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
                       2,
                       "decimal",
                       "compact",
-                      0.01,
+                      0.01
                     )}
                   </>
                   {!token.externalUsdPrice && <PriceErrorTooltip />}

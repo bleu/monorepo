@@ -1,4 +1,4 @@
-import { Address, NetworkChainId, networkFor } from "@bleu-fi/utils";
+import { Address, NetworkChainId, networkFor } from "@bleu/utils";
 import { useState } from "react";
 import { FieldValues } from "react-hook-form";
 
@@ -30,7 +30,7 @@ export function TransactionCard({
 
   function handleBack() {
     const currentStage = stages.find(
-      (stage) => stage.name === transactionStatus,
+      (stage) => stage.name === transactionStatus
     );
     setTransactionStatus(currentStage?.previousStage ?? transactionStatus);
   }
@@ -41,7 +41,7 @@ export function TransactionCard({
 
   function handleContinue() {
     const currentStage = stages.find(
-      (stage) => stage.name === transactionStatus,
+      (stage) => stage.name === transactionStatus
     );
     setTransactionStatus(currentStage?.nextStage ?? transactionStatus);
   }

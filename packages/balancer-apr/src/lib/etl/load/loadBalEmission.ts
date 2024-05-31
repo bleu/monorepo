@@ -1,4 +1,4 @@
-import { dateToEpoch } from "@bleu-fi/utils/date";
+import { dateToEpoch } from "@bleu/utils/date";
 import { and, eq, isNull } from "drizzle-orm";
 import { addToTable } from "lib/db/addToTable";
 import { logIfVerbose } from "lib/logIfVerbose";
@@ -28,6 +28,6 @@ export async function loadBalEmission() {
     timestamps.map(({ timestamp }) => ({
       timestamp,
       weekEmission: String(balEmissions.weekly(dateToEpoch(timestamp))),
-    })),
+    }))
   );
 }

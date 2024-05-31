@@ -1,4 +1,4 @@
-import { buildBlockExplorerAddressURL } from "@bleu-fi/utils";
+import { buildBlockExplorerAddressURL } from "@bleu/utils";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { Address } from "viem";
@@ -19,14 +19,14 @@ export function TransactionInfo({
 }) {
   const priceChecker = getPriceCheckerFromAddressAndChain(
     order.chainId as ChainId,
-    order.priceChecker as Address,
+    order.priceChecker as Address
   );
 
   const expecetedArguments = priceChecker
     ? getExpectedArgumentsFromPriceChecker(
         priceChecker,
         order.priceCheckerData as `0x${string}`,
-        order.chainId as ChainId,
+        order.chainId as ChainId
       )
     : [];
 
@@ -34,7 +34,7 @@ export function TransactionInfo({
     ? decodePriceCheckerData(
         priceChecker,
         order.priceCheckerData as `0x${string}`,
-        order.chainId as ChainId,
+        order.chainId as ChainId
       )
     : [];
 
@@ -69,7 +69,7 @@ export function TransactionInfo({
             const output =
               expecetedArguments[index].convertOutput?.(
                 argument,
-                order.tokenOut?.decimals || 18,
+                order.tokenOut?.decimals || 18
               ) || String(argument);
             return (
               <div key={index} className="max-w-prose text-base">

@@ -1,4 +1,4 @@
-import { Address } from "@bleu-fi/utils";
+import { Address } from "@bleu/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import {
   getTransactionDetails,
@@ -71,7 +71,7 @@ export interface IUserMilkmanTransaction {
 function structureMilkmanTransaction(
   transaction: AllTransactionFromUserQuery["users"][0]["transactions"][0],
   cowOrder: ICowOrder[][],
-  hasToken: boolean[],
+  hasToken: boolean[]
 ): IUserMilkmanTransaction {
   return {
     id: transaction.id,
@@ -101,23 +101,23 @@ async function getProcessedMilkmanTransactions({
   if (users.length === 0) return [] as IUserMilkmanTransaction[];
 
   const swapsLenByTransaction = users[0]?.transactions.map(
-    (transaction) => transaction.swaps.length,
+    (transaction) => transaction.swaps.length
   );
 
   const orderContractsByTransaction = users[0]?.transactions.map(
-    (transaction) => transaction.swaps.map((swap) => swap.orderContract),
+    (transaction) => transaction.swaps.map((swap) => swap.orderContract)
   );
 
   const orderContractsBySwap = ([] as string[]).concat(
-    ...orderContractsByTransaction,
+    ...orderContractsByTransaction
   );
 
   const tokenAddressesByTransactions = users[0]?.transactions.map(
-    (transaction) => transaction.swaps.map((swap) => swap.tokenIn?.address),
+    (transaction) => transaction.swaps.map((swap) => swap.tokenIn?.address)
   ) as (Address | undefined)[][];
 
   const tokenAddressesBySwap = ([] as (Address | undefined)[]).concat(
-    ...tokenAddressesByTransactions,
+    ...tokenAddressesByTransactions
   );
 
   const tokenBalances = (await Promise.all(
@@ -128,9 +128,9 @@ async function getProcessedMilkmanTransactions({
       return getTokenBalance(
         tokenAddressesBySwap[index] as Address,
         orderContract as Address,
-        publicClient,
+        publicClient
       );
-    }),
+    })
   )) as number[];
 
   const hasTokenBySwap = tokenBalances.map((tokenBalance) => tokenBalance > 0);
@@ -142,9 +142,9 @@ async function getProcessedMilkmanTransactions({
           return getCowOrders(orderContract as Address, chainId);
         },
         5,
-        1000,
-      ),
-    ),
+        1000
+      )
+    )
   )) as ICowOrder[][];
 
   if (cowOrdersBySwap.some((cowOrders) => cowOrders === null)) {
@@ -163,8 +163,8 @@ async function getProcessedMilkmanTransactions({
     structureMilkmanTransaction(
       transaction,
       cowOrdersByTransaction[index],
-      hasTokenByTransaction[index],
-    ),
+      hasTokenByTransaction[index]
+    )
   );
 }
 
@@ -184,11 +184,11 @@ async function fetchToken(tokenAddress: Address, chainId: ChainId) {
 }
 
 function getMilkmanTransactionsFromTransactionsDetails(
-  transactionDetails: TransactionDetails,
+  transactionDetails: TransactionDetails
 ) {
   return (
     transactionDetails.txData?.dataDecoded?.parameters?.[0].valueDecoded?.filter(
-      (value) => value.to?.toLowerCase() == MILKMAN_ADDRESS.toLowerCase(),
+      (value) => value.to?.toLowerCase() == MILKMAN_ADDRESS.toLowerCase()
     ) || []
   );
 }
@@ -210,14 +210,14 @@ async function getQueuedMilkmanTransactions({
 
   const queuedTransactionQueueDetails = await Promise.all(
     queuedTransaction.map((transaction) =>
-      getTransactionDetails(chainId, transaction.transaction.id),
-    ),
+      getTransactionDetails(chainId, transaction.transaction.id)
+    )
   );
   const queuedMilkmanTransactionQueueDetails =
     queuedTransactionQueueDetails.filter((transactionDetails) =>
       transactionDetails.txData?.dataDecoded?.parameters?.[0].valueDecoded?.some(
-        (value) => value.to?.toLowerCase() == MILKMAN_ADDRESS.toLowerCase(),
-      ),
+        (value) => value.to?.toLowerCase() == MILKMAN_ADDRESS.toLowerCase()
+      )
     );
 
   const [tokensIn, tokensOut] = await Promise.all(
@@ -226,18 +226,18 @@ async function getQueuedMilkmanTransactions({
         queuedMilkmanTransactionQueueDetails.map((transactionDetails) =>
           Promise.all(
             getMilkmanTransactionsFromTransactionsDetails(
-              transactionDetails,
+              transactionDetails
             ).map((milkmanTransaction) =>
               fetchToken(
                 milkmanTransaction.dataDecoded?.parameters?.[index]
                   .value as Address,
-                Number(chainId) as ChainId,
-              ),
-            ),
-          ),
-        ),
-      ),
-    ),
+                Number(chainId) as ChainId
+              )
+            )
+          )
+        )
+      )
+    )
   );
 
   return queuedMilkmanTransactionQueueDetails.map(
@@ -270,7 +270,7 @@ async function getQueuedMilkmanTransactions({
           };
         }) as IMilkmanOrder[],
       };
-    },
+    }
   );
 }
 
@@ -280,7 +280,7 @@ export function useUserMilkmanTransactions() {
   const [retryCount, setRetryCount] = useState(0);
   const [error, setError] = useState(false);
   const [transactions, setTransactions] = useState<IUserMilkmanTransaction[]>(
-    [],
+    []
   );
 
   const reload = ({ showSpinner }: { showSpinner: boolean }) => {
@@ -320,7 +320,7 @@ export function useUserMilkmanTransactions() {
 export async function getTokenBalance(
   tokenAddress: Address,
   userAddress: Address,
-  publicClient: PublicClient,
+  publicClient: PublicClient
 ) {
   return publicClient.readContract({
     address: tokenAddress,

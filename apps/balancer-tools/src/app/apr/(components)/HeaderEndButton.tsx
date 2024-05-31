@@ -1,7 +1,7 @@
 "use client";
 
-import { capitalize, networkIdFor, networksOnBalancer } from "@bleu-fi/utils";
-import { formatDateToMMDDYYYY, parseMMDDYYYYToDate } from "@bleu-fi/utils/date";
+import { capitalize, networkIdFor, networksOnBalancer } from "@bleu/utils";
+import { formatDateToMMDDYYYY, parseMMDDYYYYToDate } from "@bleu/utils/date";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import {
   useParams,
@@ -43,8 +43,8 @@ export default function HeaderEndButton() {
         parseMMDDYYYYToDate(startAtParam as string) as Date,
         parseMMDDYYYYToDate(endAtParam as string) as Date,
         null,
-        poolId,
-      ),
+        poolId
+      )
     );
   };
   const avaliableNetworks = Object.keys(networksOnBalancer).map((key) => ({
@@ -77,7 +77,7 @@ export default function HeaderEndButton() {
           } = values;
           handleDateUpdate(
             formatDateToMMDDYYYY(from),
-            formatDateToMMDDYYYY(to as Date),
+            formatDateToMMDDYYYY(to as Date)
           );
         }}
         initialDateFrom={startAtParam ?? undefined}

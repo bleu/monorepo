@@ -1,4 +1,4 @@
-import { formatNumber } from "@bleu-fi/utils/formatNumber";
+import { formatNumber } from "@bleu/utils/formatNumber";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 
 import { TokenLogo } from "#/components/TokenLogo";

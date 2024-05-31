@@ -1,8 +1,8 @@
 "use client";
 
-import { AMM } from "@bleu-fi/math-poolsimulator/src";
-import { PoolPairData } from "@bleu-fi/math-poolsimulator/src/types";
-import { formatNumber } from "@bleu-fi/utils/formatNumber";
+import { AMM } from "@bleu/math-poolsimulator/src";
+import { PoolPairData } from "@bleu/math-poolsimulator/src/types";
+import { formatNumber } from "@bleu/utils/formatNumber";
 import { PlotType } from "plotly.js";
 
 import { AlertCard } from "#/components/AlertCard";
@@ -40,11 +40,11 @@ export function DepthCost({
     return <Spinner />;
 
   const pairTokensInitial = initialData?.tokens.filter(
-    (token) => token.symbol !== initialAnalysisToken.symbol,
+    (token) => token.symbol !== initialAnalysisToken.symbol
   );
 
   const pairTokenCustom = customData?.tokens.filter(
-    (token) => token.symbol !== initialAnalysisToken.symbol,
+    (token) => token.symbol !== initialAnalysisToken.symbol
   );
 
   try {
@@ -58,8 +58,8 @@ export function DepthCost({
             initialData,
             initialAMM,
             initialData.poolType,
-            initialBetaLimits,
-          ),
+            initialBetaLimits
+          )
         ),
         out: pairTokensInitial.map((pairToken) =>
           calculateDepthCost(
@@ -69,8 +69,8 @@ export function DepthCost({
             initialData,
             initialAMM,
             initialData.poolType,
-            initialBetaLimits,
-          ),
+            initialBetaLimits
+          )
         ),
       },
       custom: {
@@ -82,8 +82,8 @@ export function DepthCost({
             customData,
             customAMM,
             customData.poolType,
-            customBetaLimits,
-          ),
+            customBetaLimits
+          )
         ),
         out: pairTokenCustom.map((pairToken) =>
           calculateDepthCost(
@@ -93,8 +93,8 @@ export function DepthCost({
             customData,
             customAMM,
             customData.poolType,
-            customBetaLimits,
-          ),
+            customBetaLimits
+          )
         ),
       },
     };
@@ -103,7 +103,7 @@ export function DepthCost({
       ...depthCostAmounts.initial.in.map(({ amount }) => amount),
       ...depthCostAmounts.initial.out.map(({ amount }) => amount),
       ...depthCostAmounts.custom.in.map(({ amount }) => amount),
-      ...depthCostAmounts.custom.out.map(({ amount }) => amount),
+      ...depthCostAmounts.custom.out.map(({ amount }) => amount)
     );
 
     if (maxDepthCostAmount == -1) return <Spinner />;
@@ -126,7 +126,7 @@ export function DepthCost({
         true,
         "in",
         initialAnalysisToken?.symbol,
-        depthCostAmounts.initial.in.map(({ type }) => type),
+        depthCostAmounts.initial.in.map(({ type }) => type)
       ),
       createDataObject(
         dataX,
@@ -136,7 +136,7 @@ export function DepthCost({
         true,
         "in",
         initialAnalysisToken?.symbol,
-        depthCostAmounts.custom.in.map(({ type }) => type),
+        depthCostAmounts.custom.in.map(({ type }) => type)
       ),
       createDataObject(
         dataX,
@@ -148,7 +148,7 @@ export function DepthCost({
         initialAnalysisToken?.symbol,
         depthCostAmounts.initial.out.map(({ type }) => type),
         "y2",
-        "x2",
+        "x2"
       ),
       createDataObject(
         dataX,
@@ -160,7 +160,7 @@ export function DepthCost({
         initialAnalysisToken?.symbol,
         depthCostAmounts.custom.out.map(({ type }) => type),
         "y2",
-        "x2",
+        "x2"
       ),
     ];
 
@@ -226,7 +226,7 @@ const createHoverTemplate = (
   amounts: number[],
   analysisSymbol: string | undefined,
   tokenSymbols: string[],
-  depthCostPointType: string[],
+  depthCostPointType: string[]
 ): string[] => {
   return amounts.map((amount, i) => {
     const displayAmount = `${formatNumber(amount, 2)} ${analysisSymbol}`;
@@ -254,7 +254,7 @@ const createDataObject = (
   analysisSymbol: string | undefined,
   depthCostPointType: string[],
   yAxis = "",
-  xAxis = "",
+  xAxis = ""
 ) => {
   return {
     x,
@@ -271,7 +271,7 @@ const createDataObject = (
       y,
       analysisSymbol,
       x,
-      depthCostPointType,
+      depthCostPointType
     ),
   };
 };
@@ -283,7 +283,7 @@ export function calculateDepthCost(
   data: AnalysisData,
   amm: AMM<PoolPairData>,
   poolType: PoolTypeEnum,
-  betaLimits?: BetaLimits,
+  betaLimits?: BetaLimits
 ) {
   if (!analysisToken) throw new Error("Analysis token not found");
   const tokenIn = poolSide === "in" ? analysisToken : pairToken;
@@ -297,13 +297,13 @@ export function calculateDepthCost(
           price,
           tokenIn.symbol,
           tokenOut.symbol,
-          spotPricePrecision,
+          spotPricePrecision
         )
       : amm.tokenOutForExactSpotPriceAfterSwap(
           price,
           tokenIn.symbol,
           tokenOut.symbol,
-          spotPricePrecision,
+          spotPricePrecision
         );
 
   const { alpha, beta } = computeAlphaBetaValues(poolType, data);
@@ -337,7 +337,7 @@ export function calculateDepthCost(
               amount: amm.tokenInForExactTokenOut(
                 tokenOut.balance * 0.99,
                 tokenIn.symbol,
-                tokenOut.symbol,
+                tokenOut.symbol
               ),
               type: "price limit",
             }

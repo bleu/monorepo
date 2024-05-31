@@ -1,10 +1,10 @@
-import { PoolQuery } from "@bleu-fi/gql/src/balancer/__generated__/Ethereum";
-import { AMM } from "@bleu-fi/math-poolsimulator/src";
-import { ExtendedFx } from "@bleu-fi/math-poolsimulator/src/fx";
-import { ExtendedGyro2 } from "@bleu-fi/math-poolsimulator/src/gyro2";
-import { ExtendedGyro3 } from "@bleu-fi/math-poolsimulator/src/gyro3";
-import { ExtendedGyroEV2 } from "@bleu-fi/math-poolsimulator/src/gyroE";
-import { ExtendedMetaStableMath } from "@bleu-fi/math-poolsimulator/src/metastable";
+import { PoolQuery } from "@bleu/gql/src/balancer/__generated__/Ethereum";
+import { AMM } from "@bleu/math-poolsimulator/src";
+import { ExtendedFx } from "@bleu/math-poolsimulator/src/fx";
+import { ExtendedGyro2 } from "@bleu/math-poolsimulator/src/gyro2";
+import { ExtendedGyro3 } from "@bleu/math-poolsimulator/src/gyro3";
+import { ExtendedGyroEV2 } from "@bleu/math-poolsimulator/src/gyroE";
+import { ExtendedMetaStableMath } from "@bleu/math-poolsimulator/src/metastable";
 
 import { AnalysisData } from "#/contexts/PoolSimulatorContext";
 import { fetchECLPDerivativeParams } from "#/lib/eclp-derivative";
@@ -32,11 +32,11 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
           amp: String(data.poolParams?.ampFactor),
           swapFee: String(data.poolParams?.swapFee),
           totalShares: String(
-            data.tokens.reduce((acc, token) => acc + token.balance, 0),
+            data.tokens.reduce((acc, token) => acc + token.balance, 0)
           ),
           tokens: tokensData,
           tokensList: data.tokens.map((token) => String(token.symbol)),
-        }),
+        })
       );
     }
     case PoolTypeEnum.GyroE: {
@@ -45,7 +45,7 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
         new ExtendedGyroEV2({
           swapFee: String(data.poolParams?.swapFee),
           totalShares: String(
-            data.tokens.reduce((acc, token) => acc + token.balance, 0),
+            data.tokens.reduce((acc, token) => acc + token.balance, 0)
           ),
           tokens: tokensData,
           tokensList: data.tokens.map((token) => String(token.symbol)),
@@ -59,7 +59,7 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
           },
           derivedGyroEParams: derivedParams,
           tokenRates: data.tokens.map((token) => String(token.rate)),
-        }),
+        })
       );
     }
     case PoolTypeEnum.Gyro2: {
@@ -67,13 +67,13 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
         new ExtendedGyro2({
           swapFee: String(data.poolParams?.swapFee),
           totalShares: String(
-            data.tokens.reduce((acc, token) => acc + token.balance, 0),
+            data.tokens.reduce((acc, token) => acc + token.balance, 0)
           ),
           tokens: tokensData,
           tokensList: data.tokens.map((token) => String(token.symbol)),
           sqrtAlpha: String(data.poolParams?.sqrtAlpha),
           sqrtBeta: String(data.poolParams?.sqrtBeta),
-        }),
+        })
       );
     }
     case PoolTypeEnum.Gyro3: {
@@ -81,12 +81,12 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
         new ExtendedGyro3({
           swapFee: String(data.poolParams?.swapFee),
           totalShares: String(
-            data.tokens.reduce((acc, token) => acc + token.balance, 0),
+            data.tokens.reduce((acc, token) => acc + token.balance, 0)
           ),
           tokens: tokensData,
           tokensList: data.tokens.map((token) => String(token.symbol)),
           root3Alpha: String(data.poolParams?.root3Alpha),
-        }),
+        })
       );
     }
     case PoolTypeEnum.Fx: {
@@ -94,7 +94,7 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
         new ExtendedFx({
           swapFee: String(data.poolParams?.swapFee),
           totalShares: String(
-            data.tokens.reduce((acc, token) => acc + token.balance, 0),
+            data.tokens.reduce((acc, token) => acc + token.balance, 0)
           ),
           tokens: tokensData,
           tokensList: data.tokens.map((token) => String(token.symbol)),
@@ -103,7 +103,7 @@ export async function convertAnalysisDataToAMM(data: AnalysisData) {
           lambda: String(data.poolParams?.lambda),
           delta: String(data.poolParams?.delta),
           epsilon: String(data.poolParams?.epsilon),
-        }),
+        })
       );
     }
     default:
@@ -222,7 +222,7 @@ export function calculateCurvePoints({
     startPercentage * balance,
     ...Array.from(
       { length: numberOfPoints + 20 },
-      (_, index) => initialValue * stepRatio ** index,
+      (_, index) => initialValue * stepRatio ** index
     ),
   ];
 }

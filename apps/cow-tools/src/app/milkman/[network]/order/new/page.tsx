@@ -1,6 +1,6 @@
 "use client";
 
-import { Address, Network } from "@bleu-fi/utils";
+import { Address, Network } from "@bleu/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { gnosis, goerli, mainnet } from "viem/chains";
 

@@ -1,4 +1,4 @@
-import { NetworkChainId } from "@bleu-fi/utils";
+import { NetworkChainId } from "@bleu/utils";
 
 import POOLS_WITHOUT_GAUGES from "./data/pools-without-gauge.json";
 import POOLS_WITH_GAUGES from "./data/voting-gauges.json";
@@ -54,14 +54,14 @@ export class Pool {
 
     let data;
     data = POOLS_WITH_GAUGES.find(
-      (g: { id: string }) => g.id.toLowerCase() === id.toLowerCase(),
+      (g: { id: string }) => g.id.toLowerCase() === id.toLowerCase()
     );
     if (data) {
       this.createdAt = data.gauge.addedTimestamp;
       this.gauge = new Gauge(data.gauge.address);
     } else {
       data = POOLS_WITHOUT_GAUGES.find(
-        (g: { id: string }) => g.id.toLowerCase() === id.toLowerCase(),
+        (g: { id: string }) => g.id.toLowerCase() === id.toLowerCase()
       );
       if (data) {
         this.createdAt = data.addedTimestamp;
@@ -80,7 +80,7 @@ export class Pool {
     this.address = data.address;
     this.symbol = data.symbol;
     this.tokens = data.tokens.map(
-      (t) => new Token(t as (typeof POOLS_WITH_GAUGES)[0]["tokens"][0]),
+      (t) => new Token(t as (typeof POOLS_WITH_GAUGES)[0]["tokens"][0])
     );
     POOL_CACHE[this.id] = this;
   }
@@ -98,7 +98,7 @@ export class Gauge {
     }
 
     const data = POOLS_WITH_GAUGES.find(
-      (g) => g.gauge.address.toLowerCase() === address.toLowerCase(),
+      (g) => g.gauge.address.toLowerCase() === address.toLowerCase()
     );
 
     if (!data) {

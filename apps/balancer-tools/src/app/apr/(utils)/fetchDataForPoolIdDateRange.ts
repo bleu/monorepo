@@ -1,4 +1,4 @@
-import { db } from "@bleu-fi/balancer-apr/src/db";
+import { db } from "@bleu/balancer-apr/src/db";
 import {
   pools,
   poolSnapshots,
@@ -8,8 +8,8 @@ import {
   tokens,
   vebalApr,
   yieldTokenApr,
-} from "@bleu-fi/balancer-apr/src/db/schema";
-import { dateToEpoch, formatDateToMMDDYYYY } from "@bleu-fi/utils/date";
+} from "@bleu/balancer-apr/src/db/schema";
+import { dateToEpoch, formatDateToMMDDYYYY } from "@bleu/utils/date";
 import { and, between, eq, sql } from "drizzle-orm";
 
 import { PoolStatsResults } from "./fetchDataTypes";
@@ -18,14 +18,14 @@ import { PoolTypeEnum } from "./types";
 export async function fetchDataForPoolIdDateRange(
   poolId: string,
   startDate: Date,
-  endDate: Date,
+  endDate: Date
 ): Promise<PoolStatsResults> {
   const yieldAprSum = db
     .select({
       poolExternalId: yieldTokenApr.poolExternalId,
       timestamp: yieldTokenApr.timestamp,
       yieldValueSum: sql<number>`sum(${yieldTokenApr.value})`.as(
-        "yieldValueSum",
+        "yieldValueSum"
       ),
     })
     .from(yieldTokenApr)
@@ -49,14 +49,14 @@ export async function fetchDataForPoolIdDateRange(
       poolExternalId: rewardsTokenApr.poolExternalId,
       timestamp: rewardsTokenApr.timestamp,
       rewardValueSum: sql<number>`sum(${rewardsTokenApr.value})`.as(
-        "rewardValueSum",
+        "rewardValueSum"
       ),
     })
     .from(rewardsTokenApr)
     .where(
       sql.raw(
-        `rewards_token_apr.period_end - rewards_token_apr.timestamp > interval '1 day'`,
-      ),
+        `rewards_token_apr.period_end - rewards_token_apr.timestamp > interval '1 day'`
+      )
     )
     .groupBy(rewardsTokenApr.poolExternalId, rewardsTokenApr.timestamp)
     .as("rewardAprSum");
@@ -78,8 +78,8 @@ export async function fetchDataForPoolIdDateRange(
       tokens,
       and(
         eq(tokens.address, rewardsTokenApr.tokenAddress),
-        eq(pools.networkSlug, tokens.networkSlug),
-      ),
+        eq(pools.networkSlug, tokens.networkSlug)
+      )
     )
     .as("rewardAprToken");
 
@@ -105,36 +105,36 @@ export async function fetchDataForPoolIdDateRange(
       swapFeeApr,
       and(
         eq(poolSnapshots.poolExternalId, swapFeeApr.poolExternalId),
-        eq(poolSnapshots.timestamp, swapFeeApr.timestamp),
-      ),
+        eq(poolSnapshots.timestamp, swapFeeApr.timestamp)
+      )
     )
     .fullJoin(
       vebalApr,
       and(
         eq(vebalApr.poolExternalId, poolSnapshots.poolExternalId),
-        eq(vebalApr.timestamp, poolSnapshots.timestamp),
-      ),
+        eq(vebalApr.timestamp, poolSnapshots.timestamp)
+      )
     )
     .fullJoin(
       yieldAprSum,
       and(
         eq(yieldAprSum.poolExternalId, poolSnapshots.poolExternalId),
-        eq(yieldAprSum.timestamp, poolSnapshots.timestamp),
-      ),
+        eq(yieldAprSum.timestamp, poolSnapshots.timestamp)
+      )
     )
     .fullJoin(
       rewardAprSum,
       and(
         eq(rewardAprSum.poolExternalId, poolSnapshots.poolExternalId),
-        eq(rewardAprSum.timestamp, poolSnapshots.timestamp),
-      ),
+        eq(rewardAprSum.timestamp, poolSnapshots.timestamp)
+      )
     )
     .leftJoin(pools, eq(pools.externalId, poolSnapshots.poolExternalId))
     .where(
       and(
         between(poolSnapshots.timestamp, startDate, endDate),
-        eq(poolSnapshots.poolExternalId, poolId),
-      ),
+        eq(poolSnapshots.poolExternalId, poolId)
+      )
     )
     .orderBy(poolSnapshots.timestamp);
 
@@ -151,14 +151,14 @@ export async function fetchDataForPoolIdDateRange(
       poolSnapshots,
       and(
         eq(poolSnapshots.poolExternalId, yieldAprToken.poolExternalId),
-        eq(poolSnapshots.timestamp, yieldAprToken.timestamp),
-      ),
+        eq(poolSnapshots.timestamp, yieldAprToken.timestamp)
+      )
     )
     .where(
       and(
         between(yieldAprToken.timestamp, startDate, endDate),
-        eq(poolSnapshots.poolExternalId, poolId),
-      ),
+        eq(poolSnapshots.poolExternalId, poolId)
+      )
     );
 
   const rewardAprByToken = await db
@@ -175,17 +175,17 @@ export async function fetchDataForPoolIdDateRange(
       and(
         eq(poolSnapshots.poolExternalId, rewardAprToken.poolExternalId),
         eq(poolSnapshots.timestamp, rewardAprToken.timestamp),
-        eq(poolSnapshots.networkSlug, rewardAprToken.networkSlug),
-      ),
+        eq(poolSnapshots.networkSlug, rewardAprToken.networkSlug)
+      )
     )
     .where(
       and(
         between(rewardAprToken.timestamp, startDate, endDate),
         sql.raw(
-          `"rewardAprToken".period_end - "rewardAprToken".timestamp > interval '1 day'`,
+          `"rewardAprToken".period_end - "rewardAprToken".timestamp > interval '1 day'`
         ),
-        eq(rewardAprToken.poolExternalId, poolId),
-      ),
+        eq(rewardAprToken.poolExternalId, poolId)
+      )
     );
 
   const poolsTokens = await db
@@ -200,8 +200,8 @@ export async function fetchDataForPoolIdDateRange(
       tokens,
       and(
         eq(poolTokens.networkSlug, tokens.networkSlug),
-        eq(tokens.address, poolTokens.tokenAddress),
-      ),
+        eq(tokens.address, poolTokens.tokenAddress)
+      )
     )
     .where(eq(poolTokens.poolExternalId, poolId));
 
@@ -220,12 +220,12 @@ export async function fetchDataForPoolIdDateRange(
 
     const yieldAprByDate = yieldAprByToken.filter(
       (yieldApr) =>
-        dateToEpoch(yieldApr.timestamp) === dateToEpoch(pool.timestamp),
+        dateToEpoch(yieldApr.timestamp) === dateToEpoch(pool.timestamp)
     );
 
     const rewardAprByDate = rewardAprByToken.filter(
       (rewardApr) =>
-        dateToEpoch(rewardApr.timestamp) === dateToEpoch(pool.timestamp),
+        dateToEpoch(rewardApr.timestamp) === dateToEpoch(pool.timestamp)
     );
 
     return {

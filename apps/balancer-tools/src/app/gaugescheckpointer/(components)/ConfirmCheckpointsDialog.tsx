@@ -1,5 +1,5 @@
-import { NetworkChainId, NetworkFromNetworkChainId } from "@bleu-fi/utils";
-import { formatNumber } from "@bleu-fi/utils/formatNumber";
+import { NetworkChainId, NetworkFromNetworkChainId } from "@bleu/utils";
+import { formatNumber } from "@bleu/utils/formatNumber";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { FieldValues, useForm } from "react-hook-form";
@@ -34,11 +34,11 @@ export function ConfirmCheckpointsDialog({
     2,
     "decimal",
     "standard",
-    0.01,
+    0.01
   );
 
   const anyArbitrumGauge = selectedGauges.some(
-    (gauge) => gauge.votingOption.chain === "ARBITRUM",
+    (gauge) => gauge.votingOption.chain === "ARBITRUM"
   );
 
   async function onSubmit(data: FieldValues) {

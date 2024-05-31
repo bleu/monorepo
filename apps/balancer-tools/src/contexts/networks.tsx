@@ -1,6 +1,6 @@
 "use client";
 
-import { Network, networkFor } from "@bleu-fi/utils";
+import { Network, networkFor } from "@bleu/utils";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 
@@ -28,7 +28,7 @@ interface NetworksContextI {
 }
 
 export const NetworksContext = React.createContext<NetworksContextI>(
-  {} as NetworksContextI,
+  {} as NetworksContextI
 );
 
 export const NetworksContextProvider = ({

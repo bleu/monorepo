@@ -1,4 +1,4 @@
-import { Address, buildBlockExplorerTxUrl } from "@bleu-fi/utils";
+import { Address, buildBlockExplorerTxUrl } from "@bleu/utils";
 import { Dispatch, useEffect, useState } from "react";
 
 import { PoolMetadataAttribute } from "#/contexts/PoolMetadataContext";
@@ -96,7 +96,7 @@ export function useMetadataTransaction({
   const [isTransactionDisabled, setIsTransactionDisabled] = useState(false);
   const [notification, setNotification] = useState<Notification | null>(null);
   const [transactionStatus, setTransactionStatus] = useState<TransactionStatus>(
-    TransactionStatus.AUTHORIZING,
+    TransactionStatus.AUTHORIZING
   );
   const [transactionUrl, setTransactionUrl] = useState<string | undefined>();
 

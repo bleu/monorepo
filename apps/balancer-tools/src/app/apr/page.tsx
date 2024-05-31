@@ -1,4 +1,4 @@
-import { SECONDS_IN_DAY } from "@bleu-fi/utils/date";
+import { SECONDS_IN_DAY } from "@bleu/utils/date";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
@@ -32,17 +32,17 @@ export default async function Page({
   const parsedParams = QueryParamsPagesSchema.safeParse(searchParams);
   if (!parsedParams.success) {
     const oneDayAgoFormated = new Date(
-      new Date().getTime() - SECONDS_IN_DAY * 1000,
+      new Date().getTime() - SECONDS_IN_DAY * 1000
     );
     const fourDaysAgoDateFormated = new Date(
-      new Date().getTime() - 4 * SECONDS_IN_DAY * 1000,
+      new Date().getTime() - 4 * SECONDS_IN_DAY * 1000
     );
     return redirect(
       generatePoolPageLink(
         fourDaysAgoDateFormated,
         oneDayAgoFormated,
-        searchParams,
-      ),
+        searchParams
+      )
     );
   }
   const { startAt: startDate, endAt: endDate } = parsedParams.data;

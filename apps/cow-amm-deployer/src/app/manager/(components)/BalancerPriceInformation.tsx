@@ -1,4 +1,4 @@
-import { NetworkFromNetworkChainId } from "@bleu-fi/utils";
+import { NetworkFromNetworkChainId } from "@bleu/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
@@ -11,7 +11,7 @@ export function BalancerPriceInformation({ cowAmm }: { cowAmm: ICowAmm }) {
 
   const priceOracleLink = getBalancerPoolUrl(
     safe.chainId as ChainId,
-    cowAmm.priceOracleData?.balancerPoolId,
+    cowAmm.priceOracleData?.balancerPoolId
   );
 
   return (

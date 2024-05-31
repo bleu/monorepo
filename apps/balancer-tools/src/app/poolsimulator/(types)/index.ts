@@ -1,6 +1,6 @@
-import { IGyro2Maths } from "@bleu-fi/math-poolsimulator/src/gyro2";
-import { IGyro3Maths } from "@bleu-fi/math-poolsimulator/src/gyro3";
-import { GyroEParamsFromSubgraph } from "@bleu-fi/math-poolsimulator/src/gyroE";
+import { IGyro2Maths } from "@bleu/math-poolsimulator/src/gyro2";
+import { IGyro3Maths } from "@bleu/math-poolsimulator/src/gyro3";
+import { GyroEParamsFromSubgraph } from "@bleu/math-poolsimulator/src/gyroE";
 
 type ConvertToNumber<T> = {
   [K in keyof T]?: number;

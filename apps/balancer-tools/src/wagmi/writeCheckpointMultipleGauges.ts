@@ -1,5 +1,5 @@
-import { VeBalGetVotingListQuery } from "@bleu-fi/gql/src/balancer-api-v3/__generated__/Ethereum";
-import { Address } from "@bleu-fi/utils";
+import { VeBalGetVotingListQuery } from "@bleu/gql/src/balancer-api-v3/__generated__/Ethereum";
+import { Address } from "@bleu/utils";
 import { prepareWriteContract, writeContract } from "@wagmi/core";
 
 import { apiChainNameToGaugeType } from "#/lib/gauge-checkpointer-mappings";
@@ -18,10 +18,10 @@ export async function writeCheckpointMultipleGauges({
   ethValue?: number;
 }) {
   const gauges = votingOptions.map(
-    (votingOption) => votingOption.gauge.address,
+    (votingOption) => votingOption.gauge.address
   );
   const gaugesTypes = votingOptions.map(
-    (votingOption) => apiChainNameToGaugeType[votingOption.chain],
+    (votingOption) => apiChainNameToGaugeType[votingOption.chain]
   );
 
   const config = await prepareWriteContract({

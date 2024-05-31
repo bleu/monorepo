@@ -4,7 +4,7 @@ import { FieldValues } from "react-hook-form";
 import { LinkComponent } from "#/components/Link";
 import { TRANSACTION_TYPES } from "#/lib/transactionFactory";
 
-import { AmmForm } from "./AmmForm";
+import { CreateAMMForm } from "./CreateAMMForm";
 
 function ArrowIcon() {
   return (
@@ -49,10 +49,7 @@ export function FormWrapper({
           </div>
         </div>
         <div className="flex flex-col w-[530px] overflow-auto size-full max-h-[550px]">
-          <AmmForm
-            defaultValues={defaultValues}
-            transactionType={transactionType}
-          />
+          <CreateAMMForm defaultValues={defaultValues} />
         </div>
       </div>
     </div>

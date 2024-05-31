@@ -26,7 +26,7 @@ import { useRawTxData } from "#/hooks/useRawTxData";
 import { IToken } from "#/lib/fetchAmmData";
 import { ammFormSchema } from "#/lib/schema";
 import { fetchTokenUsdPrice } from "#/lib/tokenUtils";
-import { buildTxAMMArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
+import { buildTxAMMArgs } from "#/lib/transactionFactory";
 import { PRICE_ORACLES, PriceOraclesValue } from "#/lib/types";
 import { cn } from "#/lib/utils";
 import { ChainId } from "#/utils/chainsPublicClients";
@@ -57,13 +57,9 @@ const getNewMinTradeToken0 = async (newToken0: IToken, chainId: ChainId) => {
     .catch(() => 0);
 };
 
-export function AmmForm({
-  transactionType,
+export function CreateAMMForm({
   defaultValues,
 }: {
-  transactionType:
-    | TRANSACTION_TYPES.CREATE_COW_AMM
-    | TRANSACTION_TYPES.EDIT_COW_AMM;
   defaultValues?: FieldValues;
 }) {
   const {
@@ -91,7 +87,7 @@ export function AmmForm({
   const formData = watch();
 
   const onSubmit = async (data: typeof ammFormSchema._type) => {
-    const txArgs = buildTxAMMArgs({ data, transactionType });
+    const txArgs = buildTxAMMArgs({ data });
 
     try {
       await sendTransactions(txArgs);
@@ -213,11 +209,7 @@ export function AmmForm({
             )
           }
         >
-          <span>
-            {transactionType === TRANSACTION_TYPES.CREATE_COW_AMM
-              ? "Create AMM"
-              : "Edit AMM"}
-          </span>
+          <span>Create AMM</span>
         </Button>
       </div>
     </Form>

@@ -83,7 +83,7 @@ function validateAmmId(id: string) {
 
 async function fetchPriceFeedLinks(
   decodedData: [PriceOraclesValue, PriceOracleData],
-  chainId: ChainId
+  chainId: ChainId,
 ): Promise<string[]> {
   switch (decodedData[0]) {
     case PRICE_ORACLES.UNI: {
@@ -147,7 +147,7 @@ export const fetchAmmData = cache(async (ammId: string): Promise<ICowAmm> => {
 
   const priceFeedLinks = await fetchPriceFeedLinks(
     decodedPriceOracleData,
-    chainId
+    chainId,
   );
 
   const token0 = {

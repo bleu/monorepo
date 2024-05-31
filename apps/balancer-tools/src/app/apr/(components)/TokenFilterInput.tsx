@@ -8,8 +8,8 @@ import { MultiSelectDropdown } from "./MultiSelectDropdown";
 const AVALIABLE_TOKENS = [
   ...new Set(
     POOLS_WITH_LIVE_GAUGES.flatMap((pool) =>
-      pool.tokens.map((token) => token.symbol)
-    )
+      pool.tokens.map((token) => token.symbol),
+    ),
   ),
 ];
 

@@ -48,7 +48,7 @@ export default function HistoricalChartWrapper({
     aprChartData,
     feeChartData,
     tvlChartData,
-    volumeChartData
+    volumeChartData,
   );
 
   const createdAt = Object.values(results.perDay[0])[0].externalCreatedAt;

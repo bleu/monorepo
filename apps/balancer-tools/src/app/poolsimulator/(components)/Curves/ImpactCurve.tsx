@@ -34,10 +34,10 @@ interface Amounts {
 const createAndPostWorker = (
   messageData: ImpactWorkerInputData,
   setInitialAmounts: Dispatch<SetStateAction<Amounts>>,
-  setCustomAmounts: Dispatch<SetStateAction<Amounts>>
+  setCustomAmounts: Dispatch<SetStateAction<Amounts>>,
 ) => {
   const worker = new Worker(
-    new URL("../../(workers)/impact-curve-calculation.ts", import.meta.url)
+    new URL("../../(workers)/impact-curve-calculation.ts", import.meta.url),
   );
 
   worker.onmessage = (event: MessageEvent<ImpactWorkerOutputData>) => {
@@ -106,7 +106,7 @@ export function ImpactCurve() {
     ];
 
     messages.forEach((message) =>
-      createAndPostWorker(message, setInitialAmounts, setCustomAmounts)
+      createAndPostWorker(message, setInitialAmounts, setCustomAmounts),
     );
   }, [
     initialData,
@@ -122,7 +122,7 @@ export function ImpactCurve() {
     direction: "in" | "out",
     amount: number,
     tokenFrom: string,
-    tokenTo: string
+    tokenTo: string,
   ) => {
     const formattedAmount = formatNumber(amount, 2);
     return direction === "in"
@@ -133,7 +133,7 @@ export function ImpactCurve() {
   const createHoverTemplate = (
     amounts: number[],
     direction: "in" | "out",
-    impactData: number[]
+    impactData: number[],
   ): string[] => {
     return amounts.map((amount, i) => {
       const swapFromSymbol =
@@ -149,7 +149,7 @@ export function ImpactCurve() {
         direction,
         amount,
         swapFromSymbol,
-        swapToSymbol
+        swapToSymbol,
       );
 
       const impact = formatNumber(impactData[i] / 100, 2, "percent");
@@ -165,7 +165,7 @@ export function ImpactCurve() {
     name: string,
     isLegendShown: boolean,
     direction: "in" | "out",
-    lineStyle: "solid" | "dashdot" = "solid"
+    lineStyle: "solid" | "dashdot" = "solid",
   ) => {
     const line =
       lineStyle === "dashdot"
@@ -184,7 +184,7 @@ export function ImpactCurve() {
       hovertemplate: createHoverTemplate(
         hovertemplateData,
         direction,
-        impactData
+        impactData,
       ),
       line,
     };
@@ -193,7 +193,7 @@ export function ImpactCurve() {
   const createLimitPointDataObject = (
     x: number[],
     y: number[],
-    legendGroup: string
+    legendGroup: string,
   ) => {
     return {
       x,
@@ -212,7 +212,7 @@ export function ImpactCurve() {
   const createBetaLimitsDataObject = (
     x: number[],
     y: number[],
-    legendGroup: string
+    legendGroup: string,
   ) => {
     return {
       x,
@@ -244,7 +244,7 @@ export function ImpactCurve() {
       "Initial",
       initialAnalysisToken.symbol,
       true,
-      "in"
+      "in",
     ),
     createDataObject(
       customAmounts.analysisTokenIn.amounts,
@@ -252,7 +252,7 @@ export function ImpactCurve() {
       "Custom",
       customAnalysisToken.symbol,
       true,
-      "in"
+      "in",
     ),
     createDataObject(
       initialAmounts.tabTokenIn.amounts,
@@ -261,7 +261,7 @@ export function ImpactCurve() {
       customCurrentTabToken.symbol,
       true,
       "out",
-      "dashdot"
+      "dashdot",
     ),
     createDataObject(
       customAmounts.tabTokenIn.amounts,
@@ -270,7 +270,7 @@ export function ImpactCurve() {
       customCurrentTabToken.symbol,
       true,
       "out",
-      "dashdot"
+      "dashdot",
     ),
   ];
 
@@ -290,9 +290,9 @@ export function ImpactCurve() {
               amount.analysisTokenIn?.priceImpact.slice(-1)[0] || 0,
               amount.tabTokenIn?.priceImpact.slice(-1)[0] || 0,
             ],
-            legends[index]
+            legends[index],
           )
-        : INVISIBLE_TRACE
+        : INVISIBLE_TRACE,
     );
   });
 
@@ -315,19 +315,19 @@ export function ImpactCurve() {
         ? createBetaLimitsDataObject(
             amountLimits,
             priceImpactLimits,
-            legends[index]
+            legends[index],
           )
-        : INVISIBLE_TRACE
+        : INVISIBLE_TRACE,
     );
   });
 
   const maxFromInitialAmounts = Math.max(
     ...initialAmounts.analysisTokenIn.amounts,
-    ...initialAmounts.tabTokenIn.amounts
+    ...initialAmounts.tabTokenIn.amounts,
   );
   const maxFromCustomAmounts = Math.max(
     ...customAmounts.analysisTokenIn.amounts,
-    ...customAmounts.tabTokenIn.amounts
+    ...customAmounts.tabTokenIn.amounts,
   );
   const xlimit = Math.min(maxFromInitialAmounts, maxFromCustomAmounts);
   function indexOfXLimit(value: number, ...arrays: number[][]) {
@@ -350,12 +350,12 @@ export function ImpactCurve() {
   const ylimit = Math.max(
     getImpactOnXLimit(
       initialAmounts.analysisTokenIn.priceImpact,
-      initialAmounts.tabTokenIn.priceImpact
+      initialAmounts.tabTokenIn.priceImpact,
     ),
     getImpactOnXLimit(
       customAmounts.analysisTokenIn.priceImpact,
-      customAmounts.tabTokenIn.priceImpact
-    )
+      customAmounts.tabTokenIn.priceImpact,
+    ),
   );
   return (
     <Plot

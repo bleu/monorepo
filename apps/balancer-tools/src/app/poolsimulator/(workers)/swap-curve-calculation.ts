@@ -37,14 +37,14 @@ self.addEventListener(
     if (!amm) return;
 
     const pairTokens = data.tokens.filter(
-      (token) => token.symbol !== analysisToken.symbol
+      (token) => token.symbol !== analysisToken.symbol,
     );
 
     const result = pairTokens.map((pairToken) => {
       const calculateTokenAmounts = (
         tokenIn: TokensData,
         tokenOut: TokensData,
-        amm: AMM<PoolPairData>
+        amm: AMM<PoolPairData>,
       ) => {
         const rawAmountsAnalysisTokenIn = calculateCurvePoints({
           balance: tokenOut.balance,
@@ -59,8 +59,8 @@ self.addEventListener(
             amm.exactTokenInForTokenOut(
               amount,
               tokenIn.symbol,
-              tokenOut.symbol
-            ) * -1
+              tokenOut.symbol,
+            ) * -1,
         );
 
         const rawAmountsAnalysisTokenOut = rawAmountsTabTokenIn.map(
@@ -68,22 +68,22 @@ self.addEventListener(
             amm.exactTokenInForTokenOut(
               amount,
               tokenOut.symbol,
-              tokenIn.symbol
-            ) * -1
+              tokenIn.symbol,
+            ) * -1,
         );
 
         const { trimmedIn: tabTokenIn, trimmedOut: analysisTokenOut } =
           trimTrailingValues(
             rawAmountsTabTokenIn,
             rawAmountsAnalysisTokenOut,
-            0
+            0,
           );
 
         const { trimmedIn: analysisTokenIn, trimmedOut: tabTokenOut } =
           trimTrailingValues(
             rawAmountsAnalysisTokenIn,
             rawAmountsTabTokenOut,
-            0
+            0,
           );
 
         return {
@@ -98,7 +98,7 @@ self.addEventListener(
       return calculateTokenAmounts(
         analysisToken as TokensData,
         pairToken as TokensData,
-        amm
+        amm,
       );
     });
 
@@ -106,5 +106,5 @@ self.addEventListener(
       result,
       type,
     } as SwapCurveWorkerOutputData);
-  }
+  },
 );

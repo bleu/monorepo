@@ -38,12 +38,12 @@ export function TableRowOrder({
     cowTokenList.find(
       (token) =>
         token.address == order.orderEvent.tokenIn?.address &&
-        token.chainId == order.orderEvent.chainId
+        token.chainId == order.orderEvent.chainId,
     )?.decimals ||
     1;
   const tokenInAmount = formatUnits(
     order.orderEvent.tokenAmountIn,
-    tokenInDecimals
+    tokenInDecimals,
   );
 
   return (

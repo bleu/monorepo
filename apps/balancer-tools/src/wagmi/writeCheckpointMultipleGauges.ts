@@ -18,10 +18,10 @@ export async function writeCheckpointMultipleGauges({
   ethValue?: number;
 }) {
   const gauges = votingOptions.map(
-    (votingOption) => votingOption.gauge.address
+    (votingOption) => votingOption.gauge.address,
   );
   const gaugesTypes = votingOptions.map(
-    (votingOption) => apiChainNameToGaugeType[votingOption.chain]
+    (votingOption) => apiChainNameToGaugeType[votingOption.chain],
   );
 
   const config = await prepareWriteContract({

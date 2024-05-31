@@ -103,7 +103,7 @@ export default function Page() {
                 2,
                 "decimal",
                 "compact",
-                0.01
+                0.01,
               )}
             </span>
           </div>
@@ -119,7 +119,7 @@ export default function Page() {
                 buildAccountCowExplorerUrl({
                   chainId: safe.chainId as ChainId,
                   address: safe.safeAddress as Address,
-                })
+                }),
               )
             }
             rel="noreferrer noopener"

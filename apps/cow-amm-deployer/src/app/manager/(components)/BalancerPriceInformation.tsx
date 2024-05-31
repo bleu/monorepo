@@ -11,7 +11,7 @@ export function BalancerPriceInformation({ cowAmm }: { cowAmm: ICowAmm }) {
 
   const priceOracleLink = getBalancerPoolUrl(
     safe.chainId as ChainId,
-    cowAmm.priceOracleData?.balancerPoolId
+    cowAmm.priceOracleData?.balancerPoolId,
   );
 
   return (

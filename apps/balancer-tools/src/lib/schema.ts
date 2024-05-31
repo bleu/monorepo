@@ -30,7 +30,7 @@ const metadataDateSchema = z
   .object({
     typename: z.literal(TypenameEnum.enum.date),
     value: datelike.pipe(
-      z.coerce.string().min(1, { message: "Please pick a date" })
+      z.coerce.string().min(1, { message: "Please pick a date" }),
     ),
   })
   .merge(baseMetadataItemSchema);
@@ -155,7 +155,7 @@ export const getPoolSimulatorTokenSchema = ({
         },
         {
           message: "Symbol already exists",
-        }
+        },
       ),
     balance: z.coerce.number().positive(),
     rate: z.coerce.number().positive(),
@@ -193,7 +193,7 @@ export const GyroESchema = BasePoolSchema.extend({
     },
     {
       message: "The squared norm of vector [s, c] must be 1 ± 1e−15",
-    }
+    },
   )
   .refine(
     (data) => {
@@ -201,7 +201,7 @@ export const GyroESchema = BasePoolSchema.extend({
     },
     {
       message: "Beta must be greater than alpha",
-    }
+    },
   );
 
 export const Gyro2Schema = BasePoolSchema.extend({
@@ -214,7 +214,7 @@ export const Gyro2Schema = BasePoolSchema.extend({
   },
   {
     message: "Beta must be greater than alpha",
-  }
+  },
 );
 
 export const Gyro3Schema = BasePoolSchema.extend({
@@ -237,7 +237,7 @@ export const FxSchema = BasePoolSchema.extend({
     },
     {
       message: "Alpha must be greater than beta",
-    }
+    },
   )
   .refine(
     (data) => {
@@ -247,7 +247,7 @@ export const FxSchema = BasePoolSchema.extend({
     {
       message:
         "Fee at halt must be less than 50%. Fee at halt is calculated as (delta * (2 - (alpha - beta)))",
-    }
+    },
   );
 
 export const MetaStableSchema = BasePoolSchema.extend({
@@ -268,5 +268,5 @@ export const SwapSimulatorDataSchema = z
     },
     {
       message: "Token in and token out must be different",
-    }
+    },
   );

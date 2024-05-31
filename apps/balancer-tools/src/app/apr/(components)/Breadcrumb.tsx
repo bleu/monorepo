@@ -107,7 +107,7 @@ export default function Breadcrumb() {
               link={generatePoolPageLink(
                 parseMMDDYYYYToDate(searchParams.get("startAt")) as Date,
                 parseMMDDYYYYToDate(searchParams.get("endAt")) as Date,
-                { network }
+                { network },
               )}
             >
               {network}
@@ -124,7 +124,7 @@ export default function Breadcrumb() {
           <BreadcrumbItem
             link={generatePoolPageLink(
               parseMMDDYYYYToDate(searchParams.get("startAt")) as Date,
-              parseMMDDYYYYToDate(searchParams.get("endAt")) as Date
+              parseMMDDYYYYToDate(searchParams.get("endAt")) as Date,
             )}
           >
             <div className="flex items-center gap-x-2">

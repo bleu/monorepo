@@ -12,7 +12,7 @@ export default function Page() {
 
   if (chainId == goerli.id || chainId == mainnet.id) {
     redirect(
-      `/milkman/${NetworkFromNetworkChainId[chainId as NetworkChainId]}`
+      `/milkman/${NetworkFromNetworkChainId[chainId as NetworkChainId]}`,
     );
   } else redirect("/milkman/mainnet");
 }

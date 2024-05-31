@@ -21,7 +21,7 @@ export function useTransactionStatus() {
       txHash: hash,
     });
     setNotification(
-      NOTIFICATION_MAP_GAUGES_CHECKPOINT[TransactionStatus.SUBMITTING]
+      NOTIFICATION_MAP_GAUGES_CHECKPOINT[TransactionStatus.SUBMITTING],
     );
     setTransactionUrl(txUrl);
   }

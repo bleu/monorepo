@@ -56,7 +56,7 @@ export default async function PoolOverviewCards({
         content: formatAPR(results.poolAverage.avgApr),
       },
       ...getDatesDetails(startAt, endAt),
-    ]
+    ],
   );
 
   return <OverviewCards cardsDetails={cardsDetails} />;

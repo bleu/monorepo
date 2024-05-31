@@ -28,6 +28,6 @@ export async function loadBalEmission() {
     timestamps.map(({ timestamp }) => ({
       timestamp,
       weekEmission: String(balEmissions.weekly(dateToEpoch(timestamp))),
-    }))
+    })),
   );
 }

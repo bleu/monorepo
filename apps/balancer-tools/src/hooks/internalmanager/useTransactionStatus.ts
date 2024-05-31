@@ -21,7 +21,7 @@ export function useTransactionStatus() {
       txHash: hash,
     });
     setNotification(
-      NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.SUBMITTING]
+      NOTIFICATION_MAP_INTERNAL_BALANCES[TransactionStatus.SUBMITTING],
     );
     setTransactionUrl(txUrl);
   }

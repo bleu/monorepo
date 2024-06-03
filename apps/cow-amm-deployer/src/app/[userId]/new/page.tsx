@@ -2,11 +2,11 @@
 
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 
+import { UnsuportedChain } from "#/components/UnsuportedChain";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { TRANSACTION_TYPES } from "#/lib/transactionFactory";
 import { supportedChainIds } from "#/utils/chainsPublicClients";
 
-import { UnsuportedChain } from "../../components/UnsuportedChain";
 import { FormWrapper } from "./(components)/FormWrapper";
 
 export default function Page() {

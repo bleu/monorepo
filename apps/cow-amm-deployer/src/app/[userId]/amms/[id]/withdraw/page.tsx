@@ -8,7 +8,7 @@ import { WithdrawForm } from "./(components)/WithdrawForm";
 export default async function Page({
   params,
 }: {
-  params: { id: `0x${string}` };
+  params: { userId: string; id: `0x${string}` };
 }) {
   const ammData = await fetchAmmData(params.id);
 
@@ -17,7 +17,7 @@ export default async function Page({
       <div className="my-4 flex flex-col border-2 bg-card text-card-foreground w-[530px] p-10">
         <div className="relative">
           <LinkComponent
-            href={`/amms/${params.id}`}
+            href={`${params.userId}/amms/${params.id}`}
             content={
               <ArrowLeftIcon
                 height={16}
@@ -29,7 +29,7 @@ export default async function Page({
           <p className="text-xl text-center">Proportional withdraw</p>
         </div>
         <div className="pt-8">
-          <WithdrawForm cowAmm={ammData} />
+          <WithdrawForm cowAmm={ammData} userId={params.userId} />
         </div>
       </div>
     </div>

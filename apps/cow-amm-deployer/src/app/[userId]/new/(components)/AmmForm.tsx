@@ -50,9 +50,9 @@ const getNewMinTradeToken0 = async (newToken0: IToken, chainId: ChainId) => {
       Number(
         formatUnits(
           parseUnits(String(amount), newToken0.decimals),
-          newToken0.decimals,
-        ),
-      ),
+          newToken0.decimals
+        )
+      )
     )
     .catch(() => 0);
 };
@@ -124,7 +124,7 @@ export function AmmForm({
                 });
                 setValue(
                   "minTradedToken0",
-                  await getNewMinTradeToken0(token, chainId as ChainId),
+                  await getNewMinTradeToken0(token, chainId as ChainId)
                 );
               }}
               selectedToken={(formData?.token0 as IToken) ?? undefined}
@@ -179,7 +179,7 @@ export function AmmForm({
           <AccordionTrigger
             className={cn(
               errors.minTradedToken0 ? "text-destructive" : "",
-              "pt-0",
+              "pt-0"
             )}
           >
             Advanced Options

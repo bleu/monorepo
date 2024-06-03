@@ -48,7 +48,7 @@ export function FormWrapper({
             </div>
           </div>
         </div>
-        <div className="flex flex-col w-[530px] overflow-auto size-full max-h-[550px]">
+        <div className="flex flex-col w-[530px] overflow-auto size-full max-h-[550px] p-5">
           <AmmForm
             defaultValues={defaultValues}
             transactionType={transactionType}

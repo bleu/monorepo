@@ -91,7 +91,7 @@ export default async function Page({
             <Pencil2Icon />
             Edit CoW AMM LP parameters
           </Button>
-          <Link href={`/amms/${params.id}/withdraw`}>
+          <Link href={`${params.userId}/amms/${params.id}/withdraw`}>
             <Button className="flex items-center gap-1 py-3 px-6">
               Withdraw
             </Button>

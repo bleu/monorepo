@@ -19,28 +19,35 @@ export enum TRANSACTION_TYPES {
   ERC20_APPROVE = "ERC20_APPROVE",
   CREATE_COW_AMM = "CREATE_COW_AMM",
   EDIT_COW_AMM = "EDIT_COW_AMM",
-  STOP_COW_AMM = "STOP_COW_AMM",
-  WITHDRAW = "WITHDRAW_COW_AMM",
+  STOP_COW_AMM_MODULE_VERSION = "STOP_COW_AMM_MODULE_VERSION",
+  DISABLE_COW_AMM = "DISABLE_COW_AMM",
+  WITHDRAW_COW_AMM = "WITHDRAW_COW_AMM",
 }
 
 export interface BaseArgs {
   type: TRANSACTION_TYPES;
 }
 
-export interface withdrawCowAMMargs extends BaseArgs {
-  type: TRANSACTION_TYPES.WITHDRAW;
+export interface WithdrawCoWAMMArgs extends BaseArgs {
+  type: TRANSACTION_TYPES.WITHDRAW_COW_AMM;
   amm: Address;
   amount0: bigint;
   amount1: bigint;
   chainId: ChainId;
 }
 
-export interface stopCowAmmArgs extends BaseArgs {
-  type: TRANSACTION_TYPES.STOP_COW_AMM;
+export interface DisableCoWAMMArgs extends BaseArgs {
+  type: TRANSACTION_TYPES.DISABLE_COW_AMM;
+  chainId: ChainId;
+  amm: Address;
+}
+
+export interface StopCoWAMMModuleVersionArgs extends BaseArgs {
+  type: TRANSACTION_TYPES.STOP_COW_AMM_MODULE_VERSION;
   chainId: ChainId;
 }
 
-export interface createCowAmmArgs extends BaseArgs {
+export interface CreateCoWAMMArgs extends BaseArgs {
   type: TRANSACTION_TYPES.CREATE_COW_AMM;
   token0: Address;
   token1: Address;
@@ -54,8 +61,13 @@ export interface createCowAmmArgs extends BaseArgs {
   chainId: ChainId;
 }
 
-export interface editCowAmmArgs extends Omit<createCowAmmArgs, "type"> {
+export interface EditCoWAMMArgs extends BaseArgs {
   type: TRANSACTION_TYPES.EDIT_COW_AMM;
+  minTradedToken0: bigint;
+  priceOracleAddress: Address;
+  priceOracleData: `0x${string}`;
+  chainId: ChainId;
+  amm: Address;
 }
 
 interface ITransaction<T> {
@@ -69,13 +81,27 @@ export interface ERC20ApproveArgs extends BaseArgs {
   amount: bigint;
 }
 
-class CoWAMMWithdrawRawTx implements ITransaction<withdrawCowAMMargs> {
+class CoWAMMDisableRawTx implements ITransaction<DisableCoWAMMArgs> {
+  createRawTx({ amm, chainId }: DisableCoWAMMArgs): BaseTransaction {
+    return {
+      to: COW_CONSTANT_PRODUCT_FACTORY[chainId],
+      value: "0",
+      data: encodeFunctionData({
+        abi: ConstantProductFactoryABI,
+        functionName: "disableTrading",
+        args: [amm],
+      }),
+    };
+  }
+}
+
+class CoWAMMWithdrawRawTx implements ITransaction<WithdrawCoWAMMArgs> {
   createRawTx({
     amm,
     amount0,
     amount1,
     chainId,
-  }: withdrawCowAMMargs): BaseTransaction {
+  }: WithdrawCoWAMMArgs): BaseTransaction {
     return {
       to: COW_CONSTANT_PRODUCT_FACTORY[chainId],
       value: "0",
@@ -105,7 +131,7 @@ class ERC20ApproveRawTx implements ITransaction<ERC20ApproveArgs> {
   }
 }
 
-class CowAmmCreateTx implements ITransaction<createCowAmmArgs> {
+class CoWAMMCreateTx implements ITransaction<CreateCoWAMMArgs> {
   createRawTx({
     token0,
     amount0,
@@ -117,7 +143,7 @@ class CowAmmCreateTx implements ITransaction<createCowAmmArgs> {
     priceOracleData,
     appData,
     chainId,
-  }: createCowAmmArgs): BaseTransaction {
+  }: CreateCoWAMMArgs): BaseTransaction {
     return {
       to: COW_CONSTANT_PRODUCT_FACTORY[chainId],
       value: "0",
@@ -139,38 +165,36 @@ class CowAmmCreateTx implements ITransaction<createCowAmmArgs> {
   }
 }
 
-class CowAmmEditTx implements ITransaction<editCowAmmArgs> {
+class CoWAMMEditTx implements ITransaction<EditCoWAMMArgs> {
   createRawTx({
-    token0,
-    token1,
-    token0Decimals,
+    amm,
     minTradedToken0,
     priceOracleAddress,
     priceOracleData,
-    appData,
     chainId,
-  }: editCowAmmArgs): BaseTransaction {
+  }: EditCoWAMMArgs): BaseTransaction {
     return {
       to: COW_CONSTANT_PRODUCT_FACTORY[chainId],
       value: "0",
       data: encodeFunctionData({
-        abi: cowAmmModuleAbi,
-        functionName: "replaceAmm",
+        abi: ConstantProductFactoryABI,
+        functionName: "updateParameters",
         args: [
-          token0,
-          token1,
-          parseUnits(String(minTradedToken0), token0Decimals),
+          amm,
+          minTradedToken0,
           priceOracleAddress,
           priceOracleData,
-          appData,
+          BLEU_APP_DATA,
         ],
       }),
     };
   }
 }
 
-class CowAmmStopTx implements ITransaction<stopCowAmmArgs> {
-  createRawTx({ chainId }: stopCowAmmArgs): BaseTransaction {
+class CoWAMMModuleVersionStopTx
+  implements ITransaction<StopCoWAMMModuleVersionArgs>
+{
+  createRawTx({ chainId }: StopCoWAMMModuleVersionArgs): BaseTransaction {
     return {
       to: COW_CONSTANT_PRODUCT_FACTORY[chainId],
       value: "0",
@@ -183,10 +207,11 @@ class CowAmmStopTx implements ITransaction<stopCowAmmArgs> {
 }
 export interface TransactionBindings {
   [TRANSACTION_TYPES.ERC20_APPROVE]: ERC20ApproveArgs;
-  [TRANSACTION_TYPES.CREATE_COW_AMM]: createCowAmmArgs;
-  [TRANSACTION_TYPES.STOP_COW_AMM]: stopCowAmmArgs;
-  [TRANSACTION_TYPES.EDIT_COW_AMM]: editCowAmmArgs;
-  [TRANSACTION_TYPES.WITHDRAW]: withdrawCowAMMargs;
+  [TRANSACTION_TYPES.CREATE_COW_AMM]: CreateCoWAMMArgs;
+  [TRANSACTION_TYPES.STOP_COW_AMM_MODULE_VERSION]: StopCoWAMMModuleVersionArgs;
+  [TRANSACTION_TYPES.EDIT_COW_AMM]: EditCoWAMMArgs;
+  [TRANSACTION_TYPES.WITHDRAW_COW_AMM]: WithdrawCoWAMMArgs;
+  [TRANSACTION_TYPES.DISABLE_COW_AMM]: DisableCoWAMMArgs;
 }
 
 export type AllTransactionArgs = TransactionBindings[keyof TransactionBindings];
@@ -197,10 +222,11 @@ const TRANSACTION_CREATORS: {
   >;
 } = {
   [TRANSACTION_TYPES.ERC20_APPROVE]: ERC20ApproveRawTx,
-  [TRANSACTION_TYPES.CREATE_COW_AMM]: CowAmmCreateTx,
-  [TRANSACTION_TYPES.STOP_COW_AMM]: CowAmmStopTx,
-  [TRANSACTION_TYPES.EDIT_COW_AMM]: CowAmmEditTx,
-  [TRANSACTION_TYPES.WITHDRAW]: CoWAMMWithdrawRawTx,
+  [TRANSACTION_TYPES.CREATE_COW_AMM]: CoWAMMCreateTx,
+  [TRANSACTION_TYPES.STOP_COW_AMM_MODULE_VERSION]: CoWAMMModuleVersionStopTx,
+  [TRANSACTION_TYPES.EDIT_COW_AMM]: CoWAMMEditTx,
+  [TRANSACTION_TYPES.WITHDRAW_COW_AMM]: CoWAMMWithdrawRawTx,
+  [TRANSACTION_TYPES.DISABLE_COW_AMM]: CoWAMMDisableRawTx,
 };
 
 export class TransactionFactory {
@@ -216,12 +242,8 @@ export class TransactionFactory {
 
 export function buildTxAMMArgs({
   data,
-  transactionType,
 }: {
   data: typeof ammFormSchema._type;
-  transactionType:
-    | TRANSACTION_TYPES.CREATE_COW_AMM
-    | TRANSACTION_TYPES.EDIT_COW_AMM;
 }): AllTransactionArgs[] {
   const priceOracleData = encodePriceOracleData(data as IEncodePriceOracleData);
   const priceOracleAddress = getPriceOracleAddress(
@@ -242,7 +264,7 @@ export function buildTxAMMArgs({
       amount: parseUnits(String(data.amount1), data.token1.decimals),
     },
     {
-      type: transactionType,
+      type: TRANSACTION_TYPES.CREATE_COW_AMM,
       token0: data.token0.address as Address,
       token1: data.token1.address as Address,
       amount0: parseUnits(String(data.amount0), data.token0.decimals),

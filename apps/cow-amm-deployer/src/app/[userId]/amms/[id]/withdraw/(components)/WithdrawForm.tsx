@@ -17,7 +17,7 @@ import { ICowAmm } from "#/lib/fetchAmmData";
 import { ammWithdrawSchema } from "#/lib/schema";
 import {
   TRANSACTION_TYPES,
-  withdrawCowAMMargs,
+  WithdrawCoWAMMArgs,
 } from "#/lib/transactionFactory";
 import { ChainId } from "#/utils/chainsPublicClients";
 
@@ -51,12 +51,12 @@ export function WithdrawForm({
       cowAmm.token1.decimals
     );
     const txArgs = {
-      type: TRANSACTION_TYPES.WITHDRAW,
+      type: TRANSACTION_TYPES.WITHDRAW_COW_AMM,
       amm: cowAmm.order.owner,
       amount0,
       amount1,
       chainId: chainId as ChainId,
-    } as withdrawCowAMMargs;
+    } as WithdrawCoWAMMArgs;
     try {
       await sendTransactions([txArgs]);
       router.push(`${userId}/amms/${cowAmm.id}`);

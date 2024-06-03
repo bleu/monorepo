@@ -73,11 +73,7 @@ export const ALL_STANDALONE_AMMS_FROM_USER_QUERY = graphql(`
 
 export type IToken = NonNullable<
   ResultOf<typeof AMM_QUERY>["constantProductData"]
->["token0"] & {
-  address: Address;
-  token0: IToken;
-  token1: IToken;
-};
+>["token0"];
 
 export interface ITokenExtended extends IToken {
   balance: string;

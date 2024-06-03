@@ -118,13 +118,11 @@ export function TokenSelect({
                   onSelect={() => handleSelectToken(token)}
                 >
                   <TokenInfo
-                    token={
-                      {
-                        address: token.address,
-                        symbol: token.symbol,
-                        decimals: token.decimals,
-                      } as IToken
-                    }
+                    token={{
+                      address: token.address as Address,
+                      symbol: token.symbol,
+                      decimals: token.decimals,
+                    }}
                   />
                 </CommandItem>
               ))}

@@ -2,8 +2,6 @@ import { ArrowLeftIcon } from "@radix-ui/react-icons";
 
 import { LinkComponent } from "#/components/Link";
 
-import { CreateAMMForm } from "./CreateAMMForm";
-
 function ArrowIcon() {
   return (
     <ArrowLeftIcon
@@ -14,25 +12,33 @@ function ArrowIcon() {
   );
 }
 
-export function CreateAMMFormWrapper({ userId }: { userId: string }) {
+export function FormPageWrapper({
+  children,
+  backHref,
+  formTitle,
+}: {
+  children: React.ReactNode;
+  backHref: string;
+  formTitle: string;
+}) {
   return (
     <div className="flex size-full items-center justify-center">
       <div className="my-4 flex flex-col border-2 border-foreground bg-card border-card-foreground text-card-foreground">
         <div className="relative flex size-full justify-center">
           <LinkComponent
-            href={`/${userId}/amms`}
+            href={backHref}
             content={
               <div className="absolute left-8 flex h-full items-center">
                 <ArrowIcon />
               </div>
             }
           />
-          <div className="flex w-[530px] flex-col items-center py-3">
-            <div className="text-xl">Create AMM</div>
+          <div className="flex w-[530px] flex-col items-center pt-3">
+            <div className="text-xl">{formTitle}</div>
           </div>
         </div>
-        <div className="flex flex-col w-[530px] overflow-auto size-full max-h-[550px] p-5">
-          <CreateAMMForm userId={userId} />
+        <div className="flex flex-col w-[530px] overflow-auto size-full max-h-[550px] px-5 pb-5 pt-2">
+          {children}
         </div>
       </div>
     </div>

@@ -1,11 +1,12 @@
+"use client";
+
 import { toast } from "@bleu/ui";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { brownDark } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { useForm, UseFormReturn, useWatch } from "react-hook-form";
+import { Address, formatUnits } from "viem";
 
 import { Button } from "#/components";
 import { BalancerWeightedForm } from "#/components/BalancerWeightedForm";
@@ -14,7 +15,7 @@ import { CustomOracleForm } from "#/components/CustomOracleForm";
 import { Input } from "#/components/Input";
 import { SelectInput } from "#/components/SelectInput";
 import { SushiForm } from "#/components/SushiForm";
-import { TokenSelect } from "#/components/TokenSelect";
+import { TokenInfo } from "#/components/TokenInfo";
 import { Tooltip } from "#/components/Tooltip";
 import {
   Accordion,
@@ -26,49 +27,63 @@ import { Form, FormMessage } from "#/components/ui/form";
 import { Label } from "#/components/ui/label";
 import { UniswapV2Form } from "#/components/UniswapV2Form";
 import { useRawTxData } from "#/hooks/useRawTxData";
-import { IToken } from "#/lib/fetchAmmData";
-import { ammFormSchema } from "#/lib/schema";
-import { getNewMinTradeToken0 } from "#/lib/tokenUtils";
-import { buildTxCreateAMMArgs } from "#/lib/transactionFactory";
+import { ICowAmm } from "#/lib/fetchAmmData";
+import { ammEditSchema } from "#/lib/schema";
+import { buildTxEditAMMArgs } from "#/lib/transactionFactory";
 import { PRICE_ORACLES, PriceOraclesValue } from "#/lib/types";
 import { cn } from "#/lib/utils";
-import { ChainId } from "#/utils/chainsPublicClients";
 
-import { TokenAmountInput } from "./TokenAmountInput";
-
-export function CreateAMMForm({ userId }: { userId: string }) {
-  const {
-    safe: { safeAddress, chainId },
-  } = useSafeAppsSDK();
+export function EditAMMForm({
+  cowAmmData,
+  submitButtonText,
+}: {
+  cowAmmData: ICowAmm;
+  submitButtonText: string;
+}) {
   const router = useRouter();
 
-  const form = useForm<typeof ammFormSchema._type>({
+  const form = useForm<typeof ammEditSchema._type>({
     // @ts-ignore
-    resolver: zodResolver(ammFormSchema),
+    resolver: zodResolver(ammEditSchema),
     defaultValues: {
-      safeAddress,
-      chainId,
+      safeAddress: cowAmmData.user.address,
+      chainId: cowAmmData.chainId,
+      token0: cowAmmData.token0,
+      token1: cowAmmData.token1,
+      minTradedToken0: Number(
+        formatUnits(cowAmmData.minTradedToken0, cowAmmData.token0.decimals)
+      ),
+      priceOracle: cowAmmData.decodedPriceOracleData[0],
+      balancerPoolId: cowAmmData.decodedPriceOracleData[1].balancerPoolId,
+      uniswapV2Pair: cowAmmData.decodedPriceOracleData[1].uniswapV2PairAddress,
+      sushiV2Pair: cowAmmData.decodedPriceOracleData[1].sushiSwapPairAddress,
+      chainlinkPriceFeed0:
+        cowAmmData.decodedPriceOracleData[1].chainlinkPriceFeed0,
+      chainlinkPriceFeed1:
+        cowAmmData.decodedPriceOracleData[1].chainlinkPriceFeed1,
+      chainlinkTimeThresholdInHours:
+        cowAmmData.decodedPriceOracleData[1].chainlinkTimeThresholdInHours,
+      customPriceOracleAddress:
+        cowAmmData.decodedPriceOracleData[1].customPriceOracleAddress,
+      customPriceOracleData:
+        cowAmmData.decodedPriceOracleData[1].customPriceOracleData,
     },
   });
 
   const {
-    setValue,
-    control,
     formState: { errors, isSubmitting },
   } = form;
   const { sendTransactions } = useRawTxData();
 
-  const [token0, token1, priceOracle, amount0, amount1] = useWatch({
-    control,
-    name: ["token0", "token1", "priceOracle", "amount0", "amount1"],
-  });
-
-  const onSubmit = async (data: typeof ammFormSchema._type) => {
-    const txArgs = buildTxCreateAMMArgs({ data });
+  const onSubmit = async (data: typeof ammEditSchema._type) => {
+    const txArgs = buildTxEditAMMArgs({
+      data: data,
+      ammAddress: cowAmmData.order.owner as Address,
+    });
 
     try {
       await sendTransactions(txArgs);
-      router.push(`${userId}/amms`);
+      router.push(`/${cowAmmData.user.id}/amms/${cowAmmData.id}`);
     } catch {
       toast({
         title: `Transaction failed`,
@@ -78,72 +93,13 @@ export function CreateAMMForm({ userId }: { userId: string }) {
     }
   };
 
-  useEffect(() => {
-    setValue("safeAddress", safeAddress);
-  }, [safeAddress, setValue]);
-
   return (
     <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-3">
-      <div className="flex h-fit justify-between gap-x-7">
-        <div className="w-full flex flex-col">
-          <div className="flex flex-col w-full">
-            <span className="mb-2 h-5 block text-sm">Token Pair</span>
-            <TokenSelect
-              onSelectToken={async (token: IToken) => {
-                setValue("token0", {
-                  decimals: token.decimals,
-                  address: token.address,
-                  symbol: token.symbol,
-                });
-                setValue(
-                  "minTradedToken0",
-                  await getNewMinTradeToken0(token, chainId as ChainId)
-                );
-              }}
-              selectedToken={(token0 as IToken) ?? undefined}
-              errorMessage={errors.token0?.message}
-            />
-          </div>
-        </div>
-        <div className="flex flex-col w-full">
-          <div className="w-full flex flex-col">
-            <span className="mb-2 h-5 block text-sm text-transparent">
-              Select pair
-            </span>
-            <TokenSelect
-              onSelectToken={(token: IToken) => {
-                setValue("token1", {
-                  decimals: token.decimals,
-                  address: token.address,
-                  symbol: token.symbol,
-                });
-              }}
-              selectedToken={(token1 as IToken) ?? undefined}
-              errorMessage={errors.token1?.message}
-            />
-          </div>
-        </div>
-      </div>
-      <div className="flex h-fit justify-between gap-x-7">
-        <div className="w-full flex flex-col">
-          <div className="flex flex-col w-full">
-            <span className="mb-2 h-5 block text-sm">Token amounts</span>
-            <TokenAmountInput
-              tokenFieldForm="token0"
-              form={form}
-              fieldName="amount0"
-            />
-          </div>
-        </div>
-        <div className="flex flex-col w-full">
-          <div className="w-full flex flex-col">
-            <span className="mb-2 h-5 block text-sm text-transparent" />
-            <TokenAmountInput
-              tokenFieldForm="token1"
-              form={form}
-              fieldName="amount1"
-            />
-          </div>
+      <div className="flex flex-col w-full">
+        <span className="mb-2 h-5 block text-sm">Token Pair</span>
+        <div className="flex h-fit gap-x-7">
+          <TokenInfo token={cowAmmData.token0} />
+          <TokenInfo token={cowAmmData.token1} />
         </div>
       </div>
       <PriceOracleFields form={form} />
@@ -161,7 +117,7 @@ export function CreateAMMForm({ userId }: { userId: string }) {
             <Input
               label="Minimum first token amount on each order"
               type="number"
-              step={10 ** (-token0?.decimals || 18)}
+              step={10 ** -cowAmmData.token0.decimals}
               name="minTradedToken0"
               tooltipText="This parameter is used to not overload the CoW Orderbook with small orders. By default, 10 dollars worth of the first token will be the minimum amount for each order."
             />
@@ -175,12 +131,9 @@ export function CreateAMMForm({ userId }: { userId: string }) {
           variant="highlight"
           type="submit"
           className="w-full"
-          disabled={
-            isSubmitting ||
-            !(token0 && token1 && priceOracle && amount0 && amount1)
-          }
+          disabled={isSubmitting}
         >
-          <span>Create AMM</span>
+          <span>{submitButtonText}</span>
         </Button>
       </div>
     </Form>
@@ -190,12 +143,12 @@ export function CreateAMMForm({ userId }: { userId: string }) {
 function PriceOracleFields({
   form,
 }: {
-  form: UseFormReturn<typeof ammFormSchema._type>;
+  form: UseFormReturn<typeof ammEditSchema._type>;
 }) {
   const {
     setValue,
-    formState: { errors },
     control,
+    formState: { errors },
   } = form;
 
   const priceOracle = useWatch({ control, name: "priceOracle" });

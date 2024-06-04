@@ -41,6 +41,10 @@ export const AMM_QUERY = graphql(`
         owner
       }
       disabled
+      user {
+        id
+        address
+      }
     }
   }
 `);
@@ -66,6 +70,10 @@ export const ALL_STANDALONE_AMMS_FROM_USER_QUERY = graphql(`
           chainId
           owner
         }
+        user {
+          id
+          address
+        }
       }
     }
   }
@@ -90,6 +98,7 @@ export type ICowAmm = ResultOf<typeof AMM_QUERY>["constantProductData"] & {
   totalUsdValue: number;
   chainId: ChainId;
   priceFeedLinks: string[];
+  minTradedToken0: bigint;
 };
 
 export type ICoWAmmOverview = ResultOf<

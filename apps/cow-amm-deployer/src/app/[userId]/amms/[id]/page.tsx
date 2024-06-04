@@ -90,12 +90,14 @@ export default async function Page({
           </Link>
           <TradingControlButton ammData={ammData} />
           {!ammData.disabled && (
-            <Button className="flex items-center gap-1 py-3 px-6" disabled>
-              <Pencil2Icon />
-              Edit parameters
-            </Button>
+            <Link href={`/${params.userId}/amms/${params.id}/edit`}>
+              <Button className="flex items-center gap-1 py-3 px-6">
+                <Pencil2Icon />
+                Edit parameters
+              </Button>
+            </Link>
           )}
-          <Link href={`/amms/${params.id}/withdraw`}>
+          <Link href={`/${params.userId}/amms/${params.id}/withdraw`}>
             <Button
               className="flex items-center gap-1 py-3 px-6"
               variant="highlight"

@@ -5,7 +5,7 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Slider from "@radix-ui/react-slider";
 import { useRouter } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { parseUnits } from "viem";
 
 import { Button } from "#/components/Button";
@@ -74,7 +74,7 @@ export function WithdrawForm({
     formState: { isSubmitting },
   } = form;
 
-  const { withdrawPct } = form.watch();
+  const withdrawPct = useWatch({ control, name: "withdrawPct" });
 
   return (
     <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-3">

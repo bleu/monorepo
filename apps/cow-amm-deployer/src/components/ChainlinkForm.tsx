@@ -7,7 +7,6 @@ import { UseFormReturn } from "react-hook-form";
 import { Input } from "#/components/Input";
 import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/chainlinkPriceFeedRouter";
 import { IToken } from "#/lib/fetchAmmData";
-import { ammFormSchema } from "#/lib/schema";
 import { ChainId } from "#/utils/chainsPublicClients";
 
 const TOOLTIP_PRICE_FEED_TEXT =
@@ -18,7 +17,8 @@ const TOOLTIP_PRICE_FEED_LINK = "https://data.chain.link/feeds";
 export function ChainlinkForm({
   form,
 }: {
-  form: UseFormReturn<typeof ammFormSchema._type>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  form: UseFormReturn<any>;
 }) {
   const { register, setValue, watch } = form;
   const {

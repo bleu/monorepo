@@ -2,12 +2,12 @@ import { UseFormReturn } from "react-hook-form";
 
 import { AlertCard } from "#/components/AlertCard";
 import { Input } from "#/components/Input";
-import { ammFormSchema } from "#/lib/schema";
 
 export function CustomOracleForm({
   form,
 }: {
-  form: UseFormReturn<typeof ammFormSchema._type>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  form: UseFormReturn<any>;
 }) {
   const { register } = form;
   return (

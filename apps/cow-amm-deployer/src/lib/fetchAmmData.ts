@@ -100,7 +100,7 @@ export type ICoWAmmOverview = ResultOf<
   token1: ITokenExtended;
 };
 
-function validateAmmId(id: string) {
+export function validateAmmId(id: string) {
   const parts = id.split("-");
   if (parts.length !== 3) {
     throw new Error("Invalid AMM id");

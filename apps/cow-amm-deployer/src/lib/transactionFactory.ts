@@ -3,17 +3,23 @@ import { Address, encodeFunctionData, erc20Abi, parseUnits } from "viem";
 
 import { ChainId } from "#/utils/chainsPublicClients";
 
+import { composableCowAbi } from "./abis/composableCow";
 import { ConstantProductFactoryABI } from "./abis/ConstantProductFactory";
 import { cowAmmModuleAbi } from "./abis/cowAmmModule";
 import { BLEU_APP_DATA } from "./constants";
-import { COW_CONSTANT_PRODUCT_FACTORY } from "./contracts";
+import {
+  COMPOSABLE_COW_ADDRESS,
+  COW_CONSTANT_PRODUCT_FACTORY,
+} from "./contracts";
 import {
   encodePriceOracleData,
   getPriceOracleAddress,
   IEncodePriceOracleData,
   IGetPriceOracleAddress,
 } from "./encodePriceOracleData";
+import { ICowAmm } from "./fetchAmmData";
 import { ammEditSchema, ammFormSchema } from "./schema";
+import { fetchWalletTokenBalance } from "./tokenUtils";
 
 export enum TRANSACTION_TYPES {
   ERC20_APPROVE = "ERC20_APPROVE",
@@ -40,6 +46,8 @@ export interface DisableCoWAMMArgs extends BaseArgs {
   type: TRANSACTION_TYPES.DISABLE_COW_AMM;
   chainId: ChainId;
   amm: Address;
+  hash: `0x${string}`;
+  version: "Standalone" | "SafeModule";
 }
 
 export interface StopCoWAMMModuleVersionArgs extends BaseArgs {
@@ -53,8 +61,7 @@ export interface CreateCoWAMMArgs extends BaseArgs {
   token1: Address;
   amount0: bigint;
   amount1: bigint;
-  token0Decimals: number;
-  minTradedToken0: number;
+  minTradedToken0: bigint;
   priceOracleAddress: Address;
   appData: `0x${string}`;
   priceOracleData: `0x${string}`;
@@ -82,14 +89,30 @@ export interface ERC20ApproveArgs extends BaseArgs {
 }
 
 class CoWAMMDisableRawTx implements ITransaction<DisableCoWAMMArgs> {
-  createRawTx({ amm, chainId }: DisableCoWAMMArgs): BaseTransaction {
+  createRawTx({
+    amm,
+    chainId,
+    version,
+    hash,
+  }: DisableCoWAMMArgs): BaseTransaction {
+    if (version === "Standalone") {
+      return {
+        to: COW_CONSTANT_PRODUCT_FACTORY[chainId],
+        value: "0",
+        data: encodeFunctionData({
+          abi: ConstantProductFactoryABI,
+          functionName: "disableTrading",
+          args: [amm],
+        }),
+      };
+    }
     return {
-      to: COW_CONSTANT_PRODUCT_FACTORY[chainId],
+      to: COMPOSABLE_COW_ADDRESS,
       value: "0",
       data: encodeFunctionData({
-        abi: ConstantProductFactoryABI,
-        functionName: "disableTrading",
-        args: [amm],
+        abi: composableCowAbi,
+        functionName: "remove",
+        args: [hash],
       }),
     };
   }
@@ -137,7 +160,6 @@ class CoWAMMCreateTx implements ITransaction<CreateCoWAMMArgs> {
     amount0,
     token1,
     amount1,
-    token0Decimals,
     minTradedToken0,
     priceOracleAddress,
     priceOracleData,
@@ -155,7 +177,7 @@ class CoWAMMCreateTx implements ITransaction<CreateCoWAMMArgs> {
           amount0,
           token1,
           amount1,
-          parseUnits(String(minTradedToken0), token0Decimals),
+          minTradedToken0,
           priceOracleAddress,
           priceOracleData,
           appData,
@@ -269,8 +291,10 @@ export function buildTxCreateAMMArgs({
       token1: data.token1.address as Address,
       amount0: parseUnits(String(data.amount0), data.token0.decimals),
       amount1: parseUnits(String(data.amount1), data.token1.decimals),
-      token0Decimals: data.token0.decimals,
-      minTradedToken0: data.minTradedToken0,
+      minTradedToken0: parseUnits(
+        String(data.minTradedToken0),
+        data.token0.decimals
+      ),
       priceOracleAddress,
       priceOracleData,
       appData: BLEU_APP_DATA,
@@ -302,5 +326,61 @@ export function buildTxEditAMMArgs({
       priceOracleData,
       chainId: data.chainId as ChainId,
     } as const,
+  ];
+}
+
+export async function buildMigrateToStandaloneVersionArgs({
+  data,
+}: {
+  data: ICowAmm;
+}): Promise<AllTransactionArgs[]> {
+  const userAddress = data.user.address as Address;
+  const chainId = data.chainId as ChainId;
+
+  const [token0Amount, token1Amount] = await Promise.all([
+    fetchWalletTokenBalance({
+      token: data.token0,
+      walletAddress: userAddress,
+      chainId,
+    }).then((balance) => parseUnits(balance, data.token0.decimals)),
+    fetchWalletTokenBalance({
+      token: data.token1,
+      walletAddress: userAddress,
+      chainId,
+    }).then((balance) => parseUnits(balance, data.token1.decimals)),
+  ]);
+
+  return [
+    {
+      type: TRANSACTION_TYPES.DISABLE_COW_AMM,
+      chainId: data.order.chainId as ChainId,
+      amm: data.order.owner as Address,
+      hash: data.order.hash as `0x${string}`,
+      version: data.version as "Standalone" | "SafeModule",
+    },
+    {
+      type: TRANSACTION_TYPES.ERC20_APPROVE,
+      tokenAddress: data.token0.address as Address,
+      spender: COW_CONSTANT_PRODUCT_FACTORY[data.chainId as ChainId],
+      amount: token0Amount,
+    },
+    {
+      type: TRANSACTION_TYPES.ERC20_APPROVE,
+      tokenAddress: data.token1.address as Address,
+      spender: COW_CONSTANT_PRODUCT_FACTORY[data.chainId as ChainId],
+      amount: token1Amount,
+    },
+    {
+      type: TRANSACTION_TYPES.CREATE_COW_AMM,
+      token0: data.token0.address as Address,
+      token1: data.token1.address as Address,
+      amount0: token0Amount,
+      amount1: token1Amount,
+      minTradedToken0: data.minTradedToken0,
+      priceOracleAddress: data.priceOracle,
+      priceOracleData: data.priceOracleData,
+      appData: BLEU_APP_DATA,
+      chainId: data.chainId as ChainId,
+    },
   ];
 }

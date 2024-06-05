@@ -69,14 +69,14 @@ export default function Table({
         className={cn(
           "min-w-full",
           predefinedClasses[color][variant][shade].border,
-          classNames ?? classNames
+          classNames
         )}
       >
         <table
           className={cn(
             "divide-y divide-sand7 min-w-full",
             predefinedClasses[color][variant][shade].style,
-            "w-full h-full"
+            "w-full"
           )}
         >
           {children}

@@ -1,5 +1,6 @@
 "use client";
-import { formatNumber } from "@bleu/utils/formatNumber";
+
+import { formatNumber } from "@bleu/ui";
 import { tomatoDark } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 
@@ -15,7 +16,7 @@ export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
     <Table
       color="foreground"
       shade="darkWithBorder"
-      classNames="overflow-y-auto text-background"
+      classNames="text-background"
     >
       <Table.HeaderRow>
         <Table.HeaderCell>Tokens</Table.HeaderCell>
@@ -49,7 +50,7 @@ export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
                       2,
                       "decimal",
                       "compact",
-                      0.01,
+                      0.01
                     )}
                   </>
                   {!token.usdPrice && <PriceErrorTooltip />}

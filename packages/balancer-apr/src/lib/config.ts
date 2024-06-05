@@ -16,7 +16,7 @@ export const NETWORK_TO_BALANCER_ENDPOINT_MAP = {
 } as const;
 
 const BASE_REWARDS_ENDPOINT =
-  "https://api.thegraph.com/subgraphs/name/bleu-fi/balancer-gauges";
+  "https://api.thegraph.com/subgraphs/name/bleu/balancer-gauges";
 
 export const NETWORK_TO_REWARDS_ENDPOINT_MAP = {
   ethereum: `${BASE_REWARDS_ENDPOINT}`,

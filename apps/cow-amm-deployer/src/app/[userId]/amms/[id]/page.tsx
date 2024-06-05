@@ -1,9 +1,5 @@
 import { formatNumber } from "@bleu/utils/formatNumber";
-import {
-  ArrowTopRightIcon,
-  Pencil2Icon,
-  ResetIcon,
-} from "@radix-ui/react-icons";
+import { ArrowTopRightIcon, Pencil2Icon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { Address } from "viem";
 
@@ -79,25 +75,14 @@ export default async function Page({
         </div>
         <PoolCompositionTable cowAmm={ammData} />
         <div className="flex gap-4 items-center">
-          <Link href={`/${params.userId}/amms`}>
-            <Button
-              className="flex items-center gap-1 py-3 px-6"
-              variant="ghost"
-            >
-              <ResetIcon />
-              Back to AMMs table
-            </Button>
-          </Link>
           <TradingControlButton ammData={ammData} />
           {!ammData.disabled && (
-            <Link href={`/${params.userId}/amms/${params.id}/edit`}>
-              <Button className="flex items-center gap-1 py-3 px-6">
-                <Pencil2Icon />
-                Edit parameters
-              </Button>
-            </Link>
+            <Button className="flex items-center gap-1 py-3 px-6" disabled>
+              <Pencil2Icon />
+              Edit parameters
+            </Button>
           )}
-          <Link href={`/${params.userId}/amms/${params.id}/withdraw`}>
+          <Link href={`/amms/${params.id}/withdraw`}>
             <Button
               className="flex items-center gap-1 py-3 px-6"
               variant="highlight"

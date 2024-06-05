@@ -10,12 +10,12 @@ export async function getTokensExternalPrices([_, chainId, token0, token1]: [
 ]) {
   const [token0ExternalUsdPrice, token1ExternalUsdPrice] = await Promise.all([
     fetchTokenUsdPrice({
-      tokenAddress: token0.address,
+      tokenAddress: token0.address as `0x${string}`,
       tokenDecimals: token0.decimals,
       chainId,
     }).catch(() => 0),
     fetchTokenUsdPrice({
-      tokenAddress: token1.address,
+      tokenAddress: token1.address as `0x${string}`,
       tokenDecimals: token1.decimals,
       chainId,
     }).catch(() => 0),

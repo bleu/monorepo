@@ -69,7 +69,7 @@ export const ammFormSchema = z
     {
       message: "Balancer Pool ID is required",
       path: ["balancerPoolId"],
-    },
+    }
   )
   .refine(
     // validate if uniswap v2 pool address is required
@@ -83,7 +83,7 @@ export const ammFormSchema = z
     {
       message: "Uniswap V2 Pool Address is required",
       path: ["uniswapV2Pair"],
-    },
+    }
   )
   .refine(
     // validate if sushi v2 pool address is required
@@ -97,7 +97,7 @@ export const ammFormSchema = z
     {
       message: "Sushi V2 Pool Address is required",
       path: ["sushiV2Pair"],
-    },
+    }
   )
   .refine(
     // validate if custom price oracle data is required
@@ -111,7 +111,7 @@ export const ammFormSchema = z
     {
       message: "Custom price oracle data is required",
       path: ["customPriceOracleData"],
-    },
+    }
   )
   .refine(
     // validate if chainlink oracle data is required
@@ -129,7 +129,7 @@ export const ammFormSchema = z
     {
       message: "Chainlink price feed addresses are required",
       path: ["chainlinkPriceFeed0", "chainlinkPriceFeed1"],
-    },
+    }
   )
   .refine(
     // validate if tokens are different
@@ -143,7 +143,7 @@ export const ammFormSchema = z
     {
       message: "Tokens must be different",
       path: ["token0"],
-    },
+    }
   )
 
   .superRefine(async (data, ctx) => {
@@ -179,7 +179,7 @@ export const ammFormSchema = z
         code: z.ZodIssueCode.custom,
         message: `Insufficient balance`,
         path: [x],
-      }),
+      })
     );
     return !path.length;
   })
@@ -209,10 +209,133 @@ export const ammFormSchema = z
     // validate if price oracle is working
     try {
       const priceOracleData = encodePriceOracleData(
-        data as IEncodePriceOracleData,
+        data as IEncodePriceOracleData
       );
       const priceOracleAddress = getPriceOracleAddress(
-        data as IGetPriceOracleAddress,
+        data as IGetPriceOracleAddress
+      );
+      const publicClient = publicClientsFromIds[data.chainId as ChainId];
+      await publicClient.readContract({
+        abi: minimalPriceOracleAbi,
+        address: priceOracleAddress,
+        functionName: "getPrice",
+        args: [
+          data.token0.address as Address,
+          data.token1.address as Address,
+          priceOracleData,
+        ],
+      });
+    } catch {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `Price oracle error`,
+        path: ["priceOracle"],
+      });
+    }
+  });
+
+export const ammEditSchema = z
+  .object({
+    token0: baseTokenSchema,
+    token1: baseTokenSchema,
+    minTradedToken0: z.coerce.number().positive(),
+    priceOracle: z.nativeEnum(PRICE_ORACLES),
+    safeAddress: basicAddressSchema,
+    balancerPoolId: bytes32Schema.optional(),
+    uniswapV2Pair: basicAddressSchema.optional(),
+    sushiV2Pair: basicAddressSchema.optional(),
+    chainlinkPriceFeed0: basicAddressSchema.optional(),
+    chainlinkPriceFeed1: basicAddressSchema.optional(),
+    chainlinkTimeThresholdInHours: z.coerce
+      .number()
+      .int()
+      .positive()
+      .optional(),
+    chainId: z.number().int(),
+    customPriceOracleAddress: basicAddressSchema.optional(),
+    customPriceOracleData: bytesSchema.optional(),
+  })
+  .refine(
+    // validate if balancer Pool ID is required
+    (data) => {
+      if (data.priceOracle === PRICE_ORACLES.BALANCER) {
+        return !!data.balancerPoolId;
+      }
+      return true;
+    },
+    {
+      message: "Balancer Pool ID is required",
+      path: ["balancerPoolId"],
+    }
+  )
+  .refine(
+    // validate if uniswap v2 pool address is required
+
+    (data) => {
+      if (data.priceOracle === PRICE_ORACLES.UNI) {
+        return !!data.uniswapV2Pair;
+      }
+      return true;
+    },
+    {
+      message: "Uniswap V2 Pool Address is required",
+      path: ["uniswapV2Pair"],
+    }
+  )
+  .refine(
+    // validate if sushi v2 pool address is required
+
+    (data) => {
+      if (data.priceOracle === PRICE_ORACLES.SUSHI) {
+        return !!data.sushiV2Pair;
+      }
+      return true;
+    },
+    {
+      message: "Sushi V2 Pool Address is required",
+      path: ["sushiV2Pair"],
+    }
+  )
+  .refine(
+    // validate if custom price oracle data is required
+
+    (data) => {
+      if (data.priceOracle === PRICE_ORACLES.CUSTOM) {
+        return !!data.customPriceOracleData;
+      }
+      return true;
+    },
+    {
+      message: "Custom price oracle data is required",
+      path: ["customPriceOracleData"],
+    }
+  )
+  .refine(
+    // validate if chainlink oracle data is required
+
+    (data) => {
+      if (data.priceOracle === PRICE_ORACLES.CHAINLINK) {
+        return (
+          !!data.chainlinkPriceFeed0 &&
+          !!data.chainlinkPriceFeed1 &&
+          !!data.chainlinkTimeThresholdInHours
+        );
+      }
+      return true;
+    },
+    {
+      message: "Chainlink price feed addresses are required",
+      path: ["chainlinkPriceFeed0", "chainlinkPriceFeed1"],
+    }
+  )
+  .superRefine(async (data, ctx) => {
+    // validate if price oracle is working
+    try {
+      const priceOracleData = encodePriceOracleData(
+        data as IEncodePriceOracleData
+      );
+      const priceOracleAddress = getPriceOracleAddress(
+        data as IGetPriceOracleAddress
       );
       const publicClient = publicClientsFromIds[data.chainId as ChainId];
       await publicClient.readContract({

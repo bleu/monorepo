@@ -202,7 +202,7 @@ function BodyCell({
     <td
       className={cn(
         "whitespace-nowrap text-sm",
-        customWidth ? cn(customWidth, "pl-4") : colSpan === 1 ? padding : "p-0",
+        customWidth ? cn(customWidth, "pl-4") : padding,
         classNames
       )}
       colSpan={colSpan}

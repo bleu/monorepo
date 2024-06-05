@@ -2,7 +2,7 @@ import { convertStringToNumberAndRoundDown } from "@bleu/ui";
 import { formatNumber } from "@bleu/utils/formatNumber";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { useEffect, useState } from "react";
-import { UseFormReturn } from "react-hook-form";
+import { UseFormReturn, useWatch } from "react-hook-form";
 import { Address } from "viem";
 
 import { Input } from "#/components/Input";
@@ -24,9 +24,11 @@ export function TokenAmountInput({
     safe: { safeAddress, chainId },
   } = useSafeAppsSDK();
   const [walletAmount, setWalletAmount] = useState<string>("");
-  const { setValue, watch, register } = form;
+  const { setValue, register, control } = form;
 
-  const token = watch(tokenFieldForm) as IToken | undefined;
+  const token = useWatch({ control, name: tokenFieldForm }) as
+    | IToken
+    | undefined;
 
   async function updateWalletAmount(token: IToken) {
     const updatedWalletAmount = await fetchWalletTokenBalance({
@@ -65,7 +67,7 @@ export function TokenAmountInput({
             onClick={() => {
               setValue(
                 fieldName,
-                convertStringToNumberAndRoundDown(walletAmount),
+                convertStringToNumberAndRoundDown(walletAmount)
               );
             }}
           >

@@ -41,6 +41,10 @@ export const AMM_QUERY = graphql(`
         owner
       }
       disabled
+      user {
+        id
+        address
+      }
     }
   }
 `);
@@ -66,6 +70,10 @@ export const ALL_STANDALONE_AMMS_FROM_USER_QUERY = graphql(`
           chainId
           owner
         }
+        user {
+          id
+          address
+        }
       }
     }
   }
@@ -73,11 +81,7 @@ export const ALL_STANDALONE_AMMS_FROM_USER_QUERY = graphql(`
 
 export type IToken = NonNullable<
   ResultOf<typeof AMM_QUERY>["constantProductData"]
->["token0"] & {
-  address: Address;
-  token0: IToken;
-  token1: IToken;
-};
+>["token0"];
 
 export interface ITokenExtended extends IToken {
   balance: string;
@@ -94,6 +98,7 @@ export type ICowAmm = ResultOf<typeof AMM_QUERY>["constantProductData"] & {
   totalUsdValue: number;
   chainId: ChainId;
   priceFeedLinks: string[];
+  minTradedToken0: bigint;
 };
 
 export type ICoWAmmOverview = ResultOf<
@@ -104,7 +109,7 @@ export type ICoWAmmOverview = ResultOf<
   token1: ITokenExtended;
 };
 
-function validateAmmId(id: string) {
+export function validateAmmId(id: string) {
   const parts = id.split("-");
   if (parts.length !== 3) {
     throw new Error("Invalid AMM id");

@@ -1,7 +1,7 @@
 import { FormPageWrapper } from "#/components/FormPageWrapper";
 import { fetchAmmData } from "#/lib/fetchAmmData";
 
-import { WithdrawForm } from "./(components)/WithdrawForm";
+import { EditAMMForm } from "../(components)/EditAMMForm";
 
 export default async function Page({
   params,
@@ -12,10 +12,10 @@ export default async function Page({
 
   return (
     <FormPageWrapper
-      formTitle="Proportional Withdraw"
+      formTitle="Enable AMM"
       backHref={`/${params.userId}/amms/${params.id}`}
     >
-      <WithdrawForm cowAmm={ammData} userId={params.userId} />
+      <EditAMMForm cowAmmData={ammData} submitButtonText="Enable trading" />
     </FormPageWrapper>
   );
 }

@@ -14,6 +14,7 @@ import { ChainId } from "#/utils/chainsPublicClients";
 
 import { PoolCompositionTable } from "./(components)/PoolCompositionTable";
 import { PriceInformation } from "./(components)/PriceInformation";
+import { TradingControlButton } from "./(components)/TradingControlButton";
 
 export default async function Page({
   params,
@@ -31,8 +32,16 @@ export default async function Page({
               The first <i className="text-purple">MEV-Capturing AMM</i>,
               brought to you by <i className="text-yellow">CoW DAO</i>
             </h2>
-            <PriceInformation cowAmm={ammData} />
+            {ammData.disabled ? (
+              <span>
+                This AMM is currently{" "}
+                <i className="text-destructive">disabled</i>
+              </span>
+            ) : (
+              <PriceInformation cowAmm={ammData} />
+            )}
           </div>
+
           <div className="flex flex-col bg-yellow/40 text-foreground py-2 px-8">
             <span className="text-sm">Total Value</span>
             <span className="text-2xl">
@@ -79,20 +88,20 @@ export default async function Page({
               Back to AMMs table
             </Button>
           </Link>
-          <Button
-            className="flex items-center gap-1 py-3 px-6"
-            variant="destructive"
-            disabled
-          >
-            <ResetIcon />
-            Stop CoW AMM LP
-          </Button>
-          <Button className="flex items-center gap-1 py-3 px-6" disabled>
-            <Pencil2Icon />
-            Edit CoW AMM LP parameters
-          </Button>
-          <Link href={`/amms/${params.id}/withdraw`}>
-            <Button className="flex items-center gap-1 py-3 px-6">
+          <TradingControlButton ammData={ammData} />
+          {!ammData.disabled && (
+            <Link href={`/${params.userId}/amms/${params.id}/edit`}>
+              <Button className="flex items-center gap-1 py-3 px-6">
+                <Pencil2Icon />
+                Edit parameters
+              </Button>
+            </Link>
+          )}
+          <Link href={`/${params.userId}/amms/${params.id}/withdraw`}>
+            <Button
+              className="flex items-center gap-1 py-3 px-6"
+              variant="highlight"
+            >
               Withdraw
             </Button>
           </Link>

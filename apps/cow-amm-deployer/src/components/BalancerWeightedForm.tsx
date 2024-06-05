@@ -2,28 +2,28 @@
 
 import { toast } from "@bleu/ui";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { UseFormReturn } from "react-hook-form";
+import { UseFormReturn, useWatch } from "react-hook-form";
 import { Address } from "viem";
 
 import { Input } from "#/components/Input";
 import { pools } from "#/lib/gqlBalancer";
-import { ammFormSchema } from "#/lib/schema";
 import { loadDEXPriceCheckerErrorText } from "#/lib/utils";
 
 export function BalancerWeightedForm({
   form,
 }: {
-  form: UseFormReturn<typeof ammFormSchema._type>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  form: UseFormReturn<any>;
 }) {
-  const { register, setValue, watch } = form;
+  const { register, setValue, control } = form;
   const {
     safe: { chainId },
   } = useSafeAppsSDK();
 
-  const token0 = watch("token0");
-  const token1 = watch("token1");
+  const [token0, token1] = useWatch({ control, name: ["token0", "token1"] });
+
   const tokenAddresses = [token0?.address, token1?.address].filter(
-    (address) => address,
+    (address) => address
   ) as Address[];
   return (
     <div className="flex flex-col gap-y-1">
@@ -43,7 +43,7 @@ export function BalancerWeightedForm({
             toast({
               title: "Pool not found",
               description: loadDEXPriceCheckerErrorText(
-                "Balancer V2 Weighted Pool",
+                "Balancer V2 Weighted Pool"
               ),
               variant: "destructive",
             });

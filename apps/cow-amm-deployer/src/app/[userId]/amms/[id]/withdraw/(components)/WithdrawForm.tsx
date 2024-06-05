@@ -5,7 +5,7 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Slider from "@radix-ui/react-slider";
 import { useRouter } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { parseUnits } from "viem";
 
 import { Button } from "#/components/Button";
@@ -21,7 +21,13 @@ import {
 } from "#/lib/transactionFactory";
 import { ChainId } from "#/utils/chainsPublicClients";
 
-export function WithdrawForm({ cowAmm }: { cowAmm: ICowAmm }) {
+export function WithdrawForm({
+  cowAmm,
+  userId,
+}: {
+  cowAmm: ICowAmm;
+  userId: string;
+}) {
   const form = useForm<typeof ammWithdrawSchema._type>({
     // @ts-ignore
     resolver: zodResolver(ammWithdrawSchema),
@@ -38,11 +44,11 @@ export function WithdrawForm({ cowAmm }: { cowAmm: ICowAmm }) {
   const onSubmit = async (data: typeof ammWithdrawSchema._type) => {
     const amount0 = parseUnits(
       String((Number(cowAmm.token0.balance) * data.withdrawPct) / 100),
-      cowAmm.token0.decimals,
+      cowAmm.token0.decimals
     );
     const amount1 = parseUnits(
       String((Number(cowAmm.token1.balance) * data.withdrawPct) / 100),
-      cowAmm.token1.decimals,
+      cowAmm.token1.decimals
     );
     const txArgs = {
       type: TRANSACTION_TYPES.WITHDRAW_COW_AMM,
@@ -53,7 +59,7 @@ export function WithdrawForm({ cowAmm }: { cowAmm: ICowAmm }) {
     } as WithdrawCoWAMMArgs;
     try {
       await sendTransactions([txArgs]);
-      router.push(`/amms/${cowAmm.id}`);
+      router.push(`${userId}/amms/${cowAmm.id}`);
     } catch {
       toast({
         title: `Transaction failed`,
@@ -68,7 +74,7 @@ export function WithdrawForm({ cowAmm }: { cowAmm: ICowAmm }) {
     formState: { isSubmitting },
   } = form;
 
-  const { withdrawPct } = form.watch();
+  const withdrawPct = useWatch({ control, name: "withdrawPct" });
 
   return (
     <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-3">
@@ -116,7 +122,7 @@ export function WithdrawForm({ cowAmm }: { cowAmm: ICowAmm }) {
                     <span className="font-semibold">
                       {formatNumber(
                         (Number(token.balance) * withdrawPct) / 100,
-                        4,
+                        4
                       )}{" "}
                       {token.symbol}
                     </span>
@@ -124,7 +130,7 @@ export function WithdrawForm({ cowAmm }: { cowAmm: ICowAmm }) {
                       $
                       {formatNumber(
                         (Number(token.usdValue) * withdrawPct) / 100,
-                        4,
+                        4
                       )}
                     </span>
                   </div>

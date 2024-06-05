@@ -2,12 +2,11 @@
 
 import { toast } from "@bleu/ui";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { UseFormReturn } from "react-hook-form";
+import { UseFormReturn, useWatch } from "react-hook-form";
 
 import { Input } from "#/components/Input";
 import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/chainlinkPriceFeedRouter";
 import { IToken } from "#/lib/fetchAmmData";
-import { ammFormSchema } from "#/lib/schema";
 import { ChainId } from "#/utils/chainsPublicClients";
 
 const TOOLTIP_PRICE_FEED_TEXT =
@@ -18,15 +17,16 @@ const TOOLTIP_PRICE_FEED_LINK = "https://data.chain.link/feeds";
 export function ChainlinkForm({
   form,
 }: {
-  form: UseFormReturn<typeof ammFormSchema._type>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  form: UseFormReturn<any>;
 }) {
-  const { register, setValue, watch } = form;
+  const { register, setValue, control } = form;
   const {
     safe: { chainId },
   } = useSafeAppsSDK();
 
-  const token0 = watch("token0") as IToken;
-  const token1 = watch("token1") as IToken;
+  const token0 = useWatch({ control, name: "token0" }) as IToken;
+  const token1 = useWatch({ control, name: "token1" }) as IToken;
   return (
     <div className="flex flex-col gap-y-1">
       <div className="flex h-fit justify-between gap-x-7">

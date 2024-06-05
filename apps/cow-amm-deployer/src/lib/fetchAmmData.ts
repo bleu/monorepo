@@ -41,15 +41,47 @@ export const AMM_QUERY = graphql(`
         owner
       }
       disabled
+      user {
+        id
+        address
+      }
+    }
+  }
+`);
+
+export const ALL_STANDALONE_AMMS_FROM_USER_QUERY = graphql(`
+  query ($userId: String!) {
+    constantProductDatas(where: { userId: $userId, version: "Standalone" }) {
+      items {
+        id
+        disabled
+        token0 {
+          address
+          decimals
+          symbol
+        }
+        token1 {
+          address
+          decimals
+          symbol
+        }
+        order {
+          blockTimestamp
+          chainId
+          owner
+        }
+        user {
+          id
+          address
+        }
+      }
     }
   }
 `);
 
 export type IToken = NonNullable<
   ResultOf<typeof AMM_QUERY>["constantProductData"]
->["token0"] & {
-  address: Address;
-};
+>["token0"];
 
 export interface ITokenExtended extends IToken {
   balance: string;
@@ -66,9 +98,18 @@ export type ICowAmm = ResultOf<typeof AMM_QUERY>["constantProductData"] & {
   totalUsdValue: number;
   chainId: ChainId;
   priceFeedLinks: string[];
+  minTradedToken0: bigint;
 };
 
-function validateAmmId(id: string) {
+export type ICoWAmmOverview = ResultOf<
+  typeof ALL_STANDALONE_AMMS_FROM_USER_QUERY
+>["constantProductDatas"]["items"][0] & {
+  totalUsdValue: number;
+  token0: ITokenExtended;
+  token1: ITokenExtended;
+};
+
+export function validateAmmId(id: string) {
   const parts = id.split("-");
   if (parts.length !== 3) {
     throw new Error("Invalid AMM id");
@@ -83,7 +124,7 @@ function validateAmmId(id: string) {
 
 async function fetchPriceFeedLinks(
   decodedData: [PriceOraclesValue, PriceOracleData],
-  chainId: ChainId,
+  chainId: ChainId
 ): Promise<string[]> {
   switch (decodedData[0]) {
     case PRICE_ORACLES.UNI: {
@@ -147,7 +188,7 @@ export const fetchAmmData = cache(async (ammId: string): Promise<ICowAmm> => {
 
   const priceFeedLinks = await fetchPriceFeedLinks(
     decodedPriceOracleData,
-    chainId,
+    chainId
   );
 
   const token0 = {
@@ -209,3 +250,68 @@ async function getPriceFeedLink(chainId: ChainId, address?: Address) {
 
   return `https://data.chain.link/feeds/${chainName}/mainnet/${priceFeedPageName}`;
 }
+
+export const fetchAllStandAloneAmmsFromUser = cache(
+  async (userId: string): Promise<ICoWAmmOverview[]> => {
+    const { constantProductDatas } = await request(
+      NEXT_PUBLIC_API_URL,
+      ALL_STANDALONE_AMMS_FROM_USER_QUERY,
+      { userId }
+    );
+
+    if (!constantProductDatas || !constantProductDatas.items) {
+      throw new Error("Failed to fetch AMMs");
+    }
+
+    const [balancesData, pricesData] = await Promise.all([
+      Promise.all(
+        constantProductDatas.items.map((amm) =>
+          getBalancesFromContract([
+            "balances",
+            amm.order.chainId as ChainId,
+            amm.order.owner as Address,
+            amm.token0 as IToken,
+            amm.token1 as IToken,
+          ])
+        )
+      ),
+      Promise.all(
+        constantProductDatas.items.map((amm) =>
+          getTokensExternalPrices([
+            "prices",
+            amm.order.chainId as ChainId,
+            amm.token0 as IToken,
+            amm.token1 as IToken,
+          ])
+        )
+      ),
+    ]);
+
+    return constantProductDatas.items.map((amm, index) => {
+      const token0 = {
+        ...amm.token0,
+        balance: balancesData[index].token0.balance,
+        usdPrice: pricesData[index].token0.externalUsdPrice,
+        usdValue:
+          Number(balancesData[index].token0.balance) *
+          pricesData[index].token0.externalUsdPrice,
+      };
+
+      const token1 = {
+        ...amm.token1,
+        balance: balancesData[index].token1.balance,
+        usdPrice: pricesData[index].token1.externalUsdPrice,
+        usdValue:
+          Number(balancesData[index].token1.balance) *
+          pricesData[index].token1.externalUsdPrice,
+      };
+
+      return {
+        ...amm,
+        token0,
+        token1,
+        totalUsdValue: token0.usdValue + token1.usdValue,
+      } as ICoWAmmOverview;
+    });
+  }
+);

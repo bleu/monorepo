@@ -127,6 +127,15 @@ export function validateAmmId(id: string) {
   ] as const;
 }
 
+export function validateUserId(id: string) {
+  const parts = id.split("-");
+  if (parts.length !== 2) {
+    throw new Error("Invalid User id");
+  }
+
+  return [parts[0] as Address, parseInt(parts[1]) as ChainId] as const;
+}
+
 async function fetchPriceFeedLinks(
   decodedData: [PriceOraclesValue, PriceOracleData],
   chainId: ChainId

@@ -9,9 +9,12 @@ import { cache } from "react";
 import { Address } from "viem";
 import { gnosis, sepolia } from "viem/chains";
 
-import { decodePriceOracleWithData } from "#/lib/decodePriceOracle";
+import {
+  decodePriceOracleWithData,
+  PriceOracleData,
+} from "#/lib/decodePriceOracle";
 import { NEXT_PUBLIC_API_URL } from "#/lib/ponderApi";
-import { PRICE_ORACLES, PriceOracleData, PriceOraclesValue } from "#/lib/types";
+import { PRICE_ORACLES } from "#/lib/types";
 import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 
 import { composableCowAbi } from "./abis/composableCow";
@@ -107,7 +110,7 @@ export type ICowAmm = ICoWAMMSubgraph & {
   priceOracle: Address;
   token0: ITokenExtended;
   token1: ITokenExtended;
-  decodedPriceOracleData: [PriceOraclesValue, PriceOracleData];
+  decodedPriceOracleData: PriceOracleData;
   totalUsdValue: number;
   chainId: ChainId;
   priceFeedLinks: string[];
@@ -128,29 +131,28 @@ export function validateAmmId(id: string) {
 }
 
 async function fetchPriceFeedLinks(
-  decodedData: [PriceOraclesValue, PriceOracleData],
-  chainId: ChainId
+  decodedData: PriceOracleData
 ): Promise<string[]> {
-  switch (decodedData[0]) {
+  switch (decodedData.priceOracle) {
     case PRICE_ORACLES.UNI: {
-      const url = getUniV2PairUrl(chainId, decodedData[1].uniswapV2PairAddress);
+      const url = getUniV2PairUrl(decodedData.chainId, decodedData.pairAddress);
       return url ? [url] : [];
     }
     case PRICE_ORACLES.BALANCER:
-      return [getBalancerPoolUrl(chainId, decodedData[1].balancerPoolId)];
+      return [getBalancerPoolUrl(decodedData.chainId, decodedData.poolId)];
     case PRICE_ORACLES.SUSHI:
-      return [getSushiV2Pair(chainId, decodedData[1].sushiSwapPairAddress)];
+      return [getSushiV2Pair(decodedData.chainId, decodedData.pairAddress)];
     case PRICE_ORACLES.CHAINLINK: {
       const [feed0Link, feed1Link] = await Promise.all([
-        getPriceFeedLink(chainId, decodedData[1].chainlinkPriceFeed0),
-        getPriceFeedLink(chainId, decodedData[1].chainlinkPriceFeed1),
+        getPriceFeedLink(decodedData.chainId, decodedData.feed0 as Address),
+        getPriceFeedLink(decodedData.chainId, decodedData.feed1 as Address),
       ]);
       return [feed0Link, feed1Link].filter(Boolean) as string[];
     }
-    default: {
+    case PRICE_ORACLES.CUSTOM: {
       const url = buildBlockExplorerAddressURL({
-        chainId,
-        address: decodedData[1].customPriceOracleAddress,
+        chainId: decodedData.chainId,
+        address: decodedData.address as Address,
       });
       return url ? [url.url] : [];
     }
@@ -223,10 +225,7 @@ export const getAmmData = cache(
         }),
       ]);
 
-    const priceFeedLinks = await fetchPriceFeedLinks(
-      decodedPriceOracleData,
-      subgraphData.order.chainId as ChainId
-    );
+    const priceFeedLinks = await fetchPriceFeedLinks(decodedPriceOracleData);
 
     const token0 = {
       ...token0SubgraphData,

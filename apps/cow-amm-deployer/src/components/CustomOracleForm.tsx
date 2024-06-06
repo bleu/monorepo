@@ -1,13 +1,16 @@
 import { UseFormReturn } from "react-hook-form";
+import { z } from "zod";
 
 import { AlertCard } from "#/components/AlertCard";
 import { Input } from "#/components/Input";
+import { ammEditSchema, ammFormSchema } from "#/lib/schema";
 
 export function CustomOracleForm({
   form,
 }: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  form: UseFormReturn<any>;
+  form: UseFormReturn<
+    z.input<typeof ammFormSchema> | z.input<typeof ammEditSchema>
+  >;
 }) {
   const { register } = form;
   return (
@@ -20,12 +23,12 @@ export function CustomOracleForm({
       </AlertCard>
       <Input
         label="Price Oracle Address"
-        {...register("customPriceOracleAddress")}
+        {...register("priceOracleSchema.address")}
         tooltipText="The address of the contract that will be used as the price oracle."
       />
       <Input
         label="Price Oracle Data"
-        {...register("customPriceOracleData")}
+        {...register("priceOracleSchema.data")}
         tooltipText="The bytes data that will be used to query the price oracle."
       />
     </div>

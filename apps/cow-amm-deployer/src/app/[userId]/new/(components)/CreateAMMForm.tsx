@@ -1,36 +1,27 @@
 import { toast } from "@bleu/ui";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { brownDark } from "@radix-ui/colors";
-import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useForm, UseFormReturn, useWatch } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
+import { z } from "zod";
 
 import { Button } from "#/components";
-import { BalancerWeightedForm } from "#/components/BalancerWeightedForm";
-import { ChainlinkForm } from "#/components/ChainlinkForm";
-import { CustomOracleForm } from "#/components/CustomOracleForm";
 import { Input } from "#/components/Input";
-import { SelectInput } from "#/components/SelectInput";
-import { SushiForm } from "#/components/SushiForm";
+import { PriceOracleForm } from "#/components/PriceOracleForm";
 import { TokenSelect } from "#/components/TokenSelect";
-import { Tooltip } from "#/components/Tooltip";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "#/components/ui/accordion";
-import { Form, FormMessage } from "#/components/ui/form";
-import { Label } from "#/components/ui/label";
-import { UniswapV2Form } from "#/components/UniswapV2Form";
+import { Form } from "#/components/ui/form";
 import { useRawTxData } from "#/hooks/useRawTxData";
 import { IToken } from "#/lib/fetchAmmData";
 import { ammFormSchema } from "#/lib/schema";
 import { getNewMinTradeToken0 } from "#/lib/tokenUtils";
 import { buildTxCreateAMMArgs } from "#/lib/transactionFactory";
-import { PRICE_ORACLES, PriceOraclesValue } from "#/lib/types";
 import { cn } from "#/lib/utils";
 import { ChainId } from "#/utils/chainsPublicClients";
 
@@ -42,12 +33,15 @@ export function CreateAMMForm({ userId }: { userId: string }) {
   } = useSafeAppsSDK();
   const router = useRouter();
 
-  const form = useForm<typeof ammFormSchema._type>({
+  const form = useForm<z.input<typeof ammFormSchema>>({
     // @ts-ignore
     resolver: zodResolver(ammFormSchema),
     defaultValues: {
       safeAddress,
       chainId,
+      priceOracleSchema: {
+        chainId: chainId as ChainId,
+      },
     },
   });
 
@@ -60,10 +54,16 @@ export function CreateAMMForm({ userId }: { userId: string }) {
 
   const [token0, token1, priceOracle, amount0, amount1] = useWatch({
     control,
-    name: ["token0", "token1", "priceOracle", "amount0", "amount1"],
+    name: [
+      "token0",
+      "token1",
+      "priceOracleSchema.priceOracle",
+      "amount0",
+      "amount1",
+    ],
   });
 
-  const onSubmit = async (data: typeof ammFormSchema._type) => {
+  const onSubmit = async (data: z.output<typeof ammFormSchema>) => {
     const txArgs = buildTxCreateAMMArgs({ data });
 
     try {
@@ -83,6 +83,7 @@ export function CreateAMMForm({ userId }: { userId: string }) {
   }, [safeAddress, setValue]);
 
   return (
+    // @ts-ignore
     <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-3">
       <div className="flex h-fit justify-between gap-x-7">
         <div className="w-full flex flex-col">
@@ -146,7 +147,8 @@ export function CreateAMMForm({ userId }: { userId: string }) {
           </div>
         </div>
       </div>
-      <PriceOracleFields form={form} />
+      {/* @ts-ignore */}
+      <PriceOracleForm form={form} />
       <Accordion className="w-full" type="single" collapsible>
         <AccordionItem value="advancedOptions" key="advancedOption">
           <AccordionTrigger
@@ -184,64 +186,5 @@ export function CreateAMMForm({ userId }: { userId: string }) {
         </Button>
       </div>
     </Form>
-  );
-}
-
-function PriceOracleFields({
-  form,
-}: {
-  form: UseFormReturn<typeof ammFormSchema._type>;
-}) {
-  const {
-    setValue,
-    formState: { errors },
-    control,
-  } = form;
-
-  const priceOracle = useWatch({ control, name: "priceOracle" });
-
-  return (
-    <div className="flex flex-col gap-y-3">
-      <div className="flex flex-col gap-x-7">
-        <div className="w-full">
-          <div className="flex gap-x-2 mb-2">
-            <Label>Price Oracle Source</Label>
-            <Tooltip
-              content={
-                "The AMM relies on price oracle exclusively for generating orders that will plausibly be settled in the current market conditions"
-              }
-            >
-              <InfoCircledIcon className="size-4" color={brownDark.brown8} />
-            </Tooltip>
-          </div>
-          <SelectInput
-            name="priceOracle"
-            options={Object.values(PRICE_ORACLES).map((value) => ({
-              id: value,
-              value,
-            }))}
-            onValueChange={(priceOracle) => {
-              setValue("priceOracle", priceOracle as PriceOraclesValue);
-            }}
-            placeholder={priceOracle}
-          />
-          {errors.priceOracle && (
-            <FormMessage className="text-sm text-destructive w-full">
-              <p className="text-wrap">
-                {errors.priceOracle.message as string}
-              </p>
-            </FormMessage>
-          )}
-        </div>
-      </div>
-
-      {priceOracle === PRICE_ORACLES.BALANCER && (
-        <BalancerWeightedForm form={form} />
-      )}
-      {priceOracle === PRICE_ORACLES.UNI && <UniswapV2Form form={form} />}
-      {priceOracle === PRICE_ORACLES.CUSTOM && <CustomOracleForm form={form} />}
-      {priceOracle === PRICE_ORACLES.SUSHI && <SushiForm form={form} />}
-      {priceOracle === PRICE_ORACLES.CHAINLINK && <ChainlinkForm form={form} />}
-    </div>
   );
 }

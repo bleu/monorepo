@@ -4,6 +4,7 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { useEffect, useState } from "react";
 import { UseFormReturn, useWatch } from "react-hook-form";
 import { Address } from "viem";
+import { z } from "zod";
 
 import { Input } from "#/components/Input";
 import { IToken } from "#/lib/fetchAmmData";
@@ -17,7 +18,7 @@ export function TokenAmountInput({
   fieldName,
 }: {
   tokenFieldForm: "token0" | "token1";
-  form: UseFormReturn<typeof ammFormSchema._type>;
+  form: UseFormReturn<z.input<typeof ammFormSchema>>;
   fieldName: "amount0" | "amount1";
 }) {
   const {

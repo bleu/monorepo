@@ -1,5 +1,6 @@
 import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
 import { Address, encodeFunctionData, erc20Abi, parseUnits } from "viem";
+import { z } from "zod";
 
 import { ChainId } from "#/utils/chainsPublicClients";
 
@@ -11,12 +12,6 @@ import {
   COMPOSABLE_COW_ADDRESS,
   COW_CONSTANT_PRODUCT_FACTORY,
 } from "./contracts";
-import {
-  encodePriceOracleData,
-  getPriceOracleAddress,
-  IEncodePriceOracleData,
-  IGetPriceOracleAddress,
-} from "./encodePriceOracleData";
 import { ICowAmm } from "./fetchAmmData";
 import { ammEditSchema, ammFormSchema } from "./schema";
 import { fetchWalletTokenBalance } from "./tokenUtils";
@@ -265,13 +260,8 @@ export class TransactionFactory {
 export function buildTxCreateAMMArgs({
   data,
 }: {
-  data: typeof ammFormSchema._type;
+  data: z.output<typeof ammFormSchema>;
 }): AllTransactionArgs[] {
-  const priceOracleData = encodePriceOracleData(data as IEncodePriceOracleData);
-  const priceOracleAddress = getPriceOracleAddress(
-    data as IGetPriceOracleAddress
-  );
-
   return [
     {
       type: TRANSACTION_TYPES.ERC20_APPROVE,
@@ -295,8 +285,8 @@ export function buildTxCreateAMMArgs({
         String(data.minTradedToken0),
         data.token0.decimals
       ),
-      priceOracleAddress,
-      priceOracleData,
+      priceOracleAddress: data.priceOracleSchema.priceOracleAddress as Address,
+      priceOracleData: data.priceOracleSchema.priceOracleData as `0x${string}`,
       appData: BLEU_APP_DATA,
       chainId: data.chainId as ChainId,
     } as const,
@@ -306,14 +296,9 @@ export function buildTxEditAMMArgs({
   data,
   ammAddress,
 }: {
-  data: typeof ammEditSchema._type;
+  data: z.output<typeof ammEditSchema>;
   ammAddress: Address;
 }): AllTransactionArgs[] {
-  const priceOracleData = encodePriceOracleData(data as IEncodePriceOracleData);
-  const priceOracleAddress = getPriceOracleAddress(
-    data as IGetPriceOracleAddress
-  );
-
   return [
     {
       type: TRANSACTION_TYPES.EDIT_COW_AMM,
@@ -322,8 +307,8 @@ export function buildTxEditAMMArgs({
         String(data.minTradedToken0),
         data.token0.decimals
       ),
-      priceOracleAddress,
-      priceOracleData,
+      priceOracleAddress: data.priceOracleSchema.priceOracleAddress as Address,
+      priceOracleData: data.priceOracleSchema.priceOracleData as `0x${string}`,
       chainId: data.chainId as ChainId,
     } as const,
   ];

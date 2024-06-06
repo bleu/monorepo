@@ -62,7 +62,7 @@ export function TokenAmountInput({
       <div className="flex gap-x-1 text-xs">
         <span>
           <span>
-            Wallet Balance:{" "}
+            Balance:{" "}
             {formatNumber(walletAmount, 4, "decimal", "standard", 0.0001)}
           </span>
         </span>

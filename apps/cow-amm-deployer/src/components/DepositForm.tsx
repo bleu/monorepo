@@ -1,7 +1,8 @@
 "use client";
 
+import { toast } from "@bleu/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
-// import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
@@ -9,9 +10,10 @@ import { TokenAmountInput } from "#/app/[userId]/new/(components)/TokenAmountInp
 import { Button } from "#/components";
 import { TokenInfo } from "#/components/TokenInfo";
 import { Form, FormMessage } from "#/components/ui/form";
-// import { useRawTxData } from "#/hooks/useRawTxData";
+import { useRawTxData } from "#/hooks/useRawTxData";
 import { ICowAmm } from "#/lib/fetchAmmData";
 import { getDepositSchema } from "#/lib/schema";
+import { buildDepositAmmArgs } from "#/lib/transactionFactory";
 
 export function DepositForm({
   cowAmmData,
@@ -22,7 +24,7 @@ export function DepositForm({
   walletBalanceToken0: string;
   walletBalanceToken1: string;
 }) {
-  //   const router = useRouter();
+  const router = useRouter();
   const schema = getDepositSchema(
     Number(walletBalanceToken0),
     Number(walletBalanceToken1)
@@ -37,15 +39,29 @@ export function DepositForm({
     formState: { errors, isSubmitting },
     control,
   } = form;
-  //   const { sendTransactions } = useRawTxData();
+  const { sendTransactions } = useRawTxData();
   const [amount0, amount1] = useWatch({
     control,
     name: ["amount0", "amount1"],
   });
 
   const onSubmit = async (data: z.output<typeof schema>) => {
-    // eslint-disable-next-line no-console
-    console.log({ data });
+    const txArgs = buildDepositAmmArgs({
+      cowAmm: cowAmmData,
+      amount0: data.amount0,
+      amount1: data.amount1,
+    });
+
+    try {
+      await sendTransactions(txArgs);
+      router.push(`${cowAmmData.user.id}/amms/${cowAmmData.id}`);
+    } catch {
+      toast({
+        title: `Transaction failed`,
+        description: "An error occurred while processing the transaction.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

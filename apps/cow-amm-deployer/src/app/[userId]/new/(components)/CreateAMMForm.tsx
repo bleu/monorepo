@@ -129,21 +129,15 @@ export function CreateAMMForm({ userId }: { userId: string }) {
         <div className="w-full flex flex-col">
           <div className="flex flex-col w-full">
             <span className="mb-2 h-5 block text-sm">Token amounts</span>
-            <TokenAmountInput
-              tokenFieldForm="token0"
-              form={form}
-              fieldName="amount0"
-            />
+            {/* @ts-ignore */}
+            <TokenAmountInput token={token0} form={form} fieldName="amount0" />
           </div>
         </div>
         <div className="flex flex-col w-full">
           <div className="w-full flex flex-col">
             <span className="mb-2 h-5 block text-sm text-transparent" />
-            <TokenAmountInput
-              tokenFieldForm="token1"
-              form={form}
-              fieldName="amount1"
-            />
+            {/* @ts-ignore */}
+            <TokenAmountInput token={token1} form={form} fieldName="amount1" />
           </div>
         </div>
       </div>

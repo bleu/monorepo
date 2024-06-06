@@ -5,8 +5,10 @@ import { z } from "zod";
 import { PRICE_ORACLES } from "#/lib/types";
 import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 
+import { ConstantProductFactoryABI } from "./abis/ConstantProductFactory";
 import { erc20ABI } from "./abis/erc20";
 import { minimalPriceOracleAbi } from "./abis/minimalPriceOracle";
+import { COW_CONSTANT_PRODUCT_FACTORY } from "./contracts";
 import {
   encodePriceOracleData,
   getPriceOracleAddress,
@@ -115,7 +117,6 @@ export const ammFormSchema = z
   )
   .refine(
     // validate if chainlink oracle data is required
-
     (data) => {
       if (data.priceOracle === PRICE_ORACLES.CHAINLINK) {
         return (
@@ -145,7 +146,6 @@ export const ammFormSchema = z
       path: ["token0"],
     }
   )
-
   .superRefine(async (data, ctx) => {
     // validate if there are balances of tokens
     const publicClient = publicClientsFromIds[data.chainId as ChainId];
@@ -167,7 +167,6 @@ export const ammFormSchema = z
         })
         .then((res) => Number(formatUnits(res, data.token0.decimals))),
     ]);
-
     const path = [
       { id: 0, notEnoughAmount: token0Amount < data.amount0 },
       { id: 1, notEnoughAmount: token1Amount < data.amount1 },
@@ -183,7 +182,6 @@ export const ammFormSchema = z
     );
     return !path.length;
   })
-
   .superRefine((data, ctx) => {
     // hardcoded value since we're just checking if the route exists or not
     // we're using 100 times the minTradedToken0 to cover high gas price (mainly for mainnet)
@@ -204,7 +202,6 @@ export const ammFormSchema = z
       }
     });
   })
-
   .superRefine(async (data, ctx) => {
     // validate if price oracle is working
     try {
@@ -231,6 +228,35 @@ export const ammFormSchema = z
         message: `Price oracle error`,
         path: ["priceOracle"],
       });
+    }
+  })
+  .superRefine(async (data, ctx) => {
+    // validate if cow amm doesn't exist
+    try {
+      const publicClient = publicClientsFromIds[data.chainId as ChainId];
+      const cowAmmAddress = await publicClient.readContract({
+        abi: ConstantProductFactoryABI,
+        address: COW_CONSTANT_PRODUCT_FACTORY[data.chainId as ChainId],
+        functionName: "ammDeterministicAddress",
+        args: [
+          data.safeAddress as Address,
+          data.token0.address as Address,
+          data.token1.address as Address,
+        ],
+      });
+      const contractByteCode = await publicClient.getBytecode({
+        address: cowAmmAddress,
+      });
+      if (contractByteCode !== "0x") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Cow AMM already exists`,
+          path: ["token0"],
+        });
+      }
+    } catch {
+      // eslint-disable-next-line no-console
+      console.error("Error while checking if Cow AMM exists");
     }
   });
 

@@ -1,10 +1,7 @@
-import { toast } from "@bleu/ui";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
-import { encodeAbiParameters, encodePacked, size } from "viem";
 import { z } from "zod";
 
 import { Button } from "#/components";
@@ -19,24 +16,30 @@ import {
 } from "#/components/ui/accordion";
 import { Form } from "#/components/ui/form";
 import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction";
-import { useRawTxData } from "#/hooks/useRawTxData";
 import { IToken } from "#/lib/fetchAmmData";
 import { ammFormSchema } from "#/lib/schema";
 import { getNewMinTradeToken0 } from "#/lib/tokenUtils";
-import {
-  buildTxCreateAMMArgs,
-  TransactionFactory,
-} from "#/lib/transactionFactory";
+import { buildTxCreateAMMArgs } from "#/lib/transactionFactory";
 import { cn } from "#/lib/utils";
 import { ChainId } from "#/utils/chainsPublicClients";
 
 import { TokenAmountInput } from "./TokenAmountInput";
 
-export function CreateAMMForm({ userId }: { userId: string }) {
+// const multisendABI = [
+//   {
+//     inputs: [{ internalType: "bytes", name: "transactions", type: "bytes" }],
+//     name: "multiSend",
+//     outputs: [],
+//     stateMutability: "payable",
+//     type: "function",
+//   },
+// ] as const;
+
+export function CreateAMMForm({ userId: _userId }: { userId: string }) {
   const {
     safe: { safeAddress, chainId },
   } = useSafeAppsSDK();
-  const router = useRouter();
+  // const router = useRouter();
 
   const form = useForm<z.input<typeof ammFormSchema>>({
     // @ts-ignore
@@ -56,10 +59,26 @@ export function CreateAMMForm({ userId }: { userId: string }) {
     formState: { errors, isSubmitting },
   } = form;
   // const { sendTransactions } = useRawTxData();
-  const { hash, error, writeContract, status, safeHash } =
-    useManagedTransaction();
+  const {
+    hash,
+    error,
+    writeContract,
+    writeContractWithSafe,
+    status,
+    safeHash,
+    isWalletContract,
+  } = useManagedTransaction();
+  // eslint-disable-next-line no-console
+  console.log({
+    hash,
+    error,
+    writeContract,
+    writeContractWithSafe,
+    status,
+    safeHash,
+    isWalletContract,
+  });
 
-  console.log({ error });
   const [token0, token1, priceOracle, amount0, amount1] = useWatch({
     control,
     name: [
@@ -71,57 +90,9 @@ export function CreateAMMForm({ userId }: { userId: string }) {
     ],
   });
 
-  const onSubmit = async (data: z.output<typeof ammFormSchema>) => {
-    const txArgs = buildTxCreateAMMArgs({ data });
-
-    try {
-      const txs = txArgs.map((arg) => {
-        const txData = TransactionFactory.createRawTx(arg.type, arg);
-
-        const encodedTx = encodePacked(
-          ["uint8", "address", "uint256", "uint256", "bytes"],
-          [
-            1,
-            txData.to as `0x${string}`,
-            BigInt(txData.value),
-            // @ts-ignore
-            BigInt(size(txData.data)),
-            txData.data as `0x${string}`,
-          ]
-        );
-
-        return encodedTx.slice(2);
-      });
-
-      const txData = "0x" + txs.join("");
-
-      const multisendABI = [
-        {
-          inputs: [
-            { internalType: "bytes", name: "transactions", type: "bytes" },
-          ],
-          name: "multiSend",
-          outputs: [],
-          stateMutability: "payable",
-          type: "function",
-        },
-      ] as const;
-
-      writeContract({
-        address: "0x40A2aCCbd92BCA938b02010E17A5b8929b49130D",
-        abi: multisendABI,
-        functionName: "multiSend",
-        args: [txData],
-      });
-
-      // router.push(`${userId}/amms`);
-    } catch (e) {
-      console.error(e);
-      toast({
-        title: `Transaction failed`,
-        description: "An error occurred while processing the transaction.",
-        variant: "destructive",
-      });
+  const onSubmit = (data: z.output<typeof ammFormSchema>) => {
+    if (isWalletContract) {
+      writeContractWithSafe(buildTxCreateAMMArgs({ data }));
     }
   };
 

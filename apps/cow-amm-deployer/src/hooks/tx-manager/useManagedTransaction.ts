@@ -1,17 +1,37 @@
-import { useTransactionConfirmations, useWriteContract } from "wagmi";
-import { useWaitForTransactionReceiptWrapped } from "./useWaitForTransactionReceiptWrapped";
 import { useEffect, useMemo } from "react";
-import { useSendCalls } from "wagmi/experimental";
+import {
+  useAccount,
+  useTransactionConfirmations,
+  useWriteContract,
+} from "wagmi";
+
+import { useContractWriteWithSafe } from "./useContractWriteWithSafe";
+import { useIsWalletContract } from "./useIsWalletContract";
+import { useWaitForTransactionReceiptWrapped } from "./useWaitForTransactionReceiptWrapped";
 
 const CONFIRMATIONS_THRESHOLD_FOR_FINAL_TX = 15;
 
 export function useManagedTransaction() {
+  const { address } = useAccount();
+  const { data: isWalletContract } = useIsWalletContract(address);
+
   const {
-    data,
-    error,
-    status: writeStatus,
+    data: safeData,
+    error: safeError,
+    status: safeWriteStatus,
+    writeContractWithSafe,
+  } = useContractWriteWithSafe();
+
+  const {
+    data: eoaData,
+    error: eoaError,
+    status: eoaWriteStatus,
     writeContract,
   } = useWriteContract();
+
+  const data = safeData || eoaData;
+  const error = safeError || eoaError;
+  const writeStatus = safeWriteStatus || eoaWriteStatus;
 
   const {
     hash,
@@ -25,7 +45,6 @@ export function useManagedTransaction() {
   const {
     data: blockConfirmations,
     status: blockConfirmationsStatus,
-    fetchStatus: blockConfirmationsFetchStatus,
     refetch,
   } = useTransactionConfirmations({ hash });
 
@@ -36,7 +55,6 @@ export function useManagedTransaction() {
       Number(blockConfirmations) <= CONFIRMATIONS_THRESHOLD_FOR_FINAL_TX
     ) {
       const interval = setInterval(() => {
-        console.log("refetching");
         refetch();
       }, 1000);
 
@@ -74,11 +92,25 @@ export function useManagedTransaction() {
     ([, value]) => value === true
   )?.[0];
 
-  console.log({ status, blockConfirmations, blockConfirmationsStatus });
+  if (isWalletContract) {
+    return {
+      isWalletContract,
+      status,
+      safeHash,
+      writeContract,
+      writeContractWithSafe,
+      hash,
+      error,
+      blockConfirmations,
+    };
+  }
+
   return {
+    isWalletContract,
     status,
     safeHash,
     writeContract,
+    writeContractWithSafe,
     hash,
     error,
     blockConfirmations,

@@ -21,7 +21,6 @@ export const useWaitForTransactionReceiptWrapped = (
   const gnosis = useSafeTransaction({
     safeHash: args?.hash,
   });
-  console.log({ gnosis, isWalletContract, address });
   const gnosisData = useWaitForTransactionReceipt({
     ...args,
     hash: gnosis.data,

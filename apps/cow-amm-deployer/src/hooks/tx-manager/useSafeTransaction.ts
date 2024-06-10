@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
-import { useAccount, useWatchContractEvent } from "wagmi";
 import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk";
+import { useEffect, useState } from "react";
 import { parseAbi } from "viem";
+import { useAccount, useWatchContractEvent } from "wagmi";
+
 import { useIsWalletContract } from "./useIsWalletContract";
+
 export type SafeStatus =
   | "safe_idle"
   | "safe_loading"
@@ -35,8 +37,8 @@ export const useSafeTransaction = ({
 }: {
   safeHash: `0x${string}` | undefined;
 }): {
-  data: any;
-  error: any;
+  data: `0x${string}` | undefined;
+  error: unknown;
   status: SafeStatus;
 } => {
   const [gnosisStatus, setGnosisStatus] = useState<SafeStatus>("safe_idle");
@@ -92,7 +94,7 @@ export const useSafeTransaction = ({
     };
 
   return {
-    data: txHash,
+    data: txHash as `0x${string}`,
     error: undefined,
     status: gnosisStatus,
   };

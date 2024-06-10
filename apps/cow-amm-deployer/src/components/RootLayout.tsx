@@ -2,16 +2,16 @@
 
 import { Toaster } from "@bleu/ui";
 import SafeProvider from "@gnosis.pm/safe-apps-react-sdk";
-import React, { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import React, { useState } from "react";
+import { WagmiProvider } from "wagmi";
 
 import { TokenSelectContextProvider } from "#/contexts/tokenSelect";
+import { config } from "#/wagmi";
 
 import Fathom from "./Fathom";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
-import { WagmiProvider } from "wagmi";
-import { config } from "#/wagmi";
 
 export function RootLayout({ children }: React.PropsWithChildren) {
   const [queryClient] = useState(() => new QueryClient());

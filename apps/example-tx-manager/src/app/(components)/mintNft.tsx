@@ -1,6 +1,6 @@
 import * as React from "react";
 import { encodeFunctionData, encodePacked, erc20Abi, size } from "viem";
-import { type BaseError } from "wagmi";
+import { useSimulateContract, type BaseError } from "wagmi";
 
 import { useManagedTransaction } from "@/lib/useManagedTransaction";
 
@@ -17,6 +17,34 @@ const multisendABI = [
 export function MintNFT() {
   const { hash, error, writeContract, status, safeHash } =
     useManagedTransaction();
+
+  const txData = {
+    to: "0xbe72E441BF55620febc26715db68d3494213D8Cb",
+    value: "0",
+    data: encodeFunctionData({
+      abi: erc20Abi,
+      functionName: "approve",
+      args: [
+        "0x88f2178139Ed9F6D870b3afc293eb735F54d655e",
+        BigInt("1000000000000000"),
+      ],
+    }),
+  } as const;
+
+  const encodedTx = encodePacked(
+    ["uint8", "address", "uint256", "uint256", "bytes"],
+    [
+      0,
+      txData.to,
+      BigInt(txData.value),
+      BigInt(size(txData.data)),
+      txData.data,
+    ],
+  );
+
+  const duplicatedEncodedTx = (encodedTx + encodedTx.slice(2)) as `0x${string}`;
+
+  const result = useSimulateContract({});
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

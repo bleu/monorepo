@@ -17,7 +17,7 @@ export default async function Page({ params }: { params: { userId: string } }) {
   ]);
 
   const oldVersionOfAmm = standaloneAmmData.find(
-    (amm) => amm.version !== "Standalone"
+    (amm) => amm.version !== "Standalone",
   );
 
   return (

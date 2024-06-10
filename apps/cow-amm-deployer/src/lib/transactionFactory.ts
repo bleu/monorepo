@@ -277,7 +277,7 @@ const TRANSACTION_CREATORS: {
 export class TransactionFactory {
   static createRawTx<T extends TRANSACTION_TYPES>(
     type: T,
-    args: TransactionBindings[T]
+    args: TransactionBindings[T],
   ): BaseTransaction {
     const TransactionCreator = TRANSACTION_CREATORS[type];
     const txCreator = new TransactionCreator();
@@ -311,7 +311,7 @@ export function buildTxCreateAMMArgs({
       amount1: parseUnits(String(data.amount1), data.token1.decimals),
       minTradedToken0: parseUnits(
         String(data.minTradedToken0),
-        data.token0.decimals
+        data.token0.decimals,
       ),
       priceOracleAddress: data.priceOracleSchema.priceOracleAddress as Address,
       priceOracleData: data.priceOracleSchema.priceOracleData as `0x${string}`,
@@ -333,7 +333,7 @@ export function buildTxEditAMMArgs({
       amm: ammAddress,
       minTradedToken0: parseUnits(
         String(data.minTradedToken0),
-        data.token0.decimals
+        data.token0.decimals,
       ),
       priceOracleAddress: data.priceOracleSchema.priceOracleAddress as Address,
       priceOracleData: data.priceOracleSchema.priceOracleData as `0x${string}`,
@@ -370,7 +370,7 @@ export function buildDepositAmmArgs({
   ] as ERC20ApproveArgs[];
 
   const nonZeroApproves = approvesArgs.filter(
-    (approve) => approve.amount !== BigInt(0)
+    (approve) => approve.amount !== BigInt(0),
   );
 
   return [

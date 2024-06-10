@@ -17,7 +17,7 @@ export const fetchHasAmmTxPending = cache(
   async ({ chainId, address }: { chainId: ChainId; address: string }) => {
     const queuedObjs = await getTransactionQueue(String(chainId), address);
     const queuedTxs = queuedObjs.results.filter(
-      (obj) => obj.type === "TRANSACTION"
+      (obj) => obj.type === "TRANSACTION",
     ) as Transaction[];
     const txInfos = queuedTxs
       .map((tx) => tx.transaction.txInfo)
@@ -29,7 +29,7 @@ export const fetchHasAmmTxPending = cache(
     const anyTxToProductConstantFactory = txInfos.some(
       (txInfo) =>
         txInfo.to.value.toLowerCase() ===
-        COW_CONSTANT_PRODUCT_FACTORY[chainId].toLowerCase()
+        COW_CONSTANT_PRODUCT_FACTORY[chainId].toLowerCase(),
     );
 
     // early return to avoid unnecessary calls to getTransactionDetails
@@ -40,13 +40,13 @@ export const fetchHasAmmTxPending = cache(
     const multisendTxs = queuedTxs.filter(
       (tx) =>
         tx.transaction.txInfo.type === TransactionInfoType.CUSTOM &&
-        tx.transaction.txInfo.methodName === "multiSend"
+        tx.transaction.txInfo.methodName === "multiSend",
     ) as Transaction[];
 
     const txDetails = await Promise.all(
       multisendTxs.map((tx) =>
-        getTransactionDetails(String(chainId), tx.transaction.id)
-      )
+        getTransactionDetails(String(chainId), tx.transaction.id),
+      ),
     );
 
     const anyMultiSendTxToProductConstantFactory = txDetails.some(
@@ -57,11 +57,11 @@ export const fetchHasAmmTxPending = cache(
         return txsInsideMultisend.some(
           (tx) =>
             tx.to.toLowerCase() ===
-            COW_CONSTANT_PRODUCT_FACTORY[chainId].toLowerCase()
+            COW_CONSTANT_PRODUCT_FACTORY[chainId].toLowerCase(),
         );
-      }
+      },
     );
 
     return anyMultiSendTxToProductConstantFactory;
-  }
+  },
 );

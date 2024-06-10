@@ -57,7 +57,7 @@ export function PriceOracleForm({
             onValueChange={(priceOracle) => {
               setValue(
                 "priceOracleSchema.priceOracle",
-                priceOracle as PriceOraclesValue
+                priceOracle as PriceOraclesValue,
               );
             }}
             placeholder={priceOracle}

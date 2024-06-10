@@ -30,7 +30,7 @@ export const SAFE_STATUS_MAP = {
   SUCCESS: "safe_success",
 } as const;
 
-export const useGnosisTransaction = ({
+export const useSafeTransaction = ({
   safeHash,
 }: {
   safeHash: `0x${string}` | undefined;
@@ -45,11 +45,9 @@ export const useGnosisTransaction = ({
   const { data: isWalletContract } = useIsWalletContract(address);
 
   async function loadGnosisQueuedTransactions(hash?: string) {
-    console.log({ safeHash, hash });
     if (!hash) return setGnosisStatus("safe_idle");
 
     const queued = await sdk.txs.getBySafeTxHash(hash);
-    console.log({ queued });
 
     if (!queued) {
       setGnosisStatus("safe_idle");
@@ -76,7 +74,6 @@ export const useGnosisTransaction = ({
   useWatchContractEvent({
     abi: gnosisAbi,
     address,
-    // address: address,
     eventName: "ExecutionSuccess",
     onLogs: (logs) => {
       logs.forEach((log) => {
@@ -87,27 +84,12 @@ export const useGnosisTransaction = ({
     },
   });
 
-  if (!address)
+  if (!address || !isWalletContract || !safeHash)
     return {
       data: undefined,
       error: undefined,
       status: "safe_idle",
     };
-
-  if (!isWalletContract)
-    return {
-      data: undefined,
-      error: undefined,
-      status: "safe_idle",
-    };
-
-  if (!safeHash) {
-    return {
-      data: undefined,
-      error: undefined,
-      status: "safe_idle",
-    };
-  }
 
   return {
     data: txHash,

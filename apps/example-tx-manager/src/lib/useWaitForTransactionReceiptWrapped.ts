@@ -5,10 +5,10 @@ import {
 } from "wagmi";
 
 import { useIsWalletContract } from "./useIsWalletContract";
-import { useGnosisTransaction } from "./useGnosisTransaction";
+import { useSafeTransaction } from "./useSafeTransaction";
 
 export const useWaitForTransactionReceiptWrapped = (
-  args: Parameters<typeof useWaitForTransactionReceipt>[0],
+  args: Parameters<typeof useWaitForTransactionReceipt>[0]
 ) => {
   const { address } = useAccount();
   const { data: isWalletContract } = useIsWalletContract(address);
@@ -18,7 +18,7 @@ export const useWaitForTransactionReceiptWrapped = (
     hash: isWalletContract === false ? args?.hash : undefined,
   });
 
-  const gnosis = useGnosisTransaction({
+  const gnosis = useSafeTransaction({
     safeHash: args?.hash,
   });
   console.log({ gnosis, isWalletContract, address });

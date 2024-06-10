@@ -2,16 +2,19 @@ import { toast } from "@bleu/ui";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { UseFormReturn, useWatch } from "react-hook-form";
 import { Address } from "viem";
+import { z } from "zod";
 
 import { Input } from "#/components/Input";
 import { pairs } from "#/lib/gqlUniswapV2";
+import { ammEditSchema, ammFormSchema } from "#/lib/schema";
 import { loadDEXPriceCheckerErrorText } from "#/lib/utils";
 
 export function UniswapV2Form({
   form,
 }: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  form: UseFormReturn<any>;
+  form: UseFormReturn<
+    z.input<typeof ammFormSchema> | z.input<typeof ammEditSchema>
+  >;
 }) {
   const { register, setValue, control } = form;
   const {
@@ -26,7 +29,7 @@ export function UniswapV2Form({
     <div className="flex flex-col gap-y-1">
       <Input
         label="Uniswap V2 Pair Address"
-        {...register("uniswapV2Pair")}
+        {...register("priceOracleSchema.pairAddress")}
         tooltipText="The address of the Uniswap V2 pair that will be used as the price oracle. Click on the load button it will try to find the most liquid pair address using the Uniswap V2's subgraph."
       />
       <button
@@ -39,7 +42,7 @@ export function UniswapV2Form({
               tokenAddresses[0],
               tokenAddresses[1]
             );
-            setValue("uniswapV2Pair", address);
+            setValue("priceOracleSchema.pairAddress", address);
           } catch (error) {
             toast({
               title: "Pool not found",

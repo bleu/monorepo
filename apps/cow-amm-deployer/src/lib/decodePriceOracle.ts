@@ -1,10 +1,16 @@
 import { Address, decodeAbiParameters } from "viem";
+import { z } from "zod";
 
 import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 
 import { uniswapV2PairAbi } from "./abis/uniswapV2Pair";
 import { UNISWAP_V2_FACTORY_ADDRESS } from "./contracts";
-import { PRICE_ORACLES, PriceOracleData, PriceOraclesValue } from "./types";
+import { priceOracleSchema } from "./schema";
+import { PRICE_ORACLES } from "./types";
+
+export type PriceOracleData = z.input<typeof priceOracleSchema> & {
+  chainId: ChainId;
+};
 
 export async function decodePriceOracleWithData({
   address,
@@ -14,7 +20,7 @@ export async function decodePriceOracleWithData({
   address: Address;
   priceOracleData: `0x${string}`;
   chainId: ChainId;
-}): Promise<[PriceOraclesValue, PriceOracleData]> {
+}): Promise<PriceOracleData> {
   const lowerCaseAddress = address.toLowerCase();
   const publicClient = publicClientsFromIds[chainId];
 
@@ -27,9 +33,13 @@ export async function decodePriceOracleWithData({
   ) {
     const [balancerPoolId] = decodeAbiParameters(
       [{ type: "bytes32", name: "poolId" }],
-      priceOracleData,
+      priceOracleData
     );
-    return [PRICE_ORACLES.BALANCER, { balancerPoolId: balancerPoolId }];
+    return {
+      chainId,
+      priceOracle: PRICE_ORACLES.BALANCER,
+      poolId: balancerPoolId,
+    };
   }
 
   if (
@@ -41,7 +51,7 @@ export async function decodePriceOracleWithData({
   ) {
     const [pairAddress] = decodeAbiParameters(
       [{ type: "address", name: "pairAddress" }],
-      priceOracleData,
+      priceOracleData
     );
     const pairFactory = await publicClient.readContract({
       address: pairAddress as Address,
@@ -52,9 +62,17 @@ export async function decodePriceOracleWithData({
     if (
       pairFactory.toLowerCase() === UNISWAP_V2_FACTORY_ADDRESS.toLowerCase()
     ) {
-      return [PRICE_ORACLES.UNI, { uniswapV2PairAddress: pairAddress }];
+      return {
+        chainId,
+        priceOracle: PRICE_ORACLES.UNI,
+        pairAddress,
+      };
     }
-    return [PRICE_ORACLES.SUSHI, { sushiSwapPairAddress: pairAddress }];
+    return {
+      chainId,
+      priceOracle: PRICE_ORACLES.SUSHI,
+      pairAddress,
+    };
   }
 
   if (
@@ -72,23 +90,21 @@ export async function decodePriceOracleWithData({
           { type: "uint256", name: "timeThreshold" },
           { type: "uint256", name: "backoff" },
         ],
-        priceOracleData,
+        priceOracleData
       );
     const chainlinkTimeThresholdInHours = Number(timeThreshold) / 3600;
-    return [
-      PRICE_ORACLES.CHAINLINK,
-      {
-        chainlinkPriceFeed0,
-        chainlinkPriceFeed1,
-        chainlinkTimeThresholdInHours,
-      },
-    ];
+    return {
+      chainId,
+      priceOracle: PRICE_ORACLES.CHAINLINK,
+      feed0: chainlinkPriceFeed0,
+      feed1: chainlinkPriceFeed1,
+      timeThresholdInHours: chainlinkTimeThresholdInHours,
+    };
   }
-  return [
-    PRICE_ORACLES.CUSTOM,
-    {
-      customPriceOracleAddress: address,
-      customPriceOracleData: priceOracleData,
-    },
-  ];
+  return {
+    chainId,
+    priceOracle: PRICE_ORACLES.CUSTOM,
+    address: address,
+    data: priceOracleData,
+  };
 }

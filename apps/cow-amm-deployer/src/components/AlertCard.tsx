@@ -1,4 +1,3 @@
-import { capitalize } from "@bleu/utils";
 import cn from "clsx";
 
 export function AlertCard({
@@ -15,14 +14,12 @@ export function AlertCard({
       <div
         className={cn(
           "font-bold text-sand12 px-4 py-2 border-t border-x border-border",
-          style === "error" ? "bg-destructive" : "bg-accent",
+          style === "error" ? "bg-destructive" : "bg-accent"
         )}
       >
-        {capitalize(style)}: {title}
+        {title}
       </div>
-      <div
-        className={cn("px-4 py-3 max-w-prose text-base border border-border")}
-      >
+      <div className={cn("px-4 py-3 text-base w-full border border-border")}>
         {children}
       </div>
     </div>

@@ -5,7 +5,13 @@ import { TokenLogo } from "#/components/TokenLogo";
 import { IToken, ITokenExtended } from "#/lib/fetchAmmData";
 import { ChainId } from "#/utils/chainsPublicClients";
 
-export function TokenInfo({ token }: { token: IToken | ITokenExtended }) {
+export function TokenInfo({
+  token,
+  showBalance = true,
+}: {
+  token: IToken | ITokenExtended;
+  showBalance?: boolean;
+}) {
   const { safe } = useSafeAppsSDK();
 
   return (
@@ -25,6 +31,7 @@ export function TokenInfo({ token }: { token: IToken | ITokenExtended }) {
       </div>
       {token.symbol}{" "}
       {"balance" in token &&
+        showBalance &&
         `(${formatNumber(token.balance, 4, "decimal", "compact", 0.001)})`}
     </div>
   );

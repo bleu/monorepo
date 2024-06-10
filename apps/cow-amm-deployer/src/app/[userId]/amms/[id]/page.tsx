@@ -1,9 +1,15 @@
 import { formatNumber } from "@bleu/utils/formatNumber";
-import { ArrowTopRightIcon, Pencil2Icon } from "@radix-ui/react-icons";
+import {
+  ArrowTopRightIcon,
+  Pencil2Icon,
+  ResetIcon,
+} from "@radix-ui/react-icons";
 import Link from "next/link";
 import { Address } from "viem";
 
 import { Button } from "#/components/Button";
+import { LinkComponent } from "#/components/Link";
+import { OldVersionOfAMMAlert } from "#/components/OldVersionOfAmmAlert";
 import { buildAccountCowExplorerUrl } from "#/lib/cowExplorer";
 import { fetchAmmData } from "#/lib/fetchAmmData";
 import { ChainId } from "#/utils/chainsPublicClients";
@@ -18,10 +24,12 @@ export default async function Page({
   params: { userId: string; id: string };
 }) {
   const ammData = await fetchAmmData(params.id);
+  const oldVersionOfAmm = ammData.version !== "Standalone";
 
   return (
     <div className="flex w-full justify-center">
       <div className="my-10 flex w-9/12 flex-col gap-y-5 justify-center">
+        {oldVersionOfAmm && <OldVersionOfAMMAlert ammData={ammData} />}
         <div className="flex items-center justify-between gap-x-8">
           <div className="flex flex-col gap-1">
             <h2 className="text-2xl font-serif">
@@ -75,21 +83,44 @@ export default async function Page({
         </div>
         <PoolCompositionTable cowAmm={ammData} />
         <div className="flex gap-4 items-center">
+          <LinkComponent href={`/${params.userId}/amms`}>
+            <Button
+              className="flex items-center gap-1 py-3 px-6"
+              variant="ghost"
+            >
+              <ResetIcon />
+              Back to AMMs table
+            </Button>
+          </LinkComponent>
           <TradingControlButton ammData={ammData} />
           {!ammData.disabled && (
-            <Button className="flex items-center gap-1 py-3 px-6" disabled>
-              <Pencil2Icon />
-              Edit parameters
-            </Button>
+            <LinkComponent href={`/${params.userId}/amms/${params.id}/edit`}>
+              <Button
+                className="flex items-center gap-1 py-3 px-6"
+                disabled={oldVersionOfAmm}
+              >
+                <Pencil2Icon />
+                Edit parameters
+              </Button>
+            </LinkComponent>
           )}
-          <Link href={`/amms/${params.id}/withdraw`}>
+          <LinkComponent href={`/${params.userId}/amms/${params.id}/deposit`}>
+            <Button
+              className="flex items-center gap-1 py-3 px-6"
+              disabled={oldVersionOfAmm}
+            >
+              Deposit
+            </Button>
+          </LinkComponent>
+          <LinkComponent href={`/${params.userId}/amms/${params.id}/withdraw`}>
             <Button
               className="flex items-center gap-1 py-3 px-6"
               variant="highlight"
+              disabled={oldVersionOfAmm}
             >
               Withdraw
             </Button>
-          </Link>
+          </LinkComponent>
         </div>
       </div>
     </div>

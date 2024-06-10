@@ -24,7 +24,7 @@ export function SushiForm({
   const [token0, token1] = useWatch({ control, name: ["token0", "token1"] });
 
   const tokenAddresses = [token0?.address, token1?.address].filter(
-    (address) => address
+    (address) => address,
   ) as Address[];
   return (
     <div className="flex flex-col gap-y-1">
@@ -59,7 +59,7 @@ export function SushiForm({
 async function getSushiV2PairAddress(
   chainId: number,
   token0: Address,
-  token1: Address
+  token1: Address,
 ) {
   if (token0 === token1) throw new Error("Invalid tokens");
   const pairsData = await pairs.gql(String(chainId)).pairsWhereTokens({

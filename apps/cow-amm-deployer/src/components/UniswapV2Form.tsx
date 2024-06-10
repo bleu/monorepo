@@ -23,7 +23,7 @@ export function UniswapV2Form({
 
   const [token0, token1] = useWatch({ control, name: ["token0", "token1"] });
   const tokenAddresses = [token0?.address, token1?.address].filter(
-    (address) => address
+    (address) => address,
   ) as Address[];
   return (
     <div className="flex flex-col gap-y-1">
@@ -40,7 +40,7 @@ export function UniswapV2Form({
             const address = await getUniswapV2PairAddress(
               chainId,
               tokenAddresses[0],
-              tokenAddresses[1]
+              tokenAddresses[1],
             );
             setValue("priceOracleSchema.pairAddress", address);
           } catch (error) {
@@ -61,7 +61,7 @@ export function UniswapV2Form({
 async function getUniswapV2PairAddress(
   chainId: number,
   token0: Address,
-  token1: Address
+  token1: Address,
 ) {
   if (token0 === token1) throw new Error("Invalid tokens");
   const pairsData = await pairs.gql(String(chainId) || "1").pairsWhereTokens({

@@ -14,7 +14,7 @@ export function AlertCard({
       <div
         className={cn(
           "font-bold text-sand12 px-4 py-2 border-t border-x border-border",
-          style === "error" ? "bg-destructive" : "bg-accent"
+          style === "error" ? "bg-destructive" : "bg-accent",
         )}
       >
         {title}

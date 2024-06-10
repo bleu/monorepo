@@ -20,7 +20,7 @@ export function Spinner({ size = "md" }: { size?: keyof typeof SpinnerSize }) {
             "h-4 w-4": SpinnerSizeNumber === SpinnerSize.sm,
             "h-12 w-12": SpinnerSizeNumber === SpinnerSize.md,
             "h-20 w-20": SpinnerSizeNumber === SpinnerSize.lg,
-          }
+          },
         )}
       />
     </div>

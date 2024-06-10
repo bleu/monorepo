@@ -33,7 +33,7 @@ export async function decodePriceOracleWithData({
   ) {
     const [balancerPoolId] = decodeAbiParameters(
       [{ type: "bytes32", name: "poolId" }],
-      priceOracleData
+      priceOracleData,
     );
     return {
       chainId,
@@ -51,7 +51,7 @@ export async function decodePriceOracleWithData({
   ) {
     const [pairAddress] = decodeAbiParameters(
       [{ type: "address", name: "pairAddress" }],
-      priceOracleData
+      priceOracleData,
     );
     const pairFactory = await publicClient.readContract({
       address: pairAddress as Address,
@@ -90,7 +90,7 @@ export async function decodePriceOracleWithData({
           { type: "uint256", name: "timeThreshold" },
           { type: "uint256", name: "backoff" },
         ],
-        priceOracleData
+        priceOracleData,
       );
     const chainlinkTimeThresholdInHours = Number(timeThreshold) / 3600;
     return {

@@ -50,7 +50,7 @@ export function PoolCompositionTable({ cowAmm }: { cowAmm: ICowAmm }) {
                       2,
                       "decimal",
                       "compact",
-                      0.01
+                      0.01,
                     )}
                   </>
                   {!token.usdPrice && <PriceErrorTooltip />}

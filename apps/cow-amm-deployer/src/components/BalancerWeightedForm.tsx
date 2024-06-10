@@ -26,7 +26,7 @@ export function BalancerWeightedForm({
   const [token0, token1] = useWatch({ control, name: ["token0", "token1"] });
 
   const tokenAddresses = [token0?.address, token1?.address].filter(
-    (address) => address
+    (address) => address,
   ) as Address[];
   return (
     <div className="flex flex-col gap-y-1">
@@ -46,7 +46,7 @@ export function BalancerWeightedForm({
             toast({
               title: "Pool not found",
               description: loadDEXPriceCheckerErrorText(
-                "Balancer V2 Weighted Pool"
+                "Balancer V2 Weighted Pool",
               ),
               variant: "destructive",
             });

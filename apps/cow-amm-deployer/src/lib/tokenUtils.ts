@@ -53,7 +53,7 @@ export async function fetchWalletTokenBalance({
 
 export async function fetchTokenInfo(
   tokenAddress: Address,
-  chainId: ChainId
+  chainId: ChainId,
 ): Promise<IToken> {
   const publicClient = publicClientsFromIds[chainId];
   const [symbol, decimals] = await Promise.all([
@@ -77,7 +77,7 @@ export async function fetchTokenInfo(
 
 export const getNewMinTradeToken0 = async (
   newToken0: IToken,
-  chainId: ChainId
+  chainId: ChainId,
 ) => {
   return fetchTokenUsdPrice({
     tokenAddress: newToken0.address as Address,
@@ -90,9 +90,9 @@ export const getNewMinTradeToken0 = async (
       Number(
         formatUnits(
           parseUnits(String(amount), newToken0.decimals),
-          newToken0.decimals
-        )
-      )
+          newToken0.decimals,
+        ),
+      ),
     )
     .catch(() => 0);
 };

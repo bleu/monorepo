@@ -30,7 +30,7 @@ export function TokenAmountInput({
     safe: { safeAddress, chainId },
   } = useSafeAppsSDK();
   const [walletAmount, setWalletAmount] = useState<string>(
-    defaultWalletAmount || ""
+    defaultWalletAmount || "",
   );
   const { setValue, register } = form;
 
@@ -73,7 +73,7 @@ export function TokenAmountInput({
             onClick={() => {
               setValue(
                 fieldName,
-                convertStringToNumberAndRoundDown(walletAmount)
+                convertStringToNumberAndRoundDown(walletAmount),
               );
             }}
           >

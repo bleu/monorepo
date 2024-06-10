@@ -46,7 +46,7 @@ export const balancerPriceOracleSchema = z
       }),
       priceOracleData: encodeAbiParameters(
         [{ name: "poolId", type: "bytes32" }],
-        [data.poolId as `0x${string}`]
+        [data.poolId as `0x${string}`],
       ),
     };
   });
@@ -65,7 +65,7 @@ export const uniswapV2PriceOracleSchema = z
       }),
       priceOracleData: encodeAbiParameters(
         [{ name: "pairAddress", type: "address" }],
-        [data.pairAddress as Address]
+        [data.pairAddress as Address],
       ),
     };
   });
@@ -84,7 +84,7 @@ export const sushiV2PriceOracleSchema = z
       }),
       priceOracleData: encodeAbiParameters(
         [{ name: "pairAddress", type: "address" }],
-        [data.pairAddress as Address]
+        [data.pairAddress as Address],
       ),
     };
   });
@@ -115,7 +115,7 @@ export const chainlinkPriceOracleSchema = z
           data.feed1 as Address,
           BigInt((data.timeThresholdInHours * 3600).toFixed()),
           BigInt(1),
-        ]
+        ],
       ),
     };
   });
@@ -163,7 +163,7 @@ export const ammFormSchema = z
     {
       message: "Tokens must be different",
       path: ["token0"],
-    }
+    },
   )
   .superRefine(async (data, ctx) => {
     // validate if there are balances of tokens
@@ -197,7 +197,7 @@ export const ammFormSchema = z
         code: z.ZodIssueCode.custom,
         message: `Insufficient balance`,
         path: [x],
-      })
+      }),
     );
     return !path.length;
   })
@@ -311,7 +311,7 @@ export const ammWithdrawSchema = z.object({
 
 export const getDepositSchema = (
   walletAmount0: number,
-  walletAmount1: number
+  walletAmount1: number,
 ) =>
   z
     .object({
@@ -332,5 +332,5 @@ export const getDepositSchema = (
       {
         message: "At least one of the amounts must be greater than 0",
         path: ["bothAmountsAreZero"],
-      }
+      },
     );

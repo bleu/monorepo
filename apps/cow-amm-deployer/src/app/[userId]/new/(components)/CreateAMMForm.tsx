@@ -98,7 +98,7 @@ export function CreateAMMForm({ userId }: { userId: string }) {
                 });
                 setValue(
                   "minTradedToken0",
-                  await getNewMinTradeToken0(token, chainId as ChainId)
+                  await getNewMinTradeToken0(token, chainId as ChainId),
                 );
               }}
               selectedToken={(token0 as IToken) ?? undefined}
@@ -148,7 +148,7 @@ export function CreateAMMForm({ userId }: { userId: string }) {
           <AccordionTrigger
             className={cn(
               errors.minTradedToken0 ? "text-destructive" : "",
-              "pt-0"
+              "pt-0",
             )}
           >
             Advanced Options

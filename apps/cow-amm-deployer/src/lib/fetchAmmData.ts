@@ -140,7 +140,7 @@ export function validateUserId(id: string) {
 }
 
 async function fetchPriceFeedLinks(
-  decodedData: PriceOracleData
+  decodedData: PriceOracleData,
 ): Promise<string[]> {
   switch (decodedData.priceOracle) {
     case PRICE_ORACLES.UNI: {
@@ -264,7 +264,7 @@ export const getAmmData = cache(
       chainId: subgraphData.order.chainId,
       priceFeedLinks,
     } as ICowAmm;
-  }
+  },
 );
 
 export const fetchAmmData = cache(async (ammId: string): Promise<ICowAmm> => {
@@ -314,15 +314,15 @@ export const fetchUserAmmsData = cache(
     const { constantProductDatas } = await request(
       NEXT_PUBLIC_API_URL,
       ALL_STANDALONE_AMMS_FROM_USER_QUERY,
-      { userId }
+      { userId },
     );
 
     const allAmms = (await Promise.all(
-      constantProductDatas.items.map((amm) => getAmmData(amm))
+      constantProductDatas.items.map((amm) => getAmmData(amm)),
     )) as ICowAmm[];
 
     return allAmms.filter(
-      (amm) => amm.version === "Standalone" || !amm.disabled
+      (amm) => amm.version === "Standalone" || !amm.disabled,
     );
-  }
+  },
 );

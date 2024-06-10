@@ -3,10 +3,12 @@
 import { toast } from "@bleu/ui";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { UseFormReturn, useWatch } from "react-hook-form";
+import { z } from "zod";
 
 import { Input } from "#/components/Input";
 import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/chainlinkPriceFeedRouter";
 import { IToken } from "#/lib/fetchAmmData";
+import { ammEditSchema, ammFormSchema } from "#/lib/schema";
 import { ChainId } from "#/utils/chainsPublicClients";
 
 const TOOLTIP_PRICE_FEED_TEXT =
@@ -17,8 +19,9 @@ const TOOLTIP_PRICE_FEED_LINK = "https://data.chain.link/feeds";
 export function ChainlinkForm({
   form,
 }: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  form: UseFormReturn<any>;
+  form: UseFormReturn<
+    z.input<typeof ammFormSchema> | z.input<typeof ammEditSchema>
+  >;
 }) {
   const { register, setValue, control } = form;
   const {
@@ -32,7 +35,7 @@ export function ChainlinkForm({
       <div className="flex h-fit justify-between gap-x-7">
         <div className="w-full">
           <Input
-            {...register("chainlinkPriceFeed0")}
+            {...register("priceOracleSchema.feed0")}
             label="First Token Price Feed"
             tooltipText={TOOLTIP_PRICE_FEED_TEXT}
             tooltipLink={TOOLTIP_PRICE_FEED_LINK}
@@ -40,7 +43,7 @@ export function ChainlinkForm({
         </div>
         <div className="w-full">
           <Input
-            {...register("chainlinkPriceFeed1")}
+            {...register("priceOracleSchema.feed1")}
             label="Second Token Price Feed"
             tooltipText={TOOLTIP_PRICE_FEED_TEXT}
             tooltipLink={TOOLTIP_PRICE_FEED_LINK}
@@ -64,8 +67,8 @@ export function ChainlinkForm({
 
             const { priceFeedToken0, priceFeedToken1 } =
               await oracleRouter.findRoute();
-            setValue("chainlinkPriceFeed0", priceFeedToken0);
-            setValue("chainlinkPriceFeed1", priceFeedToken1);
+            setValue("priceOracleSchema.feed0", priceFeedToken0);
+            setValue("priceOracleSchema.feed1", priceFeedToken1);
           } catch (e) {
             toast({
               title: "Price feed not found",
@@ -79,7 +82,7 @@ export function ChainlinkForm({
         Load Chainlink Price Feeds
       </button>
       <Input
-        {...register("chainlinkTimeThresholdInHours")}
+        {...register("priceOracleSchema.timeThresholdInHours")}
         type="number"
         label="Maximum time since last price feed update (hours)"
         tooltipText="If the price feed is older than this value, the order will be rejected"

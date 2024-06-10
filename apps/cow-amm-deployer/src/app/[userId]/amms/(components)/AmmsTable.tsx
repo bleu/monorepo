@@ -5,13 +5,13 @@ import { useRouter } from "next/navigation";
 
 import Table from "#/components/Table";
 import { TokenInfo } from "#/components/TokenInfo";
-import { ICoWAmmOverview } from "#/lib/fetchAmmData";
+import { ICowAmm } from "#/lib/fetchAmmData";
 
 export function AmmsTable({
   standaloneAmmData,
   userId,
 }: {
-  standaloneAmmData: ICoWAmmOverview[];
+  standaloneAmmData: ICowAmm[];
   userId: string;
 }) {
   const router = useRouter();

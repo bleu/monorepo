@@ -41,18 +41,15 @@ export default function Page() {
           supplies liquidity for trades made on CoW Protocol. Solvers compete
           with each other for the right to trade against the AMM
         </span>
-        <LinkComponent
-          href={`/${userId}/amms`}
-          content={
-            <Button
-              size="lg"
-              className="flex items-center gap-1 py-8 px-7 text-xl"
-              title="Go to the app"
-            >
-              Go to the app
-            </Button>
-          }
-        />
+        <LinkComponent href={`/${userId}/amms`}>
+          <Button
+            size="lg"
+            className="flex items-center gap-1 py-8 px-7 text-xl"
+            title="Go to the app"
+          >
+            Go to the app
+          </Button>
+        </LinkComponent>
         <Fathom />
       </div>
     </div>

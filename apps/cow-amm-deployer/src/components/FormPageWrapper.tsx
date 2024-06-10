@@ -27,12 +27,10 @@ export function FormPageWrapper({
         <div className="relative flex size-full justify-center">
           <LinkComponent
             href={backHref}
-            content={
-              <div className="absolute left-8 flex h-full items-center">
-                <ArrowIcon />
-              </div>
-            }
-          />
+            className="absolute left-8 flex h-full items-center"
+          >
+            <ArrowIcon />
+          </LinkComponent>
           <div className="flex w-[530px] flex-col items-center pt-3">
             <div className="text-xl">{formTitle}</div>
           </div>

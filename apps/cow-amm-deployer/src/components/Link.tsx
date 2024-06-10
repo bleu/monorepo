@@ -8,20 +8,25 @@ import { Spinner } from "./Spinner";
 
 export function LinkComponent({
   href,
-  content,
+  children,
+  className,
 }: {
   href: Url;
-  content: React.ReactElement;
+  children: React.ReactElement;
+  className?: string;
 }) {
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const ClonedElement = React.cloneElement(content, {
+  const ClonedElement = React.cloneElement(children, {
     onClick: () => setIsLoading(true),
-    children: isLoading ? <Spinner size={"sm"} /> : content.props.children,
+    children: isLoading ? <Spinner size={"sm"} /> : children.props.children,
   });
 
+  if (children.props.disabled) {
+    return <div className={className}>{ClonedElement}</div>;
+  }
   return (
-    <Link href={href} prefetch={false}>
+    <Link href={href} prefetch={false} className={className}>
       {ClonedElement}
     </Link>
   );

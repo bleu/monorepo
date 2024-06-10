@@ -36,7 +36,7 @@ export function PriceInformation({ cowAmm }: { cowAmm: ICowAmm }) {
     [PRICE_ORACLES.CUSTOM]: "Using price information from custom contract",
   } as const;
 
-  const priceOracle = decodedPriceOracleData[0];
+  const priceOracle = decodedPriceOracleData.priceOracle;
 
   const label = labels[priceOracle];
 

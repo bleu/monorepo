@@ -4,16 +4,19 @@ import { toast } from "@bleu/ui";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { UseFormReturn, useWatch } from "react-hook-form";
 import { Address } from "viem";
+import { z } from "zod";
 
 import { Input } from "#/components/Input";
 import { pools } from "#/lib/gqlBalancer";
+import { ammEditSchema, ammFormSchema } from "#/lib/schema";
 import { loadDEXPriceCheckerErrorText } from "#/lib/utils";
 
 export function BalancerWeightedForm({
   form,
 }: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  form: UseFormReturn<any>;
+  form: UseFormReturn<
+    z.input<typeof ammFormSchema> | z.input<typeof ammEditSchema>
+  >;
 }) {
   const { register, setValue, control } = form;
   const {
@@ -29,7 +32,7 @@ export function BalancerWeightedForm({
     <div className="flex flex-col gap-y-1">
       <Input
         label="Balancer Pool ID"
-        {...register("balancerPoolId")}
+        {...register("priceOracleSchema.poolId")}
         tooltipText="The address of the Balancer pool that will be used as the price oracle. Click on the load button it will try to find the most liquid pool address using the Balancer V2's subgraph."
       />
       <button
@@ -38,7 +41,7 @@ export function BalancerWeightedForm({
         onClick={async () => {
           try {
             const id = await getBalancerPoolId(chainId, tokenAddresses);
-            setValue("balancerPoolId", id);
+            setValue("priceOracleSchema.poolId", id);
           } catch (error) {
             toast({
               title: "Pool not found",

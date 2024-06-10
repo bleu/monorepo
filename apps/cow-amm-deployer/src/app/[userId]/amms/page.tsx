@@ -1,15 +1,30 @@
 import Link from "next/link";
 
 import { Button } from "#/components";
-import { fetchAllStandAloneAmmsFromUser } from "#/lib/fetchAmmData";
+import { OldVersionOfAMMAlert } from "#/components/OldVersionOfAmmAlert";
+import { TxPendingAlertCard } from "#/components/TxPendingAlertCard";
+import { fetchUserAmmsData, ICowAmm, validateUserId } from "#/lib/fetchAmmData";
+import { fetchHasAmmTxPending } from "#/lib/fetchHasAmmTxPending";
 
 import { AmmsTable } from "./(components)/AmmsTable";
 
 export default async function Page({ params }: { params: { userId: string } }) {
-  const standaloneAmmData = await fetchAllStandAloneAmmsFromUser(params.userId);
+  const [userAddress, chainId] = validateUserId(params.userId);
+
+  const [standaloneAmmData, hasAmmTxPending] = await Promise.all([
+    fetchUserAmmsData(params.userId) as Promise<ICowAmm[]>,
+    fetchHasAmmTxPending({ address: userAddress, chainId }) as Promise<boolean>,
+  ]);
+
+  const oldVersionOfAmm = standaloneAmmData.find(
+    (amm) => amm.version !== "Standalone"
+  );
+
   return (
     <div className="flex w-full justify-center">
       <div className="relative flex w-2/3 flex-col gap-2">
+        {oldVersionOfAmm && <OldVersionOfAMMAlert ammData={oldVersionOfAmm} />}
+        {hasAmmTxPending && <TxPendingAlertCard />}
         <div className="flex justify-between">
           <h1 className="text-2xl text-center">My CoW AMMs</h1>
           <Link href={`/${params.userId}/new`}>

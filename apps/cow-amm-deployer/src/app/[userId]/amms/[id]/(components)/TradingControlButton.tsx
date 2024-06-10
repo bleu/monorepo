@@ -22,7 +22,10 @@ export function TradingControlButton({ ammData }: { ammData: ICowAmm }) {
 function EnableAMMButton({ ammData }: { ammData: ICowAmm }) {
   return (
     <Link href={`/${ammData.user.id}/amms/${ammData.id}/enable`}>
-      <Button className="flex items-center gap-1 py-3 px-6">
+      <Button
+        className="flex items-center gap-1 py-3 px-6"
+        disabled={ammData.version !== "Standalone"}
+      >
         <PlayIcon />
         Enable trading
       </Button>
@@ -41,6 +44,8 @@ function DisableAmmButton({ ammData }: { ammData: ICowAmm }) {
       type: TRANSACTION_TYPES.DISABLE_COW_AMM,
       amm: ammData.order.owner,
       chainId: chainId as ChainId,
+      hash: ammData.order.hash,
+      version: ammData.version,
     } as DisableCoWAMMArgs;
     try {
       await sendTransactions([txArgs]);

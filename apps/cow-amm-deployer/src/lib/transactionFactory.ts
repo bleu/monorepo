@@ -13,7 +13,7 @@ import {
   IEncodePriceOracleData,
   IGetPriceOracleAddress,
 } from "./encodePriceOracleData";
-import { ammFormSchema } from "./schema";
+import { ammEditSchema, ammFormSchema } from "./schema";
 
 export enum TRANSACTION_TYPES {
   ERC20_APPROVE = "ERC20_APPROVE",
@@ -240,7 +240,7 @@ export class TransactionFactory {
   }
 }
 
-export function buildTxAMMArgs({
+export function buildTxCreateAMMArgs({
   data,
 }: {
   data: typeof ammFormSchema._type;
@@ -274,6 +274,32 @@ export function buildTxAMMArgs({
       priceOracleAddress,
       priceOracleData,
       appData: BLEU_APP_DATA,
+      chainId: data.chainId as ChainId,
+    } as const,
+  ];
+}
+export function buildTxEditAMMArgs({
+  data,
+  ammAddress,
+}: {
+  data: typeof ammEditSchema._type;
+  ammAddress: Address;
+}): AllTransactionArgs[] {
+  const priceOracleData = encodePriceOracleData(data as IEncodePriceOracleData);
+  const priceOracleAddress = getPriceOracleAddress(
+    data as IGetPriceOracleAddress,
+  );
+
+  return [
+    {
+      type: TRANSACTION_TYPES.EDIT_COW_AMM,
+      amm: ammAddress,
+      minTradedToken0: parseUnits(
+        String(data.minTradedToken0),
+        data.token0.decimals,
+      ),
+      priceOracleAddress,
+      priceOracleData,
       chainId: data.chainId as ChainId,
     } as const,
   ];

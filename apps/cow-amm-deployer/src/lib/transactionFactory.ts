@@ -23,12 +23,20 @@ export enum TRANSACTION_TYPES {
   STOP_COW_AMM_MODULE_VERSION = "STOP_COW_AMM_MODULE_VERSION",
   DISABLE_COW_AMM = "DISABLE_COW_AMM",
   WITHDRAW_COW_AMM = "WITHDRAW_COW_AMM",
+  DEPOSIT_COW_AMM = "DEPOSIT_COW_AMM",
 }
 
 export interface BaseArgs {
   type: TRANSACTION_TYPES;
 }
 
+export interface DepositCoWAMMArgs extends BaseArgs {
+  type: TRANSACTION_TYPES.DEPOSIT_COW_AMM;
+  amm: Address;
+  amount0: bigint;
+  amount1: bigint;
+  chainId: ChainId;
+}
 export interface WithdrawCoWAMMArgs extends BaseArgs {
   type: TRANSACTION_TYPES.WITHDRAW_COW_AMM;
   amm: Address;
@@ -113,6 +121,24 @@ class CoWAMMDisableRawTx implements ITransaction<DisableCoWAMMArgs> {
   }
 }
 
+class CoWAMMDepositRawTx implements ITransaction<DepositCoWAMMArgs> {
+  createRawTx({
+    amm,
+    amount0,
+    amount1,
+    chainId,
+  }: DepositCoWAMMArgs): BaseTransaction {
+    return {
+      to: COW_CONSTANT_PRODUCT_FACTORY[chainId],
+      value: "0",
+      data: encodeFunctionData({
+        abi: ConstantProductFactoryABI,
+        functionName: "deposit",
+        args: [amm, amount0, amount1],
+      }),
+    };
+  }
+}
 class CoWAMMWithdrawRawTx implements ITransaction<WithdrawCoWAMMArgs> {
   createRawTx({
     amm,
@@ -229,6 +255,7 @@ export interface TransactionBindings {
   [TRANSACTION_TYPES.EDIT_COW_AMM]: EditCoWAMMArgs;
   [TRANSACTION_TYPES.WITHDRAW_COW_AMM]: WithdrawCoWAMMArgs;
   [TRANSACTION_TYPES.DISABLE_COW_AMM]: DisableCoWAMMArgs;
+  [TRANSACTION_TYPES.DEPOSIT_COW_AMM]: DepositCoWAMMArgs;
 }
 
 export type AllTransactionArgs = TransactionBindings[keyof TransactionBindings];
@@ -244,6 +271,7 @@ const TRANSACTION_CREATORS: {
   [TRANSACTION_TYPES.EDIT_COW_AMM]: CoWAMMEditTx,
   [TRANSACTION_TYPES.WITHDRAW_COW_AMM]: CoWAMMWithdrawRawTx,
   [TRANSACTION_TYPES.DISABLE_COW_AMM]: CoWAMMDisableRawTx,
+  [TRANSACTION_TYPES.DEPOSIT_COW_AMM]: CoWAMMDepositRawTx,
 };
 
 export class TransactionFactory {
@@ -311,6 +339,49 @@ export function buildTxEditAMMArgs({
       priceOracleData: data.priceOracleSchema.priceOracleData as `0x${string}`,
       chainId: data.chainId as ChainId,
     } as const,
+  ];
+}
+
+export function buildDepositAmmArgs({
+  cowAmm,
+  amount0,
+  amount1,
+}: {
+  cowAmm: ICowAmm;
+  amount0: number;
+  amount1: number;
+}): AllTransactionArgs[] {
+  const parsedAmount0 = parseUnits(String(amount0), cowAmm.token0.decimals);
+  const parsedAmount1 = parseUnits(String(amount1), cowAmm.token1.decimals);
+
+  const approvesArgs = [
+    {
+      type: TRANSACTION_TYPES.ERC20_APPROVE,
+      tokenAddress: cowAmm.token0.address as Address,
+      spender: COW_CONSTANT_PRODUCT_FACTORY[cowAmm.chainId as ChainId],
+      amount: parsedAmount0,
+    },
+    {
+      type: TRANSACTION_TYPES.ERC20_APPROVE,
+      tokenAddress: cowAmm.token1.address as Address,
+      spender: COW_CONSTANT_PRODUCT_FACTORY[cowAmm.chainId as ChainId],
+      amount: parsedAmount1,
+    },
+  ] as ERC20ApproveArgs[];
+
+  const nonZeroApproves = approvesArgs.filter(
+    (approve) => approve.amount !== BigInt(0)
+  );
+
+  return [
+    ...nonZeroApproves,
+    {
+      type: TRANSACTION_TYPES.DEPOSIT_COW_AMM,
+      amm: cowAmm.order.owner as Address,
+      amount0: parsedAmount0,
+      amount1: parsedAmount1,
+      chainId: cowAmm.chainId as ChainId,
+    },
   ];
 }
 

@@ -154,7 +154,6 @@ export const ammFormSchema = z
   })
   .refine(
     // validate if tokens are different
-
     (data) => {
       if (data.token0.address === data.token1.address) {
         return false;
@@ -309,3 +308,29 @@ export const ammEditSchema = z
 export const ammWithdrawSchema = z.object({
   withdrawPct: z.coerce.number().positive().lte(100),
 });
+
+export const getDepositSchema = (
+  walletAmount0: number,
+  walletAmount1: number
+) =>
+  z
+    .object({
+      amount0: z.coerce
+        .number()
+        .nonnegative()
+        .lte(walletAmount0, "Insufficient balance"),
+      amount1: z.coerce
+        .number()
+        .nonnegative()
+        .lte(walletAmount1, "Insufficient balance"),
+    })
+    .refine(
+      (data) => {
+        const bothAmountsAreZero = data.amount0 === 0 && data.amount1 === 0;
+        return !bothAmountsAreZero;
+      },
+      {
+        message: "At least one of the amounts must be greater than 0",
+        path: ["bothAmountsAreZero"],
+      }
+    );

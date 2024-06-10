@@ -104,6 +104,14 @@ export default async function Page({
               </Button>
             </LinkComponent>
           )}
+          <LinkComponent href={`/${params.userId}/amms/${params.id}/deposit`}>
+            <Button
+              className="flex items-center gap-1 py-3 px-6"
+              disabled={oldVersionOfAmm}
+            >
+              Deposit
+            </Button>
+          </LinkComponent>
           <LinkComponent href={`/${params.userId}/amms/${params.id}/withdraw`}>
             <Button
               className="flex items-center gap-1 py-3 px-6"

@@ -10,7 +10,7 @@ import { TokenAmountInput } from "#/app/[userId]/new/(components)/TokenAmountInp
 import { Button } from "#/components";
 import { TokenInfo } from "#/components/TokenInfo";
 import { Form, FormMessage } from "#/components/ui/form";
-import { useRawTxData } from "#/hooks/useRawTxData";
+import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction";
 import { ICowAmm } from "#/lib/fetchAmmData";
 import { getDepositSchema } from "#/lib/schema";
 import { buildDepositAmmArgs } from "#/lib/transactionFactory";
@@ -24,10 +24,10 @@ export function DepositForm({
   walletBalanceToken0: string;
   walletBalanceToken1: string;
 }) {
-  const router = useRouter();
+  const _router = useRouter();
   const schema = getDepositSchema(
     Number(walletBalanceToken0),
-    Number(walletBalanceToken1),
+    Number(walletBalanceToken1)
   );
 
   const form = useForm<z.input<typeof schema>>({
@@ -39,7 +39,26 @@ export function DepositForm({
     formState: { errors, isSubmitting },
     control,
   } = form;
-  const { sendTransactions } = useRawTxData();
+
+  const {
+    hash,
+    error,
+    writeContract,
+    writeContractWithSafe,
+    status,
+    safeHash,
+    isWalletContract,
+  } = useManagedTransaction();
+  // eslint-disable-next-line no-console
+  console.log({
+    hash,
+    error,
+    writeContract,
+    writeContractWithSafe,
+    status,
+    safeHash,
+    isWalletContract,
+  });
   const [amount0, amount1] = useWatch({
     control,
     name: ["amount0", "amount1"],
@@ -53,8 +72,8 @@ export function DepositForm({
     });
 
     try {
-      await sendTransactions(txArgs);
-      router.push(`${cowAmmData.user.id}/amms/${cowAmmData.id}`);
+      writeContractWithSafe(txArgs);
+      // router.push(`${cowAmmData.user.id}/amms/${cowAmmData.id}`);
     } catch {
       toast({
         title: `Transaction failed`,

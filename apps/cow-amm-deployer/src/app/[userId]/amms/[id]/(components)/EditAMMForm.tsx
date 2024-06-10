@@ -18,7 +18,7 @@ import {
   AccordionTrigger,
 } from "#/components/ui/accordion";
 import { Form } from "#/components/ui/form";
-import { useRawTxData } from "#/hooks/useRawTxData";
+import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction";
 import { ICowAmm } from "#/lib/fetchAmmData";
 import { ammEditSchema } from "#/lib/schema";
 import { buildTxEditAMMArgs } from "#/lib/transactionFactory";
@@ -31,7 +31,7 @@ export function EditAMMForm({
   cowAmmData: ICowAmm;
   submitButtonText: string;
 }) {
-  const router = useRouter();
+  const _router = useRouter();
 
   const form = useForm<z.input<typeof ammEditSchema>>({
     // @ts-ignore
@@ -42,7 +42,7 @@ export function EditAMMForm({
       token0: cowAmmData.token0,
       token1: cowAmmData.token1,
       minTradedToken0: Number(
-        formatUnits(cowAmmData.minTradedToken0, cowAmmData.token0.decimals),
+        formatUnits(cowAmmData.minTradedToken0, cowAmmData.token0.decimals)
       ),
       priceOracleSchema: cowAmmData.decodedPriceOracleData,
     },
@@ -51,8 +51,26 @@ export function EditAMMForm({
   const {
     formState: { errors, isSubmitting },
   } = form;
-  const { sendTransactions } = useRawTxData();
 
+  const {
+    hash,
+    error,
+    writeContract,
+    writeContractWithSafe,
+    status,
+    safeHash,
+    isWalletContract,
+  } = useManagedTransaction();
+  // eslint-disable-next-line no-console
+  console.log({
+    hash,
+    error,
+    writeContract,
+    writeContractWithSafe,
+    status,
+    safeHash,
+    isWalletContract,
+  });
   const onSubmit = async (data: typeof ammEditSchema._type) => {
     const txArgs = buildTxEditAMMArgs({
       data: data,
@@ -60,8 +78,8 @@ export function EditAMMForm({
     });
 
     try {
-      await sendTransactions(txArgs);
-      router.push(`/${cowAmmData.user.id}/amms/${cowAmmData.id}`);
+      writeContractWithSafe(txArgs);
+      // router.push(`/${cowAmmData.user.id}/amms/${cowAmmData.id}`);
     } catch {
       toast({
         title: `Transaction failed`,
@@ -87,7 +105,7 @@ export function EditAMMForm({
           <AccordionTrigger
             className={cn(
               errors.minTradedToken0 ? "text-destructive" : "",
-              "pt-0",
+              "pt-0"
             )}
           >
             Advanced Options

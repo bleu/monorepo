@@ -5,15 +5,34 @@ import { useState } from "react";
 
 import { Button } from "#/components";
 import { AlertCard } from "#/components/AlertCard";
-import { useRawTxData } from "#/hooks/useRawTxData";
+import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction";
 import { ICowAmm } from "#/lib/fetchAmmData";
 import { buildMigrateToStandaloneVersionArgs } from "#/lib/transactionFactory";
 
 import { Spinner } from "./Spinner";
 
 export function OldVersionOfAMMAlert({ ammData }: { ammData: ICowAmm }) {
-  const { sendTransactions } = useRawTxData();
+  const {
+    hash,
+    error,
+    writeContract,
+    writeContractWithSafe,
+    status,
+    safeHash,
+    isWalletContract,
+  } = useManagedTransaction();
+  // eslint-disable-next-line no-console
+  console.log({
+    hash,
+    error,
+    writeContract,
+    writeContractWithSafe,
+    status,
+    safeHash,
+    isWalletContract,
+  });
   const [isLoading, setIsLoading] = useState(false);
+
   return (
     <div className="bg-foreground text-background mb-2">
       <AlertCard style="error" title="Old version of the AMM">
@@ -30,7 +49,7 @@ export function OldVersionOfAMMAlert({ ammData }: { ammData: ICowAmm }) {
               data: ammData,
             });
             try {
-              await sendTransactions(txArgs);
+              writeContractWithSafe(txArgs);
             } catch {
               toast({
                 title: `Transaction failed`,

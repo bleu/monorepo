@@ -7,7 +7,7 @@ import React from "react";
 import { useAccount } from "wagmi";
 
 import { Button } from "#/components/Button";
-import { useRawTxData } from "#/hooks/useRawTxData";
+import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction";
 import { ICowAmm } from "#/lib/fetchAmmData";
 import { DisableCoWAMMArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
 import { ChainId } from "#/utils/chainsPublicClients";
@@ -35,8 +35,26 @@ function EnableAMMButton({ ammData }: { ammData: ICowAmm }) {
 
 function DisableAmmButton({ ammData }: { ammData: ICowAmm }) {
   const { chainId } = useAccount();
-  const { sendTransactions } = useRawTxData();
 
+  const {
+    hash,
+    error,
+    writeContract,
+    writeContractWithSafe,
+    status,
+    safeHash,
+    isWalletContract,
+  } = useManagedTransaction();
+  // eslint-disable-next-line no-console
+  console.log({
+    hash,
+    error,
+    writeContract,
+    writeContractWithSafe,
+    status,
+    safeHash,
+    isWalletContract,
+  });
   async function onDisableAMM() {
     const txArgs = {
       type: TRANSACTION_TYPES.DISABLE_COW_AMM,
@@ -46,7 +64,7 @@ function DisableAmmButton({ ammData }: { ammData: ICowAmm }) {
       version: ammData.version,
     } as DisableCoWAMMArgs;
     try {
-      await sendTransactions([txArgs]);
+      await writeContractWithSafe([txArgs]);
     } catch {
       toast({
         title: `Transaction failed`,

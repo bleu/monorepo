@@ -1,9 +1,9 @@
 "use client";
 
 import { toast } from "@bleu/ui";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { UseFormReturn, useWatch } from "react-hook-form";
 import { Address } from "viem";
+import { useAccount } from "wagmi";
 import { z } from "zod";
 
 import { Input } from "#/components/Input";
@@ -19,14 +19,14 @@ export function BalancerWeightedForm({
   >;
 }) {
   const { register, setValue, control } = form;
-  const {
-    safe: { chainId },
-  } = useSafeAppsSDK();
+  const { chainId } = useAccount();
+
+  if (!chainId) return null;
 
   const [token0, token1] = useWatch({ control, name: ["token0", "token1"] });
 
   const tokenAddresses = [token0?.address, token1?.address].filter(
-    (address) => address,
+    (address) => address
   ) as Address[];
   return (
     <div className="flex flex-col gap-y-1">
@@ -46,7 +46,7 @@ export function BalancerWeightedForm({
             toast({
               title: "Pool not found",
               description: loadDEXPriceCheckerErrorText(
-                "Balancer V2 Weighted Pool",
+                "Balancer V2 Weighted Pool"
               ),
               variant: "destructive",
             });

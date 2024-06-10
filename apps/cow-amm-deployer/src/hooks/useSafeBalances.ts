@@ -19,8 +19,8 @@ export function useSafeBalances(): { assets: TokenBalance[]; loaded: boolean } {
             parseInt(item.balance) > 0 &&
             item.tokenInfo.type === "ERC20" &&
             item.tokenInfo.decimals > 0 &&
-            isAddress(item.tokenInfo.address),
-        ),
+            isAddress(item.tokenInfo.address)
+        )
       );
       setLoaded(true);
     }

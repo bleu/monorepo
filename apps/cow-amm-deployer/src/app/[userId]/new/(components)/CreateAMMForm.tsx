@@ -1,7 +1,7 @@
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
+import { useAccount } from "wagmi";
 import { z } from "zod";
 
 import { Button } from "#/components";
@@ -36,15 +36,13 @@ import { TokenAmountInput } from "./TokenAmountInput";
 // ] as const;
 
 export function CreateAMMForm({ userId: _userId }: { userId: string }) {
-  const {
-    safe: { safeAddress, chainId },
-  } = useSafeAppsSDK();
-  // const router = useRouter();
+  const { address: safeAddress, chainId } = useAccount();
 
   const form = useForm<z.input<typeof ammFormSchema>>({
     // @ts-ignore
     resolver: zodResolver(ammFormSchema),
     defaultValues: {
+      // TODO: this will need to be changed once we allow EOAs to create AMMs
       safeAddress,
       chainId,
       priceOracleSchema: {
@@ -58,7 +56,7 @@ export function CreateAMMForm({ userId: _userId }: { userId: string }) {
     control,
     formState: { errors, isSubmitting },
   } = form;
-  // const { sendTransactions } = useRawTxData();
+
   const {
     hash,
     error,
@@ -97,7 +95,7 @@ export function CreateAMMForm({ userId: _userId }: { userId: string }) {
   };
 
   useEffect(() => {
-    setValue("safeAddress", safeAddress);
+    setValue("safeAddress", safeAddress as string);
   }, [safeAddress, setValue]);
 
   return (

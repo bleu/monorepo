@@ -1,18 +1,18 @@
 "use client";
 
 import { formatNumber, toast } from "@bleu/ui";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Slider from "@radix-ui/react-slider";
 import { useRouter } from "next/navigation";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { parseUnits } from "viem";
+import { useAccount } from "wagmi";
 
 import { Button } from "#/components/Button";
 import Table from "#/components/Table";
 import { TokenInfo } from "#/components/TokenInfo";
 import { Form } from "#/components/ui/form";
-import { useRawTxData } from "#/hooks/useRawTxData";
+import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction";
 import { ICowAmm } from "#/lib/fetchAmmData";
 import { ammWithdrawSchema } from "#/lib/schema";
 import {
@@ -23,7 +23,7 @@ import { ChainId } from "#/utils/chainsPublicClients";
 
 export function WithdrawForm({
   cowAmm,
-  userId,
+  userId: _userId,
 }: {
   cowAmm: ICowAmm;
   userId: string;
@@ -35,20 +35,37 @@ export function WithdrawForm({
       withdrawPct: 50,
     },
   });
-  const router = useRouter();
-  const { sendTransactions } = useRawTxData();
+  const _router = useRouter();
+  const { chainId } = useAccount();
+
   const {
-    safe: { chainId },
-  } = useSafeAppsSDK();
+    hash,
+    error,
+    writeContract,
+    writeContractWithSafe,
+    status,
+    safeHash,
+    isWalletContract,
+  } = useManagedTransaction();
+  // eslint-disable-next-line no-console
+  console.log({
+    hash,
+    error,
+    writeContract,
+    writeContractWithSafe,
+    status,
+    safeHash,
+    isWalletContract,
+  });
 
   const onSubmit = async (data: typeof ammWithdrawSchema._type) => {
     const amount0 = parseUnits(
       String((Number(cowAmm.token0.balance) * data.withdrawPct) / 100),
-      cowAmm.token0.decimals,
+      cowAmm.token0.decimals
     );
     const amount1 = parseUnits(
       String((Number(cowAmm.token1.balance) * data.withdrawPct) / 100),
-      cowAmm.token1.decimals,
+      cowAmm.token1.decimals
     );
     const txArgs = {
       type: TRANSACTION_TYPES.WITHDRAW_COW_AMM,
@@ -58,8 +75,9 @@ export function WithdrawForm({
       chainId: chainId as ChainId,
     } as WithdrawCoWAMMArgs;
     try {
-      await sendTransactions([txArgs]);
-      router.push(`${userId}/amms/${cowAmm.id}`);
+      writeContractWithSafe([txArgs]);
+      // TODO: wait until ready before redirecting to the AMM page
+      // router.push(`${userId}/amms/${cowAmm.id}`);
     } catch {
       toast({
         title: `Transaction failed`,
@@ -122,7 +140,7 @@ export function WithdrawForm({
                     <span className="font-semibold">
                       {formatNumber(
                         (Number(token.balance) * withdrawPct) / 100,
-                        4,
+                        4
                       )}{" "}
                       {token.symbol}
                     </span>
@@ -130,7 +148,7 @@ export function WithdrawForm({
                       $
                       {formatNumber(
                         (Number(token.usdValue) * withdrawPct) / 100,
-                        4,
+                        4
                       )}
                     </span>
                   </div>

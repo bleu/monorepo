@@ -1,10 +1,10 @@
 "use client";
 
 import { toast } from "@bleu/ui";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { PlayIcon, StopIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import React from "react";
+import { useAccount } from "wagmi";
 
 import { Button } from "#/components/Button";
 import { useRawTxData } from "#/hooks/useRawTxData";
@@ -34,9 +34,7 @@ function EnableAMMButton({ ammData }: { ammData: ICowAmm }) {
 }
 
 function DisableAmmButton({ ammData }: { ammData: ICowAmm }) {
-  const {
-    safe: { chainId },
-  } = useSafeAppsSDK();
+  const { chainId } = useAccount();
   const { sendTransactions } = useRawTxData();
 
   async function onDisableAMM() {

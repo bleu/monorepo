@@ -1,27 +1,30 @@
 "use client";
 
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import Image from "next/image";
+import { useAccount } from "wagmi";
 
 import { Button } from "#/components/Button";
 import Fathom from "#/components/Fathom";
 import { LinkComponent } from "#/components/Link";
 import { UnsuportedChain } from "#/components/UnsuportedChain";
 import WalletNotConnected from "#/components/WalletNotConnected";
+import { useAutoConnect } from "#/hooks/tx-manager/useAutoConnect";
 import { supportedChainIds } from "#/utils/chainsPublicClients";
 
 export default function Page() {
-  const { connected, safe } = useSafeAppsSDK();
+  const { address: safeAddress, chainId, isConnected } = useAccount();
 
-  if (!connected) {
+  useAutoConnect();
+
+  if (!isConnected) {
     return <WalletNotConnected />;
   }
 
-  if (!supportedChainIds.includes(safe.chainId)) {
+  if (chainId && !supportedChainIds.includes(chainId)) {
     return <UnsuportedChain />;
   }
 
-  const userId = `${safe.safeAddress}-${safe.chainId}`;
+  const userId = `${safeAddress}-${chainId}`;
 
   return (
     <div className="flex size-full justify-center">

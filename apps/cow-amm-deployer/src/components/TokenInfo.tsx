@@ -1,5 +1,5 @@
 import { formatNumber } from "@bleu/ui";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { useAccount } from "wagmi";
 
 import { TokenLogo } from "#/components/TokenLogo";
 import { IToken, ITokenExtended } from "#/lib/fetchAmmData";
@@ -12,15 +12,14 @@ export function TokenInfo({
   token: IToken | ITokenExtended;
   showBalance?: boolean;
 }) {
-  const { safe } = useSafeAppsSDK();
-
+  const { chainId } = useAccount();
   return (
     <div className="flex items-center gap-x-1">
       <div className="flex items-center justify-center">
         <div className="rounded-full bg-white p-1">
           <TokenLogo
             tokenAddress={token.address}
-            chainId={safe.chainId as ChainId}
+            chainId={chainId as ChainId}
             className="rounded-full"
             alt="Token Logo"
             height={22}

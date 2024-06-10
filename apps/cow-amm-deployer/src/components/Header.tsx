@@ -1,11 +1,11 @@
 "use client";
 
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import Link from "next/link";
 import { ReactNode } from "react";
 import { Address } from "viem";
+import { useAccount } from "wagmi";
 
 import { buildAccountCowExplorerUrl } from "#/lib/cowExplorer";
 import { ChainId } from "#/utils/chainsPublicClients";
@@ -19,7 +19,8 @@ interface IHeader {
 }
 
 export function Header({ linkUrl, imageSrc, children, onLinkClick }: IHeader) {
-  const { safe } = useSafeAppsSDK();
+  // TODO: rename this once we use EOAs
+  const { address: safeAddress, chainId } = useAccount();
   return (
     <div className="flex h-20 w-full items-center p-4 text-foreground">
       <div className="mr-auto flex sm:flex-1 justify-start">
@@ -41,15 +42,15 @@ export function Header({ linkUrl, imageSrc, children, onLinkClick }: IHeader) {
             href={
               new URL(
                 buildAccountCowExplorerUrl({
-                  chainId: safe.chainId as ChainId,
-                  address: safe.safeAddress as Address,
-                }),
+                  chainId: chainId as ChainId,
+                  address: safeAddress as Address,
+                })
               )
             }
             rel="noreferrer noopener"
             target="_blank"
           >
-            {truncateAddress(safe.safeAddress)}
+            {truncateAddress(safeAddress)}
             <ArrowTopRightIcon />
           </Link>
         </div>

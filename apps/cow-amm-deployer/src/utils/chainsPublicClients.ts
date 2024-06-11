@@ -1,17 +1,20 @@
 import { createPublicClient, http } from "viem";
-import { gnosis, mainnet, sepolia } from "viem/chains";
+import { arbitrum, gnosis, mainnet, sepolia } from "viem/chains";
 
-export type ChainType = typeof gnosis | typeof mainnet | typeof sepolia;
+export type ChainType = (typeof supportedChains)[number];
 
-export type ChainName = "gnosis" | "mainnet" | "sepolia";
+export type ChainName = "gnosis" | "mainnet" | "arbitrum" | "sepolia";
 
-export type ChainId = typeof gnosis.id | typeof mainnet.id | typeof sepolia.id;
+export type ChainId = (typeof supportedChainIds)[number];
+
+export const supportedChains = [gnosis, mainnet, arbitrum, sepolia] as const;
 
 export const supportedChainIds = [
-  gnosis.id,
   mainnet.id,
+  gnosis.id,
+  arbitrum.id,
   sepolia.id,
-] as number[];
+] as const;
 
 export function createClientForChain(chain: ChainType) {
   return createPublicClient({
@@ -24,10 +27,12 @@ export const publicClientsFromNames = {
   gnosis: createClientForChain(gnosis),
   mainnet: createClientForChain(mainnet),
   sepolia: createClientForChain(sepolia),
+  arbitrum: createClientForChain(arbitrum),
 };
 
 export const publicClientsFromIds = {
   [gnosis.id]: createClientForChain(gnosis),
   [mainnet.id]: createClientForChain(mainnet),
   [sepolia.id]: createClientForChain(sepolia),
+  [arbitrum.id]: createClientForChain(arbitrum),
 } as const;

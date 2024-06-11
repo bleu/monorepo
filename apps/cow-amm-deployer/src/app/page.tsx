@@ -9,7 +9,7 @@ import { LinkComponent } from "#/components/Link";
 import { UnsuportedChain } from "#/components/UnsuportedChain";
 import WalletNotConnected from "#/components/WalletNotConnected";
 import { useAutoConnect } from "#/hooks/tx-manager/useAutoConnect";
-import { supportedChainIds } from "#/utils/chainsPublicClients";
+import { ChainId, supportedChainIds } from "#/utils/chainsPublicClients";
 
 export default function Page() {
   const { address: safeAddress, chainId, isConnected } = useAccount();
@@ -20,7 +20,7 @@ export default function Page() {
     return <WalletNotConnected />;
   }
 
-  if (chainId && !supportedChainIds.includes(chainId)) {
+  if (chainId && !supportedChainIds.includes(chainId as ChainId)) {
     return <UnsuportedChain />;
   }
 

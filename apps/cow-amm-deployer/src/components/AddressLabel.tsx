@@ -32,7 +32,7 @@ export function AddressLabel({
     <div className="flex items-center gap-1">
       <span className="text-sm text-primary">{label}</span>
       <span className="text-sm text-primary/60">
-        {truncate ? truncateMiddle(address) : address}
+        {truncate ? <TruncateMiddle text={address} /> : address}
       </span>
     </div>
   );

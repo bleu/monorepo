@@ -1,6 +1,5 @@
-import Link from "next/link";
-
 import { Button } from "#/components";
+import { LinkComponent } from "#/components/Link";
 import { OldVersionOfAMMAlert } from "#/components/OldVersionOfAmmAlert";
 import { TxPendingAlertCard } from "#/components/TxPendingAlertCard";
 import { fetchUserAmmsData, ICowAmm, validateUserId } from "#/lib/fetchAmmData";
@@ -27,9 +26,9 @@ export default async function Page({ params }: { params: { userId: string } }) {
         {hasAmmTxPending && <TxPendingAlertCard />}
         <div className="flex justify-between">
           <h1 className="text-2xl text-center">My CoW AMMs</h1>
-          <Link href={`/${params.userId}/new`}>
+          <LinkComponent href={`/${params.userId}/new`}>
             <Button>New AMM</Button>
-          </Link>
+          </LinkComponent>
         </div>
         <AmmsTable
           standaloneAmmData={standaloneAmmData}

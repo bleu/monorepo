@@ -57,25 +57,8 @@ export function CreateAMMForm({ userId: _userId }: { userId: string }) {
     formState: { errors, isSubmitting },
   } = form;
 
-  const {
-    hash,
-    error,
-    writeContract,
-    writeContractWithSafe,
-    status,
-    safeHash,
-    isWalletContract,
-  } = useManagedTransaction();
-  // eslint-disable-next-line no-console
-  console.log({
-    hash,
-    error,
-    writeContract,
-    writeContractWithSafe,
-    status,
-    safeHash,
-    isWalletContract,
-  });
+  const { writeContract, writeContractWithSafe, status, isWalletContract } =
+    useManagedTransaction();
 
   const [token0, token1, priceOracle, amount0, amount1] = useWatch({
     control,
@@ -91,6 +74,10 @@ export function CreateAMMForm({ userId: _userId }: { userId: string }) {
   const onSubmit = (data: z.output<typeof ammFormSchema>) => {
     if (isWalletContract) {
       writeContractWithSafe(buildTxCreateAMMArgs({ data }));
+    } else {
+      // TODO: remove this once we allow EOAs to create AMMs
+      // @ts-ignore
+      writeContract(buildTxCreateAMMArgs({ data }));
     }
   };
 
@@ -183,13 +170,15 @@ export function CreateAMMForm({ userId: _userId }: { userId: string }) {
 
       <div className="flex justify-center gap-x-5 mt-2">
         <Button
-          loading={isSubmitting}
+          loading={isSubmitting || (status !== "idle" && status !== "final")}
+          loadingText="Creating AMM..."
           variant="highlight"
           type="submit"
           className="w-full"
           disabled={
             isSubmitting ||
-            !(token0 && token1 && priceOracle && amount0 && amount1)
+            !(token0 && token1 && priceOracle && amount0 && amount1) ||
+            (status !== "idle" && status !== "final")
           }
         >
           <span>Create AMM</span>

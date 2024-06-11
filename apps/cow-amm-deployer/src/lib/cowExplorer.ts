@@ -1,5 +1,5 @@
 import { Address } from "@bleu/utils";
-import { gnosis, goerli, mainnet, sepolia } from "viem/chains";
+import { arbitrum, gnosis, goerli, mainnet, sepolia } from "viem/chains";
 
 import { ChainId } from "#/utils/chainsPublicClients";
 
@@ -10,6 +10,7 @@ const cowExplorerUrl = {
   [goerli.id]: "goerli",
   [gnosis.id]: "gc",
   [sepolia.id]: "sepolia",
+  [arbitrum.id]: "arb1",
 };
 
 export function buildAccountCowExplorerUrl({

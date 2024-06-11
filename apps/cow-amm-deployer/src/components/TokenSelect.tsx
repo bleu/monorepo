@@ -46,7 +46,7 @@ export function TokenSelect({
     try {
       const importedToken = await fetchTokenInfo(
         search as Address,
-        chainId as ChainId,
+        chainId as ChainId
       );
       handleSelectToken(importedToken);
       addImportedToken(importedToken, chainId as ChainId);
@@ -76,7 +76,7 @@ export function TokenSelect({
               {
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                 selectedToken ? (
-                  <TokenInfo token={selectedToken} />
+                  <TokenInfo token={selectedToken} showExplorerLink={false} />
                 ) : (
                   "Select Token"
                 )
@@ -121,6 +121,7 @@ export function TokenSelect({
                       symbol: token.symbol,
                       decimals: token.decimals,
                     }}
+                    showExplorerLink={false}
                   />
                 </CommandItem>
               ))}

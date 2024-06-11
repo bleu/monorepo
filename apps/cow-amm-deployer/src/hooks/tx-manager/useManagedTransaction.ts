@@ -64,35 +64,44 @@ export function useManagedTransaction() {
     }
   }, [blockConfirmationsStatus, txReceiptStatus]);
 
-  const STATE = useMemo(
-    () => ({
-      idle:
+  const STATE = useMemo(() => {
+    const stateMap = new Map([
+      [
+        "idle",
         writeStatus === "idle" &&
-        (safeStatus ? safeStatus === "safe_idle" : true),
-      confirming: writeStatus === "success" && txReceiptStatus === "pending",
-      confirmed: txReceiptStatus === "success" || safeStatus === "safe_success",
-      pending: writeStatus === "pending",
-      safeAwaitingConfirmations: safeStatus === "safe_awaiting_confirmations",
-      safeAwaitingExecution: safeStatus === "safe_awaiting_execution",
-      safeCancelled: safeStatus === "safe_cancelled",
-      final:
-        blockConfirmationsStatus === "success" &&
-        Number(blockConfirmations) >= 1,
-      error: writeStatus === "error" || safeStatus === "safe_failed",
-    }),
-    [
-      hash,
-      writeStatus,
-      safeStatus,
-      txReceiptStatus,
-      blockConfirmationsStatus,
-      blockConfirmations,
-    ],
-  );
+          (safeStatus ? safeStatus === "safe_idle" : true),
+      ],
+      [
+        "confirming",
+        writeStatus === "success" && txReceiptStatus === "pending",
+      ],
+      [
+        "confirmed",
+        txReceiptStatus === "success" || safeStatus === "safe_success",
+      ],
+      ["pending", writeStatus === "pending"],
+      [
+        "safeAwaitingConfirmations",
+        safeStatus === "safe_awaiting_confirmations",
+      ],
+      ["safeAwaitingExecution", safeStatus === "safe_awaiting_execution"],
+      ["safeCancelled", safeStatus === "safe_cancelled"],
+      ["final", blockConfirmations && Number(blockConfirmations) >= 1],
+      ["error", writeStatus === "error" || safeStatus === "safe_failed"],
+    ]);
+    return stateMap;
+  }, [
+    hash,
+    writeStatus,
+    safeStatus,
+    txReceiptStatus,
+    blockConfirmationsStatus,
+    blockConfirmations,
+  ]);
 
-  const status = Object.entries(STATE).findLast(
-    ([, value]) => value === true,
-  )?.[0];
+  const status = Array.from(STATE.entries())
+    .reverse()
+    .find(([, value]) => value === true)?.[0];
 
   if (isWalletContract) {
     return {

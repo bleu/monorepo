@@ -23,6 +23,7 @@ import { Form } from "#/components/ui/form";
 import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction";
 import { useDebounce } from "#/hooks/useDebounce";
 import { ConstantProductFactoryABI } from "#/lib/abis/ConstantProductFactory";
+import { UNBALANCED_USD_DIFF_THRESHOLD } from "#/lib/constants";
 import { COW_CONSTANT_PRODUCT_FACTORY } from "#/lib/contracts";
 import { IToken } from "#/lib/fetchAmmData";
 import { ammFormSchema } from "#/lib/schema";
@@ -227,7 +228,7 @@ export function CreateAMMForm({ userId }: { userId: string }) {
       <span>
         {amountUsdDiff} {debouncedAmountUsdDiff}
       </span>
-      {(debouncedAmountUsdDiff || 0) > 5000 && (
+      {(debouncedAmountUsdDiff || 0) > UNBALANCED_USD_DIFF_THRESHOLD && (
         <AlertCard title="Unbalanced amounts" style="warning">
           <p>
             The difference between the USD value of the two token amounts is

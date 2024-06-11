@@ -10,6 +10,10 @@ import { TokenInfo } from "#/components/TokenInfo";
 import { Form, FormMessage } from "#/components/ui/form";
 import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction";
 import { useDebounce } from "#/hooks/useDebounce";
+import {
+  PRICE_IMPACT_THRESHOLD,
+  USD_VALUE_FOR_PRICE_IMPACT_WARNING,
+} from "#/lib/constants";
 import { ICowAmm } from "#/lib/fetchAmmData";
 import { calculatePriceImpact } from "#/lib/priceImpact";
 import { getDepositSchema } from "#/lib/schema";
@@ -124,15 +128,16 @@ export function DepositForm({
           </FormMessage>
         )
       }
-      {debouncedDepositUsdValue > 5000 && debouncedPriceImpact > 0.1 && (
-        <AlertCard style="warning" title="High Price Impact">
-          <p>
-            The price impact of this deposit is{" "}
-            {formatNumber(debouncedPriceImpact * 100, 2)}%. Deposits with high
-            price impact may result in lost funds.
-          </p>
-        </AlertCard>
-      )}
+      {debouncedDepositUsdValue > USD_VALUE_FOR_PRICE_IMPACT_WARNING &&
+        debouncedPriceImpact > PRICE_IMPACT_THRESHOLD && (
+          <AlertCard style="warning" title="High Price Impact">
+            <p>
+              The price impact of this deposit is{" "}
+              {formatNumber(debouncedPriceImpact * 100, 2)}%. Deposits with high
+              price impact may result in lost funds.
+            </p>
+          </AlertCard>
+        )}
 
       <Button
         loading={

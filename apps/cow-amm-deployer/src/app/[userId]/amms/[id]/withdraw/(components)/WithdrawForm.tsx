@@ -38,25 +38,8 @@ export function WithdrawForm({
   const _router = useRouter();
   const { chainId } = useAccount();
 
-  const {
-    hash,
-    error,
-    writeContract,
-    writeContractWithSafe,
-    status,
-    safeHash,
-    isWalletContract,
-  } = useManagedTransaction();
-  // eslint-disable-next-line no-console
-  console.log({
-    hash,
-    error,
-    writeContract,
-    writeContractWithSafe,
-    status,
-    safeHash,
-    isWalletContract,
-  });
+  const { writeContract, writeContractWithSafe, status, isWalletContract } =
+    useManagedTransaction();
 
   const onSubmit = async (data: typeof ammWithdrawSchema._type) => {
     const amount0 = parseUnits(
@@ -75,7 +58,12 @@ export function WithdrawForm({
       chainId: chainId as ChainId,
     } as WithdrawCoWAMMArgs;
     try {
-      writeContractWithSafe([txArgs]);
+      if (isWalletContract) {
+        writeContractWithSafe([txArgs]);
+      } else {
+        // @ts-ignore
+        writeContract(txArgs);
+      }
       // TODO: wait until ready before redirecting to the AMM page
       // router.push(`${userId}/amms/${cowAmm.id}`);
     } catch {
@@ -162,7 +150,8 @@ export function WithdrawForm({
         variant="highlight"
         type="submit"
         className="w-full"
-        disabled={isSubmitting}
+        disabled={isSubmitting || (status !== "final" && status !== "idle")}
+        loading={isSubmitting || (status !== "final" && status !== "idle")}
       >
         Withdraw
       </Button>

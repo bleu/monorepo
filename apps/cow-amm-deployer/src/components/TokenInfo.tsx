@@ -40,7 +40,7 @@ import { BlockExplorerLink } from "./ExplorerLink";
 //   ETHEREUM_SEPOLIA: sepolia.id,
 // };
 
-export async function TokenInfo({
+export function TokenInfo({
   token,
   showBalance = false,
 }: {

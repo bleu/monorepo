@@ -40,25 +40,9 @@ export function DepositForm({
     control,
   } = form;
 
-  const {
-    hash,
-    error,
-    writeContract,
-    writeContractWithSafe,
-    status,
-    safeHash,
-    isWalletContract,
-  } = useManagedTransaction();
-  // eslint-disable-next-line no-console
-  console.log({
-    hash,
-    error,
-    writeContract,
-    writeContractWithSafe,
-    status,
-    safeHash,
-    isWalletContract,
-  });
+  const { writeContract, writeContractWithSafe, status, isWalletContract } =
+    useManagedTransaction();
+
   const [amount0, amount1] = useWatch({
     control,
     name: ["amount0", "amount1"],
@@ -72,7 +56,13 @@ export function DepositForm({
     });
 
     try {
-      writeContractWithSafe(txArgs);
+      if (isWalletContract) {
+        writeContractWithSafe(txArgs);
+      } else {
+        // TODO: remove this once we add EOA support
+        // @ts-ignore
+        writeContract(txArgs);
+      }
       // router.push(`${cowAmmData.user.id}/amms/${cowAmmData.id}`);
     } catch {
       toast({
@@ -121,11 +111,15 @@ export function DepositForm({
       }
 
       <Button
-        loading={isSubmitting}
+        loading={isSubmitting || (status !== "final" && status !== "idle")}
         variant="highlight"
         type="submit"
         className="w-full mt-2"
-        disabled={isSubmitting || (!amount0 && !amount1)}
+        disabled={
+          isSubmitting ||
+          (!amount0 && !amount1) ||
+          (status !== "final" && status !== "idle")
+        }
       >
         Deposit
       </Button>

@@ -9,6 +9,7 @@ import { Button } from "#/components";
 import { TokenInfo } from "#/components/TokenInfo";
 import { Form, FormMessage } from "#/components/ui/form";
 import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction";
+import { useDebounce } from "#/hooks/useDebounce";
 import { ICowAmm } from "#/lib/fetchAmmData";
 import { calculatePriceImpact } from "#/lib/priceImpact";
 import { getDepositSchema } from "#/lib/schema";
@@ -57,6 +58,9 @@ export function DepositForm({
     amount0: Number(amount0),
     amount1: Number(amount1),
   });
+
+  const debouncedPriceImpact = useDebounce<number>(priceImpact, 300);
+  const debouncedDepositUsdValue = useDebounce<number>(depositUsdValue, 300);
 
   const onSubmit = async (data: z.output<typeof schema>) => {
     const txArgs = buildDepositAmmArgs({
@@ -120,12 +124,12 @@ export function DepositForm({
           </FormMessage>
         )
       }
-      {depositUsdValue > 5000 && priceImpact > 0.1 && (
+      {debouncedDepositUsdValue > 5000 && debouncedPriceImpact > 0.1 && (
         <AlertCard style="warning" title="High Price Impact">
           <p>
             The price impact of this deposit is{" "}
-            {formatNumber(priceImpact * 100, 2)}%. Deposits with high price
-            impact may result in lost funds.
+            {formatNumber(debouncedPriceImpact * 100, 2)}%. Deposits with high
+            price impact may result in lost funds.
           </p>
         </AlertCard>
       )}
@@ -140,7 +144,7 @@ export function DepositForm({
         className="w-full mt-2"
         disabled={!amount0 && !amount1}
       >
-        Deposit ${formatNumber(depositUsdValue, 2)}
+        Deposit ${formatNumber(debouncedDepositUsdValue, 2)}
       </Button>
     </Form>
   );

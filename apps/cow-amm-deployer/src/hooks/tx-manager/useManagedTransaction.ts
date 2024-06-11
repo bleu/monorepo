@@ -77,7 +77,8 @@ export function useManagedTransaction() {
       ],
       [
         "confirmed",
-        txReceiptStatus === "success" || safeStatus === "safe_success",
+        txReceiptStatus === "success" ||
+          (safeStatus === "safe_success" && txReceiptStatus === "pending"),
       ],
       ["pending", writeStatus === "pending"],
       [
@@ -99,9 +100,19 @@ export function useManagedTransaction() {
     blockConfirmations,
   ]);
 
-  const status = Array.from(STATE.entries())
-    .reverse()
-    .find(([, value]) => value === true)?.[0];
+  const statusOrder = [
+    "idle",
+    "pending",
+    "confirming",
+    "confirmed",
+    "safeAwaitingConfirmations",
+    "safeAwaitingExecution",
+    "safeCancelled",
+    "final",
+    "error",
+  ];
+
+  const status = statusOrder.find((key) => STATE.get(key));
 
   if (isWalletContract) {
     return {

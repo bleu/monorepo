@@ -8,7 +8,7 @@ import { useIsWalletContract } from "./useIsWalletContract";
 import { useSafeTransaction } from "./useSafeTransaction";
 
 export const useWaitForTransactionReceiptWrapped = (
-  args: Parameters<typeof useWaitForTransactionReceipt>[0]
+  args: Parameters<typeof useWaitForTransactionReceipt>[0],
 ) => {
   const { address } = useAccount();
   const { data: isWalletContract } = useIsWalletContract(address);

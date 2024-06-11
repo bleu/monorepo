@@ -29,7 +29,7 @@ export function TokenAmountInput({
   // TODO: rename this once we use EOAs
   const { chainId, address: safeAddress } = useAccount();
   const [walletAmount, setWalletAmount] = useState<string>(
-    defaultWalletAmount || ""
+    defaultWalletAmount || "",
   );
   const { setValue, register } = form;
 
@@ -72,7 +72,7 @@ export function TokenAmountInput({
             onClick={() => {
               setValue(
                 fieldName,
-                convertStringToNumberAndRoundDown(walletAmount)
+                convertStringToNumberAndRoundDown(walletAmount),
               );
             }}
           >

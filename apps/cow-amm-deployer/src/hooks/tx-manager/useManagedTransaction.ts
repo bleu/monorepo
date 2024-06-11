@@ -87,11 +87,11 @@ export function useManagedTransaction() {
       txReceiptStatus,
       blockConfirmationsStatus,
       blockConfirmations,
-    ]
+    ],
   );
 
   const status = Object.entries(STATE).findLast(
-    ([, value]) => value === true
+    ([, value]) => value === true,
   )?.[0];
 
   if (isWalletContract) {

@@ -45,7 +45,7 @@ export function EditAMMForm({
       token0: cowAmmData.token0,
       token1: cowAmmData.token1,
       minTradedToken0: Number(
-        formatUnits(cowAmmData.minTradedToken0, cowAmmData.token0.decimals)
+        formatUnits(cowAmmData.minTradedToken0, cowAmmData.token0.decimals),
       ),
       priceOracleSchema: cowAmmData.decodedPriceOracleData,
     },
@@ -105,7 +105,7 @@ export function EditAMMForm({
           <AccordionTrigger
             className={cn(
               errors.minTradedToken0 ? "text-destructive" : "",
-              "pt-0"
+              "pt-0",
             )}
           >
             Advanced Options

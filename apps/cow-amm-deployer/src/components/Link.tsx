@@ -25,8 +25,9 @@ export function LinkComponent({
   if (children.props.disabled) {
     return <div className={className}>{ClonedElement}</div>;
   }
+
   return (
-    <Link href={href} prefetch={false} className={className}>
+    <Link href={href.toString()} prefetch={false} className={className}>
       {ClonedElement}
     </Link>
   );

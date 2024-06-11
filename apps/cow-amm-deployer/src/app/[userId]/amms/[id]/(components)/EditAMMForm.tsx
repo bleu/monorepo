@@ -2,7 +2,9 @@
 
 import { toast } from "@bleu/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { PlayIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Address, formatUnits } from "viem";
 import { z } from "zod";
@@ -24,14 +26,15 @@ import { ammEditSchema } from "#/lib/schema";
 import { buildTxEditAMMArgs } from "#/lib/transactionFactory";
 import { cn } from "#/lib/utils";
 
+import { DisableAmmButton } from "./DisableAmmButton";
+
 export function EditAMMForm({
   cowAmmData,
-  submitButtonText,
 }: {
   cowAmmData: ICowAmm;
   submitButtonText: string;
 }) {
-  const _router = useRouter();
+  const router = useRouter();
 
   const form = useForm<z.input<typeof ammEditSchema>>({
     // @ts-ignore
@@ -52,25 +55,9 @@ export function EditAMMForm({
     formState: { errors, isSubmitting },
   } = form;
 
-  const {
-    hash,
-    error,
-    writeContract,
-    writeContractWithSafe,
-    status,
-    safeHash,
-    isWalletContract,
-  } = useManagedTransaction();
-  // eslint-disable-next-line no-console
-  console.log({
-    hash,
-    error,
-    writeContract,
-    writeContractWithSafe,
-    status,
-    safeHash,
-    isWalletContract,
-  });
+  const { writeContract, writeContractWithSafe, status, isWalletContract } =
+    useManagedTransaction();
+
   const onSubmit = async (data: typeof ammEditSchema._type) => {
     const txArgs = buildTxEditAMMArgs({
       data: data,
@@ -78,8 +65,13 @@ export function EditAMMForm({
     });
 
     try {
-      writeContractWithSafe(txArgs);
-      // router.push(`/${cowAmmData.user.id}/amms/${cowAmmData.id}`);
+      if (isWalletContract) {
+        writeContractWithSafe(txArgs);
+      } else {
+        // TODO: this will need to be refactored once we have EOAs
+        // @ts-ignore
+        writeContract(txArgs);
+      }
     } catch {
       toast({
         title: `Transaction failed`,
@@ -88,6 +80,14 @@ export function EditAMMForm({
       });
     }
   };
+
+  useEffect(() => {
+    if (status === "final") {
+      router.push(`/${cowAmmData.user.id}/amms/${cowAmmData.id}`);
+    }
+  }, [status]);
+
+  const submitButtonText = cowAmmData.disabled ? "Enable AMM" : "Update AMM";
 
   return (
     // @ts-ignore
@@ -122,14 +122,20 @@ export function EditAMMForm({
         </AccordionItem>
       </Accordion>
 
-      <div className="flex justify-center gap-x-5 mt-2">
+      <div className="flex space-x-2 space-between mt-2">
+        {!cowAmmData.disabled && <DisableAmmButton ammData={cowAmmData} />}
         <Button
-          loading={isSubmitting}
-          variant="highlight"
+          loading={isSubmitting || (status !== "idle" && status !== "final")}
+          variant={cowAmmData.disabled ? "default" : "highlight"}
           type="submit"
-          className="w-full"
-          disabled={isSubmitting}
+          disabled={
+            isSubmitting ||
+            (status !== "idle" && status !== "final") ||
+            cowAmmData.version !== "Standalone"
+          }
+          loadingText="Confirming..."
         >
+          {cowAmmData.disabled ? <PlayIcon className="mr-1" /> : ""}
           <span>{submitButtonText}</span>
         </Button>
       </div>

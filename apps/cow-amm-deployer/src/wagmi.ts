@@ -9,10 +9,11 @@ declare module "wagmi" {
 }
 
 export const config = createConfig({
-  chains: [sepolia],
+  chains: [sepolia, mainnet],
   connectors: [
     injected(),
     safe({
+      allowedDomains: [/app.safe.global$/],
       debug: true,
     }),
   ],

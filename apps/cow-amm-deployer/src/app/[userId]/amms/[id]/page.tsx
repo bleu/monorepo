@@ -16,7 +16,6 @@ import { ChainId } from "#/utils/chainsPublicClients";
 
 import { PoolCompositionTable } from "./(components)/PoolCompositionTable";
 import { PriceInformation } from "./(components)/PriceInformation";
-import { TradingControlButton } from "./(components)/TradingControlButton";
 
 export default async function Page({
   params,
@@ -55,7 +54,7 @@ export default async function Page({
                 2,
                 "decimal",
                 "compact",
-                0.01,
+                0.01
               )}
             </span>
           </div>
@@ -71,7 +70,7 @@ export default async function Page({
                 buildAccountCowExplorerUrl({
                   chainId: ammData.order.chainId as ChainId,
                   address: ammData.order.owner as Address,
-                }),
+                })
               )
             }
             rel="noreferrer noopener"
@@ -92,18 +91,16 @@ export default async function Page({
               Back to AMMs table
             </Button>
           </LinkComponent>
-          <TradingControlButton ammData={ammData} />
-          {!ammData.disabled && (
-            <LinkComponent href={`/${params.userId}/amms/${params.id}/edit`}>
-              <Button
-                className="flex items-center gap-1 py-3 px-6"
-                disabled={oldVersionOfAmm}
-              >
-                <Pencil2Icon />
-                Edit parameters
-              </Button>
-            </LinkComponent>
-          )}
+          <LinkComponent href={`/${params.userId}/amms/${params.id}/edit`}>
+            <Button
+              className="flex items-center gap-1 py-3 px-6"
+              disabled={oldVersionOfAmm}
+            >
+              <Pencil2Icon />
+              Manage AMM
+            </Button>
+          </LinkComponent>
+
           <LinkComponent href={`/${params.userId}/amms/${params.id}/deposit`}>
             <Button
               className="flex items-center gap-1 py-3 px-6"

@@ -12,7 +12,7 @@ export default async function Page({
 
   return (
     <FormPageWrapper
-      formTitle="Edit AMM"
+      formTitle="Manage AMM"
       backHref={`/${params.userId}/amms/${params.id}`}
     >
       <EditAMMForm cowAmmData={ammData} submitButtonText="Edit AMM" />

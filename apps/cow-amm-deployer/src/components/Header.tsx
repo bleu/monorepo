@@ -7,9 +7,9 @@ import { ReactNode } from "react";
 import { Address } from "viem";
 import { useAccount } from "wagmi";
 
+import { TruncateMiddle } from "#/components/AddressLabel";
 import { buildAccountCowExplorerUrl } from "#/lib/cowExplorer";
 import { ChainId } from "#/utils/chainsPublicClients";
-import { truncateAddress } from "#/utils/truncate";
 
 interface IHeader {
   linkUrl: string;
@@ -50,7 +50,8 @@ export function Header({ linkUrl, imageSrc, children, onLinkClick }: IHeader) {
             rel="noreferrer noopener"
             target="_blank"
           >
-            {truncateAddress(safeAddress)}
+            <TruncateMiddle text={safeAddress} />
+
             <ArrowTopRightIcon />
           </Link>
         </div>

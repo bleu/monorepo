@@ -20,6 +20,7 @@ export function useManagedTransaction() {
     error: safeError,
     status: safeWriteStatus,
     writeContractWithSafe,
+    writeContractWithSafeAsync,
   } = useContractWriteWithSafe();
 
   const {
@@ -27,6 +28,7 @@ export function useManagedTransaction() {
     error: eoaError,
     status: eoaWriteStatus,
     writeContract,
+    writeContractAsync,
   } = useWriteContract();
 
   const data = safeData || eoaData;
@@ -111,6 +113,8 @@ export function useManagedTransaction() {
     safeHash,
     writeContract,
     writeContractWithSafe,
+    writeContractWithSafeAsync,
+    writeContractAsync,
     hash,
     error,
     blockConfirmations,

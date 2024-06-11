@@ -9,28 +9,12 @@ import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction"
 import { ICowAmm } from "#/lib/fetchAmmData";
 import { buildMigrateToStandaloneVersionArgs } from "#/lib/transactionFactory";
 
-import { Spinner } from "./Spinner";
-
 export function OldVersionOfAMMAlert({ ammData }: { ammData: ICowAmm }) {
-  const {
-    hash,
-    error,
-    writeContract,
-    writeContractWithSafe,
-    status,
-    safeHash,
-    isWalletContract,
-  } = useManagedTransaction();
-  // eslint-disable-next-line no-console
-  console.log({
-    hash,
-    error,
-    writeContract,
-    writeContractWithSafe,
-    status,
-    safeHash,
-    isWalletContract,
-  });
+  const { writeContractWithSafeAsync, status, isWalletContract } =
+    useManagedTransaction();
+
+  if (!isWalletContract || !writeContractWithSafeAsync) return;
+
   const [isLoading, setIsLoading] = useState(false);
 
   return (
@@ -43,13 +27,14 @@ export function OldVersionOfAMMAlert({ ammData }: { ammData: ICowAmm }) {
         </p>
         <Button
           className="mt-2"
+          loading={isLoading || (status !== "final" && status !== "idle")}
           onClick={async () => {
             setIsLoading(true);
             const txArgs = await buildMigrateToStandaloneVersionArgs({
               data: ammData,
             });
             try {
-              writeContractWithSafe(txArgs);
+              writeContractWithSafeAsync(txArgs);
             } catch {
               toast({
                 title: `Transaction failed`,
@@ -57,11 +42,12 @@ export function OldVersionOfAMMAlert({ ammData }: { ammData: ICowAmm }) {
                   "An error occurred while processing the transaction.",
                 variant: "destructive",
               });
+            } finally {
+              setIsLoading(false);
             }
-            setIsLoading(false);
           }}
         >
-          {isLoading ? <Spinner size="sm" /> : "Migrate to new version"}
+          Migrate to new version
         </Button>
       </AlertCard>
     </div>

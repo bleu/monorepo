@@ -1,7 +1,7 @@
 import { toast } from "@bleu/ui";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { UseFormReturn, useWatch } from "react-hook-form";
 import { Address } from "viem";
+import { useAccount } from "wagmi";
 import { z } from "zod";
 
 import { Input } from "#/components/Input";
@@ -17,9 +17,8 @@ export function UniswapV2Form({
   >;
 }) {
   const { register, setValue, control } = form;
-  const {
-    safe: { chainId },
-  } = useSafeAppsSDK();
+  const { chainId } = useAccount();
+  if (!chainId) return null;
 
   const [token0, token1] = useWatch({ control, name: ["token0", "token1"] });
   const tokenAddresses = [token0?.address, token1?.address].filter(

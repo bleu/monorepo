@@ -1,17 +1,15 @@
 import { createPublicClient, http } from "viem";
 import { gnosis, mainnet, sepolia } from "viem/chains";
 
-export type ChainType = typeof gnosis | typeof mainnet | typeof sepolia;
+export type ChainType = (typeof supportedChains)[number];
 
 export type ChainName = "gnosis" | "mainnet" | "sepolia";
 
-export type ChainId = typeof gnosis.id | typeof mainnet.id | typeof sepolia.id;
+export type ChainId = (typeof supportedChainIds)[number];
 
-export const supportedChainIds = [
-  gnosis.id,
-  mainnet.id,
-  sepolia.id,
-] as number[];
+export const supportedChains = [gnosis, mainnet, sepolia] as const;
+
+export const supportedChainIds = [mainnet.id, gnosis.id, sepolia.id] as const;
 
 export function createClientForChain(chain: ChainType) {
   return createPublicClient({

@@ -1,9 +1,9 @@
 import { convertStringToNumberAndRoundDown } from "@bleu/ui";
 import { formatNumber } from "@bleu/utils/formatNumber";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { Address } from "viem";
+import { useAccount } from "wagmi";
 
 import { Input } from "#/components/Input";
 import { IToken } from "#/lib/fetchAmmData";
@@ -26,9 +26,8 @@ export function TokenAmountInput({
   fieldName: "amount0" | "amount1";
   defaultWalletAmount?: string;
 }) {
-  const {
-    safe: { safeAddress, chainId },
-  } = useSafeAppsSDK();
+  // TODO: rename this once we use EOAs
+  const { chainId, address: safeAddress } = useAccount();
   const [walletAmount, setWalletAmount] = useState<string>(
     defaultWalletAmount || "",
   );

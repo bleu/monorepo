@@ -2,7 +2,7 @@
 
 import { toast } from "@bleu/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { PlayIcon } from "@radix-ui/react-icons";
 import { useForm } from "react-hook-form";
 import { Address, formatUnits } from "viem";
 import { z } from "zod";
@@ -18,21 +18,20 @@ import {
   AccordionTrigger,
 } from "#/components/ui/accordion";
 import { Form } from "#/components/ui/form";
-import { useRawTxData } from "#/hooks/useRawTxData";
+import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction";
 import { ICowAmm } from "#/lib/fetchAmmData";
 import { ammEditSchema } from "#/lib/schema";
 import { buildTxEditAMMArgs } from "#/lib/transactionFactory";
 import { cn } from "#/lib/utils";
 
+import { DisableAmmButton } from "./DisableAmmButton";
+
 export function EditAMMForm({
   cowAmmData,
-  submitButtonText,
 }: {
   cowAmmData: ICowAmm;
   submitButtonText: string;
 }) {
-  const router = useRouter();
-
   const form = useForm<z.input<typeof ammEditSchema>>({
     // @ts-ignore
     resolver: zodResolver(ammEditSchema),
@@ -42,7 +41,7 @@ export function EditAMMForm({
       token0: cowAmmData.token0,
       token1: cowAmmData.token1,
       minTradedToken0: Number(
-        formatUnits(cowAmmData.minTradedToken0, cowAmmData.token0.decimals),
+        formatUnits(cowAmmData.minTradedToken0, cowAmmData.token0.decimals)
       ),
       priceOracleSchema: cowAmmData.decodedPriceOracleData,
     },
@@ -51,7 +50,9 @@ export function EditAMMForm({
   const {
     formState: { errors, isSubmitting },
   } = form;
-  const { sendTransactions } = useRawTxData();
+
+  const { writeContract, writeContractWithSafe, status, isWalletContract } =
+    useManagedTransaction();
 
   const onSubmit = async (data: typeof ammEditSchema._type) => {
     const txArgs = buildTxEditAMMArgs({
@@ -60,8 +61,13 @@ export function EditAMMForm({
     });
 
     try {
-      await sendTransactions(txArgs);
-      router.push(`/${cowAmmData.user.id}/amms/${cowAmmData.id}`);
+      if (isWalletContract) {
+        writeContractWithSafe(txArgs);
+      } else {
+        // TODO: this will need to be refactored once we have EOAs
+        // @ts-ignore
+        writeContract(txArgs);
+      }
     } catch {
       toast({
         title: `Transaction failed`,
@@ -70,6 +76,8 @@ export function EditAMMForm({
       });
     }
   };
+
+  const submitButtonText = cowAmmData.disabled ? "Enable AMM" : "Update AMM";
 
   return (
     // @ts-ignore
@@ -87,7 +95,7 @@ export function EditAMMForm({
           <AccordionTrigger
             className={cn(
               errors.minTradedToken0 ? "text-destructive" : "",
-              "pt-0",
+              "pt-0"
             )}
           >
             Advanced Options
@@ -104,14 +112,19 @@ export function EditAMMForm({
         </AccordionItem>
       </Accordion>
 
-      <div className="flex justify-center gap-x-5 mt-2">
+      <div className="flex space-x-2 space-between mt-2">
+        {!cowAmmData.disabled && <DisableAmmButton ammData={cowAmmData} />}
         <Button
-          loading={isSubmitting}
-          variant="highlight"
+          loading={
+            isSubmitting ||
+            !["final", "idle", "confirmed", "error"].includes(status || "")
+          }
+          variant={cowAmmData.disabled ? "default" : "highlight"}
           type="submit"
-          className="w-full"
-          disabled={isSubmitting}
+          disabled={isSubmitting || cowAmmData.version !== "Standalone"}
+          loadingText="Confirming..."
         >
+          {cowAmmData.disabled ? <PlayIcon className="mr-1" /> : ""}
           <span>{submitButtonText}</span>
         </Button>
       </div>

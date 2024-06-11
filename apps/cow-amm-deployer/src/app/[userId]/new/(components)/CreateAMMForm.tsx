@@ -1,14 +1,16 @@
-import { toast } from "@bleu/ui";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+"use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
+import { Address } from "viem";
+import { useAccount } from "wagmi";
 import { z } from "zod";
 
 import { Button } from "#/components";
 import { Input } from "#/components/Input";
 import { PriceOracleForm } from "#/components/PriceOracleForm";
+import { TokenAmountInput } from "#/components/TokenAmountInput";
 import { TokenSelect } from "#/components/TokenSelect";
 import {
   Accordion,
@@ -17,26 +19,25 @@ import {
   AccordionTrigger,
 } from "#/components/ui/accordion";
 import { Form } from "#/components/ui/form";
-import { useRawTxData } from "#/hooks/useRawTxData";
+import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction";
+import { ConstantProductFactoryABI } from "#/lib/abis/ConstantProductFactory";
+import { COW_CONSTANT_PRODUCT_FACTORY } from "#/lib/contracts";
 import { IToken } from "#/lib/fetchAmmData";
 import { ammFormSchema } from "#/lib/schema";
 import { getNewMinTradeToken0 } from "#/lib/tokenUtils";
 import { buildTxCreateAMMArgs } from "#/lib/transactionFactory";
 import { cn } from "#/lib/utils";
-import { ChainId } from "#/utils/chainsPublicClients";
-
-import { TokenAmountInput } from "./TokenAmountInput";
+import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 
 export function CreateAMMForm({ userId }: { userId: string }) {
-  const {
-    safe: { safeAddress, chainId },
-  } = useSafeAppsSDK();
   const router = useRouter();
+  const { address: safeAddress, chainId } = useAccount();
 
   const form = useForm<z.input<typeof ammFormSchema>>({
     // @ts-ignore
     resolver: zodResolver(ammFormSchema),
     defaultValues: {
+      // TODO: this will need to be changed once we allow EOAs to create AMMs
       safeAddress,
       chainId,
       priceOracleSchema: {
@@ -50,7 +51,9 @@ export function CreateAMMForm({ userId }: { userId: string }) {
     control,
     formState: { errors, isSubmitting },
   } = form;
-  const { sendTransactions } = useRawTxData();
+
+  const { writeContract, writeContractWithSafe, status, isWalletContract } =
+    useManagedTransaction();
 
   const [token0, token1, priceOracle, amount0, amount1] = useWatch({
     control,
@@ -63,24 +66,39 @@ export function CreateAMMForm({ userId }: { userId: string }) {
     ],
   });
 
-  const onSubmit = async (data: z.output<typeof ammFormSchema>) => {
-    const txArgs = buildTxCreateAMMArgs({ data });
-
-    try {
-      await sendTransactions(txArgs);
-      router.push(`${userId}/amms`);
-    } catch {
-      toast({
-        title: `Transaction failed`,
-        description: "An error occurred while processing the transaction.",
-        variant: "destructive",
-      });
+  const onSubmit = (data: z.output<typeof ammFormSchema>) => {
+    if (isWalletContract) {
+      writeContractWithSafe(buildTxCreateAMMArgs({ data }));
+    } else {
+      // TODO: remove this once we allow EOAs to create AMMs
+      // @ts-ignore
+      writeContract(buildTxCreateAMMArgs({ data }));
     }
   };
 
   useEffect(() => {
-    setValue("safeAddress", safeAddress);
+    setValue("safeAddress", safeAddress as string);
   }, [safeAddress, setValue]);
+
+  async function onTxStatusFinal() {
+    const publicClient = publicClientsFromIds[chainId as ChainId];
+    const cowAmmAddress = await publicClient.readContract({
+      abi: ConstantProductFactoryABI,
+      address: COW_CONSTANT_PRODUCT_FACTORY[chainId as ChainId],
+      functionName: "ammDeterministicAddress",
+      args: [
+        safeAddress as Address,
+        token0.address as Address,
+        token1.address as Address,
+      ],
+    });
+    router.push(`/${userId}/amms/${cowAmmAddress}-${userId}`);
+  }
+  useEffect(() => {
+    if (status === "final") {
+      onTxStatusFinal();
+    }
+  }, [status]);
 
   return (
     // @ts-ignore
@@ -98,7 +116,7 @@ export function CreateAMMForm({ userId }: { userId: string }) {
                 });
                 setValue(
                   "minTradedToken0",
-                  await getNewMinTradeToken0(token, chainId as ChainId),
+                  await getNewMinTradeToken0(token, chainId as ChainId)
                 );
               }}
               selectedToken={(token0 as IToken) ?? undefined}
@@ -148,7 +166,7 @@ export function CreateAMMForm({ userId }: { userId: string }) {
           <AccordionTrigger
             className={cn(
               errors.minTradedToken0 ? "text-destructive" : "",
-              "pt-0",
+              "pt-0"
             )}
           >
             Advanced Options
@@ -167,14 +185,15 @@ export function CreateAMMForm({ userId }: { userId: string }) {
 
       <div className="flex justify-center gap-x-5 mt-2">
         <Button
-          loading={isSubmitting}
+          loading={
+            isSubmitting ||
+            !["final", "idle", "confirmed", "error"].includes(status || "")
+          }
+          loadingText="Creating AMM..."
           variant="highlight"
           type="submit"
           className="w-full"
-          disabled={
-            isSubmitting ||
-            !(token0 && token1 && priceOracle && amount0 && amount1)
-          }
+          disabled={!(token0 && token1 && priceOracle && amount0 && amount1)}
         >
           <span>Create AMM</span>
         </Button>

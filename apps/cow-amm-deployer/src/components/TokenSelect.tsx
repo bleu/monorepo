@@ -1,8 +1,8 @@
 import { toast } from "@bleu/ui";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import React, { useState } from "react";
 import { Address, isAddress } from "viem";
+import { useAccount } from "wagmi";
 
 import { useTokenSelect } from "#/contexts/tokenSelect";
 import { IToken } from "#/lib/fetchAmmData";
@@ -32,9 +32,7 @@ export function TokenSelect({
   disabled?: boolean;
   errorMessage?: string;
 }) {
-  const {
-    safe: { chainId },
-  } = useSafeAppsSDK();
+  const { chainId } = useAccount();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const { getTokenList, addImportedToken } = useTokenSelect();
@@ -48,7 +46,7 @@ export function TokenSelect({
     try {
       const importedToken = await fetchTokenInfo(
         search as Address,
-        chainId as ChainId,
+        chainId as ChainId
       );
       handleSelectToken(importedToken);
       addImportedToken(importedToken, chainId as ChainId);
@@ -78,7 +76,7 @@ export function TokenSelect({
               {
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                 selectedToken ? (
-                  <TokenInfo token={selectedToken} />
+                  <TokenInfo token={selectedToken} showExplorerLink={false} />
                 ) : (
                   "Select Token"
                 )
@@ -123,6 +121,7 @@ export function TokenSelect({
                       symbol: token.symbol,
                       decimals: token.decimals,
                     }}
+                    showExplorerLink={false}
                   />
                 </CommandItem>
               ))}

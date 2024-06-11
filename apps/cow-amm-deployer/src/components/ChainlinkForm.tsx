@@ -1,8 +1,8 @@
 "use client";
 
 import { toast } from "@bleu/ui";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { UseFormReturn, useWatch } from "react-hook-form";
+import { useAccount } from "wagmi";
 import { z } from "zod";
 
 import { Input } from "#/components/Input";
@@ -24,9 +24,7 @@ export function ChainlinkForm({
   >;
 }) {
   const { register, setValue, control } = form;
-  const {
-    safe: { chainId },
-  } = useSafeAppsSDK();
+  const { chainId } = useAccount();
 
   const token0 = useWatch({ control, name: "token0" }) as IToken;
   const token1 = useWatch({ control, name: "token1" }) as IToken;

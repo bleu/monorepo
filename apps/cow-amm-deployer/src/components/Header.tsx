@@ -8,7 +8,7 @@ import { Address } from "viem";
 import { useAccount } from "wagmi";
 
 import { TruncateMiddle } from "#/components/AddressLabel";
-import { buildAccountCowExplorerUrl } from "#/lib/cowExplorer";
+import { getExplorerAddressLink } from "#/lib/cowExplorer";
 import { ChainId } from "#/utils/chainsPublicClients";
 
 interface IHeader {
@@ -41,10 +41,10 @@ export function Header({ linkUrl, imageSrc, children, onLinkClick }: IHeader) {
             className="hover:text-highlight inline-flex items-center gap-1"
             href={
               new URL(
-                buildAccountCowExplorerUrl({
-                  chainId: chainId as ChainId,
-                  address: safeAddress as Address,
-                }),
+                getExplorerAddressLink(
+                  chainId as ChainId,
+                  safeAddress as Address
+                )
               )
             }
             rel="noreferrer noopener"

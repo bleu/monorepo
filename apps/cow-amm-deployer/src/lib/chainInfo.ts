@@ -1,7 +1,5 @@
-import { arbitrum, gnosis, mainnet, sepolia } from "viem/chains";
+import { gnosis, mainnet, sepolia } from "viem/chains";
 
-import ArbitrumOneLogoLight from "#/assets/cow-swap/network-arbitrum-one-logo-blue.svg";
-import ArbitrumOneLogoDark from "#/assets/cow-swap/network-arbitrum-one-logo-white.svg";
 import GnosisChainLogo from "#/assets/cow-swap/network-gnosis-chain-logo.svg";
 import EthereumLogo from "#/assets/cow-swap/network-mainnet-logo.svg";
 import SepoliaLogo from "#/assets/cow-swap/network-sepolia-logo.svg";
@@ -44,21 +42,21 @@ export const CHAIN_INFO: ChainInfoMap = {
     color: "#62688F",
     nativeCurrency: NATIVE_CURRENCIES[mainnet.id],
   },
+  // [arbitrum.id]: {
+  //   docs: "https://docs.arbitrum.io",
+  //   bridge: "https://bridge.arbitrum.io",
+  //   explorer: "https://arbiscan.io",
+  //   infoLink: "https://arbitrum.io",
+  //   label: "Arbitrum One",
+  //   addressPrefix: "arb1",
+  //   name: "arbitrum_one",
+  //   explorerTitle: "Arbiscan",
+  //   urlAlias: "arb1",
+  //   logo: { light: ArbitrumOneLogoLight, dark: ArbitrumOneLogoDark },
+  //   color: "#1B4ADD",
+  //   nativeCurrency: NATIVE_CURRENCIES[arbitrum.id],
+  // },
   [gnosis.id]: {
-    docs: "https://docs.arbitrum.io",
-    bridge: "https://bridge.arbitrum.io",
-    explorer: "https://arbiscan.io",
-    infoLink: "https://arbitrum.io",
-    label: "Arbitrum One",
-    addressPrefix: "arb1",
-    name: "arbitrum_one",
-    explorerTitle: "Arbiscan",
-    urlAlias: "arb1",
-    logo: { light: ArbitrumOneLogoLight, dark: ArbitrumOneLogoDark },
-    color: "#1B4ADD",
-    nativeCurrency: NATIVE_CURRENCIES[gnosis.id],
-  },
-  [arbitrum.id]: {
     docs: "https://docs.gnosischain.com",
     bridge: "https://bridge.gnosischain.com/",
     explorer: "https://gnosisscan.io",
@@ -70,7 +68,7 @@ export const CHAIN_INFO: ChainInfoMap = {
     urlAlias: "gc",
     logo: { light: GnosisChainLogo, dark: GnosisChainLogo },
     color: "#07795B",
-    nativeCurrency: NATIVE_CURRENCIES[arbitrum.id],
+    nativeCurrency: NATIVE_CURRENCIES[gnosis.id],
   },
   [sepolia.id]: {
     docs: "https://docs.cow.fi",

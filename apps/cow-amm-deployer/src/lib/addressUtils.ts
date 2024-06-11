@@ -3,7 +3,7 @@
 import { ChainId } from "#/utils/chainsPublicClients";
 
 import { CHAIN_INFO } from "./chainInfo";
-import { getExplorerOrderLink } from "./cowExplorerNew";
+import { getExplorerOrderLink } from "./cowExplorer";
 
 const ORDER_ID_SHORT_LENGTH = 8;
 const COW_ORDER_ID_LENGTH = 114;
@@ -21,7 +21,7 @@ export type BlockExplorerLinkType =
 function getEtherscanUrl(
   chainId: ChainId,
   data: string,
-  type: BlockExplorerLinkType,
+  type: BlockExplorerLinkType
 ): string {
   const basePath = CHAIN_INFO[chainId].explorer;
 
@@ -48,7 +48,7 @@ function getEtherscanUrl(
 export function getBlockExplorerUrl(
   chainId: ChainId,
   type: BlockExplorerLinkType,
-  data: string,
+  data: string
 ): string {
   return getEtherscanUrl(chainId, data, type);
 }
@@ -62,7 +62,7 @@ export function isCowOrder(type: BlockExplorerLinkType, data?: string) {
 export function getEtherscanLink(
   chainId: ChainId,
   type: BlockExplorerLinkType,
-  data: string,
+  data: string
 ): string {
   if (isCowOrder(type, data)) {
     // Explorer for CoW orders:
@@ -76,7 +76,7 @@ export function getEtherscanLink(
 export function getExplorerLabel(
   chainId: ChainId,
   type: BlockExplorerLinkType,
-  data?: string,
+  data?: string
 ): string {
   if (isCowOrder(type, data)) {
     return "View on Explorer";
@@ -90,7 +90,7 @@ export function getExplorerLabel(
 export function shortenOrderId(
   orderId: string,
   start = 0,
-  chars = ORDER_ID_SHORT_LENGTH,
+  chars = ORDER_ID_SHORT_LENGTH
 ): string {
   return orderId.substring(start, chars + start);
 }

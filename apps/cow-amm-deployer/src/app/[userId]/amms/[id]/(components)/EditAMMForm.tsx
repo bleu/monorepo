@@ -3,8 +3,6 @@
 import { toast } from "@bleu/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlayIcon } from "@radix-ui/react-icons";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Address, formatUnits } from "viem";
 import { z } from "zod";
@@ -34,8 +32,6 @@ export function EditAMMForm({
   cowAmmData: ICowAmm;
   submitButtonText: string;
 }) {
-  const router = useRouter();
-
   const form = useForm<z.input<typeof ammEditSchema>>({
     // @ts-ignore
     resolver: zodResolver(ammEditSchema),
@@ -45,7 +41,7 @@ export function EditAMMForm({
       token0: cowAmmData.token0,
       token1: cowAmmData.token1,
       minTradedToken0: Number(
-        formatUnits(cowAmmData.minTradedToken0, cowAmmData.token0.decimals),
+        formatUnits(cowAmmData.minTradedToken0, cowAmmData.token0.decimals)
       ),
       priceOracleSchema: cowAmmData.decodedPriceOracleData,
     },
@@ -81,12 +77,6 @@ export function EditAMMForm({
     }
   };
 
-  useEffect(() => {
-    if (status === "final") {
-      router.push(`/${cowAmmData.user.id}/amms/${cowAmmData.id}`);
-    }
-  }, [status]);
-
   const submitButtonText = cowAmmData.disabled ? "Enable AMM" : "Update AMM";
 
   return (
@@ -105,7 +95,7 @@ export function EditAMMForm({
           <AccordionTrigger
             className={cn(
               errors.minTradedToken0 ? "text-destructive" : "",
-              "pt-0",
+              "pt-0"
             )}
           >
             Advanced Options
@@ -125,14 +115,13 @@ export function EditAMMForm({
       <div className="flex space-x-2 space-between mt-2">
         {!cowAmmData.disabled && <DisableAmmButton ammData={cowAmmData} />}
         <Button
-          loading={isSubmitting || (status !== "idle" && status !== "final")}
+          loading={
+            isSubmitting ||
+            !["final", "idle", "confirmed", "error"].includes(status || "")
+          }
           variant={cowAmmData.disabled ? "default" : "highlight"}
           type="submit"
-          disabled={
-            isSubmitting ||
-            (status !== "idle" && status !== "final") ||
-            cowAmmData.version !== "Standalone"
-          }
+          disabled={isSubmitting || cowAmmData.version !== "Standalone"}
           loadingText="Confirming..."
         >
           {cowAmmData.disabled ? <PlayIcon className="mr-1" /> : ""}

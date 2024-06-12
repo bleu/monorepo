@@ -10,7 +10,7 @@ import { Address } from "viem";
 import { Button } from "#/components/Button";
 import { LinkComponent } from "#/components/Link";
 import { OldVersionOfAMMAlert } from "#/components/OldVersionOfAmmAlert";
-import { buildAccountCowExplorerUrl } from "#/lib/cowExplorer";
+import { getExplorerAddressLink } from "#/lib/cowExplorer";
 import { fetchAmmData } from "#/lib/fetchAmmData";
 import { ChainId } from "#/utils/chainsPublicClients";
 
@@ -54,7 +54,7 @@ export default async function Page({
                 2,
                 "decimal",
                 "compact",
-                0.01,
+                0.01
               )}
             </span>
           </div>
@@ -67,10 +67,10 @@ export default async function Page({
             className="text-primary hover:text-primary/90 inline-flex items-center gap-1 text-sm"
             href={
               new URL(
-                buildAccountCowExplorerUrl({
-                  chainId: ammData.order.chainId as ChainId,
-                  address: ammData.order.owner as Address,
-                }),
+                getExplorerAddressLink(
+                  ammData.order.chainId as ChainId,
+                  ammData.order.owner as Address
+                )
               )
             }
             rel="noreferrer noopener"

@@ -2,11 +2,9 @@
 
 import { toast } from "@bleu/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
-import { TokenAmountInput } from "#/app/[userId]/new/(components)/TokenAmountInput";
 import { Button } from "#/components";
 import { TokenInfo } from "#/components/TokenInfo";
 import { Form, FormMessage } from "#/components/ui/form";
@@ -14,6 +12,8 @@ import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction"
 import { ICowAmm } from "#/lib/fetchAmmData";
 import { getDepositSchema } from "#/lib/schema";
 import { buildDepositAmmArgs } from "#/lib/transactionFactory";
+
+import { TokenAmountInput } from "./TokenAmountInput";
 
 export function DepositForm({
   cowAmmData,
@@ -24,10 +24,9 @@ export function DepositForm({
   walletBalanceToken0: string;
   walletBalanceToken1: string;
 }) {
-  const _router = useRouter();
   const schema = getDepositSchema(
     Number(walletBalanceToken0),
-    Number(walletBalanceToken1),
+    Number(walletBalanceToken1)
   );
 
   const form = useForm<z.input<typeof schema>>({
@@ -111,15 +110,14 @@ export function DepositForm({
       }
 
       <Button
-        loading={isSubmitting || (status !== "final" && status !== "idle")}
+        loading={
+          isSubmitting ||
+          !["final", "idle", "confirmed", "error"].includes(status || "")
+        }
         variant="highlight"
         type="submit"
         className="w-full mt-2"
-        disabled={
-          isSubmitting ||
-          (!amount0 && !amount1) ||
-          (status !== "final" && status !== "idle")
-        }
+        disabled={!amount0 && !amount1}
       >
         Deposit
       </Button>

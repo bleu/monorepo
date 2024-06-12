@@ -47,7 +47,7 @@ export function DisableAmmButton({ ammData }: { ammData: ICowAmm }) {
       className="flex items-center gap-1 py-3 px-6"
       variant="destructive"
       onClick={onDisableAMM}
-      loading={status !== "idle" && status !== "final"}
+      loading={!["final", "idle", "confirmed", "error"].includes(status || "")}
       loadingText="Confirming..."
     >
       <StopIcon />

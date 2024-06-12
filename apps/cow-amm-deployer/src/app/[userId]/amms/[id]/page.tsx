@@ -1,21 +1,13 @@
-import { formatNumber } from "@bleu/utils/formatNumber";
-import {
-  ArrowTopRightIcon,
-  Pencil2Icon,
-  ResetIcon,
-} from "@radix-ui/react-icons";
-import Link from "next/link";
 import { Address } from "viem";
 
-import { Button } from "#/components/Button";
-import { LinkComponent } from "#/components/Link";
 import { OldVersionOfAMMAlert } from "#/components/OldVersionOfAmmAlert";
-import { getExplorerAddressLink } from "#/lib/cowExplorer";
 import { fetchAmmData } from "#/lib/fetchAmmData";
+import { fetchWalletTokenBalance } from "#/lib/tokenUtils";
 import { ChainId } from "#/utils/chainsPublicClients";
 
-import { PoolCompositionTable } from "./(components)/PoolCompositionTable";
-import { PriceInformation } from "./(components)/PriceInformation";
+import { Header } from "./(components)/Header";
+import { Manage } from "./(components)/Manage";
+import { PoolComposition } from "./(components)/PoolComposition";
 
 export default async function Page({
   params,
@@ -24,100 +16,34 @@ export default async function Page({
 }) {
   const ammData = await fetchAmmData(params.id);
   const oldVersionOfAmm = ammData.version !== "Standalone";
+  const [walletBalanceToken0, walletBalanceToken1] = await Promise.all([
+    fetchWalletTokenBalance({
+      token: ammData.token0,
+      walletAddress: ammData.user.address as Address,
+      chainId: ammData.order.chainId as ChainId,
+    }),
+    fetchWalletTokenBalance({
+      token: ammData.token1,
+      walletAddress: ammData.user.address as Address,
+      chainId: ammData.order.chainId as ChainId,
+    }),
+  ]);
 
   return (
-    <div className="flex w-full justify-center">
-      <div className="my-10 flex w-9/12 flex-col gap-y-5 justify-center">
-        {oldVersionOfAmm && <OldVersionOfAMMAlert ammData={ammData} />}
-        <div className="flex items-center justify-between gap-x-8">
-          <div className="flex flex-col gap-1">
-            <h2 className="text-2xl font-serif">
-              The first <i className="text-purple">MEV-Capturing AMM</i>,
-              brought to you by <i className="text-yellow">CoW DAO</i>
-            </h2>
-            {ammData.disabled ? (
-              <span>
-                This AMM is currently{" "}
-                <i className="text-destructive">disabled</i>
-              </span>
-            ) : (
-              <PriceInformation cowAmm={ammData} />
-            )}
-          </div>
-
-          <div className="flex flex-col bg-yellow/40 text-foreground py-2 px-8">
-            <span className="text-sm">Total Value</span>
-            <span className="text-2xl">
-              ${" "}
-              {formatNumber(
-                ammData.totalUsdValue,
-                2,
-                "decimal",
-                "compact",
-                0.01
-              )}
-            </span>
-          </div>
+    <div className="w-full flex flex-col space-y-4 px-32">
+      <Header ammData={ammData} oldVersionOfAmm={oldVersionOfAmm} />
+      {oldVersionOfAmm && <OldVersionOfAMMAlert ammData={ammData} />}
+      <div className="flex flex-row w-full space-x-4">
+        <div className="w-2/3">
+          <Manage
+            ammData={ammData}
+            oldVersionOfAmm={oldVersionOfAmm}
+            walletBalanceToken0={walletBalanceToken0}
+            walletBalanceToken1={walletBalanceToken1}
+          />
         </div>
-        <div className="flex flex-col">
-          <span className="text-xl my-2 border-b-2 border-primary">
-            AMM Composition
-          </span>
-          <Link
-            className="text-primary hover:text-primary/90 inline-flex items-center gap-1 text-sm"
-            href={
-              new URL(
-                getExplorerAddressLink(
-                  ammData.order.chainId as ChainId,
-                  ammData.order.owner as Address
-                )
-              )
-            }
-            rel="noreferrer noopener"
-            target="_blank"
-          >
-            See in CoW Explorer
-            <ArrowTopRightIcon className="hover:text-primary" />
-          </Link>
-        </div>
-        <PoolCompositionTable cowAmm={ammData} />
-        <div className="flex gap-4 items-center">
-          <LinkComponent href={`/${params.userId}/amms`}>
-            <Button
-              className="flex items-center gap-1 py-3 px-6"
-              variant="ghost"
-            >
-              <ResetIcon />
-              Back to AMMs table
-            </Button>
-          </LinkComponent>
-          <LinkComponent href={`/${params.userId}/amms/${params.id}/edit`}>
-            <Button
-              className="flex items-center gap-1 py-3 px-6"
-              disabled={oldVersionOfAmm}
-            >
-              <Pencil2Icon />
-              Manage AMM
-            </Button>
-          </LinkComponent>
-
-          <LinkComponent href={`/${params.userId}/amms/${params.id}/deposit`}>
-            <Button
-              className="flex items-center gap-1 py-3 px-6"
-              disabled={oldVersionOfAmm}
-            >
-              Deposit
-            </Button>
-          </LinkComponent>
-          <LinkComponent href={`/${params.userId}/amms/${params.id}/withdraw`}>
-            <Button
-              className="flex items-center gap-1 py-3 px-6"
-              variant="highlight"
-              disabled={oldVersionOfAmm}
-            >
-              Withdraw
-            </Button>
-          </LinkComponent>
+        <div className="flex flex-col space-y-4 w-1/3">
+          <PoolComposition ammData={ammData} />
         </div>
       </div>
     </div>

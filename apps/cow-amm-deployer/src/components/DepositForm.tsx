@@ -16,11 +16,11 @@ import { buildDepositAmmArgs } from "#/lib/transactionFactory";
 import { TokenAmountInput } from "./TokenAmountInput";
 
 export function DepositForm({
-  cowAmmData,
+  ammData,
   walletBalanceToken0,
   walletBalanceToken1,
 }: {
-  cowAmmData: ICowAmm;
+  ammData: ICowAmm;
   walletBalanceToken0: string;
   walletBalanceToken1: string;
 }) {
@@ -49,7 +49,7 @@ export function DepositForm({
 
   const onSubmit = async (data: z.output<typeof schema>) => {
     const txArgs = buildDepositAmmArgs({
-      cowAmm: cowAmmData,
+      cowAmm: ammData,
       amount0: data.amount0,
       amount1: data.amount1,
     });
@@ -62,7 +62,6 @@ export function DepositForm({
         // @ts-ignore
         writeContract(txArgs);
       }
-      // router.push(`${cowAmmData.user.id}/amms/${cowAmmData.id}`);
     } catch {
       toast({
         title: `Transaction failed`,
@@ -77,22 +76,24 @@ export function DepositForm({
     <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-3">
       <div className="flex gap-x-2 w-full items-start justify-between">
         <div className="w-1/3">
-          <TokenInfo token={cowAmmData.token0} showBalance={false} />
+          <TokenInfo token={ammData.token0} showBalance={false} />
         </div>
         <TokenAmountInput
-          token={cowAmmData.token0}
+          token={ammData.token0}
           form={form}
           fieldName="amount0"
+          defaultWalletAmount={walletBalanceToken0}
         />
       </div>
       <div className="flex gap-x-2 w-full items-start justify-between">
         <div className="w-1/3">
-          <TokenInfo token={cowAmmData.token1} showBalance={false} />
+          <TokenInfo token={ammData.token1} showBalance={false} />
         </div>
         <TokenAmountInput
           form={form}
-          token={cowAmmData.token1}
+          token={ammData.token1}
           fieldName="amount1"
+          defaultWalletAmount={walletBalanceToken1}
         />
       </div>
       {

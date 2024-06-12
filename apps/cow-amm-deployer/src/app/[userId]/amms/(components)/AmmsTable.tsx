@@ -3,6 +3,7 @@
 import { formatNumber } from "@bleu/ui";
 import { useRouter } from "next/navigation";
 
+import { StatusBadge } from "#/components/StatusBadge";
 import Table from "#/components/Table";
 import { TokenInfo } from "#/components/TokenInfo";
 import { ICowAmm } from "#/lib/fetchAmmData";
@@ -56,20 +57,12 @@ export function AmmsTable({
                 </span>
               </Table.BodyCell>
               <Table.BodyCell>
-                {amm.disabled ? (
-                  <span className="bg-highlight rounded-full p-2 text-base">
-                    Paused
-                  </span>
-                ) : (
-                  <span className="bg-success rounded-full p-2 text-base">
-                    Active
-                  </span>
-                )}
+                <StatusBadge disabled={amm.disabled} />
               </Table.BodyCell>
               <Table.BodyCell>
                 <span className="text-base">
                   {new Date(
-                    (amm.order.blockTimestamp as number) * 1000,
+                    (amm.order.blockTimestamp as number) * 1000
                   ).toLocaleString()}
                 </span>
               </Table.BodyCell>

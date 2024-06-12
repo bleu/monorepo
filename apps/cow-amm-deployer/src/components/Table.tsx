@@ -44,7 +44,7 @@ function useTableContext() {
 
   if (!context) {
     throw new Error(
-      "Child components of Table cannot be rendered outside the Table component!",
+      "Child components of Table cannot be rendered outside the Table component!"
     );
   }
 
@@ -69,14 +69,14 @@ export default function Table({
         className={cn(
           "min-w-full",
           predefinedClasses[color][variant][shade].border,
-          classNames,
+          classNames
         )}
       >
         <table
           className={cn(
             "divide-y divide-sand7 min-w-full",
             predefinedClasses[color][variant][shade].style,
-            "w-full",
+            "w-full"
           )}
         >
           {children}
@@ -110,9 +110,9 @@ function HeaderCell({
       onClick={onClick}
       scope="col"
       className={cn(
-        "text-left text-md font-bold",
+        "text-left font-bold",
         onClick ? "cursor-pointer" : "",
-        classNames,
+        classNames
       )}
     >
       {children}
@@ -155,7 +155,7 @@ function BodyCellLink({
         <Link
           href={href}
           className={cn([
-            "whitespace-nowrap text-sm text-primary-foreground p-4 flex",
+            "whitespace-nowrap text-primary-foreground p-4 flex",
             linkClassNames,
           ])}
         >
@@ -201,9 +201,9 @@ function BodyCell({
   return (
     <td
       className={cn(
-        "whitespace-nowrap text-sm",
+        "whitespace-nowrap",
         customWidth ? cn(customWidth, "pl-4") : padding,
-        classNames,
+        classNames
       )}
       colSpan={colSpan}
     >

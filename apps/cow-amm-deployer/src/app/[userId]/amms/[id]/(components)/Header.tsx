@@ -35,7 +35,7 @@ export function Header({
         <LinkComponent href={`/${ammData.user.id}/amms`}>
           <Button className="flex items-center gap-1 p-1" variant="ghost">
             <ArrowLeftIcon />
-            Back to AMMs table
+            CoW AMMs
           </Button>
         </LinkComponent>
         <Card.Title className="text-3xl flex flex-row gap-2 my-2 p-0 items-center">

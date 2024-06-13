@@ -31,7 +31,7 @@ export function Manage({
       <Card.Header className="py-1 px-0">
         <Card.Title className="px-0 text-xl">Manage</Card.Title>
         <Card.Description className="px-0 text-base">
-          Manage your CoW AMM pool
+          Manage your CoW AMM
         </Card.Description>
         <Separator />
       </Card.Header>

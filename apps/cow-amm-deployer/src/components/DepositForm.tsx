@@ -33,7 +33,7 @@ export function DepositForm({
 }) {
   const schema = getDepositSchema(
     Number(walletBalanceToken0),
-    Number(walletBalanceToken1)
+    Number(walletBalanceToken1),
   );
 
   const form = useForm<z.input<typeof schema>>({

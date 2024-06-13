@@ -1,6 +1,7 @@
 "use client";
 
 import { Card } from "@bleu/ui";
+import { formatNumber } from "@bleu/utils/formatNumber";
 
 import { ICowAmm } from "#/lib/fetchAmmData";
 
@@ -12,7 +13,10 @@ export function PoolComposition({ ammData }: { ammData: ICowAmm }) {
       <Card.Header className="py-1 px-0">
         <Card.Title className="px-0 text-xl">Pool composition</Card.Title>
         <Card.Description className="px-0 text-base">
-          Check your current CoW AMM pool composition
+          The current pool TVL is{" "}
+          <span className="font-semibold">
+            ${formatNumber(ammData.totalUsdValue, 2)}
+          </span>
         </Card.Description>
       </Card.Header>
       <Card.Content className="px-0">

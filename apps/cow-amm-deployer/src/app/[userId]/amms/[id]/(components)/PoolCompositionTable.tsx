@@ -13,9 +13,7 @@ export function PoolCompositionTable({ ammData }: { ammData: ICowAmm }) {
   return (
     <Table color="sand">
       <Table.HeaderRow>
-        <Table.HeaderCell>
-          Balance $({formatNumber(ammData.totalUsdValue, 4)})
-        </Table.HeaderCell>
+        <Table.HeaderCell>Balance</Table.HeaderCell>
         <Table.HeaderCell>Weight</Table.HeaderCell>
       </Table.HeaderRow>
       <Table.Body>

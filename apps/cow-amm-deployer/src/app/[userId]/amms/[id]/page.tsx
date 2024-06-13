@@ -33,7 +33,7 @@ export default async function Page({
     <div className="w-full flex flex-col space-y-4 px-32">
       <Header ammData={ammData} oldVersionOfAmm={oldVersionOfAmm} />
       {oldVersionOfAmm && <OldVersionOfAMMAlert ammData={ammData} />}
-      <div className="flex flex-row w-full space-x-4">
+      <div className="flex flex-row w-full space-x-8">
         <div className="w-2/3">
           <Manage
             ammData={ammData}

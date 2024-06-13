@@ -26,24 +26,19 @@ import { cn } from "#/lib/utils";
 
 import { DisableAmmButton } from "./DisableAmmButton";
 
-export function EditAMMForm({
-  cowAmmData,
-}: {
-  cowAmmData: ICowAmm;
-  submitButtonText: string;
-}) {
+export function EditAMMForm({ ammData }: { ammData: ICowAmm }) {
   const form = useForm<z.input<typeof ammEditSchema>>({
     // @ts-ignore
     resolver: zodResolver(ammEditSchema),
     defaultValues: {
-      safeAddress: cowAmmData.user.address,
-      chainId: cowAmmData.chainId,
-      token0: cowAmmData.token0,
-      token1: cowAmmData.token1,
+      safeAddress: ammData.user.address,
+      chainId: ammData.chainId,
+      token0: ammData.token0,
+      token1: ammData.token1,
       minTradedToken0: Number(
-        formatUnits(cowAmmData.minTradedToken0, cowAmmData.token0.decimals)
+        formatUnits(ammData.minTradedToken0, ammData.token0.decimals),
       ),
-      priceOracleSchema: cowAmmData.decodedPriceOracleData,
+      priceOracleSchema: ammData.decodedPriceOracleData,
     },
   });
 
@@ -57,7 +52,7 @@ export function EditAMMForm({
   const onSubmit = async (data: typeof ammEditSchema._type) => {
     const txArgs = buildTxEditAMMArgs({
       data: data,
-      ammAddress: cowAmmData.order.owner as Address,
+      ammAddress: ammData.order.owner as Address,
     });
 
     try {
@@ -77,7 +72,7 @@ export function EditAMMForm({
     }
   };
 
-  const submitButtonText = cowAmmData.disabled ? "Enable AMM" : "Update AMM";
+  const submitButtonText = ammData.disabled ? "Enable AMM" : "Update AMM";
 
   return (
     // @ts-ignore
@@ -85,8 +80,8 @@ export function EditAMMForm({
       <div className="flex flex-col w-full">
         <span className="mb-2 h-5 block text-sm">Token Pair</span>
         <div className="flex h-fit gap-x-7">
-          <TokenInfo token={cowAmmData.token0} />
-          <TokenInfo token={cowAmmData.token1} />
+          <TokenInfo token={ammData.token0} />
+          <TokenInfo token={ammData.token1} />
         </div>
       </div>
       <PriceOracleForm form={form} />
@@ -95,7 +90,7 @@ export function EditAMMForm({
           <AccordionTrigger
             className={cn(
               errors.minTradedToken0 ? "text-destructive" : "",
-              "pt-0"
+              "pt-0",
             )}
           >
             Advanced Options
@@ -104,7 +99,7 @@ export function EditAMMForm({
             <Input
               label="Minimum first token amount on each order"
               type="number"
-              step={10 ** -cowAmmData.token0.decimals}
+              step={10 ** -ammData.token0.decimals}
               name="minTradedToken0"
               tooltipText="This parameter is used to not overload the CoW Orderbook with small orders. By default, 10 dollars worth of the first token will be the minimum amount for each order."
             />
@@ -113,18 +108,18 @@ export function EditAMMForm({
       </Accordion>
 
       <div className="flex space-x-2 space-between mt-2">
-        {!cowAmmData.disabled && <DisableAmmButton ammData={cowAmmData} />}
+        {!ammData.disabled && <DisableAmmButton ammData={ammData} />}
         <Button
           loading={
             isSubmitting ||
             !["final", "idle", "confirmed", "error"].includes(status || "")
           }
-          variant={cowAmmData.disabled ? "default" : "highlight"}
+          variant={ammData.disabled ? "default" : "highlight"}
           type="submit"
-          disabled={isSubmitting || cowAmmData.version !== "Standalone"}
+          disabled={isSubmitting || ammData.version !== "Standalone"}
           loadingText="Confirming..."
         >
-          {cowAmmData.disabled ? <PlayIcon className="mr-1" /> : ""}
+          {ammData.disabled ? <PlayIcon className="mr-1" /> : ""}
           <span>{submitButtonText}</span>
         </Button>
       </div>

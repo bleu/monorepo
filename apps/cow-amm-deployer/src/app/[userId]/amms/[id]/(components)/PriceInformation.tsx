@@ -29,11 +29,11 @@ export function PriceInformation({ cowAmm }: { cowAmm: ICowAmm }) {
   const { decodedPriceOracleData, priceFeedLinks } = cowAmm;
 
   const labels = {
-    [PRICE_ORACLES.UNI]: "Using price information from Uniswap V2",
-    [PRICE_ORACLES.BALANCER]: "Using price information from Balancer V2",
-    [PRICE_ORACLES.SUSHI]: "Using price information from Sushi V2",
-    [PRICE_ORACLES.CHAINLINK]: "Using price information from Chainlink",
-    [PRICE_ORACLES.CUSTOM]: "Using price information from custom contract",
+    [PRICE_ORACLES.UNI]: "Uniswap V2",
+    [PRICE_ORACLES.BALANCER]: "Balancer V2",
+    [PRICE_ORACLES.SUSHI]: "Sushi V2",
+    [PRICE_ORACLES.CHAINLINK]: "Chainlink",
+    [PRICE_ORACLES.CUSTOM]: "Custom contract",
   } as const;
 
   const priceOracle = decodedPriceOracleData.priceOracle;

@@ -3,6 +3,7 @@
 import { formatNumber } from "@bleu/ui";
 import { useRouter } from "next/navigation";
 
+import { StatusBadge } from "#/components/StatusBadge";
 import Table from "#/components/Table";
 import { TokenInfo } from "#/components/TokenInfo";
 import { ICowAmm } from "#/lib/fetchAmmData";
@@ -24,6 +25,7 @@ export function AmmsTable({
     >
       <Table.HeaderRow>
         <Table.HeaderCell>Token pair</Table.HeaderCell>
+        <Table.HeaderCell classNames="sr-only">Token Pair</Table.HeaderCell>
         <Table.HeaderCell>Value</Table.HeaderCell>
         <Table.HeaderCell>Status</Table.HeaderCell>
         <Table.HeaderCell>Updated at</Table.HeaderCell>
@@ -42,13 +44,21 @@ export function AmmsTable({
               onClick={() => {
                 router.push(`/${userId}/amms/${amm.id}`);
               }}
-              classNames="hover:cursor-pointer hover:bg-foreground/50"
+              classNames="hover:cursor-pointer hover:bg-accent"
             >
               <Table.BodyCell>
-                <span className="text-base space-y-1">
-                  <TokenInfo token={amm.token0} />
-                  <TokenInfo token={amm.token1} />
-                </span>
+                <TokenInfo
+                  token={amm.token0}
+                  showBalance={true}
+                  showExplorerLink={false}
+                />
+              </Table.BodyCell>
+              <Table.BodyCell>
+                <TokenInfo
+                  token={amm.token1}
+                  showBalance={true}
+                  showExplorerLink={false}
+                />
               </Table.BodyCell>
               <Table.BodyCell>
                 <span className="text-base">
@@ -56,15 +66,7 @@ export function AmmsTable({
                 </span>
               </Table.BodyCell>
               <Table.BodyCell>
-                {amm.disabled ? (
-                  <span className="bg-highlight rounded-full p-2 text-base">
-                    Paused
-                  </span>
-                ) : (
-                  <span className="bg-success rounded-full p-2 text-base">
-                    Active
-                  </span>
-                )}
+                <StatusBadge disabled={amm.disabled} />
               </Table.BodyCell>
               <Table.BodyCell>
                 <span className="text-base">

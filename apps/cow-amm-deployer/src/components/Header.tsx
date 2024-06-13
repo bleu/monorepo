@@ -43,8 +43,8 @@ export function Header({ linkUrl, imageSrc, children, onLinkClick }: IHeader) {
               new URL(
                 getExplorerAddressLink(
                   chainId as ChainId,
-                  safeAddress as Address
-                )
+                  safeAddress as Address,
+                ),
               )
             }
             rel="noreferrer noopener"

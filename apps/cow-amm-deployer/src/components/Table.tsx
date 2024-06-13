@@ -110,7 +110,7 @@ function HeaderCell({
       onClick={onClick}
       scope="col"
       className={cn(
-        "text-left text-md font-bold",
+        "text-left font-bold",
         onClick ? "cursor-pointer" : "",
         classNames,
       )}
@@ -155,7 +155,7 @@ function BodyCellLink({
         <Link
           href={href}
           className={cn([
-            "whitespace-nowrap text-sm text-primary-foreground p-4 flex",
+            "whitespace-nowrap text-primary-foreground p-4 flex",
             linkClassNames,
           ])}
         >
@@ -201,7 +201,7 @@ function BodyCell({
   return (
     <td
       className={cn(
-        "whitespace-nowrap text-sm",
+        "whitespace-nowrap",
         customWidth ? cn(customWidth, "pl-4") : padding,
         classNames,
       )}

@@ -13,10 +13,10 @@ import { Button } from "#/components/Button";
 import { BlockExplorerLink } from "#/components/ExplorerLink";
 import { LinkComponent } from "#/components/Link";
 import { StatusBadge } from "#/components/StatusBadge";
-import { TokenInfo } from "#/components/TokenInfo";
 import { TokenPairLogo } from "#/components/TokenPairLogo";
 import { getExplorerAddressLink } from "#/lib/cowExplorer";
-import { ICowAmm } from "#/lib/fetchAmmData";
+import { ICowAmm, IToken } from "#/lib/fetchAmmData";
+import { truncateMiddle } from "#/lib/truncateMiddle";
 import { ChainId } from "#/utils/chainsPublicClients";
 
 import { PriceInformation } from "./PriceInformation";
@@ -51,36 +51,53 @@ export function Header({
             identifier={ammData.order.owner}
             networkId={ammData.chainId as ChainId}
           />
+          <StatusBadge disabled={ammData.disabled} />
         </Card.Title>
         <Card.Description className="flex mt-5 justify-between items-center text-base p-0">
-          <div className="flex flex-row gap-2">
-            Status: <StatusBadge disabled={ammData.disabled} />
-          </div>
-          <div className="flex flex-row gap-2">
+          <div className="flex flex-row gap-2 items-center">
             Price Oracle: <PriceInformation cowAmm={ammData} />
           </div>
-          <Link
-            className="hover:underline inline-flex items-center gap-1 text-sm"
-            href={
-              new URL(
-                getExplorerAddressLink(
-                  ammData.order.chainId as ChainId,
-                  ammData.order.owner as Address
+          <div className="flex flex-row gap-2 items-center">
+            Orders: CoW Explorer
+            <Link
+              href={
+                new URL(
+                  getExplorerAddressLink(
+                    ammData.order.chainId as ChainId,
+                    ammData.order.owner as Address
+                  )
                 )
-              )
-            }
-            rel="noreferrer noopener"
-            target="_blank"
-          >
-            Orders History
-            <ArrowTopRightIcon />
-          </Link>
-          <div className="flex flex-row gap-2">
-            Tokens: <TokenInfo token={ammData.token0} />
-            <TokenInfo token={ammData.token1} />
+              }
+              rel="noreferrer noopener"
+              target="_blank"
+            >
+              <ArrowTopRightIcon />
+            </Link>
           </div>
+          <TokenLink chainId={ammData.chainId} token={ammData.token0} />
+          <TokenLink chainId={ammData.chainId} token={ammData.token1} />
         </Card.Description>
       </Card.Header>
     </Card.Root>
+  );
+}
+
+export function TokenLink({
+  chainId,
+  token,
+}: {
+  chainId: ChainId;
+  token: IToken;
+}) {
+  return (
+    <div className="flex flex-row gap-2 items-center">
+      {token.symbol}: {truncateMiddle(token.address, 4)}
+      <BlockExplorerLink
+        type="token"
+        label={<ArrowTopRightIcon />}
+        identifier={token.address}
+        networkId={chainId as ChainId}
+      />
+    </div>
   );
 }

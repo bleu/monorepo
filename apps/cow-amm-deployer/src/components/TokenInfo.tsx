@@ -1,6 +1,6 @@
 "use client";
 import { formatNumber } from "@bleu/ui";
-import { ExternalLinkIcon } from "@radix-ui/react-icons";
+import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import { useAccount } from "wagmi";
 
 import { TokenLogo } from "#/components/TokenLogo";
@@ -39,7 +39,7 @@ export function TokenInfo({
         {showExplorerLink && (
           <BlockExplorerLink
             type="token"
-            label={<ExternalLinkIcon />}
+            label={<ArrowTopRightIcon />}
             identifier={token.address}
             networkId={chainId as ChainId}
           />

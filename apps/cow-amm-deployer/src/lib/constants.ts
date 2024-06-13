@@ -1,2 +1,8 @@
 export const BLEU_APP_DATA =
   "0x4d821ddc9d656177dad4d5c2f76a4bff2ed514ff69fa4aa4fd869d6e98d55c89";
+
+export const PRICE_IMPACT_THRESHOLD = 0.05;
+
+export const UNBALANCED_USD_DIFF_THRESHOLD = 5000;
+
+export const USD_VALUE_FOR_PRICE_IMPACT_WARNING = 5000;

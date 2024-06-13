@@ -1,6 +1,6 @@
 "use client";
 
-import { toast } from "@bleu/ui";
+import { formatNumber, toast } from "@bleu/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
@@ -9,10 +9,17 @@ import { Button } from "#/components";
 import { TokenInfo } from "#/components/TokenInfo";
 import { Form, FormMessage } from "#/components/ui/form";
 import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction";
+import { useDebounce } from "#/hooks/useDebounce";
+import {
+  PRICE_IMPACT_THRESHOLD,
+  USD_VALUE_FOR_PRICE_IMPACT_WARNING,
+} from "#/lib/constants";
 import { ICowAmm } from "#/lib/fetchAmmData";
+import { calculatePriceImpact } from "#/lib/priceImpact";
 import { getDepositSchema } from "#/lib/schema";
 import { buildDepositAmmArgs } from "#/lib/transactionFactory";
 
+import { AlertCard } from "./AlertCard";
 import { TokenAmountInput } from "./TokenAmountInput";
 
 export function DepositForm({
@@ -26,7 +33,7 @@ export function DepositForm({
 }) {
   const schema = getDepositSchema(
     Number(walletBalanceToken0),
-    Number(walletBalanceToken1),
+    Number(walletBalanceToken1)
   );
 
   const form = useForm<z.input<typeof schema>>({
@@ -46,6 +53,18 @@ export function DepositForm({
     control,
     name: ["amount0", "amount1"],
   });
+  const depositUsdValue =
+    ammData.token0.usdPrice * amount0 + ammData.token1.usdPrice * amount1;
+
+  const priceImpact = calculatePriceImpact({
+    balance0: Number(ammData.token0.balance),
+    balance1: Number(ammData.token1.balance),
+    amount0: Number(amount0),
+    amount1: Number(amount1),
+  });
+
+  const debouncedPriceImpact = useDebounce<number>(priceImpact, 300);
+  const debouncedDepositUsdValue = useDebounce<number>(depositUsdValue, 300);
 
   const onSubmit = async (data: z.output<typeof schema>) => {
     const txArgs = buildDepositAmmArgs({
@@ -109,6 +128,16 @@ export function DepositForm({
           </FormMessage>
         )
       }
+      {debouncedDepositUsdValue > USD_VALUE_FOR_PRICE_IMPACT_WARNING &&
+        debouncedPriceImpact > PRICE_IMPACT_THRESHOLD && (
+          <AlertCard style="warning" title="High Price Impact">
+            <p>
+              The price impact of this deposit is{" "}
+              {formatNumber(debouncedPriceImpact * 100, 2)}%. Deposits with high
+              price impact may result in lost funds.
+            </p>
+          </AlertCard>
+        )}
 
       <Button
         loading={
@@ -120,7 +149,7 @@ export function DepositForm({
         className="w-full mt-2"
         disabled={!amount0 && !amount1}
       >
-        Deposit
+        Deposit ${formatNumber(debouncedDepositUsdValue, 2)}
       </Button>
     </Form>
   );

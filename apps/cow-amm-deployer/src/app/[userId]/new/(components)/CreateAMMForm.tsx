@@ -1,13 +1,14 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { Address } from "viem";
 import { useAccount } from "wagmi";
 import { z } from "zod";
 
 import { Button } from "#/components";
+import { AlertCard } from "#/components/AlertCard";
 import { Input } from "#/components/Input";
 import { PriceOracleForm } from "#/components/PriceOracleForm";
 import { TokenAmountInput } from "#/components/TokenAmountInput";
@@ -20,11 +21,13 @@ import {
 } from "#/components/ui/accordion";
 import { Form } from "#/components/ui/form";
 import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction";
+import { useDebounce } from "#/hooks/useDebounce";
 import { ConstantProductFactoryABI } from "#/lib/abis/ConstantProductFactory";
+import { UNBALANCED_USD_DIFF_THRESHOLD } from "#/lib/constants";
 import { COW_CONSTANT_PRODUCT_FACTORY } from "#/lib/contracts";
 import { IToken } from "#/lib/fetchAmmData";
 import { ammFormSchema } from "#/lib/schema";
-import { getNewMinTradeToken0 } from "#/lib/tokenUtils";
+import { fetchTokenUsdPrice, getNewMinTradeToken0 } from "#/lib/tokenUtils";
 import { buildTxCreateAMMArgs } from "#/lib/transactionFactory";
 import { cn } from "#/lib/utils";
 import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
@@ -75,6 +78,13 @@ export function CreateAMMForm({ userId }: { userId: string }) {
       writeContract(buildTxCreateAMMArgs({ data }));
     }
   };
+  const [token0UsdPrice, setToken0UsdPrice] = useState<number>();
+  const [token1UsdPrice, setToken1UsdPrice] = useState<number>();
+  const [amountUsdDiff, setAmountUsdDiff] = useState<number>();
+  const debouncedAmountUsdDiff = useDebounce<number | undefined>(
+    amountUsdDiff,
+    300,
+  );
 
   useEffect(() => {
     setValue("safeAddress", safeAddress as string);
@@ -99,6 +109,38 @@ export function CreateAMMForm({ userId }: { userId: string }) {
       onTxStatusFinal();
     }
   }, [status]);
+  async function updateTokenUsdPrice(
+    token: IToken,
+    setAmountUsd: (value: number) => void,
+  ) {
+    const amountUsd = await fetchTokenUsdPrice({
+      chainId: chainId as ChainId,
+      tokenDecimals: token.decimals,
+      tokenAddress: token.address as Address,
+    });
+    setAmountUsd(amountUsd);
+  }
+
+  useEffect(() => {
+    if (token0) {
+      updateTokenUsdPrice(token0, setToken0UsdPrice);
+    }
+  }, [token0]);
+
+  useEffect(() => {
+    if (token1) {
+      updateTokenUsdPrice(token1, setToken1UsdPrice);
+    }
+  }, [token1]);
+
+  useEffect(() => {
+    if (token0?.address == token1?.address) return;
+    if (token0UsdPrice && token1UsdPrice && amount0 && amount1) {
+      const amount0Usd = amount0 * token0UsdPrice;
+      const amount1Usd = amount1 * token1UsdPrice;
+      setAmountUsdDiff(Math.abs(amount0Usd - amount1Usd));
+    }
+  }, [amount0, amount1, token0UsdPrice, token1UsdPrice]);
 
   return (
     // @ts-ignore
@@ -183,6 +225,18 @@ export function CreateAMMForm({ userId }: { userId: string }) {
         </AccordionItem>
       </Accordion>
 
+      <span>
+        {amountUsdDiff} {debouncedAmountUsdDiff}
+      </span>
+      {(debouncedAmountUsdDiff || 0) > UNBALANCED_USD_DIFF_THRESHOLD && (
+        <AlertCard title="Unbalanced amounts" style="warning">
+          <p>
+            The difference between the USD value of the two token amounts is
+            greater than $5000. This may lead to an unbalanced AMM and result in
+            loss of funds.
+          </p>
+        </AlertCard>
+      )}
       <div className="flex justify-center gap-x-5 mt-2">
         <Button
           loading={

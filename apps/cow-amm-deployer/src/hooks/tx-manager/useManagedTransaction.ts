@@ -65,32 +65,21 @@ export function useManagedTransaction() {
   }, [blockConfirmationsStatus, txReceiptStatus]);
 
   const STATE = useMemo(() => {
-    const stateMap = new Map([
-      [
-        "idle",
+    return {
+      idle:
         writeStatus === "idle" &&
-          (safeStatus ? safeStatus === "safe_idle" : true),
-      ],
-      [
-        "confirming",
-        writeStatus === "success" && txReceiptStatus === "pending",
-      ],
-      [
-        "confirmed",
+        (safeStatus ? safeStatus === "safe_idle" : true),
+      confirming: writeStatus === "success" && txReceiptStatus === "pending",
+      confirmed:
         txReceiptStatus === "success" ||
-          (safeStatus === "safe_success" && txReceiptStatus === "pending"),
-      ],
-      ["pending", writeStatus === "pending"],
-      [
-        "safeAwaitingConfirmations",
-        safeStatus === "safe_awaiting_confirmations",
-      ],
-      ["safeAwaitingExecution", safeStatus === "safe_awaiting_execution"],
-      ["safeCancelled", safeStatus === "safe_cancelled"],
-      ["final", blockConfirmations && Number(blockConfirmations) >= 1],
-      ["error", writeStatus === "error" || safeStatus === "safe_failed"],
-    ]);
-    return stateMap;
+        (safeStatus === "safe_success" && txReceiptStatus === "pending"),
+      pending: writeStatus === "pending",
+      safeAwaitingConfirmations: safeStatus === "safe_awaiting_confirmations",
+      safeAwaitingExecution: safeStatus === "safe_awaiting_execution",
+      safeCancelled: safeStatus === "safe_cancelled",
+      final: blockConfirmations && Number(blockConfirmations) >= 1,
+      error: writeStatus === "error" || safeStatus === "safe_failed",
+    } as const;
   }, [
     hash,
     writeStatus,
@@ -110,9 +99,9 @@ export function useManagedTransaction() {
     "safeCancelled",
     "final",
     "error",
-  ];
+  ] as const;
 
-  const status = statusOrder.find((key) => STATE.get(key));
+  const status = statusOrder.findLast((key) => STATE[key]);
 
   if (isWalletContract) {
     return {

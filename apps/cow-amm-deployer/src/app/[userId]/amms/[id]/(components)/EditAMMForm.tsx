@@ -76,7 +76,7 @@ export function EditAMMForm({ ammData }: { ammData: ICowAmm }) {
 
   return (
     // @ts-ignore
-    <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-3">
+    <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-5">
       <div className="flex flex-col w-full">
         <span className="mb-2 h-5 block text-sm">Token Pair</span>
         <div className="flex h-fit gap-x-7">

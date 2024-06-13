@@ -42,11 +42,11 @@ export function WithdrawForm({ ammData }: { ammData: ICowAmm }) {
     } else {
       amount0 = parseUnits(
         String((Number(ammData.token0.balance) * data.withdrawPct) / 100),
-        ammData.token0.decimals
+        ammData.token0.decimals,
       );
       amount1 = parseUnits(
         String((Number(ammData.token1.balance) * data.withdrawPct) / 100),
-        ammData.token1.decimals
+        ammData.token1.decimals,
       );
     }
     const txArgs = {
@@ -81,7 +81,7 @@ export function WithdrawForm({ ammData }: { ammData: ICowAmm }) {
   const withdrawPct = useWatch({ control, name: "withdrawPct" });
 
   return (
-    <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-3">
+    <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-5">
       <div className="flex flex-col w-full">
         <div className="flex justify-between mb-2 items-center">
           <span className="block text-xl bg-primary p-2">{withdrawPct}%</span>

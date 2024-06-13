@@ -83,7 +83,7 @@ export function CreateAMMForm({ userId }: { userId: string }) {
   const [amountUsdDiff, setAmountUsdDiff] = useState<number>();
   const debouncedAmountUsdDiff = useDebounce<number | undefined>(
     amountUsdDiff,
-    300
+    300,
   );
 
   useEffect(() => {
@@ -111,7 +111,7 @@ export function CreateAMMForm({ userId }: { userId: string }) {
   }, [status]);
   async function updateTokenUsdPrice(
     token: IToken,
-    setAmountUsd: (value: number) => void
+    setAmountUsd: (value: number) => void,
   ) {
     const amountUsd = await fetchTokenUsdPrice({
       chainId: chainId as ChainId,

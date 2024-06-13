@@ -29,7 +29,9 @@ export function FormPageWrapper({
             href={backHref}
             className="absolute left-8 flex h-full items-center"
           >
-            <ArrowIcon />
+            <button>
+              <ArrowIcon />
+            </button>
           </LinkComponent>
           <div className="flex w-[530px] flex-col items-center pt-3">
             <div className="text-xl">{formTitle}</div>

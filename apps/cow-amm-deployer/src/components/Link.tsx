@@ -18,7 +18,6 @@ export function LinkComponent({
   const [isLoading, setIsLoading] = React.useState(false);
 
   const ClonedElement = React.cloneElement(children, {
-    onClick: () => setIsLoading(true),
     children: isLoading ? <Spinner size={"sm"} /> : children.props.children,
   });
 
@@ -27,7 +26,14 @@ export function LinkComponent({
   }
 
   return (
-    <Link href={href.toString()} prefetch={false} className={className}>
+    <Link
+      href={href.toString()}
+      prefetch={false}
+      className={className}
+      onClick={() => {
+        setIsLoading(true);
+      }}
+    >
       {ClonedElement}
     </Link>
   );

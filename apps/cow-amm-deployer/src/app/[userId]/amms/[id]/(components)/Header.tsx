@@ -64,8 +64,8 @@ export function Header({
                 new URL(
                   getExplorerAddressLink(
                     ammData.order.chainId as ChainId,
-                    ammData.order.owner as Address
-                  )
+                    ammData.order.owner as Address,
+                  ),
                 )
               }
               rel="noreferrer noopener"

@@ -33,7 +33,7 @@ export function getExplorerBaseUrl(chainId: ChainId): string {
   if (!baseUrl) {
     throw new Error(
       "Unsupported Network. The operator API is not deployed in the Network " +
-        chainId
+        chainId,
     );
   } else {
     return baseUrl;
@@ -48,7 +48,7 @@ export function getExplorerOrderLink(chainId: ChainId, orderId: UID): string {
 
 export function getExplorerAddressLink(
   chainId: ChainId,
-  address: string
+  address: string,
 ): string {
   const baseUrl = getExplorerBaseUrl(chainId);
 

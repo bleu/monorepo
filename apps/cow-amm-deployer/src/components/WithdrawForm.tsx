@@ -35,11 +35,11 @@ export function WithdrawForm({ ammData }: { ammData: ICowAmm }) {
   const onSubmit = async (data: typeof ammWithdrawSchema._type) => {
     const amount0 = parseUnits(
       String((Number(ammData.token0.balance) * data.withdrawPct) / 100),
-      ammData.token0.decimals
+      ammData.token0.decimals,
     );
     const amount1 = parseUnits(
       String((Number(ammData.token1.balance) * data.withdrawPct) / 100),
-      ammData.token1.decimals
+      ammData.token1.decimals,
     );
     const txArgs = {
       type: TRANSACTION_TYPES.WITHDRAW_COW_AMM,

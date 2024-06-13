@@ -46,7 +46,7 @@ export function TokenSelect({
     try {
       const importedToken = await fetchTokenInfo(
         search as Address,
-        chainId as ChainId
+        chainId as ChainId,
       );
       handleSelectToken(importedToken);
       addImportedToken(importedToken, chainId as ChainId);

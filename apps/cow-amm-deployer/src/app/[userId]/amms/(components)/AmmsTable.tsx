@@ -71,7 +71,7 @@ export function AmmsTable({
               <Table.BodyCell>
                 <span className="text-base">
                   {new Date(
-                    (amm.order.blockTimestamp as number) * 1000
+                    (amm.order.blockTimestamp as number) * 1000,
                   ).toLocaleString()}
                 </span>
               </Table.BodyCell>

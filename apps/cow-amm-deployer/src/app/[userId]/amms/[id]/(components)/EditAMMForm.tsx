@@ -36,7 +36,7 @@ export function EditAMMForm({ ammData }: { ammData: ICowAmm }) {
       token0: ammData.token0,
       token1: ammData.token1,
       minTradedToken0: Number(
-        formatUnits(ammData.minTradedToken0, ammData.token0.decimals)
+        formatUnits(ammData.minTradedToken0, ammData.token0.decimals),
       ),
       priceOracleSchema: ammData.decodedPriceOracleData,
     },
@@ -90,7 +90,7 @@ export function EditAMMForm({ ammData }: { ammData: ICowAmm }) {
           <AccordionTrigger
             className={cn(
               errors.minTradedToken0 ? "text-destructive" : "",
-              "pt-0"
+              "pt-0",
             )}
           >
             Advanced Options

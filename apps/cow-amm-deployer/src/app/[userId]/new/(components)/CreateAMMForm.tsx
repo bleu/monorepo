@@ -227,10 +227,6 @@ export function CreateAMMForm({ userId }: { userId: string }) {
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-
-      <span>
-        {amountUsdDiff} {debouncedAmountUsdDiff}
-      </span>
       {(debouncedAmountUsdDiff || 0) > UNBALANCED_USD_DIFF_THRESHOLD && (
         <AlertCard title="Unbalanced amounts" style="warning">
           <p>

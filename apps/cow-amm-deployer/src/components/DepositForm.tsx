@@ -73,7 +73,7 @@ export function DepositForm({
 
   return (
     // @ts-ignore
-    <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-3">
+    <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-5">
       <div className="flex gap-x-2 w-full items-start justify-between">
         <div className="w-1/3">
           <TokenInfo token={ammData.token0} showBalance={false} />

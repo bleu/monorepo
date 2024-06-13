@@ -24,7 +24,7 @@ export function WithdrawForm({ ammData }: { ammData: ICowAmm }) {
     // @ts-ignore
     resolver: zodResolver(ammWithdrawSchema),
     defaultValues: {
-      withdrawPct: 50,
+      withdrawPct: 0,
     },
   });
   const { chainId } = useAccount();
@@ -33,14 +33,22 @@ export function WithdrawForm({ ammData }: { ammData: ICowAmm }) {
     useManagedTransaction();
 
   const onSubmit = async (data: typeof ammWithdrawSchema._type) => {
-    const amount0 = parseUnits(
-      String((Number(ammData.token0.balance) * data.withdrawPct) / 100),
-      ammData.token0.decimals,
-    );
-    const amount1 = parseUnits(
-      String((Number(ammData.token1.balance) * data.withdrawPct) / 100),
-      ammData.token1.decimals,
-    );
+    let amount0 = BigInt(0);
+    let amount1 = BigInt(0);
+    if (data.withdrawPct === 100) {
+      // avoid floating point arithmetic
+      amount0 = parseUnits(ammData.token0.balance, ammData.token0.decimals);
+      amount1 = parseUnits(ammData.token1.balance, ammData.token1.decimals);
+    } else {
+      amount0 = parseUnits(
+        String((Number(ammData.token0.balance) * data.withdrawPct) / 100),
+        ammData.token0.decimals,
+      );
+      amount1 = parseUnits(
+        String((Number(ammData.token1.balance) * data.withdrawPct) / 100),
+        ammData.token1.decimals,
+      );
+    }
     const txArgs = {
       type: TRANSACTION_TYPES.WITHDRAW_COW_AMM,
       amm: ammData.order.owner,
@@ -66,17 +74,33 @@ export function WithdrawForm({ ammData }: { ammData: ICowAmm }) {
 
   const {
     control,
+    setValue,
     formState: { isSubmitting },
   } = form;
 
   const withdrawPct = useWatch({ control, name: "withdrawPct" });
 
   return (
-    <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-3">
+    <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-5">
       <div className="flex flex-col w-full">
-        <span className="mb-2 h-5 block">
-          Withdraw percentage: {withdrawPct}%
-        </span>
+        <div className="flex justify-between mb-2 items-center">
+          <span className="block text-xl bg-primary p-2">{withdrawPct}%</span>
+          <div className="flex justify-between w-1/2">
+            {[25, 50, 75, 100].map((pct) => (
+              <Button
+                key={pct}
+                type="button"
+                className="px-2"
+                variant="ghost"
+                disabled={isSubmitting || !pct}
+                onClick={() => setValue("withdrawPct", pct)}
+              >
+                {pct === 100 ? "Max" : `${pct}%`}
+              </Button>
+            ))}
+          </div>
+        </div>
+
         <Controller
           name="withdrawPct"
           control={control}
@@ -85,8 +109,8 @@ export function WithdrawForm({ ammData }: { ammData: ICowAmm }) {
               className="relative flex items-center select-none touch-none w-full h-5"
               max={100}
               step={0.1}
-              min={0.1}
-              onValueChange={field.onChange}
+              min={0}
+              onValueChange={(value) => field.onChange(value[0])}
               value={[field.value]}
             >
               <Slider.Track className="relative grow rounded-full h-[3px]">
@@ -112,10 +136,16 @@ export function WithdrawForm({ ammData }: { ammData: ICowAmm }) {
       </div>
       <Button
         variant="highlight"
+        disabled={
+          !withdrawPct ||
+          (ammData.token0.balance === "0" && ammData.token1.balance === "0")
+        }
         type="submit"
         className="w-full"
-        disabled={isSubmitting || (status !== "final" && status !== "idle")}
-        loading={isSubmitting || (status !== "final" && status !== "idle")}
+        loading={
+          isSubmitting ||
+          !["final", "idle", "confirmed", "error"].includes(status || "")
+        }
       >
         Withdraw ${formatNumber((ammData.totalUsdValue * withdrawPct) / 100, 4)}
       </Button>

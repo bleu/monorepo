@@ -56,17 +56,17 @@ export function Manage({
               Edit Parameters
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="deposit">
+          <TabsContent value="deposit" className="px-1">
             <DepositForm
               ammData={ammData}
               walletBalanceToken0={walletBalanceToken0}
               walletBalanceToken1={walletBalanceToken1}
             />
           </TabsContent>
-          <TabsContent value="withdraw">
+          <TabsContent value="withdraw" className="px-1">
             <WithdrawForm ammData={ammData} />
           </TabsContent>
-          <TabsContent value="edit">
+          <TabsContent value="edit" className="px-1">
             <EditAMMForm ammData={ammData} />
           </TabsContent>
         </TabsRoot>

@@ -42,11 +42,11 @@ export function WithdrawForm({ ammData }: { ammData: ICowAmm }) {
     } else {
       amount0 = parseUnits(
         String((Number(ammData.token0.balance) * data.withdrawPct) / 100),
-        ammData.token0.decimals
+        ammData.token0.decimals,
       );
       amount1 = parseUnits(
         String((Number(ammData.token1.balance) * data.withdrawPct) / 100),
-        ammData.token1.decimals
+        ammData.token1.decimals,
       );
     }
     const txArgs = {

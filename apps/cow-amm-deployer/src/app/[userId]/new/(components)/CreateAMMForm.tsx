@@ -204,6 +204,15 @@ export function CreateAMMForm({ userId }: { userId: string }) {
           </div>
         </div>
       </div>
+      {(debouncedAmountUsdDiff || 0) > UNBALANCED_USD_DIFF_THRESHOLD && (
+        <AlertCard title="Unbalanced amounts" style="warning">
+          <p>
+            The difference between the USD value of the two token amounts is
+            greater than $5000. This may lead to an unbalanced AMM and result in
+            loss of funds.
+          </p>
+        </AlertCard>
+      )}
       {/* @ts-ignore */}
       <PriceOracleForm form={form} />
       <Accordion className="w-full" type="single" collapsible>
@@ -227,15 +236,6 @@ export function CreateAMMForm({ userId }: { userId: string }) {
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-      {(debouncedAmountUsdDiff || 0) > UNBALANCED_USD_DIFF_THRESHOLD && (
-        <AlertCard title="Unbalanced amounts" style="warning">
-          <p>
-            The difference between the USD value of the two token amounts is
-            greater than $5000. This may lead to an unbalanced AMM and result in
-            loss of funds.
-          </p>
-        </AlertCard>
-      )}
       <div className="flex justify-center gap-x-5 mt-2">
         <Button
           loading={

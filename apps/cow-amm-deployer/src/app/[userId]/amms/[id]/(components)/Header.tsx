@@ -1,11 +1,7 @@
 "use client";
 
 import { Card } from "@bleu/ui";
-import {
-  ArrowLeftIcon,
-  ArrowTopRightIcon,
-  ExternalLinkIcon,
-} from "@radix-ui/react-icons";
+import { ArrowLeftIcon, ArrowTopRightIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { Address } from "viem";
 
@@ -47,7 +43,7 @@ export function Header({
           {poolName}
           <BlockExplorerLink
             type="token"
-            label={<ExternalLinkIcon />}
+            label={<ArrowTopRightIcon />}
             identifier={ammData.order.owner}
             networkId={ammData.chainId as ChainId}
           />

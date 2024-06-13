@@ -91,6 +91,7 @@ export function CreateAMMForm({ userId }: { userId: string }) {
   }, [safeAddress, setValue]);
 
   async function onTxStatusFinal() {
+    if (!chainId || !safeAddress || !token0 || !token1) return;
     const publicClient = publicClientsFromIds[chainId as ChainId];
     const cowAmmAddress = await publicClient.readContract({
       abi: ConstantProductFactoryABI,
@@ -104,11 +105,13 @@ export function CreateAMMForm({ userId }: { userId: string }) {
     });
     router.push(`/${userId}/amms/${cowAmmAddress}-${userId}`);
   }
+
   useEffect(() => {
     if (status === "final") {
       onTxStatusFinal();
     }
   }, [status]);
+
   async function updateTokenUsdPrice(
     token: IToken,
     setAmountUsd: (value: number) => void,

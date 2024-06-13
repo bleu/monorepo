@@ -33,7 +33,7 @@ export function DepositForm({
 }) {
   const schema = getDepositSchema(
     Number(walletBalanceToken0),
-    Number(walletBalanceToken1),
+    Number(walletBalanceToken1)
   );
 
   const form = useForm<z.input<typeof schema>>({
@@ -54,11 +54,11 @@ export function DepositForm({
     name: ["amount0", "amount1"],
   });
   const depositUsdValue =
-    cowAmmData.token0.usdPrice * amount0 + cowAmmData.token1.usdPrice * amount1;
+    ammData.token0.usdPrice * amount0 + ammData.token1.usdPrice * amount1;
 
   const priceImpact = calculatePriceImpact({
-    balance0: Number(cowAmmData.token0.balance),
-    balance1: Number(cowAmmData.token1.balance),
+    balance0: Number(ammData.token0.balance),
+    balance1: Number(ammData.token1.balance),
     amount0: Number(amount0),
     amount1: Number(amount1),
   });

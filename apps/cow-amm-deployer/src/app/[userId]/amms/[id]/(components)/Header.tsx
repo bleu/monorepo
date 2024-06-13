@@ -87,7 +87,7 @@ export function TokenLink({
 }) {
   return (
     <div className="flex flex-row gap-2 items-center">
-      {token.symbol}: {truncateMiddle(token.address, 4)}
+      {token.symbol}: {truncateMiddle(token.address, 5)}
       <BlockExplorerLink
         type="token"
         label={<ArrowTopRightIcon />}

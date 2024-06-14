@@ -44,7 +44,8 @@ export function TokenAmountInput({
   }
 
   useEffect(() => {
-    const intervalId = setInterval(updateWalletAmount, 1000);
+    if (!defaultWalletAmount) updateWalletAmount();
+    const intervalId = setInterval(updateWalletAmount, 30_000);
     return () => clearInterval(intervalId);
   }, [token, safeAddress, chainId, defaultWalletAmount]);
 

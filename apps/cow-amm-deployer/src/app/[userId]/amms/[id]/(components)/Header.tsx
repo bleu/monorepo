@@ -41,7 +41,7 @@ export function Header() {
           />
           {poolName}
           <BlockExplorerLink
-            type="token"
+            type="contract"
             label={<ArrowTopRightIcon />}
             identifier={ammData.order.owner}
             networkId={ammData.chainId as ChainId}

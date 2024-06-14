@@ -57,8 +57,20 @@ function DisableTradingDialogContent({
   const [withdrawFunds, setWithdrawFunds] = React.useState(false);
   const { chainId } = useAccount();
 
-  const { writeContract, writeContractWithSafe, status, isWalletContract } =
-    useManagedTransaction();
+  const {
+    writeContract,
+    writeContractWithSafe,
+    status,
+    isWalletContract,
+    isPonderAPIUpToDate,
+  } = useManagedTransaction();
+
+  useEffect(() => {
+    if (!isPonderAPIUpToDate) return;
+
+    mutateAmm();
+    setIsOpen(false);
+  }, [isPonderAPIUpToDate]);
 
   function onDisableAMM() {
     const txArgs = [
@@ -97,13 +109,6 @@ function DisableTradingDialogContent({
       });
     }
   }
-
-  useEffect(() => {
-    if (status === "confirmed") {
-      mutateAmm();
-      setIsOpen(false);
-    }
-  }, [status]);
 
   return (
     <div className="flex flex-col gap-2 text-background bg-foreground">

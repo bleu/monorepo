@@ -23,10 +23,7 @@ export const AmmDataContext = React.createContext<IAmmDataContext>(
 export const AmmDataContextProvider = ({
   ammId,
   children,
-}: {
-  ammId: string;
-  children: React.ReactNode;
-}) => {
+}: React.PropsWithChildren<{ ammId: string }>) => {
   const {
     data: ammData,
     mutate: mutateAmm,

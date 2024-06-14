@@ -14,15 +14,14 @@ export const useWaitForTransactionReceiptWrapped = (
   const { data: isWalletContract } = useIsWalletContract(address);
 
   const plain = useWaitForTransactionReceipt({
-    ...args,
     hash: isWalletContract === false ? args?.hash : undefined,
   });
 
   const gnosis = useSafeTransaction({
     safeHash: args?.hash,
   });
+
   const gnosisData = useWaitForTransactionReceipt({
-    ...args,
     hash: gnosis.data,
   });
 

@@ -21,7 +21,7 @@ export function CreateSuccessDialog({
 }) {
   const pageHref = `/${userId}/amms/${ammId}`;
   const { data, isLoading, mutate } = useSWR(ammId, (ammId: string) =>
-    request(NEXT_PUBLIC_API_URL, AMM_QUERY, { ammId })
+    request(NEXT_PUBLIC_API_URL, AMM_QUERY, { ammId }),
   );
 
   useEffect(() => {

@@ -49,8 +49,13 @@ export function EditAMMForm({ ammData }: { ammData: ICowAmm }) {
     formState: { errors, isSubmitting },
   } = form;
 
-  const { writeContract, writeContractWithSafe, status, isWalletContract } =
-    useManagedTransaction();
+  const {
+    writeContract,
+    writeContractWithSafe,
+    status,
+    isWalletContract,
+    isPonderAPIUpToDate,
+  } = useManagedTransaction();
 
   const onSubmit = async (data: z.output<typeof ammEditSchema>) => {
     const txArgs = buildTxEditAMMArgs({
@@ -76,10 +81,9 @@ export function EditAMMForm({ ammData }: { ammData: ICowAmm }) {
   };
 
   useEffect(() => {
-    if (status === "confirmed") {
-      mutateAmm();
-    }
-  }, [status]);
+    if (!isPonderAPIUpToDate) return;
+    mutateAmm();
+  }, [isPonderAPIUpToDate]);
 
   const submitButtonText = ammData.disabled ? "Enable AMM" : "Update AMM";
 

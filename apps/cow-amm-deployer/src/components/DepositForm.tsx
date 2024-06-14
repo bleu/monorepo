@@ -49,8 +49,13 @@ export function DepositForm({
     control,
   } = form;
 
-  const { writeContract, writeContractWithSafe, status, isWalletContract } =
-    useManagedTransaction();
+  const {
+    writeContract,
+    writeContractWithSafe,
+    status,
+    isWalletContract,
+    isPonderAPIUpToDate,
+  } = useManagedTransaction();
 
   const [amount0, amount1] = useWatch({
     control,
@@ -94,10 +99,9 @@ export function DepositForm({
   };
 
   useEffect(() => {
-    if (status === "confirmed") {
-      mutateAmm();
-    }
-  }, [status]);
+    if (!isPonderAPIUpToDate) return;
+    mutateAmm();
+  }, [isPonderAPIUpToDate]);
 
   return (
     // @ts-ignore

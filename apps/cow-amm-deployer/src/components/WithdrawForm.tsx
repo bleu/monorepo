@@ -32,8 +32,13 @@ export function WithdrawForm({ ammData }: { ammData: ICowAmm }) {
   });
   const { chainId } = useAccount();
 
-  const { writeContract, writeContractWithSafe, status, isWalletContract } =
-    useManagedTransaction();
+  const {
+    writeContract,
+    writeContractWithSafe,
+    status,
+    isWalletContract,
+    isPonderAPIUpToDate,
+  } = useManagedTransaction();
 
   const onSubmit = async (data: typeof ammWithdrawSchema._type) => {
     let amount0 = BigInt(0);
@@ -76,10 +81,9 @@ export function WithdrawForm({ ammData }: { ammData: ICowAmm }) {
   };
 
   useEffect(() => {
-    if (status === "confirmed") {
-      mutateAmm();
-    }
-  }, [status]);
+    if (!isPonderAPIUpToDate) return;
+    mutateAmm();
+  }, [isPonderAPIUpToDate]);
 
   const {
     control,

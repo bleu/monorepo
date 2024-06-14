@@ -1,5 +1,6 @@
 import request from "graphql-request";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import useSWR from "swr";
 
 import { Button } from "#/components/Button";
 import { Dialog } from "#/components/Dialog";
@@ -18,24 +19,16 @@ export function CreateSuccessDialog({
   ammId?: string;
   setIsOpen: (isOpen: boolean) => void;
 }) {
-  const [ammPageReady, setAmmPageReady] = useState<boolean>(true);
   const pageHref = `/${userId}/amms/${ammId}`;
-
-  const updateAmmPageStatus = async () => {
-    if (!pageHref || !isOpen || !ammId) return;
-    try {
-      const response = await request(NEXT_PUBLIC_API_URL, AMM_QUERY, { ammId });
-      setAmmPageReady(!!response.constantProductData);
-    } catch (error) {
-      setAmmPageReady(false);
-    }
-  };
+  const { data, isLoading, mutate } = useSWR(ammId, (ammId: string) =>
+    request(NEXT_PUBLIC_API_URL, AMM_QUERY, { ammId })
+  );
 
   useEffect(() => {
-    const intervalId = setInterval(updateAmmPageStatus, 1000);
+    const intervalId = setInterval(() => ammId && mutate(), 10_000);
 
     return () => clearInterval(intervalId);
-  }, [pageHref, isOpen]);
+  }, [ammId, isOpen]);
 
   return (
     <Dialog
@@ -52,7 +45,7 @@ export function CreateSuccessDialog({
           <LinkComponent className="w-full" href={pageHref}>
             <Button
               type="button"
-              loading={!ammPageReady}
+              loading={!!data?.constantProductData || isLoading}
               loadingText="Building AMM page..."
               className="w-full"
             >

@@ -91,13 +91,15 @@ export function WithdrawForm({ ammData }: { ammData: ICowAmm }) {
     formState: { isSubmitting },
   } = form;
 
-  const withdrawPct = useWatch({ control, name: "withdrawPct" });
+  const withdrawPct = useWatch({ control, name: "withdrawPct" }) / 100;
 
   return (
     <Form {...form} onSubmit={onSubmit} className="flex flex-col gap-y-5">
       <div className="flex flex-col w-full">
         <div className="flex justify-between mb-2 items-center">
-          <span className="block text-xl bg-primary p-2">{withdrawPct}%</span>
+          <span className="block text-xl bg-primary p-2">
+            {withdrawPct * 100}%
+          </span>
           <div className="flex justify-between w-1/2">
             {[25, 50, 75, 100].map((pct) => (
               <Button
@@ -160,7 +162,7 @@ export function WithdrawForm({ ammData }: { ammData: ICowAmm }) {
           !["final", "idle", "confirmed", "error"].includes(status || "")
         }
       >
-        Withdraw ${formatNumber((ammData.totalUsdValue * withdrawPct) / 100, 4)}
+        Withdraw ${formatNumber(ammData.totalUsdValue * withdrawPct, 4)}
       </Button>
     </Form>
   );

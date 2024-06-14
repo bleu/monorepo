@@ -1,10 +1,11 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useLayoutEffect, useMemo } from "react";
 import {
   useAccount,
   useTransactionConfirmations,
   useWriteContract,
 } from "wagmi";
 
+import { useIsPonderAPIAtBlockNumber } from "../useIsPonderAPIAtBlockNumber";
 import { useContractWriteWithSafe } from "./useContractWriteWithSafe";
 import { useIsWalletContract } from "./useIsWalletContract";
 import { useWaitForTransactionReceiptWrapped } from "./useWaitForTransactionReceiptWrapped";
@@ -12,7 +13,7 @@ import { useWaitForTransactionReceiptWrapped } from "./useWaitForTransactionRece
 const CONFIRMATIONS_THRESHOLD_FOR_FINAL_TX = 15;
 
 export function useManagedTransaction() {
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
   const { data: isWalletContract } = useIsWalletContract(address);
 
   const {
@@ -40,9 +41,21 @@ export function useManagedTransaction() {
     status: txReceiptStatus,
     safeHash,
     safeStatus,
+    data: safeDataStatus,
   } = useWaitForTransactionReceiptWrapped({
     hash: data,
   });
+
+  const { isPonderAPIAtBlockNumber, mutate: refetchPonder } =
+    useIsPonderAPIAtBlockNumber(chainId, safeDataStatus?.blockNumber);
+
+  useLayoutEffect(() => {
+    if (isPonderAPIAtBlockNumber) return;
+
+    const interval = setInterval(() => refetchPonder(), 2_000);
+
+    return () => clearInterval(interval);
+  }, [isPonderAPIAtBlockNumber, safeDataStatus?.blockNumber, chainId]);
 
   const {
     data: blockConfirmations,
@@ -105,6 +118,7 @@ export function useManagedTransaction() {
 
   if (isWalletContract) {
     return {
+      isPonderAPIUpToDate: isPonderAPIAtBlockNumber,
       isWalletContract,
       status,
       safeHash,
@@ -117,6 +131,7 @@ export function useManagedTransaction() {
   }
 
   return {
+    isPonderAPIUpToDate: isPonderAPIAtBlockNumber,
     isWalletContract,
     status,
     safeHash,

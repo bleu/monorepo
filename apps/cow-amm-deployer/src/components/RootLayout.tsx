@@ -12,12 +12,13 @@ import { config } from "#/wagmi";
 import Fathom from "./Fathom";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
+import { HomePageWrapper } from "./HomePageWrapper";
 
 export function RootLayout({ children }: React.PropsWithChildren) {
   const [queryClient] = useState(() => new QueryClient());
 
   return (
-    <SafeProvider>
+    <SafeProvider loader={<HomePageWrapper disableButton={true} />}>
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
           <TokenSelectContextProvider>

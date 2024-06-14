@@ -47,6 +47,7 @@ export async function fetchWalletTokenBalance({
     address: token.address as Address,
     functionName: "balanceOf",
     args: [walletAddress],
+    blockTag: "latest",
   });
   return formatUnits(bigIntBalance, token.decimals);
 }

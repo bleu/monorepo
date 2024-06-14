@@ -17,7 +17,7 @@ export function TokenAmount({
   return (
     <div className="flex flex-col gap-1 justify-end">
       <span>
-        {formatNumber(balance / 100, 4)} {token.symbol}
+        {formatNumber(balance, 4)} {token.symbol}
       </span>
       <span className="flex flex-row gap-1 text-sm text-background/50">
         ${formatNumber(balance * usdPrice, 4)}

@@ -33,7 +33,8 @@ export function TokenAmountInput({
   );
   const { setValue, register } = form;
 
-  async function updateWalletAmount(token: IToken) {
+  async function updateWalletAmount() {
+    if (!token) return;
     const updatedWalletAmount = await fetchWalletTokenBalance({
       token,
       walletAddress: safeAddress as Address,
@@ -43,9 +44,9 @@ export function TokenAmountInput({
   }
 
   useEffect(() => {
-    if (!token) return;
-    if (defaultWalletAmount) return;
-    updateWalletAmount(token);
+    if (!defaultWalletAmount) updateWalletAmount();
+    const intervalId = setInterval(updateWalletAmount, 30_000);
+    return () => clearInterval(intervalId);
   }, [token, safeAddress, chainId, defaultWalletAmount]);
 
   const maxButtonDisabled = walletAmount == "0" || !token;

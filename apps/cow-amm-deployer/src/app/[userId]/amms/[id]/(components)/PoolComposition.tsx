@@ -3,11 +3,12 @@
 import { Card } from "@bleu/ui";
 import { formatNumber } from "@bleu/utils/formatNumber";
 
-import { ICowAmm } from "#/lib/fetchAmmData";
+import { useAmmData } from "#/contexts/ammData";
 
 import { PoolCompositionTable } from "./PoolCompositionTable";
 
-export function PoolComposition({ ammData }: { ammData: ICowAmm }) {
+export function PoolComposition() {
+  const { ammData } = useAmmData();
   return (
     <Card.Root className="bg-foreground text-background overflow-visible max-w-full rounded-none px-3">
       <Card.Header className="py-1 px-0">

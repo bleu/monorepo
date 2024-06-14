@@ -9,6 +9,7 @@ import { useAccount } from "wagmi";
 import { Button } from "#/components/Button";
 import { Checkbox } from "#/components/Checkbox";
 import { Dialog } from "#/components/Dialog";
+import { useAmmData } from "#/contexts/ammData";
 import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction";
 import { ICowAmm } from "#/lib/fetchAmmData";
 import {
@@ -52,11 +53,24 @@ function DisableTradingDialogContent({
   ammData: ICowAmm;
   setIsOpen: (isOpen: boolean) => void;
 }) {
+  const { mutateAmm } = useAmmData();
   const [withdrawFunds, setWithdrawFunds] = React.useState(false);
   const { chainId } = useAccount();
 
-  const { writeContract, writeContractWithSafe, status, isWalletContract } =
-    useManagedTransaction();
+  const {
+    writeContract,
+    writeContractWithSafe,
+    status,
+    isWalletContract,
+    isPonderAPIUpToDate,
+  } = useManagedTransaction();
+
+  useEffect(() => {
+    if (!isPonderAPIUpToDate) return;
+
+    mutateAmm();
+    setIsOpen(false);
+  }, [isPonderAPIUpToDate]);
 
   function onDisableAMM() {
     const txArgs = [
@@ -95,12 +109,6 @@ function DisableTradingDialogContent({
       });
     }
   }
-
-  useEffect(() => {
-    if (status === "confirmed") {
-      setIsOpen(false);
-    }
-  }, [status]);
 
   return (
     <div className="flex flex-col gap-2 text-background bg-foreground">

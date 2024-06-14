@@ -25,7 +25,7 @@ export function CreateSuccessDialog({
     if (!pageHref || !isOpen || !ammId) return;
     try {
       const response = await request(NEXT_PUBLIC_API_URL, AMM_QUERY, { ammId });
-      setAmmPageReady(!!response);
+      setAmmPageReady(!!response.constantProductData);
     } catch (error) {
       setAmmPageReady(false);
     }
@@ -52,7 +52,7 @@ export function CreateSuccessDialog({
           <LinkComponent className="w-full" href={pageHref}>
             <Button
               type="button"
-              loading={ammPageReady}
+              loading={!ammPageReady}
               loadingText="Building AMM page..."
               className="w-full"
             >

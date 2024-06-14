@@ -8,6 +8,7 @@ import { z } from "zod";
 
 import { Button } from "#/components";
 import { AlertCard } from "#/components/AlertCard";
+import { CreateSuccessDialog } from "#/components/CreateSuccessDialog";
 import { Input } from "#/components/Input";
 import { PriceOracleForm } from "#/components/PriceOracleForm";
 import { TokenAmountInput } from "#/components/TokenAmountInput";
@@ -21,17 +22,14 @@ import {
 import { Form } from "#/components/ui/form";
 import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction";
 import { useDebounce } from "#/hooks/useDebounce";
-import { ConstantProductFactoryABI } from "#/lib/abis/ConstantProductFactory";
 import { UNBALANCED_USD_DIFF_THRESHOLD } from "#/lib/constants";
-import { COW_CONSTANT_PRODUCT_FACTORY } from "#/lib/contracts";
 import { IToken } from "#/lib/fetchAmmData";
+import { getAmmId } from "#/lib/getAmmId";
 import { ammFormSchema } from "#/lib/schema";
 import { fetchTokenUsdPrice, getNewMinTradeToken0 } from "#/lib/tokenUtils";
 import { buildTxCreateAMMArgs } from "#/lib/transactionFactory";
 import { cn } from "#/lib/utils";
-import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
-
-import { CreateSuccessDialog } from "./CreateSuccessDialog";
+import { ChainId } from "#/utils/chainsPublicClients";
 
 export function CreateAMMForm({ userId }: { userId: string }) {
   const { address: safeAddress, chainId } = useAccount();
@@ -71,24 +69,19 @@ export function CreateAMMForm({ userId }: { userId: string }) {
     ],
   });
 
-  async function updateHref() {
+  async function updateAmmId() {
     if (!chainId || !safeAddress || !token0 || !token1) return;
-    const publicClient = publicClientsFromIds[chainId as ChainId];
-    const cowAmmAddress = await publicClient.readContract({
-      abi: ConstantProductFactoryABI,
-      address: COW_CONSTANT_PRODUCT_FACTORY[chainId as ChainId],
-      functionName: "ammDeterministicAddress",
-      args: [
-        safeAddress as Address,
-        token0.address as Address,
-        token1.address as Address,
-      ],
+    const ammId = await getAmmId({
+      chainId: chainId as ChainId,
+      userAddress: safeAddress as Address,
+      token0Address: token0.address as Address,
+      token1Address: token1.address as Address,
     });
-    setAmmId(`${cowAmmAddress}-${userId}`);
+    setAmmId(ammId);
   }
 
   const onSubmit = (data: z.output<typeof ammFormSchema>) => {
-    updateHref();
+    updateAmmId();
     if (isWalletContract) {
       writeContractWithSafe(buildTxCreateAMMArgs({ data }));
     } else {

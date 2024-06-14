@@ -1,25 +1,31 @@
+import request from "graphql-request";
 import { useEffect, useState } from "react";
 
 import { Button } from "#/components/Button";
 import { Dialog } from "#/components/Dialog";
 import { LinkComponent } from "#/components/Link";
+import { AMM_QUERY } from "#/lib/fetchAmmData";
+import { NEXT_PUBLIC_API_URL } from "#/lib/ponderApi";
 
 export function CreateSuccessDialog({
+  ammId,
+  userId,
   isOpen,
-  pageHref = "/",
   setIsOpen,
 }: {
   isOpen: boolean;
-  pageHref?: string;
+  userId: string;
+  ammId?: string;
   setIsOpen: (isOpen: boolean) => void;
 }) {
   const [ammPageReady, setAmmPageReady] = useState<boolean>(true);
+  const pageHref = `/${userId}/amms/${ammId}`;
 
   const updateAmmPageStatus = async () => {
-    if (!pageHref || !isOpen) return;
+    if (!pageHref || !isOpen || !ammId) return;
     try {
-      const response = await fetch(pageHref);
-      setAmmPageReady(response.status === 200);
+      const response = await request(NEXT_PUBLIC_API_URL, AMM_QUERY, { ammId });
+      setAmmPageReady(!!response);
     } catch (error) {
       setAmmPageReady(false);
     }

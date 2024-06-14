@@ -3,6 +3,7 @@
 import { toast } from "@bleu/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlayIcon } from "@radix-ui/react-icons";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Address, formatUnits } from "viem";
 import { z } from "zod";
@@ -18,6 +19,7 @@ import {
   AccordionTrigger,
 } from "#/components/ui/accordion";
 import { Form } from "#/components/ui/form";
+import { useAmmData } from "#/contexts/ammData";
 import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction";
 import { ICowAmm } from "#/lib/fetchAmmData";
 import { ammEditSchema } from "#/lib/schema";
@@ -27,6 +29,7 @@ import { cn } from "#/lib/utils";
 import { DisableAmmButton } from "./DisableAmmButton";
 
 export function EditAMMForm({ ammData }: { ammData: ICowAmm }) {
+  const { mutateAmm } = useAmmData();
   const form = useForm<z.input<typeof ammEditSchema>>({
     // @ts-ignore
     resolver: zodResolver(ammEditSchema),
@@ -49,7 +52,7 @@ export function EditAMMForm({ ammData }: { ammData: ICowAmm }) {
   const { writeContract, writeContractWithSafe, status, isWalletContract } =
     useManagedTransaction();
 
-  const onSubmit = async (data: typeof ammEditSchema._type) => {
+  const onSubmit = async (data: z.output<typeof ammEditSchema>) => {
     const txArgs = buildTxEditAMMArgs({
       data: data,
       ammAddress: ammData.order.owner as Address,
@@ -71,6 +74,12 @@ export function EditAMMForm({ ammData }: { ammData: ICowAmm }) {
       });
     }
   };
+
+  useEffect(() => {
+    if (status === "confirmed") {
+      mutateAmm();
+    }
+  }, [status]);
 
   const submitButtonText = ammData.disabled ? "Enable AMM" : "Update AMM";
 

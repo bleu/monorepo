@@ -1,3 +1,16 @@
-export default function Layout({ children }: { children: React.ReactNode }) {
-  return children;
+import { AmmDataContextProvider } from "#/contexts/ammData";
+
+export default function Layout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: { userId: string; id: string };
+}) {
+  return (
+    <AmmDataContextProvider ammId={params.id}>
+      {/* @ts-ignore */}
+      {children}
+    </AmmDataContextProvider>
+  );
 }

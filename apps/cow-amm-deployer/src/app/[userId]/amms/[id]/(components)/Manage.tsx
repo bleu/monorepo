@@ -10,22 +10,15 @@ import {
 } from "@bleu/ui";
 
 import { DepositForm } from "#/components/DepositForm";
-import { ICowAmm } from "#/lib/fetchAmmData";
+import { WithdrawForm } from "#/components/WithdrawForm";
+import { useAmmData } from "#/contexts/ammData";
 
-import { WithdrawForm } from "../../../../../components/WithdrawForm";
 import { EditAMMForm } from "./EditAMMForm";
 
-export function Manage({
-  ammData,
-  oldVersionOfAmm,
-  walletBalanceToken0,
-  walletBalanceToken1,
-}: {
-  ammData: ICowAmm;
-  oldVersionOfAmm: boolean;
-  walletBalanceToken0: string;
-  walletBalanceToken1: string;
-}) {
+export function Manage() {
+  const { ammData, walletBalanceToken0, walletBalanceToken1 } = useAmmData();
+  const oldVersionOfAmm = ammData.version !== "Standalone";
+
   return (
     <Card.Root className="bg-foreground text-background overflow-visible max-w-full rounded-none px-3">
       <Card.Header className="py-1 px-0">

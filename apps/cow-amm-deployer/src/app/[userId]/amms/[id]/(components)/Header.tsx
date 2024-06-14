@@ -8,21 +8,20 @@ import { Address } from "viem";
 import { Button } from "#/components/Button";
 import { BlockExplorerLink } from "#/components/ExplorerLink";
 import { LinkComponent } from "#/components/Link";
+import { OldVersionOfAMMAlert } from "#/components/OldVersionOfAmmAlert";
 import { StatusBadge } from "#/components/StatusBadge";
 import { TokenPairLogo } from "#/components/TokenPairLogo";
+import { useAmmData } from "#/contexts/ammData";
 import { getExplorerAddressLink } from "#/lib/cowExplorer";
-import { ICowAmm, IToken } from "#/lib/fetchAmmData";
+import { IToken } from "#/lib/fetchAmmData";
 import { truncateMiddle } from "#/lib/truncateMiddle";
 import { ChainId } from "#/utils/chainsPublicClients";
 
 import { PriceInformation } from "./PriceInformation";
 
-export function Header({
-  ammData,
-}: {
-  ammData: ICowAmm;
-  oldVersionOfAmm: boolean;
-}) {
+export function Header() {
+  const { ammData } = useAmmData();
+  const oldVersionOfAmm = ammData.version !== "Standalone";
   const poolName = `${ammData.token0.symbol}/${ammData.token1.symbol}`;
 
   return (
@@ -73,6 +72,7 @@ export function Header({
           <TokenLink chainId={ammData.chainId} token={ammData.token0} />
           <TokenLink chainId={ammData.chainId} token={ammData.token1} />
         </Card.Description>
+        {oldVersionOfAmm && <OldVersionOfAMMAlert ammData={ammData} />}
       </Card.Header>
     </Card.Root>
   );

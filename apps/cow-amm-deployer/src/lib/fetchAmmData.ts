@@ -139,7 +139,7 @@ export function validateUserId(id: string) {
   return [parts[0] as Address, parseInt(parts[1]) as ChainId] as const;
 }
 
-async function fetchPriceFeedLinks(
+export async function fetchPriceFeedLinks(
   decodedData: PriceOracleData,
 ): Promise<string[]> {
   switch (decodedData.priceOracle) {

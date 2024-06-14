@@ -2,12 +2,14 @@
 
 import { formatNumber, toast } from "@bleu/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "#/components";
 import { TokenInfo } from "#/components/TokenInfo";
 import { Form, FormMessage } from "#/components/ui/form";
+import { useAmmData } from "#/contexts/ammData";
 import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction";
 import { useDebounce } from "#/hooks/useDebounce";
 import {
@@ -31,6 +33,7 @@ export function DepositForm({
   walletBalanceToken0: string;
   walletBalanceToken1: string;
 }) {
+  const { mutateAmm } = useAmmData();
   const schema = getDepositSchema(
     Number(walletBalanceToken0),
     Number(walletBalanceToken1),
@@ -89,6 +92,12 @@ export function DepositForm({
       });
     }
   };
+
+  useEffect(() => {
+    if (status === "confirmed") {
+      mutateAmm();
+    }
+  }, [status]);
 
   return (
     // @ts-ignore

@@ -3,6 +3,7 @@
 import { formatNumber, toast } from "@bleu/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Slider from "@radix-ui/react-slider";
+import { useEffect } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { parseUnits } from "viem";
 import { useAccount } from "wagmi";
@@ -10,6 +11,7 @@ import { useAccount } from "wagmi";
 import { Button } from "#/components/Button";
 import { TokenAmount } from "#/components/TokenAmount";
 import { Form } from "#/components/ui/form";
+import { useAmmData } from "#/contexts/ammData";
 import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction";
 import { ICowAmm } from "#/lib/fetchAmmData";
 import { ammWithdrawSchema } from "#/lib/schema";
@@ -20,6 +22,7 @@ import {
 import { ChainId } from "#/utils/chainsPublicClients";
 
 export function WithdrawForm({ ammData }: { ammData: ICowAmm }) {
+  const { mutateAmm } = useAmmData();
   const form = useForm<typeof ammWithdrawSchema._type>({
     // @ts-ignore
     resolver: zodResolver(ammWithdrawSchema),
@@ -71,6 +74,12 @@ export function WithdrawForm({ ammData }: { ammData: ICowAmm }) {
       });
     }
   };
+
+  useEffect(() => {
+    if (status === "confirmed") {
+      mutateAmm();
+    }
+  }, [status]);
 
   const {
     control,

@@ -35,9 +35,7 @@ import { CreateSuccessDialog } from "./CreateSuccessDialog";
 
 export function CreateAMMForm({ userId }: { userId: string }) {
   const { address: safeAddress, chainId } = useAccount();
-  const [ammPageHref, setAmmPageHref] = useState<string>(
-    `/${userId}/amms/${1}-${userId}`,
-  );
+  const [ammId, setAmmId] = useState<string>();
   const [ammDialogOpen, setAmmDialogOpen] = useState(false);
 
   const form = useForm<z.input<typeof ammFormSchema>>({
@@ -86,7 +84,7 @@ export function CreateAMMForm({ userId }: { userId: string }) {
         token1.address as Address,
       ],
     });
-    setAmmPageHref(`/${userId}/amms/${cowAmmAddress}-${userId}`);
+    setAmmId(`${cowAmmAddress}-${userId}`);
   }
 
   const onSubmit = (data: z.output<typeof ammFormSchema>) => {
@@ -155,7 +153,8 @@ export function CreateAMMForm({ userId }: { userId: string }) {
     <>
       <CreateSuccessDialog
         isOpen={ammDialogOpen}
-        pageHref={ammPageHref}
+        ammId={ammId}
+        userId={userId}
         setIsOpen={setAmmDialogOpen}
       />
       {/* @ts-ignore */}

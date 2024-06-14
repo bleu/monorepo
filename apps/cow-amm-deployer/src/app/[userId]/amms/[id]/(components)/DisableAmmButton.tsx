@@ -9,6 +9,7 @@ import { useAccount } from "wagmi";
 import { Button } from "#/components/Button";
 import { Checkbox } from "#/components/Checkbox";
 import { Dialog } from "#/components/Dialog";
+import { useAmmData } from "#/contexts/ammData";
 import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction";
 import { ICowAmm } from "#/lib/fetchAmmData";
 import {
@@ -52,6 +53,7 @@ function DisableTradingDialogContent({
   ammData: ICowAmm;
   setIsOpen: (isOpen: boolean) => void;
 }) {
+  const { mutateAmm } = useAmmData();
   const [withdrawFunds, setWithdrawFunds] = React.useState(false);
   const { chainId } = useAccount();
 
@@ -98,6 +100,7 @@ function DisableTradingDialogContent({
 
   useEffect(() => {
     if (status === "confirmed") {
+      mutateAmm();
       setIsOpen(false);
     }
   }, [status]);

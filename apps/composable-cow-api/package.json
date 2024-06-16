@@ -7,14 +7,14 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@ponder/core": "0.4.36"
+    "@ponder/core": "0.4.38"
   },
   "devDependencies": {
-    "@types/node": "^18.19.3",
+    "@types/node": "^20.14.2",
     "abitype": "^0.8.11",
     "eslint": "^8.55.0",
     "eslint-config-ponder": "^0.0.92",
-    "typescript": "^5.3.3",
+    "typescript": "^5.4.5",
     "viem": "^1.19.15"
   }
 }

@@ -1,7 +1,8 @@
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { TokenType } from "@gnosis.pm/safe-apps-sdk";
 import { gql } from "graphql-tag";
 import { useEffect, useState } from "react";
-import { Address, formatUnits } from "viem";
+import { Address, erc20Abi, formatUnits } from "viem";
 
 import { composableCowAbi } from "#/lib/abis/composableCow";
 import { cowAmmModuleAbi } from "#/lib/abis/cowAmmModule";
@@ -166,22 +167,65 @@ export function useRunningAMM(): {
     setIsAmmFromModule(newIsAmmFromModule);
   }
 
+  async function loadTokenBalance({
+    tokenAddress,
+    tokenDecimals,
+    chainId,
+    tokenSymbol,
+    owner,
+  }: {
+    tokenAddress: Address;
+    tokenDecimals: number;
+    chainId: ChainId;
+    tokenSymbol: string;
+    owner: Address;
+  }) {
+    const publicClient = publicClientsFromIds[chainId];
+    const balance = await publicClient.readContract({
+      address: tokenAddress,
+      abi: erc20Abi,
+      functionName: "balanceOf",
+      args: [owner],
+    });
+    const logoUri = assets.find(
+      (asset) => asset.tokenInfo.symbol === tokenSymbol,
+    )?.tokenInfo.logoUri;
+    return {
+      tokenInfo: {
+        address: tokenAddress,
+        decimals: tokenDecimals,
+        symbol: tokenSymbol,
+        type: "ERC20" as TokenType,
+        name: tokenSymbol,
+        logoUri: logoUri || "",
+      },
+      balance: String(balance),
+      fiatBalance: "0",
+      fiatConversion: "0",
+    };
+  }
+
   async function loadCowAmm() {
     const gqlInfo = await fetchLastAmmInfo({
       chainId: chainId as ChainId,
       safeAddress: safeAddress as Address,
     });
 
-    const token0 = assets.find(
-      (asset) =>
-        asset.tokenInfo.address.toLowerCase() ===
-        gqlInfo?.token0?.address.toLowerCase(),
-    );
-    const token1 = assets.find(
-      (asset) =>
-        asset.tokenInfo.address.toLowerCase() ===
-        gqlInfo?.token1?.address.toLowerCase(),
-    );
+    const token0 = await loadTokenBalance({
+      tokenAddress: gqlInfo?.token0?.address as Address,
+      tokenDecimals: gqlInfo?.token0?.decimals as number,
+      chainId: chainId as ChainId,
+      tokenSymbol: gqlInfo?.token0?.symbol as string,
+      owner: safeAddress as Address,
+    });
+
+    const token1 = await loadTokenBalance({
+      tokenAddress: gqlInfo?.token1?.address as Address,
+      tokenDecimals: gqlInfo?.token1?.decimals as number,
+      chainId: chainId as ChainId,
+      tokenSymbol: gqlInfo?.token1?.symbol as string,
+      owner: safeAddress as Address,
+    });
 
     if (!token0 || !token1) {
       return;

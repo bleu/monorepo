@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "@bleu/ui";
 import React, { useEffect } from "react";
 import useSWR from "swr";
 import { Address } from "viem";
@@ -58,12 +59,20 @@ export const AmmDataContextProvider = ({
     if (isPonderAPIUpToDate) {
       mutateAmm();
       setIsTransactionAwaiting(false);
+      toast({
+        title: "Transaction confirmed",
+        description: "The transaction has been confirmed",
+        variant: "success",
+      });
     }
   }, [isPonderAPIUpToDate]);
 
   useEffect(() => {
-    if (!["final", "confirmed", "error", "idle"].includes(status || "")) {
+    if (!["final", "confirmed", "idle"].includes(status || "")) {
       setIsTransactionAwaiting(true);
+    }
+    if (status === "error") {
+      setIsTransactionAwaiting(false);
     }
   }, [status]);
 

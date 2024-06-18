@@ -61,7 +61,8 @@ export const AmmDataContextProvider = ({
       setIsTransactionAwaiting(false);
       toast({
         title: "Transaction confirmed",
-        description: "The transaction has been confirmed",
+        description:
+          "The transaction has been confirmed and the AMM is updated.",
         variant: "success",
       });
     }

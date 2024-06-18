@@ -1,6 +1,6 @@
 "use client";
 
-import { formatNumber, toast } from "@bleu/ui";
+import { formatNumber } from "@bleu/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
@@ -80,20 +80,12 @@ export function DepositForm({
       amount1: data.amount1,
     });
 
-    try {
-      if (isWalletContract) {
-        writeContractWithSafe(txArgs);
-      } else {
-        // TODO: remove this once we add EOA support
-        // @ts-ignore
-        writeContract(txArgs);
-      }
-    } catch {
-      toast({
-        title: `Transaction failed`,
-        description: "An error occurred while processing the transaction.",
-        variant: "destructive",
-      });
+    if (isWalletContract) {
+      writeContractWithSafe(txArgs);
+    } else {
+      // TODO: remove this once we add EOA support
+      // @ts-ignore
+      writeContract(txArgs);
     }
   };
 

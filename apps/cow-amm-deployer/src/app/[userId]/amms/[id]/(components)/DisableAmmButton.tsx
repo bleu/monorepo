@@ -1,6 +1,5 @@
 "use client";
 
-import { toast } from "@bleu/ui";
 import { StopIcon } from "@radix-ui/react-icons";
 import React, { useEffect } from "react";
 import { parseUnits } from "viem";
@@ -92,20 +91,12 @@ function DisableTradingDialogContent({
       } as WithdrawCoWAMMArgs);
     }
 
-    try {
-      if (isWalletContract) {
-        writeContractWithSafe(txArgs);
-      } else {
-        // TODO: this will need to be refactored once we have EOAs
-        // @ts-ignore
-        writeContract(txArgs);
-      }
-    } catch {
-      toast({
-        title: `Transaction failed`,
-        description: "An error occurred while processing the transaction.",
-        variant: "destructive",
-      });
+    if (isWalletContract) {
+      writeContractWithSafe(txArgs);
+    } else {
+      // TODO: this will need to be refactored once we have EOAs
+      // @ts-ignore
+      writeContract(txArgs);
     }
   }
 

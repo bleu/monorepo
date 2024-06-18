@@ -1,6 +1,5 @@
 "use client";
 
-import { toast } from "@bleu/ui";
 import { useEffect, useState } from "react";
 import { Address } from "viem";
 
@@ -60,16 +59,7 @@ export function OldVersionOfAMMAlert({ ammData }: { ammData: ICowAmm }) {
               const txArgs = await buildMigrateToStandaloneVersionArgs({
                 data: ammData,
               });
-              try {
-                writeContractWithSafe(txArgs);
-              } catch {
-                toast({
-                  title: `Transaction failed`,
-                  description:
-                    "An error occurred while processing the transaction.",
-                  variant: "destructive",
-                });
-              }
+              writeContractWithSafe(txArgs);
             }}
           >
             Migrate to new version

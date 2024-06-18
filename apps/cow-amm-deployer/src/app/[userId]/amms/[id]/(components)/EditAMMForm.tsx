@@ -1,6 +1,5 @@
 "use client";
 
-import { toast } from "@bleu/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlayIcon } from "@radix-ui/react-icons";
 import { useForm } from "react-hook-form";
@@ -61,21 +60,12 @@ export function EditAMMForm({ ammData }: { ammData: ICowAmm }) {
       data: data,
       ammAddress: ammData.order.owner as Address,
     });
-
-    try {
-      if (isWalletContract) {
-        writeContractWithSafe(txArgs);
-      } else {
-        // TODO: this will need to be refactored once we have EOAs
-        // @ts-ignore
-        writeContract(txArgs);
-      }
-    } catch {
-      toast({
-        title: `Transaction failed`,
-        description: "An error occurred while processing the transaction.",
-        variant: "destructive",
-      });
+    if (isWalletContract) {
+      writeContractWithSafe(txArgs);
+    } else {
+      // TODO: this will need to be refactored once we have EOAs
+      // @ts-ignore
+      writeContract(txArgs);
     }
   };
 

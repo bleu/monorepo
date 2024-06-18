@@ -1,6 +1,6 @@
 "use client";
 
-import { formatNumber, toast } from "@bleu/ui";
+import { formatNumber } from "@bleu/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Slider from "@radix-ui/react-slider";
 import { Controller, useForm, useWatch } from "react-hook-form";
@@ -63,19 +63,11 @@ export function WithdrawForm({ ammData }: { ammData: ICowAmm }) {
       amount1,
       chainId: chainId as ChainId,
     } as WithdrawCoWAMMArgs;
-    try {
-      if (isWalletContract) {
-        writeContractWithSafe([txArgs]);
-      } else {
-        // @ts-ignore
-        writeContract(txArgs);
-      }
-    } catch {
-      toast({
-        title: `Transaction failed`,
-        description: "An error occurred while processing the transaction.",
-        variant: "destructive",
-      });
+    if (isWalletContract) {
+      writeContractWithSafe([txArgs]);
+    } else {
+      // @ts-ignore
+      writeContract(txArgs);
     }
   };
 

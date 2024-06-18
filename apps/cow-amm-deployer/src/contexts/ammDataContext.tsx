@@ -62,8 +62,8 @@ export const AmmDataContextProvider = ({
       toast({
         title: "Transaction confirmed",
         description:
-          "The transaction has been confirmed and the AMM is updated.",
-        variant: "success",
+          "The transaction has been confirmed and the AMM was updated.",
+        className: "success group border-success bg-success text-background",
       });
     }
   }, [isPonderAPIUpToDate]);

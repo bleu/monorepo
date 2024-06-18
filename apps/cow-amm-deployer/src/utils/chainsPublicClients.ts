@@ -21,6 +21,7 @@ export function createClientForChain(chain: ChainType) {
   return createPublicClient({
     chain,
     transport: http(RPC_PROVIDERS[chain.id]),
+    cacheTime: 0,
   });
 }
 

@@ -52,6 +52,7 @@ export function OldVersionOfAMMAlert({ ammData }: { ammData: ICowAmm }) {
           </p>
           <Button
             className="mt-2"
+            loadingText="Migrating..."
             loading={
               !["final", "idle", "confirmed", "error"].includes(status || "")
             }

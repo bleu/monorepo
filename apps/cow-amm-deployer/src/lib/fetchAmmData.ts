@@ -316,5 +316,11 @@ export const fetchUserAmmsData = async (userId: string): Promise<ICowAmm[]> => {
     constantProductDatas.items.map((amm) => getAmmData(amm)),
   )) as ICowAmm[];
 
-  return allAmms.filter((amm) => amm.version === "Standalone" || !amm.disabled);
+  const allAmmsFiltered = allAmms.filter(
+    (amm) => amm.version === "Standalone" || !amm.disabled,
+  );
+
+  allAmmsFiltered.sort((a, b) => b.totalUsdValue - a.totalUsdValue);
+
+  return allAmmsFiltered;
 };

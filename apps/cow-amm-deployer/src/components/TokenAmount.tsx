@@ -20,7 +20,7 @@ export function TokenAmount({
         {formatNumber(balance, 4)} {token.symbol}
       </span>
       <span className="flex flex-row gap-1 text-sm text-background/50">
-        ${formatNumber(balance * usdPrice, 4)}
+        ${formatNumber(balance * usdPrice, 2)}
         {usdPrice ? null : <PriceErrorTooltip />}
       </span>
     </div>

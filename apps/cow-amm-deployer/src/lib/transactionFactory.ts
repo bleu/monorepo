@@ -419,7 +419,7 @@ export async function buildMigrateToStandaloneVersionArgs({
         type: TRANSACTION_TYPES.DEPOSIT_COW_AMM,
         amm: ammAddress as Address,
         amount0: token0Amount,
-        amount1: token0Amount,
+        amount1: token1Amount,
         chainId: data.order.chainId as ChainId,
       }
     : {

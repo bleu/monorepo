@@ -26,16 +26,16 @@ export function RootLayout({ children }: React.PropsWithChildren) {
             <TransactionManagerContextProvider>
               <Fathom />
               <div className="size-full">
-                <div className="flex flex-col h-screen">
+                <div className="flex flex-col h-screen overflow-auto">
                   <Header
                     linkUrl={"/"}
                     imageSrc={"/assets/cow-amm-deployer.svg"}
                   />
-                  <div className="flex flex-1 overflow-auto p-4 sm:flex-row sm:gap-x-8 text-foreground">
+                  <div className="flex flex-1 p-4 sm:flex-row sm:gap-x-8 text-foreground">
                     {children}
+                    <Toaster position="bottom-right" />
                   </div>
                   <Footer twitterLink="https://twitter.com/cowswap" />
-                  <Toaster position="top-right" />
                 </div>
               </div>
             </TransactionManagerContextProvider>

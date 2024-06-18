@@ -25,7 +25,7 @@ function getBlockNumberFromPrometheusMetrics(
 }
 
 function useAPIPrometheusMetricsBlockNumber(chainId?: number) {
-  const metricsUrl = NEXT_PUBLIC_API_URL + "/metrics";
+  const metricsUrl = NEXT_PUBLIC_API_URL + "metrics";
   const { data, isLoading, mutate } = useSWR(metricsUrl, (url: string) =>
     fetch(url).then((res) => res.text()),
   );

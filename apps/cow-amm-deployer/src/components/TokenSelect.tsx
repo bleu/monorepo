@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Address, isAddress } from "viem";
 import { useAccount } from "wagmi";
 
-import { useTokenSelect } from "#/contexts/tokenSelect";
+import { useTokenSelect } from "#/contexts/tokenSelectContext";
 import { IToken } from "#/lib/fetchAmmData";
 import { fetchTokenInfo } from "#/lib/tokenUtils";
 import { ChainId } from "#/utils/chainsPublicClients";

@@ -20,7 +20,7 @@ import {
   AccordionTrigger,
 } from "#/components/ui/accordion";
 import { Form } from "#/components/ui/form";
-import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction";
+import { useTransactionManagerContext } from "#/contexts/transactionManagerContext";
 import { useDebounce } from "#/hooks/useDebounce";
 import { UNBALANCED_USD_DIFF_THRESHOLD } from "#/lib/constants";
 import { IToken } from "#/lib/fetchAmmData";
@@ -55,8 +55,14 @@ export function CreateAMMForm({ userId }: { userId: string }) {
     formState: { errors, isSubmitting },
   } = form;
 
-  const { writeContract, writeContractWithSafe, status, isWalletContract } =
-    useManagedTransaction();
+  const {
+    managedTransaction: {
+      writeContract,
+      status,
+      isWalletContract,
+      writeContractWithSafe,
+    },
+  } = useTransactionManagerContext();
 
   const [token0, token1, priceOracle, amount0, amount1] = useWatch({
     control,

@@ -8,12 +8,13 @@ import { fetchAmmData, ICowAmm, IToken } from "#/lib/fetchAmmData";
 import { fetchWalletTokenBalance } from "#/lib/tokenUtils";
 import { ChainId } from "#/utils/chainsPublicClients";
 
+import { useTransactionManagerContext } from "./transactionManagerContext";
+
 interface IAmmDataContext {
-  isAmmDataLoading: boolean;
   ammData: ICowAmm;
   walletBalanceToken0: string;
   walletBalanceToken1: string;
-  mutateAmm: () => void;
+  isAmmUpdating: boolean;
 }
 
 export const AmmDataContext = React.createContext<IAmmDataContext>(
@@ -29,6 +30,12 @@ export const AmmDataContextProvider = ({
     mutate: mutateAmm,
     isLoading: isAmmDataLoading,
   } = useSWR<ICowAmm>(ammId, fetchAmmData);
+  const {
+    managedTransaction: { isPonderAPIUpToDate, status },
+  } = useTransactionManagerContext();
+  const [isTransactionAwaiting, setIsTransactionAwaiting] =
+    React.useState(false);
+
   const { data: walletBalanceToken0, mutate: mutateBalanceToken0 } = useSWR(
     {
       token: ammData?.token0 as IToken,
@@ -48,6 +55,19 @@ export const AmmDataContextProvider = ({
   );
 
   useEffect(() => {
+    if (isPonderAPIUpToDate) {
+      mutateAmm();
+      setIsTransactionAwaiting(false);
+    }
+  }, [isPonderAPIUpToDate]);
+
+  useEffect(() => {
+    if (!["final", "confirmed", "error", "idle"].includes(status || "")) {
+      setIsTransactionAwaiting(true);
+    }
+  }, [status]);
+
+  useEffect(() => {
     if (ammData) {
       mutateBalanceToken0();
       mutateBalanceToken1();
@@ -60,8 +80,7 @@ export const AmmDataContextProvider = ({
         ammData: ammData as ICowAmm,
         walletBalanceToken0: walletBalanceToken0 as string,
         walletBalanceToken1: walletBalanceToken1 as string,
-        mutateAmm,
-        isAmmDataLoading,
+        isAmmUpdating: isTransactionAwaiting || isAmmDataLoading,
       }}
     >
       {children}

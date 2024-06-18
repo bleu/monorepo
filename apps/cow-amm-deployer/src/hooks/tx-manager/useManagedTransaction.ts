@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import {
   useAccount,
   useTransactionConfirmations,
@@ -49,7 +49,7 @@ export function useManagedTransaction() {
   const { isPonderAPIAtBlockNumber, mutate: refetchPonder } =
     useIsPonderAPIAtBlockNumber(chainId, safeDataStatus?.blockNumber);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (isPonderAPIAtBlockNumber) return;
 
     const interval = setInterval(() => refetchPonder(), 2_000);

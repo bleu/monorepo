@@ -9,8 +9,8 @@ import { useAccount } from "wagmi";
 import { Button } from "#/components/Button";
 import { Checkbox } from "#/components/Checkbox";
 import { Dialog } from "#/components/Dialog";
-import { useAmmData } from "#/contexts/ammData";
-import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction";
+import { useAmmData } from "#/contexts/ammDataContext";
+import { useTransactionManagerContext } from "#/contexts/transactionManagerContext";
 import { ICowAmm } from "#/lib/fetchAmmData";
 import {
   AllTransactionArgs,
@@ -53,22 +53,21 @@ function DisableTradingDialogContent({
   ammData: ICowAmm;
   setIsOpen: (isOpen: boolean) => void;
 }) {
-  const { mutateAmm } = useAmmData();
+  const { isAmmUpdating } = useAmmData();
   const [withdrawFunds, setWithdrawFunds] = React.useState(false);
   const { chainId } = useAccount();
 
   const {
-    writeContract,
-    writeContractWithSafe,
-    status,
-    isWalletContract,
-    isPonderAPIUpToDate,
-  } = useManagedTransaction();
+    managedTransaction: {
+      writeContract,
+      writeContractWithSafe,
+      isWalletContract,
+      isPonderAPIUpToDate,
+    },
+  } = useTransactionManagerContext();
 
   useEffect(() => {
     if (!isPonderAPIUpToDate) return;
-
-    mutateAmm();
     setIsOpen(false);
   }, [isPonderAPIUpToDate]);
 
@@ -128,9 +127,7 @@ function DisableTradingDialogContent({
         className="flex items-center gap-1 py-3 px-6"
         variant="destructive"
         onClick={onDisableAMM}
-        loading={
-          !["final", "idle", "confirmed", "error"].includes(status || "")
-        }
+        loading={isAmmUpdating}
         loadingText="Confirming..."
       >
         <StopIcon />

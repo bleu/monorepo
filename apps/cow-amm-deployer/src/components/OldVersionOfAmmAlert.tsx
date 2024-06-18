@@ -6,7 +6,7 @@ import { Address } from "viem";
 
 import { Button } from "#/components";
 import { AlertCard } from "#/components/AlertCard";
-import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction";
+import { useTransactionManagerContext } from "#/contexts/transactionManagerContext";
 import { ICowAmm } from "#/lib/fetchAmmData";
 import { getAmmId } from "#/lib/getAmmId";
 import { buildMigrateToStandaloneVersionArgs } from "#/lib/transactionFactory";
@@ -18,8 +18,9 @@ export function OldVersionOfAMMAlert({ ammData }: { ammData: ICowAmm }) {
   const [ammId, setAmmId] = useState<string>();
   const [ammDialogOpen, setAmmDialogOpen] = useState(false);
 
-  const { writeContractWithSafe, status } = useManagedTransaction();
-
+  const {
+    managedTransaction: { writeContractWithSafe, status },
+  } = useTransactionManagerContext();
   async function updateAmmId() {
     const ammId = await getAmmId({
       chainId: ammData.chainId as ChainId,

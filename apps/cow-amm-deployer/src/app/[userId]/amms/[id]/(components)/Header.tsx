@@ -1,6 +1,6 @@
 "use client";
 
-import { Card } from "@bleu/ui";
+import { Card, CardDescription, CardHeader, CardTitle } from "@bleu/ui";
 import { ArrowLeftIcon, ArrowTopRightIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { Address } from "viem";
@@ -11,7 +11,7 @@ import { LinkComponent } from "#/components/Link";
 import { OldVersionOfAMMAlert } from "#/components/OldVersionOfAmmAlert";
 import { StatusBadge } from "#/components/StatusBadge";
 import { TokenPairLogo } from "#/components/TokenPairLogo";
-import { useAmmData } from "#/contexts/ammData";
+import { useAmmData } from "#/contexts/ammDataContext";
 import { getExplorerAddressLink } from "#/lib/cowExplorer";
 import { IToken } from "#/lib/fetchAmmData";
 import { truncateMiddle } from "#/lib/truncateMiddle";
@@ -25,15 +25,15 @@ export function Header() {
   const poolName = `${ammData.token0.symbol}/${ammData.token1.symbol}`;
 
   return (
-    <Card.Root className="w-full overflow-visible max-w-full rounded-none bg-background">
-      <Card.Header className="p-0 flex flex-col gap-y-2">
+    <Card className="w-full overflow-visible max-w-full rounded-none bg-background text-foreground">
+      <CardHeader className="p-0 flex flex-col gap-y-2">
         <LinkComponent href={`/${ammData.user.id}/amms`}>
           <Button className="flex items-center gap-1 p-1" variant="ghost">
             <ArrowLeftIcon />
             CoW AMMs
           </Button>
         </LinkComponent>
-        <Card.Title className="text-3xl flex flex-row gap-2 my-2 p-0 items-center">
+        <CardTitle className="text-3xl flex flex-row gap-2 my-2 p-0 items-center">
           <TokenPairLogo
             token0={ammData.token0}
             token1={ammData.token1}
@@ -47,8 +47,8 @@ export function Header() {
             networkId={ammData.chainId as ChainId}
           />
           <StatusBadge disabled={ammData.disabled} />
-        </Card.Title>
-        <Card.Description className="flex mt-5 justify-between items-center text-base p-0">
+        </CardTitle>
+        <CardDescription className="flex mt-5 justify-between items-center text-base p-0 text-foreground">
           <div className="flex flex-row gap-2 items-center">
             Price Oracle: <PriceInformation cowAmm={ammData} />
           </div>
@@ -71,10 +71,10 @@ export function Header() {
           </div>
           <TokenLink chainId={ammData.chainId} token={ammData.token0} />
           <TokenLink chainId={ammData.chainId} token={ammData.token1} />
-        </Card.Description>
+        </CardDescription>
         {oldVersionOfAmm && <OldVersionOfAMMAlert ammData={ammData} />}
-      </Card.Header>
-    </Card.Root>
+      </CardHeader>
+    </Card>
   );
 }
 

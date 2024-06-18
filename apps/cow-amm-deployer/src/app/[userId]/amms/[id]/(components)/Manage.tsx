@@ -2,6 +2,10 @@
 
 import {
   Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
   Separator,
   TabsContent,
   TabsList,
@@ -11,42 +15,47 @@ import {
 
 import { DepositForm } from "#/components/DepositForm";
 import { WithdrawForm } from "#/components/WithdrawForm";
-import { useAmmData } from "#/contexts/ammData";
+import { useAmmData } from "#/contexts/ammDataContext";
 
 import { EditAMMForm } from "./EditAMMForm";
 
 export function Manage() {
-  const { ammData, walletBalanceToken0, walletBalanceToken1 } = useAmmData();
+  const { ammData, walletBalanceToken0, walletBalanceToken1, isAmmUpdating } =
+    useAmmData();
   const oldVersionOfAmm = ammData.version !== "Standalone";
 
   return (
     <>
-      <Card.Root className="bg-foreground text-background overflow-visible max-w-full rounded-none px-3">
-        <Card.Header className="py-1 px-0">
-          <Card.Title className="px-0 text-xl">Manage</Card.Title>
-          <Card.Description className="px-0 text-base">
+      <Card className="bg-foreground text-background overflow-visible max-w-full rounded-none px-3">
+        <CardHeader className="py-1 px-0">
+          <CardTitle className="px-0 text-xl">Manage</CardTitle>
+          <CardDescription className="px-0 text-base">
             Manage your CoW AMM
-          </Card.Description>
+          </CardDescription>
           <Separator />
-        </Card.Header>
-        <Card.Content className="px-0">
+        </CardHeader>
+        <CardContent className="px-0">
           <TabsRoot defaultValue={oldVersionOfAmm ? "edit" : "deposit"}>
             <TabsList>
               <TabsTrigger
                 className="rounded-none"
                 value="deposit"
-                disabled={oldVersionOfAmm}
+                disabled={oldVersionOfAmm || isAmmUpdating}
               >
                 Deposit
               </TabsTrigger>
               <TabsTrigger
                 className="rounded-none"
                 value="withdraw"
-                disabled={oldVersionOfAmm}
+                disabled={oldVersionOfAmm || isAmmUpdating}
               >
                 Withdraw
               </TabsTrigger>
-              <TabsTrigger className="rounded-none" value="edit">
+              <TabsTrigger
+                className="rounded-none"
+                value="edit"
+                disabled={isAmmUpdating}
+              >
                 Edit Parameters
               </TabsTrigger>
             </TabsList>
@@ -64,8 +73,8 @@ export function Manage() {
               <EditAMMForm ammData={ammData} />
             </TabsContent>
           </TabsRoot>
-        </Card.Content>
-      </Card.Root>
+        </CardContent>
+      </Card>
     </>
   );
 }

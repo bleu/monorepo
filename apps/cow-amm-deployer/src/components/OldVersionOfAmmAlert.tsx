@@ -34,6 +34,12 @@ export function OldVersionOfAMMAlert({ ammData }: { ammData: ICowAmm }) {
     updateAmmId();
   }, []);
 
+  useEffect(() => {
+    if (status === "final" || status === "confirmed") {
+      setAmmDialogOpen(true);
+    }
+  }, [status]);
+
   return (
     <>
       <CreateSuccessDialog

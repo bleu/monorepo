@@ -5,11 +5,10 @@ import { z } from "zod";
 import { PRICE_ORACLES } from "#/lib/types";
 import { ChainId, publicClientsFromIds } from "#/utils/chainsPublicClients";
 
-import { ConstantProductFactoryABI } from "./abis/ConstantProductFactory";
 import { erc20ABI } from "./abis/erc20";
 import { minimalPriceOracleAbi } from "./abis/minimalPriceOracle";
-import { COW_CONSTANT_PRODUCT_FACTORY } from "./contracts";
 import { getPriceOracleAddress } from "./encodePriceOracleData";
+import { fetchAmmIsDeployed } from "./fetchAmmIsDeployed";
 import { fetchCowQuote } from "./orderBookApi/fetchCowQuote";
 
 const basicAddressSchema = z
@@ -246,21 +245,13 @@ export const ammFormSchema = z
   .superRefine(async (data, ctx) => {
     // validate if cow amm doesn't exist
     try {
-      const publicClient = publicClientsFromIds[data.chainId as ChainId];
-      const cowAmmAddress = await publicClient.readContract({
-        abi: ConstantProductFactoryABI,
-        address: COW_CONSTANT_PRODUCT_FACTORY[data.chainId as ChainId],
-        functionName: "ammDeterministicAddress",
-        args: [
-          data.safeAddress as Address,
-          data.token0.address as Address,
-          data.token1.address as Address,
-        ],
+      const { isDeployed } = await fetchAmmIsDeployed({
+        chainId: data.chainId as ChainId,
+        user: data.safeAddress as Address,
+        token0: data.token0.address as Address,
+        token1: data.token1.address as Address,
       });
-      const contractByteCode = await publicClient.getBytecode({
-        address: cowAmmAddress,
-      });
-      if (contractByteCode) {
+      if (isDeployed) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: `Cow AMM already exists`,

@@ -18,7 +18,7 @@ export const config = createConfig({
     }),
   ],
   transports: {
-    [mainnet.id]: http(process.env.NEXT_PUBLIC_RPC_URL_MAINNET),
-    [sepolia.id]: http(process.env.NEXT_PUBLIC_RPC_URL_SEPOLIA),
+    [mainnet.id]: http(process.env.RPC_URL_MAINNET),
+    [sepolia.id]: http(process.env.RPC_URL_SEPOLIA),
   },
 });

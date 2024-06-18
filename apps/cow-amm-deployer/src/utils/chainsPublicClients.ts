@@ -12,9 +12,9 @@ export const supportedChains = [gnosis, mainnet, sepolia] as const;
 export const supportedChainIds = [mainnet.id, gnosis.id, sepolia.id] as const;
 
 export const RPC_PROVIDERS = {
-  [mainnet.id]: process.env.NEXT_PUBLIC_RPC_URL_MAINNET,
-  [gnosis.id]: process.env.NEXT_PUBLIC_RPC_URL_GNOSIS,
-  [sepolia.id]: process.env.NEXT_PUBLIC_RPC_URL_SEPOLIA,
+  [mainnet.id]: process.env.RPC_URL_MAINNET,
+  [gnosis.id]: process.env.RPC_URL_GNOSIS,
+  [sepolia.id]: process.env.RPC_URL_SEPOLIA,
 } as const;
 
 export function createClientForChain(chain: ChainType) {

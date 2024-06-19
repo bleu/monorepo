@@ -1,2 +1,2 @@
 export const NEXT_PUBLIC_API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:42069";
+  process.env.NEXT_PUBLIC_API_URL || "https://cowamm-next-api.bleu.builders";

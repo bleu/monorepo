@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import {
   useAccount,
   useTransactionConfirmations,
@@ -48,14 +48,6 @@ export function useManagedTransaction() {
 
   const { isPonderAPIAtBlockNumber, mutate: refetchPonder } =
     useIsPonderAPIAtBlockNumber(chainId, safeDataStatus?.blockNumber);
-
-  useLayoutEffect(() => {
-    if (isPonderAPIAtBlockNumber) return;
-
-    const interval = setInterval(() => refetchPonder(), 2_000);
-
-    return () => clearInterval(interval);
-  }, [isPonderAPIAtBlockNumber, safeDataStatus?.blockNumber, chainId]);
 
   const {
     data: blockConfirmations,
@@ -115,6 +107,15 @@ export function useManagedTransaction() {
   ] as const;
 
   const status = statusOrder.findLast((key) => STATE[key]);
+
+  useEffect(() => {
+    if (isPonderAPIAtBlockNumber) return;
+    if (!["final", "confirmed"].includes(status || "")) return;
+
+    const interval = setInterval(() => refetchPonder(), 2_000);
+
+    return () => clearInterval(interval);
+  }, [isPonderAPIAtBlockNumber, safeDataStatus?.blockNumber, chainId, status]);
 
   if (isWalletContract) {
     return {

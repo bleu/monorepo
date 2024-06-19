@@ -1,16 +1,15 @@
 "use client";
 
-import { toast } from "@bleu/ui";
 import { StopIcon } from "@radix-ui/react-icons";
-import React, { useEffect } from "react";
+import React from "react";
 import { parseUnits } from "viem";
 import { useAccount } from "wagmi";
 
 import { Button } from "#/components/Button";
 import { Checkbox } from "#/components/Checkbox";
 import { Dialog } from "#/components/Dialog";
-import { useAmmData } from "#/contexts/ammData";
-import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction";
+import { useAmmData } from "#/contexts/ammDataContext";
+import { useTransactionManagerContext } from "#/contexts/transactionManagerContext";
 import { ICowAmm } from "#/lib/fetchAmmData";
 import {
   AllTransactionArgs,
@@ -21,6 +20,7 @@ import { ChainId } from "#/utils/chainsPublicClients";
 
 export function DisableAmmButton({ ammData }: { ammData: ICowAmm }) {
   const [isOpen, setIsOpen] = React.useState(false);
+  const { isAmmUpdating } = useAmmData();
 
   return (
     <Dialog
@@ -38,6 +38,7 @@ export function DisableAmmButton({ ammData }: { ammData: ICowAmm }) {
         onClick={() => {
           setIsOpen(true);
         }}
+        disabled={isAmmUpdating}
       >
         <StopIcon />
         Disable trading
@@ -48,29 +49,21 @@ export function DisableAmmButton({ ammData }: { ammData: ICowAmm }) {
 
 function DisableTradingDialogContent({
   ammData,
-  setIsOpen,
 }: {
   ammData: ICowAmm;
   setIsOpen: (isOpen: boolean) => void;
 }) {
-  const { mutateAmm } = useAmmData();
+  const { isAmmUpdating } = useAmmData();
   const [withdrawFunds, setWithdrawFunds] = React.useState(false);
   const { chainId } = useAccount();
 
   const {
-    writeContract,
-    writeContractWithSafe,
-    status,
-    isWalletContract,
-    isPonderAPIUpToDate,
-  } = useManagedTransaction();
-
-  useEffect(() => {
-    if (!isPonderAPIUpToDate) return;
-
-    mutateAmm();
-    setIsOpen(false);
-  }, [isPonderAPIUpToDate]);
+    managedTransaction: {
+      writeContract,
+      writeContractWithSafe,
+      isWalletContract,
+    },
+  } = useTransactionManagerContext();
 
   function onDisableAMM() {
     const txArgs = [
@@ -93,20 +86,12 @@ function DisableTradingDialogContent({
       } as WithdrawCoWAMMArgs);
     }
 
-    try {
-      if (isWalletContract) {
-        writeContractWithSafe(txArgs);
-      } else {
-        // TODO: this will need to be refactored once we have EOAs
-        // @ts-ignore
-        writeContract(txArgs);
-      }
-    } catch {
-      toast({
-        title: `Transaction failed`,
-        description: "An error occurred while processing the transaction.",
-        variant: "destructive",
-      });
+    if (isWalletContract) {
+      writeContractWithSafe(txArgs);
+    } else {
+      // TODO: this will need to be refactored once we have EOAs
+      // @ts-ignore
+      writeContract(txArgs);
     }
   }
 
@@ -128,9 +113,7 @@ function DisableTradingDialogContent({
         className="flex items-center gap-1 py-3 px-6"
         variant="destructive"
         onClick={onDisableAMM}
-        loading={
-          !["final", "idle", "confirmed", "error"].includes(status || "")
-        }
+        loading={isAmmUpdating}
         loadingText="Confirming..."
       >
         <StopIcon />

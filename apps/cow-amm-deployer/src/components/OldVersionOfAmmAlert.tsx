@@ -1,12 +1,11 @@
 "use client";
 
-import { toast } from "@bleu/ui";
 import { useEffect, useState } from "react";
 import { Address } from "viem";
 
 import { Button } from "#/components";
 import { AlertCard } from "#/components/AlertCard";
-import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction";
+import { useTransactionManagerContext } from "#/contexts/transactionManagerContext";
 import { ICowAmm } from "#/lib/fetchAmmData";
 import { getAmmId } from "#/lib/getAmmId";
 import { buildMigrateToStandaloneVersionArgs } from "#/lib/transactionFactory";
@@ -18,8 +17,9 @@ export function OldVersionOfAMMAlert({ ammData }: { ammData: ICowAmm }) {
   const [ammId, setAmmId] = useState<string>();
   const [ammDialogOpen, setAmmDialogOpen] = useState(false);
 
-  const { writeContractWithSafe, status } = useManagedTransaction();
-
+  const {
+    managedTransaction: { writeContractWithSafe, status },
+  } = useTransactionManagerContext();
   async function updateAmmId() {
     const ammId = await getAmmId({
       chainId: ammData.chainId as ChainId,
@@ -33,6 +33,12 @@ export function OldVersionOfAMMAlert({ ammData }: { ammData: ICowAmm }) {
   useEffect(() => {
     updateAmmId();
   }, []);
+
+  useEffect(() => {
+    if (status === "final" || status === "confirmed") {
+      setAmmDialogOpen(true);
+    }
+  }, [status]);
 
   return (
     <>
@@ -51,6 +57,7 @@ export function OldVersionOfAMMAlert({ ammData }: { ammData: ICowAmm }) {
           </p>
           <Button
             className="mt-2"
+            loadingText="Migrating..."
             loading={
               !["final", "idle", "confirmed", "error"].includes(status || "")
             }
@@ -58,16 +65,7 @@ export function OldVersionOfAMMAlert({ ammData }: { ammData: ICowAmm }) {
               const txArgs = await buildMigrateToStandaloneVersionArgs({
                 data: ammData,
               });
-              try {
-                writeContractWithSafe(txArgs);
-              } catch {
-                toast({
-                  title: `Transaction failed`,
-                  description:
-                    "An error occurred while processing the transaction.",
-                  variant: "destructive",
-                });
-              }
+              writeContractWithSafe(txArgs);
             }}
           >
             Migrate to new version

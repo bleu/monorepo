@@ -13,6 +13,7 @@ import {
   COW_CONSTANT_PRODUCT_FACTORY,
 } from "./contracts";
 import { ICowAmm } from "./fetchAmmData";
+import { fetchAmmIsDeployed } from "./fetchAmmIsDeployed";
 import { ammEditSchema, ammFormSchema } from "./schema";
 import { fetchWalletTokenBalance } from "./tokenUtils";
 
@@ -406,6 +407,34 @@ export async function buildMigrateToStandaloneVersionArgs({
     }).then((balance) => parseUnits(balance, data.token1.decimals)),
   ]);
 
+  const { isDeployed, address: ammAddress } = await fetchAmmIsDeployed({
+    chainId,
+    user: data.order.owner as Address,
+    token0: data.token0.address as Address,
+    token1: data.token1.address as Address,
+  });
+
+  const newAmmArgs: AllTransactionArgs = isDeployed
+    ? {
+        type: TRANSACTION_TYPES.DEPOSIT_COW_AMM,
+        amm: ammAddress as Address,
+        amount0: token0Amount,
+        amount1: token1Amount,
+        chainId: data.order.chainId as ChainId,
+      }
+    : {
+        type: TRANSACTION_TYPES.CREATE_COW_AMM,
+        token0: data.token0.address as Address,
+        token1: data.token1.address as Address,
+        amount0: token0Amount,
+        amount1: token1Amount,
+        minTradedToken0: data.minTradedToken0,
+        priceOracleAddress: data.priceOracle,
+        priceOracleData: data.priceOracleData,
+        appData: BLEU_APP_DATA,
+        chainId: data.chainId as ChainId,
+      };
+
   return [
     {
       type: TRANSACTION_TYPES.DISABLE_COW_AMM,
@@ -426,17 +455,6 @@ export async function buildMigrateToStandaloneVersionArgs({
       spender: COW_CONSTANT_PRODUCT_FACTORY[data.chainId as ChainId],
       amount: token1Amount,
     },
-    {
-      type: TRANSACTION_TYPES.CREATE_COW_AMM,
-      token0: data.token0.address as Address,
-      token1: data.token1.address as Address,
-      amount0: token0Amount,
-      amount1: token1Amount,
-      minTradedToken0: data.minTradedToken0,
-      priceOracleAddress: data.priceOracle,
-      priceOracleData: data.priceOracleData,
-      appData: BLEU_APP_DATA,
-      chainId: data.chainId as ChainId,
-    },
+    newAmmArgs,
   ];
 }

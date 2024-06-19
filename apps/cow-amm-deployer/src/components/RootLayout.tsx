@@ -6,7 +6,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { WagmiProvider } from "wagmi";
 
-import { TokenSelectContextProvider } from "#/contexts/tokenSelect";
+import { TokenSelectContextProvider } from "#/contexts/tokenSelectContext";
+import { TransactionManagerContextProvider } from "#/contexts/transactionManagerContext";
 import { config } from "#/wagmi";
 
 import Fathom from "./Fathom";
@@ -22,20 +23,22 @@ export function RootLayout({ children }: React.PropsWithChildren) {
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
           <TokenSelectContextProvider>
-            <Fathom />
-            <div className="size-full">
-              <div className="flex flex-col h-screen">
-                <Header
-                  linkUrl={"/"}
-                  imageSrc={"/assets/cow-amm-deployer.svg"}
-                />
-                <div className="flex flex-1 overflow-auto p-4 sm:flex-row sm:gap-x-8 text-foreground">
-                  {children}
+            <TransactionManagerContextProvider>
+              <Fathom />
+              <div className="size-full">
+                <div className="flex flex-col h-screen overflow-auto">
+                  <Header
+                    linkUrl={"/"}
+                    imageSrc={"/assets/cow-amm-deployer.svg"}
+                  />
+                  <div className="flex flex-1 p-4 sm:flex-row sm:gap-x-8 text-foreground">
+                    {children}
+                    <Toaster position="bottom-right" />
+                  </div>
+                  <Footer twitterLink="https://twitter.com/cowswap" />
                 </div>
-                <Footer twitterLink="https://twitter.com/cowswap" />
-                <Toaster position="top-right" />
               </div>
-            </div>
+            </TransactionManagerContextProvider>
           </TokenSelectContextProvider>
         </QueryClientProvider>
       </WagmiProvider>

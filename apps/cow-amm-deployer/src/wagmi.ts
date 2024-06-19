@@ -1,5 +1,5 @@
 import { createConfig, http } from "wagmi";
-import { mainnet, sepolia } from "wagmi/chains";
+import { gnosis, mainnet, sepolia } from "wagmi/chains";
 import { injected, safe } from "wagmi/connectors";
 
 declare module "wagmi" {
@@ -18,7 +18,8 @@ export const config = createConfig({
     }),
   ],
   transports: {
-    [mainnet.id]: http(process.env.NEXT_PUBLIC_RPC_URL_MAINNET),
-    [sepolia.id]: http(process.env.NEXT_PUBLIC_RPC_URL_SEPOLIA),
+    [mainnet.id]: http(process.env.RPC_URL_MAINNET),
+    [sepolia.id]: http(process.env.RPC_URL_SEPOLIA),
+    [gnosis.id]: http(process.env.RPC_URL_GNOSIS),
   },
 });

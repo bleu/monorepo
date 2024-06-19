@@ -25,7 +25,7 @@ export function CreateSuccessDialog({
   );
 
   useEffect(() => {
-    const intervalId = setInterval(() => ammId && mutate(), 10_000);
+    const intervalId = setInterval(() => ammId && mutate(), 1_000);
 
     return () => clearInterval(intervalId);
   }, [ammId, isOpen]);

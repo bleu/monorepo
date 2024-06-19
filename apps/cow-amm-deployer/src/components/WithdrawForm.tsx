@@ -1,9 +1,8 @@
 "use client";
 
-import { formatNumber, toast } from "@bleu/ui";
+import { formatNumber } from "@bleu/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Slider from "@radix-ui/react-slider";
-import { useEffect } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { parseUnits } from "viem";
 import { useAccount } from "wagmi";
@@ -11,8 +10,8 @@ import { useAccount } from "wagmi";
 import { Button } from "#/components/Button";
 import { TokenAmount } from "#/components/TokenAmount";
 import { Form } from "#/components/ui/form";
-import { useAmmData } from "#/contexts/ammData";
-import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction";
+import { useAmmData } from "#/contexts/ammDataContext";
+import { useTransactionManagerContext } from "#/contexts/transactionManagerContext";
 import { ICowAmm } from "#/lib/fetchAmmData";
 import { ammWithdrawSchema } from "#/lib/schema";
 import {
@@ -22,7 +21,7 @@ import {
 import { ChainId } from "#/utils/chainsPublicClients";
 
 export function WithdrawForm({ ammData }: { ammData: ICowAmm }) {
-  const { mutateAmm } = useAmmData();
+  const { isAmmUpdating } = useAmmData();
   const form = useForm<typeof ammWithdrawSchema._type>({
     // @ts-ignore
     resolver: zodResolver(ammWithdrawSchema),
@@ -33,12 +32,12 @@ export function WithdrawForm({ ammData }: { ammData: ICowAmm }) {
   const { chainId } = useAccount();
 
   const {
-    writeContract,
-    writeContractWithSafe,
-    status,
-    isWalletContract,
-    isPonderAPIUpToDate,
-  } = useManagedTransaction();
+    managedTransaction: {
+      writeContract,
+      writeContractWithSafe,
+      isWalletContract,
+    },
+  } = useTransactionManagerContext();
 
   const onSubmit = async (data: typeof ammWithdrawSchema._type) => {
     let amount0 = BigInt(0);
@@ -64,26 +63,13 @@ export function WithdrawForm({ ammData }: { ammData: ICowAmm }) {
       amount1,
       chainId: chainId as ChainId,
     } as WithdrawCoWAMMArgs;
-    try {
-      if (isWalletContract) {
-        writeContractWithSafe([txArgs]);
-      } else {
-        // @ts-ignore
-        writeContract(txArgs);
-      }
-    } catch {
-      toast({
-        title: `Transaction failed`,
-        description: "An error occurred while processing the transaction.",
-        variant: "destructive",
-      });
+    if (isWalletContract) {
+      writeContractWithSafe([txArgs]);
+    } else {
+      // @ts-ignore
+      writeContract(txArgs);
     }
   };
-
-  useEffect(() => {
-    if (!isPonderAPIUpToDate) return;
-    mutateAmm();
-  }, [isPonderAPIUpToDate]);
 
   const {
     control,
@@ -98,7 +84,7 @@ export function WithdrawForm({ ammData }: { ammData: ICowAmm }) {
       <div className="flex flex-col w-full">
         <div className="flex justify-between mb-2 items-center">
           <span className="block text-xl bg-primary p-2">
-            {withdrawPct * 100}%
+            {formatNumber(withdrawPct * 100, 2)}%
           </span>
           <div className="flex justify-between w-1/2">
             {[25, 50, 75, 100].map((pct) => (
@@ -157,10 +143,8 @@ export function WithdrawForm({ ammData }: { ammData: ICowAmm }) {
         }
         type="submit"
         className="w-full"
-        loading={
-          isSubmitting ||
-          !["final", "idle", "confirmed", "error"].includes(status || "")
-        }
+        loading={isSubmitting || isAmmUpdating}
+        loadingText="Withdrawing..."
       >
         Withdraw ${formatNumber(ammData.totalUsdValue * withdrawPct, 4)}
       </Button>

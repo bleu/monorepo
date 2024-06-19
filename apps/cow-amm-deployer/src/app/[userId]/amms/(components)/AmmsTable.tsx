@@ -4,7 +4,6 @@ import { formatNumber } from "@bleu/ui";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-import { Spinner } from "#/components/Spinner";
 import { StatusBadge } from "#/components/StatusBadge";
 import Table from "#/components/Table";
 import { TokenInfo } from "#/components/TokenInfo";
@@ -18,8 +17,6 @@ export function AmmsTable({
   userId: string;
 }) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = React.useState(false);
-
   return (
     <Table
       color="foreground"
@@ -40,19 +37,12 @@ export function AmmsTable({
               <span className="text-base">No AMMs created yet</span>
             </Table.BodyCell>
           </Table.BodyRow>
-        ) : isLoading ? (
-          <Table.BodyRow>
-            <Table.BodyCell colSpan={5} classNames="text-center">
-              <Spinner />
-            </Table.BodyCell>
-          </Table.BodyRow>
         ) : (
           standaloneAmmData.map((amm) => (
             <Table.BodyRow
               key={amm.id}
               onClick={() => {
                 router.push(`/${userId}/amms/${amm.id}`);
-                setIsLoading(true);
               }}
               classNames="hover:cursor-pointer hover:bg-accent"
             >

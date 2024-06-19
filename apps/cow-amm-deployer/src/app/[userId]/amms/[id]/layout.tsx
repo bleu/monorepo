@@ -1,4 +1,4 @@
-import { AmmDataContextProvider } from "#/contexts/ammData";
+import { AmmDataContextProvider } from "#/contexts/ammDataContext";
 
 export default function Layout({
   children,

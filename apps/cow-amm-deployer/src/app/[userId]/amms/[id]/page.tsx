@@ -1,7 +1,7 @@
 "use client";
 
 import { Spinner } from "#/components/Spinner";
-import { useAmmData } from "#/contexts/ammData";
+import { useAmmData } from "#/contexts/ammDataContext";
 
 import { Header } from "./(components)/Header";
 import { Manage } from "./(components)/Manage";

@@ -1,9 +1,8 @@
 "use client";
 
-import { toast } from "@bleu/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlayIcon } from "@radix-ui/react-icons";
-import { useEffect } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { Address, formatUnits } from "viem";
 import { z } from "zod";
@@ -19,8 +18,8 @@ import {
   AccordionTrigger,
 } from "#/components/ui/accordion";
 import { Form } from "#/components/ui/form";
-import { useAmmData } from "#/contexts/ammData";
-import { useManagedTransaction } from "#/hooks/tx-manager/useManagedTransaction";
+import { useAmmData } from "#/contexts/ammDataContext";
+import { useTransactionManagerContext } from "#/contexts/transactionManagerContext";
 import { ICowAmm } from "#/lib/fetchAmmData";
 import { ammEditSchema } from "#/lib/schema";
 import { buildTxEditAMMArgs } from "#/lib/transactionFactory";
@@ -29,7 +28,8 @@ import { cn } from "#/lib/utils";
 import { DisableAmmButton } from "./DisableAmmButton";
 
 export function EditAMMForm({ ammData }: { ammData: ICowAmm }) {
-  const { mutateAmm } = useAmmData();
+  const [buttonClicked, setButtonClicked] = React.useState<string>();
+  const { isAmmUpdating } = useAmmData();
   const form = useForm<z.input<typeof ammEditSchema>>({
     // @ts-ignore
     resolver: zodResolver(ammEditSchema),
@@ -50,40 +50,27 @@ export function EditAMMForm({ ammData }: { ammData: ICowAmm }) {
   } = form;
 
   const {
-    writeContract,
-    writeContractWithSafe,
-    status,
-    isWalletContract,
-    isPonderAPIUpToDate,
-  } = useManagedTransaction();
+    managedTransaction: {
+      writeContract,
+      writeContractWithSafe,
+      isWalletContract,
+    },
+  } = useTransactionManagerContext();
 
   const onSubmit = async (data: z.output<typeof ammEditSchema>) => {
     const txArgs = buildTxEditAMMArgs({
       data: data,
       ammAddress: ammData.order.owner as Address,
     });
-
-    try {
-      if (isWalletContract) {
-        writeContractWithSafe(txArgs);
-      } else {
-        // TODO: this will need to be refactored once we have EOAs
-        // @ts-ignore
-        writeContract(txArgs);
-      }
-    } catch {
-      toast({
-        title: `Transaction failed`,
-        description: "An error occurred while processing the transaction.",
-        variant: "destructive",
-      });
+    setButtonClicked("edit");
+    if (isWalletContract) {
+      writeContractWithSafe(txArgs);
+    } else {
+      // TODO: this will need to be refactored once we have EOAs
+      // @ts-ignore
+      writeContract(txArgs);
     }
   };
-
-  useEffect(() => {
-    if (!isPonderAPIUpToDate) return;
-    mutateAmm();
-  }, [isPonderAPIUpToDate]);
 
   const submitButtonText = ammData.disabled ? "Enable AMM" : "Update AMM";
 
@@ -123,14 +110,12 @@ export function EditAMMForm({ ammData }: { ammData: ICowAmm }) {
       <div className="flex space-x-2 space-between mt-2">
         {!ammData.disabled && <DisableAmmButton ammData={ammData} />}
         <Button
-          loading={
-            isSubmitting ||
-            !["final", "idle", "confirmed", "error"].includes(status || "")
-          }
+          loading={isAmmUpdating && buttonClicked === "edit"}
           variant={ammData.disabled ? "default" : "highlight"}
           type="submit"
-          disabled={isSubmitting || ammData.version !== "Standalone"}
-          loadingText="Confirming..."
+          disabled={
+            isSubmitting || ammData.version !== "Standalone" || isAmmUpdating
+          }
         >
           {ammData.disabled ? <PlayIcon className="mr-1" /> : ""}
           <span>{submitButtonText}</span>

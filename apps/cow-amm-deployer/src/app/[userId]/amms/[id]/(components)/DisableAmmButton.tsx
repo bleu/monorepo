@@ -20,6 +20,7 @@ import { ChainId } from "#/utils/chainsPublicClients";
 
 export function DisableAmmButton({ ammData }: { ammData: ICowAmm }) {
   const [isOpen, setIsOpen] = React.useState(false);
+  const { isAmmUpdating } = useAmmData();
 
   return (
     <Dialog
@@ -37,6 +38,7 @@ export function DisableAmmButton({ ammData }: { ammData: ICowAmm }) {
         onClick={() => {
           setIsOpen(true);
         }}
+        disabled={isAmmUpdating}
       >
         <StopIcon />
         Disable trading

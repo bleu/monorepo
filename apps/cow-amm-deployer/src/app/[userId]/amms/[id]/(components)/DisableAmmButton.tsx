@@ -1,7 +1,7 @@
 "use client";
 
 import { StopIcon } from "@radix-ui/react-icons";
-import React, { useEffect } from "react";
+import React from "react";
 import { parseUnits } from "viem";
 import { useAccount } from "wagmi";
 
@@ -49,7 +49,6 @@ export function DisableAmmButton({ ammData }: { ammData: ICowAmm }) {
 
 function DisableTradingDialogContent({
   ammData,
-  setIsOpen,
 }: {
   ammData: ICowAmm;
   setIsOpen: (isOpen: boolean) => void;
@@ -63,14 +62,8 @@ function DisableTradingDialogContent({
       writeContract,
       writeContractWithSafe,
       isWalletContract,
-      isPonderAPIUpToDate,
     },
   } = useTransactionManagerContext();
-
-  useEffect(() => {
-    if (!isPonderAPIUpToDate) return;
-    setIsOpen(false);
-  }, [isPonderAPIUpToDate]);
 
   function onDisableAMM() {
     const txArgs = [

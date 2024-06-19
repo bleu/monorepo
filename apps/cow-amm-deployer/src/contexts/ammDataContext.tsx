@@ -56,8 +56,7 @@ export const AmmDataContextProvider = ({
   );
 
   useEffect(() => {
-    if (isPonderAPIUpToDate) {
-      mutateAmm();
+    if (isPonderAPIUpToDate && isTransactionAwaiting) {
       setIsTransactionAwaiting(false);
       toast({
         title: "Transaction confirmed",
@@ -65,6 +64,10 @@ export const AmmDataContextProvider = ({
           "The transaction has been confirmed and the AMM was updated.",
         className: "success group border-success bg-success text-background",
       });
+    }
+
+    if (isPonderAPIUpToDate) {
+      mutateAmm();
     }
   }, [isPonderAPIUpToDate]);
 

@@ -16,7 +16,6 @@ module.exports = {
       },
     },
     fontFamily: {
-      serif: ["var(--font-family-serif)", ...defaultTheme.fontFamily.serif],
       sans: ["var(--font-family-sans)", ...defaultTheme.fontFamily.sans],
     },
     extend: {

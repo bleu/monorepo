@@ -15,7 +15,7 @@ export function CustomPriceInformation({ cowAmm }: { cowAmm: ICowAmm }) {
   });
 
   return (
-    <div className="flex flex-row gap-x-1 items-center hover:text-foreground/90">
+    <div className="flex flex-row gap-x-1 items-center">
       <span>Using price information from custom contract</span>
       {priceOracleLink && (
         <Link href={priceOracleLink.url} target="_blank">

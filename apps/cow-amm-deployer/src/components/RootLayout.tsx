@@ -15,8 +15,8 @@ export function RootLayout({ children }: React.PropsWithChildren) {
       <Fathom />
       <div className="size-full">
         <div className="flex flex-col h-screen">
-          <Header linkUrl={"/"} imageSrc={"/assets/cow-amm-deployer.svg"} />
-          <div className="flex flex-1 overflow-auto p-4 sm:flex-row sm:gap-x-8 text-foreground">
+          <Header linkUrl={"/"} imageSrc={"/assets/app-logo.svg"} />
+          <div className="flex flex-1 overflow-auto p-4 sm:flex-row sm:gap-x-8 text-white">
             {children}
           </div>
           <Footer twitterLink="https://twitter.com/cowswap" />

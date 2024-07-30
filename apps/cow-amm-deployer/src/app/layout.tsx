@@ -20,33 +20,10 @@ export const metadata: Metadata = {
   },
 };
 
-const flechaS = localFont({
+const studioFeixenSans = localFont({
   src: [
     {
-      path: "../fonts/FlechaS-Medium.woff2",
-      weight: "500",
-      style: "normal",
-    },
-    {
-      path: "../fonts/FlechaS-MediumItalic.woff2",
-      weight: "500",
-      style: "italic",
-    },
-  ],
-  variable: "--font-family-serif",
-});
-
-const circularStd = localFont({
-  src: [
-    {
-      path: "../fonts/CircularStd-Book.woff2",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../fonts/CircularStd-Medium.woff2",
-      weight: "500",
-      style: "normal",
+      path: "../fonts/Studio-Feixen-Sans.ttf",
     },
   ],
   variable: "--font-family-sans",
@@ -57,9 +34,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <html lang="en" className="h-full">
       <body
         className={cn(
-          flechaS.variable,
-          circularStd.variable,
-          "bg-background flex h-full flex-col font-sans font-normal text-foreground",
+          studioFeixenSans.variable,
+          "bg-[url(/assets/bg.png)] flex h-full flex-col font-sans font-normal text-white",
         )}
       >
         <RootLayout>{children}</RootLayout>

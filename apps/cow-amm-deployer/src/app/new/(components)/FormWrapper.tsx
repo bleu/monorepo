@@ -29,7 +29,7 @@ export function FormWrapper({
     transactionType === TRANSACTION_TYPES.CREATE_COW_AMM ? "/" : "/manager";
   return (
     <div className="flex size-full items-center justify-center">
-      <div className="my-4 flex flex-col border-2 border-foreground bg-card border-card-foreground text-card-foreground">
+      <div className="my-4 flex flex-col border-2 border-foreground bg-card border-card-foreground text-card-foreground rounded-xl">
         <div className="relative flex size-full justify-center">
           <LinkComponent
             href={backHref}
@@ -40,7 +40,7 @@ export function FormWrapper({
             }
           />
           <div className="flex w-[530px] flex-col items-center py-3">
-            <div className="text-xl">
+            <div className="text-xl text-background">
               {transactionType === TRANSACTION_TYPES.CREATE_COW_AMM
                 ? "Create"
                 : "Edit"}{" "}

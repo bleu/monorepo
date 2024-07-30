@@ -66,16 +66,16 @@ export default function Page() {
       <div className="flex size-full justify-center">
         <div className="flex flex-col items-center gap-8 justify-center">
           <h2 className="mt-8 leading-snug text-center w-3/4 text-2xl">
-            <b className="text-yellow">Attention</b>, deploying a CoW AMM
+            <b className="text-info">Attention</b>, deploying a CoW AMM
             Liquidity pool requires a safe wallet. Keep in mind, that the{" "}
-            <b className="text-yellow">
+            <b className="text-info">
               Safe used for deploying liquidity should only be used for this
               purpose
             </b>
             , as the tokens held in the safe will be used for the pool creation.
             CoW AMM utilizes all available token balances on the Safe for the
             token pairs that you have created a liquidity pool, thus,{" "}
-            <b className="text-yellow">
+            <b className="text-info">
               disabling other functionalities a Safe might be used for.
             </b>
           </h2>

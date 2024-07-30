@@ -15,7 +15,7 @@ export function BalancerPriceInformation({ cowAmm }: { cowAmm: ICowAmm }) {
   );
 
   return (
-    <div className="flex flex-row gap-x-1 items-center hover:text-foreground/90">
+    <div className="flex flex-row gap-x-1 items-center">
       <span>Using price information from Balancer V2</span>
       {priceOracleLink && (
         <Link href={priceOracleLink} target="_blank">

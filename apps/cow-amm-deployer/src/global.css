@@ -19,31 +19,32 @@ div[data-rk] {
 
 @layer base {
   :root {
-    --border: 10 19% 12%;
-    --input: 41 37% 91%;
+    --border: 354 17% 12%;
+    /* --input: 354 17% 12%; */
+    --input: 0 37% 91%;
     --ring: 36 12% 81%;
-    --background: 10 19% 12%;
-    --foreground: 41 37% 91%;
-    --primary: 201 100% 67%;
-    --primary-foreground: 10 19% 12%;
-    --secondary: 266 83% 57%;
-    --secondary-foreground: 41 37% 91%;
+    --background: 104 86% 16%;
+    --foreground: 0 37% 91%;
+    --primary: 85 75% 70%;
+    --primary-foreground: 104 86% 16%;
+    --secondary: 191 100% 80%;
+    --secondary-foreground: 202 100% 50;
     --destructive: 348 86% 61%;
-    --destructive-foreground: 10 22% 11%;
-    --muted: 41 37% 91%;
-    --muted-foreground: 10 19% 12%;
-    --accent: 271 100% 71%;
+    --destructive-foreground: 255 100% 100%;
+    --muted: 0 37% 91%;
+    --muted-foreground: 104 86% 16%;
+    --accent: 202 100% 50%;
     --accent-foreground: 10 22% 11%;
 
-    --popover: 41 37% 91%;
-    --popover-foreground: 10 19% 12%;
-    --card: 41 37% 91%;
-    --card-foreground: 10 19% 12%;
+    --popover: 0 37% 91%;
+    --popover-foreground: 354 17% 12%;
+    --card: 0 37% 91%;
+    --card-foreground: 104 86% 16%;
     --radius: 0px;
 
-    --highlight: 39 100% 50%;
-    --info: 204 86% 53%;
-    --success: 123 39% 47%;
+    --highlight: 91 68% 45%;
+    --info: 91 68% 45%;
+    --success: 91 68% 45%;
     --warning: 45 100% 51%;
   }
 

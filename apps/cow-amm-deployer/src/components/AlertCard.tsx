@@ -11,17 +11,20 @@ export function AlertCard({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="w-full justify-center" role="alert">
+    <div className="w-full justify-center rounded-lg" role="alert">
       <div
         className={cn(
-          "font-bold text-sand12 px-4 py-2 border-t border-x border-border",
+          "font-bold text-white px-4 py-2 rounded-t-lg",
           style === "error" ? "bg-destructive" : "bg-accent",
         )}
       >
         {capitalize(style)}: {title}
       </div>
       <div
-        className={cn("px-4 py-3 max-w-prose text-base border border-border")}
+        className={cn(
+          "px-4 py-3 max-w-prose text-base border rounded-b-lg",
+          style === "error" ? "border-destructive" : "border-accent",
+        )}
       >
         {children}
       </div>

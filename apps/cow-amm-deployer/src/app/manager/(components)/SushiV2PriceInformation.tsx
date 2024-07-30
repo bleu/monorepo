@@ -14,7 +14,7 @@ export function SushiV2PriceInformation({ cowAmm }: { cowAmm: ICowAmm }) {
   );
 
   return (
-    <div className="flex flex-row gap-x-1 items-center hover:text-foreground/90">
+    <div className="flex flex-row gap-x-1 items-center">
       <span>Using price information from Sushi V2</span>
       {priceOracleLink && (
         <Link href={priceOracleLink} target="_blank">

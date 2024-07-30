@@ -29,13 +29,13 @@ export function Header({ linkUrl, imageSrc, children, onLinkClick }: IHeader) {
           className="flex items-center gap-3 justify-self-start"
         >
           {imageSrc && (
-            <Image src={imageSrc} height={75} width={300} alt="CoW AMM Logo" />
+            <Image src={imageSrc} height={50} width={200} alt="CoW AMM Logo" />
           )}
         </Link>
       </div>
       {children && <div className="flex flex-1 justify-center">{children}</div>}
       <div className="ml-auto flex flex-1 justify-end">
-        <div className="border-foreground text-center text-sm font-semibold border focus-visible:outline-brown7 focus-visible:outline-offset-2 disabled:opacity-40 py-3 px-5">
+        <div className="text-center text-sm font-semibold border-none py-3 px-5 rounded-full bg-primary text-primary-foreground">
           <Link
             className="hover:text-highlight inline-flex items-center gap-1"
             href={

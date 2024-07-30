@@ -2,7 +2,6 @@
 
 import { formatNumber } from "@bleu/utils/formatNumber";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { tomatoDark } from "@radix-ui/colors";
 import {
   ArrowTopRightIcon,
   ExclamationTriangleIcon,
@@ -88,13 +87,12 @@ export default function Page() {
       <div className="my-10 flex w-9/12 flex-col gap-y-5 justify-center">
         <div className="flex items-center justify-between gap-x-8">
           <div className="flex flex-col gap-1">
-            <h2 className="text-2xl font-serif">
-              The first <i className="text-purple">MEV-Capturing AMM</i>,
-              brought to you by <i className="text-yellow">CoW DAO</i>{" "}
-            </h2>
+            <span className="text-2xl font-bold">
+              The first MEV-Capturing AMM, brought to you by CoW DAO
+            </span>
             <PriceInformation cowAmm={cowAmm} />
           </div>
-          <div className="flex flex-col bg-yellow/40 text-foreground py-2 px-8">
+          <div className="flex flex-col py-2 px-8">
             <span className="text-sm">Total Value</span>
             <span className="text-2xl">
               ${" "}
@@ -109,11 +107,11 @@ export default function Page() {
           </div>
         </div>
         <div className="flex flex-col">
-          <span className="text-xl my-2 border-b-2 border-primary">
+          <span className="text-xl my-2 border-b-2 border-info">
             AMM Composition
           </span>
           <Link
-            className="text-primary hover:text-primary/90 inline-flex items-center gap-1 text-sm"
+            className="text-secondary hover:text-secondary/90 inline-flex items-center gap-1 text-sm"
             href={
               new URL(
                 buildAccountCowExplorerUrl({
@@ -126,7 +124,7 @@ export default function Page() {
             target="_blank"
           >
             See in CoW Explorer
-            <ArrowTopRightIcon className="hover:text-primary" />
+            <ArrowTopRightIcon />
           </Link>
         </div>
         <PoolCompositionTable cowAmm={cowAmm} />
@@ -154,10 +152,7 @@ export default function Page() {
           </Button>
           {!isAmmFromModule && (
             <Tooltip content="This CoW AMM LP position was not created from the supported module.">
-              <ExclamationTriangleIcon
-                className="size-6"
-                color={tomatoDark.tomato10}
-              />
+              <ExclamationTriangleIcon className="size-6 text-destructive" />
             </Tooltip>
           )}
         </div>

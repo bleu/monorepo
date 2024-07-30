@@ -102,12 +102,12 @@ export function TokenSelect({
           <Button
             variant="outline"
             type="button"
-            className="px-2 justify-between"
+            className="px-2 justify-between rounded-lg text-black"
             disabled={disabled}
             onClick={() => setOpen(true)}
           >
             <div className="flex items-center gap-1">
-              <div className="rounded-full bg-input p-[3px]">
+              <div className="rounded-full p-[3px]">
                 <TokenLogo
                   src={tokenUri}
                   tokenAddress={selectedValue?.address}
@@ -124,7 +124,7 @@ export function TokenSelect({
             {!disabled && <ChevronDownIcon />}
           </Button>
         </PopoverTrigger>
-        <PopoverContent>
+        <PopoverContent className="rounded-lg bg-input">
           <Command>
             <CommandInput
               // TODO: COW-179

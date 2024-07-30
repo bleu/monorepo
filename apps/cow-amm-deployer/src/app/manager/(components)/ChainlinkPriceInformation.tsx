@@ -32,13 +32,13 @@ export function ChainlinkPriceInformation({ cowAmm }: { cowAmm: ICowAmm }) {
     fetchPriceFeedLinks();
   }, []);
   return (
-    <div className="flex flex-row gap-x-1 items-start hover:text-foreground/90">
+    <div className="flex flex-row gap-x-1 items-start">
       <span>Using price information from Chainlink</span>
       {priceFeed0Link && (
         <Link
           href={priceFeed0Link}
           target="_blank"
-          className="text-primary hover:text-primary/80 text-xs"
+          className="text-secondary hover:text-secondary/80 text-xs"
         >
           1
         </Link>
@@ -47,7 +47,7 @@ export function ChainlinkPriceInformation({ cowAmm }: { cowAmm: ICowAmm }) {
         <Link
           href={priceFeed1Link}
           target="_blank"
-          className="text-primary hover:text-primary/80 text-xs"
+          className="text-secondary hover:text-secondary/80 text-xs"
         >
           2
         </Link>

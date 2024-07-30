@@ -1,7 +1,6 @@
 import { Address } from "@bleu/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { brownDark } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -75,7 +74,7 @@ export function AmmForm({
     resolver: zodResolver(ammFormSchema),
     defaultValues: {
       ...defaultValues,
-      safeAddress,
+      safeAddress: safeAddress as Address,
       chainId,
     },
   });
@@ -113,7 +112,7 @@ export function AmmForm({
   }, [fallbackState, setValue]);
 
   useEffect(() => {
-    setValue("safeAddress", safeAddress);
+    setValue("safeAddress", safeAddress as Address);
   }, [safeAddress, setValue]);
 
   if (!fallbackState || !domainSeparator) {
@@ -134,7 +133,7 @@ export function AmmForm({
               onSelectToken={async (token: IToken) => {
                 setValue("token0", {
                   decimals: token.decimals,
-                  address: token.address,
+                  address: token.address as Address,
                   symbol: token.symbol,
                 });
                 setValue(
@@ -160,7 +159,7 @@ export function AmmForm({
               onSelectToken={(token: IToken) => {
                 setValue("token1", {
                   decimals: token.decimals,
-                  address: token.address,
+                  address: token.address as Address,
                   symbol: token.symbol,
                 });
               }}
@@ -236,9 +235,30 @@ function PriceOracleFields({
     setValue,
     formState: { errors },
     watch,
+    unregister,
   } = form;
 
   const priceOracle = watch("priceOracle");
+
+  const unregisterFields = (selectedPriceOracle: PRICE_ORACLES) => {
+    if (selectedPriceOracle !== PRICE_ORACLES.BALANCER)
+      unregister("balancerPoolId");
+    if (selectedPriceOracle !== PRICE_ORACLES.UNI) unregister("uniswapV2Pair");
+    if (selectedPriceOracle !== PRICE_ORACLES.SUSHI) unregister("sushiV2Pair");
+    if (selectedPriceOracle !== PRICE_ORACLES.CHAINLINK) {
+      unregister("chainlinkPriceFeed0");
+      unregister("chainlinkPriceFeed1");
+      unregister("chainlinkTimeThresholdInHours");
+    }
+    if (selectedPriceOracle !== PRICE_ORACLES.CUSTOM) {
+      unregister("customPriceOracleAddress");
+      unregister("customPriceOracleData");
+    }
+  };
+
+  useEffect(() => {
+    unregisterFields(priceOracle);
+  }, [priceOracle]);
 
   return (
     <div className="flex flex-col gap-y-3">
@@ -251,7 +271,7 @@ function PriceOracleFields({
                 "The AMM relies on price oracle exclusively for generating orders that will plausibly be settled in the current market conditions"
               }
             >
-              <InfoCircledIcon className="size-4" color={brownDark.brown8} />
+              <InfoCircledIcon className="size-4 text-secondary-foreground" />
             </Tooltip>
           </div>
           <SelectInput

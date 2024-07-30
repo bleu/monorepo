@@ -1,6 +1,5 @@
 "use client";
 
-import { brownDark } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import cn from "clsx";
 import React, { HTMLProps } from "react";
@@ -24,7 +23,7 @@ export const BaseInput = React.forwardRef<
     {...props}
     ref={ref}
     className={cn(
-      "w-full selection:color-white border border-border box-border inline-flex h-[35px] appearance-none items-center justify-center bg-input px-[10px] text-[15px] leading-none text-background outline-none selection:bg-primary-content disabled:bg-brown9 ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50",
+      "w-full selection:color-white border border-border box-border inline-flex h-[35px] appearance-none items-center justify-center bg-input px-[10px] text-[15px] leading-none text-border outline-none selection:bg-primary-content disabled:bg-brown9 ring-offset-background placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 rounded-lg",
       props.className,
     )}
   />
@@ -54,10 +53,10 @@ export const Input = React.forwardRef<HTMLInputElement, IInput>(
             <Tooltip content={tooltipText}>
               {tooltipLink ? (
                 <a href={tooltipLink} target="_blank" rel="noopener noreferrer">
-                  <InfoCircledIcon color={brownDark.brown8} />
+                  <InfoCircledIcon className="text-secondary-foreground" />
                 </a>
               ) : (
-                <InfoCircledIcon color={brownDark.brown8} />
+                <InfoCircledIcon className="text-secondary-foreground" />
               )}
             </Tooltip>
           )}
@@ -66,7 +65,7 @@ export const Input = React.forwardRef<HTMLInputElement, IInput>(
           <BaseInput
             {...props}
             {...register(name, validation)}
-            className={cn({ "border border-red-500": errors[name] })}
+            className={cn({ "border border-destructive": errors[name] })}
           />
         </FormControl>
         {errorMessage && (
